@@ -4,3 +4,5 @@ django-guardian==1.4.8
 django-extensions==1.7.8
 Werkzeug==0.12.1
 psycopg2==2.7.1
+django-countries==4.4
+django-localflavor==1.4.1
