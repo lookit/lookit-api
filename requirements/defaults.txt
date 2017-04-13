@@ -1,0 +1,6 @@
+Django==1.11
+djangorestframework==3.6.2
+django-guardian==1.4.8
+django-extensions==1.7.8
+Werkzeug==0.12.1
+psycopg2==2.7.1
