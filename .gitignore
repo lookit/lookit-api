@@ -104,37 +104,10 @@ typings/
 # dotenv environment variables file
 .env
 
-# Assets
-########
-.webassets-cache
-website/static/public/
-website/static/mfr/
-# Allow robots.txt to be deployment-specific
-website/static/robots.local.txt
-website/static/sitemaps/
-
-# OSF-specific
-##############
-
-api/static/vendor
 
 # Local settings files
 local.py
 local.json
-
-website/uploads/
-website/mfrcache/
-website/mfrtemp/
-website/osfstoragecache/
-website/gpg/
-webpack-assets.json
-sauce.json
-
-# Built log templates
-website/templates/_log_templates.mako
-
-# Build JS files
-website/static/built/*
 
 # Logs
 logs/*
@@ -150,11 +123,6 @@ website/mfrtemp/
 docs/_build
 website/static/img/badges
 
-# Scripts
-scripts/guid_blacklist.txt
-scripts/hide_extra_registration_logs.json
-scripts/osfstorage/usage_whitelist.json
-
 # Celery dbs
 celerybeat-schedule*
 celery_beat.py.db
@@ -162,32 +130,10 @@ celery_beat.py.db
 # Diff (used during merge resolution)
 *.orig
 
-# GUIDS
-scripts/guid_blacklist.txt
-
-# Generated json
-website/static/js/_allLogTexts.json
-website/static/js/_anonymousLogTexts.json
-
-# Admin Specific
-#################
-admin/static/public/
-# web_loader stat file
-admin/webpack-stats.json
-# bower
-admin/static/vendor/
-admin/db.sqlite3
-admin/db.sqlite3-journal
-
 # Celery Beat
 celerybeat-schedule
 celerybeat.pid
 
-# Analytics Output
-website/analytics/
-
-piwik-migration
-scripts/image_maniplation/test_rounded_corners.html
 
 .autoenv
 .docker-compose.env
@@ -195,3 +141,4 @@ scripts/image_maniplation/test_rounded_corners.html
 docker-compose.override.yml
 .unison*
 .docker-sync/
+.magicindex.json
