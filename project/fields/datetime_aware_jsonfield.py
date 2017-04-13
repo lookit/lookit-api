@@ -7,13 +7,21 @@ from decimal import Decimal
 from functools import partial
 
 import pytz
-import ciso8601
 from django.contrib.postgres import lookups
 from django.contrib.postgres.fields.jsonb import JSONField
 from django.contrib.postgres.forms.jsonb import JSONField as JSONFormField
+from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
-from osf.exceptions import NaiveDatetimeException, ValidationError
+
+import ciso8601
 from psycopg2.extras import Json
+
+
+class NaiveDatetimeException(Exception):
+    pass
+
+class ValidationError(ValidationError):
+    pass
 
 logger = logging.getLogger(__name__)
 

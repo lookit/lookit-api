@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'localflavor',
 
     # our stuff
+    'api',
+    'accounts',
+    'studies'
 ]
 
 MIDDLEWARE_CLASSES = [
