@@ -10,10 +10,20 @@
     <meta name="apple-touch-fullscreen" content="yes">
 
     <link href="/static/exp/css/vendor.css" rel="stylesheet" />
+    <link href="/static/exp/css/app.css" rel="stylesheet" />
   </head>
   <body>
-    <header>
+    <header class="wrapper-large flush-top">
         {% block header %}
+        <section class="grid">
+          <div class="column--light">
+            <h1 class="fw-bold">Experimenter</h1>
+          </div>
+          <div class="ta-right">
+              <a class="btn" href="{% url 'collaborator-list' %}">Collaborators</a>
+              <a class="btn btn--secondary" href="{% url 'collaborator-create' %}">Create</a>
+          </div>
+        </section>
         {% endblock %}
     </header>
     <section class="wrapper">
@@ -25,6 +35,12 @@
         </article>
     </section>
     {% block footer %}
+      <footer class="wrapper-larger flush-bottom">
+        <ul class="inline">
+          <a class="btn btn--link" href="{% url 'collaborator-list' %}">Collaborators</a>
+          <a class="btn btn--link" href="{% url 'collaborator-create' %}">Create</a>
+        </ul>
+      </footer>
     {% endblock %}
     {% block footerjs %}
     {% endblock %}
