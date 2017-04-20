@@ -14,9 +14,25 @@ class UserListView(generic.ListView):
     # TODO Pagination pls
 
 
-class UserDetailView(generic.DetailView):
+class UserDetailView(generic.UpdateView):
     queryset = User.objects.filter(participant__isnull=True)
+    fields = ('is_active', )
+    template_name = 'accounts/user_detail.html'
     model = User
+
+    def get_success_url(self):
+        return reverse('collaborator-detail', kwargs={'pk': self.object.id})
+
+    def post(self, request, *args, **kwargs):
+        retval = super(UserDetailView, self).post(request, *args, **kwargs)
+        if 'enable' in self.request.POST:
+            self.object.is_active = True
+        elif 'disable' in self.request.POST:
+            self.object.is_active = False
+        self.object.save()
+        return retval
+
+
 
 
 class AssignUserStudies(generic.UpdateView):

@@ -12,7 +12,6 @@
         <label class="select">
           <select name="studies" required id="id_studies" multiple="multiple">
             {% for study in form.studies %}
-            {{ study.data|pprint}}
             <option value="{{study.data.value}}"{% if study.data.selected %} selected{% endif %}>{{study.data.label}}</option>
             {% endfor %}
           </select>
