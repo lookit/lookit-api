@@ -10,7 +10,12 @@
         <h2>{{ user.username }}</h2>
         <input type="hidden" name="user" value="{{ user.id }}" />
         <label class="select">
-          {{ form.studies }}
+          <select name="studies" required id="id_studies" multiple="multiple">
+            {% for study in form.studies %}
+            {{ study.data|pprint}}
+            <option value="{{study.data.value}}"{% if study.data.selected %} selected{% endif %}>{{study.data.label}}</option>
+            {% endfor %}
+          </select>
           <span class="select__label" for="select">Studies</span>
         </label>
         <input type="submit" value="Assign Studies" />

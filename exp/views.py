@@ -24,6 +24,15 @@ class AssignUserStudies(generic.UpdateView):
     queryset = User.objects.filter(participant__isnull=True)
     form_class = UserStudiesForm
 
+    def get_success_url(self):
+        return reverse('collaborator-list')
+
+    def get_initial(self):
+        permissions = ['studies.view_study', 'studies.edit_study']
+        initial = super(AssignUserStudies, self).get_initial()
+        initial['studies'] = get_objects_for_user(self.object, permissions)
+        return initial
+
     def get_context_data(self, **kwargs):
         context = super(AssignUserStudies, self).get_context_data(**kwargs)
         context['studies'] = Study.objects.all()

@@ -1,7 +1,7 @@
 from django import forms
 
 from accounts.models import User
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 from studies.models import Study
 
 
@@ -26,7 +26,13 @@ class UserStudiesForm(forms.Form):
             return True
 
     def save(self):
-        for perm in ['view_study', 'edit_study']:
+        permissions = ['studies.view_study', 'studies.edit_study']
+        current_permitted_objects = get_objects_for_user(self.cleaned_data['user'], permissions)
+        disallowed_studies = current_permitted_objects.exclude(id__in=[x.id for x in self.cleaned_data['studies']])
+
+        for perm in permissions:
             for study in self.cleaned_data['studies']:
                 assign_perm(perm, self.cleaned_data['user'], study)
+            for study in disallowed_studies:
+                remove_perm(perm, self.cleaned_data['user'], study)
         return self.cleaned_data['user']

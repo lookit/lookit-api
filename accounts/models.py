@@ -3,9 +3,11 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.contrib.postgres.forms.ranges import FloatRangeField
 from django.db import models
+from django.db.models import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 
 from django_countries.fields import CountryField
+from guardian.shortcuts import get_objects_for_user
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
@@ -45,18 +47,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
-    def get_short_name():
+    def get_short_name(self):
         return self.username
 
-    def get_full_name():
-        return f'{self.given_name} {self.middle_name} {self.family_name} — {self.username}'
+    def get_full_name(self):
+        return f'{self.given_name} {self.middle_name} {self.family_name}'
 
     def __str__(self):
         return f'<User: {self.username}>'
 
     @property
     def is_participant(self):
-        return self.participant is not None
+        try:
+            return self.participant is not None
+        except ObjectDoesNotExist:
+            return False
 
     @property
     def studies(self):
