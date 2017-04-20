@@ -1,22 +1,24 @@
 from django.shortcuts import reverse
 from django.views import generic
 
-from accounts.forms import CollaboratorStudiesForm
-from accounts.models import Collaborator, User
+from accounts.forms import UserStudiesForm
+from accounts.models import User
 from studies.models import Study
 
 
-class AssignCollaboratorStudies(generic.UpdateView):
-    queryset = Collaborator.objects.filter()
-    form_class = CollaboratorStudiesForm
+class AssignUserStudies(generic.UpdateView):
+    template_name = 'accounts/assign_studies_form.html'
+    queryset = User.objects.filter()
+    form_class = UserStudiesForm
 
     def get_context_data(self, **kwargs):
-        context = super(AssignCollaboratorStudies, self).get_context_data(**kwargs)
+        context = super(AssignUserStudies, self).get_context_data(**kwargs)
         context['studies'] = Study.objects.all()
         return context
+    # TODO Make this save the relationship between the studies and the collabs
 
 
-class CollaboratorCreateView(generic.CreateView):
+class UserCreateView(generic.CreateView):
     model = User
     fields = (
         'username',
@@ -26,9 +28,4 @@ class CollaboratorCreateView(generic.CreateView):
     )
 
     def get_success_url(self):
-        return reverse('assign_studies', kwargs={'pk': self.object.collaborator.id})
-
-    def form_valid(self, form):
-        self.object = form.save()
-        Collaborator.objects.create(user=self.object)
-        return super(CollaboratorCreateView, self).form_valid(form)
+        return reverse('assign_studies', kwargs={'pk': self.object.id})

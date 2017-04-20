@@ -55,21 +55,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f'<User: {self.username}>'
 
     @property
-    def is_collaborator():
-        return self.collaborator is not None
-
-    @property
     def is_participant():
         return self.participant is not None
 
     objects = UserManager()
-
-
-class Collaborator(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='collaborator', related_query_name='collaborator')
-
-    def __str__(self):
-        return f'<Collaborator: {self.user.username}>'
 
 
 class Participant(models.Model):

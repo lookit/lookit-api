@@ -9,3 +9,9 @@ class Study(models.Model):
 
     def __str__(self):
         return f'<Study: {self.name}>'
+
+    class Meta:
+        permissions = (
+            ('view_study', 'View Study'),
+            ('edit_study', 'Edit Study')
+        )

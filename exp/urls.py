@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from exp.views import AssignCollaboratorStudies, CollaboratorCreateView
+from exp.views import AssignUserStudies, UserCreateView
 
 urlpatterns = [
-    url(r'collaborator/create/$', CollaboratorCreateView.as_view(), name='collaborator-create'),
-    url(r'collaborator/(?P<pk>\d+)/assign_studies/$', AssignCollaboratorStudies.as_view(), name='assign_studies'),
+    url(r'collaborator/create/$', UserCreateView.as_view(), name='collaborator-create'),
+    url(r'collaborator/(?P<pk>\d+)/assign_studies/$', AssignUserStudies.as_view(), name='assign_studies'),
 ]
