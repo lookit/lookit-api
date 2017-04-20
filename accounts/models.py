@@ -36,8 +36,11 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.EmailField(unique=True)
     USERNAME_FIELD = EMAIL_FIELD = "username"
+    username = models.EmailField(unique=True)
+    given_name = models.CharField(max_length=255)
+    middle_name = models.CharField(max_length=255, blank=True)
+    family_name = models.CharField(max_length=255)
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -45,14 +48,31 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_short_name():
         return self.username
 
+    def get_full_name():
+        return f'{self.given_name} {self.middle_name} {self.family_name} — {self.username}'
+
+    def __str__(self):
+        return f'<User: {self.username}>'
+
+    @property
+    def is_collaborator():
+        return self.collaborator is not None
+
+    @property
+    def is_participant():
+        return self.participant is not None
+
     objects = UserManager()
 
 
-class CollaboratorProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='collaborator_profile', related_query_name='collaborator')
+class Collaborator(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='collaborator', related_query_name='collaborator')
+
+    def __str__(self):
+        return f'<Collaborator: {self.user.username}>'
 
 
-class ParticipantProfile(models.Model):
+class Participant(models.Model):
     RACE_CHOICES = (
         ('white', 'White'),
         ('hisp', 'Hispanic, Latino, or Spanish origin'),
@@ -153,7 +173,7 @@ class ParticipantProfile(models.Model):
         ('suburban','suburban'),
         ('rural', 'rural')
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='participant_profile', related_query_name='participant')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='participant', related_query_name='participant')
 
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
     child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
@@ -174,4 +194,4 @@ class ParticipantProfile(models.Model):
     extra = DateTimeAwareJSONField()
 
     def __str__(self):
-        return f'<ParticipantProfile: {self.user.username}>'
+        return f'<Participant: {self.user.username}>'

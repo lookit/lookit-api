@@ -1,6 +1,6 @@
 from rest_framework import serializers as drf_serializers
 
-from accounts.models import ParticipantProfile, User
+from accounts.models import Participant, User
 from rest_framework_json_api import serializers
 
 
@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ParticipantSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     class Meta:
-        model = ParticipantProfile
+        model = Participant
         fields = (
             'user',
             'number_of_children',

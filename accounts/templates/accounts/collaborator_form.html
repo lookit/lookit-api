@@ -1,0 +1,17 @@
+{% extends 'exp/base.html' %}
+
+{% block title %}Assign Studies{% endblock %}
+{% block content %}
+    <h1>Assign Studies</h1>
+    <section class="error-list">
+      {{ form.non_field_errors }}
+    </section>
+    <form action="" method="post">{% csrf_token %}
+        <h2>{{ collaborator.user.username }}</h2>
+        <label class="select">
+          {{ form.studies }}
+          <span class="select__label" for="select">Studies</span>
+        </label>
+        <input type="submit" value="Assign Studies" />
+    </form>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'exp/base.html' %}
+
+{% block title %}Create Collaborator{% endblock %}
+{% block content %}
+    <h1>Create Collaborator</h1>
+    <section class="error-list">
+      {{ form.non_field_errors }}
+    </section>
+    <form action="" method="post">{% csrf_token %}
+        {{ collaborators.management_form }}
+        <label class="textfield">
+          {{ form.username }}
+          <span class="textfield__label">Email Address</span>
+        </label>
+        <section class="error-list">
+          {{ form.username.errors}}
+        </section>
+
+        <section class="grid">
+          <div>
+            <label class="textfield">
+              {{ form.given_name}}
+              <span class="textfield__label">Given Name</span>
+            </label>
+            <section class="error-list">
+              {{ form.given_name.errors}}
+            </section>
+          </div>
+          <div class="column--light">
+            <label class="textfield">
+              {{ form.middle_name}}
+              <span class="textfield__label">Middle Name</span>
+            </label>
+            <section class="error-list">
+              {{ form.middle_name.errors}}
+            </section>
+          </div>
+
+          <div>
+            <label class="textfield">
+              {{ form.family_name}}
+              <span class="textfield__label">Family Name</span>
+            </label>
+            <section class="error-list">
+              {{ form.family_name.errors}}
+            </section>
+          </div>
+        </section>
+        <input type="submit" value="Create Collaborator" />
+    </form>
+{% endblock %}
