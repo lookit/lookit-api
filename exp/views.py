@@ -15,6 +15,10 @@ class UserListView(generic.ListView):
 
 
 class UserDetailView(generic.UpdateView):
+    '''
+    UserDetailView shows information about a user and allows enabling or disabling
+    a user.
+    '''
     queryset = User.objects.filter(participant__isnull=True)
     fields = ('is_active', )
     template_name = 'accounts/user_detail.html'
@@ -34,6 +38,10 @@ class UserDetailView(generic.UpdateView):
 
 
 class AssignUserStudies(generic.UpdateView):
+    '''
+    AssignUserStudies lists studies available and let's someone assign permissions
+    to users.
+    '''
     template_name = 'accounts/assign_studies_form.html'
     queryset = User.objects.filter(participant__isnull=True)
     form_class = UserStudiesForm
@@ -54,6 +62,16 @@ class AssignUserStudies(generic.UpdateView):
 
 
 class UserCreateView(generic.CreateView):
+    '''
+    UserCreateView creates a user. It forces is_active to True; is_superuser
+    and is_staff to False; and sets a random 12 char password.
+
+    TODO Eventually this should email the user at their username/email once they
+    are saved.
+    TODO It should set an unusable password, send them an email to a url with that password
+    in it as a token, let them set their own password after clicking the link. It should
+    definitely check to make sure it's an unusable password before it allows the reset.
+    '''
     model = User
     fields = (
         'username',
