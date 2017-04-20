@@ -15,6 +15,7 @@ class AssignUserStudies(generic.UpdateView):
         context = super(AssignUserStudies, self).get_context_data(**kwargs)
         context['studies'] = Study.objects.all()
         return context
+        
     # TODO Make this save the relationship between the studies and the collabs
 
 
