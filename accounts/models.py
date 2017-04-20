@@ -55,8 +55,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f'<User: {self.username}>'
 
     @property
-    def is_participant():
+    def is_participant(self):
         return self.participant is not None
+
+    @property
+    def studies(self):
+        if not self.is_participant:
+            return get_objects_for_user(self, ['studies.view_study', 'studies.edit_study'])
+        return None
 
     objects = UserManager()
 
