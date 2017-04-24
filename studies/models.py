@@ -1,6 +1,6 @@
 from django.db import models
 
-from accounts.models import Organization, User, DemographicData
+from accounts.models import DemographicData, Organization, User
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
@@ -10,6 +10,7 @@ class Study(models.Model):
     is_active = models.BooleanField(default=True)
     blocks = DateTimeAwareJSONField(default=dict)
     # TODO record activity logs: created, submitted for approval, approved, rejected, started, participant_started, paused, started, paused, participant_finished, deactivated
+
     def __str__(self):
         return f'<Study: {self.name}>'
 
@@ -38,6 +39,9 @@ class Response(models.Model):
 class Log(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f'<{self.__class__.name}: {self.action} @ {self.created_at:%c}>'
 
     class Meta:
         abstract = True

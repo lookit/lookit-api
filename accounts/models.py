@@ -39,6 +39,9 @@ class Organization(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     url = models.URLField(verbose_name='Website')
 
+    def __str__(self):
+        return f'<Organization: {self.name}>'
+
     class Meta:
         permissions = (
             ('is_admin', 'Organization Administrator'),
