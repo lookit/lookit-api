@@ -8,7 +8,7 @@ from studies.models import Study
 
 
 class UserListView(generic.ListView):
-    queryset = User.objects.filter(participant__isnull=True)
+    queryset = User.objects.filter(demographics__isnull=True)
     model = User
 
     # TODO Pagination pls
@@ -19,7 +19,7 @@ class UserDetailView(generic.UpdateView):
     UserDetailView shows information about a user and allows enabling or disabling
     a user.
     '''
-    queryset = User.objects.filter(participant__isnull=True)
+    queryset = User.objects.filter(demographics__isnull=True)
     fields = ('is_active', )
     template_name = 'accounts/user_detail.html'
     model = User
@@ -43,7 +43,7 @@ class AssignUserStudies(generic.UpdateView):
     to users.
     '''
     template_name = 'accounts/assign_studies_form.html'
-    queryset = User.objects.filter(participant__isnull=True)
+    queryset = User.objects.filter(demographics__isnull=True)
     form_class = UserStudiesForm
 
     def get_success_url(self):
@@ -98,3 +98,29 @@ class UserCreateView(generic.CreateView):
 
     def get_success_url(self):
         return reverse('assign-studies', kwargs={'pk': self.object.id})
+
+class StudyListView(generic.ListView):
+    model = Study
+
+    # TODO Pagination
+
+class StudyDetailView(generic.UpdateView):
+    '''
+    StudyDetailView shows information about a study and allows enabling or disabling
+    a user.
+    '''
+    fields = ('is_active', )
+    template_name = 'studies/study_detail.html'
+    model = Study
+
+    def get_success_url(self):
+        return reverse('study-detail', kwargs={'pk': self.object.id})
+
+    def post(self, request, *args, **kwargs):
+        retval = super(StudyDetailView, self).post(request, *args, **kwargs)
+        if 'enable' in self.request.POST:
+            self.object.is_active = True
+        elif 'disable' in self.request.POST:
+            self.object.is_active = False
+        self.object.save()
+        return retval

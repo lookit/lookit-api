@@ -1,9 +1,7 @@
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
-from django.contrib.postgres.forms.ranges import FloatRangeField
 from django.db import models
-from django.db.models import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 
 from django_countries.fields import CountryField
@@ -37,12 +35,27 @@ class UserManager(BaseUserManager):
         return user
 
 
+class Organization(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+    url = models.URLField(verbose_name='Website')
+
+    class Meta:
+        permissions = (
+            ('is_admin', 'Organization Administrator'),
+            ('can_add_collaborators', 'Can Add Collaborators'),
+            ('can_approve_studies', 'Can Approve Studies'),
+            ('can_disable_studies', 'Can Disable Studies'),
+        )
+
+
 class User(AbstractBaseUser, PermissionsMixin):
-    USERNAME_FIELD = EMAIL_FIELD = "username"
+    USERNAME_FIELD = EMAIL_FIELD = 'username'
     username = models.EmailField(unique=True)
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='users', related_query_name='user', null=True, blank=True)
+
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -58,10 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_participant(self):
-        try:
-            return self.participant is not None
-        except ObjectDoesNotExist:
-            return False
+        return self.demographics.exists()
 
     @property
     def studies(self):
@@ -72,7 +82,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
 
-class Participant(models.Model):
+class DemographicData(models.Model):
     RACE_CHOICES = (
         ('white', 'White'),
         ('hisp', 'Hispanic, Latino, or Spanish origin'),
@@ -173,7 +183,9 @@ class Participant(models.Model):
         ('suburban','suburban'),
         ('rural', 'rural')
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='participant', related_query_name='participant')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='demographics', related_query_name='demographics')
+    created_at = models.DateTimeField(auto_now_add=True)
+    previous = models.ForeignKey('self', on_delete=models.CASCADE, related_name='next_demographic_data', related_query_name='next_demographic_data', null=True, blank=True)
 
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
     child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
@@ -194,4 +206,4 @@ class Participant(models.Model):
     extra = DateTimeAwareJSONField()
 
     def __str__(self):
-        return f'<Participant: {self.user.username}>'
+        return f'<DemographicData: {self.user.username} @ {self.created_at:%c}>'

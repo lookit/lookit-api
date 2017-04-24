@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 
-from accounts.models import Participant
-from accounts.serializers import ParticipantSerializer
+from accounts.models import DemographicData
+from accounts.serializers import DemographicDataSerializer
 
 
-class ParticipantViewSet(viewsets.ModelViewSet):
-    queryset = Participant.objects.all()
-    serializer_class = ParticipantSerializer
+class DemographicDataViewSet(viewsets.ModelViewSet):
+    queryset = DemographicData.objects.all()
+    serializer_class = DemographicDataSerializer

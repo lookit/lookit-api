@@ -16,12 +16,14 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from exp.views import (AssignUserStudies, UserCreateView, UserDetailView,
-                       UserListView)
+from exp.views import (AssignUserStudies, StudyDetailView, StudyListView,
+                       UserCreateView, UserDetailView, UserListView)
 
 urlpatterns = [
     url(r'collaborators/create/$', UserCreateView.as_view(), name='collaborator-create'),
     url(r'collaborators/(?P<pk>\d+)/$', UserDetailView.as_view(), name='collaborator-detail'),
     url(r'collaborators/$', UserListView.as_view(), name='collaborator-list'),
     url(r'collaborators/(?P<pk>\d+)/assign-studies/$', AssignUserStudies.as_view(), name='assign-studies'),
+    url(r'studies/$', StudyListView.as_view(), name='study-list'),
+    url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
 ]

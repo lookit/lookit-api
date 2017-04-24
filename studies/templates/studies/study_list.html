@@ -1,0 +1,22 @@
+{% extends 'exp/base.html' %}
+
+{% block title %}List Studies{% endblock %}
+{% block content %}
+    <h2>Studies</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Active?</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for study in object_list %}
+          <tr>
+            <td><a href="{% url 'study-detail' study.id %}">{{ study.name }}</a></td>
+            <td>{{ study.is_active }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}
