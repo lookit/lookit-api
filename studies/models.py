@@ -2,14 +2,20 @@ from django.db import models
 
 from accounts.models import DemographicData, Organization, User
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
+from transitions import Machine
+
+from . import workflow
 
 
 class Study(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.DO_NOTHING, related_name='studies', related_query_name='study')
     name = models.CharField(max_length=255, blank=False, null=False)
-    is_active = models.BooleanField(default=True)
+    organization = models.ForeignKey(Organization, on_delete=models.DO_NOTHING, related_name='studies', related_query_name='study')
     blocks = DateTimeAwareJSONField(default=dict)
-    # TODO record activity logs: created, submitted for approval, approved, rejected, started, participant_started, paused, started, paused, participant_finished, deactivated
+    state = models.CharField(choices=workflow.STATE_CHOICES, max_length=25, default=workflow.STATE_CHOICES[0][0])
+
+    def __init__(self, *args, **kwargs):
+        super(Study, self).__init__(*args, **kwargs)
+        machine = Machine(self, states=workflow.states, transitions=workflow.transitions, initial=self.state, send_event=True, after_state_change='finalize_state_change')
 
     def __str__(self):
         return f'<Study: {self.name}>'
@@ -21,6 +27,43 @@ class Study(models.Model):
             ('can_respond', 'Can Respond?'),
         )
 
+    # WORKFLOW CALLBACKS
+    def notify_administrators_of_submission(self, ev):
+        # TODO
+        pass
+
+    def notify_submitter_of_approval(self, ev):
+        # TODO
+        pass
+
+    def notify_submitter_of_rejection(self, ev):
+        # TODO
+        pass
+
+    def notify_administrators_of_retraction(self, ev):
+        # TODO
+        pass
+
+    def notify_administrators_of_activation(self, ev):
+        # TODO
+        pass
+
+    def notify_administrators_of_pause(self, ev):
+        # TODO
+        pass
+
+    def notify_administrators_of_deactivation(self, ev):
+        # TODO
+        pass
+
+    # Runs for every transition to log action
+    def log_action(self, ev):
+        StudyLog.objects.create(action=ev.state.name, study=ev.model, user=ev.kwargs.get('user'))
+
+    # Runs for every transition to save state and log action
+    def finalize_state_change(self, ev):
+        ev.model.save()
+        self.log_action(ev)
 
 class Response(models.Model):
     study = models.ForeignKey(Study, on_delete=models.DO_NOTHING)
@@ -46,33 +89,12 @@ class Log(models.Model):
     class Meta:
         abstract = True
 
-STUDY_ACTIONS = (
-    ('created', 'Created'),
-    ('submitted', 'Submitted for Approval'),
-    ('rejected', 'Rejected'),
-    ('approved', 'Approved'),
-    ('started', 'Started'),
-    ('paused', 'Paused'),
-    ('resumed', 'Resumed'),
-    ('deactivated', 'Deactivated'),
-    ('retracted', 'Retracted'),
-    ('viewed_data', 'Viewed Data'),
-)
-
 
 class StudyLog(Log):
-    action = models.CharField(max_length=128, choices=STUDY_ACTIONS)
+    action = models.CharField(max_length=128)
     study = models.ForeignKey(Study, on_delete=models.DO_NOTHING)
 
 
-RESPONSE_ACTIONS = (
-    ('started', 'Started'),
-    ('paused', 'Paused'),
-    ('abandoned', 'Abandoned'),
-    ('finished', 'Finished'),
-)
-
-
 class ResponseLog(Log):
-    action = models.CharField(max_length=128, choices=RESPONSE_ACTIONS)
+    action = models.CharField(max_length=128)
     response = models.ForeignKey(Response, on_delete=models.DO_NOTHING)

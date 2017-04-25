@@ -1,12 +1,4 @@
-#from transitions import Machine
-from transitions.extensions import GraphMachine as Machine
-
-
-class Model(object):
-    pass
-
-
-m = Model()
+from transitions.extensions import LockedHierarchicalGraphMachine as Machine
 
 states = [
     'created',
@@ -18,6 +10,10 @@ states = [
     'paused',
     'deactivated'
 ]
+
+STATE_CHOICES = tuple(
+ (x, x.title()) for x in states
+)
 
 transitions = [
     {
@@ -46,19 +42,13 @@ transitions = [
     },
     {
         'trigger': 'resubmit',
-        'source': 'retracted',
-        'dest': 'submitted',
-        'after': 'notify_administrators_of_submission',
-    },
-    {
-        'trigger': 'resubmit',
         'source': 'rejected',
         'dest': 'submitted',
         'after': 'notify_administrators_of_submission'
     },
     {
         'trigger': 'activate',
-        'source': 'approved',
+        'source': ['approved','paused'],
         'dest': 'active',
         'after': 'notify_administrators_of_activation'
     },
@@ -69,25 +59,9 @@ transitions = [
         'after': 'notify_administrators_of_pause',
     },
     {
-        'trigger': 'activate',
-        'source': 'paused',
-        'dest': 'active',
-        'after': 'notify_administrators_of_activation',
-    },
-    {
         'trigger': 'deactivate',
-        'source': 'active',
-        'dest': 'deactivated',
-        'after': 'notify_administrators_of_deactivation'
-    },
-    {
-        'trigger': 'deactivate',
-        'source': 'paused',
+        'source': ['active', 'paused'],
         'dest': 'deactivated',
         'after': 'notify_administrators_of_deactivation'
     },
 ]
-
-machine = Machine(model=m, states=states, transitions=transitions, initial='created')
-
-m.get_graph().draw('workflow.png', prog='dot')
