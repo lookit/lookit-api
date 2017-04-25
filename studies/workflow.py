@@ -1,4 +1,3 @@
-from transitions.extensions import LockedHierarchicalGraphMachine as Machine
 
 states = [
     'created',

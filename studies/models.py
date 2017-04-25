@@ -2,7 +2,7 @@ from django.db import models
 
 from accounts.models import DemographicData, Organization, User
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
-from transitions import Machine
+from transitions.extensions import GraphMachine as Machine
 
 from . import workflow
 
@@ -15,7 +15,7 @@ class Study(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
-        machine = Machine(self, states=workflow.states, transitions=workflow.transitions, initial=self.state, send_event=True, after_state_change='finalize_state_change')
+        self.machine = Machine(self, states=workflow.states, transitions=workflow.transitions, initial=self.state, send_event=True, after_state_change='finalize_state_change')
 
     def __str__(self):
         return f'<Study: {self.name}>'
@@ -93,6 +93,9 @@ class Log(models.Model):
 class StudyLog(Log):
     action = models.CharField(max_length=128)
     study = models.ForeignKey(Study, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f'<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}'
 
 
 class ResponseLog(Log):
