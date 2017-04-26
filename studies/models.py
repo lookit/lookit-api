@@ -92,7 +92,7 @@ class Log(models.Model):
 
 class StudyLog(Log):
     action = models.CharField(max_length=128)
-    study = models.ForeignKey(Study, on_delete=models.DO_NOTHING)
+    study = models.ForeignKey(Study, on_delete=models.DO_NOTHING, related_name='logs', related_query_name='logs')
 
     def __str__(self):
         return f'<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}'
