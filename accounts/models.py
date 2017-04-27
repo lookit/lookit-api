@@ -1,9 +1,14 @@
+import base64
+import hashlib
+
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
+from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 
+import pydenticon
 from django_countries.fields import CountryField
 from guardian.shortcuts import get_objects_for_user
 from localflavor.us.models import USStateField
@@ -58,13 +63,38 @@ class User(AbstractBaseUser, PermissionsMixin):
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='users', related_query_name='user', null=True, blank=True)
-
+    _identicon = models.TextField(verbose_name='identicon')
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
+    @property
+    def identicon(self):
+        if not self._identicon:
+            rbw = self._make_rainbow()
+            generator = pydenticon.Generator(5, 5, digest=hashlib.sha512, foreground=rbw, background='rgba(0,0,0,0)')
+            png = generator.generate(f'{self.username} {self.given_name} {self.middle_name} {self.family_name} {self.organization}', 64, 64)
+            b64_png = base64.b64encode(png)
+            self._identicon = f'data:image/png;base64,{b64_png.decode()}'
+            self.save()
+        return self._identicon
+
+    def _make_rainbow(self):
+        rbw = []
+        for i in range(0, 255, 10):
+            for j in range(0, 255, 10):
+                for k in range(0, 255, 10):
+                    rbw.append(f'rgb({i},{j},{k})')
+        return rbw
+
+
+
+    @property
+    def identicon_html(self):
+        return mark_safe(f'<img src="{str(self.identicon)}" width="64"/>')
+
     def get_short_name(self):
-        return self.username
+        return self.identicon_html
 
     def get_full_name(self):
         return f'{self.given_name} {self.middle_name} {self.family_name}'
@@ -209,4 +239,4 @@ class DemographicData(models.Model):
     extra = DateTimeAwareJSONField()
 
     def __str__(self):
-        return f'<DemographicData: {self.user.username} @ {self.created_at:%c}>'
+        return f'<DemographicData: {self.user.get_short_name} @ {self.created_at:%c}>'

@@ -66,12 +66,12 @@ class Study(models.Model):
         self.log_action(ev)
 
 class Response(models.Model):
-    study = models.ForeignKey(Study, on_delete=models.DO_NOTHING)
+    study = models.ForeignKey(Study, on_delete=models.DO_NOTHING, related_name='responses')
     participant = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     demographic_snapshot = models.ForeignKey(DemographicData, on_delete=models.DO_NOTHING)
     results = DateTimeAwareJSONField(default=dict)
     def __str__(self):
-        return f'<Response: {self.study} {self.participant.username}>'
+        return f'<Response: {self.study} {self.participant.get_short_name}>'
 
     class Meta:
         permissions = (

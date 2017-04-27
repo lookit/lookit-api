@@ -1,0 +1,40 @@
+{% extends 'exp/base.html' %}
+
+{% block title %}{{ study.name }}{% endblock %}
+{% block content %}
+    <h1>{{ study.name }}</h1>
+    <table>
+      <tbody>
+        <tr>
+          <th>
+              State
+          </th>
+          <td>
+            {{ study.get_state_display }}
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Blocks
+          </th>
+          <td>
+            {{ study.blocks }}
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Participants
+          </th>
+          <td>
+            <ul>
+            {% for response in study.responses.all %}
+              <li>
+                {{ response.participant.get_short_name }}
+              </li>
+            {% endfor %}
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+{% endblock %}

@@ -7,7 +7,7 @@
       {{ form.non_field_errors }}
     </section>
     <form action="" method="post">{% csrf_token %}
-        <h2>{{ user.username }}</h2>
+        <h2>{{ user.get_short_name }}</h2>
         <input type="hidden" name="user" value="{{ user.id }}" />
         <label class="select">
           <select name="studies" required id="id_studies" multiple="multiple">

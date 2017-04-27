@@ -104,23 +104,9 @@ class StudyListView(generic.ListView):
 
     # TODO Pagination
 
-class StudyDetailView(generic.UpdateView):
+class StudyDetailView(generic.DetailView):
     '''
-    StudyDetailView shows information about a study and allows enabling or disabling
-    a user.
+    StudyDetailView shows information about a study.
     '''
-    fields = ('is_active', )
     template_name = 'studies/study_detail.html'
     model = Study
-
-    def get_success_url(self):
-        return reverse('study-detail', kwargs={'pk': self.object.id})
-
-    def post(self, request, *args, **kwargs):
-        retval = super(StudyDetailView, self).post(request, *args, **kwargs)
-        if 'enable' in self.request.POST:
-            self.object.is_active = True
-        elif 'disable' in self.request.POST:
-            self.object.is_active = False
-        self.object.save()
-        return retval
