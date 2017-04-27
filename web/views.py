@@ -19,8 +19,8 @@ class StudiesListView(generic.ListView):
         # TODO or by if they've taken the study before this is the spot
         # self.request.user
         qs = super().get_queryset(*args, **kwargs)
-        qs.filter(state='active')
-        return
+        qs = qs.filter(state='active')
+        return qs
 
 
 class ParticipantSignupView(generic.CreateView):
