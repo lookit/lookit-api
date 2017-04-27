@@ -21,9 +21,11 @@ from django.contrib import admin
 from api import urls as api_urls
 from exp import urls as exp_urls
 from project import settings
+from web import urls as web_urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^exp/', include(exp_urls)),
-    url(r'^api/', include(api_urls))
+    url(r'^api/', include(api_urls)),
+    url(r'^', include(web_urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

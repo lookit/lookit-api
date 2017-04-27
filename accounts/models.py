@@ -17,7 +17,6 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
 class UserManager(BaseUserManager):
-
     def create_user(self, username, password=None):
         if not username:
             raise ValueError('Users must have a username')
@@ -236,7 +235,7 @@ class DemographicData(models.Model):
     country = CountryField()
     state = USStateField(choices=('XX', _('Select a State')) + USPS_CHOICES[:])
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
-    extra = DateTimeAwareJSONField()
+    extra = DateTimeAwareJSONField(null=True)
 
     def __str__(self):
         return f'<DemographicData: {self.user.get_short_name} @ {self.created_at:%c}>'

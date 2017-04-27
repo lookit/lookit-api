@@ -15,7 +15,15 @@ class Study(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
-        self.machine = Machine(self, states=workflow.states, transitions=workflow.transitions, initial=self.state, send_event=True, after_state_change='finalize_state_change')
+        self.machine = Machine(
+            self,
+            states=workflow.states,
+            transitions=workflow.transitions,
+            initial=self.state,
+            send_event=True,
+            before_state_change='check_permission',
+            after_state_change='finalize_state_change'
+        )
 
     def __str__(self):
         return f'<Study: {self.name}>'
@@ -28,6 +36,10 @@ class Study(models.Model):
         )
 
     # WORKFLOW CALLBACKS
+    def check_permission(self, ev):
+        # TODO
+        pass
+
     def notify_administrators_of_submission(self, ev):
         # TODO
         pass
