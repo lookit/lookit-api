@@ -52,6 +52,7 @@ class Organization(models.Model):
             ('can_add_collaborators', 'Can Add Collaborators'),
             ('can_approve_studies', 'Can Approve Studies'),
             ('can_disable_studies', 'Can Disable Studies'),
+            ('can_view', 'Can View')
         )
 
 

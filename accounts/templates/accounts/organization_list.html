@@ -1,0 +1,23 @@
+{% extends 'exp/base.html' %}
+
+{% block title %}Organizations{% endblock %}
+
+{% block content %}
+<h1>Organizations</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Url</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for org in object_list %}
+      <tr>
+        <td>{{ org.name }}</td>
+        <td><a href="{{ org.url }}" target="_blank">{{ org.url }}</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

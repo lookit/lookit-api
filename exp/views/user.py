@@ -98,15 +98,3 @@ class UserCreateView(generic.CreateView):
 
     def get_success_url(self):
         return reverse('assign-studies', kwargs={'pk': self.object.id})
-
-class StudyListView(generic.ListView):
-    model = Study
-
-    # TODO Pagination
-
-class StudyDetailView(generic.DetailView):
-    '''
-    StudyDetailView shows information about a study.
-    '''
-    template_name = 'studies/study_detail.html'
-    model = Study

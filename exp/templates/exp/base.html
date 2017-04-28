@@ -20,8 +20,7 @@
             <h1 class="fw-bold">Experimenter</h1>
           </div>
           <div class="ta-right">
-              <a class="btn" href="{% url 'collaborator-list' %}">Collaborators</a>
-              <a class="btn btn--secondary" href="{% url 'collaborator-create' %}">Create</a>
+            {% include 'exp/_navigation.html' %}
           </div>
         </section>
         {% endblock %}
@@ -35,11 +34,8 @@
         </article>
     </section>
     {% block footer %}
-      <footer class="wrapper-larger flush-bottom">
-        <ul class="inline">
-          <a class="btn btn--link" href="{% url 'collaborator-list' %}">Collaborators</a>
-          <a class="btn btn--link" href="{% url 'collaborator-create' %}">Create</a>
-        </ul>
+      <footer class="wrapper-larger flush-bottom inline-list">
+        {% include 'exp/_navigation.html' %}
       </footer>
     {% endblock %}
     {% block footerjs %}
