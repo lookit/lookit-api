@@ -1,22 +1,31 @@
 {% extends 'exp/base.html' %}
+{% load bootstrap3 %}
 
 {% block title %}Assign Studies{% endblock %}
-{% block content %}
-    <h1>Assign Studies</h1>
-    <section class="error-list">
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
       {{ form.non_field_errors }}
-    </section>
-    <form action="" method="post">{% csrf_token %}
-        <h2>{{ user.get_short_name }}</h2>
-        <input type="hidden" name="user" value="{{ user.id }}" />
-        <label class="select">
-          <select name="studies" required id="id_studies" multiple="multiple">
-            {% for study in form.studies %}
-            <option value="{{study.data.value}}"{% if study.data.selected %} selected{% endif %}>{{study.data.label}}</option>
-            {% endfor %}
-          </select>
-          <span class="select__label" for="select">Studies</span>
-        </label>
-        <input type="submit" value="Assign Studies" />
-    </form>
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h1 class="panel-title">Assign Studies</h1>
+      </div>
+      <div class="panel-body">
+        <form action="" method="post">{% csrf_token %}
+            <input type="hidden" name="user" value="{{ user.id }}" />
+            {% bootstrap_form form exclude="user" %}
+            {% buttons %}
+              <button type="submit" class="btn btn-default">
+                {% bootstrap_icon "plus" %} Assign Studies
+              </button>
+            {% endbuttons %}
+        </form>
+    </div>
+  </div>
 {% endblock %}

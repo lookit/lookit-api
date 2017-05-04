@@ -2,38 +2,38 @@
 
 {% block title %}List Collaborators{% endblock %}
 {% block content %}
-    <h2>Collaborators</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>Identicon</th>
-          <th>Full Name</th>
-          <th>Studies</th>
-          <th>Active</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for user in object_list %}
+    <h1>Collaborators</h1>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
           <tr>
-            <td>{{ user.username }}</td>
-            <td>{{ user.identicon_html }}</td>
-            <td>{{ user.get_full_name }}</td>
-            <td>{% for us in user.studies %}{{ us.name }}, {% endfor %}</td>
-            <td>{{ user.is_active }}</td>
-            <td>
-              <ul>
-                  <li>
-                    <a href="{% url 'collaborator-detail' user.id %}">View</a>
-                  </li>
-                  <li>
-                    <a href="{% url 'assign-studies' user.id %}">Assign Studies</a>
-                  </li>
-              </ul>
-            </td>
+            <th>ID</th>
+            <th>Identicon</th>
+            <th>Studies</th>
+            <th>Active</th>
+            <th>Actions</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for user in object_list %}
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.identicon_html }}</td>
+              <td>{% for us in user.studies %}{{ us.name }}, {% endfor %}</td>
+              <td>{{ user.is_active }}</td>
+              <td>
+                <ul>
+                    <li>
+                      <a href="{% url 'collaborator-detail' user.id %}">View</a>
+                    </li>
+                    <li>
+                      <a href="{% url 'assign-studies' user.id %}">Assign Studies</a>
+                    </li>
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 {% endblock %}

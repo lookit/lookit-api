@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'guardian',
     'localflavor',
     'rest_framework',
+    'bootstrap3',
 
     # our stuff
     'api',
