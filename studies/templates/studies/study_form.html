@@ -1,0 +1,47 @@
+{% extends 'exp/base.html' %}
+
+{% block title %}Create Study{% endblock %}
+
+{% block content %}
+    <section class="error-list">
+      {{ form.non_field_errors }}
+    </section>
+    <form action="" method="POST">{% csrf_token %}
+        <section class="grid">
+          <div>
+            <label class="textfield">
+              {{ form.name }}
+              <span class="textfield__label">Name</span>
+            </label>
+            <section class="error-list">
+              {{ form.name.errors}}
+            </section>
+          </div>
+        </section>
+        <section class="grid">
+          <label class="select">
+            <select name="organization" required id="id_organization">
+              {% for organization in form.organization %}
+              <option value="{{ organization.data.value }}"{% if organization.data.selected %} selected{% endif %}>{{ organization.data.label }}</option>
+              {% endfor %}
+            </select>
+            <span class="select__label" for="select">Organization</span>
+          </label>
+          <section class="error-list">
+            {{ form.organization.errors}}
+          </section>
+        </section>
+        <section class="grid">
+          <div>
+            <label class="textfield">
+              {{ form.blocks }}
+              <span class="textfield__label">Blocks</span>
+            </label>
+            <section class="error-list">
+              {{ form.blocks.errors}}
+            </section>
+          </div>
+        </section>
+        <input type="submit" value="Create Study" />
+    </form>
+{% endblock %}

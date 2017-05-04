@@ -22,7 +22,7 @@ class Study(models.Model):
             initial=self.state,
             send_event=True,
             before_state_change='check_permission',
-            after_state_change='finalize_state_change'
+            after_state_change='_finalize_state_change'
         )
 
     def __str__(self):
@@ -37,8 +37,10 @@ class Study(models.Model):
 
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
-        # TODO
-        pass
+        user = ev.kwargs.get('user')
+        if user.is_superuser:
+            return
+        raise 
 
     def notify_administrators_of_submission(self, ev):
         # TODO
@@ -69,13 +71,13 @@ class Study(models.Model):
         pass
 
     # Runs for every transition to log action
-    def log_action(self, ev):
+    def _log_action(self, ev):
         StudyLog.objects.create(action=ev.state.name, study=ev.model, user=ev.kwargs.get('user'))
 
     # Runs for every transition to save state and log action
-    def finalize_state_change(self, ev):
+    def _finalize_state_change(self, ev):
         ev.model.save()
-        self.log_action(ev)
+        self._log_action(ev)
 
 class Response(models.Model):
     study = models.ForeignKey(Study, on_delete=models.DO_NOTHING, related_name='responses')

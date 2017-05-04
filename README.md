@@ -1,15 +1,15 @@
 # lookit-api
 API for Lookit
 
-
 #TODO
+- Add login, logout, forgot password, change user information for exp and web (same forms, different templates)
 - Collaborator creation
-  - **exp Website**
+  - **exp website**
   - Organization admin enters user information
   - Creates and/or assigns groups to user
 - Study manipulation
   - **exp website**
-  - List of current studies (within the org)
+  - List of current studies (within the org, unless admin)
     - Allow moving studies through workflow
   - Create, either build or upload
     - Build

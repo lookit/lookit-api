@@ -35,6 +35,20 @@
             </ul>
           </td>
         </tr>
+        <tr>
+          <th>
+            Actions
+          </th>
+          <td>
+          {% for trigger in triggers %}
+            <form method="POST" action="{% url 'study-detail' study.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="trigger" value="{{ trigger }}" />
+              <input type="submit" value="{{ trigger|title }}" />
+            </form>
+          {% endfor %}
+          </td>
+        </tr>
       </tbody>
     </table>
 {% endblock %}

@@ -29,7 +29,7 @@ class ParticipantSignupView(generic.CreateView):
     form_class = forms.ParticipantSignupForm
 
     def get_success_url(self):
-        return reverse('demographic-data-create', kwargs=dict(pk=self.request.user.id))
+        return reverse('demographic-data-create')
 
 
 class DemographicDataCreateView(generic.CreateView):

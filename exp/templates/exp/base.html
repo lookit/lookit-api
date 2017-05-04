@@ -11,6 +11,14 @@
 
     <link href="/static/exp/css/vendor.css" rel="stylesheet" />
     <link href="/static/exp/css/app.css" rel="stylesheet" />
+    {% if request.user.is_superuser %}
+    <style>
+      body {
+          background: url('/static/exp/img/su-mode.svg') repeat transparent;
+          background-size: 400px 400px;
+      }
+    </style>
+    {% endif %}
   </head>
   <body>
     <header class="wrapper-large flush-top flush-bottom">

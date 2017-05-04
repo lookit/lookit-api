@@ -4,6 +4,13 @@
 .flush-bottom {
   margin-bottom: 0; padding-bottom: 0;
 }
-ul.inline li {
+.margin-right-1 {
+  margin-right: 1em;
+}
+
+nav.navigation-list ul {
+  list-style-type: none;
+}
+nav.navigation-list ul li {
   display: inline-block;
 }
