@@ -1,12 +1,25 @@
 {% extends 'exp/base.html' %}
+{% load bootstrap3 %}
 
-{% block title %}List Studies{% endblock %}
+{% block title %}Studies{% endblock %}
+
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
+  <div class="container">
     <h2>Studies</h2>
-    <table>
+    <table class="table table-striped">
       <thead>
         <tr>
           <th>Name</th>
+          <th># Responses</th>
           <th>Active?</th>
         </tr>
       </thead>
@@ -14,9 +27,11 @@
         {% for study in object_list %}
           <tr>
             <td><a href="{% url 'study-detail' study.id %}">{{ study.name }}</a></td>
+            <td>{{ study.responses.count }}</td>
             <td>{{ study.is_active }}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+  </div>
 {% endblock %}
