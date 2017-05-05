@@ -9,6 +9,11 @@ from . import workflow
 
 class Study(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
+    short_description = models.TextField()
+    long_description = models.TextField()
+    criteria = models.TextField()
+    duration = models.TextField()
+    image = models.ImageField(null=True)
     organization = models.ForeignKey(Organization, on_delete=models.DO_NOTHING, related_name='studies', related_query_name='study')
     blocks = DateTimeAwareJSONField(default=dict)
     state = models.CharField(choices=workflow.STATE_CHOICES, max_length=25, default=workflow.STATE_CHOICES[0][0])
@@ -40,7 +45,7 @@ class Study(models.Model):
         user = ev.kwargs.get('user')
         if user.is_superuser:
             return
-        raise 
+        raise
 
     def notify_administrators_of_submission(self, ev):
         # TODO

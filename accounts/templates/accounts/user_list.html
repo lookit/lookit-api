@@ -1,13 +1,18 @@
 {% extends 'exp/base.html' %}
+{% load bootstrap3 %}
 
-{% block title %}List Collaborators{% endblock %}
+{% block title %}Users{% endblock %}
+{% block flash %}
+  {% bootstrap_messages %}
+{% endblock %}
 {% block content %}
+  <div class="container">
     <h1>Collaborators</h1>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Identifier</th>
             <th>Identicon</th>
             <th>Studies</th>
             <th>Active</th>
@@ -17,23 +22,20 @@
         <tbody>
           {% for user in object_list %}
             <tr>
-              <td>{{ user.id }}</td>
+              <td>{{ user.uuid }}</td>
               <td>{{ user.identicon_html }}</td>
               <td>{% for us in user.studies %}{{ us.name }}, {% endfor %}</td>
               <td>{{ user.is_active }}</td>
               <td>
-                <ul>
-                    <li>
-                      <a href="{% url 'collaborator-detail' user.id %}">View</a>
-                    </li>
-                    <li>
-                      <a href="{% url 'assign-studies' user.id %}">Assign Studies</a>
-                    </li>
-                </ul>
+                <div class="btn-group">
+                  <a class="btn btn-default" href="{% url 'collaborator-detail' user.id %}">View</a>
+                  <a class="btn btn-default" href="{% url 'assign-studies' user.id %}">Assign Studies</a>
+                </div>
               </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+  </div>
 {% endblock %}

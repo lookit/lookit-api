@@ -2,6 +2,7 @@
 API for Lookit
 
 #TODO
+- Filter the queue of studies in an organization by their status.
 - Add login, logout, forgot password, change user information for exp and web (same forms, different templates)
 - Collaborator creation
   - **exp website**

@@ -23,6 +23,11 @@ class StudiesListView(generic.ListView):
         return qs
 
 
+class StudyDetailView(generic.DetailView):
+    template_name = 'web/study-detail.html'
+    model = Study
+
+
 class ParticipantSignupView(generic.CreateView):
     template_name = 'web/participant-signup.html'
     model = User

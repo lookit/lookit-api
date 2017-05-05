@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import uuid
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -59,6 +60,7 @@ class Organization(models.Model):
 
 class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
     username = models.EmailField(unique=True)
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
@@ -74,34 +76,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         if not self._identicon:
             rbw = self._make_rainbow()
             generator = pydenticon.Generator(5, 5, digest=hashlib.sha512, foreground=rbw, background='rgba(0,0,0,0)')
-            png = generator.generate(f'{self.username} {self.given_name} {self.middle_name} {self.family_name} {self.organization}', 64, 64)
+            png = generator.generate(str(self.uuid), 64, 64)
             b64_png = base64.b64encode(png)
             self._identicon = f'data:image/png;base64,{b64_png.decode()}'
             self.save()
         return self._identicon
 
-    def _make_rainbow(self):
-        rbw = []
-        for i in range(0, 255, 10):
-            for j in range(0, 255, 10):
-                for k in range(0, 255, 10):
-                    rbw.append(f'rgb({i},{j},{k})')
-        return rbw
-
-
-
     @property
     def identicon_html(self):
         return mark_safe(f'<img src="{str(self.identicon)}" width="64"/>')
-
-    def get_short_name(self):
-        return self.identicon_html
-
-    def get_full_name(self):
-        return f'{self.given_name} {self.middle_name} {self.family_name}'
-
-    def __str__(self):
-        return f'<User: {self.username}>'
 
     @property
     def is_participant(self):
@@ -112,6 +95,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         if not self.is_participant:
             return get_objects_for_user(self, ['studies.view_study', 'studies.edit_study'])
         return None
+
+    def _make_rainbow(self):
+        rbw = []
+        for i in range(0, 255, 10):
+            for j in range(0, 255, 10):
+                for k in range(0, 255, 10):
+                    rbw.append(f'rgb({i},{j},{k})')
+        return rbw
+
+    def get_short_name(self):
+        return self.uuid
+
+    def get_full_name(self):
+        return f'{self.given_name} {self.middle_name} {self.family_name}'
+
+    def __str__(self):
+        return f'<User: {self.uuid}>'
 
     objects = UserManager()
 
@@ -240,4 +240,4 @@ class DemographicData(models.Model):
     extra = DateTimeAwareJSONField(null=True)
 
     def __str__(self):
-        return f'<DemographicData: {self.user.get_short_name} @ {self.created_at:%c}>'
+        return f'<DemographicData: {self.user.get_short_name()} @ {self.created_at:%c}>'
