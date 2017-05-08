@@ -30,11 +30,9 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'accounts.User'
 GUARDIAN_MONKEY_PATCH = False
 
-
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.flatpages',
@@ -50,6 +48,7 @@ INSTALLED_APPS = [
     'localflavor',
     'rest_framework',
     'bootstrap3',
+    'debug_toolbar',
 
     # our stuff
     'api',
@@ -60,6 +59,7 @@ INSTALLED_APPS = [
 
     # at the bottom so overriding form widget templates have a fallback
     'django.forms',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -72,7 +72,10 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+INTERNAL_IPS = ['127.0.0.1',]
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # this is default
