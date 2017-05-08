@@ -36,9 +36,10 @@ class Study(models.Model):
 
     class Meta:
         permissions = (
-            ('view_study', 'View Study'),
-            ('edit_study', 'Edit Study'),
-            ('can_respond', 'Can Respond?'),
+            ('can_view', 'View Study'),
+            ('can_edit', 'Edit Study'),
+            ('can_submit', 'Submit Study'),
+            ('can_respond', 'Can Respond'),
         )
 
     # WORKFLOW CALLBACKS
@@ -84,6 +85,29 @@ class Study(models.Model):
     def _finalize_state_change(self, ev):
         ev.model.save()
         self._log_action(ev)
+
+# TODO Need a post_save hook for edit that pulls studies out of approved state
+# TODO or disallows editing in pre_save if they are approved
+
+@receiver(post_save, sender=Study)
+def study_post_save(sender, **kwargs):
+    """
+    Create groups for all newly created Study isntances. We only
+    run on study creation to avoid having to check for existence
+    on each call to Study.save.
+    """
+    study, created = kwargs['instance'], kwargs['created']
+    if created:
+        from django.contrib.auth.models import Group
+        for group in ['read', 'admin']:
+            group_instance = Group.objects.create(name=f'{slugify(study.name)}-{group}')
+            for perm in Study.Meta.permissions:
+                # add only view permissions to non-admin
+                if group == 'read' and perm != 'can_view':
+                    continue
+                assign_perm(perm[0], group_instance, obj=study)
+
+
 
 class Response(models.Model):
     study = models.ForeignKey(Study, on_delete=models.DO_NOTHING, related_name='responses')
