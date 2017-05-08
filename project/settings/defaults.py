@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'accounts.User'
+GUARDIAN_MONKEY_PATCH = False
 
 
 # Application definition

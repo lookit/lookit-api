@@ -3,6 +3,7 @@ API for Lookit
 
 #TODO
 - Filter the queue of studies in an organization by their status.
+- Make sure to add LoginRequiredMixin to all views that need it
 - Add login, logout, forgot password, change user information for exp and web (same forms, different templates)
 - Collaborator creation
   - **exp website**
@@ -25,7 +26,6 @@ API for Lookit
   - JSON => CSV
 - Setup templated emails functionality triggered by state change
 - Wire up wolfkrow call backs.
-- Make sure to add LoginRequiredMixin to all views that need it
 - s3 module
   - CRUD folders for video
   - Generation of time-limited urls to access files

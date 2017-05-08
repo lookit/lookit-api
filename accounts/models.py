@@ -11,6 +11,7 @@ from django.utils.translation import ugettext as _
 
 import pydenticon
 from django_countries.fields import CountryField
+from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
@@ -58,7 +59,7 @@ class Organization(models.Model):
         )
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
     username = models.EmailField(unique=True)

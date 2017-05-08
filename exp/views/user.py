@@ -3,18 +3,19 @@ from django.views import generic
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
+from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from studies.models import Study
 
 
-class UserListView(generic.ListView):
+class UserListView(LoginRequiredMixin, generic.ListView):
     queryset = User.objects.filter(demographics__isnull=True)
     model = User
 
     # TODO Pagination pls
 
 
-class UserDetailView(generic.UpdateView):
+class UserDetailView(LoginRequiredMixin, generic.UpdateView):
     '''
     UserDetailView shows information about a user and allows enabling or disabling
     a user.
@@ -37,7 +38,7 @@ class UserDetailView(generic.UpdateView):
         return retval
 
 
-class AssignUserStudies(generic.UpdateView):
+class AssignUserStudies(LoginRequiredMixin, generic.UpdateView):
     '''
     AssignUserStudies lists studies available and let's someone assign permissions
     to users.
@@ -61,7 +62,7 @@ class AssignUserStudies(generic.UpdateView):
         return context
 
 
-class UserCreateView(generic.CreateView):
+class UserCreateView(LoginRequiredMixin, generic.CreateView):
     '''
     UserCreateView creates a user. It forces is_active to True; is_superuser
     and is_staff to False; and sets a random 12 char password.

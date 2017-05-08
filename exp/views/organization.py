@@ -2,9 +2,10 @@ from django.shortcuts import reverse
 from django.views import generic
 
 from accounts.models import Organization
+from guardian.mixins import LoginRequiredMixin
 
 
-class OrganizationCreateView(generic.CreateView):
+class OrganizationCreateView(LoginRequiredMixin, generic.CreateView):
     fields = ('name', 'url', )
     model = Organization
 
@@ -12,9 +13,9 @@ class OrganizationCreateView(generic.CreateView):
         return reverse('organization-list')
 
 
-class OrganizationListView(generic.ListView):
+class OrganizationListView(LoginRequiredMixin, generic.ListView):
     model = Organization
 
 
-class OrganizationDetailView(generic.DetailView):
+class OrganizationDetailView(LoginRequiredMixin, generic.DetailView):
     model = Organization

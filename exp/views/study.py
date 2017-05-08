@@ -2,11 +2,12 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views import generic
 
+from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_perms
 from studies.models import Study
 
 
-class StudyCreateView(generic.CreateView):
+class StudyCreateView(LoginRequiredMixin, generic.CreateView):
     fields = ('name', 'organization', 'blocks', )
     model = Study
 
@@ -14,13 +15,13 @@ class StudyCreateView(generic.CreateView):
         return reverse('study-detail', kwargs=dict(pk=self.object.id))
 
 
-class StudyListView(generic.ListView):
+class StudyListView(LoginRequiredMixin, generic.ListView):
     model = Study
 
     # TODO Pagination
 
 
-class StudyDetailView(generic.DetailView):
+class StudyDetailView(LoginRequiredMixin, generic.DetailView):
     '''
     StudyDetailView shows information about a study.
     '''
