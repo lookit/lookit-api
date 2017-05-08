@@ -59,6 +59,28 @@ class Organization(models.Model):
         )
 
 
+@receiver(post_save, sender=Organization)
+def organization_post_save(sender, **kwargs):
+    """
+    Create groups for all newly created Organization instances.
+    We only run on Organization creation to avoid having to check
+    existence on each call to Organization.save.
+    """
+    organization, created = kwargs['instance'], kwargs['created']
+    if created:
+        org_slug = slugify(organization.name)
+        from django.contrib.auth.models import Group
+        from guardian.shortcuts import assign_perm
+        for group in ['read', 'admin']:
+            group_instance = Group.objects.get_or_create(name=f'{org_slug}-{group}')
+            for perm in Organization.Meta.permissions:
+                # only add view permissions to non-admin
+                if group == 'read' and perm != 'can_view':
+                    continue
+                assign_perm(perm[0], group_instance, obj=organization)
+
+
+
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
