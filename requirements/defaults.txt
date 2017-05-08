@@ -1,4 +1,4 @@
-Django==1.11
+Django==1.11.1
 djangorestframework==3.6.2
 #git+git@github.com:cos-forks/django-rest-framework-json-api.git@d8c3dc479e037d4c11599934551a61c410a89601
 django-guardian==1.4.8
