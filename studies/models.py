@@ -13,6 +13,7 @@ class Study(models.Model):
     long_description = models.TextField()
     criteria = models.TextField()
     duration = models.TextField()
+    contact_info = models.TextField()
     image = models.ImageField(null=True)
     organization = models.ForeignKey(Organization, on_delete=models.DO_NOTHING, related_name='studies', related_query_name='study')
     blocks = DateTimeAwareJSONField(default=dict)
