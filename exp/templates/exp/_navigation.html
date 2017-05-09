@@ -13,8 +13,13 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
         {% if user.is_authenticated %}
+        {% if user.is_superuser %}
         <li><a href="{% url 'exp:organization-list' %}">List Organizations</a></li>
         <li><a href="{% url 'exp:organization-create' %}">Create Organization</a></li>
+        <li role="separator" class="divider"></li>
+        {% endif %} {# /if user.is_superuser #}
+        <li><a href="{% url 'exp:participant-list' %}">List Participants</a></li>
+        <li><a href="{% url 'exp:response-list' %}">List Responses</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="{% url 'exp:collaborator-list' %}">List Collaborators</a></li>
         <li><a href="{% url 'exp:collaborator-create' %}">Create Collaborator</a></li>

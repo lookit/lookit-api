@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
   <div class="container">
-    <h1>Collaborators</h1>
+    <h1>Participants</h1>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
@@ -16,22 +16,15 @@
             <th>Identicon</th>
             <th>Studies</th>
             <th>Active</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {% for user in object_list %}
             <tr>
-              <td>{{ user.uuid }}</td>
+              <td><a href="{% url 'exp:participant-detail' user.id %}">{{ user.uuid }}</a></td>
               <td>{{ user.identicon_html }}</td>
               <td>{% for us in user.studies %}{{ us.name }}, {% endfor %}</td>
               <td>{{ user.is_active }}</td>
-              <td>
-                <div class="btn-group">
-                  <a class="btn btn-default" href="{% url 'exp:collaborator-detail' user.id %}">View</a>
-                  <a class="btn btn-default" href="{% url 'exp:assign-studies' user.id %}">Assign Studies</a>
-                </div>
-              </td>
             </tr>
           {% endfor %}
         </tbody>

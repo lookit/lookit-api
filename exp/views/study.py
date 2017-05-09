@@ -3,7 +3,7 @@ from django.shortcuts import reverse
 from django.views import generic
 
 from guardian.mixins import LoginRequiredMixin
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_objects_for_user, get_perms
 from studies.models import Study
 
 
@@ -18,7 +18,9 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
 class StudyListView(LoginRequiredMixin, generic.ListView):
     model = Study
 
-    # TODO Pagination
+    def get_queryset(self, *args, **kwargs):
+        return get_objects_for_user(self.request.user, 'studies.can_view')
+
 
 
 class StudyDetailView(LoginRequiredMixin, generic.DetailView):

@@ -16,18 +16,22 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 
-from exp.views import (AssignUserStudies, ExperimenterDashboard,
+from exp.views import (AssignCollaboratorStudies, ExperimenterDashboard,
                        OrganizationCreateView, OrganizationListView,
                        StudyCreateView, StudyDetailView, StudyListView,
-                       UserCreateView, UserDetailView, UserListView)
+                       CollaboratorCreateView, CollaboratorDetailView, CollaboratorListView, ParticipantListView,
+                       ParticipantDetailView, ResponseListView)
 
 urlpatterns = [
     url(r'organizations/$', OrganizationListView.as_view(), name='organization-list'),
     url(r'organizations/create/$', OrganizationCreateView.as_view(), name='organization-create'),
-    url(r'collaborators/create/$', UserCreateView.as_view(), name='collaborator-create'),
-    url(r'collaborators/(?P<pk>\d+)/$', UserDetailView.as_view(), name='collaborator-detail'),
-    url(r'collaborators/$', UserListView.as_view(), name='collaborator-list'),
-    url(r'collaborators/(?P<pk>\d+)/assign-studies/$', AssignUserStudies.as_view(), name='assign-studies'),
+    url(r'collaborators/create/$', CollaboratorCreateView.as_view(), name='collaborator-create'),
+    url(r'collaborators/(?P<pk>\d+)/$', CollaboratorDetailView.as_view(), name='collaborator-detail'),
+    url(r'collaborators/$', CollaboratorListView.as_view(), name='collaborator-list'),
+    url(r'responses/$', ResponseListView.as_view(), name='response-list'),
+    url(r'collaborators/(?P<pk>\d+)/assign-studies/$', AssignCollaboratorStudies.as_view(), name='assign-studies'),
+    url(r'participants/(?P<pk>\d+)/$', ParticipantDetailView.as_view(), name='participant-detail'),
+    url(r'participants/$', ParticipantListView.as_view(), name='participant-list'),
     url(r'studies/$', StudyListView.as_view(), name='study-list'),
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),

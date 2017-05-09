@@ -2,10 +2,10 @@
 API for Lookit
 
 #TODO
-- Filter the queue of studies in an organization by their status.
+- Add the ability to filter the queue of studies in an organization by their status.
 - Make sure to add LoginRequiredMixin to all views that need it
 - Make sure to add permission requirements to all exp views
-- Add login, logout, forgot password, change user information web
+- Add login, logout, forgot password, change user information #web
 - Collaborator creation
   - **exp website**
   - Organization admin enters user information
