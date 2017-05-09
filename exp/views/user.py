@@ -26,7 +26,7 @@ class UserDetailView(LoginRequiredMixin, generic.UpdateView):
     model = User
 
     def get_success_url(self):
-        return reverse('collaborator-detail', kwargs={'pk': self.object.id})
+        return reverse('exp:collaborator-detail', kwargs={'pk': self.object.id})
 
     def post(self, request, *args, **kwargs):
         retval = super(UserDetailView, self).post(request, *args, **kwargs)
@@ -48,7 +48,7 @@ class AssignUserStudies(LoginRequiredMixin, generic.UpdateView):
     form_class = UserStudiesForm
 
     def get_success_url(self):
-        return reverse('collaborator-list')
+        return reverse('exp:collaborator-list')
 
     def get_initial(self):
         permissions = ['studies.view_study', 'studies.edit_study']
@@ -98,4 +98,4 @@ class UserCreateView(LoginRequiredMixin, generic.CreateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('assign-studies', kwargs={'pk': self.object.id})
+        return reverse('exp:assign-studies', kwargs={'pk': self.object.id})

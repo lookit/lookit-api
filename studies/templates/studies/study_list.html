@@ -26,7 +26,7 @@
       <tbody>
         {% for study in object_list %}
           <tr>
-            <td><a href="{% url 'study-detail' study.id %}">{{ study.name }}</a></td>
+            <td><a href="{% url 'exp:study-detail' study.id %}">{{ study.name }}</a></td>
             <td>{{ study.responses.count }}</td>
             <td>{{ study.is_active }}</td>
           </tr>

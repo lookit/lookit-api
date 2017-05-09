@@ -10,7 +10,7 @@ class OrganizationCreateView(LoginRequiredMixin, generic.CreateView):
     model = Organization
 
     def get_success_url(self):
-        return reverse('organization-list')
+        return reverse('exp:organization-list')
 
 
 class OrganizationListView(LoginRequiredMixin, generic.ListView):

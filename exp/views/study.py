@@ -12,7 +12,7 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
     model = Study
 
     def get_success_url(self):
-        return reverse('study-detail', kwargs=dict(pk=self.object.id))
+        return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
 
 
 class StudyListView(LoginRequiredMixin, generic.ListView):
@@ -52,7 +52,7 @@ class StudyDetailView(LoginRequiredMixin, generic.DetailView):
         if hasattr(object, trigger):
             # transition through workflow state
             getattr(object, trigger)(user=self.request.user)
-        return HttpResponseRedirect(reverse('study-detail', kwargs=dict(pk=object.pk)))
+        return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=object.pk)))
 
     def get_context_data(self, **kwargs):
         context = super(StudyDetailView, self).get_context_data(**kwargs)

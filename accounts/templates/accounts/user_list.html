@@ -28,8 +28,8 @@
               <td>{{ user.is_active }}</td>
               <td>
                 <div class="btn-group">
-                  <a class="btn btn-default" href="{% url 'collaborator-detail' user.id %}">View</a>
-                  <a class="btn btn-default" href="{% url 'assign-studies' user.id %}">Assign Studies</a>
+                  <a class="btn btn-default" href="{% url 'exp:collaborator-detail' user.id %}">View</a>
+                  <a class="btn btn-default" href="{% url 'exp:assign-studies' user.id %}">Assign Studies</a>
                 </div>
               </td>
             </tr>

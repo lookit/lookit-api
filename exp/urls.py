@@ -31,6 +31,5 @@ urlpatterns = [
     url(r'studies/$', StudyListView.as_view(), name='study-list'),
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
-    url('^', include('django.contrib.auth.urls')),
     url(r'', ExperimenterDashboard.as_view(), name='dashboard')
 ]
