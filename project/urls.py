@@ -17,13 +17,17 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 
 from api import urls as api_urls
 from exp import urls as exp_urls
 from project import settings
 from web import urls as web_urls
 
+favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)
+
 urlpatterns = [
+    url(r'^favicon\.ico$', favicon_view),
     url(r'^admin/', admin.site.urls),
     url(r'^exp/', include(exp_urls, namespace='exp')),
     url(r'^api/', include(api_urls)),
