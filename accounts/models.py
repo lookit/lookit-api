@@ -6,7 +6,10 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.html import mark_safe
+from django.utils.text import slugify
 from django.utils.translation import ugettext as _
 
 import pydenticon
@@ -71,8 +74,8 @@ def organization_post_save(sender, **kwargs):
         from django.contrib.auth.models import Group
         from guardian.shortcuts import assign_perm
         for group in ['read', 'admin']:
-            group_instance = Group.objects.get_or_create(name=f'{slugify(organization.name)}-{group}')
-            for perm in Organization.Meta.permissions:
+            group_instance, created = Group.objects.get_or_create(name=f'{slugify(organization.name)}-{group}')
+            for perm in Organization._meta.permissions:
                 # add only view permissions to non-admin
                 if group == 'read' and perm != 'can_view':
                     continue

@@ -1,6 +1,10 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.text import slugify
 
 from accounts.models import DemographicData, Organization, User
+from guardian.shortcuts import assign_perm
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from transitions.extensions import GraphMachine as Machine
 
@@ -101,7 +105,7 @@ def study_post_save(sender, **kwargs):
         from django.contrib.auth.models import Group
         for group in ['read', 'admin']:
             group_instance = Group.objects.create(name=f'{slugify(study.name)}-{group}')
-            for perm in Study.Meta.permissions:
+            for perm in Study._meta.permissions:
                 # add only view permissions to non-admin
                 if group == 'read' and perm != 'can_view':
                     continue
