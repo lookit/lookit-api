@@ -6,11 +6,10 @@ from accounts.models import DemographicData, User
 from studies.models import Study
 
 
-class HomeView(generic.TemplateView):
-    template_name = 'web/home.html'
-
-
 class StudiesListView(generic.ListView):
+    '''
+    List all active studies
+    '''
     template_name = 'web/studies-list.html'
     model = Study
 
@@ -24,11 +23,18 @@ class StudiesListView(generic.ListView):
 
 
 class StudyDetailView(generic.DetailView):
+    '''
+    Show the details of a study, should offer to allow a participant
+    to take the study and forward/proxy them to the js application
+    '''
     template_name = 'web/study-detail.html'
     model = Study
 
 
 class ParticipantSignupView(generic.CreateView):
+    '''
+    Allows a participant to sign up
+    '''
     template_name = 'web/participant-signup.html'
     model = User
     form_class = forms.ParticipantSignupForm
@@ -38,6 +44,9 @@ class ParticipantSignupView(generic.CreateView):
 
 
 class DemographicDataCreateView(generic.CreateView):
+    '''
+    Allows a participant to provide demographic data
+    '''
     template_name = 'web/demographic-data-create.html'
     model = DemographicData
     form_class = forms.DemographicDataForm

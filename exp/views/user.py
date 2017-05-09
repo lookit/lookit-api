@@ -9,39 +9,41 @@ from studies.models import Study, Response
 
 
 class ParticipantListView(LoginRequiredMixin, generic.ListView):
+    '''
+    ParticipantListView shows a list of participants that have participated in studies
+    related to organizations that the current user has permissions to.
+    '''
     template_name = 'accounts/participant_list.html'
     queryset = User.objects.exclude(demographics__isnull=True)
     model = User
 
     def get_queryset(self):
         qs = super(ParticipantListView, self).get_queryset()
-        return qs.filter(organization=self.request.user.organization)
+        return qs.filter(responses__study__organization=self.request.user.organization)
 
 
 class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
     '''
-    ParticipantDetailView shows information about a participant and allows enabling or disabling
-    a user.
+    ParticipantDetailView shows information about a participant that has participated in studies
+    related to organizations that the current user has permission to.
     '''
     queryset = User.objects.exclude(demographics__isnull=True).select_related('organization')
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
     model = User
 
+    def get_queryset(self):
+        qs = super(ParticipantDetailView, self).get_queryset()
+        return qs.filter(responses__study__organization=self.request.user.organization)
+
     def get_success_url(self):
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
 
-    def post(self, request, *args, **kwargs):
-        retval = super(ParticipantDetailView, self).post(request, *args, **kwargs)
-        if 'enable' in self.request.POST:
-            self.object.is_active = True
-        elif 'disable' in self.request.POST:
-            self.object.is_active = False
-        self.object.save()
-        return retval
-
 
 class ResponseListView(LoginRequiredMixin, generic.ListView):
+    '''
+    Displays a list of responses for studies that the current user can view.
+    '''
     template_name = 'accounts/response_list.html'
 
     def get_queryset(self):
@@ -50,6 +52,9 @@ class ResponseListView(LoginRequiredMixin, generic.ListView):
 
 
 class CollaboratorListView(LoginRequiredMixin, generic.ListView):
+    '''
+    Displays a list of collaborators in the same organization as the current user. 
+    '''
     template_name = 'accounts/collaborator_list.html'
     queryset = User.objects.filter(demographics__isnull=True)
     model = User
@@ -133,6 +138,7 @@ class CollaboratorCreateView(LoginRequiredMixin, generic.CreateView):
 
     def post(self, request, *args, **kwargs):
         # TODO put this on the view so that we can send the user an email once their user is saved
+        # TODO alternatively send the password in a post_save signal under certain conditions
         self.user_password = User.objects.make_random_password(length=12)
         form = self.get_form()
         query_dict = form.data.copy()

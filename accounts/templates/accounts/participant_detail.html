@@ -4,11 +4,6 @@
 {% block title %}{{ user.uuid }}{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
 {% endblock %}
 {% block content %}
   <div class="container">
@@ -43,14 +38,5 @@
         </tr>
       </tbody>
     </table>
-    <form action="" method="POST">{% csrf_token %}
-      {% if user.is_active %}
-        <input type="hidden" name="disable" />
-        <input class="btn btn-default" type="submit" value="Disable User" onclick="return confirm('Are you sure?');"/>
-      {% else %}
-        <input type="hidden" name="enable" />
-        <input class="btn btn-default" type="submit" value="Enable User" onclick="return confirm('Are you sure?');"/>
-      {% endif %}
-    </form>
   </div>
 {% endblock %}

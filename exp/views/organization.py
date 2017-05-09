@@ -6,6 +6,9 @@ from guardian.mixins import LoginRequiredMixin
 
 
 class OrganizationCreateView(LoginRequiredMixin, generic.CreateView):
+    '''
+    OrganizationCreateView allows a user to create an organization.
+    '''
     fields = ('name', 'url', )
     model = Organization
 
@@ -14,8 +17,14 @@ class OrganizationCreateView(LoginRequiredMixin, generic.CreateView):
 
 
 class OrganizationListView(LoginRequiredMixin, generic.ListView):
+    '''
+    OrganizationListView shows a list of organizations.
+    '''
     model = Organization
 
 
 class OrganizationDetailView(LoginRequiredMixin, generic.DetailView):
+    '''
+    OrganizationDetailView shows details about an organization.
+    '''
     model = Organization

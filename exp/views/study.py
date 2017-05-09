@@ -8,6 +8,10 @@ from studies.models import Study
 
 
 class StudyCreateView(LoginRequiredMixin, generic.CreateView):
+    '''
+    StudyCreateView allows a user to create a study and then redirects
+    them to the detail view for that study.
+    '''
     fields = ('name', 'organization', 'blocks', )
     model = Study
 
@@ -16,6 +20,9 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
 
 
 class StudyListView(LoginRequiredMixin, generic.ListView):
+    '''
+    StudyListView shows a list of studies that a user has permission to.
+    '''
     model = Study
 
     def get_queryset(self, *args, **kwargs):
