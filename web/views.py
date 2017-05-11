@@ -8,16 +8,16 @@ from studies.models import Study
 
 class StudiesListView(generic.ListView):
     '''
-    List all active studies
+    List all active studies.
     '''
     template_name = 'web/studies-list.html'
     model = Study
 
-    def get_queryset(self, *args, **kwargs):
+    def get_queryset(self):
         # TODO if we need to filter by study demographics vs user demographics
         # TODO or by if they've taken the study before this is the spot
         # self.request.user
-        qs = super().get_queryset(*args, **kwargs)
+        qs = super().get_queryset()
         qs = qs.filter(state='active')
         return qs
 

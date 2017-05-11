@@ -50,10 +50,10 @@
             Actions
           </th>
           <td>
-            <form method="POST" action="{% url 'study-detail' study.id %}"> {% csrf_token %}
+            <form method="POST" action=""> {% csrf_token %}
               <div class"btn-group" role="group" aria-label="study actions">
                 {% for trigger in triggers %}
-                  <button type="submit" class="btn btn-default" value="trigger">{{ trigger|title }}</button>
+                  <button type="submit" class="btn btn-default" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
                 {% endfor %}
               </div>
             </form>
