@@ -136,6 +136,7 @@ class CollaboratorCreateView(LoginRequiredMixin, generic.CreateView):
     definitely check to make sure it's an unusable password before it allows the reset.
     '''
     model = User
+    template_name = 'accounts/collaborator_form.html'
     fields = (
         'username',
         'given_name',
