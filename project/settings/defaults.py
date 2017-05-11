@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'bootstrap3',
     'debug_toolbar',
+    'ace_overlay',
 
     # our stuff
     'api',
