@@ -11,17 +11,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
     <meta name="apple-touch-fullscreen" content="yes">
 
-    {% bootstrap_css %}
-    {% bootstrap_javascript jquery=True %}
-    <link href="/static/exp/css/app.css" rel="stylesheet" />
-    {% if request.user.is_superuser %}
-    <style>
-      body {
-          background: url('/static/exp/img/su-mode.svg') repeat transparent;
-          background-size: 400px 400px;
-      }
-    </style>
-    {% endif %}
+    {% block head %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript jquery=True %}
+        <link href="/static/exp/css/app.css" rel="stylesheet" />
+        {% if request.user.is_superuser %}
+        <style>
+          body {
+              background: url('/static/exp/img/su-mode.svg') repeat transparent;
+              background-size: 400px 400px;
+          }
+        </style>
+        {% endif %}
+    {% endblock %}
   </head>
   <body>
     <div class="container-fluid">
