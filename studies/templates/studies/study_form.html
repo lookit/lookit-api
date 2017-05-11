@@ -2,6 +2,19 @@
 {% load bootstrap3 %}
 
 {% block title %}Create Study{% endblock %}
+{% block head %}
+    {{ block.super }}
+    <script type="application/javascript">
+        (function (){
+            if (window.jQuery !== undefined) {
+                window.django = {
+                    'jQuery': window.jQuery
+                };
+            }
+        })();
+    </script>
+    {{ form.media }}
+{% endblock %}
 
 {% block flash %}
   {% bootstrap_messages %}

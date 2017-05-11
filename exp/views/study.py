@@ -4,6 +4,8 @@ from django.views import generic
 
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
+
+from studies.forms import StudyForm
 from studies.models import Study
 
 
@@ -14,6 +16,9 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
     '''
     fields = ('name', 'organization', 'blocks', )
     model = Study
+
+    def get_form_class(self):
+        return StudyForm
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
