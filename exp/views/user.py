@@ -19,7 +19,7 @@ class ParticipantListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         qs = super(ParticipantListView, self).get_queryset()
-        return qs.filter(responses__study__organization=self.request.user.organization)
+        return qs.filter(response__study__organization=self.request.user.organization)
 
 
 class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
@@ -34,7 +34,7 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
 
     def get_queryset(self):
         qs = super(ParticipantDetailView, self).get_queryset()
-        return qs.filter(responses__study__organization=self.request.user.organization)
+        return qs.filter(response__study__organization=self.request.user.organization)
 
     def get_success_url(self):
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
@@ -45,6 +45,17 @@ class ResponseListView(LoginRequiredMixin, generic.ListView):
     Displays a list of responses for studies that the current user can view.
     '''
     template_name = 'accounts/response_list.html'
+
+    def get_queryset(self):
+        studies = get_objects_for_user(self.request.user, 'studies.can_view')
+        return Response.objects.filter(study__in=studies).order_by('study__name')
+
+
+class ResponseDetailView(LoginRequiredMixin, generic.DetailView):
+    '''
+    Displays a response.
+    '''
+    template_name = 'accounts/response_detail.html'
 
     def get_queryset(self):
         studies = get_objects_for_user(self.request.user, 'studies.can_view')

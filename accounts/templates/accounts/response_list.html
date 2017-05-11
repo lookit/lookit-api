@@ -1,7 +1,8 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 
-{% block title %}Users{% endblock %}
+
+{% block title %}Responses{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
@@ -20,7 +21,7 @@
         <tbody>
           {% for resp in object_list %}
             <tr>
-              <td>{{ resp.study.name }}</td>
+                <td><a href="{% url 'exp:response-detail' resp.id %}">{{ resp.study.name }}</a></td>
               <td>{{ resp.participant.uuid }}  {{ resp.participant.identicon_html }}</td>
               <td>{{ resp.logs.last.action }}</td>
             </tr>

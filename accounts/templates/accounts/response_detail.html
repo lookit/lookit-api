@@ -1,39 +1,43 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 
-{% block title %}{{ user.uuid }}{% endblock %}
+{% block title %}Response{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
 {% block content %}
   <div class="container">
-    <h1>{{ user.uuid }}</h1>
+    <h1>Response</h1>
     <table class="table table-compact">
       <tbody>
         <tr>
           <th>
-            Identicon
+              Study
           </th>
           <td>
-            {{ user.identicon_html }}
+            {{ object.study.name }}
           </td>
         </tr>
         <tr>
           <th>
-            Studies
+           Participant
           </th>
           <td>
-            {% for study in user.studies %}
-              {{ study.name }},
-            {% endfor %}
+              {{ object.participant.uuid }},
           </td>
         </tr>
         <tr>
-            <th>Responses</th>
+            <th>Demographic snapshot</th>
             <td>
-                {% for resp in user.response_set.all %}
-                    <a href="{% url 'exp:response-detail' resp.id %}">{{ resp.study.name }}</a><br/>
-                {% endfor %}
+                {% include 'accounts/_demographics.html' %}
+            </td>
+        </tr>
+        <tr>
+            <th>
+               Results
+            </th>
+            <td>
+                {{ object.results }},
             </td>
         </tr>
       </tbody>

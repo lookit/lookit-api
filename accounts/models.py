@@ -265,3 +265,26 @@ class DemographicData(models.Model):
 
     def __str__(self):
         return f'<DemographicData: {self.user.get_short_name()} @ {self.created_at:%c}>'
+
+    def to_display(self):
+        return dict(
+           user=self.user.uuid.hex,
+            created_at=self.created_at.isoformat(),
+            number_of_children=self.get_number_of_children_display(),
+            child_birthdays=[birthday.isoformat() for birthday in self.child_birthdays],
+            languages_spoken_at_home=self.languages_spoken_at_home,
+            number_of_guardians=self.get_number_of_guardians_display(),
+            number_of_guardians_explanation=self.number_of_guardians_explanation,
+            race_identification=self.get_race_identification_display(),
+            age=self.get_age_display(),
+            gender=self.get_gender_display(),
+            education_level=self.get_education_level_display(),
+            spouse_education_level=self.get_spouse_education_level_display(),
+            annual_income=self.get_annual_income_display(),
+            number_of_books=self.number_of_books,
+            additional_comments=self.additional_comments,
+            country=str(self.country),
+            state=self.get_state_display(),
+            density=self.get_density_display(),
+            extra=self.extra
+        )
