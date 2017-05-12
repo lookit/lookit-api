@@ -22,6 +22,7 @@ class Study(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.DO_NOTHING, related_name='studies', related_query_name='study')
     blocks = DateTimeAwareJSONField(default=dict)
     state = models.CharField(choices=workflow.STATE_CHOICES, max_length=25, default=workflow.STATE_CHOICES[0][0])
+    public = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
