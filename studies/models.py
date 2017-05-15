@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -12,6 +13,7 @@ from . import workflow
 
 
 class Study(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=255, blank=False, null=False)
     short_description = models.TextField()
     long_description = models.TextField()

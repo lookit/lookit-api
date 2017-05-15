@@ -1,7 +1,16 @@
-# lookit-api
-API for Lookit
 
-#TODO
+
+
+
+
+
+
+
+
+
+
+
+# TODO
 - Add the ability to filter the queue of studies in an organization by their status.
 - Make sure to add LoginRequiredMixin to all views that need it
 - Make sure to add permission requirements to all exp views
