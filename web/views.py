@@ -18,7 +18,7 @@ class StudiesListView(generic.ListView):
         # TODO or by if they've taken the study before this is the spot
         # self.request.user
         qs = super().get_queryset()
-        qs = qs.filter(state='active')
+        qs = qs.filter(state='active', public=True)
         return qs
 
 
@@ -42,7 +42,7 @@ class StudyDetailView(generic.DetailView):
             queryset = self.get_queryset()
 
         uuid = self.kwargs.get('uuid')
-        
+
         if uuid is not None:
             queryset = queryset.filter(uuid=uuid)
         try:
