@@ -14,7 +14,7 @@ from . import workflow
 
 
 class Study(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=255, blank=False, null=False)
     short_description = models.TextField()
     long_description = models.TextField()
