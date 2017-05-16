@@ -32,8 +32,8 @@
           <div class="caption">
             <h3>{{ obj.name }}</h3>
             <p>{{ obj.description|truncatewords:30 }}</p>
-            {{ obj.id }}
-            <p class="text-center"><a href="{% url 'study-detail' pk=obj.id %}" class="btn btn-default">See details</a></p>
+            {{ obj.uuid }}
+            <p class="text-center"><a href="{% url 'public-study-detail' uuid=obj.uuid %}" class="btn btn-default">See details</a></p>
           </div>
         </div>
       </div>

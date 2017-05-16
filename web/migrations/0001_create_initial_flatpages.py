@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.models import Site
 from django.db import migrations
 
 flatpages = [
@@ -15,9 +16,10 @@ flatpages = [
 
 
 def make_pages(*args, **kwargs):
+    site, created = Site.objects.get_or_create(domain='example.com', defaults={'name': 'Example'})
     for page in flatpages:
         flatpage_obj, created = FlatPage.objects.get_or_create(**page)
-        flatpage_obj.sites.add(1)
+        flatpage_obj.sites.add(site)
 
 
 def unmake_pages(*args, **kwargs):
@@ -27,6 +29,7 @@ def unmake_pages(*args, **kwargs):
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('studies', '0014_study_uuid'),
     ]
 
     operations = [
