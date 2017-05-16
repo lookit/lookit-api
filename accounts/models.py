@@ -22,6 +22,7 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
 class UserManager(BaseUserManager):
+
     def create_user(self, username, password=None):
         if not username:
             raise ValueError('Users must have a username')
@@ -53,12 +54,10 @@ class Organization(models.Model):
 
     class Meta:
         permissions = (
-            ('is_admin', 'Organization Administrator'),
-            ('can_add_collaborators', 'Can Add Collaborators'),
-            ('can_approve_studies', 'Can Approve Studies'),
-            ('can_disable_studies', 'Can Disable Studies'),
             ('can_view', 'Can View'),
-            ('can_add_study', 'Can Add Study'),
+            ('can_edit', 'Can Edit'),
+            ('can_create', 'Can Create'),
+            ('can_remove', 'Can Remove'),
         )
 
 
@@ -74,7 +73,7 @@ def organization_post_save(sender, **kwargs):
         from django.contrib.auth.models import Group
         from guardian.shortcuts import assign_perm
         for group in ['read', 'admin']:
-            group_instance, created = Group.objects.get_or_create(name=f'{slugify(organization.name)}-{group}')
+            group_instance, created = Group.objects.get_or_create(name=f'{slugify(organization.name)}-ORG_{group}'.upper())
             for perm in Organization._meta.permissions:
                 # add only view permissions to non-admin
                 if group == 'read' and perm != 'can_view':
@@ -89,7 +88,8 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='users', related_query_name='user', null=True, blank=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE,
+                                     related_name='users', related_query_name='user', null=True, blank=True)
     _identicon = models.TextField(verbose_name='identicon')
 
     is_active = models.BooleanField(default=False)
@@ -99,7 +99,8 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def identicon(self):
         if not self._identicon:
             rbw = self._make_rainbow()
-            generator = pydenticon.Generator(5, 5, digest=hashlib.sha512, foreground=rbw, background='rgba(0,0,0,0)')
+            generator = pydenticon.Generator(
+                5, 5, digest=hashlib.sha512, foreground=rbw, background='rgba(0,0,0,0)')
             png = generator.generate(str(self.uuid), 64, 64)
             b64_png = base64.b64encode(png)
             self._identicon = f'data:image/png;base64,{b64_png.decode()}'
@@ -138,6 +139,16 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f'<User: {self.uuid}>'
 
     objects = UserManager()
+
+    class Meta:
+        permissions = (
+            ('can_create', 'Can Create'),
+            ('can_view', 'Can View'),
+            ('can_edit', 'Can Edit'),
+            ('can_remove', 'Can Remove'),
+            ('can_view_permissions', 'Can View Permissions'),
+            ('can_edit_permissions', 'Can Edit Permissions'),
+        )
 
 
 class DemographicData(models.Model):
@@ -237,13 +248,15 @@ class DemographicData(models.Model):
         ('na', 'prefer not to answer')
     )
     DENSITY_CHOICES = (
-        ('urban','urban'),
-        ('suburban','suburban'),
+        ('urban', 'urban'),
+        ('suburban', 'suburban'),
         ('rural', 'rural')
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='demographics', related_query_name='demographics')
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='demographics', related_query_name='demographics')
     created_at = models.DateTimeField(auto_now_add=True)
-    previous = models.ForeignKey('self', on_delete=models.CASCADE, related_name='next_demographic_data', related_query_name='next_demographic_data', null=True, blank=True)
+    previous = models.ForeignKey('self', on_delete=models.CASCADE, related_name='next_demographic_data',
+                                 related_query_name='next_demographic_data', null=True, blank=True)
 
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
     child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
@@ -268,7 +281,7 @@ class DemographicData(models.Model):
 
     def to_display(self):
         return dict(
-           user=self.user.uuid.hex,
+            user=self.user.uuid.hex,
             created_at=self.created_at.isoformat(),
             number_of_children=self.get_number_of_children_display(),
             child_birthdays=[birthday.isoformat() for birthday in self.child_birthdays],

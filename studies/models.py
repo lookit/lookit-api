@@ -1,4 +1,5 @@
 import uuid
+
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -107,7 +108,7 @@ def study_post_save(sender, **kwargs):
     if created:
         from django.contrib.auth.models import Group
         for group in ['read', 'admin']:
-            group_instance = Group.objects.create(name=f'{slugify(study.name)}-{group}')
+            group_instance = Group.objects.create(name=f'{slugify(study.name)}-STUDY_{group}'.upper())
             for perm in Study._meta.permissions:
                 # add only view permissions to non-admin
                 if group == 'read' and perm != 'can_view':
