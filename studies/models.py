@@ -22,9 +22,18 @@ class Study(models.Model):
     duration = models.TextField()
     contact_info = models.TextField()
     image = models.ImageField(null=True)
-    organization = models.ForeignKey(Organization, on_delete=models.DO_NOTHING, related_name='studies', related_query_name='study')
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.DO_NOTHING,
+        related_name='studies',
+        related_query_name='study'
+    )
     blocks = DateTimeAwareJSONField(default=dict)
-    state = models.CharField(choices=workflow.STATE_CHOICES, max_length=25, default=workflow.STATE_CHOICES[0][0])
+    state = models.CharField(
+        choices=workflow.STATE_CHOICES,
+        max_length=25,
+        default=workflow.STATE_CHOICES[0][0]
+    )
     public = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
@@ -44,10 +53,22 @@ class Study(models.Model):
 
     class Meta:
         permissions = (
-            ('can_view', 'View Study'),
-            ('can_edit', 'Edit Study'),
-            ('can_submit', 'Submit Study'),
-            ('can_respond', 'Can Respond'),
+            ('can_view', 'Can View'),
+            ('can_create', 'Can Create'),
+            ('can_edit', 'Can Edit'),
+            ('can_remove', 'Can Remove'),
+            ('can_activate', 'Can Activate'),
+            ('can_deactivate', 'Can Deactivate'),
+            ('can_pause', 'Can Pause'),
+            ('can_resume', 'Can Resume'),
+            ('can_submit', 'Can Submit'),
+            ('can_retract', 'Can Retract'),
+            ('can_resubmit', 'Can Resubmit'),
+            ('can_edit_permissions', 'Can Edit Permissions'),
+            ('can_view_permissions', 'Can View Permissions'),
+            ('can_view_responses', 'Can View Responses'),
+            ('can_view_video_responses', 'Can View Video Responses'),
+            ('can_view_demographics', 'Can View Demographics'),
         )
 
     # WORKFLOW CALLBACKS
@@ -87,7 +108,11 @@ class Study(models.Model):
 
     # Runs for every transition to log action
     def _log_action(self, ev):
-        StudyLog.objects.create(action=ev.state.name, study=ev.model, user=ev.kwargs.get('user'))
+        StudyLog.objects.create(
+            action=ev.state.name,
+            study=ev.model,
+            user=ev.kwargs.get('user')
+        )
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
@@ -96,6 +121,7 @@ class Study(models.Model):
 
 # TODO Need a post_save hook for edit that pulls studies out of approved state
 # TODO or disallows editing in pre_save if they are approved
+
 
 @receiver(post_save, sender=Study)
 def study_post_save(sender, **kwargs):
@@ -108,7 +134,9 @@ def study_post_save(sender, **kwargs):
     if created:
         from django.contrib.auth.models import Group
         for group in ['read', 'admin']:
-            group_instance = Group.objects.create(name=f'{slugify(study.name)}-STUDY_{group}'.upper())
+            group_instance = Group.objects.create(
+                name=f'{slugify(study.name)}-STUDY_{group}'.upper()
+            )
             for perm in Study._meta.permissions:
                 # add only view permissions to non-admin
                 if group == 'read' and perm != 'can_view':
@@ -116,12 +144,18 @@ def study_post_save(sender, **kwargs):
                 assign_perm(perm[0], group_instance, obj=study)
 
 
-
 class Response(models.Model):
-    study = models.ForeignKey(Study, on_delete=models.DO_NOTHING, related_name='responses')
+    study = models.ForeignKey(
+        Study, on_delete=models.DO_NOTHING,
+        related_name='responses'
+    )
     participant = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    demographic_snapshot = models.ForeignKey(DemographicData, on_delete=models.DO_NOTHING)
+    demographic_snapshot = models.ForeignKey(
+        DemographicData,
+        on_delete=models.DO_NOTHING
+    )
     results = DateTimeAwareJSONField(default=dict)
+
     def __str__(self):
         return f'<Response: {self.study} {self.participant.get_short_name}>'
 
@@ -144,10 +178,16 @@ class Log(models.Model):
 
 class StudyLog(Log):
     action = models.CharField(max_length=128)
-    study = models.ForeignKey(Study, on_delete=models.DO_NOTHING, related_name='logs', related_query_name='logs')
+    study = models.ForeignKey(
+        Study,
+        on_delete=models.DO_NOTHING,
+        related_name='logs',
+        related_query_name='logs'
+    )
 
     def __str__(self):
-        return f'<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}'
+        return f'<StudyLog: {self.action} on {self.study.name} \
+         at {self.created_at} by {self.user.username}'
 
 
 class ResponseLog(Log):

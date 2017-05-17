@@ -69,11 +69,16 @@ def organization_post_save(sender, **kwargs):
     existence on each call to Organization.save.
     """
     organization, created = kwargs['instance'], kwargs['created']
+
     if created:
         from django.contrib.auth.models import Group
         from guardian.shortcuts import assign_perm
+        org_studies = organization.studies.all()
+        researchers = organization.users.filter(demographic_data__isnull=True)
         for group in ['read', 'admin']:
-            group_instance, created = Group.objects.get_or_create(name=f'{slugify(organization.name)}-ORG_{group}'.upper())
+            group_instance, created = Group.objects.get_or_create(
+                name=f'{slugify(organization.name)}-ORG_{group}'.upper()
+            )
             for perm in Organization._meta.permissions:
                 # add only view permissions to non-admin
                 if group == 'read' and perm != 'can_view':
@@ -88,8 +93,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE,
-                                     related_name='users', related_query_name='user', null=True, blank=True)
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE,
+        related_name='users', related_query_name='user',
+        null=True, blank=True
+    )
     _identicon = models.TextField(verbose_name='identicon')
 
     is_active = models.BooleanField(default=False)
@@ -100,7 +108,9 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         if not self._identicon:
             rbw = self._make_rainbow()
             generator = pydenticon.Generator(
-                5, 5, digest=hashlib.sha512, foreground=rbw, background='rgba(0,0,0,0)')
+                5, 5, digest=hashlib.sha512,
+                foreground=rbw, background='rgba(0,0,0,0)'
+            )
             png = generator.generate(str(self.uuid), 64, 64)
             b64_png = base64.b64encode(png)
             self._identicon = f'data:image/png;base64,{b64_png.decode()}'
@@ -252,11 +262,16 @@ class DemographicData(models.Model):
         ('suburban', 'suburban'),
         ('rural', 'rural')
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='demographics', related_query_name='demographics')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='demographics', related_query_name='demographics'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
-    previous = models.ForeignKey('self', on_delete=models.CASCADE, related_name='next_demographic_data',
-                                 related_query_name='next_demographic_data', null=True, blank=True)
+    previous = models.ForeignKey(
+        'self', on_delete=models.CASCADE,
+        related_name='next_demographic_data',
+        related_query_name='next_demographic_data', null=True, blank=True
+    )
 
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
     child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
