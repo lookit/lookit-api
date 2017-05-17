@@ -73,7 +73,7 @@ class Migration(migrations.Migration):
                 ('url', models.URLField(verbose_name='Website')),
             ],
             options={
-                'permissions': (('is_admin', 'Organization Administrator'), ('can_add_collaborators', 'Can Add Collaborators'), ('can_approve_studies', 'Can Approve Studies'), ('can_disable_studies', 'Can Disable Studies')),
+                'permissions': (('is_admin', 'Organization Administrator'), ('can_add_researchers', 'Can Add Researchers'), ('can_approve_studies', 'Can Approve Studies'), ('can_disable_studies', 'Can Disable Studies')),
             },
         ),
         migrations.AddField(

@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='organization',
-            options={'permissions': (('is_admin', 'Organization Administrator'), ('can_add_collaborators', 'Can Add Collaborators'), ('can_approve_studies', 'Can Approve Studies'), ('can_disable_studies', 'Can Disable Studies'), ('can_view', 'Can View'))},
+            options={'permissions': (('is_admin', 'Organization Administrator'), ('can_add_researchers', 'Can Add Researchers'), ('can_approve_studies', 'Can Approve Studies'), ('can_disable_studies', 'Can Disable Studies'), ('can_view', 'Can View'))},
         ),
     ]

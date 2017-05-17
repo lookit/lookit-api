@@ -16,21 +16,21 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 
-from exp.views import (AssignCollaboratorStudies, ExperimenterDashboard,
+from exp.views import (AssignResearcherStudies, ExperimenterDashboard,
                        OrganizationCreateView, OrganizationListView,
                        StudyCreateView, StudyDetailView, StudyListView,
-                       CollaboratorCreateView, CollaboratorDetailView, CollaboratorListView, ParticipantListView,
+                       ResearcherCreateView, ResearcherDetailView, ResearcherListView, ParticipantListView,
                        ParticipantDetailView, ResponseListView, ResponseDetailView)
 
 urlpatterns = [
     url(r'organizations/$', OrganizationListView.as_view(), name='organization-list'),
     url(r'organizations/create/$', OrganizationCreateView.as_view(), name='organization-create'),
-    url(r'collaborators/create/$', CollaboratorCreateView.as_view(), name='collaborator-create'),
-    url(r'collaborators/(?P<pk>\d+)/$', CollaboratorDetailView.as_view(), name='collaborator-detail'),
-    url(r'collaborators/$', CollaboratorListView.as_view(), name='collaborator-list'),
+    url(r'researchers/create/$', ResearcherCreateView.as_view(), name='researcher-create'),
+    url(r'researchers/(?P<pk>\d+)/$', ResearcherDetailView.as_view(), name='researcher-detail'),
+    url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
     url(r'responses/$', ResponseListView.as_view(), name='response-list'),
     url(r'responses/(?P<pk>\d+)/$', ResponseDetailView.as_view(), name='response-detail'),
-    url(r'collaborators/(?P<pk>\d+)/assign-studies/$', AssignCollaboratorStudies.as_view(), name='assign-studies'),
+    url(r'researchers/(?P<pk>\d+)/assign-studies/$', AssignResearcherStudies.as_view(), name='assign-studies'),
     url(r'participants/(?P<pk>\d+)/$', ParticipantDetailView.as_view(), name='participant-detail'),
     url(r'participants/$', ParticipantListView.as_view(), name='participant-list'),
     url(r'studies/$', StudyListView.as_view(), name='study-list'),

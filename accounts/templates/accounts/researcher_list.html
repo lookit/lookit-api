@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
   <div class="container">
-    <h1>Collaborators</h1>
+    <h1>Researchers</h1>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
@@ -28,7 +28,7 @@
               <td>{{ user.is_active }}</td>
               <td>
                 <div class="btn-group">
-                  <a class="btn btn-default" href="{% url 'exp:collaborator-detail' user.id %}">View</a>
+                  <a class="btn btn-default" href="{% url 'exp:researcher-detail' user.id %}">View</a>
                   <a class="btn btn-default" href="{% url 'exp:assign-studies' user.id %}">Assign Studies</a>
                 </div>
               </td>

@@ -12,8 +12,8 @@ class UserForm(forms.ModelForm):
 
 
 class UserStudiesForm(forms.Form):
-    template = 'accounts/collaborator_form.html'
-    user = forms.ModelChoiceField(User.objects.all(), required=True, label='Collaborator')
+    template = 'accounts/researcher_form.html'
+    user = forms.ModelChoiceField(User.objects.all(), required=True, label='Researcher')
     studies = forms.ModelMultipleChoiceField(
         Study.objects.all(), required=True, label='Assigned Studies')
 

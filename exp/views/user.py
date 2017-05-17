@@ -62,35 +62,35 @@ class ResponseDetailView(LoginRequiredMixin, generic.DetailView):
         return Response.objects.filter(study__in=studies).order_by('study__name')
 
 
-class CollaboratorListView(LoginRequiredMixin, generic.ListView):
+class ResearcherListView(LoginRequiredMixin, generic.ListView):
     '''
-    Displays a list of collaborators in the same organization as the current user. 
+    Displays a list of researchers in the same organization as the current user. 
     '''
-    template_name = 'accounts/collaborator_list.html'
+    template_name = 'accounts/researcher_list.html'
     queryset = User.objects.filter(demographics__isnull=True)
     model = User
 
     def get_queryset(self):
-        qs = super(CollaboratorListView, self).get_queryset()
+        qs = super(ResearcherListView, self).get_queryset()
         # TODO this should probably use permissions eventually, just to be safe
         return qs.filter(organization=self.request.user.organization)
 
 
-class CollaboratorDetailView(LoginRequiredMixin, generic.UpdateView):
+class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
     '''
-    CollaboratorDetailView shows information about a collaborator and allows enabling or disabling
+    ResearcherDetailView shows information about a researcher and allows enabling or disabling
     a user.
     '''
     queryset = User.objects.filter(demographics__isnull=True)
     fields = ('is_active', )
-    template_name = 'accounts/collaborator_detail.html'
+    template_name = 'accounts/researcher_detail.html'
     model = User
 
     def get_success_url(self):
-        return reverse('exp:collaborator-detail', kwargs={'pk': self.object.id})
+        return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
 
     def post(self, request, *args, **kwargs):
-        retval = super(CollaboratorDetailView, self).post(request, *args, **kwargs)
+        retval = super(ResearcherDetailView, self).post(request, *args, **kwargs)
         if 'enable' in self.request.POST:
             self.object.is_active = True
         elif 'disable' in self.request.POST:
@@ -99,7 +99,7 @@ class CollaboratorDetailView(LoginRequiredMixin, generic.UpdateView):
         return retval
 
 
-class AssignCollaboratorStudies(LoginRequiredMixin, generic.UpdateView):
+class AssignResearcherStudies(LoginRequiredMixin, generic.UpdateView):
     '''
     AssignUserStudies lists studies available and let's someone assign permissions
     to users.
@@ -109,22 +109,22 @@ class AssignCollaboratorStudies(LoginRequiredMixin, generic.UpdateView):
     form_class = UserStudiesForm
 
     def get_success_url(self):
-        return reverse('exp:collaborator-list')
+        return reverse('exp:researcher-list')
 
     def get_initial(self):
         permissions = ['studies.view_study', 'studies.edit_study']
-        initial = super(AssignCollaboratorStudies, self).get_initial()
+        initial = super(AssignResearcherStudies, self).get_initial()
         initial['studies'] = get_objects_for_user(self.object, permissions)
         return initial
 
     def get_context_data(self, **kwargs):
-        context = super(AssignCollaboratorStudies, self).get_context_data(**kwargs)
+        context = super(AssignResearcherStudies, self).get_context_data(**kwargs)
         #  only show studies in their organization
         context['studies'] = Study.objects.filter(organization=context['user'].organization)
         return context
 
 
-class CollaboratorCreateView(LoginRequiredMixin, generic.CreateView):
+class ResearcherCreateView(LoginRequiredMixin, generic.CreateView):
     '''
     UserCreateView creates a user. It forces is_active to True; is_superuser
     and is_staff to False; and sets a random 12 char password.
@@ -136,7 +136,7 @@ class CollaboratorCreateView(LoginRequiredMixin, generic.CreateView):
     definitely check to make sure it's an unusable password before it allows the reset.
     '''
     model = User
-    template_name = 'accounts/collaborator_form.html'
+    template_name = 'accounts/researcher_form.html'
     fields = (
         'username',
         'given_name',

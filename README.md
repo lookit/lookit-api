@@ -15,7 +15,7 @@
 - Make sure to add LoginRequiredMixin to all views that need it
 - Make sure to add permission requirements to all exp views
 - Add login, logout, forgot password, change user information #web
-- Collaborator creation
+- Researcher creation
   - **exp website**
   - Organization admin enters user information
   - Creates and/or assigns groups to user
@@ -41,7 +41,7 @@
   - CRUD folders for video
   - Generation of time-limited urls to access files
   - Could potentially cache exported data there; #STRETCH
-  - Collaborators in Orgs should be able to access things only inside of their organization or group's folders
+  - Researchers in Orgs should be able to access things only inside of their organization or group's folders
 - Lookit website
   - Static assets
   - dynamic sections?
