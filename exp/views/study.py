@@ -34,7 +34,6 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
         return get_objects_for_user(self.request.user, 'studies.can_view')
 
 
-
 class StudyDetailView(LoginRequiredMixin, generic.DetailView):
     '''
     StudyDetailView shows information about a study.
@@ -70,5 +69,6 @@ class StudyDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(StudyDetailView, self).get_context_data(**kwargs)
-        context['triggers'] = self.get_permitted_triggers(self.object.machine.get_triggers(self.object.state))
+        context['triggers'] = self.get_permitted_triggers(
+            self.object.machine.get_triggers(self.object.state))
         return context

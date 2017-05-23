@@ -73,17 +73,10 @@ def organization_post_save(sender, **kwargs):
     if created:
         from django.contrib.auth.models import Group
         from guardian.shortcuts import assign_perm
-        org_studies = organization.studies.all()
-        researchers = organization.users.filter(demographic_data__isnull=True)
         for group in ['read', 'admin']:
             group_instance, created = Group.objects.get_or_create(
-                name=f'{slugify(organization.name)}-ORG_{group}'.upper()
+                name=f'{slugify(organization.name)}_ORG_{group}'.upper()
             )
-            for perm in Organization._meta.permissions:
-                # add only view permissions to non-admin
-                if group == 'read' and perm != 'can_view':
-                    continue
-                assign_perm(perm[0], group_instance, obj=organization)
 
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):

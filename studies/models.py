@@ -61,6 +61,7 @@ class Study(models.Model):
             ('can_deactivate', 'Can Deactivate'),
             ('can_pause', 'Can Pause'),
             ('can_resume', 'Can Resume'),
+            ('can_approve', 'Can Approve'),
             ('can_submit', 'Can Submit'),
             ('can_retract', 'Can Retract'),
             ('can_resubmit', 'Can Resubmit'),
@@ -126,22 +127,37 @@ class Study(models.Model):
 @receiver(post_save, sender=Study)
 def study_post_save(sender, **kwargs):
     """
-    Create groups for all newly created Study isntances. We only
+    Add study permissions to organization groups and
+    create groups for all newly created Study instances. We only
     run on study creation to avoid having to check for existence
     on each call to Study.save.
     """
     study, created = kwargs['instance'], kwargs['created']
     if created:
         from django.contrib.auth.models import Group
+
+        organization_groups = Group.objects.filter(
+            name__startswith=f'{slugify(study.organization.name)}_ORG_'.upper()
+        )
+        # assign study permissions to organization groups
+        for group in organization_groups:
+            for perm, _ in Study._meta.permissions:
+                if 'ADMIN' in group.name:
+                    assign_perm(perm, group, obj=study)
+                elif 'READ' in group.name and 'view' in perm:
+                    assign_perm(perm, group, obj=study)
+
+        # create study groups and assign permissions
         for group in ['read', 'admin']:
-            group_instance = Group.objects.create(
-                name=f'{slugify(study.name)}-STUDY_{group}'.upper()
+            study_group_instance = Group.objects.create(
+                name=f'{slugify(study.organization.name)}_{slugify(study.name)}_STUDY_{group}'.upper()  # noqa
             )
-            for perm in Study._meta.permissions:
+            for perm, _ in Study._meta.permissions:
                 # add only view permissions to non-admin
                 if group == 'read' and perm != 'can_view':
                     continue
-                assign_perm(perm[0], group_instance, obj=study)
+                if 'approve' not in perm:
+                    assign_perm(perm, study_group_instance, obj=study)
 
 
 class Response(models.Model):
@@ -186,8 +202,7 @@ class StudyLog(Log):
     )
 
     def __str__(self):
-        return f'<StudyLog: {self.action} on {self.study.name} \
-         at {self.created_at} by {self.user.username}'
+        return f'<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}'  # noqa
 
 
 class ResponseLog(Log):
