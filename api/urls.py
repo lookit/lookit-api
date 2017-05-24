@@ -5,6 +5,7 @@ from api import views as api_views
 
 router = DefaultRouter()
 router.register(r'users', api_views.DemographicDataViewSet)
+router.register(r'studies', api_views.StudyViewSet)
 
 urlpatterns = [
     url(r'^(?P<version>(v1|v2))/', include(router.urls))

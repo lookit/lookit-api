@@ -1,5 +1,11 @@
-from accounts.models import DemographicData, User
+from accounts.models import DemographicData, Profile, User
 from rest_framework_json_api import serializers
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = '__all__'
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,10 +16,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 class DemographicDataSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    profiles = ProfileSerializer(many=True, source='user.profiles.all')
+
     class Meta:
         model = DemographicData
         fields = (
             'user',
+            'profiles',
             'number_of_children',
             'child_birthdays',
             'languages_spoken_at_home',
