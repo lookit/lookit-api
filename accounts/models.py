@@ -18,6 +18,7 @@ from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
+from model_utils import Choices
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
@@ -54,10 +55,10 @@ class Organization(models.Model):
 
     class Meta:
         permissions = (
-            ('can_view', 'Can View'),
-            ('can_edit', 'Can Edit'),
-            ('can_create', 'Can Create'),
-            ('can_remove', 'Can Remove'),
+            ('can_view', _('Can View')),
+            ('can_edit', _('Can Edit')),
+            ('can_create', _('Can Create')),
+            ('can_remove', _('Can Remove')),
         )
 
 
@@ -145,42 +146,42 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     class Meta:
         permissions = (
-            ('can_create', 'Can Create'),
-            ('can_view', 'Can View'),
-            ('can_edit', 'Can Edit'),
-            ('can_remove', 'Can Remove'),
-            ('can_view_permissions', 'Can View Permissions'),
-            ('can_edit_permissions', 'Can Edit Permissions'),
+            ('can_create', _('Can Create')),
+            ('can_view', _('Can View')),
+            ('can_edit', _('Can Edit')),
+            ('can_remove', _('Can Remove')),
+            ('can_view_permissions', _('Can View Permissions')),
+            ('can_edit_permissions', _('Can Edit Permissions')),
         )
 
 
 class Profile(models.Model):
-    GENDER_CHOICES = (
-        ('m', 'male'),
-        ('f', 'female'),
-        ('o', 'other'),
-        ('na', 'prefer not to answer')
+    GENDER_CHOICES = Choices(
+        ('m', _('male')),
+        ('f', _('female')),
+        ('o', _('other')),
+        ('na', _('prefer not to answer')),
     )
-    AGE_AT_BIRTH_CHOICES = (
-        ('na', 'Not sure or prefer not to answer'),
-        ('<24', 'Under 24 weeks'),
-        ('24', '24 weeks'),
-        ('25', '25 weeks'),
-        ('26', '26 weeks'),
-        ('27', '27 weeks'),
-        ('28', '28 weeks'),
-        ('29', '29 weeks'),
-        ('30', '30 weeks'),
-        ('31', '31 weeks'),
-        ('32', '32 weeks'),
-        ('33', '33 weeks'),
-        ('34', '34 weeks'),
-        ('35', '35 weeks'),
-        ('36', '36 weeks'),
-        ('37', '37 weeks'),
-        ('38', '38 weeks'),
-        ('39', '39 weeks'),
-        ('40>', '40 or more weeks'),
+    AGE_AT_BIRTH_CHOICES = Choices(
+        ('na', _('Not sure or prefer not to answer')),
+        ('<24', _('Under 24 weeks')),
+        ('24', _('24 weeks')),
+        ('25', _('25 weeks')),
+        ('26', _('26 weeks')),
+        ('27', _('27 weeks')),
+        ('28', _('28 weeks')),
+        ('29', _('29 weeks')),
+        ('30', _('30 weeks')),
+        ('31', _('31 weeks')),
+        ('32', _('32 weeks')),
+        ('33', _('33 weeks')),
+        ('34', _('34 weeks')),
+        ('35', _('35 weeks')),
+        ('36', _('36 weeks')),
+        ('37', _('37 weeks')),
+        ('38', _('38 weeks')),
+        ('39', _('39 weeks')),
+        ('40>', _('40 or more weeks')),
     )
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
     given_name = models.CharField(max_length=255)
@@ -202,105 +203,105 @@ class Profile(models.Model):
 
 
 class DemographicData(models.Model):
-    RACE_CHOICES = (
-        ('white', 'White'),
-        ('hisp', 'Hispanic, Latino, or Spanish origin'),
-        ('black', 'Black or African American'),
-        ('asian', 'Asian'),
-        ('native', 'American Indian or Alaska Native'),
-        ('mideast-naf', 'Middle Eastern or North African'),
-        ('hawaiian-pac-isl', 'Native Hawaiian or Other Pacific Islander'),
-        ('other', 'Another race, ethnicity, or origin')
+    RACE_CHOICES = Choices(
+        ('white', _('White')),
+        ('hisp', _('Hispanic, Latino, or Spanish origin')),
+        ('black', _('Black or African American')),
+        ('asian', _('Asian')),
+        ('native', _('American Indian or Alaska Native')),
+        ('mideast-naf', _('Middle Eastern or North African')),
+        ('hawaiian-pac-isl', _('Native Hawaiian or Other Pacific Islander')),
+        ('other', _('Another race, ethnicity, or origin')),
     )
-    GENDER_CHOICES = (
-        ('m', 'male'),
-        ('f', 'female'),
-        ('o', 'other'),
-        ('na', 'prefer not to answer')
+    GENDER_CHOICES = Choices(
+        ('m', _('male')),
+        ('f', _('female')),
+        ('o', _('other')),
+        ('na', _('prefer not to answer')),
     )
-    EDUCATION_CHOICES = (
-        ('some', 'some or attending high school'),
-        ('hs', 'high school diploma or GED'),
-        ('col', 'some or attending college'),
-        ('assoc', '2-year college degree'),
-        ('bach', '4-year college degree'),
-        ('grad', 'some or attending graduate or professional school'),
-        ('prof', 'graduate or professional degree')
+    EDUCATION_CHOICES = Choices(
+        ('some', _('some or attending high school')),
+        ('hs', _('high school diploma or GED')),
+        ('col', _('some or attending college')),
+        ('assoc', _('2-year college degree')),
+        ('bach', _('4-year college degree')),
+        ('grad', _('some or attending graduate or professional school')),
+        ('prof', _('graduate or professional degree')),
     )
-    SPOUSE_EDUCATION_CHOICES = (
-        ('some', 'some or attending high school'),
-        ('hs', 'high school diploma or GED'),
-        ('col', 'some or attending college'),
-        ('assoc', '2-year college degree'),
-        ('bach', '4-year college degree'),
-        ('grad', 'some or attending graduate or professional school'),
-        ('prof', 'graduate or professional degree'),
-        ('na', 'not applicable - no spouse or partner')
+    SPOUSE_EDUCATION_CHOICES = Choices(
+        ('some', _('some or attending high school')),
+        ('hs', _('high school diploma or GED')),
+        ('col', _('some or attending college')),
+        ('assoc', _('2-year college degree')),
+        ('bach', _('4-year college degree')),
+        ('grad', _('some or attending graduate or professional school')),
+        ('prof', _('graduate or professional degree')),
+        ('na', _('not applicable - no spouse or partner')),
     )
-    NO_CHILDREN_CHOICES = (
-        ('0', '0'),
-        ('1', '1'),
-        ('2', '2'),
-        ('3', '3'),
-        ('4', '4'),
-        ('5', '5'),
-        ('6', '6'),
-        ('7', '7'),
-        ('8', '8'),
-        ('9', '9'),
-        ('10', '10'),
-        ('>10', 'More than 10')
+    NO_CHILDREN_CHOICES = Choices(
+        ('0', _('0')),
+        ('1', _('1')),
+        ('2', _('2')),
+        ('3', _('3')),
+        ('4', _('4')),
+        ('5', _('5')),
+        ('6', _('6')),
+        ('7', _('7')),
+        ('8', _('8')),
+        ('9', _('9')),
+        ('10', _('10')),
+        ('>10', _('More than 10')),
     )
-    AGE_CHOICES = (
-        ('<18', 'under 18'),
-        ('18-21', '18-21'),
-        ('22-24', '22-24'),
-        ('25-29', '25-29'),
-        ('30-34', '30-34'),
-        ('35-39', '35-39'),
-        ('40-44', '40-44'),
-        ('45-59', '45-49'),
-        ('50s', '50-59'),
-        ('60s', '60-69'),
-        ('>70', '70 or over')
+    AGE_CHOICES = Choices(
+        ('<18', _('under 18')),
+        ('18-21', _('18-21')),
+        ('22-24', _('22-24')),
+        ('25-29', _('25-29')),
+        ('30-34', _('30-34')),
+        ('35-39', _('35-39')),
+        ('40-44', _('40-44')),
+        ('45-59', _('45-49')),
+        ('50s', _('50-59')),
+        ('60s', _('60-69')),
+        ('>70', _('70 or over')),
     )
 
-    GUARDIAN_CHOICES = (
-        ('1', '1'),
-        ('2', '2'),
-        ('3>', '3 or more'),
-        ('varies', 'varies')
+    GUARDIAN_CHOICES = Choices(
+        ('1', _('1')),
+        ('2', _('2')),
+        ('3>', _('3 or more')),
+        ('varies', _('varies')),
     )
-    INCOME_CHOICES = (
-        ('0', '0'),
-        ('5000', '5000'),
-        ('10000', '10000'),
-        ('15000', '15000'),
-        ('20000', '20000'),
-        ('30000', '30000'),
-        ('40000', '40000'),
-        ('50000', '50000'),
-        ('60000', '60000'),
-        ('70000', '70000'),
-        ('80000', '80000'),
-        ('90000', '90000'),
-        ('100000', '100000'),
-        ('110000', '110000'),
-        ('120000', '120000'),
-        ('130000', '130000'),
-        ('140000', '140000'),
-        ('150000', '150000'),
-        ('160000', '160000'),
-        ('170000', '170000'),
-        ('180000', '180000'),
-        ('190000', '190000'),
-        ('>200000', 'over 200000'),
-        ('na', 'prefer not to answer')
+    INCOME_CHOICES = Choices(
+        ('0', _('0')),
+        ('5000', _('5000')),
+        ('10000', _('10000')),
+        ('15000', _('15000')),
+        ('20000', _('20000')),
+        ('30000', _('30000')),
+        ('40000', _('40000')),
+        ('50000', _('50000')),
+        ('60000', _('60000')),
+        ('70000', _('70000')),
+        ('80000', _('80000')),
+        ('90000', _('90000')),
+        ('100000', _('100000')),
+        ('110000', _('110000')),
+        ('120000', _('120000')),
+        ('130000', _('130000')),
+        ('140000', _('140000')),
+        ('150000', _('150000')),
+        ('160000', _('160000')),
+        ('170000', _('170000')),
+        ('180000', _('180000')),
+        ('190000', _('190000')),
+        ('>200000', _('over 200000')),
+        ('na', _('prefer not to answer')),
     )
-    DENSITY_CHOICES = (
-        ('urban', 'urban'),
-        ('suburban', 'suburban'),
-        ('rural', 'rural')
+    DENSITY_CHOICES = Choices(
+        ('urban', _('urban')),
+        ('suburban', _('suburban')),
+        ('rural', _('rural')),
     )
     user = models.ForeignKey(
         User, on_delete=models.CASCADE,

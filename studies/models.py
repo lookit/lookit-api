@@ -32,7 +32,7 @@ class Study(models.Model):
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
-        default=workflow.STATE_CHOICES[0][0]
+        default=workflow.STATE_CHOICES.created
     )
     public = models.BooleanField(default=False)
 

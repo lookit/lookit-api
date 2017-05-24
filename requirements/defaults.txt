@@ -12,3 +12,4 @@ transitions==0.5.2
 pydenticon==0.3
 django-bootstrap3==8.2.2
 django-ace-overlay==0.6
+django-model-utils==3.0.0
