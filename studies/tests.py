@@ -20,7 +20,7 @@ class StudyPermissionsTestCase(TestCase):
         'can_view_responses', 'can_view_video_responses', 'can_resubmit',
         'can_submit', 'can_view_demographics'
     ]
-    
+
     org_admin_perms = study_admin_perms + ['can_approve']
 
     study_read_perms = [
