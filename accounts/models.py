@@ -154,6 +154,53 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         )
 
 
+class Profile(models.Model):
+    GENDER_CHOICES = (
+        ('m', 'male'),
+        ('f', 'female'),
+        ('o', 'other'),
+        ('na', 'prefer not to answer')
+    )
+    AGE_AT_BIRTH_CHOICES = (
+        ('na', 'Not sure or prefer not to answer'),
+        ('<24', 'Under 24 weeks'),
+        ('24', '24 weeks'),
+        ('25', '25 weeks'),
+        ('26', '26 weeks'),
+        ('27', '27 weeks'),
+        ('28', '28 weeks'),
+        ('29', '29 weeks'),
+        ('30', '30 weeks'),
+        ('31', '31 weeks'),
+        ('32', '32 weeks'),
+        ('33', '33 weeks'),
+        ('34', '34 weeks'),
+        ('35', '35 weeks'),
+        ('36', '36 weeks'),
+        ('37', '37 weeks'),
+        ('38', '38 weeks'),
+        ('39', '39 weeks'),
+        ('40>', '40 or more weeks'),
+    )
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
+    given_name = models.CharField(max_length=255)
+    birthday = models.DateField()
+    gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
+    age_at_birth = models.CharField(max_length=25)
+    additional_information = models.TextField()
+    deleted = models.BooleanField(default=False)
+
+    user = models.ForeignKey(
+        'accounts.User',
+        related_name='profiles',
+        related_query_name='profiles'
+    )
+
+    @property
+    def age(self):
+        return timezone.now() - self.birthday
+
+
 class DemographicData(models.Model):
     RACE_CHOICES = (
         ('white', 'White'),
