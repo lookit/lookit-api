@@ -2,6 +2,7 @@ import base64
 import hashlib
 import uuid
 
+import pydenticon
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
@@ -12,14 +13,13 @@ from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import ugettext as _
-
-import pydenticon
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
+
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
@@ -127,7 +127,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def studies(self):
         if not self.is_participant:
-            return get_objects_for_user(self, ['studies.view_study', 'studies.edit_study'])
+            return get_objects_for_user(self, ['studies.can_view', 'studies.can_edit'])
         return None
 
     def _make_rainbow(self):

@@ -1,11 +1,11 @@
 from django.shortcuts import reverse
 from django.views import generic
+from guardian.mixins import LoginRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
-from guardian.mixins import LoginRequiredMixin
-from guardian.shortcuts import get_objects_for_user
-from studies.models import Study, Response
+from studies.models import Response, Study
 
 
 class ParticipantListView(LoginRequiredMixin, generic.ListView):
@@ -64,7 +64,7 @@ class ResponseDetailView(LoginRequiredMixin, generic.DetailView):
 
 class ResearcherListView(LoginRequiredMixin, generic.ListView):
     '''
-    Displays a list of researchers in the same organization as the current user. 
+    Displays a list of researchers in the same organization as the current user.
     '''
     template_name = 'accounts/researcher_list.html'
     queryset = User.objects.filter(demographics__isnull=True)
@@ -112,14 +112,14 @@ class AssignResearcherStudies(LoginRequiredMixin, generic.UpdateView):
         return reverse('exp:researcher-list')
 
     def get_initial(self):
-        permissions = ['studies.view_study', 'studies.edit_study']
+        permissions = ['studies.can_view', 'studies.can_edit']
         initial = super(AssignResearcherStudies, self).get_initial()
         initial['studies'] = get_objects_for_user(self.object, permissions)
         return initial
 
     def get_context_data(self, **kwargs):
         context = super(AssignResearcherStudies, self).get_context_data(**kwargs)
-        #  only show studies in their organization
+        # only show studies in their organization
         context['studies'] = Study.objects.filter(organization=context['user'].organization)
         return context
 

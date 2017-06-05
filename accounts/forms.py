@@ -1,7 +1,7 @@
 from django import forms
+from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 from accounts.models import DemographicData, User
-from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 from studies.models import Study
 
 
@@ -27,7 +27,7 @@ class UserStudiesForm(forms.Form):
             return True
 
     def save(self):
-        permissions = ['studies.view_study', 'studies.edit_study']
+        permissions = ['studies.can_view', 'studies.can_edit']
         current_permitted_objects = get_objects_for_user(self.cleaned_data['user'], permissions)
         disallowed_studies = current_permitted_objects.exclude(
             id__in=[x.id for x in self.cleaned_data['studies']])
