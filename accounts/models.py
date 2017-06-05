@@ -8,6 +8,7 @@ from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import ugettext as _
@@ -112,6 +113,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return self._identicon
 
     @property
+    def latest_demographics(self):
+        return self.demographics.last()
+
+    @property
     def identicon_html(self):
         return mark_safe(f'<img src="{str(self.identicon)}" width="64"/>')
 
@@ -143,6 +148,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f'<User: {self.uuid}>'
 
     objects = UserManager()
+
+    class JSONAPIMeta:
+        resource_name = 'users'
+        lookup_field = 'uuid'
 
     class Meta:
         permissions = (
@@ -200,6 +209,10 @@ class Profile(models.Model):
     @property
     def age(self):
         return timezone.now() - self.birthday
+
+    class JSONAPIMeta:
+        resource_name = 'profiles'
+        lookup_field = 'uuid'
 
 
 class DemographicData(models.Model):
@@ -314,6 +327,7 @@ class DemographicData(models.Model):
         related_query_name='next_demographic_data', null=True, blank=True
     )
 
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
     child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
     languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home')
@@ -331,6 +345,10 @@ class DemographicData(models.Model):
     state = USStateField(choices=('XX', _('Select a State')) + USPS_CHOICES[:])
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
     extra = DateTimeAwareJSONField(null=True)
+
+    class JSONAPIMeta:
+        resource_name = 'demographics'
+        lookup_field = 'uuid'
 
     def __str__(self):
         return f'<DemographicData: {self.user.get_short_name()} @ {self.created_at:%c}>'

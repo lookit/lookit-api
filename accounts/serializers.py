@@ -1,28 +1,16 @@
+from rest_framework import serializers
+
 from accounts.models import DemographicData, Profile, User
-from rest_framework_json_api import serializers
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = '__all__'
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
+from rest_framework_json_api.relations import ResourceRelatedField
 
 
 class DemographicDataSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    profiles = ProfileSerializer(many=True, source='user.profiles.all')
+    resource_name = 'demographics'
 
     class Meta:
         model = DemographicData
         fields = (
-            'user',
-            'profiles',
+            'uuid',
             'number_of_children',
             'child_birthdays',
             'languages_spoken_at_home',
@@ -41,3 +29,58 @@ class DemographicDataSerializer(serializers.ModelSerializer):
             'density',
             'extra',
         )
+
+
+class UserSerializer(serializers.ModelSerializer):
+    resource_name = 'users'
+    url = serializers.HyperlinkedIdentityField(
+        view_name='user-detail',
+        lookup_field='uuid'
+    )
+
+    included_serializers = {
+        'demographics': DemographicDataSerializer,
+    }
+
+    class Meta:
+        model = User
+        fields = (
+            'url',
+            'uuid',
+            'organization',
+            'identicon',
+            'is_active',
+            'is_staff',
+            'demographics'
+        )
+
+    class JSONAPIMeta:
+        included_resources = ['demographics', ]
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    lookup_field = 'uuid'
+    url = serializers.HyperlinkedIdentityField(
+        view_name='profile-detail',
+        lookup_field='uuid'
+    )
+    included_serializers = {
+        'user': UserSerializer,
+    }
+
+    class Meta:
+        model = Profile
+        fields = (
+            'url',
+            'user',
+            'uuid',
+            'given_name',
+            'birthday',
+            'gender',
+            'age_at_birth',
+            'additional_information',
+            'deleted',
+        )
+
+    class JSONAPIMeta:
+        included_resources = ['user', ]
