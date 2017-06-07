@@ -6,10 +6,15 @@ from rest_framework_json_api.relations import ResourceRelatedField
 
 class DemographicDataSerializer(serializers.ModelSerializer):
     resource_name = 'demographics'
+    url = serializers.HyperlinkedIdentityField(
+        view_name='profile-demographics-detail',
+        lookup_field='uuid'
+    )
 
     class Meta:
         model = DemographicData
         fields = (
+            'url',
             'uuid',
             'number_of_children',
             'child_birthdays',
@@ -83,4 +88,4 @@ class ProfileSerializer(serializers.ModelSerializer):
         )
 
     class JSONAPIMeta:
-        included_resources = ['user', ]
+        included_resources = ['user', 'user__demographics', ]

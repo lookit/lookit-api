@@ -15,6 +15,7 @@ class ProfileViewSet(views.ModelViewSet):
 class ProfileDemographicsViewSet(views.ModelViewSet):
     queryset = DemographicData.objects.all()
     serializer_class = DemographicDataSerializer
+    lookup_field = 'uuid'
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)

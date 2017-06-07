@@ -1,11 +1,12 @@
 import uuid
+from profile import Profile
 
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 
-from accounts.models import DemographicData, Organization, User
+from accounts.models import DemographicData, Organization, Profile, User
 from guardian.shortcuts import assign_perm
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from transitions.extensions import GraphMachine as Machine
@@ -35,6 +36,7 @@ class Study(models.Model):
         default=workflow.STATE_CHOICES.created
     )
     public = models.BooleanField(default=False)
+    creator = models.ForeignKey(User)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
@@ -165,7 +167,7 @@ class Response(models.Model):
         Study, on_delete=models.DO_NOTHING,
         related_name='responses'
     )
-    participant = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    profile = models.ForeignKey(Profile, on_delete=models.DO_NOTHING)
     demographic_snapshot = models.ForeignKey(
         DemographicData,
         on_delete=models.DO_NOTHING
@@ -173,7 +175,7 @@ class Response(models.Model):
     results = DateTimeAwareJSONField(default=dict)
 
     def __str__(self):
-        return f'<Response: {self.study} {self.participant.get_short_name}>'
+        return f'<Response: {self.study} {self.profile.user.get_short_name}>'
 
     class Meta:
         permissions = (

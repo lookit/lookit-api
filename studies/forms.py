@@ -9,7 +9,7 @@ class ResponseForm(forms.ModelForm):
     class Meta:
         fields = (
             'study',
-            'participant',
+            'profile',
             'demographic_snapshot',
             'results'
         )

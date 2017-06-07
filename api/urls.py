@@ -6,6 +6,7 @@ from api import views as api_views
 router = DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
 router.register(r'studies', api_views.StudyViewSet)
+
 router.register(r'profiles/(?P<profile_id>.*?)/demographics',
                 api_views.ProfileDemographicsViewSet,
                 base_name='profile-demographics'

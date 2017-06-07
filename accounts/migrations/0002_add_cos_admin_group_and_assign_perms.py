@@ -37,7 +37,7 @@ def goodbye_cos_admin_group(*args, **kwargs):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0006_auto_20170505_0004'),
+        ('accounts', '0001_initial'),
     ]
 
     operations = [

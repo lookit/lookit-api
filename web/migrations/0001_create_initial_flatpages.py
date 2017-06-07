@@ -29,7 +29,6 @@ def unmake_pages(*args, **kwargs):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studies', '0014_study_uuid'),
     ]
 
     operations = [
