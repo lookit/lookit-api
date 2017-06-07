@@ -39,7 +39,7 @@
             <ul>
             {% for response in study.responses.all %}
               <li>
-                  <a href="{% url 'exp:response-detail' response.id %}">{{ response.profile.user.get_short_name }}</a>
+                  <a href="{% url 'exp:response-detail' response.id %}">{{ response.child.user.get_short_name }}</a>
               </li>
             {% endfor %}
             </ul>

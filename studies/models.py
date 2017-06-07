@@ -1,16 +1,14 @@
 import uuid
-from profile import Profile
 
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
-
-from accounts.models import DemographicData, Organization, Profile, User
 from guardian.shortcuts import assign_perm
-from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from transitions.extensions import GraphMachine as Machine
 
+from accounts.models import DemographicData, Organization, Child, User
+from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from . import workflow
 
 
@@ -167,7 +165,7 @@ class Response(models.Model):
         Study, on_delete=models.DO_NOTHING,
         related_name='responses'
     )
-    profile = models.ForeignKey(Profile, on_delete=models.DO_NOTHING)
+    child = models.ForeignKey(Child, on_delete=models.DO_NOTHING)
     demographic_snapshot = models.ForeignKey(
         DemographicData,
         on_delete=models.DO_NOTHING
@@ -175,7 +173,7 @@ class Response(models.Model):
     results = DateTimeAwareJSONField(default=dict)
 
     def __str__(self):
-        return f'<Response: {self.study} {self.profile.user.get_short_name}>'
+        return f'<Response: {self.study} {self.child.user.get_short_name}>'
 
     class Meta:
         permissions = (

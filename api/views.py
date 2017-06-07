@@ -1,25 +1,26 @@
-from accounts.models import DemographicData, Profile, User
-from accounts.serializers import (DemographicDataSerializer, ProfileSerializer,
-                                  UserSerializer)
 from rest_framework_json_api import views
+
+from accounts.models import DemographicData, Child, User
+from accounts.serializers import (DemographicDataSerializer, ChildSerializer,
+                                  UserSerializer)
 from studies.models import Study
 from studies.serializers import StudySerializer
 
 
-class ProfileViewSet(views.ModelViewSet):
-    queryset = Profile.objects.filter(user__demographics__isnull=False, user__is_active=True)
-    serializer_class = ProfileSerializer
+class ChildViewSet(views.ModelViewSet):
+    queryset = Child.objects.filter(user__demographics__isnull=False, user__is_active=True)
+    serializer_class = ChildSerializer
     lookup_field = 'uuid'
 
 
-class ProfileDemographicsViewSet(views.ModelViewSet):
+class ChildDemographicsViewSet(views.ModelViewSet):
     queryset = DemographicData.objects.all()
     serializer_class = DemographicDataSerializer
     lookup_field = 'uuid'
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
-        return qs.filter(user__profiles__uuid=self.kwargs['profile_id'])
+        return qs.filter(user__children__uuid=self.kwargs['child_id'])
 
 
 class UserViewSet(views.ModelViewSet):

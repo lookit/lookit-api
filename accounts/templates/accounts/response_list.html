@@ -22,7 +22,7 @@
           {% for resp in object_list %}
             <tr>
                 <td><a href="{% url 'exp:response-detail' resp.id %}">{{ resp.study.name }}</a></td>
-              <td>{{ resp.profile.user.uuid }}  {{ resp.profile.user.identicon_html }}</td>
+              <td>{{ resp.child.user.uuid }}  {{ resp.child.user.identicon_html }}</td>
               <td>{{ resp.logs.last.action }}</td>
             </tr>
           {% endfor %}

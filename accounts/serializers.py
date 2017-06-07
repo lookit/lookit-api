@@ -1,13 +1,12 @@
 from rest_framework import serializers
 
-from accounts.models import DemographicData, Profile, User
-from rest_framework_json_api.relations import ResourceRelatedField
+from accounts.models import DemographicData, Child, User
 
 
 class DemographicDataSerializer(serializers.ModelSerializer):
     resource_name = 'demographics'
     url = serializers.HyperlinkedIdentityField(
-        view_name='profile-demographics-detail',
+        view_name='child-demographics-detail',
         lookup_field='uuid'
     )
 
@@ -63,10 +62,10 @@ class UserSerializer(serializers.ModelSerializer):
         included_resources = ['demographics', ]
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+class ChildSerializer(serializers.ModelSerializer):
     lookup_field = 'uuid'
     url = serializers.HyperlinkedIdentityField(
-        view_name='profile-detail',
+        view_name='child-detail',
         lookup_field='uuid'
     )
     included_serializers = {
@@ -74,7 +73,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     }
 
     class Meta:
-        model = Profile
+        model = Child
         fields = (
             'url',
             'user',

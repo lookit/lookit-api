@@ -7,11 +7,11 @@ router = DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
 router.register(r'studies', api_views.StudyViewSet)
 
-router.register(r'profiles/(?P<profile_id>.*?)/demographics',
-                api_views.ProfileDemographicsViewSet,
-                base_name='profile-demographics'
+router.register(r'children/(?P<child_id>.*?)/demographics',
+                api_views.ChildDemographicsViewSet,
+                base_name='child-demographics'
                 )
-router.register(r'profiles', api_views.ProfileViewSet)
+router.register(r'children', api_views.ChildViewSet)
 
 urlpatterns = [
     url(r'^(?P<version>(v1|v2))/', include(router.urls))

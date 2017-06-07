@@ -1,10 +1,10 @@
 from django.contrib import admin
-
-from accounts.models import DemographicData, Organization, Profile, User
 from guardian.admin import GuardedModelAdmin
 
+from accounts.models import DemographicData, Organization, Child, User
 
-class ProfileAdmin(GuardedModelAdmin):
+
+class ChildAdmin(GuardedModelAdmin):
     pass
 
 
@@ -23,4 +23,4 @@ class DemographicDataAdmin(GuardedModelAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(DemographicData, DemographicDataAdmin)
-admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Child, ChildAdmin)

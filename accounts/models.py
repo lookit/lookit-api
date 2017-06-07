@@ -74,7 +74,6 @@ def organization_post_save(sender, **kwargs):
 
     if created:
         from django.contrib.auth.models import Group
-        from guardian.shortcuts import assign_perm
         for group in ['read', 'admin']:
             group_instance, created = Group.objects.get_or_create(
                 name=f'{slugify(organization.name)}_ORG_{group}'.upper()
@@ -164,7 +163,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         )
 
 
-class Profile(models.Model):
+class Child(models.Model):
     GENDER_CHOICES = Choices(
         ('m', _('male')),
         ('f', _('female')),
@@ -202,8 +201,8 @@ class Profile(models.Model):
 
     user = models.ForeignKey(
         'accounts.User',
-        related_name='profiles',
-        related_query_name='profiles'
+        related_name='children',
+        related_query_name='children'
     )
 
     @property
@@ -211,7 +210,7 @@ class Profile(models.Model):
         return timezone.now() - self.birthday
 
     class JSONAPIMeta:
-        resource_name = 'profiles'
+        resource_name = 'children'
         lookup_field = 'uuid'
 
 
