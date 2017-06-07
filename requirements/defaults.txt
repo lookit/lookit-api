@@ -1,15 +1,20 @@
-Django==1.11.1
-djangorestframework==3.6.2
+-e git+git@github.com:cwisecarver/django-extensions.git@239d1f5960f3bfe57dce1ff91acfe60db1c887e0#egg=django_extensions
+-e git+git@github.com:cwisecarver/django-rest-framework-json-api.git@d8c3dc479e037d4c11599934551a61c410a89601#egg=djangorestframework_jsonapi
 #git+git@github.com:cos-forks/django-rest-framework-json-api.git@d8c3dc479e037d4c11599934551a61c410a89601
-django-guardian==1.4.8
-django-extensions==1.7.8
-Werkzeug==0.12.1
-psycopg2==2.7.1
-django-countries==4.4
-django-localflavor==1.4.1
 ciso8601==1.0.3
-transitions==0.5.2
-pydenticon==0.3
-django-bootstrap3==8.2.2
 django-ace-overlay==0.6
+django-bootstrap3==8.2.2
+django-countries==4.4
+django-debug-toolbar==1.8
+django-extensions==1.7.8
+django-guardian==1.4.8
+django-localflavor==1.4.1
 django-model-utils==3.0.0
+django-pdb==0.5.1
+django-prettyjson==0.2.2
+Django==1.11.2
+djangorestframework==3.6.2
+psycopg2==2.7.1
+pydenticon==0.3
+transitions==0.5.2
+Werkzeug==0.12.1
