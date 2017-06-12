@@ -24,7 +24,6 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
 class UserManager(BaseUserManager):
-
     def create_user(self, username, password=None):
         if not username:
             raise ValueError('Users must have a username')
@@ -116,6 +115,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return self.demographics.last()
 
     @property
+    def identicon_small_html(self):
+        return mark_safe(f'<img src="{str(self.identicon)}" width="18"/>')
+
+    @property
     def identicon_html(self):
         return mark_safe(f'<img src="{str(self.identicon)}" width="64"/>')
 
@@ -138,7 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return rbw
 
     def get_short_name(self):
-        return self.uuid
+        return f'{self.given_name} {self.family_name}'
 
     def get_full_name(self):
         return f'{self.given_name} {self.middle_name} {self.family_name}'
