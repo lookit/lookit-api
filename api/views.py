@@ -13,16 +13,6 @@ class ChildViewSet(views.ModelViewSet):
     lookup_field = 'uuid'
 
 
-class ChildDemographicsViewSet(views.ModelViewSet):
-    queryset = DemographicData.objects.all()
-    serializer_class = DemographicDataSerializer
-    lookup_field = 'uuid'
-
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        return qs.filter(user__children__uuid=self.kwargs['child_id'])
-
-
 class UserViewSet(views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'users'

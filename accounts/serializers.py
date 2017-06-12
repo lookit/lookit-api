@@ -5,15 +5,10 @@ from accounts.models import DemographicData, Child, User
 
 class DemographicDataSerializer(serializers.ModelSerializer):
     resource_name = 'demographics'
-    url = serializers.HyperlinkedIdentityField(
-        view_name='child-demographics-detail',
-        lookup_field='uuid'
-    )
 
     class Meta:
         model = DemographicData
         fields = (
-            'url',
             'uuid',
             'number_of_children',
             'child_birthdays',
