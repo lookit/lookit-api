@@ -54,8 +54,12 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_json_api',
     'storages',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
     # our stuff
+    'osf_oauth2_adapter',
     'api',
     'web',
     'accounts',
@@ -86,6 +90,7 @@ INTERNAL_IPS = ['127.0.0.1', ]
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'guardian.backends.ObjectPermissionBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 ROOT_URLCONF = 'project.urls'
@@ -185,7 +190,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ID = 1
+SITE_ID = 2
 
 
 # Static files (CSS, JavaScript, Images)
