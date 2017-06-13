@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^signup/?$', views.ParticipantSignupView.as_view(), name='participant-signup'),
     url(r'^demographic_data/?$', views.DemographicDataCreateView.as_view(), name='demographic-data-create'),
     url(r'^studies/?$', views.StudiesListView.as_view(), name='studies-list'),
-    url(r'^studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/$', views.StudyDetailView.as_view(), name='public-study-detail'),
+    url(r'^studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/$', views.StudyDetailView.as_view(), name='study-detail'),
     url(r'^faq/?$', flatpages_views.flatpage, dict(url='/faq/'), name='faq'),
     url(r'^scientists/?$', flatpages_views.flatpage, dict(url='/scientists/'), name='scientists'),
     url(r'^resources/?$', flatpages_views.flatpage, dict(url='/resources/'), name='resources'),
