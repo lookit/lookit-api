@@ -1,4 +1,6 @@
+from django.http import Http404
 from django.shortcuts import reverse
+from django.utils.translation import ugettext as _
 from django.views import generic
 
 from accounts import forms
@@ -63,7 +65,7 @@ class ParticipantSignupView(generic.CreateView):
     form_class = forms.ParticipantSignupForm
 
     def get_success_url(self):
-        return reverse('demographic-data-create')
+        return reverse('web:demographic-data-create')
 
 
 class DemographicDataCreateView(generic.CreateView):
@@ -79,4 +81,4 @@ class DemographicDataCreateView(generic.CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('studies-list')
+        return reverse('web:studies-list')

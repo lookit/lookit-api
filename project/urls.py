@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^exp/', include(exp_urls, namespace='exp')),
     url(r'^api/', include(api_urls)),
-    url(r'^', include(web_urls)),
+    url(r'^', include(web_urls, namespace='web')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
