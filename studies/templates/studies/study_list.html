@@ -13,25 +13,81 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container">
-    <h2>Studies</h2>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th># Responses</th>
-          <th>Active?</th>
-        </tr>
-      </thead>
-      <tbody>
+<div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+          <h1> Manage Studies </h1>
+      </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+            <input class="form-control" name="searchBar" placeholder="Filter" size="50" type="text">
+        </div>
+    </div>
+    <div class="row text-center button-block">
+        <div style="display: inline-block; float: none;">
+            <ul class="nav nav-pills">
+                <li class="multi-toggle-filter btn" role="button">Active</li>
+                <li class="multi-toggle-filter btn" role="button">Pending</li>
+                <li class="multi-toggle-filter btn" role="button">Approved</li>
+                <li class="multi-toggle-filter btn" role="button">Draft</li>
+                <li class="multi-toggle-filter btn" role="button">Archived</li>
+                <li class="multi-toggle-filter btn" role="button">My Studies</li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-8">
+            <strong>Title</strong> <i class="fa fa-sort btn" role="button"></i>
+        </div>
+        <div class="col-xs-2 text-center">
+            <strong>Begin Date</strong> <i class="fa fa-sort btn" role="button"></i>
+        </div>
+        <div class="col-xs-2 text-center">
+            <strong>End Date</strong> <i class="fa fa-sort btn" role="button"></i>
+        </div>
+        <hr>
+    </div>
+    <div class="row results">
         {% for study in object_list %}
-          <tr>
-            <td><a href="{% url 'exp:study-detail' study.id %}">{{ study.name }}</a></td>
-            <td>{{ study.responses.count }}</td>
-            <td>{{ study.is_active }}</td>
-          </tr>
+            <div class="col-md-12 well">
+                <div class="row table-block">
+                    <div class="col-xs-8">
+                        <strong>{{ study.name }}</strong>
+                    </div>
+                    <div class="col-xs-2 text-center">
+                        <strong>{{ study.begin_date|default:"N/A" }}</strong>
+                    </div>
+                    <div class="col-xs-2 text-center">
+                        <strong>{{ study.end_date|default:"N/A" }}</strong>
+                    </div>
+                </div>
+                <div class="row table-block">
+                    <div class="col-xs-12">
+                        <p> {{ study.short_description }}</p>
+                    </div>
+                </div>
+                <div class="row table-block">
+                    <div class="col-xs-12">
+                        <strong>Study Creator: </strong> {{ study.creator.given_name }} {{ study.creator.family_name }}
+                    </div>
+                </div>
+                <div class="row table-block">
+                    <div class="col-xs-3">
+                        <strong>Status:</strong> {{ study.state|title }}
+                    </div>
+                    <div class="col-xs-3">
+                        <strong>Last Edited:</strong> 2/28/2017
+                    </div>
+                    <div class="col-xs-3">
+                        <strong> Completed Responses: {{ study.responses.count }}  {# TODO Get completed responses #}
+                    </div>
+                    <div class="col-xs-3 pull-right">
+                        <strong> Incomplete Responses: {{ study.responses.count }} {# TODO Get incomplete responses #}
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-      </tbody>
-    </table>
+    </div>
   </div>
 {% endblock %}
