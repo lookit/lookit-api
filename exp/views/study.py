@@ -31,7 +31,10 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
     model = Study
 
     def get_queryset(self, *args, **kwargs):
-        return get_objects_for_user(self.request.user, 'studies.can_view')
+        queryset = get_objects_for_user(self.request.user, 'studies.can_view')
+        if self.request.GET.get('state'):
+            queryset = queryset.filter(state=self.request.GET.get('state'))
+        return queryset
 
 
 class StudyDetailView(LoginRequiredMixin, generic.DetailView):
