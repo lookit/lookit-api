@@ -14,3 +14,8 @@ nav.navigation-list ul {
 nav.navigation-list ul li {
   display: inline-block;
 }
+
+a.state-link {
+    color: inherit;
+    text-decoration: inherit;
+}
