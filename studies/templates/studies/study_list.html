@@ -27,12 +27,13 @@
     <div class="row text-center button-block">
         <div style="display: inline-block; float: none;">
             <ul class="nav nav-pills">
-                <li class="multi-toggle-filter btn" role="button">Active</li>
-                <li class="multi-toggle-filter btn" role="button">Pending</li>
-                <li class="multi-toggle-filter btn" role="button">Approved</li>
-                <li class="multi-toggle-filter btn" role="button">Draft</li>
-                <li class="multi-toggle-filter btn" role="button">Archived</li>
-                <li class="multi-toggle-filter btn" role="button">My Studies</li>
+                <li class="multi-toggle-filter {% if state == "active" %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}?state=active">Active</a></li>
+                <li class="multi-toggle-filter {% if state == "pending" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?state=pending">Pending</a></li>
+                <li class="multi-toggle-filter {% if state == "approved" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?state=approved">Approved</a></li>
+                <li class="multi-toggle-filter {% if state == "draft" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?state=draft">Draft</a></li>
+                <li class="multi-toggle-filter {% if state == "archived" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?state=archived">Archived</a></li>
+                <li class="multi-toggle-filter {% if state == "my-studies" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?state=my-studies">My Studies</a></li>
+                <li class="multi-toggle-filter {% if state == "all" %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}">All</a></li>
             </ul>
         </div>
     </div>
@@ -46,8 +47,8 @@
         <div class="col-xs-2 text-center">
             <strong>End Date</strong> <i class="fa fa-sort btn" role="button"></i>
         </div>
-        <hr>
     </div>
+    <hr>
     <div class="row results">
         {% for study in object_list %}
             <div class="col-md-12 well">
