@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views import generic
+from django.db.models import Q
 
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
@@ -32,8 +33,13 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self, *args, **kwargs):
         queryset = get_objects_for_user(self.request.user, 'studies.can_view')
+
         if self.request.GET.get('state'):
             queryset = queryset.filter(state=self.request.GET.get('state'))
+
+        match = self.request.GET.get('match')
+        if match:
+            queryset = queryset.filter(Q(name__icontains=match) | Q(short_description__icontains=match))
         return queryset
 
     def get_context_data(self, **kwargs):
