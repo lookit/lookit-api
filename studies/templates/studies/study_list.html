@@ -16,7 +16,7 @@
 <div class="container">
     <div class="row">
       <div class="col-xs-12">
-          <h1> Manage Studies </h1>
+          <h2> Manage Studies </h2>
       </div>
     </div>
     <div class="row text-center">
@@ -77,13 +77,13 @@
                         <strong>Status:</strong> {{ study.state|title }}
                     </div>
                     <div class="col-xs-3">
-                        <strong>Last Edited:</strong> 2/28/2017
+                        <strong>Last Edited:</strong> {{ study.date_modified }}
                     </div>
                     <div class="col-xs-3">
-                        <strong> Completed Responses: {{ study.responses.count }}  {# TODO Get completed responses #}
+                        <strong> Completed Responses: </strong> {{ study.responses.count }}  {# TODO Get completed responses #}
                     </div>
                     <div class="col-xs-3 pull-right">
-                        <strong> Incomplete Responses: {{ study.responses.count }} {# TODO Get incomplete responses #}
+                        <strong> Incomplete Responses: </strong> {{ study.responses.count }} {# TODO Get incomplete responses #}
                     </div>
                 </div>
             </div>
