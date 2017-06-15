@@ -45,6 +45,8 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(StudyListView, self).get_context_data(**kwargs)
         context['state'] = self.request.GET.get('state') or 'all'
+        context['match'] = self.request.GET.get('match') or ''
+        context['sort'] = self.request.GET.get('sort') or ''
         return context
 
 
