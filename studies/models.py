@@ -75,6 +75,16 @@ class Study(models.Model):
             ('can_view_demographics', 'Can View Demographics'),
         )
 
+    @property
+    def begin_date(self):
+         return self.logs.filter(action='active').latest('action').created_at
+
+    @property
+    def end_date(self):
+        begin_date = self.begin_date
+        end_date = self.logs.filter(action='deactivated').latest('action').created_at
+        return end_date if end_date > begin_date else None
+
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
         user = ev.kwargs.get('user')
