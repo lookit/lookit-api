@@ -30,16 +30,28 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
     StudyListView shows a list of studies that a user has permission to.
     '''
     model = Study
+    template_name = 'studies/study_list.html'
 
     def get_queryset(self, *args, **kwargs):
+        request = self.request.GET
         queryset = get_objects_for_user(self.request.user, 'studies.can_view')
 
-        if self.request.GET.get('state'):
-            queryset = queryset.filter(state=self.request.GET.get('state'))
+        if request.get('state'):
+            queryset = queryset.filter(state=request.get('state'))
 
-        match = self.request.GET.get('match')
+        match = request.get('match')
         if match:
             queryset = queryset.filter(Q(name__icontains=match) | Q(short_description__icontains=match))
+
+        sort = request.get('sort')
+        if sort:
+            if 'name' in sort:
+                queryset = queryset.order_by(request.get('sort'))
+            elif 'beginDate' in sort:
+                queryset = sorted(queryset, key=lambda t: t.begin_date, reverse=True if '-' in sort else False)
+            elif 'endDate' in sort:
+                queryset = sorted(queryset, key=lambda t: t.end_date, reverse=True if '-' in sort else False)
+
         return queryset
 
     def get_context_data(self, **kwargs):
