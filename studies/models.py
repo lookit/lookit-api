@@ -15,6 +15,7 @@ from . import workflow
 class Study(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=255, blank=False, null=False)
+    date_modified = models.DateTimeField(auto_now=True)
     short_description = models.TextField()
     long_description = models.TextField()
     criteria = models.TextField()
