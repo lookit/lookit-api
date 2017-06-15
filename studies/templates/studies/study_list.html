@@ -46,13 +46,13 @@
     </div>
     <div class="row">
         <div class="col-xs-8">
-            <strong>Title</strong> <i class="fa fa-sort btn" role="button"></i>
+            <strong>Name</strong> <a href="{% url 'exp:study-list' %}?{% query_transform request sort="name"%}"><i class="fa fa-sort btn" role="button" name="name"></i></a>
         </div>
         <div class="col-xs-2 text-center">
-            <strong>Begin Date</strong> <i class="fa fa-sort btn" role="button"></i>
+            <strong>Begin Date</strong> <a href="{% url 'exp:study-list' %}?{% query_transform request sort="beginDate" %}"><i class="fa fa-sort btn" role="button" name="beginDate"></i></a>
         </div>
         <div class="col-xs-2 text-center">
-            <strong>End Date</strong> <i class="fa fa-sort btn" role="button"></i>
+            <strong>End Date</strong> <a href="{% url 'exp:study-list' %}?{% query_transform request sort="endDate" %}"><i class="fa fa-sort btn" role="button" name="endDate"></i></a>
         </div>
     </div>
     <hr>
