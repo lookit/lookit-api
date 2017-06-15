@@ -1,14 +1,19 @@
 from rest_framework import serializers
 
-from accounts.models import DemographicData, Child, User
+from accounts.models import Child, DemographicData, User
 
 
 class DemographicDataSerializer(serializers.ModelSerializer):
     resource_name = 'demographics'
+    url = serializers.HyperlinkedIdentityField(
+        view_name='demographicdata-detail',
+        lookup_field='uuid'
+    )
 
     class Meta:
         model = DemographicData
         fields = (
+            'url',
             'uuid',
             'number_of_children',
             'child_birthdays',
