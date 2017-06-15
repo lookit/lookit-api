@@ -347,7 +347,7 @@ class DemographicData(models.Model):
         ('rural', _('rural')),
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        User, on_delete=models.CASCADE, null=True,
         related_name='demographics', related_query_name='demographics'
     )
     created_at = models.DateTimeField(auto_now_add=True)

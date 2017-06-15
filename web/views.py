@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate, login
 from django.http import Http404
 from django.shortcuts import reverse
 from django.utils.translation import ugettext as _
@@ -64,6 +65,16 @@ class ParticipantSignupView(generic.CreateView):
     model = User
     form_class = forms.ParticipantSignupForm
 
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        new_user = authenticate(
+            self.request,
+            username=form.cleaned_data['username'],
+            password=form.cleaned_data['password1']
+        )
+        login(self.request, new_user, backend='django.contrib.auth.backends.ModelBackend')
+        return resp
+
     def get_success_url(self):
         return reverse('web:demographic-data-create')
 
@@ -77,8 +88,10 @@ class DemographicDataCreateView(generic.CreateView):
     form_class = forms.DemographicDataForm
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+        resp = super().form_valid(form)
+        self.object.user = self.request.user
+        self.object.save()
+        return resp
 
     def get_success_url(self):
         return reverse('web:studies-list')
