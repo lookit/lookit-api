@@ -23,11 +23,14 @@
     <div class="row text-center">
         <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
             <form method="GET">
-              <input class="form-control" name="match" placeholder="Filter" size="50" type="text">
+                <input class="form-control" name="match" placeholder="Filter" size="50" type="text">
+                <input type="hidden" name="sort" value={{ sort }}>
+                <input type="hidden" name="state" value={{ state }}>
             </form>
 
         </div>
     </div>
+
     <div class="row text-center button-block">
         <div style="display: inline-block; float: none;">
             <ul class="nav nav-pills">
