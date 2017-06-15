@@ -28,7 +28,9 @@ class Study(models.Model):
         related_name='studies',
         related_query_name='study'
     )
-    blocks = DateTimeAwareJSONField(default=dict)
+    structure = DateTimeAwareJSONField(default=dict)
+    display_full_screen = models.BooleanField(default=True)
+    exit_url = models.URLField(default="https://lookit.mit.edu/")
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
