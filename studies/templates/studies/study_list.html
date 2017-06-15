@@ -60,10 +60,10 @@
                         <strong>{{ study.name }}</strong>
                     </div>
                     <div class="col-xs-2 text-center">
-                        <strong>{{ study.begin_date|default:"N/A" }}</strong>
+                        <strong>{{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
                     </div>
                     <div class="col-xs-2 text-center">
-                        <strong>{{ study.end_date|default:"N/A" }}</strong>
+                        <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
                     </div>
                 </div>
                 <div class="row table-block">
@@ -81,7 +81,7 @@
                         <strong>Status:</strong> {{ study.state|title }}
                     </div>
                     <div class="col-xs-3">
-                        <strong>Last Edited:</strong> {{ study.date_modified }}
+                        <strong>Last Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
                     </div>
                     <div class="col-xs-3">
                         <strong> Completed Responses: </strong> {{ study.responses.count }}  {# TODO Get completed responses #}
