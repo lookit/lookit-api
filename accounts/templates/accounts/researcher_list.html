@@ -7,35 +7,52 @@
 {% endblock %}
 {% block content %}
   <div class="container">
-    <h1>Researchers</h1>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Organization</th>
-            <th>Studies</th>
-            <th>Active</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user in object_list %}
-            <tr>
-              <td>{{ user.username }}</td>
-              <td>{{ user.organization.name }}</td>
-              <td>{% for us in user.studies %}{{ us.name }}, {% endfor %}</td>
-              <td>{{ user.is_active }}</td>
-              <td>
-                <div class="btn-group">
-                  <a class="btn btn-default" href="{% url 'exp:researcher-detail' user.id %}">View</a>
-                  <a class="btn btn-default" href="{% url 'exp:assign-studies' user.id %}">Assign Studies</a>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="row">
+        <div class="col-xs-9">
+            <h1 class="researchers-header">Researchers</h1>
+        </div>
+        <div class="col-xs-3 pt-lg">
+            <button class="btn btn-success" >
+                Create Researcher
+            </button>
+        </div>
     </div>
+    <div class="row text-center mt-md">
+       <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+           <form method="GET">
+               <input class="form-control" name="name" placeholder="Filter" size="50" type="text">
+           </form>
+       </div>
+   </div>
+   <div class="row mt-xl">
+       <div class="col-xs-6 col-xs-offset-1">
+            <strong>Researcher Name</strong> <a class="sort-studies-button" href="#"><i class="fa fa-sort btn" role="button"></i></a>
+       </div>
+
+       <div class="col-xs-3">
+            <strong>Permissions</strong>
+       </div>
+
+       <div class="col-xs-2">
+       </div>
+   </div>
+   <hr>
+   {% for user in object_list %}
+   <div class="row">
+        <div class="col-xs-6 col-xs-offset-1">
+            <strong>{{ user.get_short_name }}</strong>
+        </div>
+
+        <div class="col-xs-3">
+            Permission will go here
+        </div>
+
+           <div class="col-xs-2">
+               <button class="btn btn-danger btn-sm" >
+                   Remove
+               </button>
+           </div>
+       </div>
+   {% endfor %}
   </div>
 {% endblock %}
