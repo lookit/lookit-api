@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views import generic
 from django.db.models import Q
+from django.utils import timezone
 
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
@@ -46,12 +47,11 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
         sort = request.get('sort')
         if sort:
             if 'name' in sort:
-                queryset = queryset.order_by(request.get('sort'))
+                queryset = queryset.order_by(sort)
             elif 'beginDate' in sort:
-                queryset = sorted(queryset, key=lambda t: t.begin_date, reverse=True if '-' in sort else False)
+                queryset = sorted(queryset, key=lambda t: t.begin_date or timezone.now(), reverse=True if '-' in sort else False)
             elif 'endDate' in sort:
-                queryset = sorted(queryset, key=lambda t: t.end_date, reverse=True if '-' in sort else False)
-
+                queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
         return queryset
 
     def get_context_data(self, **kwargs):

@@ -77,12 +77,20 @@ class Study(models.Model):
 
     @property
     def begin_date(self):
-         return self.logs.filter(action='active').latest('action').created_at
+        active_logs = self.logs.filter(action='active')
+        if active_logs:
+            return active_logs.latest('action').created_at
+        else:
+            return None
 
     @property
     def end_date(self):
         begin_date = self.begin_date
-        end_date = self.logs.filter(action='deactivated').latest('action').created_at
+        deactivated_logs = self.logs.filter(action='deactivated')
+        if deactivated_logs and begin_date:
+            end_date = deactivated_logs.latest('action').created_at
+        else:
+            return None;
         return end_date if end_date > begin_date else None
 
     # WORKFLOW CALLBACKS
