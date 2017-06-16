@@ -14,3 +14,21 @@ nav.navigation-list ul {
 nav.navigation-list ul li {
   display: inline-block;
 }
+
+.pt-lg {
+    padding-top: 20px;
+}
+.mt-md {
+    margin-top: 15px;
+}
+.mt-lg {
+    margin-top: 20px;
+}
+.mt-xl {
+    margin-top: 25px;
+}
+
+/*Researchers*/
+.researchers-header {
+    display: inline-block;
+}
