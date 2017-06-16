@@ -23,3 +23,8 @@ a.state-link {
     background-color: rgba(96, 96, 96, 0.15);
     color: black
 }
+
+.sort-studies-button {
+    color: inherit;
+    text-decoration: inherit;
+}
