@@ -88,10 +88,10 @@
                         <strong>Last Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
                     </div>
                     <div class="col-xs-3">
-                        <strong> Completed Responses: </strong> {{ study.responses.count }}  {# TODO Get completed responses #}
+                        <strong> Completed Responses: </strong> {{ study.completed_responses }}
                     </div>
                     <div class="col-xs-3 pull-right">
-                        <strong> Incomplete Responses: </strong> {{ study.responses.count }} {# TODO Get incomplete responses #}
+                        <strong> Incomplete Responses: </strong> {{ study.incomplete_responses}}
                     </div>
                 </div>
             </div>

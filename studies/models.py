@@ -94,6 +94,14 @@ class Study(models.Model):
             return None;
         return end_date if end_date > begin_date else None
 
+    @property
+    def completed_responses(self):
+        return self.responses.filter(completed=True).count();
+
+    @property
+    def incomplete_responses(self):
+        return self.responses.filter(completed=False).count();
+
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
         user = ev.kwargs.get('user')
