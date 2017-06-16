@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm
 from transitions.extensions import GraphMachine as Machine
+from django.contrib.postgres.fields import ArrayField
 
 from accounts.models import DemographicData, Organization, Child, User
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
@@ -186,12 +187,16 @@ class Response(models.Model):
         Study, on_delete=models.DO_NOTHING,
         related_name='responses'
     )
+    completed = models.BooleanField(default=False)
+    exp_data = DateTimeAwareJSONField(default=dict)
+    conditions = DateTimeAwareJSONField(default=dict)
+    sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)
+    global_event_timings = DateTimeAwareJSONField(default=dict)
     child = models.ForeignKey(Child, on_delete=models.DO_NOTHING)
     demographic_snapshot = models.ForeignKey(
         DemographicData,
         on_delete=models.DO_NOTHING
     )
-    results = DateTimeAwareJSONField(default=dict)
 
     def __str__(self):
         return f'<Response: {self.study} {self.child.user.get_short_name}>'
