@@ -39,8 +39,8 @@
                 <li class="multi-toggle-filter {% if state == "approved" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="approved" %}">Approved</a></li>
                 <li class="multi-toggle-filter {% if state == "created" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="created" %}">Created</a></li>
                 <li class="multi-toggle-filter {% if state == "deactivated" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="deactivated" %}">Deactivated</a></li>
-                <li class="multi-toggle-filter {% if state == "my-studies" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="my-studies" %}">My Studies</a></li>
-                <li class="multi-toggle-filter {% if state == "all" %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}">All</a></li>
+                <li class="multi-toggle-filter {% if state == "myStudies" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="myStudies" %}">My Studies</a></li>
+                <li class="multi-toggle-filter {% if state == "all" %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="all" %}">All</a></li>
             </ul>
         </div>
     </div>

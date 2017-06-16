@@ -37,8 +37,12 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
         request = self.request.GET
         queryset = get_objects_for_user(self.request.user, 'studies.can_view')
 
-        if request.get('state'):
-            queryset = queryset.filter(state=request.get('state'))
+        state = request.get('state')
+        if state:
+            if state == 'myStudies':
+                queryset = queryset.filter(creator=self.request.user)
+            else:
+                queryset = queryset.filter(state=state)
 
         match = request.get('match')
         if match:
@@ -52,6 +56,7 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
                 queryset = sorted(queryset, key=lambda t: t.begin_date or timezone.now(), reverse=True if '-' in sort else False)
             elif 'endDate' in sort:
                 queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
+
         return queryset
 
     def get_context_data(self, **kwargs):

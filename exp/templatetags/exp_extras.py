@@ -6,8 +6,9 @@ register = template.Library()
 def query_transform(request, **kwargs):
     updated = request.GET.copy()
 
-    if kwargs.get('state'):
-        updated['state'] = kwargs.get('state')
+    state = kwargs.get('state')
+    if state:
+        updated['state'] = '' if state == 'all' else state
     if kwargs.get('match'):
         updated['match'] = kwargs.get('match')
 
