@@ -38,7 +38,7 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
         queryset = get_objects_for_user(self.request.user, 'studies.can_view')
 
         state = request.get('state')
-        if state:
+        if state and state != 'all':
             if state == 'myStudies':
                 queryset = queryset.filter(creator=self.request.user)
             else:

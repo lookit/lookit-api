@@ -8,7 +8,8 @@ def query_transform(request, **kwargs):
 
     state = kwargs.get('state')
     if state:
-        updated['state'] = '' if state == 'all' else state
+        updated['state'] = state
+
     if kwargs.get('match'):
         updated['match'] = kwargs.get('match')
 
