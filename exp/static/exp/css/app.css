@@ -28,3 +28,7 @@ a.state-link {
     color: inherit;
     text-decoration: inherit;
 }
+
+.mb-lg {
+    margin-bottom: 25px;
+}

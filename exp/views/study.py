@@ -53,15 +53,17 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
             if 'name' in sort:
                 queryset = queryset.order_by(sort)
             elif 'beginDate' in sort:
+                # TODO optimize using subquery
                 queryset = sorted(queryset, key=lambda t: t.begin_date or timezone.now(), reverse=True if '-' in sort else False)
             elif 'endDate' in sort:
+                # TODO optimize using subquery
                 queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
 
         return queryset
 
     def get_context_data(self, **kwargs):
-        context = super(StudyListView, self).get_context_data(**kwargs)
-        context['state'] = self.request.GET.get('state') or 'all'
+        context = super().get_context_data(**kwargs)
+        context['state'] = self.request.GET.get('state', 'all')
         context['match'] = self.request.GET.get('match') or ''
         context['sort'] = self.request.GET.get('sort') or ''
         return context

@@ -57,45 +57,53 @@
     </div>
     <hr>
     <div class="row results">
-        {% for study in object_list %}
-            <div class="col-md-12 well">
-                <div class="row table-block">
-                    <div class="col-xs-8">
-                        <strong>{{ study.name }}</strong>
+        {% if object_list %}
+            {% for study in object_list %}
+                <div class="col-md-12 well">
+                    <div class="row table-block">
+                        <div class="col-xs-8">
+                            <strong>{{ study.name }}</strong>
+                        </div>
+                        <div class="col-xs-2 text-center">
+                            <strong>{{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
+                        </div>
+                        <div class="col-xs-2 text-center">
+                            <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
+                        </div>
                     </div>
-                    <div class="col-xs-2 text-center">
-                        <strong>{{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
+                    <div class="row table-block">
+                        <div class="col-xs-12">
+                            <p> {{ study.short_description }}</p>
+                        </div>
                     </div>
-                    <div class="col-xs-2 text-center">
-                        <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
+                    <div class="row table-block">
+                        <div class="col-xs-12">
+                            <strong>Study Creator: </strong> {{ study.creator.given_name }} {{ study.creator.family_name }}
+                        </div>
+                    </div>
+                    <div class="row table-block">
+                        <div class="col-xs-3">
+                            <strong>Status:</strong> {{ study.state|title }}
+                        </div>
+                        <div class="col-xs-3">
+                            <strong>Last Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
+                        </div>
+                        <div class="col-xs-3">
+                            <strong> Completed Responses: </strong> {{ study.completed_responses_count }}
+                        </div>
+                        <div class="col-xs-3 pull-right">
+                            <strong> Incomplete Responses: </strong> {{ study.incomplete_responses_count }}
+                        </div>
                     </div>
                 </div>
-                <div class="row table-block">
-                    <div class="col-xs-12">
-                        <p> {{ study.short_description }}</p>
-                    </div>
-                </div>
-                <div class="row table-block">
-                    <div class="col-xs-12">
-                        <strong>Study Creator: </strong> {{ study.creator.given_name }} {{ study.creator.family_name }}
-                    </div>
-                </div>
-                <div class="row table-block">
-                    <div class="col-xs-3">
-                        <strong>Status:</strong> {{ study.state|title }}
-                    </div>
-                    <div class="col-xs-3">
-                        <strong>Last Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
-                    </div>
-                    <div class="col-xs-3">
-                        <strong> Completed Responses: </strong> {{ study.completed_responses }}
-                    </div>
-                    <div class="col-xs-3 pull-right">
-                        <strong> Incomplete Responses: </strong> {{ study.incomplete_responses}}
-                    </div>
+            {% endfor %}
+        {% else %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <p class="mb-lg"><em> No studies found matching this filter! </em></p>
                 </div>
             </div>
-        {% endfor %}
+        {% endif %}
     </div>
   </div>
 {% endblock %}

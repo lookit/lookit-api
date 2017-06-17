@@ -79,7 +79,7 @@ class Study(models.Model):
     @property
     def begin_date(self):
         active_logs = self.logs.filter(action='active')
-        if active_logs:
+        if active_logs.exists():
             return active_logs.latest('action').created_at
         else:
             return None
@@ -88,18 +88,18 @@ class Study(models.Model):
     def end_date(self):
         begin_date = self.begin_date
         deactivated_logs = self.logs.filter(action='deactivated')
-        if deactivated_logs and begin_date:
+        if deactivated_logs.exists() and begin_date:
             end_date = deactivated_logs.latest('action').created_at
         else:
             return None;
         return end_date if end_date > begin_date else None
 
     @property
-    def completed_responses(self):
+    def completed_responses_count(self):
         return self.responses.filter(completed=True).count();
 
     @property
-    def incomplete_responses(self):
+    def incomplete_responses_count(self):
         return self.responses.filter(completed=False).count();
 
     # WORKFLOW CALLBACKS
