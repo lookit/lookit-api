@@ -11,38 +11,65 @@
   {% endif %}
 {% endblock %}
 {% block content %}
-  <div class="container">
-    <h1>{{ user.username }}</h1>
-    <table class="table table-compact">
-      <tbody>
-        <tr>
-          <th>
-            Username
-          </th>
-          <td>
-            {{ user.username }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Organization
-          </th>
-          <td>
-            {{ user.organization.name }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Studies
-          </th>
-          <td>
-            {% for study in user.studies %}
-              {{ study.name }},
-            {% endfor %}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+<div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+          <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> > {{ user.get_short_name }} </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+          <div class="pull-right">
+              <button class="btn btn-default"> Send password reset email </button>
+              <button class="btn btn-default"> Resend confirmation email </button>
+          </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+          <strong> Email address </strong>
+           <p> {{ user.username }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+          <strong> Given name </strong>
+          <p> {{ user.given_name }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+          <strong> Middle name </strong>
+           <p> {{ user.middle_name }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+          <strong> Family Name </strong>
+           <p> {{ user.family_name }}
+      </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <strong> Permissions </strong>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                    Current user permission goes here <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Other permission</a></li>
+                    <li><a href="#">Other permission</a></li>
+                    <li><a href="#">Other permission</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+          <button class="btn btn-default"> Discard </button>
+          <button class="btn btn-success"> Save </button>
+      </div>
+    </div>
     <form action="" method="POST">{% csrf_token %}
       {% if user.is_active %}
         <input type="hidden" name="disable" />
