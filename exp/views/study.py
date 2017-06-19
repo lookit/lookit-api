@@ -1,6 +1,8 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views import generic
+from django.db.models import Q
+from django.utils import timezone
 
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
@@ -29,9 +31,42 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
     StudyListView shows a list of studies that a user has permission to.
     '''
     model = Study
+    template_name = 'studies/study_list.html'
 
     def get_queryset(self, *args, **kwargs):
-        return get_objects_for_user(self.request.user, 'studies.can_view')
+        request = self.request.GET
+        queryset = get_objects_for_user(self.request.user, 'studies.can_view')
+
+        state = request.get('state')
+        if state and state != 'all':
+            if state == 'myStudies':
+                queryset = queryset.filter(creator=self.request.user)
+            else:
+                queryset = queryset.filter(state=state)
+
+        match = request.get('match')
+        if match:
+            queryset = queryset.filter(Q(name__icontains=match) | Q(short_description__icontains=match))
+
+        sort = request.get('sort')
+        if sort:
+            if 'name' in sort:
+                queryset = queryset.order_by(sort)
+            elif 'beginDate' in sort:
+                # TODO optimize using subquery
+                queryset = sorted(queryset, key=lambda t: t.begin_date or timezone.now(), reverse=True if '-' in sort else False)
+            elif 'endDate' in sort:
+                # TODO optimize using subquery
+                queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['state'] = self.request.GET.get('state', 'all')
+        context['match'] = self.request.GET.get('match') or ''
+        context['sort'] = self.request.GET.get('sort') or ''
+        return context
 
 
 class StudyDetailView(LoginRequiredMixin, generic.DetailView):

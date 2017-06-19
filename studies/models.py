@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm
 from transitions.extensions import GraphMachine as Machine
+from django.contrib.postgres.fields import ArrayField
 
 from accounts.models import DemographicData, Organization, Child, User
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
@@ -15,6 +16,7 @@ from . import workflow
 class Study(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=255, blank=False, null=False)
+    date_modified = models.DateTimeField(auto_now=True)
     short_description = models.TextField()
     long_description = models.TextField()
     criteria = models.TextField()
@@ -27,7 +29,9 @@ class Study(models.Model):
         related_name='studies',
         related_query_name='study'
     )
-    blocks = DateTimeAwareJSONField(default=dict)
+    structure = DateTimeAwareJSONField(default=dict)
+    display_full_screen = models.BooleanField(default=True)
+    exit_url = models.URLField(default="https://lookit.mit.edu/")
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
@@ -71,6 +75,32 @@ class Study(models.Model):
             ('can_view_video_responses', 'Can View Video Responses'),
             ('can_view_demographics', 'Can View Demographics'),
         )
+
+    @property
+    def begin_date(self):
+        active_logs = self.logs.filter(action='active')
+        if active_logs.exists():
+            return active_logs.latest('action').created_at
+        else:
+            return None
+
+    @property
+    def end_date(self):
+        begin_date = self.begin_date
+        deactivated_logs = self.logs.filter(action='deactivated')
+        if deactivated_logs.exists() and begin_date:
+            end_date = deactivated_logs.latest('action').created_at
+        else:
+            return None;
+        return end_date if end_date > begin_date else None
+
+    @property
+    def completed_responses_count(self):
+        return self.responses.filter(completed=True).count();
+
+    @property
+    def incomplete_responses_count(self):
+        return self.responses.filter(completed=False).count();
 
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
@@ -165,12 +195,16 @@ class Response(models.Model):
         Study, on_delete=models.DO_NOTHING,
         related_name='responses'
     )
+    completed = models.BooleanField(default=False)
+    exp_data = DateTimeAwareJSONField(default=dict)
+    conditions = DateTimeAwareJSONField(default=dict)
+    sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)
+    global_event_timings = DateTimeAwareJSONField(default=dict)
     child = models.ForeignKey(Child, on_delete=models.DO_NOTHING)
     demographic_snapshot = models.ForeignKey(
         DemographicData,
         on_delete=models.DO_NOTHING
     )
-    results = DateTimeAwareJSONField(default=dict)
 
     def __str__(self):
         return f'<Response: {self.study} {self.child.user.get_short_name}>'
