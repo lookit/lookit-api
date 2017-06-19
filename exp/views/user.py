@@ -101,6 +101,7 @@ class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
             self.object.is_active = True
         elif 'disable' in self.request.POST:
             self.object.is_active = False
+
         if self.request.POST.get('name') == 'given_name':
             self.object.given_name = self.request.POST['value']
         if self.request.POST.get('name') == 'middle_name':
@@ -175,4 +176,5 @@ class ResearcherCreateView(LoginRequiredMixin, generic.CreateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('exp:assign-studies', kwargs={'pk': self.object.id})
+        return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
+        # return reverse('exp:assign-studies', kwargs={'pk': self.object.id})
