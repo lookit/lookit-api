@@ -168,9 +168,10 @@ class ResearcherCreateView(LoginRequiredMixin, generic.CreateView):
         form = self.get_form()
         query_dict = form.data.copy()
         # implicitly add them to their creator's organization
-        query_dict.update(is_active=True, is_superuser=False, is_staff=False, password=self.user_password, organization=self.request.user.organization)
+        query_dict.update(is_active=True, is_superuser=False, is_staff=False, password=self.user_password)
         form.data = query_dict
         if form.is_valid():
+            form.instance.organization = self.request.user.organization
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
