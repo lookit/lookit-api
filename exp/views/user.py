@@ -95,6 +95,12 @@ class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
             self.object.is_active = True
         elif 'disable' in self.request.POST:
             self.object.is_active = False
+        if self.request.POST.get('name') == 'given_name':
+            self.object.given_name = self.request.POST['value']
+        if self.request.POST.get('name') == 'middle_name':
+            self.object.middle_name = self.request.POST['value']
+        if self.request.POST.get('name') == 'family_name':
+            self.object.family_name = self.request.POST['value']
         self.object.save()
         return retval
 
