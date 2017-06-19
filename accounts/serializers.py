@@ -46,7 +46,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'url',
             'uuid',
-            'organization',
+            'given_name',
+            'middle_name',
+            'family_name',
             'identicon',
             'is_active',
             'is_staff',
