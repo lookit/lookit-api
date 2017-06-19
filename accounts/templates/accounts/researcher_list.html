@@ -48,9 +48,11 @@
         </div>
 
            <div class="col-xs-2">
-               <button class="btn btn-danger btn-sm" >
-                   Remove
-               </button>
+               <form method='POST'> {% csrf_token %}
+                   <button name='delete' class="btn btn-danger btn-sm" value= {{ user.id }} >
+                       Remove
+                   </button>
+               </form>
            </div>
        </div>
    {% endfor %}

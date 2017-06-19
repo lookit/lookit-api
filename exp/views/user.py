@@ -75,6 +75,12 @@ class ResearcherListView(LoginRequiredMixin, generic.ListView):
         # TODO this should probably use permissions eventually, just to be safe
         return qs.filter(organization=self.request.user.organization)
 
+    def post(self, request, *args, **kwargs):
+        retval = super(ResearcherListView, self).get(request, *args, **kwargs)
+        if 'delete' in self.request.POST:
+            User.objects.get(pk=self.request.POST['delete']).delete()
+        return retval
+
 
 class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
     '''
