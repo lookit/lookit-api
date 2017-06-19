@@ -16,7 +16,7 @@
         {% if request.user.is_superuser %}
         <li><a href="{% url 'exp:organization-list' %}">Manage Organization</a></li>
         <li role="separator" class="divider"></li>
-        <li><a href="{% url 'exp:studies-list' %}">Manage Studies</a></li>
+        <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
         {% endif %} {# /if request.user.is_superuser #}
         <li role="separator" class="divider"></li>
         <li class="dropdown">
