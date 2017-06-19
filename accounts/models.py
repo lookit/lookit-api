@@ -82,7 +82,7 @@ def organization_post_save(sender, **kwargs):
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
-    username = models.EmailField(unique=True)
+    username = models.EmailField(unique=True, verbose_name= 'Email address')
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
