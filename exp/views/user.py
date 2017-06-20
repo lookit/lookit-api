@@ -1,4 +1,7 @@
 from django.shortcuts import reverse
+from django.db.models import Q
+from django.db.models.functions import Lower
+
 from django.views import generic
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
@@ -73,13 +76,27 @@ class ResearcherListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         qs = super(ResearcherListView, self).get_queryset()
         # TODO this should probably use permissions eventually, just to be safe
-        return qs.filter(organization=self.request.user.organization)
+        queryset = qs.filter(organization=self.request.user.organization)
+        match = self.request.GET.get('match')
+        if match:
+            queryset = queryset.filter(Q(family_name__icontains=match) | Q(given_name__icontains=match)| Q(middle_name__icontains=match))
+        sort = self.request.GET.get('sort')
+        if sort:
+            if 'family_name' in sort:
+                queryset = queryset.order_by(Lower('family_name').asc()) if '-' in sort else queryset.order_by(Lower('family_name').desc())
+        return queryset
 
     def post(self, request, *args, **kwargs):
         retval = super(ResearcherListView, self).get(request, *args, **kwargs)
         if 'delete' in self.request.POST:
             User.objects.get(pk=self.request.POST['delete']).delete()
         return retval
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['match'] = self.request.GET.get('match') or ''
+        context['sort'] = self.request.GET.get('sort') or ''
+        return context
 
 
 class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):

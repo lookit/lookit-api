@@ -1,5 +1,6 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
+{% load exp_extras %}
 
 {% block title %}Users{% endblock %}
 {% block flash %}
@@ -20,13 +21,14 @@
     <div class="row text-center mt-md">
        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
            <form method="GET">
-               <input class="form-control" name="name" placeholder="Filter" size="50" type="text">
+               <input class="form-control" name="match" placeholder={{ match|default:"Filter" }} size="50" type="text">
+               <input type="hidden" name="sort" value={{ sort }}>
            </form>
        </div>
    </div>
    <div class="row mt-xl">
        <div class="col-xs-6 col-xs-offset-1">
-            <strong>Researcher Name</strong> <a class="sort-studies-button" href="#"><i class="fa fa-sort btn" role="button"></i></a>
+           <strong>Researcher Name</strong> <a class="sort-studies-button" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="family_name"%}"><i class="fa fa-sort btn" role="button" name="family_name"></i></a>
        </div>
 
        <div class="col-xs-3">
