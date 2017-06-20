@@ -191,6 +191,7 @@ class ResearcherCreateView(LoginRequiredMixin, generic.CreateView):
             form.instance.organization = self.request.user.organization
             return self.form_valid(form)
         else:
+            self.object = None
             return self.form_invalid(form)
 
     def get_success_url(self):
