@@ -83,7 +83,7 @@ class ResearcherListView(LoginRequiredMixin, generic.ListView):
         sort = self.request.GET.get('sort')
         if sort:
             if 'family_name' in sort:
-                queryset = queryset.order_by(Lower('family_name').asc()) if '-' in sort else queryset.order_by(Lower('family_name').desc())
+                queryset = queryset.order_by(Lower('family_name').desc()) if '-' in sort else queryset.order_by(Lower('family_name').asc())
         return queryset
 
     def post(self, request, *args, **kwargs):
