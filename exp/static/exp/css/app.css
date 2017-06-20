@@ -55,3 +55,9 @@ a.state-link {
 .researchers-header {
     display: inline-block;
 }
+
+.modal.in {
+    width: 80%; /* respsonsive width */
+    top:5%;
+    margin: 0 auto; 
+}
