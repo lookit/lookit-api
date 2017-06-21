@@ -132,6 +132,16 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             return get_objects_for_user(self, ['studies.can_view', 'studies.can_edit'])
         return None
 
+    @property
+    def display_permission(self):
+        groups = [group.name for group in self.groups.all()]
+        if f'{slugify(self.organization.name)}_ORG_ADMIN'.upper() in groups:
+            return 'Organization Admin'
+        elif f'{slugify(self.organization.name)}_ORG_READ'.upper() in groups:
+            return 'Organization Read'
+        else:
+            return 'Researcher'
+
     def _make_rainbow(self):
         rbw = []
         for i in range(0, 255, 10):
