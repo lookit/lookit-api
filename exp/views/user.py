@@ -207,6 +207,11 @@ class ResearcherCreateView(LoginRequiredMixin, generic.CreateView):
         'is_superuser',
         'password'
     )
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_org_admin or request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied # HTTP 403
 
     def post(self, request, *args, **kwargs):
         # TODO put this on the view so that we can send the user an email once their user is saved
@@ -214,10 +219,10 @@ class ResearcherCreateView(LoginRequiredMixin, generic.CreateView):
         self.user_password = User.objects.make_random_password(length=12)
         form = self.get_form()
         query_dict = form.data.copy()
-        # implicitly add them to their creator's organization
         query_dict.update(is_active=True, is_superuser=False, is_staff=False, password=self.user_password)
         form.data = query_dict
         if form.is_valid():
+            # implicitly add them to their creator's organization
             form.instance.organization = self.request.user.organization
             return self.form_valid(form)
         else:
