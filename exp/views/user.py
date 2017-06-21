@@ -2,6 +2,7 @@ from django.shortcuts import reverse
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.contrib.auth.models import Group
+from django.core.exceptions import PermissionDenied
 
 from django.views import generic
 from django.utils.text import slugify
@@ -75,6 +76,13 @@ class ResearcherListView(LoginRequiredMixin, generic.ListView):
     queryset = User.objects.filter(demographics__isnull=True)
     model = User
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_org_read or request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied # HTTP 403
+
+
     def get_queryset(self):
         qs = super(ResearcherListView, self).get_queryset()
         # TODO this should probably use permissions eventually, just to be safe
@@ -110,6 +118,12 @@ class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
     fields = ('is_active', )
     template_name = 'accounts/researcher_detail.html'
     model = User
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_org_read or request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied # HTTP 403
 
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
