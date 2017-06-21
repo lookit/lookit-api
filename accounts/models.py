@@ -134,12 +134,12 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @property
     def is_org_admin(self):
-        groups = [group.name for group in self.groups.all()] if self.groups.all().exists() else []
+        groups = self.groups.all().values_list('name', flat=True)
         return self.organization and f'{slugify(self.organization.name)}_ORG_ADMIN'.upper() in groups
 
     @property
     def is_org_read(self):
-        groups = [group.name for group in self.groups.all()] if self.groups.all().exists() else []
+        groups = self.groups.all().values_list('name', flat=True)
         return self.organization and f'{slugify(self.organization.name)}_ORG_READ'.upper() in groups or self.is_org_admin
 
     @property
