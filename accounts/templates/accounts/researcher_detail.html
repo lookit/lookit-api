@@ -19,9 +19,9 @@
         $('#family_name').editable();
         $('#user_permissions').editable({
             source: [
-                  {value: 1, text: 'Researcher'},
-                  {value: 2, text: 'Organization Admin'},
-                  {value: 3, text: 'Organization Read'}
+                  {value: 'researcher', text: 'Researcher'},
+                  {value: 'org_read', text: 'Organization Read'},
+                  {value: 'org_admin', text: 'Organization Admin'}
                ]
         });
     });
@@ -81,6 +81,7 @@
             <strong> Permissions </strong>
             <div>
                 <a href="#" id="user_permissions" data-type="select" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ user.id }}" data-url="/post" data-title="Select permissions">
+                    {{ user.display_permission }}
                 </a>
             </div>
         </div>

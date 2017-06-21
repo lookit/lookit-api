@@ -1,8 +1,10 @@
 from django.shortcuts import reverse
 from django.db.models import Q
 from django.db.models.functions import Lower
+from django.contrib.auth.models import Group
 
 from django.views import generic
+from django.utils.text import slugify
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 
@@ -125,6 +127,20 @@ class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
             self.object.middle_name = self.request.POST['value']
         if self.request.POST.get('name') == 'family_name':
             self.object.family_name = self.request.POST['value']
+        if self.request.POST.get('name') == 'user_permissions':
+            new_perm_short = self.request.POST['value']
+            admin_group = Group.objects.get(name=f'{slugify(self.get_object().organization.name)}_ORG_ADMIN'.upper())
+            read_group = Group.objects.get(name=f'{slugify(self.get_object().organization.name)}_ORG_READ'.upper())
+            researcher = self.get_object()
+
+            if new_perm_short == 'org_admin':
+                admin_group.user_set.add(researcher)
+            elif new_perm_short == 'org_read':
+                read_group.user_set.add(researcher)
+                admin_group.user_set.remove(researcher)
+            else:
+                admin_group.user_set.remove(researcher)
+                read_group.user_set.remove(researcher)
         self.object.save()
         return retval
 
