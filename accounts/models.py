@@ -140,7 +140,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def is_org_read(self):
         groups = [group.name for group in self.groups.all()] if self.groups.all().exists() else []
-        return self.organization and f'{slugify(self.organization.name)}_ORG_READ'.upper() in groups
+        return self.organization and f'{slugify(self.organization.name)}_ORG_READ'.upper() in groups or self.is_org_admin
 
     @property
     def display_permission(self):
