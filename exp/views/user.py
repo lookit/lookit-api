@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from django.shortcuts import reverse
 from django.db.models import Q
 from django.db.models.functions import Lower
@@ -89,7 +92,8 @@ class ResearcherListView(LoginRequiredMixin, generic.ListView):
         queryset = qs.filter(organization=self.request.user.organization)
         match = self.request.GET.get('match')
         if match:
-            queryset = queryset.filter(Q(family_name__icontains=match) | Q(given_name__icontains=match)| Q(middle_name__icontains=match))
+            queryset = queryset.filter(reduce(operator.or_,
+              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(middle_name__icontains=term) for term in match.split())))
         sort = self.request.GET.get('sort')
         if sort:
             if 'family_name' in sort:
