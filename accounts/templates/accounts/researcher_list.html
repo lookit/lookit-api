@@ -20,7 +20,7 @@
             <h1 class="researchers-header">Researchers</h1>
         </div>
         <div class="col-xs-3 pt-lg">
-            {% if request.user.is_org_admin or request.user.is_superuser %}
+            {% if perms.can_create_users %}
                 <a href="{% url 'exp:researcher-create' %}" class="btn btn-success" >
                     Create Researcher
                 </a>
@@ -59,7 +59,7 @@
         </div>
 
         <div class="col-xs-2">
-            {% if request.user.is_org_admin or request.user.is_superuser %}
+            {% if perms.can_remove_users %}
                 <a data-toggle="modal" id="{{ user.id }}" onclick="populateDeleteModal({{ user.id }}, '{{ user.get_short_name }}')" class="deleteResearcher btn btn-danger btn-sm" href="#deleteModal">Remove</a>
             {% endif %}
         </div>

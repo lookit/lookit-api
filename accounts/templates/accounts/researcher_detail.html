@@ -50,7 +50,7 @@
       <div class="col-xs-12">
           <strong> Given name </strong>
           <div>
-              {% if request.user.is_org_admin or request.user.is_superuser  %}
+              {% if perms.can_edit_users  %}
                   <a href="#" id="given_name" data-type="text" data-pk="{{ user.id }}" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}"data-title="Given name">
                       {{ user.given_name }}
                   </a>
@@ -64,7 +64,7 @@
       <div class="col-xs-12">
           <strong> Middle name </strong>
           <div>
-              {% if request.user.is_org_admin or request.user.is_superuser %}
+              {% if perms.can_edit_users %}
                   <a href="#" id="middle_name" data-type="text" data-pk="{{ user.id }}" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}"data-title="Middle name">
                       {{ user.middle_name }}
                   </a>
@@ -78,7 +78,7 @@
       <div class="col-xs-12">
           <strong> Family name </strong>
           <div>
-              {% if request.user.is_org_admin or request.user.is_superuser  %}
+              {% if perms.can_edit_users %}
                   <a href="#" id="family_name" data-type="text" data-pk="{{ user.id }}" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-title="Family name">
                       {{ user.family_name }}
                   </a>
@@ -92,7 +92,7 @@
         <div class="col-xs-12">
             <strong> Permissions </strong>
             <div>
-                {% if request.user.is_org_admin or request.user.is_superuser  %}
+                {% if perms.can_edit_user_permissions  %}
                     <a href="#" id="user_permissions" data-type="select" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ user.id }}" data-url="/post" data-title="Select permissions">
                         {{ user.display_permission }}
                     </a>

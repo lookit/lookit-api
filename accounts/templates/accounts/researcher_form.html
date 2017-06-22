@@ -25,11 +25,13 @@
         <form action="" method="post">{% csrf_token %}
             {{ researchers.management_form }}
             {% bootstrap_form form exclude="is_active,is_staff,is_superuser,password" %}
-            {% buttons %}
-              <button type="submit" class="btn btn-success">
-                {% bootstrap_icon "plus" %} Create Researcher
-              </button>
-            {% endbuttons %}
+            {% if perms.can_create_users %}
+                {% buttons %}
+                  <button type="submit" class="btn btn-success">
+                    {% bootstrap_icon "plus" %} Create Researcher
+                  </button>
+                {% endbuttons %}
+            {% endif %}
         </form>
     </div>
   </div>
