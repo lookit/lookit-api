@@ -11,7 +11,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.html import mark_safe
-from django.utils.text import slugify
 from django.utils.translation import ugettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
@@ -20,6 +19,7 @@ from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 
+from accounts.utils import build_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
@@ -75,7 +75,7 @@ def organization_post_save(sender, **kwargs):
         from django.contrib.auth.models import Group
         for group in ['read', 'admin']:
             group_instance, created = Group.objects.get_or_create(
-                name=f'{slugify(organization.name)}_ORG_{group}'.upper()
+                name=build_group_name(organization.name, group)
             )
 
 
@@ -135,12 +135,12 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def is_org_admin(self):
         groups = self.groups.all().values_list('name', flat=True)
-        return self.organization and f'{slugify(self.organization.name)}_ORG_ADMIN'.upper() in groups
+        return self.organization and build_group_name(self.organization.name, 'admin') in groups
 
     @property
     def is_org_read(self):
         groups = self.groups.all().values_list('name', flat=True)
-        return self.organization and f'{slugify(self.organization.name)}_ORG_READ'.upper() in groups or self.is_org_admin
+        return self.organization and build_group_name(self.organization.name, 'read') in groups or self.is_org_admin
 
     @property
     def display_permission(self):

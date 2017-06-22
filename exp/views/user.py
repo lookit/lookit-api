@@ -5,12 +5,12 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 
 from django.views import generic
-from django.utils.text import slugify
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
+from accounts.utils import build_group_name
 from studies.models import Response, Study
 
 
@@ -144,8 +144,9 @@ class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
             self.object.family_name = self.request.POST['value']
         if self.request.POST.get('name') == 'user_permissions':
             new_perm_short = self.request.POST['value']
-            admin_group = Group.objects.get(name=f'{slugify(self.get_object().organization.name)}_ORG_ADMIN'.upper())
-            read_group = Group.objects.get(name=f'{slugify(self.get_object().organization.name)}_ORG_READ'.upper())
+            org_name = self.get_object().organization.name
+            admin_group = Group.objects.get(name=build_group_name(org_name, 'admin'))
+            read_group = Group.objects.get(name=build_group_name(org_name, 'read'))
             researcher = self.get_object()
 
             if new_perm_short == 'org_admin':
