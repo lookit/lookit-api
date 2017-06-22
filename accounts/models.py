@@ -176,12 +176,12 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     class Meta:
         permissions = (
-            ('can_create', _('Can Create')),
-            ('can_view', _('Can View')),
-            ('can_edit', _('Can Edit')),
-            ('can_remove', _('Can Remove')),
-            ('can_view_permissions', _('Can View Permissions')),
-            ('can_edit_permissions', _('Can Edit Permissions')),
+            ('can_create_users', _('Can Create User')),
+            ('can_view_users', _('Can View User')),
+            ('can_edit_users', _('Can Edit User')),
+            ('can_remove_users', _('Can Remove User')),
+            ('can_view_user_permissions', _('Can View User Permissions')),
+            ('can_edit_user_permissions', _('Can Edit User Permissions')),
         )
 
 

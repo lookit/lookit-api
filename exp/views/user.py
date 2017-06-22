@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from django.views import generic
 from guardian.mixins import LoginRequiredMixin
@@ -71,20 +72,15 @@ class ResponseDetailView(LoginRequiredMixin, generic.DetailView):
         return Response.objects.filter(study__in=studies).order_by('study__name')
 
 
-class ResearcherListView(LoginRequiredMixin, generic.ListView):
+class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     '''
     Displays a list of researchers in the same organization as the current user.
     '''
     template_name = 'accounts/researcher_list.html'
     queryset = User.objects.filter(demographics__isnull=True)
     model = User
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_org_read or request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied # HTTP 403
-
+    permission_required = 'accounts.can_view_users'
+    raise_exception = True
 
     def get_queryset(self):
         qs = super(ResearcherListView, self).get_queryset()
@@ -101,7 +97,7 @@ class ResearcherListView(LoginRequiredMixin, generic.ListView):
         return queryset
 
     def post(self, request, *args, **kwargs):
-        retval = super().post(request, *args, **kwargs)
+        retval = super().get(request, *args, **kwargs)
         # TODO Delete behavior might not be very proper
         if 'delete' in self.request.POST:
             User.objects.get(pk=self.request.POST['delete']).delete()
@@ -114,7 +110,7 @@ class ResearcherListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
+class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
     '''
     ResearcherDetailView shows information about a researcher and allows enabling or disabling
     a user.
@@ -123,12 +119,8 @@ class ResearcherDetailView(LoginRequiredMixin, generic.UpdateView):
     fields = ('is_active', )
     template_name = 'accounts/researcher_detail.html'
     model = User
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_org_read or request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied # HTTP 403
+    permission_required = 'accounts.can_view_users'
+    raise_exception = True
 
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
@@ -190,7 +182,7 @@ class AssignResearcherStudies(LoginRequiredMixin, generic.UpdateView):
         return context
 
 
-class ResearcherCreateView(LoginRequiredMixin, generic.CreateView):
+class ResearcherCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
     '''
     UserCreateView creates a user. It forces is_active to True; is_superuser
     and is_staff to False; and sets a random 12 char password.
@@ -213,11 +205,8 @@ class ResearcherCreateView(LoginRequiredMixin, generic.CreateView):
         'is_superuser',
         'password'
     )
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_org_admin or request.user.is_superuser:
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise PermissionDenied # HTTP 403
+    permission_required = 'accounts.can_create_users'
+    raise_exception = True
 
     def post(self, request, *args, **kwargs):
         # TODO put this on the view so that we can send the user an email once their user is saved
