@@ -1,9 +1,8 @@
-from rest_framework import serializers
-
+from api.serializers import UUIDSerializerMixin, ModelSerializer
 from studies.models import Study
 
 
-class StudySerializer(serializers.ModelSerializer):
+class StudySerializer(UUIDSerializerMixin, ModelSerializer):
 
     class Meta:
         model = Study

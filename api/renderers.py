@@ -15,8 +15,8 @@ import inflection
 from rest_framework_json_api import utils
 
 
-class JSONRenderer(renderers.JSONRenderer):
-    '''
+class JSONAPIRenderer(renderers.JSONRenderer):
+    """
     Render a JSON response per the JSON API spec:
     {
         'data': [{
@@ -103,7 +103,7 @@ class JSONRenderer(renderers.JSONRenderer):
 
                 for related_object in relation_queryset:
                     relation_data.append(
-                        OrderedDict([('type', relation_type), ('id', encoding.force_text(getattr(related_object, field.lookup_field)))])
+                        OrderedDict([('type', relation_type), ('id', encoding.force_text(related_object.uuid))])
                     )
 
                 data.update({field_name: {
@@ -135,15 +135,10 @@ class JSONRenderer(renderers.JSONRenderer):
                 continue
 
             if isinstance(field, (relations.PrimaryKeyRelatedField, relations.HyperlinkedRelatedField)):
-                lookup_field = getattr(field, 'lookup_field', default=None)
-
-                if lookup_field:
-                    relation_id = getattr(getattr(resource_instance, source), lookup_field)
-                else:
-                    resolved, relation = utils.get_relation_instance(resource_instance, '%s_id' % source, field.parent)
-                    if not resolved:
-                        continue
-                    relation_id = relation if resource.get(field_name) else None
+                resolved, relation = utils.get_relation_instance(resource_instance, '%s_id' % source, field.parent)
+                if not resolved:
+                    continue
+                relation_id = relation if resource.get(field_name) else None
                 relation_data = {
                     'data': (
                         OrderedDict([('type', relation_type), ('id', encoding.force_text(relation_id))])
@@ -192,7 +187,7 @@ class JSONRenderer(renderers.JSONRenderer):
 
                     relation_data.append(OrderedDict([
                         ('type', nested_resource_instance_type),
-                        ('id', encoding.force_text(nested_resource_instance.pk))
+                        ('id', encoding.force_text(nested_resource_instance.uuid))
                     ]))
                 data.update({
                     field_name: {
@@ -223,7 +218,7 @@ class JSONRenderer(renderers.JSONRenderer):
 
                         relation_data.append(OrderedDict([
                             ('type', nested_resource_instance_type),
-                            ('id', encoding.force_text(nested_resource_instance.pk))
+                            ('id', encoding.force_text(nested_resource_instance.uuid))
                         ]))
 
                     data.update({field_name: {'data': relation_data}})
@@ -239,7 +234,7 @@ class JSONRenderer(renderers.JSONRenderer):
                         'data': (
                             OrderedDict([
                                 ('type', relation_type),
-                                ('id', encoding.force_text(relation_instance.pk))
+                                ('id', encoding.force_text(relation_instance.uuid))
                             ]) if resource.get(field_name) else None)
                     }
                 })
@@ -389,7 +384,7 @@ class JSONRenderer(renderers.JSONRenderer):
     def build_json_resource_obj(cls, fields, resource, resource_instance, resource_name):
         resource_data = [
             ('type', resource_name),
-            ('id', encoding.force_text(resource_instance.pk) if resource_instance else None),
+            ('id', encoding.force_text(resource_instance.uuid) if resource_instance else None),
             ('attributes', cls.extract_attributes(fields, resource)),
         ]
         relationships = cls.extract_relationships(fields, resource, resource_instance)
@@ -410,12 +405,12 @@ class JSONRenderer(renderers.JSONRenderer):
         links = view.get_links()
         if links:
             render_data.update({'links': links}),
-        return super(JSONRenderer, self).render(
+        return super().render(
             render_data, accepted_media_type, renderer_context
         )
 
     def render_errors(self, data, accepted_media_type=None, renderer_context=None):
-        return super(JSONRenderer, self).render(
+        return super().render(
             utils.format_errors(data), accepted_media_type, renderer_context
         )
 
@@ -438,7 +433,7 @@ class JSONRenderer(renderers.JSONRenderer):
         # If `resource_name` is set to None then render default as the dev
         # wants to build the output format manually.
         if resource_name is None or resource_name is False:
-            return super(JSONRenderer, self).render(
+            return super().render(
                 data, accepted_media_type, renderer_context
             )
 
@@ -521,6 +516,6 @@ class JSONRenderer(renderers.JSONRenderer):
         if json_api_meta:
             render_data['meta'] = utils.format_keys(json_api_meta)
 
-        return super(JSONRenderer, self).render(
+        return super().render(
             render_data, accepted_media_type, renderer_context
         )

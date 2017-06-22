@@ -1,9 +1,10 @@
-from rest_framework import serializers
+from rest_framework_json_api import serializers
 
 from accounts.models import Child, DemographicData, User
+from api.serializers import ModelSerializer, UUIDSerializerMixin
 
 
-class DemographicDataSerializer(serializers.ModelSerializer):
+class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
     resource_name = 'demographics'
     url = serializers.HyperlinkedIdentityField(
         view_name='demographicdata-detail',
@@ -35,7 +36,7 @@ class DemographicDataSerializer(serializers.ModelSerializer):
         )
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(UUIDSerializerMixin, ModelSerializer):
     resource_name = 'users'
     url = serializers.HyperlinkedIdentityField(
         view_name='user-detail',
@@ -64,7 +65,7 @@ class UserSerializer(serializers.ModelSerializer):
         included_resources = ['demographics', ]
 
 
-class ChildSerializer(serializers.ModelSerializer):
+class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
     lookup_field = 'uuid'
     url = serializers.HyperlinkedIdentityField(
         view_name='child-detail',
@@ -89,4 +90,4 @@ class ChildSerializer(serializers.ModelSerializer):
         )
 
     class JSONAPIMeta:
-        included_resources = ['user', 'user__demographics', ]
+        included_resources = ['user', ]

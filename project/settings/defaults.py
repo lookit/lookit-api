@@ -153,12 +153,13 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser'
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'api.renderers.JSONRenderer',
+        'api.renderers.JSONAPIRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
 }
+
 JSON_API_FORMAT_KEYS = 'dasherize'
 JSON_API_PLURALIZE_TYPES = True
 
