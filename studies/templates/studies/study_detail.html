@@ -11,13 +11,30 @@
   {% endif %}
 {% endblock %}
 {% block content %}
+<script>
+    $(document).ready(function(){
+        new Clipboard('#copy-link-button');
+        $('[data-toggle="tooltip"]').tooltip({
+            title: "Copied!",
+            trigger: "click",
+            placement: "bottom",
+        });
+        $('body').on('hidden.bs.tooltip', function (e) {
+            $(e.target).data("bs.tooltip").inState.click = false;
+        });
+
+        removeTooltip = function() {
+            $('[data-toggle="tooltip"]').tooltip('hide')
+        }
+    });
+</script>
   <div class="container">
       <div class="row">
         <div class="col-xs-12">
             <a href="{% url 'exp:study-list' %}"> Manage Studies </a> > {{ study.name }} </a>
         </div>
       </div>
-      <div class="row">
+      <div class="row pb-md">
           <div class="col-xs-9">
               <h2> {{ study.name}}</h2>
           </div>
@@ -27,23 +44,23 @@
             </button>
           </div>
       </div>
-      <div class="row">
+      <div class="row pb-md">
           <div class="col-xs-12">
               <p><img src="{{ study.image.url }}" width="300px"></p>
           </div>
       </div>
-      <div class="row">
+      <div class="row pb-md">
           <div class="col-xs-12">
              <p> {{ study.short_description }} </p>
           </div>
       </div>
-      <div class="row">
+      <div class="row pb-md">
           <div class="col-xs-12">
               <label> Purpose: </label>
               <p> {{ study.long_description }} </p>
           </div>
       </div>
-      <div class="row">
+      <div class="row pb-md">
           <div class="col-xs-12">
               <p>
                   <span class="pr-md"><label class='pr-xs'> Duration: </label> {{ study.duration }} </span>
@@ -51,20 +68,41 @@
               </p>
           </div>
       </div>
-      <div class="row">
+      <div class="row pb-md">
           <div class="col-xs-12">
               <p>
                   <span class="pr-md"><label class='pr-xs'> Participant eligibility: </label> {{ study.criteria }} </span>
               </p>
           </div>
       </div>
-      <div class="row">
+      <div class="row pb-md">
           <div class="col-xs-12">
               <p>
-                  <span class="pr-md"><label class='pr-xs'> Minimum age: </label> {{ study.min_age }} </span>
-                    <span class="pr-md"><label class='pr-xs'> Maximum age: </label> {{ study.max_age }} </span>
-                    <span class="pr-md"><label class='pr-xs'> Last edited: </label> {{ study.date_modified |date:"M d, Y" }} </span>
+                <span class="pr-md"><label class='pr-xs'> Minimum age: </label> {{ study.min_age }} </span>
+                <span class="pr-md"><label class='pr-xs'> Maximum age: </label> {{ study.max_age }} </span>
+                <span class="pr-md"><label class='pr-xs'> Last edited: </label> {{ study.date_modified |date:"M d, Y" }} </span>
               </p>
+          </div>
+      </div>
+      <div class="row pb-md">
+          <div class="col-xs-2">
+              <p>
+                 <span class="pr-md"><label class='pr-xs'> Discoverability: </label>
+                     {% if study.public %}
+                       <span> Public </span>
+                     {% else %}
+                       <span> Private </span>
+                     {% endif %}
+                 </span>
+              </p>
+          </div>
+          <div class="col-xs-4">
+              <div class="input-group">
+                <input type="text" class="form-control" id="private-study-link" value="https://www.uuid-based-url.com" aria-describedby="copy-link-button">
+                <span onmouseout="removeTooltip(this)" data-toggle="tooltip" class="input-group-addon btn" id="copy-link-button" data-clipboard-target="#private-study-link" >
+                    <img src="/static/exp/img/clippy.svg" width="13"/>
+                </span>
+              </div>
           </div>
       </div>
 

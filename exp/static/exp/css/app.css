@@ -33,6 +33,10 @@ a.state-link {
     color: inherit;
     text-decoration: inherit;
 }
+
+.pb-md {
+    padding-bottom: 15px;
+}
 .pr-xs {
     padding-right: 5px;
 }
