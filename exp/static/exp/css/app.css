@@ -33,13 +33,28 @@ a.state-link {
     color: inherit;
     text-decoration: inherit;
 }
+.pr-xs {
+    padding-right: 5px;
+}
 
-.mb-lg {
-    margin-bottom: 25px;
+.pr-sm {
+    padding-right: 10px;
+}
+
+.pr-md {
+    padding-right: 15px;
+}
+
+.pr-lg {
+    padding-right: 20px;
 }
 
 .pt-lg {
     padding-top: 20px;
+}
+
+.mb-lg {
+    margin-bottom: 25px;
 }
 .mt-md {
     margin-top: 15px;
@@ -59,5 +74,5 @@ a.state-link {
 .modal.in {
     width: 80%; /* respsonsive width */
     top:5%;
-    margin: 0 auto; 
+    margin: 0 auto;
 }
