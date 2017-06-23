@@ -22,6 +22,8 @@ class Study(models.Model):
     criteria = models.TextField()
     duration = models.TextField()
     contact_info = models.TextField()
+    max_age = models.TextField(default='')
+    min_age = models.TextField(default='')
     image = models.ImageField(null=True)
     organization = models.ForeignKey(
         Organization,
