@@ -61,7 +61,7 @@
                 <div class="col-md-12 well">
                     <div class="row table-block">
                         <div class="col-xs-8">
-                            <strong>{{ study.name }}</strong>
+                            <a href="{% url 'exp:study-detail' pk=study.id %}"><strong>{{ study.name }}</strong></a>
                         </div>
                         <div class="col-xs-2 text-center">
                             <strong>{{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
