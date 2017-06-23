@@ -85,7 +85,7 @@ class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.Li
     def get_queryset(self):
         qs = super(ResearcherListView, self).get_queryset()
         # TODO this should probably use permissions eventually, just to be safe
-        queryset = qs.filter(organization=self.request.user.organization)
+        queryset = qs.filter(organization=self.request.user.organization,is_active=True)
         match = self.request.GET.get('match')
         if match:
             queryset = queryset.filter(reduce(operator.or_,
@@ -98,9 +98,10 @@ class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.Li
 
     def post(self, request, *args, **kwargs):
         retval = super().get(request, *args, **kwargs)
-        # TODO Delete behavior might not be very proper
-        if 'delete' in self.request.POST:
-            User.objects.get(pk=self.request.POST['delete']).delete()
+        if 'disable' in self.request.POST and self.request.method == "POST":
+            researcher = User.objects.get(pk=self.request.POST['disable'])
+            researcher.is_active = False
+            researcher.save()
         return retval
 
     def get_context_data(self, **kwargs):
@@ -127,10 +128,6 @@ class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.
 
     def post(self, request, *args, **kwargs):
         retval = super(ResearcherDetailView, self).post(request, *args, **kwargs)
-        if 'enable' in self.request.POST:
-            self.object.is_active = True
-        elif 'disable' in self.request.POST:
-            self.object.is_active = False
 
         if self.request.POST.get('name') == 'given_name':
             self.object.given_name = self.request.POST['value']
