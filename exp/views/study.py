@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views import generic
@@ -46,7 +49,8 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
 
         match = request.get('match')
         if match:
-            queryset = queryset.filter(Q(name__icontains=match) | Q(short_description__icontains=match))
+            queryset = queryset.filter(reduce(operator.or_,
+              (Q(name__icontains=term) | Q(short_description__icontains=term) for term in match.split())))
 
         sort = request.get('sort')
         if sort:

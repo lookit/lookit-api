@@ -1,3 +1,8 @@
+body {
+    font-family: 'Lato', sans-serif;
+    font-size : 15px;
+}
+
 .flush-top {
   margin-top: 0; padding-top: 0;
 }
@@ -31,4 +36,28 @@ a.state-link {
 
 .mb-lg {
     margin-bottom: 25px;
+}
+
+.pt-lg {
+    padding-top: 20px;
+}
+.mt-md {
+    margin-top: 15px;
+}
+.mt-lg {
+    margin-top: 20px;
+}
+.mt-xl {
+    margin-top: 25px;
+}
+
+/*Researchers*/
+.researchers-header {
+    display: inline-block;
+}
+
+.modal.in {
+    width: 80%; /* respsonsive width */
+    top:5%;
+    margin: 0 auto; 
 }

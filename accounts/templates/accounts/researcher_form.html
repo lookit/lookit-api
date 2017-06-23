@@ -12,7 +12,12 @@
 {% endblock %}
 {% block content %}
   <div class="container">
-    <div class="panel panel-default">
+    <div class="row">
+        <div class="col-xs-12">
+            <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> > Create Researcher </a>
+        </div>
+    </div>
+    <div class="mt-xl panel panel-default">
       <div class="panel-heading">
         <h1 class="panel-title">Create Researcher</h1>
       </div>
@@ -20,11 +25,13 @@
         <form action="" method="post">{% csrf_token %}
             {{ researchers.management_form }}
             {% bootstrap_form form exclude="is_active,is_staff,is_superuser,password" %}
-            {% buttons %}
-              <button type="submit" class="btn btn-default">
-                {% bootstrap_icon "plus" %} Create Researcher
-              </button>
-            {% endbuttons %}
+            {% if perms.can_create_users %}
+                {% buttons %}
+                  <button type="submit" class="btn btn-success">
+                    {% bootstrap_icon "plus" %} Create Researcher
+                  </button>
+                {% endbuttons %}
+            {% endif %}
         </form>
     </div>
   </div>

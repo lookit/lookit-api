@@ -11,46 +11,96 @@
   {% endif %}
 {% endblock %}
 {% block content %}
-  <div class="container">
-    <h1>{{ user.username }}</h1>
-    <table class="table table-compact">
-      <tbody>
-        <tr>
-          <th>
-            Username
-          </th>
-          <td>
-            {{ user.username }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Organization
-          </th>
-          <td>
-            {{ user.organization.name }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Studies
-          </th>
-          <td>
-            {% for study in user.studies %}
-              {{ study.name }},
-            {% endfor %}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <form action="" method="POST">{% csrf_token %}
-      {% if user.is_active %}
-        <input type="hidden" name="disable" />
-        <input class="btn btn-default" type="submit" value="Disable User" onclick="return confirm('Are you sure?');"/>
-      {% else %}
-        <input type="hidden" name="enable" />
-        <input class="btn btn-default" type="submit" value="Enable User" onclick="return confirm('Are you sure?');"/>
-      {% endif %}
-    </form>
+<script>
+    $.fn.editable.defaults.mode = 'inline';
+    $(document).ready(function() {
+        $('#given_name').editable();
+        $('#middle_name').editable();
+        $('#family_name').editable();
+        $('#user_permissions').editable({
+            source: [
+                  {value: 'researcher', text: 'Researcher'},
+                  {value: 'org_read', text: 'Organization Read'},
+                  {value: 'org_admin', text: 'Organization Admin'}
+               ]
+        });
+    });
+</script>
+<div class="container mb-lg">
+    <div class="row">
+      <div class="col-xs-12">
+          <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> > {{ user.get_short_name }} </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+          <div class="pull-right">
+              <button class="btn btn-default"> Send password reset email </button>
+              <button class="btn btn-default"> Resend confirmation email </button>
+          </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+          <strong> Email address </strong>
+           <p> {{ user.username }}
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Given name </strong>
+          <div>
+              {% if perms.can_edit_users  %}
+                  <a href="#" id="given_name" data-type="text" data-pk="{{ user.id }}" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}"data-title="Given name">
+                      {{ user.given_name }}
+                  </a>
+              {% else %}
+                    {{ user.given_name }}
+              {% endif %}
+          </div>
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Middle name </strong>
+          <div>
+              {% if perms.can_edit_users %}
+                  <a href="#" id="middle_name" data-type="text" data-pk="{{ user.id }}" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}"data-title="Middle name">
+                      {{ user.middle_name }}
+                  </a>
+              {% else %}
+                {{ user.middle_name }}
+              {% endif %}
+          </div>
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Family name </strong>
+          <div>
+              {% if perms.can_edit_users %}
+                  <a href="#" id="family_name" data-type="text" data-pk="{{ user.id }}" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-title="Family name">
+                      {{ user.family_name }}
+                  </a>
+              {% else %}
+                {{ user.family_name }}
+              {% endif %}
+          </div>
+      </div>
+    </div>
+    <div class="row mt-md">
+        <div class="col-xs-12">
+            <strong> Permissions </strong>
+            <div>
+                {% if perms.can_edit_user_permissions  %}
+                    <a href="#" id="user_permissions" data-type="select" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ user.id }}" data-url="/post" data-title="Select permissions">
+                        {{ user.display_permission }}
+                    </a>
+                {% else %}
+                    {{ user.display_permission }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
   </div>
 {% endblock %}
