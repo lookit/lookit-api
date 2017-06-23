@@ -1,7 +1,7 @@
-from rest_framework_json_api import serializers
-
 from accounts.models import Child, DemographicData, User
-from api.serializers import ModelSerializer, UUIDSerializerMixin
+from api.serializers import (ModelSerializer, UUIDResourceRelatedField,
+                             UUIDSerializerMixin)
+from rest_framework_json_api import serializers
 
 
 class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
@@ -15,7 +15,6 @@ class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
         model = DemographicData
         fields = (
             'url',
-            'uuid',
             'number_of_children',
             'child_birthdays',
             'languages_spoken_at_home',
@@ -51,14 +50,13 @@ class UserSerializer(UUIDSerializerMixin, ModelSerializer):
         model = User
         fields = (
             'url',
-            'uuid',
             'given_name',
             'middle_name',
             'family_name',
             'identicon',
             'is_active',
             'is_staff',
-            'demographics'
+            'demographics',
         )
 
     class JSONAPIMeta:
@@ -80,7 +78,6 @@ class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
         fields = (
             'url',
             'user',
-            'uuid',
             'given_name',
             'birthday',
             'gender',

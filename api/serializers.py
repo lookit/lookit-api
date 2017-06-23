@@ -1,13 +1,16 @@
 from collections import OrderedDict
 
 from rest_framework_json_api.relations import ResourceRelatedField
-from rest_framework_json_api.serializers import ModelSerializer as JSONAPIModelSerializer
-from rest_framework_json_api.utils import get_included_serializers, get_resource_type_from_serializer, \
-    get_resource_type_from_instance
+from rest_framework_json_api.serializers import \
+    ModelSerializer as JSONAPIModelSerializer
+from rest_framework_json_api.utils import (get_included_serializers,
+                                           get_resource_type_from_instance,
+                                           get_resource_type_from_serializer)
 
 
 class UUIDResourceRelatedField(ResourceRelatedField):
     def to_representation(self, value):
+        # force pk to be UUID
         pk = value.uuid
 
         # check to see if this resource has a different resource_name when

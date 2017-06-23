@@ -2,8 +2,8 @@ from accounts.models import Child, DemographicData, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   UserSerializer)
 from rest_framework_json_api import views
-from studies.models import Study
-from studies.serializers import StudySerializer
+from studies.models import Response, Study
+from studies.serializers import ResponseSerializer, StudySerializer
 
 
 class ChildViewSet(views.ModelViewSet):
@@ -30,4 +30,9 @@ class UserViewSet(views.ModelViewSet):
 class StudyViewSet(views.ModelViewSet):
     queryset = Study.objects.filter(state='active')
     serializer_class = StudySerializer
+    lookup_field = 'uuid'
+
+class ResponseViewSet(views.ModelViewSet):
+    queryset = Response.objects.all()
+    serializer_class = ResponseSerializer
     lookup_field = 'uuid'

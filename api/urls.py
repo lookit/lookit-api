@@ -8,7 +8,8 @@ router.register(r'users', api_views.UserViewSet)
 router.register(r'studies', api_views.StudyViewSet)
 router.register(r'demographics', api_views.DemographicDataViewSet)
 router.register(r'children', api_views.ChildViewSet)
+router.register(r'responses', api_views.ResponseViewSet)
 
 urlpatterns = [
-    url(r'^(?P<version>(v1|v2))/', include(router.urls))
+    url(r'^(?P<version>(v1|v2))/', include(router.urls)),
 ]
