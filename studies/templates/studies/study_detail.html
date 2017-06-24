@@ -14,6 +14,7 @@
 <script>
     $(document).ready(function(){
         new Clipboard('#copy-link-button');
+        $('#private-study-link').attr('readonly', 'readonly');
         $('[data-toggle="tooltip"]').tooltip({
             title: "Copied!",
             trigger: "click",
@@ -85,7 +86,7 @@
           </div>
       </div>
       <div class="row pb-md">
-          <div class="col-xs-2">
+          <div class="col-xs-12 col-sm-3">
               <p>
                  <span class="pr-md"><label class='pr-xs'> Discoverability: </label>
                      {% if study.public %}
@@ -96,7 +97,7 @@
                  </span>
               </p>
           </div>
-          <div class="col-xs-4">
+          <div class="col-xs-12 col-sm-4">
               <div class="input-group">
                 <input type="text" class="form-control" id="private-study-link" value="https://www.uuid-based-url.com" aria-describedby="copy-link-button">
                 <span onmouseout="removeTooltip(this)" data-toggle="tooltip" class="input-group-addon btn" id="copy-link-button" data-clipboard-target="#private-study-link" >
@@ -105,15 +106,28 @@
               </div>
           </div>
       </div>
+      <div class="row">
+          <div class="col-xs-6">
+              <h3> <span class="pr-md"> Status: </span> {{ study.get_state_display}} </h3>
+              {% if triggers %}
+                  <h4> Change Status: </h4>
+                  <form method="POST" action=""> {% csrf_token %}
+                    <div class"btn-group" role="group" aria-label="study actions">
+                      {% for trigger in triggers %}
+                        <button type="submit" class="btn btn-default" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
+                      {% endfor %}
+                    </div>
+                  </form>
+              {% endif %}
+          </div>
+          <div class="col-xs-6">
+
+          </div>
+
+      </div>
 
 
-      <form method="POST" action=""> {% csrf_token %}
-        <div class"btn-group" role="group" aria-label="study actions">
-          {% for trigger in triggers %}
-            <button type="submit" class="btn btn-default" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
-          {% endfor %}
-        </div>
-      </form>
+
 
   </div>
 {% endblock %}
