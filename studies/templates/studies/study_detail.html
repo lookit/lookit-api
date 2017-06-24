@@ -12,6 +12,7 @@
 {% endblock %}
 {% block content %}
 <script>
+    $.fn.editable.defaults.mode = 'inline';
     $(document).ready(function(){
         new Clipboard('#copy-link-button');
         $('#private-study-link').attr('readonly', 'readonly');
@@ -27,6 +28,7 @@
         removeTooltip = function() {
             $('[data-toggle="tooltip"]').tooltip('hide')
         }
+        $('#rejection_comments').editable();
     });
 </script>
   <div class="container">
@@ -107,27 +109,45 @@
           </div>
       </div>
       <div class="row">
-          <div class="col-xs-6">
-              <h3> <span class="pr-md"> Status: </span> {{ study.get_state_display}} </h3>
-              {% if triggers %}
-                  <h4> Change Status: </h4>
-                  <form method="POST" action=""> {% csrf_token %}
-                    <div class"btn-group" role="group" aria-label="study actions">
-                      {% for trigger in triggers %}
-                        <button type="submit" class="btn btn-default" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
-                      {% endfor %}
-                    </div>
-                  </form>
-              {% endif %}
+          <div class="col-md-6">
+              <div class="well study-detail-block">
+                  <p> Study Status </p>
+                  <h3> <span class="pr-md"> Status: </span> {{ study.get_state_display}} </h3>
+                  {% if triggers %}
+                      <h4> Change Status: </h4>
+                      <form method="POST" action=""> {% csrf_token %}
+                        <div class"btn-group" role="group" aria-label="study actions">
+                          {% for trigger in triggers %}
+                            <button type="submit" class="btn btn-default" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
+                          {% endfor %}
+                        </div>
+                      </form>
+                  {% endif %}
+                  <div class="row">
+                      <div class="col-xs-12">
+                          {% if study.state == 'rejected' %}
+                            <label> Comments: </label>
+                            <a href="#" id="rejection_comments" data-type="textarea" data-pk=" {{ study.id }}"> Reason for rejection </a>
+                          {% endif %}
+                      </div>
+                  </div>
+              </div>
           </div>
-          <div class="col-xs-6">
+      <div class="col-md-6">
+          <div class="well study-detail-block">
+            <center>
+                <p><i class="increase-4 fa fa-file-text-o"></i></p>
+                <h4> View <strong>{{study.responses.completed_responses_count}}</strong> Responses </h4>
+                <p> Inspect responses from studies </p>
+            </center>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="well">
 
-          </div>
-
-      </div>
-
-
-
-
+            </div>
+        </div>
+    </div>
   </div>
 {% endblock %}

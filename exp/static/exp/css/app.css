@@ -80,3 +80,11 @@ a.state-link {
     top:5%;
     margin: 0 auto;
 }
+
+
+/* Study Detail */
+.study-detail-block {
+    display:block;
+    width:100%;
+    height:200px;
+}
