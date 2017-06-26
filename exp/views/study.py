@@ -99,11 +99,15 @@ class StudyDetailView(LoginRequiredMixin, generic.DetailView):
         return permitted_triggers
 
     def post(self, *args, **kwargs):
-        trigger = self.request.POST['trigger']
+        trigger = self.request.POST.get('trigger')
         object = self.get_object()
-        if hasattr(object, trigger):
-            # transition through workflow state
-            getattr(object, trigger)(user=self.request.user)
+        if trigger:
+            if hasattr(object, trigger):
+                # transition through workflow state
+                getattr(object, trigger)(user=self.request.user)
+        if 'comments-text' in self.request.POST.keys():
+            object.comments = self.request.POST['comments-text']
+            object.save()
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=object.pk)))
 
     def get_context_data(self, **kwargs):

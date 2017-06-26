@@ -28,9 +28,6 @@
         removeTooltip = function() {
             $('[data-toggle="tooltip"]').tooltip('hide')
         }
-        $('#rejection_comments').editable({
-            rows: 4
-        });
     });
 </script>
   <div class="container">
@@ -41,7 +38,7 @@
       </div>
       <div class="row">
           <div class="col-xs-9">
-              <h2> {{ study.name}}</h2>
+              <h1> {{ study.name}}</h1>
           </div>
           <div class="col-xs-3 pt-lg">
               <button class="btn btn-default pull-right">
@@ -111,34 +108,40 @@
           </div>
       </div>
       <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-7">
               <div class="well study-detail-block">
                   <div class="row">
-                      <div class="col-xs-6">
-                          <h3 class="study-status"> <span class="pr-md"> Status: </span> {{ study.get_state_display}} </h3>
+                      <div class="col-sm-6 center">
+                          <h2 class="study-status"> <span class="pr-md"> Status:</span><em>{{study.get_state_display}}<em></h2>
                           {% if triggers %}
-                              <h4 class="change-status"> Change Status: </h4>
-                              <form class="change-status" method="POST" action=""> {% csrf_token %}
-                                <div class="btn-group" role="group" aria-label="study actions">
-                                  {% for trigger in triggers %}
-                                    <button type="submit" class="btn btn-success" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
-                                  {% endfor %}
-                                </div>
-                              </form>
+                            <div>
+                                <h4 class="change-status pt-lg"> Change Status: </h4>
+                                <form class="change-status" method="POST" action=""> {% csrf_token %}
+                                  <div class="btn-group pt-xs" role="group" aria-label="study actions">
+                                    {% for trigger in triggers %}
+                                      <button type="submit" class="btn btn-success" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
+                                    {% endfor %}
+                                  </div>
+                                </form>
+                            </div>
                           {% endif %}
                       </div>
-                      <div class="col-xs-6">
-                          {% if study.state == 'rejected' %}
-                            <label> Comments: </label>
-                            <a href="#" id="rejection_comments" data-type="textarea" data-pk=" {{ study.id }}"> Reason for rejection </a>
-                          {% endif %}
-                      </div>
+                      <form class="submit-comments" method="POST"> {% csrf_token %}
+                          <div class="col-sm-6">
+                                  <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments </label>
+                                  <textarea name="comments-text" class="rejection-comments" {% if study.state != 'rejected' %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea>
+                                  <div class="submit-comments-panel">
+                                      <button name="cancel" value="reset" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="reset"><i class="fa fa-times"></i></button>
+                                      <button name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="submit"><i class="fa fa-check"></i></button>
+                                  </div>
+                          </div>
+                      </form>
                   </div>
               </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-5">
               <div class="well study-detail-block">
-                <center class="mt-sm">
+                <center class="mt-lg">
                     <p><i class="fa-2x fa fa-file-text-o"></i></p>
                     <h4> View <strong>{{study.responses.completed_responses_count|default:"0" }}</strong> Responses </h4>
                     <p> Inspect responses from completed studies </p>
