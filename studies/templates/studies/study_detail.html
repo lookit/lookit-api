@@ -111,7 +111,7 @@
           <div class="col-md-7">
               <div class="well study-detail-block">
                   <div class="row">
-                      <div class="col-sm-6 center">
+                      <div class="col-sm-6 center col-xs-12">
                           <h2 class="study-status"> <span class="pr-md"> Status:</span><em>{{study.get_state_display}}</em></h2>
                           {% if triggers %}
                             <div>
@@ -127,9 +127,9 @@
                           {% endif %}
                       </div>
                       <form class="submit-comments" method="POST"> {% csrf_token %}
-                          <div class="col-sm-6">
-                                  <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments </label>
-                                  <textarea name="comments-text" class="rejection-comments" {% if study.state != 'rejected' %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea>
+                          <div class="col-sm-6 col-xs-12">
+                                  <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
+                                  <em><textarea name="comments-text" class="rejection-comments" {% if study.state != 'rejected' %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
                                   <div class="submit-comments-panel">
                                       <button name="cancel" value="reset" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="reset"><i class="fa fa-times"></i></button>
                                       <button name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="submit"><i class="fa fa-check"></i></button>
@@ -140,7 +140,7 @@
               </div>
           </div>
           <div class="col-md-5">
-              <div class="well study-detail-block">
+              <div class="well view-response-block">
                 <center class="mt-lg">
                     <p><i class="fa-2x fa fa-file-text-o"></i></p>
                     <h4> View <strong>{{study.responses.completed_responses_count|default:"0" }}</strong> Responses </h4>
@@ -152,7 +152,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="well">
-                <p> <label> Study Logs: </label></p>
+                <h3 class="study-logs-label"> Study Logs: </h3>
                 {% for log in logs %}
                     <div class="row pb-sm">
                         <div class="col-sm-3 col-sm-offset-1">

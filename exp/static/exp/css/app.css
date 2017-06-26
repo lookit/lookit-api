@@ -112,6 +112,16 @@ a.state-link {
     width:100%;
     height: 190px;
 }
+.view-response-block {
+    display: block;
+    width: 100%;
+    height: 190px;
+}
+@media (max-width: 780px) {
+  .study-detail-block {
+      height:350px;
+  }
+}
 
 h2.study-status {
     padding-top: 0px;
@@ -142,4 +152,9 @@ textarea.rejection-comments {
 
 .submit-comments-panel {
     text-align: right;
+}
+
+h3.study-logs-label {
+    padding-top: 0px;
+    margin-top: 5px;
 }
