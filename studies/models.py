@@ -25,6 +25,7 @@ class Study(models.Model):
     max_age = models.TextField(default='')
     min_age = models.TextField(default='')
     image = models.ImageField(null=True)
+    comments= models.TextField(default='')
     organization = models.ForeignKey(
         Organization,
         on_delete=models.DO_NOTHING,
