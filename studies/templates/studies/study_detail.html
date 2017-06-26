@@ -11,55 +11,179 @@
   {% endif %}
 {% endblock %}
 {% block content %}
+<script>
+    $.fn.editable.defaults.mode = 'inline';
+    $(document).ready(function(){
+        new Clipboard('#copy-link-button');
+        $('#private-study-link').attr('readonly', 'readonly');
+        $('[data-toggle="tooltip"]').tooltip({
+            title: "Copied!",
+            trigger: "click",
+            placement: "bottom",
+        });
+        $('body').on('hidden.bs.tooltip', function (e) {
+            $(e.target).data("bs.tooltip").inState.click = false;
+        });
+
+        removeTooltip = function() {
+            $('[data-toggle="tooltip"]').tooltip('hide')
+        }
+    });
+</script>
   <div class="container">
-    <h1>{{ study.name }}</h1>
-    <table class="table">
-      <tbody>
-        <tr>
-          <th>
-              State
-          </th>
-          <td>
-            {{ study.get_state_display }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Blocks
-          </th>
-          <td>
-            {{ study.blocks }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Participants
-          </th>
-          <td>
-            <ul>
-            {% for response in study.responses.all %}
-              <li>
-                  <a href="{% url 'exp:response-detail' response.id %}">{{ response.child.user.get_short_name }}</a>
-              </li>
-            {% endfor %}
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Actions
-          </th>
-          <td>
-            <form method="POST" action=""> {% csrf_token %}
-              <div class"btn-group" role="group" aria-label="study actions">
-                {% for trigger in triggers %}
-                  <button type="submit" class="btn btn-default" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
-                {% endfor %}
+      <div class="row">
+        <div class="col-xs-12">
+            <a href="{% url 'exp:study-list' %}"> Manage Studies </a> > {{ study.name }} </a>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-9">
+              <h1> {{ study.name}}</h1>
+          </div>
+          <div class="col-xs-3 pt-lg">
+              <button class="btn btn-default pull-right">
+                <i class="fa fa-pencil-square-o"></i> Edit Details
+            </button>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-12">
+              <p><img src="{{ study.image.url }}" width="300px"></p>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-12">
+             <p> {{ study.short_description }} </p>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-12">
+              <label> Purpose: </label>
+              <p> {{ study.long_description }} </p>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-12">
+              <p>
+                  <span class="pr-md"><label class='pr-xs'> Duration: </label> {{ study.duration }} </span>
+                  <span><label class='pr-xs'> Exit URL: </label> {{ study.exit_url }} </span>
+              </p>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-12">
+              <p>
+                  <span class="pr-md"><label class='pr-xs'> Participant eligibility: </label> {{ study.criteria }} </span>
+              </p>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-12">
+              <p>
+                <span class="pr-md"><label class='pr-xs'> Minimum age: </label> {{ study.min_age }} </span>
+                <span class="pr-md"><label class='pr-xs'> Maximum age: </label> {{ study.max_age }} </span>
+                <span class="pr-md"><label class='pr-xs'> Last edited: </label> {{ study.date_modified |date:"M d, Y" }} </span>
+              </p>
+          </div>
+      </div>
+      <div class="row pb-lg">
+          <div class="col-xs-12 col-sm-3">
+              <p>
+                 <span class="pr-md"><label class='pr-xs'> Discoverability: </label>
+                     {% if study.public %}
+                       <span> Public </span>
+                     {% else %}
+                       <span> Private </span>
+                     {% endif %}
+                 </span>
+              </p>
+          </div>
+          <div class="col-xs-12 col-sm-4">
+              <div class="input-group">
+                <input type="text" class="form-control" id="private-study-link" value="https://www.uuid-based-url.com" aria-describedby="copy-link-button">
+                <span onmouseout="removeTooltip(this)" data-toggle="tooltip" class="input-group-addon btn" id="copy-link-button" data-clipboard-target="#private-study-link" >
+                    <img src="/static/exp/img/clippy.svg" width="13"/>
+                </span>
               </div>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-md-7">
+              <div class="well study-detail-block">
+                  <div class="row">
+                      <div class="col-sm-6 center col-xs-12">
+                          <h2 class="study-status"> <span class="pr-md"> Status:</span><em>{{study.get_state_display}}</em></h2>
+                          {% if triggers %}
+                            <div>
+                                <h4 class="change-status pt-lg"> Change Status: </h4>
+                                <form class="change-status" method="POST" action=""> {% csrf_token %}
+                                  <div class="btn-group pt-xs" role="group" aria-label="study actions">
+                                    {% for trigger in triggers %}
+                                      <button type="submit" class="btn btn-success" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
+                                    {% endfor %}
+                                  </div>
+                                </form>
+                            </div>
+                          {% endif %}
+                      </div>
+                      <form class="submit-comments" method="POST"> {% csrf_token %}
+                          <div class="col-sm-6 col-xs-12">
+                                  <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
+                                  <em><textarea name="comments-text" class="rejection-comments" {% if study.state != 'rejected' %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
+                                  <div class="submit-comments-panel">
+                                      <button name="cancel" value="reset" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="reset"><i class="fa fa-times"></i></button>
+                                      <button name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="submit"><i class="fa fa-check"></i></button>
+                                  </div>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+          </div>
+          <div class="col-md-5">
+              <div class="well view-response-block">
+                <center class="mt-lg">
+                    <p><i class="fa-2x fa fa-file-text-o"></i></p>
+                    <h4> View <strong>{{study.responses.completed_responses_count|default:"0" }}</strong> Responses </h4>
+                    <p> Inspect responses from completed studies </p>
+                </center>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="well">
+                <h3 class="study-logs-label"> Study Logs: </h3>
+                {% for log in logs %}
+                    <div class="row pb-sm">
+                        <div class="col-sm-3 col-sm-offset-1">
+                            {{ log.created_at }}
+                        </div>
+                        <div class="col-sm-6">
+                            {{ log.study.name }} study {% if log.action == "active" %} activated {% else %} {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-xs-10 col-xs-offset-1" style="text-align: right;">
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if logs.has_previous %}
+                                    <a href="?logs_page={{ logs.previous_page_number }}"><i class="fa fa-chevron-left"> </i></a>
+                                {% endif %}
+
+                                <span class="current">
+                                    &nbsp;Page {{ logs.number }} of {{ logs.paginator.num_pages }} &nbsp;
+                                </span>
+
+                                {% if logs.has_next %}
+                                    <a href="?logs_page={{ logs.next_page_number }}"><i class="fa fa-chevron-right"></i></a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
   </div>
 {% endblock %}
