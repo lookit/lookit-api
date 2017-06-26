@@ -223,4 +223,3 @@ class ResearcherCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.
 
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
-        # return reverse('exp:assign-studies', kwargs={'pk': self.object.id})

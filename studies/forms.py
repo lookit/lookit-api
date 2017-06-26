@@ -26,3 +26,19 @@ class StudyForm(forms.ModelForm):
             'blocks'
         )
         model = Study
+
+
+class StudyEditForm(forms.ModelForm):
+    class Meta:
+        model = Study
+        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age', 'max_age', 'contact_info', 'public']
+        labels = {
+            'short_description': "Short Description",
+            'long_description': "Purpose",
+            'exit_url': "Exit URL",
+            'criteria': "Participant Eligibility",
+            'min_age': "Minimum Age",
+            'max_age': "Maximum Age",
+            'contact_info': "Researcher/Contact Information",
+            'public': "Discoverable"
+        }
