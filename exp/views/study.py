@@ -7,6 +7,7 @@ from django.views import generic
 from django.db.models import Q
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
@@ -74,12 +75,14 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class StudyDetailView(LoginRequiredMixin, generic.DetailView):
+class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
     '''
     StudyDetailView shows information about a study.
     '''
     template_name = 'studies/study_detail.html'
     model = Study
+    permission_required = 'studies.can_view_study'
+    raise_exception = True
 
     def get_permitted_triggers(self, triggers):
         permitted_triggers = []

@@ -55,10 +55,10 @@ class Organization(models.Model):
 
     class Meta:
         permissions = (
-            ('can_view', _('Can View')),
-            ('can_edit', _('Can Edit')),
-            ('can_create', _('Can Create')),
-            ('can_remove', _('Can Remove')),
+            ('can_view_organization', _('Can View Organization')),
+            ('can_edit_organization', _('Can Edit Organization')),
+            ('can_create_organization', _('Can Create Organization')),
+            ('can_remove_organization', _('Can Remove Organization')),
         )
 
 
