@@ -119,7 +119,7 @@
                           {% if triggers %}
                               <h4 class="change-status"> Change Status: </h4>
                               <form class="change-status" method="POST" action=""> {% csrf_token %}
-                                <div class"btn-group" role="group" aria-label="study actions">
+                                <div class="btn-group" role="group" aria-label="study actions">
                                   {% for trigger in triggers %}
                                     <button type="submit" class="btn btn-success" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
                                   {% endfor %}
