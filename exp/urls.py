@@ -18,7 +18,7 @@ from django.conf.urls import include, url
 
 from exp.views import (AssignResearcherStudies, ExperimenterDashboard,
                        OrganizationCreateView, OrganizationListView,
-                       StudyCreateView, StudyDetailView, StudyListView,
+                       StudyCreateView, StudyDetailView, StudyListView,StudyEditView,
                        ResearcherCreateView, ResearcherDetailView, ResearcherListView, ParticipantListView,
                        ParticipantDetailView, ResponseListView, ResponseDetailView)
 
@@ -36,5 +36,6 @@ urlpatterns = [
     url(r'studies/$', StudyListView.as_view(), name='study-list'),
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
+    url(r'studies/(?P<pk>\d+)/edit/$', StudyEditView.as_view(), name='study-edit'),
     url(r'', ExperimenterDashboard.as_view(), name='dashboard')
 ]
