@@ -6,6 +6,7 @@ from django.shortcuts import reverse
 from django.views import generic
 from django.db.models import Q
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
@@ -110,8 +111,22 @@ class StudyDetailView(LoginRequiredMixin, generic.DetailView):
             object.save()
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=object.pk)))
 
+    def study_logs(self):
+        ''' Returns a page object with 10 study logs'''
+        logs_list = self.object.logs.all()
+        paginator = Paginator(logs_list, 10)
+        page = self.request.GET.get('logs_page')
+        try:
+            logs = paginator.page(page)
+        except PageNotAnInteger:
+            logs = paginator.page(1)
+        except EmptyPage:
+            logs = paginator.page(paginator.num_pages)
+        return logs
+
     def get_context_data(self, **kwargs):
         context = super(StudyDetailView, self).get_context_data(**kwargs)
         context['triggers'] = self.get_permitted_triggers(
             self.object.machine.get_triggers(self.object.state))
+        context['logs'] = self.study_logs()
         return context
