@@ -23,6 +23,8 @@ from api import urls as api_urls
 from exp import urls as exp_urls
 from project import settings
 from web import urls as web_urls
+from django.conf import settings
+from django.conf.urls.static import static
 
 favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)
 
@@ -38,4 +40,4 @@ if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+    ] + urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
