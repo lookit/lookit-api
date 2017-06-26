@@ -31,12 +31,14 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
 
 
-class StudyListView(LoginRequiredMixin, generic.ListView):
+class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     '''
     StudyListView shows a list of studies that a user has permission to.
     '''
     model = Study
     template_name = 'studies/study_list.html'
+    permission_required = 'studies.can_view_study'
+    raise_exception = True
 
     def get_queryset(self, *args, **kwargs):
         request = self.request.GET
@@ -83,6 +85,18 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
     model = Study
     permission_required = 'studies.can_view_study'
     raise_exception = True
+    status_tooltip_text = {
+        "created": "Study has not been submitted for approval",
+        "active": "Study is collecting data",
+        "submitted": "Study is awaiting approval",
+        "draft": "Study has not been submitted for approval",
+        "approved": "Study is approved but not started",
+        "rejected": "Study has been rejected. Please edit before resubmitting.",
+        "retracted": "Study has been withdrawn",
+        "paused": "Study is not collecting data",
+        "deactivated": "Study is not collecting data"
+    }
+
 
     def get_permitted_triggers(self, triggers):
         permitted_triggers = []
@@ -132,6 +146,9 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         context['triggers'] = self.get_permitted_triggers(
             self.object.machine.get_triggers(self.object.state))
         context['logs'] = self.study_logs()
+
+        state = self.object.state
+        context["status_tooltip"] = self.status_tooltip_text.get(state, state)
         return context
 
 class StudyEditView(LoginRequiredMixin, generic.DetailView):

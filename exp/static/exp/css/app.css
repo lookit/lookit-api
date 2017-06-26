@@ -37,10 +37,12 @@ a.state-link {
     color: inherit;
     text-decoration: inherit;
 }
+.pb-xs {
+    padding-bottom: 5px;
+}
 .pb-sm {
     padding-bottom: 10px;
 }
-
 .pb-md {
     padding-bottom: 15px;
 }
@@ -50,34 +52,39 @@ a.state-link {
 .pr-xs {
     padding-right: 5px;
 }
-
 .pr-sm {
     padding-right: 10px;
 }
-
 .pr-md {
     padding-right: 15px;
 }
-
 .pr-lg {
     padding-right: 20px;
 }
-
 .pt-xs {
     padding-top: 5px;
 }
-
 .pt-sm {
     padding-top: 10px;
 }
 .pt-md {
     padding-top: 15px;
 }
-
 .pt-lg {
     padding-top: 20px;
 }
-
+.pl-sm {
+    padding-left: 5px;
+}
+.pl-md {
+    padding-left: 10px;
+}
+.pl-lg {
+    padding-left: 15px;
+}
+.pl-xl {
+    padding-left: 20px;
+}
 .mb-lg {
     margin-bottom: 25px;
 }
@@ -126,7 +133,8 @@ a.state-link {
 h2.study-status {
     padding-top: 0px;
     margin-top: 20px;
-    padding-bottom: 10px;
+    padding-bottom: 5px;
+    display: inline-block;
 }
 
 h4.change-status {
@@ -158,4 +166,15 @@ h3.study-logs-label {
     padding-top: 0px;
     margin-top: 5px;
     margin-bottom: 20px;
+}
+
+.logs-pagination {
+    text-align: right;
+}
+
+.question-icon {
+    margin-left: 5px;
+    position: relative;
+    bottom: 5px;
+    left: 5px;
 }
