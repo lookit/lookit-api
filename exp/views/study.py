@@ -12,8 +12,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from guardian.mixins import LoginRequiredMixin
-from guardian.shortcuts import get_objects_for_user, get_perms
+from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_perms, get_groups_with_perms
 
+from accounts.utils import build_study_group_name
+from accounts.models import User
 from studies.forms import StudyForm, StudyEditForm
 from studies.models import Study
 
@@ -161,6 +163,19 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
     template_name = 'studies/study_edit.html'
     form_class = StudyEditForm
     model = Study
+
+    def get_study_researchers(self):
+        study = self.get_object()
+        study_specific_groups = []
+        for group in get_groups_with_perms(self.get_object()):
+            if "STUDY" in group.name:
+                study_specific_groups.append(group)
+        return User.objects.filter(Q(groups__name=study_specific_groups[0]) | Q(groups__name=study_specific_groups[1])).distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['researchers'] = self.get_study_researchers()
+        return context
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
