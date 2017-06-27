@@ -195,11 +195,16 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
 
     def post(self, *args, **kwargs):
         """ Adds user to study read group by default """
-        user_id = self.request.POST.get('add_user')
-        if user_id:
-            user = User.objects.get(pk=user_id)
+        add_user = self.request.POST.get('add_user')
+        remove_user = self.request.POST.get('remove_user')
+        if add_user:
+            add = User.objects.get(pk=add_user)
             read_group = self.get_study_read_group()
-            read_group.user_set.add(user)
+            read_group.user_set.add(add)
+        if remove_user:
+            remove = User.objects.get(pk=remove_user)
+            self.get_study_read_group().user_set.remove(remove)
+            self.get_study_admin_group().user_set.remove(remove)
         return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
 
     def get_context_data(self, **kwargs):
