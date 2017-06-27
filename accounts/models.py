@@ -19,7 +19,7 @@ from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 
-from accounts.utils import build_group_name
+from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
@@ -75,7 +75,7 @@ def organization_post_save(sender, **kwargs):
         from django.contrib.auth.models import Group
         for group in ['read', 'admin']:
             group_instance, created = Group.objects.get_or_create(
-                name=build_group_name(organization.name, group)
+                name=build_org_group_name(organization.name, group)
             )
 
 
@@ -135,12 +135,12 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def is_org_admin(self):
         groups = self.groups.all().values_list('name', flat=True)
-        return self.organization and build_group_name(self.organization.name, 'admin') in groups
+        return self.organization and build_org_group_name(self.organization.name, 'admin') in groups
 
     @property
     def is_org_read(self):
         groups = self.groups.all().values_list('name', flat=True)
-        return self.organization and build_group_name(self.organization.name, 'read') in groups or self.is_org_admin
+        return self.organization and build_org_group_name(self.organization.name, 'read') in groups or self.is_org_admin
 
     @property
     def display_permission(self):

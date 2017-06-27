@@ -14,7 +14,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
-from accounts.utils import build_group_name
+from accounts.utils import build_org_group_name
 from studies.models import Response, Study
 
 
@@ -138,8 +138,8 @@ class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.
         if self.request.POST.get('name') == 'user_permissions':
             new_perm_short = self.request.POST['value']
             org_name = self.get_object().organization.name
-            admin_group = Group.objects.get(name=build_group_name(org_name, 'admin'))
-            read_group = Group.objects.get(name=build_group_name(org_name, 'read'))
+            admin_group = Group.objects.get(name=build_org_group_name(org_name, 'admin'))
+            read_group = Group.objects.get(name=build_org_group_name(org_name, 'read'))
             researcher = self.get_object()
 
             if new_perm_short == 'org_admin':
