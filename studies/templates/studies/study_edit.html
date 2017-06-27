@@ -47,12 +47,28 @@
             <div class="col-xs-5">
                 <form method="GET">
                     <div class="input-group">
-                       <input type="text" class="form-control">
+                       <input class="form-control" name="search" placeholder="Search" size="50" type="text">
                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
+                            <button class="btn btn-default" type="submit" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
                        </span>
                     </div>
                 </form>
+                <div class="researcher-search-results">
+                    {% if users_result %}
+                        <h2 class="researchers-label"> Results </h2>
+                        {% for user in users_result %}
+                            <div class="row pt-xs">
+                                <div class="col-xs-8 col-xs-offset-1">
+                                    <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.get_short_name }} </a>
+                                </div>
+                                <div class="col-xs-3">
+                                    <a class="btn btn-success btn-sm"><i class="fa fa-plus"> </i></a>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
             <div class="col-xs-7">
                 <h2 class="researchers-label"> Researchers </h2>
@@ -66,9 +82,9 @@
                     <div class="col-xs-3">
                     </div>
                 </div>
-                {% for researcher in researchers %}
+                {% for researcher in current_researchers %}
                     {% get_obj_perms researcher for study as "study_perms" %}
-                    <div class="row">
+                    <div class="row pt-xs">
                         <div class="col-xs-6">
                             {{ researcher.get_short_name }}
                         </div>

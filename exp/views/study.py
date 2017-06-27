@@ -165,6 +165,7 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
     model = Study
 
     def get_study_researchers(self):
+        """  Pulls researchers that belong to Study Admin and Study Read groups """
         study = self.get_object()
         study_specific_groups = []
         for group in get_groups_with_perms(self.get_object()):
@@ -172,9 +173,19 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
                 study_specific_groups.append(group)
         return User.objects.filter(Q(groups__name=study_specific_groups[0]) | Q(groups__name=study_specific_groups[1])).distinct()
 
+    def search_researchers(self):
+        """ Searches user first, last, and middle names for search query"""
+        name = self.request.GET.get('search', None)
+        researchers_result = []
+        if name:
+            researchers_result = User.objects.filter(reduce(operator.or_,
+              (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in name.split())))
+        return researchers_result
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['researchers'] = self.get_study_researchers()
+        context['current_researchers'] = self.get_study_researchers()
+        context['users_result'] = self.search_researchers()
         return context
 
     def get_success_url(self):
