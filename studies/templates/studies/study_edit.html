@@ -47,7 +47,7 @@
             <div class="col-xs-5">
                 <form method="GET">
                     <div class="input-group">
-                       <input class="form-control" name="search" placeholder="Search" size="50" type="text">
+                       <input class="form-control" name="search" placeholder="{{ name|default:'Search' }}" size="50" type="text">
                        <span class="input-group-btn">
                             <button class="btn btn-default" type="submit" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
                        </span>
@@ -62,11 +62,17 @@
                                     <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.get_short_name }} </a>
                                 </div>
                                 <div class="col-xs-3">
-                                    <a class="btn btn-success btn-sm"><i class="fa fa-plus"> </i></a>
-
+                                    <form method="POST">{% csrf_token %}
+                                        <input type="hidden" name="add_user" value="{{user.id}}"/>
+                                        <button type="submit" value='{{user.id}}' class="btn btn-success btn-sm"><i class="fa fa-plus"> </i></button>
+                                    </form>
                                 </div>
                             </div>
                         {% endfor %}
+                    {% else %}
+                        {% if name %}
+                            <p class="pt-md"><em> No results found! </em></p>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>

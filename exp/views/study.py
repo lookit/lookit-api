@@ -167,25 +167,46 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
     def get_study_researchers(self):
         """  Pulls researchers that belong to Study Admin and Study Read groups """
         study = self.get_object()
-        study_specific_groups = []
-        for group in get_groups_with_perms(self.get_object()):
-            if "STUDY" in group.name:
-                study_specific_groups.append(group)
-        return User.objects.filter(Q(groups__name=study_specific_groups[0]) | Q(groups__name=study_specific_groups[1])).distinct()
+        return User.objects.filter(Q(groups__name=self.get_study_admin_group().name) | Q(groups__name=self.get_study_read_group().name))
 
     def search_researchers(self):
         """ Searches user first, last, and middle names for search query"""
         name = self.request.GET.get('search', None)
-        researchers_result = []
+        researchers_result = None
         if name:
+            current_researcher_ids = self.get_study_researchers().values_list('id', flat=True)
             researchers_result = User.objects.filter(reduce(operator.or_,
-              (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in name.split())))
+              (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in name.split()))).exclude(id__in=current_researcher_ids).distinct()
         return researchers_result
+
+    def get_study_admin_group(self):
+        groups = get_groups_with_perms(self.get_object())
+        for group in groups:
+            if "STUDY" and "ADMIN" in group.name:
+                return group
+        return None
+
+    def get_study_read_group(self):
+        groups = get_groups_with_perms(self.get_object())
+        for group in groups:
+            if "STUDY" and "READ" in group.name:
+                return group
+        return None
+
+    def post(self, *args, **kwargs):
+        """ Adds user to study read group by default """
+        user_id = self.request.POST.get('add_user')
+        if user_id:
+            user = User.objects.get(pk=user_id)
+            read_group = self.get_study_read_group()
+            read_group.user_set.add(user)
+        return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
+        context['name'] = self.request.GET.get('search')
         return context
 
     def get_success_url(self):
