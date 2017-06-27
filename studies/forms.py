@@ -1,4 +1,5 @@
 from ace_overlay.widgets import AceOverlayWidget
+from django.forms import ModelForm, Textarea
 from django import forms
 
 from studies.models import Response, Study
@@ -40,5 +41,14 @@ class StudyEditForm(forms.ModelForm):
             'min_age': "Minimum Age",
             'max_age': "Maximum Age",
             'contact_info': "Researcher/Contact Information",
-            'public': "Discoverable"
+            'public': "Discoverable - Do you want this study to be publicly discoverable on Lookit once approved?"
+        }
+        widgets = {
+            'short_description': Textarea(attrs={'rows': 2}),
+            'long_description': Textarea(attrs={'rows': 2}),
+            'exit_url': Textarea(attrs={'rows': 1}),
+            'criteria': Textarea(attrs={'rows': 1}),
+            'min_age': Textarea(attrs={'rows': 1}),
+            'max_age': Textarea(attrs={'rows': 1}),
+            'contact_info': Textarea(attrs={'rows': 1}),
         }

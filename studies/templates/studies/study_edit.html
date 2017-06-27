@@ -1,5 +1,6 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
+{% load guardian_tags %}
 
 {% block title %}Edit Study{% endblock %}
 {% block flash %}
@@ -24,16 +25,67 @@
       <div class="panel-body">
         <form action="" method="post">{% csrf_token %}
             {% bootstrap_form form %}
-            {% buttons %}
-            <button type="cancel" class="btn btn-default">
-              Cancel
-            </button>
-              <button type="submit" class="btn btn-success">
-                 Save Changes
-              </button>
-            {% endbuttons %}
-
+            <div class="pull-right">
+                {% buttons %}
+                    <button type="cancel" class="btn btn-default">
+                      Cancel
+                    </button>
+                      <button type="submit" class="btn btn-success">
+                         Save Changes
+                      </button>
+                {% endbuttons %}
+            </div>
         </form>
     </div>
   </div>
+  <div class="mt-xl panel panel-default">
+    <div class="panel-heading">
+      <h1 class="panel-title">Manage Researchers</h1>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-5">
+                <form method="GET">
+                    <div class="input-group">
+                       <input type="text" class="form-control">
+                       <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
+                       </span>
+                    </div>
+                </form>
+            </div>
+            <div class="col-xs-7">
+                <h2 class="researchers-label"> Researchers </h2>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label> Name </label>
+                    </div>
+                    <div class="col-xs-3">
+                        <label> Permissions </label>
+                    </div>
+                    <div class="col-xs-3">
+                    </div>
+                </div>
+                {% for researcher in researchers %}
+                    {% get_obj_perms researcher for study as "study_perms" %}
+                    <div class="row">
+                        <div class="col-xs-6">
+                            {{ researcher.get_short_name }}
+                        </div>
+                        <div class="col-xs-3">
+                            {% if "can_edit" in study_perms %}
+                                Admin
+                            {% else %}
+                                Read
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-3">
+                            <a class="btn btn-danger btn-sm">Remove</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
