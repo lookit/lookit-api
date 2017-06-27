@@ -8,6 +8,7 @@ from guardian.shortcuts import assign_perm
 from transitions.extensions import GraphMachine as Machine
 from django.contrib.postgres.fields import ArrayField
 
+from accounts.utils import build_study_group_name
 from accounts.models import DemographicData, Organization, Child, User
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from . import workflow
@@ -183,7 +184,7 @@ def study_post_save(sender, **kwargs):
         # create study groups and assign permissions
         for group in ['read', 'admin']:
             study_group_instance = Group.objects.create(
-                name=f'{slugify(study.organization.name)}_{slugify(study.name)}_STUDY_{group}'.upper()  # noqa
+                name=build_study_group_name(study.organization.name, study.name, group)
             )
             for perm, _ in Study._meta.permissions:
                 # add only view permissions to non-admin
