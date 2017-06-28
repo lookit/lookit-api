@@ -23,5 +23,5 @@
 #   - preview
 #       - create a random build folder name based on the uuid of the study and a timestamp
 #       - Do the deployment steps without copying to s3
-#       - launch a new browser window at the url of the temporary build folder
+#       - launch a new browser window at proxy view that requires login to the url of the temporary build folder
 #       - task to clean up the temporary build folders nightly, weekly, monthly?
