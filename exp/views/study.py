@@ -96,7 +96,7 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
 
     def study_logs(self):
         ''' Returns a page object with 10 study logs'''
-        logs_list = self.object.logs.all()
+        logs_list = self.object.logs.all().order_by('-created_at')
         paginator = Paginator(logs_list, 10)
         page = self.request.GET.get('logs_page')
         try:

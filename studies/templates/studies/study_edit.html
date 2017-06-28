@@ -55,7 +55,7 @@
     </div>
     <div class="panel-body">
         <div class="row">
-            <div class="col-xs-5">
+            <div class="col-sm-5">
                 <form method="GET">
                     <div class="input-group">
                        <input class="form-control" name="search" placeholder="{{ name|default:'Search' }}" size="50" type="text">
@@ -87,7 +87,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="col-xs-7">
+            <div class="col-sm-7">
                 <h2 class="researchers-label"> Researchers </h2>
                 <div class="row">
                     <div class="col-xs-6">
@@ -143,6 +143,17 @@
             </div>
         </div>
     </div>
-
+</div>
+<div class="mt-xs panel panel-default">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 center">
+                <a href="#" class="btn btn-primary"> Archive this study </a>
+            </div>
+            <div class="col-md-6 center">
+                <a href="#" class="btn btn-primary"> Clone this study </a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
