@@ -244,6 +244,7 @@ def study_post_save(sender, **kwargs):
 
 
 class Response(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4)
     study = models.ForeignKey(
         Study, on_delete=models.DO_NOTHING,
         related_name='responses'
@@ -267,8 +268,13 @@ class Response(models.Model):
             ('view_response', 'View Response'),
         )
 
+    class JSONAPIMeta:
+        resource_name = 'responses'
+        lookup_field = 'uuid'
+
 
 class Log(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
@@ -291,6 +297,9 @@ class StudyLog(Log):
     def __str__(self):
         return f'<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}'  # noqa
 
+    class JSONAPIMeta:
+        resource_name = 'study-logs'
+        lookup_field = 'uuid'
     class Meta:
         index_together = (
             ('study', 'action')
@@ -305,3 +314,6 @@ class ResponseLog(Log):
         index_together = (
             ('response', 'action')
         )
+    class JSONAPIMeta:
+        resource_name = 'response-logs'
+        lookup_field = 'uuid'

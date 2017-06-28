@@ -48,6 +48,7 @@ class UserManager(BaseUserManager):
 
 
 class Organization(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=255, blank=False, null=False)
     url = models.URLField(verbose_name='Website')
 
@@ -169,7 +170,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f'{self.given_name} {self.middle_name} {self.family_name}'
 
     def __str__(self):
-        return f'<User: {self.uuid}>'
+        return f'<User: {self.get_short_name()}>'
 
     objects = UserManager()
 
