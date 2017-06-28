@@ -23,7 +23,7 @@
           </div>
           <div class="col-xs-3 pt-lg">
               <a class="btn btn-primary pull-right" href="{% url 'exp:study-edit' pk=study.id %}">
-                  <i class="fa fa-pencil-square-o"></i> Edit Details
+                  <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Details
               </a>
           </div>
       </div>
@@ -97,7 +97,7 @@
           <div class="col-md-5">
               <div class="well view-response-block">
                 <center class="mt-lg">
-                    <p><i class="fa-2x fa fa-file-text-o"></i></p>
+                    <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
                     <h4> View <strong>{{study.responses.completed_responses_count|default:"0" }}</strong> Responses </h4>
                     <p> Inspect responses from completed studies </p>
                 </center>

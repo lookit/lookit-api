@@ -45,13 +45,13 @@
     </div>
     <div class="row">
         <div class="col-xs-8">
-            <strong>Name</strong> <a class="sort-studies-button" href="{% url 'exp:study-list' %}?{% query_transform request sort="name"%}"><i class="fa fa-sort btn" role="button" name="name"></i></a>
+            <strong>Name</strong> <a aria-label="Sort studies by name" class="sort-studies-button" href="{% url 'exp:study-list' %}?{% query_transform request sort="name"%}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="name"></i></a>
         </div>
         <div class="col-xs-2 text-center">
-            <strong>Begin Date</strong> <a class="sort-studies-button" href="{% url 'exp:study-list' %}?{% query_transform request sort="beginDate" %}"><i class="fa fa-sort btn" role="button" name="beginDate"></i></a>
+            <strong>Begin Date</strong> <a class="sort-studies-button" aria-label="Sort studies by begin date" href="{% url 'exp:study-list' %}?{% query_transform request sort="beginDate" %}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="beginDate"></i></a>
         </div>
         <div class="col-xs-2 text-center">
-            <strong>End Date</strong> <a class="sort-studies-button" href="{% url 'exp:study-list' %}?{% query_transform request sort="endDate" %}"><i class="fa fa-sort btn" role="button" name="endDate"></i></a>
+            <strong>End Date</strong> <a class="sort-studies-button"  aria-label="Sort studies by end date" href="{% url 'exp:study-list' %}?{% query_transform request sort="endDate" %}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="endDate"></i></a>
         </div>
     </div>
     <hr>

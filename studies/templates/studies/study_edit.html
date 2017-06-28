@@ -75,7 +75,7 @@
                                 <div class="col-xs-3">
                                     <form method="POST">{% csrf_token %}
                                         <input type="hidden" name="add_user" value="{{user.id}}"/>
-                                        <button type="submit" value='{{user.id}}' class="btn btn-success btn-sm"><i class="fa fa-plus"> </i></button>
+                                        <button aria-label="Add researcher to study" type="submit" value='{{user.id}}' class="btn btn-success btn-sm"><i aria-hidden="true" class="fa fa-plus"> </i></button>
                                     </form>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@
             <div class="col-md-5">
                 <div class="well modify-study-block">
                     <center class="mt-lg">
-                        <p><i class="fa-2x fa fa-list"></i></p>
+                        <p><i aria-hidden="true" class="fa-2x fa fa-list"></i></p>
                         <h4> Build Study </h4>
                         <p> Add/Modify study components </p>
                     </center>
