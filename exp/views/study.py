@@ -130,7 +130,7 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
     def get_study_researchers(self):
         """  Pulls researchers that belong to Study Admin and Study Read groups """
         study = self.get_object()
-        return User.objects.filter(Q(groups__name=self.get_study_admin_group().name) | Q(groups__name=self.get_study_read_group().name))
+        return User.objects.filter(Q(groups__name=self.get_study_admin_group().name) | Q(groups__name=self.get_study_read_group().name)).distinct()
 
     def search_researchers(self):
         """ Searches user first, last, and middle names for search query. Does not display researchers that are already on project """
@@ -157,7 +157,7 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
         """ Fetches the study admin group """
         groups = get_groups_with_perms(self.get_object())
         for group in groups:
-            if "STUDY" and "ADMIN" in group.name:
+            if "STUDY" in group.name and "ADMIN" in group.name:
                 return group
         return None
 
@@ -165,7 +165,7 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
         """ Fetches the study read group """
         groups = get_groups_with_perms(self.get_object())
         for group in groups:
-            if "STUDY" and "READ" in group.name:
+            if "STUDY" in group.name and "READ" in group.name:
                 return group
         return None
 

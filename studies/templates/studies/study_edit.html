@@ -108,6 +108,9 @@
                     <div class="row pt-xs">
                         <div class="col-xs-6">
                             <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.get_short_name }} </a>
+                            {% if researcher.is_org_admin %}
+                                <span class="small"><em> *Organization Admin </em></span>
+                            {% endif %}
                         </div>
                         <div class="col-xs-3">
                             <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
