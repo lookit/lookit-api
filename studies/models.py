@@ -52,6 +52,10 @@ class Study(models.Model):
     public = models.BooleanField(default=False)
     creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
+    last_known_player_sha = models.CharField(max_length=255, blank=True)
+    last_known_addons_sha = models.CharField(max_length=255, blank=True)
+    remote_folder_url = models.URLField(blank=True)
+
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
         self.machine = Machine(
