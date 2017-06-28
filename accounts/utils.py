@@ -18,7 +18,8 @@ status_tooltip_text = {
     "rejected": "Study has been rejected. Please edit before resubmitting.",
     "retracted": "Study has been withdrawn",
     "paused": "Study is not collecting data",
-    "deactivated": "Study is not collecting data"
+    "deactivated": "Study is not collecting data",
+    "archived": "Study has been archived and removed from search."
 }
 
 def get_permitted_triggers(self, triggers):

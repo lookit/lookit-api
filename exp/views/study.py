@@ -47,7 +47,7 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
 
     def get_queryset(self, *args, **kwargs):
         request = self.request.GET
-        queryset = get_objects_for_user(self.request.user, 'studies.can_view')
+        queryset = get_objects_for_user(self.request.user, 'studies.can_view').exclude(state="archived")
 
         state = request.get('state')
         if state and state != 'all':
