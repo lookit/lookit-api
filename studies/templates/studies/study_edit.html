@@ -58,7 +58,7 @@
             <div class="col-sm-5">
                 <form method="GET">
                     <div class="input-group">
-                       <input class="form-control" name="search" placeholder="{{ name|default:'Search' }}" size="50" type="text">
+                       <input class="form-control" name="match" placeholder="{{ name|default:'Search' }}" size="50" type="text">
                        <span class="input-group-btn">
                             <button class="btn btn-default" type="submit" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
                        </span>
@@ -80,6 +80,10 @@
                                 </div>
                             </div>
                         {% endfor %}
+                        <div class="pt-md">
+                            {% include 'studies/paginator.html' with items=users_result request=request %}
+                        </div>
+
                     {% else %}
                         {% if search_query %}
                             <p class="pt-md"><em> No results found! </em></p>

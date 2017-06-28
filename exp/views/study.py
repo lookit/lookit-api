@@ -8,6 +8,7 @@ from django import forms
 
 from django.db.models import Q
 from django.utils import timezone
+from django.db.models.functions import Lower
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
@@ -98,7 +99,7 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         ''' Returns a page object with 10 study logs'''
         logs_list = self.object.logs.all().order_by('-created_at')
         paginator = Paginator(logs_list, 10)
-        page = self.request.GET.get('logs_page')
+        page = self.request.GET.get('page')
         try:
             logs = paginator.page(page)
         except PageNotAnInteger:
@@ -133,12 +134,22 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
 
     def search_researchers(self):
         """ Searches user first, last, and middle names for search query. Does not display researchers that are already on project """
-        search_query = self.request.GET.get('search', None)
+        search_query = self.request.GET.get('match', None)
         researchers_result = None
         if search_query:
             current_researcher_ids = self.get_study_researchers().values_list('id', flat=True)
             researchers_result = User.objects.filter(reduce(operator.or_,
-              (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in search_query.split()))).exclude(id__in=current_researcher_ids).distinct()
+              (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in search_query.split()))).exclude(id__in=current_researcher_ids).distinct().order_by(Lower('family_name').asc())
+        if researchers_result:
+            paginator = Paginator(researchers_result, 5)
+            page = self.request.GET.get('page')
+            try:
+                users = paginator.page(page)
+            except PageNotAnInteger:
+                users = paginator.page(1)
+            except EmptyPage:
+                users = paginator.page(paginator.num_pages)
+            return users
         return researchers_result
 
     def get_study_admin_group(self):
@@ -205,7 +216,7 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
 
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
-        context['search_query'] = self.request.GET.get('search')
+        context['search_query'] = self.request.GET.get('match')
 
         context["status_tooltip"] = status_tooltip_text.get(state, state)
         context['triggers'] = get_permitted_triggers(self,

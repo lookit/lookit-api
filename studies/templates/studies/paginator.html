@@ -1,0 +1,17 @@
+{% load exp_extras %}
+
+<div class="items-pagination">
+    <span class="step-links">
+        {% if items.has_previous %}
+            <a href="?{% query_transform request page=items.previous_page_number %}"><i class="fa fa-chevron-left"> </i></a>
+        {% endif %}
+
+        <span class="current">
+            &nbsp;Page {{ items.number }} of {{ items.paginator.num_pages }} &nbsp;
+        </span>
+
+        {% if items.has_next %}
+            <a href="?{% query_transform request page=items.next_page_number %}"><i class="fa fa-chevron-right"></i></a>
+        {% endif %}
+    </span>
+</div>
