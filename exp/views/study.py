@@ -138,7 +138,8 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
         researchers_result = None
         if search_query:
             current_researcher_ids = self.get_study_researchers().values_list('id', flat=True)
-            researchers_result = User.objects.filter(reduce(operator.or_,
+            user_queryset = User.objects.filter(organization=self.request.user.organization,is_active=True)
+            researchers_result = user_queryset.filter(reduce(operator.or_,
               (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in search_query.split()))).exclude(id__in=current_researcher_ids).distinct().order_by(Lower('family_name').asc())
         if researchers_result:
             paginator = Paginator(researchers_result, 5)
