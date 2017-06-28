@@ -25,7 +25,7 @@ class Study(models.Model):
     contact_info = models.TextField()
     max_age = models.TextField(default='')
     min_age = models.TextField(default='')
-    image = models.ImageField(null=True)
+    image = models.ImageField(null=True, upload_to='study_images/')
     comments = models.TextField(blank=True, null=True)
     organization = models.ForeignKey(
         Organization,

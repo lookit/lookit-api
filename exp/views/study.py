@@ -205,7 +205,7 @@ class StudyEditView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateV
         Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
         4) researcher delete 5) Changing study status / adding rejection comments
         """
-        if "image" in self.request.POST:
+        if "short_description" in self.request.POST:
             """ Study metadata is being edited """
             super().post(*args, **kwargs)
 
