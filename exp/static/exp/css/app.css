@@ -184,3 +184,9 @@ h3.study-logs-label {
 h2.researchers-label {
     font-size: 26px;
 }
+
+.modify-study-block {
+    display: block;
+    width: 100%;
+    height: 190px;
+}
