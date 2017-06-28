@@ -109,7 +109,7 @@
                         <div class="col-xs-6">
                             <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.get_short_name }} </a>
                             {% if researcher.is_org_admin %}
-                                <span class="small"><em> *Organization Admin </em></span>
+                                <span class="small"><em> *{{ study.organization.name }} Admin </em></span>
                             {% endif %}
                         </div>
                         <div class="col-xs-3">
