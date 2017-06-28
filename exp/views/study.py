@@ -119,13 +119,15 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         return context
 
 
-class StudyEditView(LoginRequiredMixin, generic.UpdateView):
+class StudyEditView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
     '''
     StudyEditView allows user to edit study.
     '''
     template_name = 'studies/study_edit.html'
     form_class = StudyEditForm
     model = Study
+    permission_required = 'studies.can_edit_study'
+    raise_exception = True
 
     def get_study_researchers(self):
         """  Pulls researchers that belong to Study Admin and Study Read groups """
