@@ -295,3 +295,5 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+EMBER_EXP_PLAYER_REPO = 'https://github.com/pattisdr/ember-frame-player'
+EMBER_ADDONS_REPO = 'https://github.com/centerforopenscience/exp-addons'
