@@ -43,7 +43,7 @@
         <form class="submit-comments" method="POST"> {% csrf_token %}
             <div class="col-sm-6 col-xs-12">
                     <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
-                    <em><textarea name="comments-text" class="rejection-comments" {% if study.state != 'rejected' %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
+                    <em><textarea class="{% if study.state != 'rejected' %}comments-text{% endif %}" name="comments-text" class="rejection-comments" {% if study.state != 'rejected' %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
                     <div class="submit-comments-panel">
                         <button name="cancel" value="reset" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="reset"><i class="fa fa-times"></i></button>
                         <button name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="submit"><i class="fa fa-check"></i></button>

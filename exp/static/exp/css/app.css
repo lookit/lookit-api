@@ -179,6 +179,9 @@ h3.study-logs-label {
     left: 5px;
 }
 
+.comments-text {
+    color: gray;
+}
 
 /* Study Edit */
 h2.researchers-label {
