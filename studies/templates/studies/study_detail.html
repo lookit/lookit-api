@@ -11,28 +11,6 @@
   {% endif %}
 {% endblock %}
 {% block content %}
-<script>
-    $.fn.editable.defaults.mode = 'inline';
-    $(document).ready(function(){
-        new Clipboard('#copy-link-button');
-        $('#private-study-link').attr('readonly', 'readonly');
-        $('#copy-link-button').tooltip({
-            title: "Copied!",
-            trigger: "click",
-            placement: "bottom",
-        });
-        $('.question-icon').tooltip({
-            placement: "top",
-        });
-        $('body').on('hidden.bs.tooltip', function (e) {
-            $(e.target).data("bs.tooltip").inState.click = false;
-        });
-
-        removeTooltip = function() {
-            $('[data-toggle="tooltip"]').tooltip('hide')
-        }
-    });
-</script>
   <div class="container">
       <div class="row">
         <div class="col-xs-12">
@@ -114,38 +92,7 @@
       </div>
       <div class="row">
           <div class="col-md-7">
-              <div class="well study-detail-block">
-                  <div class="row">
-                      <div class="col-sm-6 center col-xs-12">
-                          <div >
-                              <h2 class="study-status"> <span class="pr-md"> Status:</span><em>{{study.get_state_display}}</em></h2>
-                              <i title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon fa fa-question-circle-o"></i>
-                          </div>
-                          {% if triggers %}
-                            <div>
-                                <h4 class="change-status pt-xs" style="display:inline-block"> Change Status: </h4>
-                                <form style="display:inline-block" class="change-status" method="POST" action=""> {% csrf_token %}
-                                  <div style="display:inline-block" class="btn-group pl-md" role="group" aria-label="study actions">
-                                    {% for trigger in triggers %}
-                                      <button type="submit" class="btn btn-success" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
-                                    {% endfor %}
-                                  </div>
-                                </form>
-                            </div>
-                          {% endif %}
-                      </div>
-                      <form class="submit-comments" method="POST"> {% csrf_token %}
-                          <div class="col-sm-6 col-xs-12">
-                                  <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
-                                  <em><textarea name="comments-text" class="rejection-comments" {% if study.state != 'rejected' %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
-                                  <div class="submit-comments-panel">
-                                      <button name="cancel" value="reset" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="reset"><i class="fa fa-times"></i></button>
-                                      <button name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="submit"><i class="fa fa-check"></i></button>
-                                  </div>
-                          </div>
-                      </form>
-                  </div>
-              </div>
+              {% include 'studies/study_status.html' with study=study %}
           </div>
           <div class="col-md-5">
               <div class="well view-response-block">
