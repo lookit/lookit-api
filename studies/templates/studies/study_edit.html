@@ -12,6 +12,17 @@
   {% endif %}
 {% endblock %}
 {% block content %}
+<script>
+    $.fn.editable.defaults.mode = 'inline';
+    $(document).ready(function() {
+        $('.researcher_permissions').editable({
+            source: [
+                  {value: 'study_read', text: 'Read'},
+                  {value: 'study_admin', text: 'Admin'}
+               ]
+        });
+    });
+</script>
   <div class="container">
     <div class="row">
         <div class="col-xs-12">
@@ -70,7 +81,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        {% if name %}
+                        {% if search_query %}
                             <p class="pt-md"><em> No results found! </em></p>
                         {% endif %}
                     {% endif %}
@@ -95,11 +106,13 @@
                             <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.get_short_name }} </a>
                         </div>
                         <div class="col-xs-3">
-                            {% if "can_edit" in study_perms %}
-                                Admin
-                            {% else %}
-                                Read
-                            {% endif %}
+                            <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
+                                {% if "can_edit" in study_perms %}
+                                    Admin
+                                {% else %}
+                                    Read
+                                {% endif %}
+                            </a>
                         </div>
                         <div class="col-xs-3">
                             <form method="POST">{% csrf_token %}

@@ -171,15 +171,16 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
 
     def search_researchers(self):
         """ Searches user first, last, and middle names for search query"""
-        name = self.request.GET.get('search', None)
+        search_query = self.request.GET.get('search', None)
         researchers_result = None
-        if name:
+        if search_query:
             current_researcher_ids = self.get_study_researchers().values_list('id', flat=True)
             researchers_result = User.objects.filter(reduce(operator.or_,
-              (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in name.split()))).exclude(id__in=current_researcher_ids).distinct()
+              (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in search_query.split()))).exclude(id__in=current_researcher_ids).distinct()
         return researchers_result
 
     def get_study_admin_group(self):
+        """ Fetches the study admin group """
         groups = get_groups_with_perms(self.get_object())
         for group in groups:
             if "STUDY" and "ADMIN" in group.name:
@@ -187,6 +188,7 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
         return None
 
     def get_study_read_group(self):
+        """ Fetches the study read group """
         groups = get_groups_with_perms(self.get_object())
         for group in groups:
             if "STUDY" and "READ" in group.name:
@@ -194,24 +196,41 @@ class StudyEditView(LoginRequiredMixin, generic.UpdateView):
         return None
 
     def post(self, *args, **kwargs):
-        """ Adds user to study read group by default """
+        """
+        Handles adding, updating, and deleting researcher from study. Users are
+        added to study read group by default.
+        """
+        study_read_group = self.get_study_read_group()
+        study_admin_group = self.get_study_admin_group()
         add_user = self.request.POST.get('add_user')
+        update_user = None
+        if self.request.POST.get('name') == 'update_user':
+             update_user = self.request.POST.get('pk')
+             permissions = self.request.POST.get('value')
         remove_user = self.request.POST.get('remove_user')
+
         if add_user:
-            add = User.objects.get(pk=add_user)
-            read_group = self.get_study_read_group()
-            read_group.user_set.add(add)
+            study_read_group.user_set.add(User.objects.get(pk=add_user))
         if remove_user:
             remove = User.objects.get(pk=remove_user)
-            self.get_study_read_group().user_set.remove(remove)
-            self.get_study_admin_group().user_set.remove(remove)
+            study_read_group.user_set.remove(remove)
+            study_admin_group.user_set.remove(remove)
+        if update_user:
+            update = User.objects.get(pk=update_user)
+            if permissions == 'study_admin':
+                study_read_group.user_set.remove(update)
+                study_admin_group.user_set.add(update)
+            if permissions == 'study_read':
+                study_read_group.user_set.add(update)
+                study_admin_group.user_set.remove(update)
+
         return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
-        context['name'] = self.request.GET.get('search')
+        context['search_query'] = self.request.GET.get('search')
         return context
 
     def get_success_url(self):
