@@ -1,5 +1,6 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
+{% load exp_extras %}
 
 {% block title %}Users{% endblock %}
 {% block flash %}
@@ -8,23 +9,54 @@
 {% block content %}
   <div class="container">
     <h1>Participants</h1>
+
+    <form method="GET">
+        <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
+        <input type="hidden" name="sort" value={{ sort }}>
+    </form>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Identifier</th>
+            <!-- <th>Identifier</th>
             <th>Identicon</th>
             <th>Studies</th>
-            <th>Active</th>
+            <th>Active</th> -->
+            <th>
+                First Name
+                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='given_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='-given_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+            </th>
+            <th>
+                Last name
+                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='family_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='-family_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+            </th>
+            <th>
+                Email Adress
+                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='username' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='-username' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+            </th>
+            <th>
+                Last Active
+                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='last_login' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='-last_login' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+            </th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {% for user in object_list %}
             <tr>
-              <td><a href="{% url 'exp:participant-detail' user.id %}">{{ user.uuid }}</a></td>
+              <!-- <td><a class='btn' href="{% url 'exp:participant-detail' user.id %}">View Profile</a></td>
               <td>{{ user.identicon_html }}</td>
               <td>{% for us in user.studies %}{{ us.name }}, {% endfor %}</td>
-              <td>{{ user.is_active }}</td>
+              <td>{{ user.is_active }}</td> -->
+              <td>{{ user.given_name }}</td>
+              <td>{{ user.family_name }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.last_login|date:"n/d/Y"|default:"N/A" }}</td>
+              <td><a class='btn btn-primary' href="{% url 'exp:participant-detail' user.id %}">View Profile</a></td>
             </tr>
           {% endfor %}
         </tbody>

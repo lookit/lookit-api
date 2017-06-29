@@ -11,6 +11,8 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views import generic
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
+from django.db.models import Q
+
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
@@ -24,12 +26,18 @@ class ParticipantListView(LoginRequiredMixin, generic.ListView):
     related to organizations that the current user has permissions to.
     '''
     template_name = 'accounts/participant_list.html'
-    queryset = User.objects.exclude(demographics__isnull=True)
+    queryset = User.objects.all() #exclude(demographics__isnull=True)
     model = User
 
     def get_queryset(self):
+        filter_val = self.request.GET.get('match', False)
+        order = self.request.GET.get('sort', False) or 'family_name' # to prevent empty string overriding default here
+        # q = Q(organization=self.request.user.organization)
+        q = Q(organization__isnull=False)
+        if filter_val:
+            q = q & (Q(family_name__icontains=filter_val) | Q(username__icontains=filter_val) | Q(given_name__icontains=filter_val))
         qs = super(ParticipantListView, self).get_queryset()
-        return qs.filter(response__study__organization=self.request.user.organization)
+        return qs.filter(q).order_by(order)
 
 
 class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
