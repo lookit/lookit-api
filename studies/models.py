@@ -73,7 +73,7 @@ class Study(models.Model):
             ('can_submit_study', 'Can Submit Study'),
             ('can_retract_study', 'Can Retract Study'),
             ('can_resubmit_study', 'Can Resubmit Study'),
-            ('can_edit__study_permissions', 'Can Edit Study Permissions'),
+            ('can_edit_study_permissions', 'Can Edit Study Permissions'),
             ('can_view_study_permissions', 'Can View Study Permissions'),
             ('can_view_study_responses', 'Can View Study Responses'),
             ('can_view_study_video_responses', 'Can View Study Video Responses'),
