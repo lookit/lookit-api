@@ -17,22 +17,10 @@ class ResponseForm(forms.ModelForm):
         model = Response
 
 
-class StudyForm(forms.ModelForm):
-    blocks = forms.CharField(widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width="100%", height="100%", showprintmargin=False), required=False)
-
-    class Meta:
-        fields = (
-            'name',
-            'organization',
-            'blocks'
-        )
-        model = Study
-
-
 class StudyEditForm(forms.ModelForm):
     class Meta:
         model = Study
-        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age', 'max_age', 'contact_info', 'public']
+        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age', 'max_age', 'duration', 'contact_info', 'public']
         labels = {
             'short_description': "Short Description",
             'long_description': "Purpose",
@@ -50,5 +38,9 @@ class StudyEditForm(forms.ModelForm):
             'criteria': Textarea(attrs={'rows': 1}),
             'min_age': Textarea(attrs={'rows': 1}),
             'max_age': Textarea(attrs={'rows': 1}),
+            'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
         }
+        
+class StudyForm(StudyEditForm):
+    blocks = forms.CharField(widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width="100%", height="100%", showprintmargin=False), required=False)

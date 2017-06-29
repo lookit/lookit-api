@@ -33,6 +33,12 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
     def get_form_class(self):
         return StudyForm
 
+    def form_valid(self, form):
+        user = self.request.user
+        form.instance.creator = user
+        form.instance.organization = user.organization
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
 
