@@ -129,7 +129,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def studies(self):
         if not self.is_participant:
-            return get_objects_for_user(self, ['studies.can_view', 'studies.can_edit'])
+            return get_objects_for_user(self, ['studies.can_view_study', 'studies.can_edit_study'])
         return None
 
     @property

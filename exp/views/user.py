@@ -57,7 +57,7 @@ class ResponseListView(LoginRequiredMixin, generic.ListView):
     template_name = 'accounts/response_list.html'
 
     def get_queryset(self):
-        studies = get_objects_for_user(self.request.user, 'studies.can_view')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
         return Response.objects.filter(study__in=studies).order_by('study__name')
 
 
@@ -68,7 +68,7 @@ class ResponseDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = 'accounts/response_detail.html'
 
     def get_queryset(self):
-        studies = get_objects_for_user(self.request.user, 'studies.can_view')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
         return Response.objects.filter(study__in=studies).order_by('study__name')
 
 
@@ -167,7 +167,7 @@ class AssignResearcherStudies(LoginRequiredMixin, generic.UpdateView):
         return reverse('exp:researcher-list')
 
     def get_initial(self):
-        permissions = ['studies.can_view', 'studies.can_edit']
+        permissions = ['studies.can_view_study', 'studies.can_edit_study']
         initial = super(AssignResearcherStudies, self).get_initial()
         initial['studies'] = get_objects_for_user(self.object, permissions)
         return initial
