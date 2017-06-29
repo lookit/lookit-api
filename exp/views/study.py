@@ -1,3 +1,4 @@
+import uuid
 import operator
 from functools import reduce
 
@@ -93,6 +94,12 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
 
     def post(self, *args, **kwargs):
         update_trigger(self)
+        if self.request.POST.get('clone_study'):
+            clone = self.get_object().clone()
+            clone.creator = self.request.user
+            clone.organization = self.request.user.organization
+            clone.save()
+            return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
 
     def study_logs(self):

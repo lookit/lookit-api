@@ -22,12 +22,13 @@
               <h1> {{ study.name}}</h1>
           </div>
           <div class="col-xs-3 pt-lg button-toolbar pull-right">
-                <a class="mr-md btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
-                    <i aria-hidden="true" class="fa fa-files-o"></i> Clone Study
-                </a>
-                <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
-                    <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Details
-                </a>
+              <form method="POST" style="display:inline">{% csrf_token %}
+                  <input type="hidden" name="clone_study" value="{{study.id}}"/>
+                  <button type="submit" class="mr-md btn btn-default"> <i aria-hidden="true" class="fa fa-files-o"></i> Clone Study </button>
+              </form>
+              <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
+                  <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Details
+              </a>
           </div>
       </div>
       <div class="row">

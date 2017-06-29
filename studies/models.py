@@ -113,6 +113,24 @@ class Study(models.Model):
             return
         raise
 
+    def clone(self):
+        """ Create a new, unsaved copy of this study. """
+        copy = self.__class__.objects.get(pk=self.pk)
+        copy.id = None
+        copy.public = False
+        copy.state = 'created'
+        copy.name = 'Copy of ' + copy.name
+
+        # empty the fks
+        fk_field_names = [f.name for f in self._meta.model._meta.get_fields() if isinstance(f, (models.ForeignKey))]
+        for field_name in fk_field_names:
+            setattr(copy, field_name, None)
+        try:
+            copy.uuid = uuid.uuid4()
+        except AttributeError:
+            pass
+        return copy
+
     def notify_administrators_of_submission(self, ev):
         # TODO
         pass
@@ -184,11 +202,11 @@ def study_post_save(sender, **kwargs):
         # create study groups and assign permissions
         for group in ['read', 'admin']:
             study_group_instance = Group.objects.create(
-                name=build_study_group_name(study.organization.name, study.name, group)
+                name=build_study_group_name(study.organization.name, study.name, study.pk, group)
             )
             for perm, _ in Study._meta.permissions:
                 # add only view permissions to non-admin
-                if group == 'read' and perm != 'can_view':
+                if group == 'read' and perm != 'can_view_study':
                     continue
                 if 'approve' not in perm:
                     assign_perm(perm, study_group_instance, obj=study)

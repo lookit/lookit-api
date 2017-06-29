@@ -43,7 +43,7 @@
         <form class="submit-comments" method="POST"> {% csrf_token %}
             <div class="col-sm-6 col-xs-12">
                     <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
-                    <em><textarea class="rejection-comments {% if study.state != 'rejected' %}comments-text{% endif %}" name="comments-text" {% if study.state != 'rejected' %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
+                    <em><textarea class="rejection-comments {% if study.state != 'rejected' %}comments-text{% endif %}" name="comments-text" {% if study.state != 'rejected' and perms.can_approve_study %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
                     <div class="submit-comments-panel">
                         <button aria-label="Cancel change rejection comments" name="cancel" value="reset" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="reset"><i aria-hidden="true" class="fa fa-times"></i></button>
                         <button aria-label="Update rejection comments" name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="submit"><i aria-hidden="true" class="fa fa-check"></i></button>
