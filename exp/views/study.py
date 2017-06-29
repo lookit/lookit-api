@@ -19,7 +19,7 @@ from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_p
 from accounts.utils import build_study_group_name, status_tooltip_text, get_permitted_triggers, update_trigger
 from accounts.models import User
 from studies.forms import StudyForm, StudyEditForm
-from studies.models import Study
+from studies.models import Study, StudyLog
 
 
 class StudyCreateView(LoginRequiredMixin, generic.CreateView):
@@ -105,9 +105,16 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.save()
+            # self.create_study_log()
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
 
+    def create_study_log(self):
+        StudyLog.objects.create(
+            action='created',
+            study=self.get_object(),
+            user=self.request.user
+        )
     def study_logs(self):
         ''' Returns a page object with 10 study logs'''
         logs_list = self.object.logs.all().order_by('-created_at')

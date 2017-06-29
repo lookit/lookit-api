@@ -70,7 +70,7 @@
                         {% for user in users_result %}
                             <div class="row pt-xs">
                                 <div class="col-xs-8 col-xs-offset-1">
-                                    <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.get_short_name }} </a>
+                                    <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.identicon_small_html }} {{ user.get_short_name }} </a>
                                 </div>
                                 <div class="col-xs-3">
                                     <form method="POST">{% csrf_token %}
@@ -107,7 +107,7 @@
                     {% get_obj_perms researcher for study as "study_perms" %}
                     <div class="row pt-xs">
                         <div class="col-xs-6">
-                            <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.get_short_name }} </a>
+                            <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.identicon_small_html }} {{ researcher.get_short_name }} </a>
                             {% if researcher.is_org_admin %}
                                 <span class="small"><em> *{{ study.organization.name }} Admin </em></span>
                             {% endif %}

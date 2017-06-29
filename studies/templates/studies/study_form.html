@@ -27,7 +27,12 @@
 {% endblock %}
 {% block content %}
   <div class="container">
-    <div class="panel panel-default">
+    <div class="row">
+        <div class="col-xs-12">
+            <a href="{% url 'exp:study-list' %}"> Manage Studies </a> > Create Study
+        </div>
+    </div>
+    <div class="panel panel-default mt-md">
       <div class="panel-heading">
         <h1 class="panel-title">Create Study</h1>
       </div>
