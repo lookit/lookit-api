@@ -16,10 +16,11 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_perms, get_groups_with_perms
 
-from accounts.utils import build_study_group_name, status_tooltip_text, get_permitted_triggers, update_trigger
+from accounts.utils import status_tooltip_text, get_permitted_triggers, update_trigger
 from accounts.models import User
 from studies.forms import StudyForm, StudyEditForm
 from studies.models import Study, StudyLog
+
 
 
 class StudyCreateView(LoginRequiredMixin, generic.CreateView):
@@ -37,7 +38,23 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
         user = self.request.user
         form.instance.creator = user
         form.instance.organization = user.organization
-        return super().form_valid(form)
+
+        self.object = form.save()
+        self.add_creator_to_study_admin_group()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_study_admin_group(self):
+        """ Fetches the study admin group """
+        groups = get_groups_with_perms(self.object)
+        for group in groups:
+            if "STUDY" in group.name and "ADMIN" in group.name:
+                return group
+        return None
+
+    def add_creator_to_study_admin_group(self):
+        study_admin_group = self.get_study_admin_group()
+        study_admin_group.user_set.add(User.objects.get(pk=self.request.user.pk))
+        return study_admin_group
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))

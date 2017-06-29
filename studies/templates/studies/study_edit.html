@@ -114,7 +114,7 @@
                         </div>
                         <div class="col-xs-3">
                             <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
-                                {% if "can_edit" in study_perms %}
+                                {% if "can_edit_study" in study_perms %}
                                     Admin
                                 {% else %}
                                     Read
