@@ -41,6 +41,6 @@ class StudyEditForm(forms.ModelForm):
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
         }
-        
+
 class StudyForm(StudyEditForm):
-    blocks = forms.CharField(widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width="100%", height="100%", showprintmargin=False), required=False)
+    blocks = forms.CharField(label="Build Study - Add JSON", widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width="100%", height="100%", showprintmargin=False), required=False)
