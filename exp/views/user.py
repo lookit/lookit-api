@@ -45,14 +45,23 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
     ParticipantDetailView shows information about a participant that has participated in studies
     related to organizations that the current user has permission to.
     '''
-    queryset = User.objects.exclude(demographics__isnull=True).select_related('organization')
+    # queryset = User.objects.exclude(demographics__isnull=True).select_related('organization')
+    queryset = User.objects.all().select_related('organization')
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
     model = User
 
     def get_queryset(self):
         qs = super(ParticipantDetailView, self).get_queryset()
-        return qs.filter(response__study__organization=self.request.user.organization)
+        return qs.filter(organization=self.request.user.organization)
+
+    def get_context_data(self, **kwargs):
+        context = super(ParticipantDetailView, self).get_context_data(**kwargs)
+        orderby = self.request.GET.get('sort', None)
+        user = context['user']
+        context['studies'] = user.studies.order_by(orderby) if orderby else user.studies
+        return context
+
 
     def get_success_url(self):
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})

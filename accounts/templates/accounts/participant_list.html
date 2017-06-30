@@ -18,10 +18,6 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <!-- <th>Identifier</th>
-            <th>Identicon</th>
-            <th>Studies</th>
-            <th>Active</th> -->
             <th>
                 First Name
                 <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='given_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
@@ -48,10 +44,6 @@
         <tbody>
           {% for user in object_list %}
             <tr>
-              <!-- <td><a class='btn' href="{% url 'exp:participant-detail' user.id %}">View Profile</a></td>
-              <td>{{ user.identicon_html }}</td>
-              <td>{% for us in user.studies %}{{ us.name }}, {% endfor %}</td>
-              <td>{{ user.is_active }}</td> -->
               <td>{{ user.given_name }}</td>
               <td>{{ user.family_name }}</td>
               <td>{{ user.username }}</td>

@@ -1,5 +1,6 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
+{% load exp_extras %}
 
 {% block title %}{{ user.uuid }}{% endblock %}
 {% block flash %}
@@ -7,8 +8,49 @@
 {% endblock %}
 {% block content %}
   <div class="container">
-    <h1>{{ user.uuid }}</h1>
-    <table class="table table-compact">
+    <div><h1 style="display: inline">{{ user.given_name }} {{ user.family_name }}</h1><div class='pull-right' style="display: inline">Edit Details</div></div>
+    <div style='margin-top: 15px'>
+        <b style="display: inline">Email address: </b>
+        <p style="display: inline; margin-right: 15px">{{ user.username }}</p>
+        <b style="display: inline">Last Active: </b>
+        <p style="display: inline">{{ user.last_login|date:"n/d/Y"|default:"N/A" }}</p>
+    </div>
+    <hr/>
+    <h2>{{ user.given_name}}'s Studies</h2>
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>
+                Experiment Title
+                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+            </th>
+            <th>
+                Participant Status
+                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='state' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-state' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+            </th>
+            <th>
+                Date Modified
+                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for study in studies %}
+            <tr>
+                <td><a href="{% url 'exp:study-detail' study.id %}">{{ study.name }}</a></td>
+                <td>{{ study.state }}</td>
+                <td>{{ study.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- <table class="table table-compact">
       <tbody>
         <tr>
           <th>
@@ -33,10 +75,11 @@
             <td>
                 {% for resp in user.response_set.all %}
                     <a href="{% url 'exp:response-detail' resp.id %}">{{ resp.study.name }}</a><br/>
+
                 {% endfor %}
             </td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
   </div>
 {% endblock %}
