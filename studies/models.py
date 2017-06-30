@@ -8,6 +8,9 @@ from guardian.shortcuts import assign_perm
 from transitions.extensions import GraphMachine as Machine
 from django.contrib.postgres.fields import ArrayField
 
+from guardian.shortcuts import get_groups_with_perms
+
+
 from accounts.utils import build_study_group_name
 from accounts.models import DemographicData, Organization, Child, User
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
@@ -99,6 +102,24 @@ class Study(models.Model):
         return end_date if end_date > begin_date else None
 
     @property
+    def study_admin_group(self):
+        """ Fetches the study admin group """
+        groups = get_groups_with_perms(self)
+        for group in groups:
+            if "STUDY" in group.name and "ADMIN" in group.name:
+                return group
+        return None
+
+    @property
+    def study_read_group(self):
+        """ Fetches the study read group """
+        groups = get_groups_with_perms(self)
+        for group in groups:
+            if "STUDY" in group.name and "READ" in group.name:
+                return group
+        return None
+
+    @property
     def completed_responses_count(self):
         return self.responses.filter(completed=True).count();
 
@@ -174,7 +195,6 @@ class Study(models.Model):
 
 # TODO Need a post_save hook for edit that pulls studies out of approved state
 # TODO or disallows editing in pre_save if they are approved
-
 
 @receiver(post_save, sender=Study)
 def study_post_save(sender, **kwargs):

@@ -14,7 +14,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from guardian.mixins import LoginRequiredMixin
-from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_perms, get_groups_with_perms
+from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_perms
 
 from accounts.utils import status_tooltip_text, get_permitted_triggers, update_trigger
 from accounts.models import User
@@ -38,21 +38,12 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
         user = self.request.user
         form.instance.creator = user
         form.instance.organization = user.organization
-
         self.object = form.save()
         self.add_creator_to_study_admin_group()
         return HttpResponseRedirect(self.get_success_url())
 
-    def get_study_admin_group(self):
-        """ Fetches the study admin group """
-        groups = get_groups_with_perms(self.object)
-        for group in groups:
-            if "STUDY" in group.name and "ADMIN" in group.name:
-                return group
-        return None
-
     def add_creator_to_study_admin_group(self):
-        study_admin_group = self.get_study_admin_group()
+        study_admin_group = self.object.study_admin_group()
         study_admin_group.user_set.add(User.objects.get(pk=self.request.user.pk))
         return study_admin_group
 
@@ -169,7 +160,7 @@ class StudyEditView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateV
     def get_study_researchers(self):
         """  Pulls researchers that belong to Study Admin and Study Read groups """
         study = self.get_object()
-        return User.objects.filter(Q(groups__name=self.get_study_admin_group().name) | Q(groups__name=self.get_study_read_group().name)).distinct()
+        return User.objects.filter(Q(groups__name=self.get_object().study_admin_group.name) | Q(groups__name=self.get_object().study_read_group.name)).distinct()
 
     def search_researchers(self):
         """ Searches user first, last, and middle names for search query. Does not display researchers that are already on project """
@@ -192,29 +183,13 @@ class StudyEditView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateV
             return users
         return researchers_result
 
-    def get_study_admin_group(self):
-        """ Fetches the study admin group """
-        groups = get_groups_with_perms(self.get_object())
-        for group in groups:
-            if "STUDY" in group.name and "ADMIN" in group.name:
-                return group
-        return None
-
-    def get_study_read_group(self):
-        """ Fetches the study read group """
-        groups = get_groups_with_perms(self.get_object())
-        for group in groups:
-            if "STUDY" in group.name and "READ" in group.name:
-                return group
-        return None
-
     def manage_researcher_permissions(self):
         """
         Handles adding, updating, and deleting researcher from study. Users are
         added to study read group by default.
         """
-        study_read_group = self.get_study_read_group()
-        study_admin_group = self.get_study_admin_group()
+        study_read_group = self.get_object().study_read_group
+        study_admin_group = self.get_object().study_admin_group
         add_user = self.request.POST.get('add_user')
         remove_user = self.request.POST.get('remove_user')
         update_user = None

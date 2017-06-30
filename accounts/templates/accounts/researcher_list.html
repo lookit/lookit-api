@@ -49,7 +49,7 @@
    </div>
    <hr>
    {% for user in object_list %}
-   <div class="row">
+   <div class="row pt-xs">
         <div class="col-xs-6 col-xs-offset-1">
             <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
         </div>

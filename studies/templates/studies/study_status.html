@@ -29,7 +29,6 @@
             </div>
             {% if triggers %}
               <div>
-                  <h4 class="small change-status pt-xs"> Change Status: </h4>
                   <form style="display:inline-block" class="change-status" method="POST" action=""> {% csrf_token %}
                     <div style="display:inline-block" class="btn-group pl-md" role="group" aria-label="study actions">
                       {% for trigger in triggers %}
