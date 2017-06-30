@@ -41,6 +41,7 @@ class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
         form.instance.creator = user
         form.instance.organization = user.organization
         self.object = form.save()
+        # TODO Should this be moved to the model - adding creator to study admin group on creation?
         self.add_creator_to_study_admin_group()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -115,16 +116,9 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.save()
-            # self.create_study_log()
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
 
-    def create_study_log(self):
-        StudyLog.objects.create(
-            action='created',
-            study=self.get_object(),
-            user=self.request.user
-        )
     def study_logs(self):
         ''' Returns a page object with 10 study logs'''
         logs_list = self.object.logs.all().order_by('-created_at')
@@ -143,7 +137,6 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         context['triggers'] = get_permitted_triggers(self,
             self.object.machine.get_triggers(self.object.state))
         context['logs'] = self.study_logs()
-
         state = self.object.state
         context["status_tooltip"] = status_tooltip_text.get(state, state)
         return context
@@ -173,17 +166,22 @@ class StudyEditView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateV
             user_queryset = User.objects.filter(organization=self.request.user.organization,is_active=True)
             researchers_result = user_queryset.filter(reduce(operator.or_,
               (Q(family_name=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in search_query.split()))).exclude(id__in=current_researcher_ids).distinct().order_by(Lower('family_name').asc())
-        if researchers_result:
-            paginator = Paginator(researchers_result, 5)
-            page = self.request.GET.get('page')
-            try:
-                users = paginator.page(page)
-            except PageNotAnInteger:
-                users = paginator.page(1)
-            except EmptyPage:
-                users = paginator.page(paginator.num_pages)
-            return users
+            researchers_result = self.build_researchers_paginator(researchers_result)
         return researchers_result
+
+    def build_researchers_paginator(self, researchers_result):
+        """
+        Builds paginated search results for researchers
+        """
+        paginator = Paginator(researchers_result, 5)
+        page = self.request.GET.get('page')
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            users = paginator.page(1)
+        except EmptyPage:
+            users = paginator.page(paginator.num_pages)
+        return users
 
     def manage_researcher_permissions(self):
         """
