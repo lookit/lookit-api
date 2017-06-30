@@ -114,9 +114,6 @@ a.state-link {
 
 
 /* Study Detail */
-.study-col-heading: {
-    text-align: center;
-}
 .study-detail-block {
     display: block;
     width:100%;
@@ -130,9 +127,6 @@ a.state-link {
 @media (max-width: 780px) {
   .study-detail-block {
       height:350px;
-  }
-  .study-col-heading: {
-      text-align: left;
   }
 }
 

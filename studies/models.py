@@ -197,6 +197,15 @@ class Study(models.Model):
 # TODO or disallows editing in pre_save if they are approved
 
 @receiver(post_save, sender=Study)
+def add_study_created_log(sender, instance, created, **kwargs):
+    if created:
+        StudyLog.objects.create(
+            action='created',
+            study=instance,
+            user=instance.creator
+        )
+
+@receiver(post_save, sender=Study)
 def study_post_save(sender, **kwargs):
     """
     Add study permissions to organization groups and

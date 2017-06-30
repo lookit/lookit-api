@@ -43,7 +43,7 @@ class StudyCreateView(LoginRequiredMixin, generic.CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def add_creator_to_study_admin_group(self):
-        study_admin_group = self.object.study_admin_group()
+        study_admin_group = self.object.study_admin_group
         study_admin_group.user_set.add(User.objects.get(pk=self.request.user.pk))
         return study_admin_group
 
