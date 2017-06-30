@@ -29,124 +29,128 @@
             <a href="{% url 'exp:study-list' %}"> Manage Studies </a> > <a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }} </a> > Edit
         </div>
     </div>
-    <div class="mt-xl panel panel-default">
-      <div class="panel-heading">
-        <h1 class="panel-title">Description and Discoverability</h1>
-      </div>
-      <div class="panel-body">
-        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-            {% bootstrap_form form %}
-            <div class="pull-right">
-                {% buttons %}
-                    <button type="cancel" class="btn btn-default">
-                      Cancel
-                    </button>
-                      <button type="submit" class="btn btn-success">
-                         Save Changes
-                      </button>
-                {% endbuttons %}
-            </div>
-        </form>
-    </div>
-  </div>
-  <div class="mt-xl panel panel-default">
-    <div class="panel-heading">
-      <h1 class="panel-title">Manage Researchers</h1>
-    </div>
-    <div class="panel-body">
-        <div class="row">
-            <div class="col-sm-5">
-                <form method="GET">
-                    <div class="input-group">
-                       <input class="form-control" name="match" placeholder="{{ name|default:'Search' }}" size="50" type="text">
-                       <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
-                       </span>
+    <div class="row">
+        <div class="col-lg-10 col-lg-offset-1">
+            <div class="mt-xl panel panel-default">
+              <div class="panel-heading">
+                <h1 class="panel-title">Description and Discoverability</h1>
+              </div>
+              <div class="panel-body">
+                <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                    {% bootstrap_form form %}
+                    <div class="pull-right">
+                        {% buttons %}
+                            <button type="cancel" class="btn btn-default">
+                              Cancel
+                            </button>
+                              <button type="submit" class="btn btn-success">
+                                 Save Changes
+                              </button>
+                        {% endbuttons %}
                     </div>
                 </form>
-                <div class="researcher-search-results">
-                    {% if users_result %}
-                        <h2 class="researchers-label"> Results </h2>
-                        {% for user in users_result %}
+            </div>
+          </div>
+          <div class="mt-xl panel panel-default">
+            <div class="panel-heading">
+              <h1 class="panel-title">Manage Researchers</h1>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <form method="GET">
+                            <div class="input-group">
+                               <input class="form-control" name="match" placeholder="{{ name|default:'Search' }}" size="50" type="text">
+                               <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
+                               </span>
+                            </div>
+                        </form>
+                        <div class="researcher-search-results">
+                            {% if users_result %}
+                                <h2 class="researchers-label"> Results </h2>
+                                {% for user in users_result %}
+                                    <div class="row pt-xs">
+                                        <div class="col-xs-8 col-xs-offset-1">
+                                            <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.identicon_small_html }} {{ user.get_short_name }} </a>
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <form method="POST">{% csrf_token %}
+                                                <input type="hidden" name="add_user" value="{{user.id}}"/>
+                                                <button aria-label="Add researcher to study" type="submit" value='{{user.id}}' class="btn btn-success btn-sm"><i aria-hidden="true" class="fa fa-plus"> </i></button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <div class="pt-md">
+                                    {% include 'studies/paginator.html' with items=users_result request=request %}
+                                </div>
+
+                            {% else %}
+                                {% if search_query %}
+                                    <p class="pt-md"><em> No results found! </em></p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <h2 class="researchers-label"> Researchers </h2>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <label> Name </label>
+                            </div>
+                            <div class="col-xs-3">
+                                <label> Permissions </label>
+                            </div>
+                            <div class="col-xs-3">
+                            </div>
+                        </div>
+                        {% for researcher in current_researchers %}
+                            {% get_obj_perms researcher for study as "study_perms" %}
                             <div class="row pt-xs">
-                                <div class="col-xs-8 col-xs-offset-1">
-                                    <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.identicon_small_html }} {{ user.get_short_name }} </a>
+                                <div class="col-xs-6">
+                                    <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.identicon_small_html }} {{ researcher.get_short_name }} </a>
+                                    {% if researcher.is_org_admin %}
+                                        <span class="small"><em> *{{ study.organization.name }} Admin </em></span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-xs-3">
+                                    <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
+                                        {% if "can_edit_study" in study_perms %}
+                                            Admin
+                                        {% else %}
+                                            Read
+                                        {% endif %}
+                                    </a>
                                 </div>
                                 <div class="col-xs-3">
                                     <form method="POST">{% csrf_token %}
-                                        <input type="hidden" name="add_user" value="{{user.id}}"/>
-                                        <button aria-label="Add researcher to study" type="submit" value='{{user.id}}' class="btn btn-success btn-sm"><i aria-hidden="true" class="fa fa-plus"> </i></button>
+                                        <input type="hidden" name="remove_user" value="{{researcher.id}}"/>
+                                        <button type="submit" class="btn btn-danger btn-sm"> Remove </button>
                                     </form>
                                 </div>
                             </div>
                         {% endfor %}
-                        <div class="pt-md">
-                            {% include 'studies/paginator.html' with items=users_result request=request %}
-                        </div>
-
-                    {% else %}
-                        {% if search_query %}
-                            <p class="pt-md"><em> No results found! </em></p>
-                        {% endif %}
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-sm-7">
-                <h2 class="researchers-label"> Researchers </h2>
-                <div class="row">
-                    <div class="col-xs-6">
-                        <label> Name </label>
-                    </div>
-                    <div class="col-xs-3">
-                        <label> Permissions </label>
-                    </div>
-                    <div class="col-xs-3">
                     </div>
                 </div>
-                {% for researcher in current_researchers %}
-                    {% get_obj_perms researcher for study as "study_perms" %}
-                    <div class="row pt-xs">
-                        <div class="col-xs-6">
-                            <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.identicon_small_html }} {{ researcher.get_short_name }} </a>
-                            {% if researcher.is_org_admin %}
-                                <span class="small"><em> *{{ study.organization.name }} Admin </em></span>
-                            {% endif %}
-                        </div>
-                        <div class="col-xs-3">
-                            <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
-                                {% if "can_edit_study" in study_perms %}
-                                    Admin
-                                {% else %}
-                                    Read
-                                {% endif %}
-                            </a>
-                        </div>
-                        <div class="col-xs-3">
-                            <form method="POST">{% csrf_token %}
-                                <input type="hidden" name="remove_user" value="{{researcher.id}}"/>
-                                <button type="submit" class="btn btn-danger btn-sm"> Remove </button>
-                            </form>
-                        </div>
-                    </div>
-                {% endfor %}
             </div>
         </div>
-    </div>
-</div>
-<div class="mt-xs panel panel-default">
-    <div class="panel-body">
-        <div class="row">
-            <div class="col-md-5">
-                <div class="well modify-study-block">
-                    <center class="mt-lg">
-                        <p><i aria-hidden="true" class="fa-2x fa fa-list"></i></p>
-                        <h4> Build Study </h4>
-                        <p> Add/Modify study components </p>
-                    </center>
+        <div class="mt-xs panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="well modify-study-block">
+                            <center class="mt-lg">
+                                <p><i aria-hidden="true" class="fa-2x fa fa-list"></i></p>
+                                <h4> Build Study </h4>
+                                <p> Add/Modify study components </p>
+                            </center>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                          {% include 'studies/study_status.html' with study=study %}
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-7">
-                  {% include 'studies/study_status.html' with study=study %}
             </div>
         </div>
     </div>

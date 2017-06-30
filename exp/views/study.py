@@ -23,13 +23,15 @@ from studies.models import Study, StudyLog
 
 
 
-class StudyCreateView(LoginRequiredMixin, generic.CreateView):
+class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
     '''
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
     '''
     fields = ('name', 'organization', 'blocks', )
     model = Study
+    permission_required = 'studies.can_create_study'
+    raise_exception = True
 
     def get_form_class(self):
         return StudyForm

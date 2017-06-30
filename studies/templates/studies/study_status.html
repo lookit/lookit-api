@@ -22,15 +22,18 @@
 </script>
 <div class="well study-detail-block">
     <div class="row">
-        <div class="col-sm-6 center col-xs-12">
+        <div class="col-sm-6 col-xs-12">
             <div >
-                <h2 class="study-status"> <span class="pr-md"> Status:</span><em>{{study.get_state_display}}</em></h2>
-                <i aria-label="Status information: {{ status_tooltip }}"title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon fa fa-question-circle-o"></i>
+                <h2 class="study-status"> <span class="pr-sm"> Status:</span> </h2>
+                <span style="white-space: nowrap;">
+                    <h2 class="study-status"><em>{{study.get_state_display}}</em></h2>
+                    <i aria-label="Status information: {{ status_tooltip }}"title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon fa fa-question-circle-o"></i>
+                 </span>
             </div>
             {% if triggers %}
               <div>
-                  <form style="display:inline-block" class="change-status" method="POST" action=""> {% csrf_token %}
-                    <div style="display:inline-block" class="btn-group pl-md" role="group" aria-label="study actions">
+                  <form class="change-status pt-md" method="POST" action=""> {% csrf_token %}
+                    <div class="change-status btn-group" role="group" aria-label="study actions">
                       {% for trigger in triggers %}
                         <button type="submit" class="btn {% if trigger == 'archive' %}btn-danger {% else %}btn-success {% endif %}" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
                       {% endfor %}
