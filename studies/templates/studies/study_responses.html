@@ -3,6 +3,41 @@
 {% load exp_extras %}
 
 {% block title %}Studies{% endblock %}
+{% block head %}
+    {{ block.super }}
+    <script type="application/javascript">
+        $(document).ready(function(){
+            $('.response-data').hide();
+            $('.selectable-participant').click(function() {
+                var id = $(this)[0].id;
+                var index = id.split('-').slice(-1)[0];
+                $('.selectable-participant').removeClass('selected');
+                $('#' + id).addClass('selected');
+                $('.response-data').hide();
+                var json_ = $('#json-data-' + index).html();
+                // TODO: there needs to be a better way to do this
+                var formatted = JSON.stringify(JSON.parse(json_.split("'").join('"').split('None').join('null').split('True').join('true').split('False').join('false')), null, 2);
+                $('#json-data-' + index).html(formatted);
+                $('#response-data-' + index).show();
+            });
+        });
+    </script>
+    <style>
+        .selectable-participant {
+            cursor: pointer;
+        }
+        .selectable-participant.selected {
+            background-color: #6ec6f5;
+        }
+        .table-striped>tbody>tr {
+            background-color: transparent;
+        }
+        .table-striped>tbody>tr.selected {
+            background-color: #6ec6f5;
+        }
+    </style>
+    {{ form.media }}
+{% endblock %}
 
 {% block flash %}
   {% bootstrap_messages %}
@@ -19,49 +54,53 @@
         <h2>Responses</h2>
     </div>
     <ul class="nav nav-tabs" role="tablist">
-        <li {% if by_participant %} class='active' {% endif %} ><a href="?by_participant=true">Session Data</a></li>
-        <li {% if all_data %} class='active' {% endif %} ><a href="?all_data=true">All Session Data</a></li>
-        <li {% if all_attachments %} class='active' {% endif %} ><a href="?all_attachments=true">All Attachments</a></li>
+        <li {% if by_participant %} class='active' {% endif %} ><a href="#by_participant" role="tab" data-toggle="tab">Session Data</a></li>
+        <li {% if all_data %} class='active' {% endif %} ><a href="#all_data" role="tab" data-toggle="tab">All Session Data</a></li>
+        <li {% if all_attachments %} class='active' {% endif %} ><a href="#all_attachments" role="tab" data-toggle="tab">All Attachments</a></li>
     </ul>
-    {% if all_data %}
-
-    {% elif all_attachments %}
-
-    {% else %}
-    <div class="row">
-        <div class="col-xs-5">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>
-                                Participant ID
-                                <a href="?{% query_transform request sort='id' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                                <a href="?{% query_transform request sort='-id' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-                            </th>
-                            <th>
-                                Date
-                                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='family_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='-family_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane {% if by_participant %} active {% endif %}" id="by_participant">
+            <div class="row">
+                <div class="col-xs-5">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Participant ID
+                                        <a href="?by_participant=true&{% query_transform request sort='id' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                                        <a href="?by_participant=true&{% query_transform request sort='-id' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                                    </th>
+                                    <th>
+                                        Date
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for response in responses %}
+                              <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}'>
+                                <td>{{ response.child.user.id }}</td>
+                                <td>{{ response.exp_data.dateCreated|date:"n/d/Y"|default:"N/A" }}</td>
+                              </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-xs-7">
                     {% for response in responses %}
-                      <tr>
-                        <td>{{ response.child.user.id }}</td>
-                        <td>{{ response.exp_data.dateCreated|date:"n/d/Y"|default:"N/A" }}</td>
-
-                      </tr>
+                        <div class='response-data' id='response-data-{{ forloop.counter }}' class='hidden'>
+                            <p> {{forloop.counter}} </p>
+                            <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response.exp_data }}</pre>
+                        </div>
                     {% endfor %}
-                    </tbody>
-                </table>
+                </div>
             </div>
         </div>
-        <div class="col-xs-7">
-            
+        <div role="tabpanel" class="tab-pane {% if all_data %} active {% endif %}" id="all_data">
+        </div>
+        <div role="tabpanel" class="tab-pane {% if all_attachments %} active {% endif %}" id="all_attachments">
         </div>
     </div>
-    {% endif %}
 </div>
 {% endblock %}
