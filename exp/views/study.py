@@ -1,4 +1,4 @@
-import operator
+import operator, json
 from functools import reduce
 
 from django.http import HttpResponseRedirect
@@ -131,6 +131,8 @@ class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
         study = context['study']
 
         context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
+        context['response_data'] = [json.dumps(resp.exp_data, indent=2) for resp in context['responses']]
+        context['all_responses'] = ','.join(context['response_data'])
 
         return context
 

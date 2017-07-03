@@ -14,13 +14,10 @@
                 $('.selectable-participant').removeClass('selected');
                 $('#' + id).addClass('selected');
                 $('.response-data').hide();
-                var json_ = $('#json-data-' + index).html();
-                // TODO: there needs to be a better way to do this
-                var formatted = JSON.stringify(JSON.parse(json_.split("'").join('"').split('None').join('null').split('True').join('true').split('False').join('false')), null, 2);
-                $('#json-data-' + index).html(formatted);
                 $('#response-data-' + index).show();
             });
         });
+
     </script>
     <style>
         .selectable-participant {
@@ -88,16 +85,19 @@
                     </div>
                 </div>
                 <div class="col-xs-7">
-                    {% for response in responses %}
+                    {% for response in response_data %}
                         <div class='response-data' id='response-data-{{ forloop.counter }}' class='hidden'>
                             <p> {{forloop.counter}} </p>
-                            <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response.exp_data }}</pre>
+                            <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
                         </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
         <div role="tabpanel" class="tab-pane {% if all_data %} active {% endif %}" id="all_data">
+            <pre class='all-data'>
+                {{ all_responses }}
+            </pre>
         </div>
         <div role="tabpanel" class="tab-pane {% if all_attachments %} active {% endif %}" id="all_attachments">
         </div>
