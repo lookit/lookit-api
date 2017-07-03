@@ -1,0 +1,67 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+{% load exp_extras %}
+
+{% block title %}Studies{% endblock %}
+
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class='container'>
+    <div class='row'>
+        <h2>Responses</h2>
+    </div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li {% if by_participant %} class='active' {% endif %} ><a href="?by_participant=true">Session Data</a></li>
+        <li {% if all_data %} class='active' {% endif %} ><a href="?all_data=true">All Session Data</a></li>
+        <li {% if all_attachments %} class='active' {% endif %} ><a href="?all_attachments=true">All Attachments</a></li>
+    </ul>
+    {% if all_data %}
+
+    {% elif all_attachments %}
+
+    {% else %}
+    <div class="row">
+        <div class="col-xs-5">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Participant ID
+                                <a href="?{% query_transform request sort='id' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                                <a href="?{% query_transform request sort='-id' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                            </th>
+                            <th>
+                                Date
+                                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='family_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                                <a href="{% url 'exp:participant-list' %}?{% query_transform request sort='-family_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for response in responses %}
+                      <tr>
+                        <td>{{ response.child.user.id }}</td>
+                        <td>{{ response.exp_data.dateCreated|date:"n/d/Y"|default:"N/A" }}</td>
+
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-xs-7">
+            
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

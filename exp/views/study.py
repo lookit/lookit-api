@@ -111,3 +111,26 @@ class StudyDetailView(LoginRequiredMixin, generic.DetailView):
         context['triggers'] = self.get_permitted_triggers(
             self.object.machine.get_triggers(self.object.state))
         return context
+
+
+class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
+    template_name = 'studies/study_responses.html'
+    model = Study
+
+    def get_context_data(self, **kwargs):
+        context = super(StudyResponsesList, self).get_context_data(**kwargs)
+        if self.request.GET.get('all_data', False):
+            context['all_data'] = True
+        elif self.request.GET.get('all_attachments', False):
+            context['all_attachments'] = True
+        else:
+            context['by_participant'] = True
+
+        orderby = self.request.GET.get('sort', None)
+
+        study = context['study']
+
+        context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
+
+        return context
+
