@@ -1,19 +1,18 @@
 import uuid
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_groups_with_perms
+from kombu.utils import cached_property
 from transitions.extensions import GraphMachine as Machine
-from django.contrib.postgres.fields import ArrayField
 
-from guardian.shortcuts import get_groups_with_perms
-
-
+from accounts.models import Child, DemographicData, Organization, User
 from accounts.utils import build_study_group_name
-from accounts.models import DemographicData, Organization, Child, User
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
+
 from . import workflow
 
 
@@ -42,7 +41,8 @@ class Study(models.Model):
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
-        default=workflow.STATE_CHOICES.created
+        default=workflow.STATE_CHOICES.created,
+        db_index=True
     )
     public = models.BooleanField(default=False)
     creator = models.ForeignKey(User)
@@ -83,23 +83,23 @@ class Study(models.Model):
             ('can_view_study_demographics', 'Can View Study Demographics'),
         )
 
-    @property
+    @cached_property
     def begin_date(self):
-        active_logs = self.logs.filter(action='active')
-        if active_logs.exists():
-            return active_logs.latest('action').created_at
-        else:
+        try:
+            return self.logs.filter(action='active').first().created_at
+        except AttributeError:
             return None
 
     @property
     def end_date(self):
-        begin_date = self.begin_date
-        deactivated_logs = self.logs.filter(action='deactivated')
-        if deactivated_logs.exists() and begin_date:
-            end_date = deactivated_logs.latest('action').created_at
+        if not self.begin_date:
+            return None
+        try:
+            end_date = self.logs.filter(action='deactivate').first().created_at
+        except AttributeError:
+            return None
         else:
-            return None;
-        return end_date if end_date > begin_date else None
+            return end_date if end_date > begin_date else None
 
     @property
     def study_admin_group(self):
@@ -119,13 +119,13 @@ class Study(models.Model):
                 return group
         return None
 
-    @property
-    def completed_responses_count(self):
-        return self.responses.filter(completed=True).count();
-
-    @property
-    def incomplete_responses_count(self):
-        return self.responses.filter(completed=False).count();
+    # @property
+    # def completed_responses_count(self):
+    #     return self.responses.filter(completed=True).count()
+    #
+    # @property
+    # def incomplete_responses_count(self):
+    #     return self.responses.filter(completed=False).count()
 
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
@@ -278,7 +278,7 @@ class Log(models.Model):
 
 
 class StudyLog(Log):
-    action = models.CharField(max_length=128)
+    action = models.CharField(max_length=128, db_index=True)
     study = models.ForeignKey(
         Study,
         on_delete=models.DO_NOTHING,
@@ -289,7 +289,17 @@ class StudyLog(Log):
     def __str__(self):
         return f'<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}'  # noqa
 
+    class Meta:
+        index_together = (
+            ('study', 'action')
+        )
+
 
 class ResponseLog(Log):
-    action = models.CharField(max_length=128)
+    action = models.CharField(max_length=128, db_index=True)
     response = models.ForeignKey(Response, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        index_together = (
+            ('response', 'action')
+        )

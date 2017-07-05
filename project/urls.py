@@ -14,6 +14,7 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -23,8 +24,6 @@ from api import urls as api_urls
 from exp import urls as exp_urls
 from project import settings
 from web import urls as web_urls
-from django.conf import settings
-from django.conf.urls.static import static
 
 favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)
 
@@ -34,6 +33,7 @@ urlpatterns = [
     url(r'^exp/', include(exp_urls, namespace='exp')),
     url(r'^api/', include(api_urls)),
     url(r'^', include(web_urls, namespace='web')),
+    url(r'^', include('django.contrib.auth.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

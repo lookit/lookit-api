@@ -1,26 +1,25 @@
-import uuid
 import operator
+import uuid
 from functools import reduce
 
+from django import forms
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models import Case, Count, Q, When
+from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
-from django.views import generic
-from django import forms
-
-from django.db.models import Q
 from django.utils import timezone
-from django.db.models.functions import Lower
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth.mixins import PermissionRequiredMixin
-
+from django.views import generic
 from guardian.mixins import LoginRequiredMixin
-from guardian.shortcuts import get_objects_for_user, get_perms, get_users_with_perms
+from guardian.shortcuts import (get_objects_for_user, get_perms,
+                                get_users_with_perms)
 
-from accounts.utils import status_tooltip_text, get_permitted_triggers, update_trigger
 from accounts.models import User
-from studies.forms import StudyForm, StudyEditForm
+from accounts.utils import (get_permitted_triggers, status_tooltip_text,
+                            update_trigger)
+from studies.forms import StudyEditForm, StudyForm
 from studies.models import Study, StudyLog
-
 
 
 class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
@@ -89,6 +88,10 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
             elif 'endDate' in sort:
                 # TODO optimize using subquery
                 queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
+
+        queryset = queryset.select_related('creator')
+        queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
+        queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
 
         return queryset
 

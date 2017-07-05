@@ -85,53 +85,51 @@
     </div>
     <hr>
     <div class="row results">
-        {% if object_list %}
-            {% for study in object_list %}
-                <div class="col-xs-12 col-md-10 col-md-offset-1 well">
-                    <div class="row table-block">
-                        <div class="col-xs-12 col-sm-8">
-                            <a href="{% url 'exp:study-detail' pk=study.id %}"><strong>{{ study.name }}</strong></a>
-                        </div>
-                        <div class="col-xs-12 col-sm-2">
-                            <strong>{{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
-                        </div>
-                        <div class="col-xs-12 col-sm-2">
-                            <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
-                        </div>
-                    </div>
-                    <div class="row table-block">
-                        <div class="col-xs-12">
-                            <p> {{ study.short_description }}</p>
-                        </div>
-                    </div>
-                    <div class="row table-block">
-                        <div class="col-xs-12">
-                            <strong>Study Creator: </strong> {{ study.creator.get_short_name }}
-                        </div>
-                    </div>
-                    <div class="row table-block">
-                        <div class="col-sm-3">
-                            <strong>Status:</strong> {{ study.state|title }}
-                        </div>
-                        <div class="col-sm-3">
-                            <strong>Last Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
-                        </div>
-                        <div class="col-sm-3">
-                            <strong> Completed Responses: </strong> {{ study.completed_responses_count }}
-                        </div>
-                        <div class="col-sm-3">
-                            <strong> Incomplete Responses: </strong> {{ study.incomplete_responses_count }}
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="row">
-                <div class="col-sm-10 col-sm-offset-1">
-                    <p class="mb-lg"><em> No studies found matching this filter! </em></p>
-                </div>
-            </div>
-        {% endif %}
+      {% for study in object_list %}
+          <div class="col-xs-12 col-md-10 col-md-offset-1 well">
+              <div class="row table-block">
+                  <div class="col-xs-12 col-sm-8">
+                      <a href="{% url 'exp:study-detail' pk=study.id %}"><strong>{{ study.name }}</strong></a>
+                  </div>
+                  <div class="col-xs-12 col-sm-2">
+                      <strong>{{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
+                  </div>
+                  <div class="col-xs-12 col-sm-2">
+                      <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
+                  </div>
+              </div>
+              <div class="row table-block">
+                  <div class="col-xs-12">
+                      <p> {{ study.short_description }}</p>
+                  </div>
+              </div>
+              <div class="row table-block">
+                  <div class="col-xs-12">
+                      <strong>Study Creator: </strong> {{ study.creator.get_short_name }}
+                  </div>
+              </div>
+              <div class="row table-block">
+                  <div class="col-sm-3">
+                      <strong>Status:</strong> {{ study.state|title }}
+                  </div>
+                  <div class="col-sm-3">
+                      <strong>Last Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
+                  </div>
+                  <div class="col-sm-3">
+                      <strong> Completed Responses: </strong> {{ study.completed_responses_count }}
+                  </div>
+                  <div class="col-sm-3">
+                      <strong> Incomplete Responses: </strong> {{ study.incomplete_responses_count }}
+                  </div>
+              </div>
+          </div>
+      {% empty %}
+      <div class="row">
+          <div class="col-sm-10 col-sm-offset-1">
+              <p class="mb-lg"><em> No studies found matching this filter! </em></p>
+          </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </div>
