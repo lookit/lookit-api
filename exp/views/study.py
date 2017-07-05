@@ -119,20 +119,14 @@ class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(StudyResponsesList, self).get_context_data(**kwargs)
-        if self.request.GET.get('all_data', False):
-            context['all_data'] = True
-        elif self.request.GET.get('all_attachments', False):
-            context['all_attachments'] = True
-        else:
-            context['by_participant'] = True
 
         orderby = self.request.GET.get('sort', None)
 
         study = context['study']
-
+        context['state'] = self.request.GET.get('state', 'by_participant')
         context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
         context['response_data'] = [json.dumps(resp.exp_data, indent=2) for resp in context['responses']]
         context['all_responses'] = ','.join(context['response_data'])
-
+        # import ipdb; ipdb.set_trace()
         return context
 

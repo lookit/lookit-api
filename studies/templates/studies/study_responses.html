@@ -8,6 +8,8 @@
     <script type="application/javascript">
         $(document).ready(function(){
             $('.response-data').hide();
+            $('#response-participant-1').addClass('selected');
+            $('#response-data-1').show();
             $('.selectable-participant').click(function() {
                 var id = $(this)[0].id;
                 var index = id.split('-').slice(-1)[0];
@@ -16,8 +18,11 @@
                 $('.response-data').hide();
                 $('#response-data-' + index).show();
             });
+            var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.all-data').html());
+            var elem = $('#download-all-data')[0];
+            elem.href = data;
+            elem.download = '<name of study>-all-data.json';
         });
-
     </script>
     <style>
         .selectable-participant {
@@ -51,12 +56,12 @@
         <h2>Responses</h2>
     </div>
     <ul class="nav nav-tabs" role="tablist">
-        <li {% if by_participant %} class='active' {% endif %} ><a href="#by_participant" role="tab" data-toggle="tab">Session Data</a></li>
-        <li {% if all_data %} class='active' {% endif %} ><a href="#all_data" role="tab" data-toggle="tab">All Session Data</a></li>
-        <li {% if all_attachments %} class='active' {% endif %} ><a href="#all_attachments" role="tab" data-toggle="tab">All Attachments</a></li>
+        <li {% if state == 'by_participant' %} class='active' {% endif %} ><a href="#by_participant" role="tab" data-toggle="tab">Session Data</a></li>
+        <li {% if state == 'all_data' %} class='active' {% endif %} ><a href="#all_data" role="tab" data-toggle="tab">All Session Data</a></li>
+        <li {% if state == 'all_attachments' %} class='active' {% endif %} ><a href="#all_attachments" role="tab" data-toggle="tab">All Attachments</a></li>
     </ul>
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane {% if by_participant %} active {% endif %}" id="by_participant">
+        <div role="tabpanel" class="tab-pane {% if state == 'by_participant' %} active {% endif %}" id="by_participant">
             <div class="row">
                 <div class="col-xs-5">
                     <div class="table-responsive">
@@ -65,11 +70,13 @@
                                 <tr>
                                     <th>
                                         Participant ID
-                                        <a href="?by_participant=true&{% query_transform request sort='id' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                                        <a href="?by_participant=true&{% query_transform request sort='-id' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='id' %}"><i class="fa fa-chevron-up" role="button"></i></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='-id' %}"><i class="fa fa-chevron-down" role="button"></i></a>
                                     </th>
                                     <th>
                                         Date
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='date_modified' %}"><i class="fa fa-chevron-up" role="button"></i></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='-date_modified' %}"><i class="fa fa-chevron-down" role="button"></i></a>
                                     </th>
                                 </tr>
                             </thead>
@@ -77,7 +84,7 @@
                             {% for response in responses %}
                               <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}'>
                                 <td>{{ response.child.user.id }}</td>
-                                <td>{{ response.exp_data.dateCreated|date:"n/d/Y"|default:"N/A" }}</td>
+                                <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
                               </tr>
                             {% endfor %}
                             </tbody>
@@ -89,17 +96,51 @@
                         <div class='response-data' id='response-data-{{ forloop.counter }}' class='hidden'>
                             <p> {{forloop.counter}} </p>
                             <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
+                            <h5>Attachments</h5>
+                            <p> TODO: Use some sort of zip solution for attachment + json </p>
                         </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane {% if all_data %} active {% endif %}" id="all_data">
-            <pre class='all-data'>
-                {{ all_responses }}
-            </pre>
+        <div role="tabpanel" class="tab-pane {% if state == 'all_data' %} active {% endif %}" id="all_data">
+            <div class='row'><h4 class='col-sm-9'>All Data</h4><a id='download-all-data' class='btn btn-primary col-sm-3'>Download All Data</a></div>
+            <div class='row'><pre class='all-data'>{{ all_responses }}</pre></div>
         </div>
-        <div role="tabpanel" class="tab-pane {% if all_attachments %} active {% endif %}" id="all_attachments">
+        <div role="tabpanel" class="tab-pane {% if state == 'all_attachments' %} active {% endif %}" id="all_attachments">
+            <div class='row'><h4 class='col-sm-9'>Attachments</h4><a class='btn btn-primary col-sm-3' href="{{ study.all_attachments_download_url }}">Download all attachments</a></div>
+            <div class='row'>
+                <form method="GET">
+                    <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
+                    <input type="hidden" name="sort" value={{ sort }}>
+                </form>
+            </div>
+            <div class='row'><div class="table-responsive"><table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='all_attachments' sort='id' %}"><i class="fa fa-chevron-up" role="button"></i></a>
+                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='all_attachments' sort='-id' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                        </th>
+                        <th>
+                            Date
+                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='all_attachments' sort='date_modified' %}"><i class="fa fa-chevron-up" role="button"></i></a>
+                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='all_attachments' sort='-date_modified' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                        </th>
+                        <th><th/>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for response in responses %}
+                  <tr>
+                    <td>{{ response.attachment.name|default:"No_file.mov" }}</td>
+                    <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
+                    <td><a class='btn btn-primary' href="{{ response.attachment.download_url }}">Download</a></td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+            </table></div></div>
         </div>
     </div>
 </div>
