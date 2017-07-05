@@ -1,13 +1,12 @@
 import operator
 from functools import reduce
 
-from django.shortcuts import reverse
-from django.db.models import Q
-from django.db.models.functions import Lower
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.mixins import PermissionRequiredMixin
-
+from django.db.models import Q
+from django.db.models.functions import Lower
+from django.shortcuts import reverse
 from django.views import generic
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
@@ -85,7 +84,7 @@ class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.Li
     def get_queryset(self):
         qs = super(ResearcherListView, self).get_queryset()
         # TODO this should probably use permissions eventually, just to be safe
-        queryset = qs.filter(organization=self.request.user.organization,is_active=True)
+        queryset = qs.filter(organization=self.request.user.organization, is_active=True)
         match = self.request.GET.get('match')
         if match:
             queryset = queryset.filter(reduce(operator.or_,
@@ -94,6 +93,7 @@ class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.Li
         if sort:
             if 'family_name' in sort:
                 queryset = queryset.order_by(Lower('family_name').desc()) if '-' in sort else queryset.order_by(Lower('family_name').asc())
+        queryset = queryset.select_related('organization')
         return queryset
 
     def post(self, request, *args, **kwargs):

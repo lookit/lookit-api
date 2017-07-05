@@ -15,6 +15,7 @@ from django.utils.translation import ugettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user
+from kombu.utils import cached_property
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
@@ -122,7 +123,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def identicon_html(self):
         return mark_safe(f'<img src="{str(self.identicon)}" width="64"/>')
 
-    @property
+    @cached_property
     def is_participant(self):
         return self.demographics.exists()
 
@@ -132,15 +133,17 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             return get_objects_for_user(self, ['studies.can_view_study', 'studies.can_edit_study'])
         return None
 
-    @property
+    @cached_property
     def is_org_admin(self):
-        groups = self.groups.all().values_list('name', flat=True)
-        return self.organization and build_org_group_name(self.organization.name, 'admin') in groups
+        if not self.organization:
+            return false
+        return self.groups.filter(name=build_org_group_name(self.organization.name, 'admin')).exists()
 
     @property
     def is_org_read(self):
-        groups = self.groups.all().values_list('name', flat=True)
-        return self.organization and build_org_group_name(self.organization.name, 'read') in groups or self.is_org_admin
+        if self.is_org_admin:
+            return True
+        return self.groups.filter(name=build_org_group_name(self.organization. name, 'read')).exists()
 
     @property
     def display_permission(self):

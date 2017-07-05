@@ -12,7 +12,7 @@ def query_transform(request, **kwargs):
 
     if kwargs.get('page'):
         updated['page'] = kwargs.get('page')
-        
+
     if kwargs.get('match'):
         updated['match'] = kwargs.get('match')
 
