@@ -2,7 +2,6 @@ import base64
 import hashlib
 import uuid
 
-import pydenticon
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
@@ -12,14 +11,16 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
+from kombu.utils import cached_property
+
+import pydenticon
+from accounts.utils import build_org_group_name
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
-
-from accounts.utils import build_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
@@ -55,34 +56,34 @@ class Organization(models.Model):
 
     class Meta:
         permissions = (
-            ('can_view', _('Can View')),
-            ('can_edit', _('Can Edit')),
-            ('can_create', _('Can Create')),
-            ('can_remove', _('Can Remove')),
+            ('can_view_organization', _('Can View Organization')),
+            ('can_edit_organization', _('Can Edit Organization')),
+            ('can_create_organization', _('Can Create Organization')),
+            ('can_remove_organization', _('Can Remove Organization')),
         )
 
 
 @receiver(post_save, sender=Organization)
 def organization_post_save(sender, **kwargs):
-    """
+    '''
     Create groups for all newly created Organization instances.
     We only run on Organization creation to avoid having to check
     existence on each call to Organization.save.
-    """
+    '''
     organization, created = kwargs['instance'], kwargs['created']
 
     if created:
         from django.contrib.auth.models import Group
         for group in ['read', 'admin']:
             group_instance, created = Group.objects.get_or_create(
-                name=build_group_name(organization.name, group)
+                name=build_org_group_name(organization.name, group)
             )
 
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
-    username = models.EmailField(unique=True, verbose_name= 'Email address')
+    username = models.EmailField(unique=True, verbose_name='Email address')
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
@@ -116,31 +117,33 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @property
     def identicon_small_html(self):
-        return mark_safe(f'<img src="{str(self.identicon)}" width="18"/>')
+        return mark_safe(f'<img src="{str(self.identicon)}" width="18" />')
 
     @property
     def identicon_html(self):
-        return mark_safe(f'<img src="{str(self.identicon)}" width="64"/>')
+        return mark_safe(f'<img src="{str(self.identicon)}" width="64" />')
 
-    @property
+    @cached_property
     def is_participant(self):
         return self.demographics.exists()
 
     @property
     def studies(self):
         if not self.is_participant:
-            return get_objects_for_user(self, ['studies.can_view', 'studies.can_edit'])
+            return get_objects_for_user(self, ['studies.can_view_study', 'studies.can_edit_study'])
         return None
 
-    @property
+    @cached_property
     def is_org_admin(self):
-        groups = self.groups.all().values_list('name', flat=True)
-        return self.organization and build_group_name(self.organization.name, 'admin') in groups
+        if not self.organization:
+            return False
+        return self.groups.filter(name=build_org_group_name(self.organization.name, 'admin')).exists()
 
     @property
     def is_org_read(self):
-        groups = self.groups.all().values_list('name', flat=True)
-        return self.organization and build_group_name(self.organization.name, 'read') in groups or self.is_org_admin
+        if self.is_org_admin:
+            return True
+        return self.groups.filter(name=build_org_group_name(self.organization. name, 'read')).exists()
 
     @property
     def display_permission(self):

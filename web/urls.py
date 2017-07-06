@@ -12,6 +12,5 @@ urlpatterns = [
     url(r'^scientists/?$', flatpages_views.flatpage, dict(url='/scientists/'), name='scientists'),
     url(r'^resources/?$', flatpages_views.flatpage, dict(url='/resources/'), name='resources'),
     url(r'^contact_us/?$', flatpages_views.flatpage, dict(url='/contact_us/'), name='contact_us'),
-    url('^', include('django.contrib.auth.urls')),
     url(r'^$', flatpages_views.flatpage, dict(url='/'), name='home'),
 ]

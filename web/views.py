@@ -33,11 +33,11 @@ class StudyDetailView(generic.DetailView):
     model = Study
 
     def get_object(self, queryset=None):
-        """
+        '''
         Returns the object the view is displaying.
         By default this requires `self.queryset` and a `pk` or `slug` argument
         in the URLconf, but subclasses can override this to return any object.
-        """
+        '''
         # Use a custom queryset if provided; this is required for subclasses
         # like DateDetailView
         if queryset is None:
@@ -51,7 +51,7 @@ class StudyDetailView(generic.DetailView):
             # Get the single item from the filtered queryset
             obj = queryset.get()
         except queryset.model.DoesNotExist:
-            raise Http404(_("No %(verbose_name)s found matching the query") %
+            raise Http404(_('No %(verbose_name)s found matching the query') %
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 

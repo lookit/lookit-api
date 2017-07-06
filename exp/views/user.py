@@ -1,20 +1,19 @@
 import operator
 from functools import reduce
 
-from django.shortcuts import reverse
-from django.db.models import Q
-from django.db.models.functions import Lower
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.mixins import PermissionRequiredMixin
-
+from django.db.models import Q
+from django.db.models.functions import Lower
+from django.shortcuts import reverse
 from django.views import generic
-from guardian.mixins import LoginRequiredMixin
-from guardian.shortcuts import get_objects_for_user
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
-from accounts.utils import build_group_name
+from accounts.utils import build_org_group_name
+from guardian.mixins import LoginRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 
 
@@ -57,7 +56,7 @@ class ResponseListView(LoginRequiredMixin, generic.ListView):
     template_name = 'accounts/response_list.html'
 
     def get_queryset(self):
-        studies = get_objects_for_user(self.request.user, 'studies.can_view')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
         return Response.objects.filter(study__in=studies).order_by('study__name')
 
 
@@ -68,7 +67,7 @@ class ResponseDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = 'accounts/response_detail.html'
 
     def get_queryset(self):
-        studies = get_objects_for_user(self.request.user, 'studies.can_view')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
         return Response.objects.filter(study__in=studies).order_by('study__name')
 
 
@@ -85,7 +84,7 @@ class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.Li
     def get_queryset(self):
         qs = super(ResearcherListView, self).get_queryset()
         # TODO this should probably use permissions eventually, just to be safe
-        queryset = qs.filter(organization=self.request.user.organization,is_active=True)
+        queryset = qs.filter(organization=self.request.user.organization, is_active=True)
         match = self.request.GET.get('match')
         if match:
             queryset = queryset.filter(reduce(operator.or_,
@@ -94,11 +93,12 @@ class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.Li
         if sort:
             if 'family_name' in sort:
                 queryset = queryset.order_by(Lower('family_name').desc()) if '-' in sort else queryset.order_by(Lower('family_name').asc())
+        queryset = queryset.select_related('organization')
         return queryset
 
     def post(self, request, *args, **kwargs):
         retval = super().get(request, *args, **kwargs)
-        if 'disable' in self.request.POST and self.request.method == "POST":
+        if 'disable' in self.request.POST and self.request.method == 'POST':
             researcher = User.objects.get(pk=self.request.POST['disable'])
             researcher.is_active = False
             researcher.save()
@@ -138,8 +138,8 @@ class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.
         if self.request.POST.get('name') == 'user_permissions':
             new_perm_short = self.request.POST['value']
             org_name = self.get_object().organization.name
-            admin_group = Group.objects.get(name=build_group_name(org_name, 'admin'))
-            read_group = Group.objects.get(name=build_group_name(org_name, 'read'))
+            admin_group = Group.objects.get(name=build_org_group_name(org_name, 'admin'))
+            read_group = Group.objects.get(name=build_org_group_name(org_name, 'read'))
             researcher = self.get_object()
 
             if new_perm_short == 'org_admin':
@@ -167,7 +167,7 @@ class AssignResearcherStudies(LoginRequiredMixin, generic.UpdateView):
         return reverse('exp:researcher-list')
 
     def get_initial(self):
-        permissions = ['studies.can_view', 'studies.can_edit']
+        permissions = ['studies.can_view_study', 'studies.can_edit_study']
         initial = super(AssignResearcherStudies, self).get_initial()
         initial['studies'] = get_objects_for_user(self.object, permissions)
         return initial
@@ -223,4 +223,3 @@ class ResearcherCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.
 
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
-        # return reverse('exp:assign-studies', kwargs={'pk': self.object.id})
