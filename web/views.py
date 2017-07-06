@@ -20,7 +20,7 @@ class StudiesListView(generic.ListView):
         # TODO or by if they've taken the study before this is the spot
         # self.request.user
         qs = super().get_queryset()
-        qs = qs.filter(state='active', public=True)
+        # qs = qs.filter(state='active', public=True)
         return qs
 
 

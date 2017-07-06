@@ -22,21 +22,23 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <h1>Studies</h1>
-  <div class="row">
-    {% for obj in object_list %}
-      <div class="col-md-4">
-        <div class="thumbnail">
-          <img src="http://lorempixel.com/300/220/cats" width="300" height="220" />
-          <div class="caption">
-            <h3>{{ obj.name }}</h3>
-            <p>{{ obj.description|truncatewords:30 }}</p>
-            {{ obj.uuid }}
-            <p class="text-center"><a href="{% url 'web:study-detail' uuid=obj.uuid %}" class="btn btn-default">See details</a></p>
-          </div>
+<div class='lookit-row lookit-page-title'>
+    <h2 class='container'>Studies</h2>
+</div>
+<div class='container'>
+    <div class="lookit-row">
+        {% for obj in object_list %}
+        <div class="col-md-4">
+            <div class="thumbnail">
+                <img src="http://lorempixel.com/300/220/cats" width="300" height="220" />
+                <div class="caption">
+                    <h3>{{ obj.name }}</h3>
+                    <p>{{ obj.description|truncatewords:300 }}</p>
+                    <p class="text-center"><a href="{% url 'web:study-detail' uuid=obj.uuid %}" class="btn btn-default">See details</a></p>
+                </div>
+            </div>
         </div>
-      </div>
-    {% endfor %}
-  </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

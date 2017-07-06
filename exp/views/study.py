@@ -110,4 +110,5 @@ class StudyDetailView(LoginRequiredMixin, generic.DetailView):
         context = super(StudyDetailView, self).get_context_data(**kwargs)
         context['triggers'] = self.get_permitted_triggers(
             self.object.machine.get_triggers(self.object.state))
+        import ipdb; ipdb.set_trace()
         return context

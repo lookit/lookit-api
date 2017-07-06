@@ -12,28 +12,33 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <h1>Participate in {{ object.name }}</h1>
-    </div>
-    <div class="col-md-6 text-align-right">
-      <a href="{% url 'web:studies-list' %}" class="btn btn-primary">Back to list</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <div class="thumbnail">
-        <img src="http://lorempixel.com/600/440/cats" width="600" height="440" />
-        <div class="caption">
-          <h3>Thank you for your interest in this study! We'll help you learn more and get started.</h3>
-          <p><strong>Eligibility criteria:</strong> {{ object.criteria }}</p>
-          <p><strong>Duration:</strong> {{ object.duration }}</p>
-          <p><strong>What happens:</strong> {{ object.short_description }}</p>
-          <p><strong>What are we studying?:</strong> {{ object.long_description }}</p>
+<div class='lookit-row lookit-page-title'>
+    <div class='container'>
+        <div class='row'>
+
+            <h2 class='col-sm-10'>Participate in {{ object.name }}</h2>
+            <a href="{% url 'web:studies-list' %}" class="col-sm-2 btn btn-lg btn-primary pull-right">Back to list</a>
         </div>
-      </div>
     </div>
-  </div>
 </div>
+<div class='container'>
+    <div class="lookit-row"><div class='col-md-10 col-md-offset-1'>
+        <div class='row'><div class='col-xs-12'>
+            <img src="http://lorempixel.com/600/440/cats" width="600" height="440" />
+        </div></div>
+        <div class='row'>
+            <div class='col-md-9'>
+                <div class="caption">
+                  <h4>Thank you for your interest in this study! We'll help you learn more and get started.</h4>
+                  <p><strong>Eligibility criteria:</strong> {{ object.criteria }}</p>
+                  <p><strong>Duration:</strong> {{ object.duration }}</p>
+                  <p><strong>What happens:</strong> {{ object.short_description }}</p>
+                  <p><strong>What are we studying?:</strong> {{ object.long_description }}</p>
+                </div>
+            </div>
+            <div class='col-md-3'>
+                <a href="" class="btn-lg btn-primary pull-right">Participate Now</a>
+            </div>
+        </div>
+    </div></div>
 {% endblock %}
