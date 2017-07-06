@@ -5,13 +5,13 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
-from guardian.shortcuts import assign_perm, get_groups_with_perms
 from kombu.utils import cached_property
-from transitions.extensions import GraphMachine as Machine
 
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.utils import build_study_group_name
+from guardian.shortcuts import assign_perm, get_groups_with_perms
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
+from transitions.extensions import GraphMachine as Machine
 
 from . import workflow
 
@@ -37,7 +37,7 @@ class Study(models.Model):
     )
     structure = DateTimeAwareJSONField(default=dict)
     display_full_screen = models.BooleanField(default=True)
-    exit_url = models.URLField(default="https://lookit.mit.edu/")
+    exit_url = models.URLField(default='https://lookit.mit.edu/')
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
@@ -103,19 +103,19 @@ class Study(models.Model):
 
     @property
     def study_admin_group(self):
-        """ Fetches the study admin group """
+        ''' Fetches the study admin group '''
         groups = get_groups_with_perms(self)
         for group in groups:
-            if "STUDY" in group.name and "ADMIN" in group.name:
+            if 'STUDY' in group.name and 'ADMIN' in group.name:
                 return group
         return None
 
     @property
     def study_read_group(self):
-        """ Fetches the study read group """
+        ''' Fetches the study read group '''
         groups = get_groups_with_perms(self)
         for group in groups:
-            if "STUDY" in group.name and "READ" in group.name:
+            if 'STUDY' in group.name and 'READ' in group.name:
                 return group
         return None
 
@@ -135,7 +135,7 @@ class Study(models.Model):
         raise
 
     def clone(self):
-        """ Create a new, unsaved copy of this study. """
+        ''' Create a new, unsaved copy of this study. '''
         copy = self.__class__.objects.get(pk=self.pk)
         copy.id = None
         copy.public = False
@@ -196,6 +196,7 @@ class Study(models.Model):
 # TODO Need a post_save hook for edit that pulls studies out of approved state
 # TODO or disallows editing in pre_save if they are approved
 
+
 @receiver(post_save, sender=Study)
 def add_study_created_log(sender, instance, created, **kwargs):
     if created:
@@ -205,14 +206,15 @@ def add_study_created_log(sender, instance, created, **kwargs):
             user=instance.creator
         )
 
+
 @receiver(post_save, sender=Study)
 def study_post_save(sender, **kwargs):
-    """
+    '''
     Add study permissions to organization groups and
     create groups for all newly created Study instances. We only
     run on study creation to avoid having to check for existence
     on each call to Study.save.
-    """
+    '''
     study, created = kwargs['instance'], kwargs['created']
     if created:
         from django.contrib.auth.models import Group

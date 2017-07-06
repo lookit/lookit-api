@@ -2,7 +2,6 @@ import base64
 import hashlib
 import uuid
 
-import pydenticon
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
@@ -12,15 +11,16 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
+from kombu.utils import cached_property
+
+import pydenticon
+from accounts.utils import build_org_group_name
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user
-from kombu.utils import cached_property
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
-
-from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 
 
@@ -65,11 +65,11 @@ class Organization(models.Model):
 
 @receiver(post_save, sender=Organization)
 def organization_post_save(sender, **kwargs):
-    """
+    '''
     Create groups for all newly created Organization instances.
     We only run on Organization creation to avoid having to check
     existence on each call to Organization.save.
-    """
+    '''
     organization, created = kwargs['instance'], kwargs['created']
 
     if created:
@@ -83,7 +83,7 @@ def organization_post_save(sender, **kwargs):
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
-    username = models.EmailField(unique=True, verbose_name= 'Email address')
+    username = models.EmailField(unique=True, verbose_name='Email address')
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
@@ -117,11 +117,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @property
     def identicon_small_html(self):
-        return mark_safe(f'<img src="{str(self.identicon)}" width="18"/>')
+        return mark_safe(f'<img src="{str(self.identicon)}" width="18" />')
 
     @property
     def identicon_html(self):
-        return mark_safe(f'<img src="{str(self.identicon)}" width="64"/>')
+        return mark_safe(f'<img src="{str(self.identicon)}" width="64" />')
 
     @cached_property
     def is_participant(self):
@@ -136,7 +136,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @cached_property
     def is_org_admin(self):
         if not self.organization:
-            return false
+            return False
         return self.groups.filter(name=build_org_group_name(self.organization.name, 'admin')).exists()
 
     @property

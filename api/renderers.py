@@ -1,6 +1,6 @@
-"""
+'''
 Renderers
-"""
+'''
 import copy
 from collections import OrderedDict
 
@@ -16,24 +16,24 @@ from rest_framework_json_api import renderers, utils
 
 
 class JSONRenderer(renderers.JSONRenderer):
-    """
+    '''
     Render a JSON response per the JSON API spec:
     {
-        "data": [{
-            "type": "companies",
-            "id": 1,
-            "attributes": {
-                "name": "Mozilla",
-                "slug": "mozilla",
-                "date-created": "2014-03-13 16:33:37"
+        'data': [{
+            'type': 'companies',
+            'id': 1,
+            'attributes': {
+                'name': 'Mozilla',
+                'slug': 'mozilla',
+                'date-created': '2014-03-13 16:33:37'
             }
         }, {
-            "type": "companies",
-            "id": 2,
+            'type': 'companies',
+            'id': 2,
             ...
         }]
     }
-    """
+    '''
 
     media_type = 'application/vnd.api+json'
     format = 'vnd.api+json'
@@ -53,8 +53,8 @@ class JSONRenderer(renderers.JSONRenderer):
                 continue
 
             # Skip read_only attribute fields when `resource` is an empty
-            # serializer. Prevents the "Raw Data" form of the browsable API
-            # from rendering `"foo": null` for read only fields
+            # serializer. Prevents the 'Raw Data' form of the browsable API
+            # from rendering `'foo': null` for read only fields
             try:
                 resource[field_name]
             except KeyError:
@@ -110,7 +110,7 @@ class JSONRenderer(renderers.JSONRenderer):
 
                 data.update({field_name: {
                     'links': {
-                        "related": resource.get(field_name)},
+                        'related': resource.get(field_name)},
                     'data': relation_data,
                     'meta': {
                         'count': len(relation_data)
@@ -420,7 +420,7 @@ class JSONRenderer(renderers.JSONRenderer):
 
     def render_relationship_view(self, data, accepted_media_type=None, renderer_context=None):
         # Special case for RelationshipView
-        view = renderer_context.get("view", None)
+        view = renderer_context.get('view', None)
         render_data = OrderedDict([
             ('data', data)
         ])
@@ -438,8 +438,8 @@ class JSONRenderer(renderers.JSONRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
 
-        view = renderer_context.get("view", None)
-        request = renderer_context.get("request", None)
+        view = renderer_context.get('view', None)
+        request = renderer_context.get('request', None)
 
         # Get the resource name.
         resource_name = utils.get_resource_name(renderer_context)
@@ -465,7 +465,7 @@ class JSONRenderer(renderers.JSONRenderer):
         json_api_meta = data.get('meta', {}) if isinstance(data, dict) else {}
 
         if data and 'results' in data:
-            serializer_data = data["results"]
+            serializer_data = data['results']
         else:
             serializer_data = data
 

@@ -1,4 +1,4 @@
-"""project URL Configuration
+'''project URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.9/topics/http/urls/
@@ -13,14 +13,16 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
-"""
+'''
 from django.conf.urls import include, url
 
 from exp.views import (AssignResearcherStudies, ExperimenterDashboard,
                        OrganizationCreateView, OrganizationListView,
-                       StudyCreateView, StudyDetailView, StudyListView,StudyEditView,
-                       ResearcherCreateView, ResearcherDetailView, ResearcherListView, ParticipantListView,
-                       ParticipantDetailView, ResponseListView, ResponseDetailView)
+                       ParticipantDetailView, ParticipantListView,
+                       ResearcherCreateView, ResearcherDetailView,
+                       ResearcherListView, ResponseDetailView,
+                       ResponseListView, StudyCreateView, StudyDetailView,
+                       StudyListView, StudyUpdateView)
 
 urlpatterns = [
     url(r'organizations/$', OrganizationListView.as_view(), name='organization-list'),
@@ -36,6 +38,6 @@ urlpatterns = [
     url(r'studies/$', StudyListView.as_view(), name='study-list'),
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
-    url(r'studies/(?P<pk>\d+)/edit/$', StudyEditView.as_view(), name='study-edit'),
+    url(r'studies/(?P<pk>\d+)/edit/$', StudyUpdateView.as_view(), name='study-edit'),
     url(r'', ExperimenterDashboard.as_view(), name='dashboard')
 ]

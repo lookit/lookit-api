@@ -1,31 +1,35 @@
 from django.utils.text import slugify
+
 from guardian.shortcuts import get_perms
 
+
 def build_org_group_name(org_name, group):
-    """Returns org group name in the form of <ORGNAME>_ORG_<GROUP>"""
+    '''Returns org group name in the form of <ORGNAME>_ORG_<GROUP>'''
     return f'{slugify({org_name})}_ORG_{group}'.upper()
 
+    
 def build_study_group_name(org_name, study_name, study_pk, group):
-    """Returns org group name in the form of <ORGNAME>_ORG_<GROUP>"""
+    '''Returns org group name in the form of <ORGNAME>_ORG_<GROUP>'''
     return f'{slugify({org_name})}_{slugify({study_name})}_{study_pk}_STUDY_{group}'.upper()
 
 status_tooltip_text = {
-    "created": "Study has not been submitted for approval",
-    "active": "Study is collecting data",
-    "submitted": "Study is awaiting approval",
-    "draft": "Study has not been submitted for approval",
-    "approved": "Study is approved but not started",
-    "rejected": "Study has been rejected. Please edit before resubmitting.",
-    "retracted": "Study has been withdrawn",
-    "paused": "Study is not collecting data",
-    "deactivated": "Study is not collecting data",
-    "archived": "Study has been archived and removed from search."
+    'created': 'Study has not been submitted for approval',
+    'active': 'Study is collecting data',
+    'submitted': 'Study is awaiting approval',
+    'draft': 'Study has not been submitted for approval',
+    'approved': 'Study is approved but not started',
+    'rejected': 'Study has been rejected. Please edit before resubmitting.',
+    'retracted': 'Study has been withdrawn',
+    'paused': 'Study is not collecting data',
+    'deactivated': 'Study is not collecting data',
+    'archived': 'Study has been archived and removed from search.'
 }
 
-def get_permitted_triggers(self, triggers):
-    """ Get permitted triggers for study state """
+
+def get_permitted_triggers(view_instance, triggers):
+    ''' Get permitted triggers for study state '''
     permitted_triggers = []
-    organization_permissions = get_perms(self.request.user, self.object.organization)
+    organization_permissions = get_perms(view_instance.request.user, view_instance.object.organization)
 
     admin_triggers = ['reject', 'approve']
 
@@ -34,22 +38,23 @@ def get_permitted_triggers(self, triggers):
         if trigger.startswith('to_'):
             continue
         # remove triggers that people don't have permission to
-        if not self.request.user.is_superuser or (trigger in admin_triggers and 'is_admin' not in organization_permissions):
+        if not view_instance.request.user.is_superuser or (trigger in admin_triggers and 'is_admin' not in organization_permissions):
             continue
 
         permitted_triggers.append(trigger)
 
     return permitted_triggers
 
-def update_trigger(self):
-    """ Transition to next state in study workflow """
-    trigger = self.request.POST.get('trigger')
-    object = self.get_object()
+
+def update_trigger(view_instance):
+    ''' Transition to next state in study workflow '''
+    trigger = view_instance.request.POST.get('trigger')
+    object = view_instance.get_object()
     if trigger:
         if hasattr(object, trigger):
             # transition through workflow state
-            getattr(object, trigger)(user=self.request.user)
-    if 'comments-text' in self.request.POST.keys():
-        object.comments = self.request.POST['comments-text']
+            getattr(object, trigger)(user=view_instance.request.user)
+    if 'comments-text' in view_instance.request.POST.keys():
+        object.comments = view_instance.request.POST['comments-text']
         object.save()
     return object

@@ -8,12 +8,12 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.shortcuts import reverse
 from django.views import generic
-from guardian.mixins import LoginRequiredMixin
-from guardian.shortcuts import get_objects_for_user
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
 from accounts.utils import build_org_group_name
+from guardian.mixins import LoginRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 
 
@@ -98,7 +98,7 @@ class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.Li
 
     def post(self, request, *args, **kwargs):
         retval = super().get(request, *args, **kwargs)
-        if 'disable' in self.request.POST and self.request.method == "POST":
+        if 'disable' in self.request.POST and self.request.method == 'POST':
             researcher = User.objects.get(pk=self.request.POST['disable'])
             researcher.is_active = False
             researcher.save()
