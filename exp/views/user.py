@@ -26,7 +26,7 @@ class ParticipantListView(LoginRequiredMixin, generic.ListView):
     related to organizations that the current user has permissions to.
     '''
     template_name = 'accounts/participant_list.html'
-    queryset = User.objects.all() #exclude(demographics__isnull=True)
+    queryset = User.objects.all().exclude(demographics__isnull=True)
     model = User
 
     def get_queryset(self):
@@ -70,7 +70,7 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
         } for child in user.children.all()]
         context['full_name'] = user.get_full_name()
         context['demographics'] = user.latest_demographics.to_display()
-        # TODO what happened to the studies
+        # TODO studies no longer showing, cannot find a relationship, although this page showed them at some point
         context['studies'] = user.studies.order_by(orderby) if orderby else user.studies
         return context
 
