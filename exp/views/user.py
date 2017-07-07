@@ -32,8 +32,9 @@ class ParticipantListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         filter_val = self.request.GET.get('match', False)
         order = self.request.GET.get('sort', False) or 'family_name' # to prevent empty string overriding default here
-        # q = Q(organization=self.request.user.organization)
-        q = Q(organization__isnull=False)
+        # TODO participants who have responded to studies the current user has permission to.
+        q = Q(organization=self.request.user.organization)
+        # q = Q(organization__isnull=False)
         if filter_val:
             q = q & (Q(family_name__icontains=filter_val) | Q(username__icontains=filter_val) | Q(given_name__icontains=filter_val))
         qs = super(ParticipantListView, self).get_queryset()
@@ -59,6 +60,17 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
         context = super(ParticipantDetailView, self).get_context_data(**kwargs)
         orderby = self.request.GET.get('sort', None)
         user = context['user']
+        context['children'] = [{
+            'name': child.given_name,
+            'birthday': child.birthday,
+            'gender': child.get_gender_display(),
+            'age_at_birth': child.age_at_birth,
+            'age': child.age,
+            'extra': child.additional_information
+        } for child in user.children.all()]
+        context['full_name'] = user.get_full_name()
+        context['demographics'] = user.latest_demographics.to_display()
+        # TODO what happened to the studies
         context['studies'] = user.studies.order_by(orderby) if orderby else user.studies
         return context
 

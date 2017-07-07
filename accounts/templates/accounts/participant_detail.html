@@ -2,13 +2,13 @@
 {% load bootstrap3 %}
 {% load exp_extras %}
 
-{% block title %}{{ user.uuid }}{% endblock %}
+{% block title %}{{ full_name }}{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
 {% block content %}
   <div class="container">
-    <div><h1 style="display: inline">{{ user.given_name }} {{ user.family_name }}</h1><div class='pull-right' style="display: inline">Edit Details</div></div>
+     <h1 style="display: inline">{{ full_name }}</h1>
     <div style='margin-top: 15px'>
         <b style="display: inline">Email address: </b>
         <p style="display: inline; margin-right: 15px">{{ user.username }}</p>
@@ -16,8 +16,41 @@
         <p style="display: inline">{{ user.last_login|date:"n/d/Y"|default:"N/A" }}</p>
     </div>
     <hr/>
-    <h2>{{ user.given_name}}'s Studies</h2>
-
+    <div class='row'>
+        <div class='col-sm-6'>
+            <h3>Children</h3><ul>
+            {% for child in children %}
+                <hr>
+                <li><h4>{{child.name}}</h4></li>
+                <div><b>Birthday:</b> {{child.birthday|date:"n/d/Y"|default:"N/A"}}</div>
+                <div><b>Gender:</b> {{child.gender}}</div>
+                <div><b>Participant's Age at Child's Birth:</b> {{child.age_at_birth}}</div>
+                <div><b>Age:</b> {{child.age}}</div>
+                <div><b>Extra:</b> {{child.extra}}</div>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class='col-sm-6'>
+            <h3>Latest Demographic Data</h3>
+            <div><b>Number of Children:</b> {{ demographics.number_of_children }}</div>
+            <div><b>Children Birthdays:</b> {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+            <div><b>Laguages Spoken at Home:</b> {{ demographics.languages_spoken_at_home }}</div>
+            <div><b>Number of Guardians:</b> {{ demographics.number_of_guardians }}</div>
+            <div><b>Explanation for Guardians:</b> {{ demographics.number_of_guardians_explanation }}</div>
+            <div><b>Race:</b> {{ demographics.race_identification }}</div>
+            <div><b>Age:</b> {{ demographics.age }}</div>
+            <div><b>Gender:</b> {{ demographics.gender }}</div>
+            <div><b>Education Level:</b> {{ demographics.education_level }}</div>
+            <div><b>Spouse's Education Level:</b> {{ demographics.spouse_education_level }}</div>
+            <div><b>Annual Income:</b> {{ demographics.annual_income }}</div>
+            <div><b>Books at Home:</b> {{ demographics.number_of_books }}</div>
+            <div><b>Additional Comments:</b> {{ demographics.additional_comments }}</div>
+            <div><b>Country:</b> {{ demographics.country }}</div>
+            <div><b>State:</b> {{ demographics.state }}</div>
+            <div><b>Density:</b> {{ demographics.density }}</div>
+        </div>
+    </div>
+    <h3>{{ user.given_name}}'s Studies</h3>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>

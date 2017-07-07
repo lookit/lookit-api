@@ -124,7 +124,14 @@ class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
 
         study = context['study']
         context['state'] = self.request.GET.get('state', 'by_participant')
+        match = self.request.GET.get('match', False)
+        # if match:
+        #     Q(attachment__name__icontains)
+        #     (Q(family_name__icontains=filter_val) | Q(username__icontains=filter_val) | Q(given_name__icontains=filter_val))
+        # responses = study.responses.filter()
         context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
+
+
         context['response_data'] = [json.dumps(resp.exp_data, indent=2) for resp in context['responses']]
         context['all_responses'] = ','.join(context['response_data'])
         # import ipdb; ipdb.set_trace()
