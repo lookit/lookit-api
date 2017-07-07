@@ -84,6 +84,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ROOT_URLCONF = 'project.urls'
+LOGIN_URL = '/login/'
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
