@@ -1,7 +1,7 @@
 from django import forms
+from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 from accounts.models import DemographicData, User
-from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 from studies.models import Study
 
 
@@ -12,8 +12,8 @@ class UserForm(forms.ModelForm):
 
 
 class UserStudiesForm(forms.Form):
-    template = 'accounts/collaborator_form.html'
-    user = forms.ModelChoiceField(User.objects.all(), required=True, label='Collaborator')
+    template = 'accounts/researcher_form.html'
+    user = forms.ModelChoiceField(User.objects.all(), required=True, label='Researcher')
     studies = forms.ModelMultipleChoiceField(
         Study.objects.all(), required=True, label='Assigned Studies')
 
@@ -27,7 +27,7 @@ class UserStudiesForm(forms.Form):
             return True
 
     def save(self):
-        permissions = ['studies.view_study', 'studies.edit_study']
+        permissions = ['studies.can_view_study', 'studies.can_edit_study']
         current_permitted_objects = get_objects_for_user(self.cleaned_data['user'], permissions)
         disallowed_studies = current_permitted_objects.exclude(
             id__in=[x.id for x in self.cleaned_data['studies']])

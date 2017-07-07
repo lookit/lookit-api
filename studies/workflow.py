@@ -1,4 +1,8 @@
 
+from django.utils.translation import ugettext as _
+
+from model_utils import Choices
+
 states = [
     'created',
     'submitted',
@@ -7,12 +11,12 @@ states = [
     'approved',
     'active',
     'paused',
-    'deactivated'
+    'deactivated',
+    'archived'
 ]
+state_tuples = tuple((x, _(x.title())) for x in states)
 
-STATE_CHOICES = tuple(
- (x, x.title()) for x in states
-)
+STATE_CHOICES = Choices(*state_tuples)
 
 transitions = [
     {
@@ -32,6 +36,11 @@ transitions = [
         'source': ['submitted', 'approved', 'active', 'paused', 'deactivated'],
         'dest': 'rejected',
         'after': 'notify_submitter_of_rejection',
+    },
+    {
+        'trigger': 'archive',
+        'source': ['created', 'rejected', 'retracted', 'submitted', 'approved', 'active', 'paused', 'deactivated'],
+        'dest': 'archived',
     },
     {
         'trigger': 'retract',

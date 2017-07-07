@@ -1,0 +1,87 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+{% load exp_extras %}
+
+{% block title %}Users{% endblock %}
+{% block flash %}
+  {% bootstrap_messages %}
+{% endblock %}
+{% block content %}
+<script>
+    function populateDeleteModal(userId, userName) {
+        document.getElementById("delete-researcher-button").value = userId;
+        document.getElementById("deletingResearchName").innerHTML = userName;
+        return false;
+    }
+</script>
+  <div class="container mb-lg">
+    <div class="row">
+        <div class="col-xs-9">
+            <h2 class="researchers-header">Researchers</h2>
+        </div>
+        <div class="col-xs-3 pt-lg">
+            {% if perms.can_create_users %}
+                <a href="{% url 'exp:researcher-create' %}" class="btn btn-success" >
+                    Create Researcher
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row text-center mt-md">
+       <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+           <form method="GET">
+               <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
+               <input type="hidden" name="sort" value={{ sort }}>
+           </form>
+       </div>
+   </div>
+   <div class="row mt-xl">
+       <div class="col-xs-6 col-xs-offset-1">
+           <strong>Researcher Name</strong> <a aria-label="Sort researchers by name" class="sort-studies-button" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="family_name"%}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="family_name"></i></a>
+       </div>
+
+       <div class="col-xs-3">
+            <strong>Permissions</strong>
+       </div>
+
+       <div class="col-xs-2">
+       </div>
+   </div>
+   <hr>
+   {% for user in object_list %}
+   <div class="row pt-xs">
+        <div class="col-xs-6 col-xs-offset-1">
+            <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
+        </div>
+
+        <div class="col-xs-3">
+            {{ user.display_permission }}
+        </div>
+
+        <div class="col-xs-2">
+            {% if perms.can_remove_users %}
+                <a data-toggle="modal" id="{{ user.id }}" onclick="populateDeleteModal({{ user.id }}, '{{ user.get_short_name }}')" class="deleteResearcher btn btn-danger btn-sm" href="#deleteModal">Remove</a>
+            {% endif %}
+        </div>
+    </div>
+   {% endfor %}
+   <div class="modal fade" id="deleteModal">
+       <form class="well" method="post">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal">×</button>
+           <h3>Are you sure you want to delete this researcher? </h3>
+         </div>
+         <div class="modal-body">
+              {% csrf_token %}
+              <p> Deleting <span id="deletingResearchName"> this researcher </span> cannot be undone. </p>
+         </div>
+         <div class="modal-footer">
+              <input name="cancel" class="btn btn-default" type="submit" value="Cancel"/>
+              <button id="delete-researcher-button" name='disable' class="btn btn-danger" type="submit">
+                  Remove
+              </button>
+         </div>
+       </form>
+   </div>
+  </div>
+{% endblock %}

@@ -1,11 +1,20 @@
+import operator
+from functools import reduce
+
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.models import Group
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q
+from django.db.models.functions import Lower
 from django.shortcuts import reverse
 from django.views import generic
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
+from accounts.utils import build_org_group_name
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
-from studies.models import Study, Response
+from studies.models import Response, Study
 
 
 class ParticipantListView(LoginRequiredMixin, generic.ListView):
@@ -47,7 +56,7 @@ class ResponseListView(LoginRequiredMixin, generic.ListView):
     template_name = 'accounts/response_list.html'
 
     def get_queryset(self):
-        studies = get_objects_for_user(self.request.user, 'studies.can_view')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
         return Response.objects.filter(study__in=studies).order_by('study__name')
 
 
@@ -58,48 +67,94 @@ class ResponseDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = 'accounts/response_detail.html'
 
     def get_queryset(self):
-        studies = get_objects_for_user(self.request.user, 'studies.can_view')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
         return Response.objects.filter(study__in=studies).order_by('study__name')
 
 
-class CollaboratorListView(LoginRequiredMixin, generic.ListView):
+class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     '''
-    Displays a list of collaborators in the same organization as the current user. 
+    Displays a list of researchers in the same organization as the current user.
     '''
-    template_name = 'accounts/collaborator_list.html'
+    template_name = 'accounts/researcher_list.html'
     queryset = User.objects.filter(demographics__isnull=True)
     model = User
+    permission_required = 'accounts.can_view_users'
+    raise_exception = True
 
     def get_queryset(self):
-        qs = super(CollaboratorListView, self).get_queryset()
+        qs = super(ResearcherListView, self).get_queryset()
         # TODO this should probably use permissions eventually, just to be safe
-        return qs.filter(organization=self.request.user.organization)
+        queryset = qs.filter(organization=self.request.user.organization, is_active=True)
+        match = self.request.GET.get('match')
+        if match:
+            queryset = queryset.filter(reduce(operator.or_,
+              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(middle_name__icontains=term) for term in match.split())))
+        sort = self.request.GET.get('sort')
+        if sort:
+            if 'family_name' in sort:
+                queryset = queryset.order_by(Lower('family_name').desc()) if '-' in sort else queryset.order_by(Lower('family_name').asc())
+        queryset = queryset.select_related('organization')
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        retval = super().get(request, *args, **kwargs)
+        if 'disable' in self.request.POST and self.request.method == 'POST':
+            researcher = User.objects.get(pk=self.request.POST['disable'])
+            researcher.is_active = False
+            researcher.save()
+        return retval
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['match'] = self.request.GET.get('match') or ''
+        context['sort'] = self.request.GET.get('sort') or ''
+        return context
 
 
-class CollaboratorDetailView(LoginRequiredMixin, generic.UpdateView):
+class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
     '''
-    CollaboratorDetailView shows information about a collaborator and allows enabling or disabling
+    ResearcherDetailView shows information about a researcher and allows enabling or disabling
     a user.
     '''
     queryset = User.objects.filter(demographics__isnull=True)
     fields = ('is_active', )
-    template_name = 'accounts/collaborator_detail.html'
+    template_name = 'accounts/researcher_detail.html'
     model = User
+    permission_required = 'accounts.can_view_users'
+    raise_exception = True
 
     def get_success_url(self):
-        return reverse('exp:collaborator-detail', kwargs={'pk': self.object.id})
+        return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
 
     def post(self, request, *args, **kwargs):
-        retval = super(CollaboratorDetailView, self).post(request, *args, **kwargs)
-        if 'enable' in self.request.POST:
-            self.object.is_active = True
-        elif 'disable' in self.request.POST:
-            self.object.is_active = False
+        retval = super(ResearcherDetailView, self).post(request, *args, **kwargs)
+
+        if self.request.POST.get('name') == 'given_name':
+            self.object.given_name = self.request.POST['value']
+        if self.request.POST.get('name') == 'middle_name':
+            self.object.middle_name = self.request.POST['value']
+        if self.request.POST.get('name') == 'family_name':
+            self.object.family_name = self.request.POST['value']
+        if self.request.POST.get('name') == 'user_permissions':
+            new_perm_short = self.request.POST['value']
+            org_name = self.get_object().organization.name
+            admin_group = Group.objects.get(name=build_org_group_name(org_name, 'admin'))
+            read_group = Group.objects.get(name=build_org_group_name(org_name, 'read'))
+            researcher = self.get_object()
+
+            if new_perm_short == 'org_admin':
+                admin_group.user_set.add(researcher)
+            elif new_perm_short == 'org_read':
+                read_group.user_set.add(researcher)
+                admin_group.user_set.remove(researcher)
+            else:
+                admin_group.user_set.remove(researcher)
+                read_group.user_set.remove(researcher)
         self.object.save()
         return retval
 
 
-class AssignCollaboratorStudies(LoginRequiredMixin, generic.UpdateView):
+class AssignResearcherStudies(LoginRequiredMixin, generic.UpdateView):
     '''
     AssignUserStudies lists studies available and let's someone assign permissions
     to users.
@@ -109,22 +164,22 @@ class AssignCollaboratorStudies(LoginRequiredMixin, generic.UpdateView):
     form_class = UserStudiesForm
 
     def get_success_url(self):
-        return reverse('exp:collaborator-list')
+        return reverse('exp:researcher-list')
 
     def get_initial(self):
-        permissions = ['studies.view_study', 'studies.edit_study']
-        initial = super(AssignCollaboratorStudies, self).get_initial()
+        permissions = ['studies.can_view_study', 'studies.can_edit_study']
+        initial = super(AssignResearcherStudies, self).get_initial()
         initial['studies'] = get_objects_for_user(self.object, permissions)
         return initial
 
     def get_context_data(self, **kwargs):
-        context = super(AssignCollaboratorStudies, self).get_context_data(**kwargs)
-        #  only show studies in their organization
+        context = super(AssignResearcherStudies, self).get_context_data(**kwargs)
+        # only show studies in their organization
         context['studies'] = Study.objects.filter(organization=context['user'].organization)
         return context
 
 
-class CollaboratorCreateView(LoginRequiredMixin, generic.CreateView):
+class ResearcherCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
     '''
     UserCreateView creates a user. It forces is_active to True; is_superuser
     and is_staff to False; and sets a random 12 char password.
@@ -136,7 +191,7 @@ class CollaboratorCreateView(LoginRequiredMixin, generic.CreateView):
     definitely check to make sure it's an unusable password before it allows the reset.
     '''
     model = User
-    template_name = 'accounts/collaborator_form.html'
+    template_name = 'accounts/researcher_form.html'
     fields = (
         'username',
         'given_name',
@@ -147,6 +202,8 @@ class CollaboratorCreateView(LoginRequiredMixin, generic.CreateView):
         'is_superuser',
         'password'
     )
+    permission_required = 'accounts.can_create_users'
+    raise_exception = True
 
     def post(self, request, *args, **kwargs):
         # TODO put this on the view so that we can send the user an email once their user is saved
@@ -154,13 +211,15 @@ class CollaboratorCreateView(LoginRequiredMixin, generic.CreateView):
         self.user_password = User.objects.make_random_password(length=12)
         form = self.get_form()
         query_dict = form.data.copy()
-        # implicitly add them to their creator's organization
-        query_dict.update(is_active=True, is_superuser=False, is_staff=False, password=self.user_password, organization=self.request.user.organization)
+        query_dict.update(is_active=True, is_superuser=False, is_staff=False, password=self.user_password)
         form.data = query_dict
         if form.is_valid():
+            # implicitly add them to their creator's organization
+            form.instance.organization = self.request.user.organization
             return self.form_valid(form)
         else:
+            self.object = None
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('exp:assign-studies', kwargs={'pk': self.object.id})
+        return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})

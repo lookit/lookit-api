@@ -1,4 +1,6 @@
+from django.http import Http404
 from django.shortcuts import reverse
+from django.utils.translation import ugettext as _
 from django.views import generic
 
 from accounts import forms
@@ -18,7 +20,7 @@ class StudiesListView(generic.ListView):
         # TODO or by if they've taken the study before this is the spot
         # self.request.user
         qs = super().get_queryset()
-        qs = qs.filter(state='active')
+        qs = qs.filter(state='active', public=True)
         return qs
 
 
@@ -31,25 +33,25 @@ class StudyDetailView(generic.DetailView):
     model = Study
 
     def get_object(self, queryset=None):
-        """
+        '''
         Returns the object the view is displaying.
         By default this requires `self.queryset` and a `pk` or `slug` argument
         in the URLconf, but subclasses can override this to return any object.
-        """
+        '''
         # Use a custom queryset if provided; this is required for subclasses
         # like DateDetailView
         if queryset is None:
             queryset = self.get_queryset()
 
         uuid = self.kwargs.get('uuid')
-        
+
         if uuid is not None:
             queryset = queryset.filter(uuid=uuid)
         try:
             # Get the single item from the filtered queryset
             obj = queryset.get()
         except queryset.model.DoesNotExist:
-            raise Http404(_("No %(verbose_name)s found matching the query") %
+            raise Http404(_('No %(verbose_name)s found matching the query') %
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
@@ -63,7 +65,7 @@ class ParticipantSignupView(generic.CreateView):
     form_class = forms.ParticipantSignupForm
 
     def get_success_url(self):
-        return reverse('demographic-data-create')
+        return reverse('web:demographic-data-create')
 
 
 class DemographicDataCreateView(generic.CreateView):
@@ -79,4 +81,4 @@ class DemographicDataCreateView(generic.CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('studies-list')
+        return reverse('web:studies-list')

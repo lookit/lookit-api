@@ -1,5 +1,7 @@
+
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
+{% load exp_extras %}
 
 {% block title %}Studies{% endblock %}
 
@@ -13,25 +15,122 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container">
-    <h2>Studies</h2>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th># Responses</th>
-          <th>Active?</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for study in object_list %}
-          <tr>
-            <td><a href="{% url 'exp:study-detail' study.id %}">{{ study.name }}</a></td>
-            <td>{{ study.responses.count }}</td>
-            <td>{{ study.is_active }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-10 col-lg-8 col-xs-12">
+            <h2>  Manage Studies </h2>
+        </div>
+        {% if perms.can_create_study %}
+            <div class="col-xs-12 col-sm-2 pt-lg pull-right">
+                <a class="btn btn-success" href="{% url 'exp:study-create' %}">
+                    <i aria-hidden="true" class="fa fa-plus"></i> Create Study
+                </a>
+            </div>
+        {% endif %}
+        </div>
+    <div class="row text-center mt-lg">
+        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+            <form method="GET">
+                <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
+                <input type="hidden" name="sort" value={{ sort }}>
+                <input type="hidden" name="state" value={{ state }}>
+            </form>
+        </div>
+    </div>
+
+    <div class="row text-center button-block hidden-xs">
+        <div style="display: inline-block; float: none;">
+            <ul class="nav nav-pills">
+                <li class="multi-toggle-filter {% if state == "active" %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="active" %}">Active</a></li>
+                <li class="multi-toggle-filter {% if state == "submitted" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="submitted" %}">Submitted</a></li>
+                <li class="multi-toggle-filter {% if state == "approved" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="approved" %}">Approved</a></li>
+                <li class="multi-toggle-filter {% if state == "created" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="created" %}">Created</a></li>
+                <li class="multi-toggle-filter {% if state == "deactivated" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="deactivated" %}">Deactivated</a></li>
+                <li class="multi-toggle-filter {% if state == "myStudies" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="myStudies" %}">My Studies</a></li>
+                <li class="multi-toggle-filter {% if state == "all" %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="all" %}">All</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row visible-xs pt-lg">
+        <div class="col-xs-12">
+            <div class="dropdown show">
+                  <a class="btn btn-default dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Change filter:  {{  state|capfirst}}
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="stateDropdown">
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="active" %}">Active</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="submitted" %}">Submitted</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="created" %}">Created</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="deactivated" %}">Deactivated</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="myStudies" %}">My Studies</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="all" %}">All</a></li>
+                  </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row hidden-xs pt-md">
+        <div class="col-xs-12 col-md-10 col-md-offset-1">
+            <div class="row">
+                <div class="col-xs-8">
+                    <strong>Name</strong> <a aria-label="Sort studies by name" class="sort-studies-button" href="{% url 'exp:study-list' %}?{% query_transform request sort="name"%}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="name"></i></a>
+                </div>
+                <div class="col-xs-2">
+                    <strong>Begin Date</strong> <a class="sort-studies-button" aria-label="Sort studies by begin date" href="{% url 'exp:study-list' %}?{% query_transform request sort="beginDate" %}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="beginDate"></i></a>
+                </div>
+                <div class="col-xs-2">
+                    <strong>End Date</strong> <a class="sort-studies-button"  aria-label="Sort studies by end date" href="{% url 'exp:study-list' %}?{% query_transform request sort="endDate" %}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="endDate"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row results">
+      {% for study in object_list %}
+          <div class="col-xs-12 col-md-10 col-md-offset-1 well">
+              <div class="row table-block">
+                  <div class="col-xs-12 col-sm-8">
+                      <a href="{% url 'exp:study-detail' pk=study.id %}"><strong>{{ study.name }}</strong></a>
+                  </div>
+                  <div class="col-xs-12 col-sm-2">
+                      <strong>{{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
+                  </div>
+                  <div class="col-xs-12 col-sm-2">
+                      <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
+                  </div>
+              </div>
+              <div class="row table-block">
+                  <div class="col-xs-12">
+                      <p> {{ study.short_description }}</p>
+                  </div>
+              </div>
+              <div class="row table-block">
+                  <div class="col-xs-12">
+                      <strong>Study Creator: </strong> {{ study.creator.get_short_name }}
+                  </div>
+              </div>
+              <div class="row table-block">
+                  <div class="col-sm-3">
+                      <strong>Status:</strong> {{ study.state|title }}
+                  </div>
+                  <div class="col-sm-3">
+                      <strong>Last Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
+                  </div>
+                  <div class="col-sm-3">
+                      <strong> Completed Responses: </strong> {{ study.completed_responses_count }}
+                  </div>
+                  <div class="col-sm-3">
+                      <strong> Incomplete Responses: </strong> {{ study.incomplete_responses_count }}
+                  </div>
+              </div>
+          </div>
+      {% empty %}
+      <div class="row">
+          <div class="col-sm-10 col-sm-offset-1">
+              <p class="mb-lg"><em> No studies found matching this filter! </em></p>
+          </div>
+      </div>
+      {% endfor %}
+    </div>
   </div>
+</div>
 {% endblock %}

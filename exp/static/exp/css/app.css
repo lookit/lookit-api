@@ -1,3 +1,12 @@
+body {
+    font-family: 'Lato', sans-serif;
+    font-size : 15px;
+}
+
+.center {
+    text-align: center;
+}
+
 .flush-top {
   margin-top: 0; padding-top: 0;
 }
@@ -13,4 +22,177 @@ nav.navigation-list ul {
 }
 nav.navigation-list ul li {
   display: inline-block;
+}
+
+a.state-link {
+    color: inherit;
+    text-decoration: inherit;
+}
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    background-color: rgba(96, 96, 96, 0.15);
+    color: black
+}
+
+.sort-studies-button {
+    color: inherit;
+    text-decoration: inherit;
+}
+.pb-xs {
+    padding-bottom: 5px;
+}
+.pb-sm {
+    padding-bottom: 10px;
+}
+.pb-md {
+    padding-bottom: 15px;
+}
+.pb-lg {
+    padding-bottom: 20px;
+}
+.pr-xs {
+    padding-right: 5px;
+}
+.pr-sm {
+    padding-right: 10px;
+}
+.pr-md {
+    padding-right: 15px;
+}
+.pr-lg {
+    padding-right: 20px;
+}
+.pt-xs {
+    padding-top: 5px;
+}
+.pt-sm {
+    padding-top: 10px;
+}
+.pt-md {
+    padding-top: 15px;
+}
+.pt-lg {
+    padding-top: 20px;
+}
+.pl-sm {
+    padding-left: 5px;
+}
+.pl-md {
+    padding-left: 10px;
+}
+.pl-lg {
+    padding-left: 15px;
+}
+.pl-xl {
+    padding-left: 20px;
+}
+.mb-lg {
+    margin-bottom: 25px;
+}
+.mt-sm {
+    margin-top: 10px;
+}
+.mt-md {
+    margin-top: 15px;
+}
+.mt-lg {
+    margin-top: 20px;
+}
+.mt-xl {
+    margin-top: 25px;
+}
+
+/*Researchers*/
+.researchers-header {
+    display: inline-block;
+}
+
+.modal.in {
+    width: 80%; /* respsonsive width */
+    top:5%;
+    margin: 0 auto;
+}
+
+
+/* Study Detail */
+.study-detail-block {
+    display: block;
+    width:100%;
+    height: 190px;
+}
+.view-response-block {
+    display: block;
+    width: 100%;
+    height: 190px;
+}
+@media (max-width: 780px) {
+  .study-detail-block {
+      height:350px;
+  }
+  .comments-block.comments-label {
+      margin-top: 30px;
+  }
+}
+
+h2.study-status {
+    padding-top: 0px;
+    margin-top: 5px;
+    padding-bottom: 5px;
+    display: inline-block;
+}
+
+h4.change-status {
+    display: inline-block;
+}
+
+.comments-label {
+    color: gray;
+}
+
+textarea.rejection-comments {
+   resize: none;
+   -webkit-box-sizing: border-box;
+   -moz-box-sizing: border-box;
+   box-sizing: border-box;
+   width: 100%;
+}
+
+.comments-block {
+    padding-top: -10px;
+    margin-top: -10px;
+}
+
+.submit-comments-panel {
+    text-align: right;
+}
+
+h3.study-logs-label {
+    padding-top: 0px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+.items-pagination {
+    text-align: right;
+}
+
+.question-icon {
+    margin-left: 5px;
+    position: relative;
+    bottom: 5px;
+    left: 5px;
+}
+
+.comments-text {
+    color: gray;
+}
+
+/* Study Edit */
+h2.researchers-label {
+    font-size: 26px;
+}
+
+.modify-study-block {
+    display: block;
+    width: 100%;
+    height: 190px;
 }
