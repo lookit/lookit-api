@@ -129,7 +129,7 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         paginator = Paginator(logs_list, 10)
         page = self.request.GET.get('page')
         try:
-            logs = paginator.page(page, 1)
+            logs = paginator.page(page)
         except PageNotAnInteger:
             logs = paginator.page(1)
         except EmptyPage:
