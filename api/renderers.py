@@ -16,7 +16,7 @@ from rest_framework_json_api import utils
 
 
 class JSONAPIRenderer(renderers.JSONRenderer):
-    """
+    '''
     Render a JSON response per the JSON API spec:
     {
         'data': [{
