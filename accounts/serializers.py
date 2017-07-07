@@ -13,7 +13,10 @@ class OrganizationSerializer(UUIDSerializerMixin, ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ('name', 'url', )
+        fields = (
+            'name',
+            'url',
+        )
 
 
 class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
@@ -67,8 +70,7 @@ class UserSerializer(UUIDSerializerMixin, ModelSerializer):
     organization = UUIDResourceRelatedField(
         queryset=Organization.objects,
         many=False,
-        related_link_view_name='user-organizations-list',
-        related_link_url_kwarg='user_uuid',
+        related_link_view_name='organization-detail',
         related_link_lookup_field='uuid',
     )
     children = UUIDResourceRelatedField(

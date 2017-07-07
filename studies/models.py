@@ -45,7 +45,7 @@ class Study(models.Model):
         db_index=True
     )
     public = models.BooleanField(default=False)
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
@@ -82,6 +82,10 @@ class Study(models.Model):
             ('can_view_study_video_responses', 'Can View Study Video Responses'),
             ('can_view_study_demographics', 'Can View Study Demographics'),
         )
+
+    class JSONAPIMeta:
+        resource_name = 'studies'
+        lookup_field = 'uuid'
 
     @cached_property
     def begin_date(self):

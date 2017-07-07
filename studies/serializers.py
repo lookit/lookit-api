@@ -1,6 +1,6 @@
 from accounts.models import Child, Organization, User
-from api.serializers import (ModelSerializer, UUIDResourceRelatedField,
-                             UUIDSerializerMixin)
+from api.serializers import (ModelSerializer,
+                             UUIDResourceRelatedField, UUIDSerializerMixin)
 from rest_framework_json_api import serializers
 from studies.models import Response, Study
 
@@ -12,10 +12,13 @@ class StudySerializer(UUIDSerializerMixin, ModelSerializer):
     )
     organization = UUIDResourceRelatedField(
         queryset=Organization.objects,
-        many=False,
-        related_link_view_name='study-organizations-list',
-        related_link_url_kwarg='study_uuid',
-        related_link_lookup_field='uuid',
+        related_link_view_name='organization-detail',
+        related_link_lookup_field='uuid', many=False
+    )
+    creator = UUIDResourceRelatedField(
+        queryset=User.objects,
+        related_link_view_name='user-detail',
+        related_link_lookup_field='uuid', many=False
     )
     responses = UUIDResourceRelatedField(
         queryset=Response.objects,
@@ -43,6 +46,7 @@ class StudySerializer(UUIDSerializerMixin, ModelSerializer):
             'state',
             'public',
             'organization',
+            'creator',
             'responses',
         )
 
@@ -55,23 +59,20 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
     study = UUIDResourceRelatedField(
         queryset=Study.objects,
         many=False,
-        related_link_view_name='response-studies-list',
-        related_link_url_kwarg='response_uuid',
+        related_link_view_name='study-detail',
         related_link_lookup_field='uuid',
     )
     user = UUIDResourceRelatedField(
         source='child.user',
         queryset=User.objects,
         many=False,
-        related_link_view_name='response-users-list',
-        related_link_url_kwarg='response_uuid',
+        related_link_view_name='user-list',
         related_link_lookup_field='uuid',
     )
     child = UUIDResourceRelatedField(
         queryset=Child.objects,
         many=False,
-        related_link_view_name='response-children-list',
-        related_link_url_kwarg='response_uuid',
+        related_link_view_name='child-detail',
         related_link_lookup_field='uuid',
     )
 

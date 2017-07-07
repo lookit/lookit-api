@@ -7,8 +7,34 @@ from rest_framework_json_api.utils import (get_included_serializers,
                                            get_resource_type_from_instance,
                                            get_resource_type_from_serializer)
 
+from rest_framework.relations import reverse
+
 
 class UUIDResourceRelatedField(ResourceRelatedField):
+
+    def __init__(self, self_link_view_name=None, related_link_view_name=None, **kwargs):
+        if self_link_view_name is not None:
+            self.self_link_view_name = self_link_view_name
+        if related_link_view_name is not None:
+            self.related_link_view_name = related_link_view_name
+
+        self.related_link_lookup_field = kwargs.pop('related_link_lookup_field', self.related_link_lookup_field)
+        self.related_link_url_kwarg = kwargs.pop('related_link_url_kwarg', self.related_link_lookup_field)
+
+        self.many = kwargs.get('many', False)
+
+        # check for a model class that was passed in for the relation type
+        model = kwargs.pop('model', None)
+        if model:
+            self.model = model
+
+        # We include this simply for dependency injection in tests.
+        # We can't add it as a class attributes or it would expect an
+        # implicit `self` argument to be passed.
+        self.reverse = reverse
+
+        super(ResourceRelatedField, self).__init__(**kwargs)
+
     def to_representation(self, value):
         # force pk to be UUID
         pk = getattr(value, 'uuid', getattr(value, 'pk'))
@@ -38,7 +64,12 @@ class UUIDResourceRelatedField(ResourceRelatedField):
         self_kwargs.update({'related_field': self.field_name if self.field_name else self.parent.field_name})
         self_link = self.get_url('self', self.self_link_view_name, self_kwargs, request)
 
-        related_kwargs = {self.related_link_url_kwarg: kwargs[self.related_link_lookup_field]}
+        if not self.many and obj and hasattr(obj, self.field_name) and hasattr(getattr(obj, self.field_name), self.related_link_lookup_field):
+            # individual relationships should be referenced by their canonical URL
+            related_kwargs = {self.related_link_url_kwarg: getattr(getattr(obj, self.field_name), self.related_link_lookup_field)}
+        else:
+            related_kwargs = {self.related_link_url_kwarg: kwargs[self.related_link_lookup_field]}
+
         related_link = self.get_url('related', self.related_link_view_name, related_kwargs, request)
 
         if self_link:
