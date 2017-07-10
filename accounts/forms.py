@@ -43,17 +43,6 @@ class UserStudiesForm(forms.Form):
 
 class ParticipantSignupForm(UserCreationForm):
 
-    def clean(self):
-        cleaned_data = super(ParticipantSignupForm, self).clean()
-        password = cleaned_data.get('password')
-        confirm_password = cleaned_data.get('confirm_password')
-
-        if password != confirm_password:
-            raise forms.ValidationError(
-                'password and confirm_password do not match'
-            )
-        return cleaned_data
-
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.cleaned_data["password1"])
