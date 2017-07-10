@@ -11,7 +11,8 @@ states = [
     'approved',
     'active',
     'paused',
-    'deactivated'
+    'deactivated',
+    'archived'
 ]
 state_tuples = tuple((x, _(x.title())) for x in states)
 
@@ -35,6 +36,11 @@ transitions = [
         'source': ['submitted', 'approved', 'active', 'paused', 'deactivated'],
         'dest': 'rejected',
         'after': 'notify_submitter_of_rejection',
+    },
+    {
+        'trigger': 'archive',
+        'source': ['created', 'rejected', 'retracted', 'submitted', 'approved', 'active', 'paused', 'deactivated'],
+        'dest': 'archived',
     },
     {
         'trigger': 'retract',

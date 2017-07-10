@@ -27,7 +27,7 @@ class UserStudiesForm(forms.Form):
             return True
 
     def save(self):
-        permissions = ['studies.can_view', 'studies.can_edit']
+        permissions = ['studies.can_view_study', 'studies.can_edit_study']
         current_permitted_objects = get_objects_for_user(self.cleaned_data['user'], permissions)
         disallowed_studies = current_permitted_objects.exclude(
             id__in=[x.id for x in self.cleaned_data['studies']])
