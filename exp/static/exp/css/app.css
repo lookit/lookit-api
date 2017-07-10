@@ -3,6 +3,14 @@ body {
     font-size : 15px;
 }
 
+h1 {
+  font-size: 32px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
 .center {
     text-align: center;
 }
@@ -197,10 +205,9 @@ h2.researchers-label {
     height: 190px;
 }
 
-h1 {
-  font-size: 32px;
-}
-
-h2 {
-  font-size: 24px;
+/* Participant Detail */
+.child-name {
+    background-color: #F5F5F5;
+    padding: 5px 5px 5px 10px;
+    border-radius: 5px;
 }
