@@ -77,7 +77,6 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
             'age': child.age,
             'extra': child.additional_information
         } for child in user.children.all()]
-        context['full_name'] = user.get_full_name()
         context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
         # TODO studies no longer showing, cannot find a relationship, although this page showed them at some point
         context['studies'] = user.studies.order_by(orderby) if orderby else user.studies

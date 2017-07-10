@@ -2,13 +2,13 @@
 {% load bootstrap3 %}
 {% load exp_extras %}
 
-{% block title %}{{ full_name }}{% endblock %}
+{% block title %}{{ user.get_full_name }}{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
 {% block content %}
   <div class="container mb-xl">
-     <h1 style="display: inline">{{ full_name }}</h1>
+     <h1 style="display: inline">{{ user.get_full_name }}</h1>
     <div style='margin-top: 15px'>
         <b style="display: inline">Email address: </b>
         <p style="display: inline; margin-right: 15px">{{ user.username }}</p>
