@@ -48,8 +48,8 @@ class UserManager(BaseUserManager):
 
 
 class Organization(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4)
-    name = models.CharField(max_length=255, blank=False, null=False)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     url = models.URLField(verbose_name='Website')
 
     def __str__(self):
@@ -84,8 +84,8 @@ def organization_post_save(sender, **kwargs):
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
-    username = models.EmailField(unique=True, verbose_name='Email address')
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
+    username = models.EmailField(unique=True, verbose_name='Email address', db_index=True)
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
@@ -219,7 +219,7 @@ class Child(models.Model):
         ('39', _('39 weeks')),
         ('40>', _('40 or more weeks')),
     )
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     given_name = models.CharField(max_length=255)
     birthday = models.DateField()
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
@@ -357,7 +357,7 @@ class DemographicData(models.Model):
         related_query_name='next_demographic_data', null=True, blank=True
     )
 
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
     child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
     languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home')

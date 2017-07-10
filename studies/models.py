@@ -17,8 +17,8 @@ from . import workflow
 
 
 class Study(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
-    name = models.CharField(max_length=255, blank=False, null=False)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
     short_description = models.TextField()
     long_description = models.TextField()
@@ -249,7 +249,7 @@ def study_post_save(sender, **kwargs):
 
 
 class Response(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     study = models.ForeignKey(
         Study, on_delete=models.DO_NOTHING,
         related_name='responses'
@@ -272,6 +272,7 @@ class Response(models.Model):
         permissions = (
             ('view_response', 'View Response'),
         )
+        ordering = ['-demographic_snapshot__created_at']
 
     class JSONAPIMeta:
         resource_name = 'responses'
@@ -279,8 +280,8 @@ class Response(models.Model):
 
 
 class Log(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4)
-    created_at = models.DateTimeField(auto_now_add=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     def __str__(self):
@@ -289,6 +290,7 @@ class Log(models.Model):
     class Meta:
         abstract = True
         ordering = ['-created_at']
+
 
 class StudyLog(Log):
     action = models.CharField(max_length=128, db_index=True)
