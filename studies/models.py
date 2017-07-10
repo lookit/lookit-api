@@ -17,8 +17,8 @@ from . import workflow
 
 
 class Study(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
-    name = models.CharField(max_length=255, blank=False, null=False)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
     short_description = models.TextField()
     long_description = models.TextField()
@@ -45,7 +45,7 @@ class Study(models.Model):
         db_index=True
     )
     public = models.BooleanField(default=False)
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
@@ -82,6 +82,11 @@ class Study(models.Model):
             ('can_view_study_video_responses', 'Can View Study Video Responses'),
             ('can_view_study_demographics', 'Can View Study Demographics'),
         )
+        ordering = ['name']
+
+    class JSONAPIMeta:
+        resource_name = 'studies'
+        lookup_field = 'uuid'
 
     @cached_property
     def begin_date(self):
@@ -244,6 +249,7 @@ def study_post_save(sender, **kwargs):
 
 
 class Response(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     study = models.ForeignKey(
         Study, on_delete=models.DO_NOTHING,
         related_name='responses'
@@ -266,10 +272,16 @@ class Response(models.Model):
         permissions = (
             ('view_response', 'View Response'),
         )
+        ordering = ['-demographic_snapshot__created_at']
+
+    class JSONAPIMeta:
+        resource_name = 'responses'
+        lookup_field = 'uuid'
 
 
 class Log(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     def __str__(self):
@@ -277,6 +289,7 @@ class Log(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['-created_at']
 
 
 class StudyLog(Log):
@@ -291,6 +304,9 @@ class StudyLog(Log):
     def __str__(self):
         return f'<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}'  # noqa
 
+    class JSONAPIMeta:
+        resource_name = 'study-logs'
+        lookup_field = 'uuid'
     class Meta:
         index_together = (
             ('study', 'action')
@@ -305,3 +321,6 @@ class ResponseLog(Log):
         index_together = (
             ('response', 'action')
         )
+    class JSONAPIMeta:
+        resource_name = 'response-logs'
+        lookup_field = 'uuid'
