@@ -15,7 +15,6 @@
         <b style="display: inline">Last Active: </b>
         <p style="display: inline">{{ user.last_login|date:"n/d/Y"|default:"N/A" }}</p>
     </div>
-    <hr/>
     <div class='row'>
         <div class='col-sm-6'>
             <h3>Children</h3>
@@ -77,11 +76,18 @@
           </tr>
         </thead>
         <tbody>
-            {% for study in studies %}
+            {% for study_dict in studies %}
             <tr>
-                <td><a href="{% url 'exp:study-detail' study.id %}">{{ study.name }}</a></td>
-                <td>{{ study.state }}</td>
-                <td>{{ study.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
+                <td><a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a></td>
+                <td>
+                    {% if study_dict.completed %}
+                        Completed
+                    {% else %}
+                        In Progress
+                    {% endif %}
+
+                </td>
+                <td>{{ study_dict.study.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
             </tr>
           {% endfor %}
         </tbody>
