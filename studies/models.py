@@ -82,6 +82,7 @@ class Study(models.Model):
             ('can_view_study_video_responses', 'Can View Study Video Responses'),
             ('can_view_study_demographics', 'Can View Study Demographics'),
         )
+        ordering = ['name']
 
     class JSONAPIMeta:
         resource_name = 'studies'
@@ -287,7 +288,7 @@ class Log(models.Model):
 
     class Meta:
         abstract = True
-
+        ordering = ['-created_at']
 
 class StudyLog(Log):
     action = models.CharField(max_length=128, db_index=True)

@@ -62,6 +62,7 @@ class Organization(models.Model):
             ('can_create_organization', _('Can Create Organization')),
             ('can_remove_organization', _('Can Remove Organization')),
         )
+        ordering = ['name']
 
 
 @receiver(post_save, sender=Organization)
@@ -187,6 +188,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ('can_view_user_permissions', _('Can View User Permissions')),
             ('can_edit_user_permissions', _('Can Edit User Permissions')),
         )
+        ordering = ['username']
 
 
 class Child(models.Model):
@@ -234,6 +236,9 @@ class Child(models.Model):
     @property
     def age(self):
         return timezone.now() - self.birthday
+
+    class Meta:
+        ordering = ['-birthday']
 
     class JSONAPIMeta:
         resource_name = 'children'
@@ -370,6 +375,9 @@ class DemographicData(models.Model):
     state = USStateField(choices=('XX', _('Select a State')) + USPS_CHOICES[:])
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
     extra = DateTimeAwareJSONField(null=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     class JSONAPIMeta:
         resource_name = 'demographics'
