@@ -1,0 +1,56 @@
+<script>
+    $.fn.editable.defaults.mode = 'inline';
+    $(document).ready(function(){
+        new Clipboard('#copy-link-button');
+        $('#private-study-link').attr('readonly', 'readonly');
+        $('#copy-link-button').tooltip({
+            title: "Copied!",
+            trigger: "click",
+            placement: "bottom",
+        });
+        $('.question-icon').tooltip({
+            placement: "top",
+        });
+        $('body').on('hidden.bs.tooltip', function (e) {
+            $(e.target).data("bs.tooltip").inState.click = false;
+        });
+
+        removeTooltip = function() {
+            $('[data-toggle="tooltip"]').tooltip('hide')
+        }
+    });
+</script>
+<div class="well study-detail-block">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <div >
+                <h2 class="study-status"> <span class="pr-sm"> Status:</span> </h2>
+                <span style="white-space: nowrap;">
+                    <h2 class="study-status"><em>{{study.get_state_display}}</em></h2>
+                    <i aria-label="Status information: {{ status_tooltip }}"title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon fa fa-question-circle-o"></i>
+                 </span>
+            </div>
+            {% if triggers %}
+              <div>
+                  <form class="change-status pt-md" method="POST" action=""> {% csrf_token %}
+                    <div class="change-status btn-group" role="group" aria-label="study actions">
+                      {% for trigger in triggers %}
+                        <button type="submit" class="btn {% if trigger == 'archive' %}btn-danger {% else %}btn-success {% endif %}" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
+                      {% endfor %}
+                    </div>
+                  </form>
+              </div>
+            {% endif %}
+        </div>
+        <form class="submit-comments" method="POST"> {% csrf_token %}
+            <div class="col-sm-6 col-xs-12">
+                    <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
+                    <em><textarea class="rejection-comments {% if study.state != 'rejected' %}comments-text{% endif %}" name="comments-text" {% if study.state != 'rejected' and perms.can_approve_study %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
+                    <div class="submit-comments-panel">
+                        <button aria-label="Cancel change rejection comments" name="cancel" value="reset" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="reset"><i aria-hidden="true" class="fa fa-times"></i></button>
+                        <button aria-label="Update rejection comments" name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' %}disabled{% endif %} type="submit"><i aria-hidden="true" class="fa fa-check"></i></button>
+                    </div>
+            </div>
+        </form>
+    </div>
+</div>

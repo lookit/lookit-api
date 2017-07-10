@@ -12,54 +12,129 @@
 {% endblock %}
 {% block content %}
   <div class="container">
-    <h1>{{ study.name }}</h1>
-    <table class="table">
-      <tbody>
-        <tr>
-          <th>
-              State
-          </th>
-          <td>
-            {{ study.get_state_display }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Blocks
-          </th>
-          <td>
-            {{ study.blocks }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Participants
-          </th>
-          <td>
-            <ul>
-            {% for response in study.responses.all %}
-              <li>
-                  <a href="{% url 'exp:response-detail' response.id %}">{{ response.child.user.get_short_name }}</a>
-              </li>
-            {% endfor %}
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Actions
-          </th>
-          <td>
-            <form method="POST" action=""> {% csrf_token %}
-              <div class"btn-group" role="group" aria-label="study actions">
-                {% for trigger in triggers %}
-                  <button type="submit" class="btn btn-default" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
-                {% endfor %}
-              </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9">
+            <a href="{% url 'exp:study-list' %}"> Manage Studies </a> > {{ study.name }} </a>
+        </div>
+        <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3 button-toolbar pull-right">
+            <form method="POST" style="display:inline">{% csrf_token %}
+                <input type="hidden" name="clone_study" value="{{study.id}}"/>
+                <button type="submit" class="mr-md btn btn-default"> <i aria-hidden="true" class="fa fa-files-o"></i> Clone Study </button>
             </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
+                <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Study
+            </a>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-lg-10 col-lg-offset-1">
+              <div class="row">
+                  <div class="col-xs-12">
+                      <h1> {{ study.name}}</h1>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-xs-12">
+                      {% if study.image %}
+                        <p><img height="200" width="auto" src="{{ study.image.url }}" width="300px"></p>
+                      {% endif %}
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-xs-12">
+                     <p> {{ study.short_description }} </p>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-xs-12">
+                      <label> Purpose: </label>
+                      <p> {{ study.long_description }} </p>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-xs-12">
+                      <p>
+                          <span class="pr-md"><label class='pr-xs'> Duration: </label> {{ study.duration }} </span>
+                          <span><label class='pr-xs'> Exit URL: </label> {{ study.exit_url | default:"None specified" }} </span>
+                      </p>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-xs-12">
+                      <p>
+                          <span class="pr-md"><label class='pr-xs'> Participant eligibility: </label> {{ study.criteria }} </span>
+                      </p>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-xs-12">
+                      <p>
+                        <span class="pr-md"><label class='pr-xs'> Minimum age: </label> {{ study.min_age }} </span>
+                        <span class="pr-md"><label class='pr-xs'> Maximum age: </label> {{ study.max_age }} </span>
+                        <span class="pr-md"><label class='pr-xs'> Last edited: </label> {{ study.date_modified |date:"M d, Y" }} </span>
+                      </p>
+                  </div>
+              </div>
+              <div class="row pb-lg">
+                  <div class="col-xs-12 col-sm-3">
+                      <p>
+                         <span class="pr-md"><label class='pr-xs'> Discoverability: </label>
+                             {% if study.public %}
+                               <span> Public </span>
+                             {% else %}
+                               <span> Private </span>
+                             {% endif %}
+                         </span>
+                      </p>
+                  </div>
+                  <div class="col-xs-12 col-sm-4">
+                      {% if not study.public %}
+                          <div class="input-group">
+                            <input type="text" class="form-control" id="private-study-link" value="https://lookit.mit.edu/studies/{{study.uuid }}" aria-describedby="copy-link-button">
+                            <span onmouseout="removeTooltip(this)" data-toggle="tooltip" class="input-group-addon btn" id="copy-link-button" data-clipboard-target="#private-study-link" >
+                                <img src="/static/exp/img/clippy.svg" width="13"/>
+                            </span>
+                          </div>
+                      {% endif %}
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-8">
+                      {% include 'studies/study_status.html' with study=study %}
+                  </div>
+                  <div class="col-md-4">
+                      <div class="well view-response-block">
+                        <center class="mt-lg">
+                            <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
+                            <h4> View <strong>{{study.completed_responses_count|default:"0" }}</strong> {% if study.completed_responses_count == 1 %} Response {% else %} Responses {% endif %} </h4>
+                            <p> Inspect responses from completed studies </p>
+                        </center>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="well">
+                        <h3 class="study-logs-label"> Study Logs: </h3>
+                        {% for log in logs %}
+                            <div class="row pb-sm">
+                                <div class="col-sm-3">
+                                    {{ log.created_at }}
+                                 </div>
+                                <div class="col-sm-9">
+                                    {{ log.study.name }} study {% if log.action == "active" %} activated {% else %} {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="row">
+                            <div class="col-xs-10 col-xs-offset-1">
+                                {% include 'studies/paginator.html' with items=logs %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+      </div>
   </div>
 {% endblock %}

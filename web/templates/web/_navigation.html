@@ -21,9 +21,9 @@
         <li><a href="{% url 'web:resources' %}">Resources</a></li>
         <li><a href="{% url 'web:contact_us' %}">Contact Us</a></li>
         {% if user.is_authenticated %}
-          <li><a href="{% url 'web:logout' %}">Logout</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
         {% else %}
-          <li><a href="{% url 'web:login' %}{% if request.get_full_path != '/logout/' %}?next={{ request.get_full_path }}{% else %}?next=/{%endif %}">Login</a></li>
+          <li><a href="{% url 'login' %}{% if request.get_full_path != '/logout/' %}?next={{ request.get_full_path }}{% else %}?next=/{%endif %}">Login</a></li>
         {% endif %}
       </ul>
     </div><!-- /.navbar-collapse -->
