@@ -30,15 +30,20 @@ class ParticipantListView(LoginRequiredMixin, generic.ListView):
     model = User
 
     def get_queryset(self):
-        filter_val = self.request.GET.get('match', False)
+        qs = super().get_queryset()
+        # TODO this should probably use permissions eventually, just to be safe
+        match = self.request.GET.get('match', False)
         order = self.request.GET.get('sort', False) or 'family_name' # to prevent empty string overriding default here
-        # TODO participants who have responded to studies the current user has permission to.
-        q = Q(organization=self.request.user.organization)
-        # q = Q(organization__isnull=False)
-        if filter_val:
-            q = q & (Q(family_name__icontains=filter_val) | Q(username__icontains=filter_val) | Q(given_name__icontains=filter_val))
-        qs = super(ParticipantListView, self).get_queryset()
-        return qs.filter(q).order_by(order)
+        if match:
+            qs = qs.filter(reduce(operator.or_,
+              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(middle_name__icontains=term) for term in match.split())))
+        return qs.order_by(order)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['match'] = self.request.GET.get('match') or ''
+        context['sort'] = self.request.GET.get('sort') or ''
+        return context
 
 
 class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
