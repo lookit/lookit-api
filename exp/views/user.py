@@ -8,6 +8,9 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.shortcuts import reverse
 from django.views import generic
+from guardian.mixins import LoginRequiredMixin
+from guardian.shortcuts import get_objects_for_user
+from django.db.models import Q
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
@@ -23,12 +26,19 @@ class ParticipantListView(LoginRequiredMixin, generic.ListView):
     related to organizations that the current user has permissions to.
     '''
     template_name = 'accounts/participant_list.html'
-    queryset = User.objects.exclude(demographics__isnull=True)
+    queryset = User.objects.all().exclude(demographics__isnull=True)
     model = User
 
     def get_queryset(self):
+        filter_val = self.request.GET.get('match', False)
+        order = self.request.GET.get('sort', False) or 'family_name' # to prevent empty string overriding default here
+        # TODO participants who have responded to studies the current user has permission to.
+        q = Q(organization=self.request.user.organization)
+        # q = Q(organization__isnull=False)
+        if filter_val:
+            q = q & (Q(family_name__icontains=filter_val) | Q(username__icontains=filter_val) | Q(given_name__icontains=filter_val))
         qs = super(ParticipantListView, self).get_queryset()
-        return qs.filter(response__study__organization=self.request.user.organization)
+        return qs.filter(q).order_by(order)
 
 
 class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
@@ -36,14 +46,34 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
     ParticipantDetailView shows information about a participant that has participated in studies
     related to organizations that the current user has permission to.
     '''
-    queryset = User.objects.exclude(demographics__isnull=True).select_related('organization')
+    # queryset = User.objects.exclude(demographics__isnull=True).select_related('organization')
+    queryset = User.objects.all().select_related('organization')
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
     model = User
 
     def get_queryset(self):
         qs = super(ParticipantDetailView, self).get_queryset()
-        return qs.filter(response__study__organization=self.request.user.organization)
+        return qs.filter(organization=self.request.user.organization)
+
+    def get_context_data(self, **kwargs):
+        context = super(ParticipantDetailView, self).get_context_data(**kwargs)
+        orderby = self.request.GET.get('sort', None)
+        user = context['user']
+        context['children'] = [{
+            'name': child.given_name,
+            'birthday': child.birthday,
+            'gender': child.get_gender_display(),
+            'age_at_birth': child.age_at_birth,
+            'age': child.age,
+            'extra': child.additional_information
+        } for child in user.children.all()]
+        context['full_name'] = user.get_full_name()
+        context['demographics'] = user.latest_demographics.to_display()
+        # TODO studies no longer showing, cannot find a relationship, although this page showed them at some point
+        context['studies'] = user.studies.order_by(orderby) if orderby else user.studies
+        return context
+
 
     def get_success_url(self):
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})

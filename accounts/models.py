@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import uuid
+from datetime import date
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -235,7 +236,7 @@ class Child(models.Model):
 
     @property
     def age(self):
-        return timezone.now() - self.birthday
+        return date.today() - self.birthday
 
     class Meta:
         ordering = ['-birthday']

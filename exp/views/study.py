@@ -1,5 +1,9 @@
+<<<<<<< HEAD
+import operator, json
+=======
 import operator
 import uuid
+>>>>>>> b27775bf5991f823806baf3c7f106674b8a6b904
 from functools import reduce
 
 from django import forms
@@ -241,5 +245,30 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
         return context
 
+
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
+
+
+class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
+    template_name = 'studies/study_responses.html'
+    model = Study
+
+    def get_context_data(self, **kwargs):
+        context = super(StudyResponsesList, self).get_context_data(**kwargs)
+
+        orderby = self.request.GET.get('sort', None)
+
+        study = context['study']
+        context['state'] = self.request.GET.get('state', 'by_participant')
+        match = self.request.GET.get('match', False)
+        # if match:
+        #     Q(attachment__name__icontains)
+        # responses = study.responses.filter()
+        context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
+
+
+        context['response_data'] = [json.dumps(resp.exp_data, indent=2) for resp in context['responses']]
+        context['all_responses'] = ','.join(context['response_data'])
+
+        return context

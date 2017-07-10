@@ -14,6 +14,7 @@
       <ul class="nav navbar-nav navbar-right">
         {% if request.user.is_authenticated %}
         {% if request.user.is_superuser %}
+        <li><a href="{% url 'exp:participant-list' %}">See Participants</a></li>
         <li><a href="{% url 'exp:researcher-list' %}">Manage Organization</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
