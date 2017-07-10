@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 import operator, json
-=======
-import operator
 import uuid
->>>>>>> b27775bf5991f823806baf3c7f106674b8a6b904
 from functools import reduce
 
 from django import forms
