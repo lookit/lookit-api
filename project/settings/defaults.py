@@ -114,11 +114,11 @@ DATABASES = {
     'default': {
         'CONN_MAX_AGE': 0,
         'ENGINE': 'django.db.backends.postgresql',  # django.db.backends.postgresql
-        'NAME': os.environ.get('OSF_DB_NAME', 'lookit'),
-        'USER': os.environ.get('OSF_DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('OSF_DB_PASSWORD', ''),
-        'HOST': os.environ.get('OSF_DB_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('OSF_DB_PORT', '5432'),
+        'NAME': os.environ.get('LOOKIT_DB_NAME', 'lookit'),
+        'USER': os.environ.get('LOOKIT_DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('LOOKIT_DB_PASSWORD', ''),
+        'HOST': os.environ.get('LOOKIT_DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('LOOKIT_DB_PORT', '5432'),
         'ATOMIC_REQUESTS': True,
     }
 }
