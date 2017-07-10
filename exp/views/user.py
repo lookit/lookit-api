@@ -1,6 +1,7 @@
 import operator
 from functools import reduce
 
+from django.http import Http404
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
@@ -57,9 +58,12 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
     template_name = 'accounts/participant_detail.html'
     model = User
 
-    def get_queryset(self):
-        qs = super(ParticipantDetailView, self).get_queryset()
-        return qs.filter(organization=self.request.user.organization)
+    def get_object(self, queryset=None):
+        participant = super().get_object(queryset)
+        if participant.latest_demographics:
+            return participant
+        else:
+            raise Http404
 
     def get_context_data(self, **kwargs):
         context = super(ParticipantDetailView, self).get_context_data(**kwargs)
@@ -74,7 +78,7 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
             'extra': child.additional_information
         } for child in user.children.all()]
         context['full_name'] = user.get_full_name()
-        context['demographics'] = user.latest_demographics.to_display()
+        context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
         # TODO studies no longer showing, cannot find a relationship, although this page showed them at some point
         context['studies'] = user.studies.order_by(orderby) if orderby else user.studies
         return context
