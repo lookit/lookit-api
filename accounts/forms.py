@@ -1,7 +1,8 @@
 from django import forms
-from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
+from django.contrib.auth.forms import UserCreationForm
 
 from accounts.models import DemographicData, User
+from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 from studies.models import Study
 
 
@@ -40,24 +41,19 @@ class UserStudiesForm(forms.Form):
         return self.cleaned_data['user']
 
 
-class ParticipantSignupForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput())
-    confirm_password = forms.CharField(widget=forms.PasswordInput())
+class ParticipantSignupForm(UserCreationForm):
 
-    def clean(self):
-        cleaned_data = super(ParticipantSignupForm, self).clean()
-        password = cleaned_data.get('password')
-        confirm_password = cleaned_data.get('confirm_password')
-
-        if password != confirm_password:
-            raise forms.ValidationError(
-                'password and confirm_password do not match'
-            )
-        return cleaned_data
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        user.is_active = True
+        if commit:
+            user.save()
+        return user
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'confirm_password',
+        fields = ('username',
                   'given_name', 'middle_name', 'family_name', )
         exclude = ('user_permissions', 'groups', '_identicon', 'organization',
                    'is_active', 'is_staff', 'is_superuser', 'last_login')
