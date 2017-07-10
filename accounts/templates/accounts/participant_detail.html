@@ -7,14 +7,21 @@
   {% bootstrap_messages %}
 {% endblock %}
 {% block content %}
-  <div class="container mb-xl">
-     <h1 style="display: inline">{{ user.get_full_name }}</h1>
-    <div style='margin-top: 15px'>
-        <b style="display: inline">Email address: </b>
-        <p style="display: inline; margin-right: 15px">{{ user.username }}</p>
-        <b style="display: inline">Last Active: </b>
-        <p style="display: inline">{{ user.last_login|date:"n/d/Y"|default:"N/A" }}</p>
-    </div>
+  <div class="container mb-lg">
+      <div class="row">
+          <div class="col-xs-12">
+              <a href="{% url 'exp:participant-list' %}"> All Participants </a> > {{ user.get_short_name }} </a>
+          </div>
+      </div>
+
+      <div class="row">
+          <div class="col-xs-12">
+              <h1> {{ user.get_full_name }} </h1>
+              <span class="pr-md"><label class='pr-xs'> Email: </label> {{ user.username }} </span>
+              <span><label class='pr-xs'> Last Active: </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
+          </div>
+      </div>
+
     <div class='row'>
         <div class='col-sm-6'>
             <h3>Children</h3>
@@ -54,75 +61,41 @@
         </div>
     </div>
     <h3>{{ user.given_name}}'s Studies</h3>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>
-                Experiment Title
-                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-            </th>
-            <th>
-                Participant Status
-                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='state' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-state' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-            </th>
-            <th>
-                Date Modified
-                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for study_dict in studies %}
-            <tr>
-                <td><a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a></td>
-                <td>
-                    {% if study_dict.completed %}
-                        Completed
-                    {% else %}
-                        In Progress
-                    {% endif %}
-
-                </td>
-                <td>{{ study_dict.study.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="row">
+        <div class="col-sm-6">
+            Study Title
+            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+        </div>
+        <div class="col-sm-3">
+            Completion Status
+            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='state' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-state' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+        </div>
+        <div class="col-sm-3">
+            Date Modified
+            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+        </div>
     </div>
-    <!-- <table class="table table-compact">
-      <tbody>
-        <tr>
-          <th>
-            Identicon
-          </th>
-          <td>
-            {{ user.identicon_html }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Studies
-          </th>
-          <td>
-            {% for study in user.studies %}
-              {{ study.name }},
-            {% endfor %}
-          </td>
-        </tr>
-        <tr>
-            <th>Responses</th>
-            <td>
-                {% for resp in user.response_set.all %}
-                    <a href="{% url 'exp:response-detail' resp.id %}">{{ resp.study.name }}</a><br/>
-
-                {% endfor %}
-            </td>
-        </tr>
-      </tbody>
-    </table> -->
+    {% for study_dict in studies %}
+    <div class="row pt-sm">
+        <div class="col-sm-6 col-xs-12">
+            <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
+        </div>
+        <div class="col-sm-3 col-xs-12">
+            <span class="visible-xs">Status: </span>
+            {% if study_dict.completed %}
+                Completed
+            {% else %}
+                In Progress
+            {% endif %}
+        </div>
+        <div class="col-sm-3 col-xs-12">
+            {{ study_dict.study.date_modified|date:"n/d/Y"|default:"N/A" }}
+        </div>
+    </div>
+  {% endfor %}
   </div>
+</div>
 {% endblock %}
