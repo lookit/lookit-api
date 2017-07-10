@@ -97,22 +97,9 @@ class JSONAPIRenderer(renderers.JSONRenderer):
                 # special case for HyperlinkedIdentityField
                 relation_data = list()
 
-                # Don't try to query an empty relation
-                relation_queryset = relation_instance \
-                    if relation_instance is not None else list()
-
-                for related_object in relation_queryset:
-                    relation_data.append(
-                        OrderedDict([('type', relation_type), ('id', encoding.force_text(related_object.uuid))])
-                    )
-
                 data.update({field_name: {
                     'links': {
                         'related': resource.get(field_name)},
-                    'data': relation_data,
-                    'meta': {
-                        'count': len(relation_data)
-                    }
                 }})
                 continue
 
@@ -122,9 +109,7 @@ class JSONAPIRenderer(renderers.JSONRenderer):
                     continue
 
                 # special case for ResourceRelatedField
-                relation_data = {
-                    'data': resource.get(field_name)
-                }
+                relation_data = {}
 
                 field_links = field.get_links(resource_instance)
                 relation_data.update(
@@ -139,11 +124,7 @@ class JSONAPIRenderer(renderers.JSONRenderer):
                 if not resolved:
                     continue
                 relation_id = relation if resource.get(field_name) else None
-                relation_data = {
-                    'data': (
-                        OrderedDict([('type', relation_type), ('id', encoding.force_text(relation_id))])
-                        if relation_id is not None else None)
-                }
+                relation_data = {}
 
                 relation_data.update(
                     {'links': {'related': resource.get(field_name)}}
@@ -159,21 +140,11 @@ class JSONAPIRenderer(renderers.JSONRenderer):
 
                 if isinstance(field.child_relation, ResourceRelatedField):
                     # special case for ResourceRelatedField
-                    relation_data = {
-                        'data': resource.get(field_name)
-                    }
-
+                    relation_data = {}
                     field_links = field.child_relation.get_links(resource_instance)
                     relation_data.update(
                         {'links': field_links}
                         if field_links else dict()
-                    )
-                    relation_data.update(
-                        {
-                            'meta': {
-                                'count': len(resource.get(field_name))
-                            }
-                        }
                     )
                     data.update({field_name: relation_data})
                     continue
@@ -189,14 +160,6 @@ class JSONAPIRenderer(renderers.JSONRenderer):
                         ('type', nested_resource_instance_type),
                         ('id', encoding.force_text(nested_resource_instance.uuid))
                     ]))
-                data.update({
-                    field_name: {
-                        'data': relation_data,
-                        'meta': {
-                            'count': len(relation_data)
-                        }
-                    }
-                })
                 continue
 
             if isinstance(field, ListSerializer):
