@@ -4,14 +4,14 @@ Renderers
 import copy
 from collections import OrderedDict
 
-from django.db.models import Manager, QuerySet
+import inflection
+from django.db.models import Manager
 from django.utils import encoding, six
 from rest_framework import relations, renderers
 from rest_framework.serializers import (BaseSerializer, ListSerializer,
                                         Serializer)
 from rest_framework.settings import api_settings
 
-import inflection
 from rest_framework_json_api import utils
 
 
@@ -456,8 +456,9 @@ class JSONAPIRenderer(renderers.JSONRenderer):
         if isinstance(data, dict) and data.get('links'):
             render_data['links'] = data.get('links')
 
+        from rest_framework.routers import APIRootView
         # format the api root link list
-        if view.__class__ and view.__class__.__name__ == 'APIRoot':
+        if isinstance(view, APIRootView):
             render_data['data'] = None
             render_data['links'] = json_api_data
         else:
