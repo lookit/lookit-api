@@ -72,13 +72,21 @@
         <div class="col-xs-12 col-md-10 col-md-offset-1">
             <div class="row">
                 <div class="col-xs-8">
-                    <strong>Name</strong> <a aria-label="Sort studies by name" class="sort-studies-button" href="{% url 'exp:study-list' %}?{% query_transform request sort="name"%}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="name"></i></a>
+                    <strong>Name</strong>
+                    <a aria-label="Sort studies by name" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request sort="name"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+                    <a aria-label="Reverse sort studies by name" href="{% url 'exp:study-list' %}?{% query_transform request sort="-name"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
                 </div>
                 <div class="col-xs-2">
-                    <strong>Begin Date</strong> <a class="sort-studies-button" aria-label="Sort studies by begin date" href="{% url 'exp:study-list' %}?{% query_transform request sort="beginDate" %}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="beginDate"></i></a>
+                    <strong>Begin Date</strong>
+                    <a aria-label="Sort studies by begin date" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request sort="beginDate"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+                    <a aria-label="Reverse sort studies by begin date" href="{% url 'exp:study-list' %}?{% query_transform request sort="-beginDate"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
+
                 </div>
                 <div class="col-xs-2">
-                    <strong>End Date</strong> <a class="sort-studies-button"  aria-label="Sort studies by end date" href="{% url 'exp:study-list' %}?{% query_transform request sort="endDate" %}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="endDate"></i></a>
+                    <strong>End Date</strong>
+                    <a aria-label="Sort studies by end date" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request sort="endDate"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="endDate"></i></a>
+                    <a aria-label="Reverse sort studies by end date" href="{% url 'exp:study-list' %}?{% query_transform request sort="-endDate"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="endDate"></i></a>
+
                 </div>
             </div>
         </div>

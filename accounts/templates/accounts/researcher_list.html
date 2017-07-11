@@ -37,7 +37,9 @@
    </div>
    <div class="row mt-xl">
        <div class="col-xs-6 col-xs-offset-1">
-           <strong>Researcher Name</strong> <a aria-label="Sort researchers by name" class="sort-studies-button" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="family_name"%}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="family_name"></i></a>
+           <strong>Researcher Name</strong>
+           <a aria-label="Sort researchers by name" class="pl-sm" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="family_name"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+           <a aria-label="Reverse sort researchers by name" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="-family_name"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
        </div>
 
        <div class="col-xs-3">
