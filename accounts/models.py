@@ -1,7 +1,6 @@
 import base64
 import hashlib
 import uuid
-from datetime import timedelta
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -236,11 +235,12 @@ class Child(models.Model):
         today = timezone.now().date()
         birthday = self.birthday
         age = today - birthday
-
-        if age > timedelta(days=730): # Child is older than two years
-            return today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
+        if age.days > 730: # Child is older than two years
+            return str(today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))) + ' years'
+        elif age.days > 30:
+            return str(int(age.days/30)) + ' months'
         else:
-            return age
+            return str(age.days) + ' days'
 
     class JSONAPIMeta:
         resource_name = 'children'
