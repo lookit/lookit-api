@@ -65,6 +65,10 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
     def get_queryset(self, *args, **kwargs):
         request = self.request.GET
         queryset = get_objects_for_user(self.request.user, 'studies.can_view_study').exclude(state='archived')
+        queryset = queryset.select_related('creator')
+        queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
+        queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
+
 
         state = request.get('state')
         if state and state != 'all':
@@ -88,10 +92,6 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
             elif 'endDate' in sort:
                 # TODO optimize using subquery
                 queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
-
-        queryset = queryset.select_related('creator')
-        queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
-        queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
 
         return queryset
 
