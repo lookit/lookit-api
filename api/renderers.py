@@ -4,18 +4,18 @@ Renderers
 import copy
 from collections import OrderedDict
 
-from django.db.models import Manager, QuerySet
+import inflection
+from django.db.models import Manager
 from django.utils import encoding, six
-from rest_framework import relations
+from rest_framework import relations, renderers
 from rest_framework.serializers import (BaseSerializer, ListSerializer,
                                         Serializer)
 from rest_framework.settings import api_settings
 
-import inflection
-from rest_framework_json_api import renderers, utils
+from rest_framework_json_api import utils
 
 
-class JSONRenderer(renderers.JSONRenderer):
+class JSONAPIRenderer(renderers.JSONRenderer):
     '''
     Render a JSON response per the JSON API spec:
     {
@@ -91,43 +91,25 @@ class JSONRenderer(renderers.JSONRenderer):
             relation_type = utils.get_related_resource_type(field)
 
             if isinstance(field, relations.HyperlinkedIdentityField):
-                resolved, relation_instance = utils.get_relation_instance(
-                    resource_instance, source, field.parent)
+                resolved, relation_instance = utils.get_relation_instance(resource_instance, source, field.parent)
                 if not resolved:
                     continue
                 # special case for HyperlinkedIdentityField
                 relation_data = list()
 
-                # Don't try to query an empty relation
-                relation_queryset = relation_instance \
-                    if relation_instance is not None else list()
-
-                for related_object in relation_queryset:
-                    relation_data.append(
-                        OrderedDict([('type', relation_type),
-                                     ('id', cls.get_lookup_value(related_object))])
-                    )
-
                 data.update({field_name: {
                     'links': {
                         'related': resource.get(field_name)},
-                    'data': relation_data,
-                    'meta': {
-                        'count': len(relation_data)
-                    }
                 }})
                 continue
 
             if isinstance(field, ResourceRelatedField):
-                resolved, relation_instance = utils.get_relation_instance(
-                    resource_instance, source, field.parent)
+                resolved, relation_instance = utils.get_relation_instance(resource_instance, source, field.parent)
                 if not resolved:
                     continue
 
                 # special case for ResourceRelatedField
-                relation_data = {
-                    'data': resource.get(field_name)
-                }
+                relation_data = {}
 
                 field_links = field.get_links(resource_instance)
                 relation_data.update(
@@ -138,17 +120,11 @@ class JSONRenderer(renderers.JSONRenderer):
                 continue
 
             if isinstance(field, (relations.PrimaryKeyRelatedField, relations.HyperlinkedRelatedField)):
-                resolved, relation = utils.get_relation_instance(
-                    resource_instance, '%s_id' % source, field.parent)
+                resolved, relation = utils.get_relation_instance(resource_instance, '%s_id' % source, field.parent)
                 if not resolved:
                     continue
                 relation_id = relation if resource.get(field_name) else None
-                relation_data = {
-                    'data': (
-                        OrderedDict([('type', relation_type),
-                                     ('id', encoding.force_text(relation_id))])
-                        if relation_id is not None else None)
-                }
+                relation_data = {}
 
                 relation_data.update(
                     {'links': {'related': resource.get(field_name)}}
@@ -158,28 +134,17 @@ class JSONRenderer(renderers.JSONRenderer):
                 continue
 
             if isinstance(field, relations.ManyRelatedField):
-                resolved, relation_instance = utils.get_relation_instance(
-                    resource_instance, source, field.parent)
+                resolved, relation_instance = utils.get_relation_instance(resource_instance, source, field.parent)
                 if not resolved:
                     continue
 
                 if isinstance(field.child_relation, ResourceRelatedField):
                     # special case for ResourceRelatedField
-                    relation_data = {
-                        'data': resource.get(field_name)
-                    }
-
+                    relation_data = {}
                     field_links = field.child_relation.get_links(resource_instance)
                     relation_data.update(
                         {'links': field_links}
                         if field_links else dict()
-                    )
-                    relation_data.update(
-                        {
-                            'meta': {
-                                'count': len(resource.get(field_name))
-                            }
-                        }
                     )
                     data.update({field_name: relation_data})
                     continue
@@ -193,21 +158,12 @@ class JSONRenderer(renderers.JSONRenderer):
 
                     relation_data.append(OrderedDict([
                         ('type', nested_resource_instance_type),
-                        ('id', cls.get_lookup_value(nested_resource_instance))
+                        ('id', encoding.force_text(nested_resource_instance.uuid))
                     ]))
-                data.update({
-                    field_name: {
-                        'data': relation_data,
-                        'meta': {
-                            'count': len(relation_data)
-                        }
-                    }
-                })
                 continue
 
             if isinstance(field, ListSerializer):
-                resolved, relation_instance = utils.get_relation_instance(
-                    resource_instance, source, field.parent)
+                resolved, relation_instance = utils.get_relation_instance(resource_instance, source, field.parent)
                 if not resolved:
                     continue
 
@@ -225,15 +181,14 @@ class JSONRenderer(renderers.JSONRenderer):
 
                         relation_data.append(OrderedDict([
                             ('type', nested_resource_instance_type),
-                            ('id', cls.get_lookup_value(nested_resource_instance))
+                            ('id', encoding.force_text(nested_resource_instance.uuid))
                         ]))
 
                     data.update({field_name: {'data': relation_data}})
                     continue
 
             if isinstance(field, Serializer):
-                resolved, relation_instance = utils.get_relation_instance(
-                    resource_instance, source, field.parent)
+                resolved, relation_instance = utils.get_relation_instance(resource_instance, source, field.parent)
                 if not resolved:
                     continue
 
@@ -242,7 +197,7 @@ class JSONRenderer(renderers.JSONRenderer):
                         'data': (
                             OrderedDict([
                                 ('type', relation_type),
-                                ('id', cls.get_lookup_value(relation_instance))
+                                ('id', encoding.force_text(relation_instance.uuid))
                             ]) if resource.get(field_name) else None)
                     }
                 })
@@ -284,8 +239,7 @@ class JSONRenderer(renderers.JSONRenderer):
                 relation_instance = getattr(resource_instance, field_name)
             except AttributeError:
                 try:
-                    # For ManyRelatedFields if `related_name` is not set we need to access
-                    # `foo_set` from `source`
+                    # For ManyRelatedFields if `related_name` is not set we need to access `foo_set` from `source`
                     relation_instance = getattr(resource_instance, field.child_relation.source)
                 except AttributeError:
                     if not hasattr(current_serializer, field.source):
@@ -391,13 +345,11 @@ class JSONRenderer(renderers.JSONRenderer):
 
     @classmethod
     def build_json_resource_obj(cls, fields, resource, resource_instance, resource_name):
-
         resource_data = [
             ('type', resource_name),
-            ('id', cls.get_lookup_value(resource_instance)),
+            ('id', encoding.force_text(resource_instance.uuid) if resource_instance else None),
             ('attributes', cls.extract_attributes(fields, resource)),
         ]
-
         relationships = cls.extract_relationships(fields, resource, resource_instance)
         if relationships:
             resource_data.append(('relationships', relationships))
@@ -406,17 +358,6 @@ class JSONRenderer(renderers.JSONRenderer):
                 isinstance(fields[api_settings.URL_FIELD_NAME], relations.RelatedField):
             resource_data.append(('links', {'self': resource[api_settings.URL_FIELD_NAME]}))
         return OrderedDict(resource_data)
-
-    @classmethod
-    def get_lookup_value(cls, resource_instance):
-        lookup_id = None
-        if resource_instance and hasattr(resource_instance.JSONAPIMeta, 'lookup_field'):
-            field_name = getattr(resource_instance.JSONAPIMeta, 'lookup_field')
-            lookup_id = getattr(resource_instance, field_name, resource_instance.pk)
-        elif resource_instance:
-            lookup_id = resource_instance.pk
-
-        return encoding.force_text(lookup_id) if lookup_id is not None else lookup_id
 
     def render_relationship_view(self, data, accepted_media_type=None, renderer_context=None):
         # Special case for RelationshipView
@@ -427,12 +368,12 @@ class JSONRenderer(renderers.JSONRenderer):
         links = view.get_links()
         if links:
             render_data.update({'links': links}),
-        return super(JSONRenderer, self).render(
+        return super().render(
             render_data, accepted_media_type, renderer_context
         )
 
     def render_errors(self, data, accepted_media_type=None, renderer_context=None):
-        return super(JSONRenderer, self).render(
+        return super().render(
             utils.format_errors(data), accepted_media_type, renderer_context
         )
 
@@ -455,7 +396,7 @@ class JSONRenderer(renderers.JSONRenderer):
         # If `resource_name` is set to None then render default as the dev
         # wants to build the output format manually.
         if resource_name is None or resource_name is False:
-            return super(JSONRenderer, self).render(
+            return super().render(
                 data, accepted_media_type, renderer_context
             )
 
@@ -488,28 +429,24 @@ class JSONRenderer(renderers.JSONRenderer):
                     resource = serializer_data[position]  # Get current resource
                     resource_instance = serializer.instance[position]  # Get current instance
 
-                    json_resource_obj = self.build_json_resource_obj(
-                        fields, resource, resource_instance, resource_name)
+                    json_resource_obj = self.build_json_resource_obj(fields, resource, resource_instance, resource_name)
                     meta = self.extract_meta(serializer, resource)
                     if meta:
                         json_resource_obj.update({'meta': utils.format_keys(meta)})
                     json_api_data.append(json_resource_obj)
 
-                    included = self.extract_included(
-                        fields, resource, resource_instance, included_resources)
+                    included = self.extract_included(fields, resource, resource_instance, included_resources)
                     if included:
                         json_api_included.extend(included)
             else:
                 resource_instance = serializer.instance
-                json_api_data = self.build_json_resource_obj(
-                    fields, serializer_data, resource_instance, resource_name)
+                json_api_data = self.build_json_resource_obj(fields, serializer_data, resource_instance, resource_name)
 
                 meta = self.extract_meta(serializer, serializer_data)
                 if meta:
                     json_api_data.update({'meta': utils.format_keys(meta)})
 
-                included = self.extract_included(
-                    fields, serializer_data, resource_instance, included_resources)
+                included = self.extract_included(fields, serializer_data, resource_instance, included_resources)
                 if included:
                     json_api_included.extend(included)
 
@@ -519,8 +456,9 @@ class JSONRenderer(renderers.JSONRenderer):
         if isinstance(data, dict) and data.get('links'):
             render_data['links'] = data.get('links')
 
+        from rest_framework.routers import APIRootView
         # format the api root link list
-        if view.__class__ and view.__class__.__name__ == 'APIRoot':
+        if isinstance(view, APIRootView):
             render_data['data'] = None
             render_data['links'] = json_api_data
         else:
@@ -537,12 +475,11 @@ class JSONRenderer(renderers.JSONRenderer):
                     unique_compound_documents.append(included_dict)
 
             # Sort the items by type then by id
-            render_data['included'] = sorted(
-                unique_compound_documents, key=lambda item: (item['type'], item['id']))
+            render_data['included'] = sorted(unique_compound_documents, key=lambda item: (item['type'], item['id']))
 
         if json_api_meta:
             render_data['meta'] = utils.format_keys(json_api_meta)
 
-        return super(JSONRenderer, self).render(
+        return super().render(
             render_data, accepted_media_type, renderer_context
         )

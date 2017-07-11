@@ -1,5 +1,30 @@
+{% extends 'web/base.html' %}
+{% load bootstrap3 %}
+{% block title %}Signup{% endblock %}
 
-<form method="POST" action="">{% csrf_token %}
-{{ form.as_p }}
-<input type="submit" value="Create account" />
-</form>
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h1 class="panel-title">Create Account</h1>
+      </div>
+      <div class="panel-body">
+        <form method="POST" action="">{% csrf_token %}
+          {% bootstrap_form form %}
+          {% buttons %}
+            <button type="submit" class="btn btn-default">
+              {% bootstrap_icon "plus" %} Create Account
+            </button>
+          {% endbuttons %}
+        </form>
+    </div>
+  </div>
+{% endblock %}
