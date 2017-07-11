@@ -215,18 +215,18 @@
             <div class="row hidden-xs hidden-sm pt-sm">
                 <div class="col-md-6 col-xs-12">
                     Study Title
-                    <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                    <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                    <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
                 </div>
                 <div class="col-md-3 col-xs-12">
                     Completion Status
-                    <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='completed' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                    <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-completed' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                    <a aria-label="Sort user studies by completion status" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='completed' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-completed' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
                 </div>
                 <div class="col-md-3 col-xs-12">
                     Date Modified
-                    <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                    <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                    <a aria-label="Sort user studies by date modified" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
                 </div>
                 <hr>
             </div>
