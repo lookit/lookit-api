@@ -37,7 +37,7 @@ class ParticipantListView(LoginRequiredMixin, generic.ListView):
         order = self.request.GET.get('sort', False) or 'family_name' # to prevent empty string overriding default here
         if match:
             qs = qs.filter(reduce(operator.or_,
-              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(middle_name__icontains=term) for term in match.split())))
+              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(username__icontains=term) for term in match.split())))
         return qs.order_by(order)
 
     def get_context_data(self, **kwargs):

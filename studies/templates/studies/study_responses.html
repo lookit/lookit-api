@@ -29,9 +29,9 @@
 
                 $('.nav-tabs a').click(function (e) {
                     $(this).tab('show');
-                    var scrollLoc = $('body').scrollTop() || $('html').scrollTop();
+                    var scroll = $('body').scrollTop() || $('html').scrollTop();
                     window.location.hash = this.hash;
-                    $('html,body').scrollTop(scrollLoc);
+                    $('html,body').scrollTop(scrollmem);
               });
             });
         });
