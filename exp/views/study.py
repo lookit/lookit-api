@@ -122,6 +122,12 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
+        queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
+        return queryset
+
     @property
     def study_logs(self):
         ''' Returns a page object with 10 study logs'''

@@ -119,14 +119,6 @@ class Study(models.Model):
                 return group
         return None
 
-    # @property
-    # def completed_responses_count(self):
-    #     return self.responses.filter(completed=True).count()
-    #
-    # @property
-    # def incomplete_responses_count(self):
-    #     return self.responses.filter(completed=False).count()
-
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
         user = ev.kwargs.get('user')
