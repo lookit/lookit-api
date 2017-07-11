@@ -52,22 +52,13 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
     ParticipantDetailView shows information about a participant that has participated in studies
     related to organizations that the current user has permission to.
     '''
-    # queryset = User.objects.exclude(demographics__isnull=True).select_related('organization')
-    queryset = User.objects.all().select_related('organization')
+    queryset = User.objects.exclude(demographics__isnull=True)
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
     model = User
 
-    def get_object(self, queryset=None):
-        participant = super().get_object(queryset)
-        if participant.latest_demographics:
-            return participant
-        else:
-            raise Http404
-
     def get_context_data(self, **kwargs):
         context = super(ParticipantDetailView, self).get_context_data(**kwargs)
-        orderby = self.request.GET.get('sort', None)
         user = context['user']
         context['children'] = [{
             'name': child.given_name,
@@ -78,11 +69,22 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
             'extra': child.additional_information
         } for child in user.children.all()]
         context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
-        resps = Response.objects.filter(child__user=self.get_object())
-        context['studies'] = [{'study': resp.study, 'completed': resp.completed} for resp in resps]
-        # context['studies'] = user.studies.order_by(orderby) if orderby else user.studies
+        context['studies'] = self.get_study_info()
         return context
 
+    def get_study_info(self):
+        """ Pulls responses belonging to user and returns study info """
+        resps = Response.objects.filter(child__user=self.get_object())
+        orderby = self.request.GET.get('sort', None)
+        if orderby:
+            if 'date_modified' in orderby:
+                resps = resps.order_by(orderby)
+            elif 'completed' in orderby:
+                resps = resps.order_by(orderby.replace('-', '') if '-' in orderby else '-' + orderby)
+        studies = [{'modified': resp.date_modified, 'study': resp.study, 'name': resp.study.name, 'completed': resp.completed} for resp in resps]
+        if orderby and 'name' in orderby:
+            studies = sorted(studies, key=operator.itemgetter('name'), reverse=True if '-' in orderby else False)
+        return studies
 
     def get_success_url(self):
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})

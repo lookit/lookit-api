@@ -209,41 +209,79 @@
     </div>
     <hr>
     <h3>{{ user.given_name}}'s Studies</h3>
-    <div class="row">
-        <div class="col-sm-6">
-            Study Title
-            <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-        </div>
-        <div class="col-sm-3">
-            Completion Status
-            <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='state' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-state' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-        </div>
-        <div class="col-sm-3">
-            Date Modified
-            <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-            <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-        </div>
-    </div>
-    {% for study_dict in studies %}
-    <div class="row pt-sm">
-        <div class="col-sm-6 col-xs-12">
-            <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
-        </div>
-        <div class="col-sm-3 col-xs-12">
-            <span class="visible-xs">Status: </span>
-            {% if study_dict.completed %}
-                Completed
-            {% else %}
-                In Progress
-            {% endif %}
-        </div>
-        <div class="col-sm-3 col-xs-12">
-            {{ study_dict.study.date_modified|date:"n/d/Y"|default:"N/A" }}
-        </div>
-    </div>
-  {% endfor %}
+    {% if studies %}
+            <div class="row hidden-xs hidden-sm pt-sm">
+                <div class="col-md-6 col-xs-12">
+                    Study Title
+                    <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    Completion Status
+                    <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='completed' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-completed' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    Date Modified
+                    <a class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                </div>
+                <hr>
+            </div>
+            <div class="row mt-xs visible-xs visible-sm">
+                <div class="col-xs-12 mt-lg mb-lg">
+                    <div class="btn-group">
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                             Study Title <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" role="menu">
+                            <li> <a aria-label="Sort ascending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}">Sort A-Z</a></li>
+                            <li> <a aria-label="Sort descending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}">Sort Z-A</a></li>
+                          </ul>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                           Completion Status <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a aria-label="Sort ascending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='completed' %}">Sort A-Z </a></li>
+                          <li><a aria-label="Sort descending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-completed' %}">Sort Z-A </a></li>
+                        </ul>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                           Date Modified <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a aria-label="Sort ascending by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}">Sort Asc</a></li>
+                          <li><a aria-label="Sort descending by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}">Sort Desc</a></li>
+                        </ul>
+                      </div>
+                   </div>
+                </div>
+            </div>
+            {% for study_dict in studies %}
+            <div class="row pt-sm">
+                <div class="col-md-6 col-xs-12">
+                    <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    <span class="visible-xs visible-sm">Status: </span>
+                    {% if study_dict.completed %}
+                        Completed
+                    {% else %}
+                        In Progress
+                    {% endif %}
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    {{ study_dict.modified |date:"n/d/Y"|default:"N/A" }}
+                </div>
+            </div>
+          {% endfor %}
+    {% else %}
+      <p><em> User has not participated in any studies yet! </em></p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
