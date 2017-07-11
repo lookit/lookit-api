@@ -262,6 +262,16 @@ class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
         study = context['study']
         context['state'] = self.request.GET.get('state', 'by_participant')
         context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
-        context['response_data'] = [json.dumps(resp.exp_data, indent=2) for resp in context['responses']]
+        context['response_data'] = [json.dumps({
+            'sequence': resp.sequence,
+            'conditions': resp.conditions,
+            'exp_data': resp.exp_data,
+            'participant_id': resp.child.user.id,
+            'global_event_timings': resp.global_event_timings,
+            'child_id': resp.child.id,
+            'completed': resp.completed,
+            'study_id': resp.study.id,
+            'response_id': resp.id,
+            }, indent=4) for resp in context['responses']]
         context['all_responses'] = ', '.join(context['response_data'])
         return context
