@@ -22,7 +22,20 @@
             var elem = $('#download-all-data')[0];
             elem.href = data;
             elem.download = '{{study.name}}-all-data.json';
+
+            $(function(){
+                var hash = window.location.hash;
+                hash && $('ul.nav a[href="' + hash + '"]').tab('show');
+
+                $('.nav-tabs a').click(function (e) {
+                    $(this).tab('show');
+                    var scrollLoc = $('body').scrollTop() || $('html').scrollTop();
+                    window.location.hash = this.hash;
+                    $('html,body').scrollTop(scrollLoc);
+              });
+            });
         });
+
     </script>
     <style>
         .selectable-participant {
@@ -65,17 +78,17 @@
     <div class="row">
         <div class="col-xs-12">
             <ul class="nav nav-tabs" role="tablist">
-                <li {% if state == 'by_participant' %} class='active' {% endif %} >
+                <li class="active">
                     <a href="#by_participant" role="tab" data-toggle="tab">
                         Individual <span class="hidden-xs"> Responses </span>
                     </a>
                 </li>
-                <li {% if state == 'all_data' %} class='active' {% endif %}>
+                <li>
                     <a href="#all_data" role="tab" data-toggle="tab">
                         All <span class="hidden-xs"> Responses </span>
                     </a>
                 </li>
-                <li {% if state == 'all_attachments' %} class='active' {% endif %}>
+                <li>
                     <a href="#all_attachments" role="tab" data-toggle="tab">
                         <span class="hidden-xs"> All </span> Attachments
                     </a>
@@ -84,7 +97,7 @@
         </div>
     </div>
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane {% if state == 'by_participant' %} active {% endif %}" id="by_participant">
+        <div role="tabpanel" class="tab-pane active" id="by_participant">
             <div class="row pt-md">
                 <div class="col-sm-5 col-xs-12">
                     <div class="table-responsive">
@@ -93,13 +106,13 @@
                                 <tr>
                                     <th>
                                         Participant ID
-                                        <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='id' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='-id' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
                                     </th>
                                     <th>
                                         Date
-                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='date_modified' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='-date_modified' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
                                     </th>
                                 </tr>
                             </thead>
@@ -125,7 +138,7 @@
                 </div>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane {% if state == 'all_data' %} active {% endif %}" id="all_data">
+        <div role="tabpanel" class="tab-pane" id="all_data">
             <div class='row'>
                 <h3 class='col-sm-9 col-xs-12'>
                     All Data
@@ -140,7 +153,7 @@
                 </div>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane {% if state == 'all_attachments' %} active {% endif %}" id="all_attachments">
+        <div role="tabpanel" class="tab-pane" id="all_attachments">
             <div class='row'>
                 <h3 class='col-sm-9 col-xs-12'>Attachments</h3>
                 <a class='mt-md btn btn-primary col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2' href="{{ study.all_attachments_download_url }}">Download all attachments</a>
@@ -162,13 +175,13 @@
                                 <tr>
                                     <th>
                                         Name
-                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='all_attachments' sort='id' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='all_attachments' sort='-id' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#all_attachments"><i class="fa fa-chevron-up" role="button"></i></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#all_attachments"><i class="fa fa-chevron-down" role="button"></i></a>
                                     </th>
                                     <th>
                                         Date
-                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='all_attachments' sort='date_modified' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='all_attachments' sort='-date_modified' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}#all_attachments"><i class="fa fa-chevron-up" role="button"></i></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}#all_attachments"><i class="fa fa-chevron-down" role="button"></i></a>
                                     </th>
                                     <th></th>
                                 </tr>

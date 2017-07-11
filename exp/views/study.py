@@ -260,7 +260,6 @@ class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         orderby = self.request.GET.get('sort', None)
         study = context['study']
-        context['state'] = self.request.GET.get('state', 'by_participant')
         context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
         context['response_data'] = [json.dumps({
             'sequence': resp.sequence,
