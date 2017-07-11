@@ -233,7 +233,7 @@
                     <div class="btn-group">
                         <div class="btn-group">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                             Study Title <span class="caret"></span>
+                             Title <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu" role="menu">
                             <li> <a aria-label="Sort ascending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}">Sort A-Z</a></li>
@@ -242,7 +242,7 @@
                       </div>
                       <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                           Completion Status <span class="caret"></span>
+                            Status <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
                           <li><a aria-label="Sort ascending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='completed' %}">Sort A-Z </a></li>
@@ -251,7 +251,7 @@
                       </div>
                       <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                           Date Modified <span class="caret"></span>
+                            Modified <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
                           <li><a aria-label="Sort ascending by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}">Sort Asc</a></li>
