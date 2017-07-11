@@ -81,6 +81,15 @@ a.state-link {
 .pt-lg {
     padding-top: 20px;
 }
+.pt-xl {
+    padding-top: 25px;
+}
+.pt-xxl {
+    padding-top: 30px;
+}
+.pt-xxxl {
+    padding-top: 35px;
+}
 .pl-sm {
     padding-left: 5px;
 }

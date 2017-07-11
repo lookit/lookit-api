@@ -29,13 +29,13 @@
             cursor: pointer;
         }
         .selectable-participant.selected {
-            background-color: #6ec6f5;
+            background-color: #B7D4EE;
         }
         .table-striped>tbody>tr {
             background-color: transparent;
         }
         .table-striped>tbody>tr.selected {
-            background-color: #6ec6f5;
+            background-color: #B7D4EE;
         }
     </style>
     {{ form.media }}
@@ -51,7 +51,7 @@
 {% endblock %}
 
 {% block content %}
-<div class='container'>
+<div class='container mb-lg'>
     <div class='row'>
         <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9">
             <a href="{% url 'exp:study-list' %}"> Manage Studies </a> > <a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name}} </a> > Responses
@@ -62,27 +62,43 @@
             <h1>Responses</h1>
         </div>
     </div>
-    <ul class="nav nav-tabs" role="tablist">
-        <li {% if state == 'by_participant' %} class='active' {% endif %} ><a href="#by_participant" role="tab" data-toggle="tab">Session Data</a></li>
-        <li {% if state == 'all_data' %} class='active' {% endif %} ><a href="#all_data" role="tab" data-toggle="tab">All Session Data</a></li>
-        <li {% if state == 'all_attachments' %} class='active' {% endif %} ><a href="#all_attachments" role="tab" data-toggle="tab">All Attachments</a></li>
-    </ul>
+    <div class="row">
+        <div class="col-xs-12">
+            <ul class="nav nav-tabs" role="tablist">
+                <li {% if state == 'by_participant' %} class='active' {% endif %} >
+                    <a href="#by_participant" role="tab" data-toggle="tab">
+                        Individual <span class="hidden-xs"> Responses </span>
+                    </a>
+                </li>
+                <li {% if state == 'all_data' %} class='active' {% endif %}>
+                    <a href="#all_data" role="tab" data-toggle="tab">
+                        All <span class="hidden-xs"> Responses </span>
+                    </a>
+                </li>
+                <li {% if state == 'all_attachments' %} class='active' {% endif %}>
+                    <a href="#all_attachments" role="tab" data-toggle="tab">
+                        <span class="hidden-xs"> All </span> Attachments
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane {% if state == 'by_participant' %} active {% endif %}" id="by_participant">
-            <div class="row">
-                <div class="col-xs-5">
+            <div class="row pt-md">
+                <div class="col-sm-5 col-xs-12">
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>
                                         Participant ID
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='id' %}"><i class="fa fa-chevron-up" role="button"></i></a>
+                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='id' %}"><i class="fa fa-chevron-up" role="button"></i></a>
                                         <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='-id' %}"><i class="fa fa-chevron-down" role="button"></i></a>
                                     </th>
                                     <th>
                                         Date
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='date_modified' %}"><i class="fa fa-chevron-up" role="button"></i></a>
+                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='date_modified' %}"><i class="fa fa-chevron-up" role="button"></i></a>
                                         <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request state='by_participant' sort='-date_modified' %}"><i class="fa fa-chevron-down" role="button"></i></a>
                                     </th>
                                 </tr>
@@ -98,10 +114,9 @@
                         </table>
                     </div>
                 </div>
-                <div class="col-xs-7">
+                <div class="col-sm-7 col-xs-12">
                     {% for response in response_data %}
-                        <div class='response-data' id='response-data-{{ forloop.counter }}' class='hidden'>
-                            <p> {{forloop.counter}} </p>
+                        <div class='response-data pt-xxxl' id='response-data-{{ forloop.counter }}' class='hidden'>
                             <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
                             <h5>Attachments</h5>
                             <p> TODO: Use some sort of zip solution for attachment + json </p>

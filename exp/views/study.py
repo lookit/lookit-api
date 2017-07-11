@@ -257,20 +257,11 @@ class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
     model = Study
 
     def get_context_data(self, **kwargs):
-        context = super(StudyResponsesList, self).get_context_data(**kwargs)
-
+        context = super().get_context_data(**kwargs)
         orderby = self.request.GET.get('sort', None)
-
         study = context['study']
         context['state'] = self.request.GET.get('state', 'by_participant')
-        match = self.request.GET.get('match', False)
-        # if match:
-        #     Q(attachment__name__icontains)
-        # responses = study.responses.filter()
         context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
-
-
         context['response_data'] = [json.dumps(resp.exp_data, indent=2) for resp in context['responses']]
-        context['all_responses'] = ','.join(context['response_data'])
-
+        context['all_responses'] = ', '.join(context['response_data'])
         return context
