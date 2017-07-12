@@ -252,9 +252,11 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
 
 
-class StudyResponsesList(LoginRequiredMixin, generic.DetailView):
+class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
     template_name = 'studies/study_responses.html'
     model = Study
+    permission_required = 'studies.can_view_study_responses'
+    raise_exception = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -21,13 +21,15 @@ from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 
 
-class ParticipantListView(LoginRequiredMixin, generic.ListView):
+class ParticipantListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     '''
     ParticipantListView shows a list of participants that have participated in studies
     related to organizations that the current user has permissions to.
     '''
     template_name = 'accounts/participant_list.html'
     queryset = User.objects.all().exclude(demographics__isnull=True)
+    permission_required = 'accounts.can_view_users'
+    raise_exception = True
     model = User
 
     def get_queryset(self):
@@ -47,7 +49,7 @@ class ParticipantListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
+class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
     '''
     ParticipantDetailView shows information about a participant that has participated in studies
     related to organizations that the current user has permission to.
@@ -55,6 +57,8 @@ class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
     queryset = User.objects.exclude(demographics__isnull=True)
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
+    permission_required = 'accounts.can_view_users'
+    raise_exception = True
     model = User
 
     def get_context_data(self, **kwargs):
