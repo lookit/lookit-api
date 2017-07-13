@@ -265,6 +265,10 @@ a.no-link-formatting {
 
 /* STUDY DETAIL */
 
+.back-to-list-button {
+    margin-top: 15px;
+}
+
 .study-detail-thumbnail {
     max-width: 80%;
     //max-width: 650px;
@@ -282,6 +286,18 @@ a.no-link-formatting {
 .study-detail-info {
     margin-top: 30px;
 }
+
+button:disabled#participate-button,
+button[disabled]#participate-button{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+#participate-button {
+    margin-top: 20px;
+}
+
 
 /* PARTICIPATE */
 #expContainer:fullscreen {

@@ -27,56 +27,74 @@
 {% endblock %}
 
 {% block content %}
-<div class='lookit-row lookit-page-title'>
-    <div class='container'>
-        <div class='row'>
+    <script>
+        function imgError(image, index) {
+            image.style.display = 'none';
+            var placeholder = document.getElementById('image-placeholder');
+            placeholder.style.display = 'block';
+        }
+        function childSelected(selected) {
+            var participateButton = document.getElementById('participate-button');
+            selected.value === 'none' ? participateButton.disabled = true : participateButton.disabled = false;
+        }
+    </script>
+    <div class='lookit-row lookit-page-title'>
+        <div class='container'>
+            <div class='row'>
 
-            <h2 class='col-sm-10'>Participate in {{ object.name }}</h2>
-            <a href="{% url 'web:studies-list' %}" class="active col-sm-2 btn btn-lg btn-primary pull-right">Back to list</a>
+                <h2 class='col-sm-10'>Participate in "{{ object.name }}"</h2>
+                <a href="{% url 'web:studies-list' %}" class="active col-sm-2 btn btn-lg btn-primary pull-right back-to-list-button">Back to list</a>
+            </div>
         </div>
     </div>
-</div>
-<div class='container'>
-    <div class="lookit-row"><div class='col-md-10 col-md-offset-1'>
-        <div class='row'><div class='col-xs-12'>
-            <img src="http://lorempixel.com/600/440/cats" width="600" height="440" />
-        </div></div>
-        <div class='row'>
-            <div class='col-md-9'>
-                <div class="caption">
-                  <h4>Thank you for your interest in this study! We'll help you learn more and get started.</h4>
-                  <p><strong>Eligibility criteria:</strong> {{ object.criteria }}</p>
-                  <p><strong>Duration:</strong> {{ object.duration }}</p>
-                  <p><strong>What happens:</strong> {{ object.short_description }}</p>
-                  <p><strong>What are we studying?:</strong> {{ object.long_description }}</p>
+    <div class='container'>
+        <div class="lookit-row"><div class='col-md-10 col-md-offset-1'>
+            <div class='row'><div class='col-xs-12'>
+                <p class="image-block">
+                    <img class="study-detail-thumbnail" onerror="imgError(this)" src="{{ object.image.url }}" width="300px">
+                    <div style="display:none;" class="study-list-placeholder" id="image-placeholder">
+                          <i class="fa fa-picture-o"></i>
+                    </div>
+                </p>
+            </div></div>
+            <div class='row'>
+                <div class='col-md-9'>
+                    <div class="caption">
+                      <h4>Thank you for your interest in this study! We'll help you learn more and get started.</h4>
+                      <p><strong>Eligibility criteria:</strong> {{ object.criteria }}</p>
+                      <p><strong>Duration:</strong> {{ object.duration }}</p>
+                      <p><strong>What happens:</strong> {{ object.short_description }}</p>
+                      <p><strong>What are we studying?:</strong> {{ object.long_description }}</p>
+                    </div>
                 </div>
-            </div>
-            <div class='col-md-3'>
-                <!-- TODO: Find out where is the login, add children and add proper hrefs -->
-                {% if not request.user.is_authenticated %}
-                <a class="btn btn-lg btn-default" href='/login'>Log in to participate</a>
-                {% elif not children %}
-                <a class="btn btn-lg btn-default" href='/mychildren'>Add child profile to participate</a>
-                {% elif not has_demographic %}
-                <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-create' }">Complete demographic survey to participate</a>
-                {% else %}
-                <div class="form-group">
-                    <label>Select a child:</label>
-                    <!-- TODO: cant find the study's age requirements, need to go in here -->
-                    <p class='hidden' id='min-age'>{{ object.min_age }}</p>
-                    <p class='hidden' id='max-age'>{{ object.max_age }}</p>
-                    <select>
-                        <option >None Selected</option>
-                        {% for child in children %}
-                        <option value="{{child.age}}">{{child.given_name}}</option>
-                        {% endfor %}
-                    </select>
-                    <p class="text-warning" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research! </p>
-    	            <p class="text-warning" id='too-old'>Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research.</p>
-                    <a href="" class="btn-lg btn-primary pull-right">Participate Now</a>
+                <div class='col-md-3'>
+                    <!-- TODO: Find out where is the login, add children and add proper hrefs -->
+                    {% if not request.user.is_authenticated %}
+                    <a class="btn btn-lg btn-default" href='/login'>Log in to participate</a>
+                    {% elif not children %}
+                    <a class="btn btn-lg btn-default" href='/mychildren'>Add child profile to participate</a>
+                    {% elif not has_demographic %}
+                    <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-create' }">Complete demographic survey to participate</a>
+                    {% else %}
+                    <div class="form-group">
+                        <label>Select a child:</label>
+                        <!-- TODO: cant find the study's age requirements, need to go in here -->
+                        <p class='hidden' id='min-age'>{{ object.min_age }}</p>
+                        <p class='hidden' id='max-age'>{{ object.max_age }}</p>
+                        <select onchange="childSelected(this)">
+                            <option value=none >None Selected</option>
+                            {% for child in children %}
+                            <option value="{{child.age}}">{{child.given_name}}</option>
+                            {% endfor %}
+                        </select>
+                        <p class="text-warning" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research! </p>
+        	            <p class="text-warning" id='too-old'>Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research.</p>
+
+                        <button type="button" disabled class="btn-lg btn-primary" id="participate-button"> Participate now! </button>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
         </div>
-    </div></div>
+    </div>
 {% endblock %}
