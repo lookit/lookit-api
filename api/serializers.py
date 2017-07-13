@@ -1,13 +1,17 @@
+import json
 from collections import OrderedDict
+
+import six
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.relations import reverse
 
 from rest_framework_json_api.relations import ResourceRelatedField
 from rest_framework_json_api.serializers import \
     ModelSerializer as JSONAPIModelSerializer
 from rest_framework_json_api.utils import (get_included_serializers,
                                            get_resource_type_from_instance,
+                                           get_resource_type_from_queryset,
                                            get_resource_type_from_serializer)
-
-from rest_framework.relations import reverse
 
 
 class UUIDResourceRelatedField(ResourceRelatedField):
@@ -34,6 +38,33 @@ class UUIDResourceRelatedField(ResourceRelatedField):
         self.reverse = reverse
 
         super(ResourceRelatedField, self).__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        if isinstance(data, six.text_type):
+            try:
+                data = json.loads(data)
+            except ValueError:
+                # show a useful error if they send a `pk` instead of resource object
+                self.fail('incorrect_type', data_type=type(data).__name__)
+        if not isinstance(data, dict):
+            self.fail('incorrect_type', data_type=type(data).__name__)
+        expected_relation_type = get_resource_type_from_queryset(self.queryset)
+
+        if 'type' not in data:
+            self.fail('missing_type')
+
+        if 'id' not in data:
+            self.fail('missing_id')
+
+        if data['type'] != expected_relation_type:
+            self.conflict('incorrect_relation_type', relation_type=expected_relation_type, received_type=data['type'])
+
+        try:
+            return self.get_queryset().get(uuid=data['id'])
+        except ObjectDoesNotExist:
+            self.fail('does_not_exist', pk_value=data)
+        except (TypeError, ValueError):
+            self.fail('incorrect_type', data_type=type(data).__name__)
 
     def to_representation(self, value):
         # force pk to be UUID

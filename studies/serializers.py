@@ -1,6 +1,6 @@
-from accounts.models import Child, Organization, User
-from api.serializers import (ModelSerializer,
-                             UUIDResourceRelatedField, UUIDSerializerMixin)
+from accounts.models import Child, DemographicData, Organization, User
+from api.serializers import (ModelSerializer, UUIDResourceRelatedField,
+                             UUIDSerializerMixin)
 from rest_framework_json_api import serializers
 from studies.models import Response, Study
 
@@ -68,12 +68,19 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
         many=False,
         related_link_view_name='user-list',
         related_link_lookup_field='uuid',
+        required=False
     )
     child = UUIDResourceRelatedField(
         queryset=Child.objects,
         many=False,
         related_link_view_name='child-detail',
         related_link_lookup_field='uuid',
+    )
+    demographic_snapshot = UUIDResourceRelatedField(
+        queryset=DemographicData.objects,
+        many=False,
+        related_link_view_name='demographicdata-detail',
+        related_link_lookup_field='uuid'
     )
 
     class Meta:
@@ -88,4 +95,5 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
             'child',
             'user',
             'study',
+            'demographic_snapshot',
         )
