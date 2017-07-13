@@ -18,10 +18,7 @@ class StudiesListView(generic.ListView):
     def get_queryset(self):
         # TODO if we need to filter by study demographics vs user demographics
         # TODO or by if they've taken the study before this is the spot
-        # self.request.user
-        qs = super().get_queryset()
-        # qs = qs.filter(state='active', public=True)
-        return qs
+        return super().get_queryset().filter(state='active', public=True)
 
 
 class StudyDetailView(generic.DetailView):
