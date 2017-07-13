@@ -202,6 +202,7 @@ button.account-row {
 .study-list-placeholder {
     font-size: 200px;
     text-align: center;
+    color: #333333;
 }
 
 .study-list-panel .caption {
@@ -257,6 +258,10 @@ button.account-row {
     width: 800px;
 }
 
+a.no-link-formatting {
+  color: black;
+  text-decoration: none;
+}
 
 /* STUDY DETAIL */
 
