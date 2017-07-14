@@ -1,3 +1,5 @@
+from django_filters import rest_framework as filters
+
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   OrganizationSerializer, UserSerializer)
@@ -65,10 +67,18 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     filter_fields = [('response', 'responses'), ]
 
+class ResponseFilter(filters.FilterSet):
+    child = filters.UUIDFilter(name='child__uuid')
+
+    class Meta:
+        model = Response
+        fields = ['child']
 
 class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'responses'
     queryset = Response.objects.all()
     serializer_class = ResponseSerializer
     lookup_field = 'uuid'
-    filter_fields = [('study', 'study'), ]
+    filter_fields = [('study', 'study') ]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = ResponseFilter
