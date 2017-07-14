@@ -1,6 +1,7 @@
 import operator
 from functools import reduce
 
+from django.http import Http404
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
@@ -8,6 +9,9 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.shortcuts import reverse
 from django.views import generic
+from guardian.mixins import LoginRequiredMixin
+from guardian.shortcuts import get_objects_for_user
+from django.db.models import Q
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
@@ -17,33 +21,74 @@ from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 
 
-class ParticipantListView(LoginRequiredMixin, generic.ListView):
+class ParticipantListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     '''
     ParticipantListView shows a list of participants that have participated in studies
     related to organizations that the current user has permissions to.
     '''
     template_name = 'accounts/participant_list.html'
-    queryset = User.objects.exclude(demographics__isnull=True)
+    queryset = User.objects.all().exclude(demographics__isnull=True)
+    permission_required = 'accounts.can_view_users'
+    raise_exception = True
     model = User
 
     def get_queryset(self):
-        qs = super(ParticipantListView, self).get_queryset()
-        return qs.filter(response__study__organization=self.request.user.organization)
+        qs = super().get_queryset()
+        # TODO this should probably use permissions eventually, just to be safe
+        match = self.request.GET.get('match', False)
+        order = self.request.GET.get('sort', False) or 'family_name' # to prevent empty string overriding default here
+        if match:
+            qs = qs.filter(reduce(operator.or_,
+              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(username__icontains=term) for term in match.split())))
+        return qs.order_by(order)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['match'] = self.request.GET.get('match') or ''
+        context['sort'] = self.request.GET.get('sort') or ''
+        return context
 
 
-class ParticipantDetailView(LoginRequiredMixin, generic.UpdateView):
+class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
     '''
     ParticipantDetailView shows information about a participant that has participated in studies
     related to organizations that the current user has permission to.
     '''
-    queryset = User.objects.exclude(demographics__isnull=True).select_related('organization')
+    queryset = User.objects.exclude(demographics__isnull=True)
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
+    permission_required = 'accounts.can_view_users'
+    raise_exception = True
     model = User
 
-    def get_queryset(self):
-        qs = super(ParticipantDetailView, self).get_queryset()
-        return qs.filter(response__study__organization=self.request.user.organization)
+    def get_context_data(self, **kwargs):
+        context = super(ParticipantDetailView, self).get_context_data(**kwargs)
+        user = context['user']
+        context['children'] = [{
+            'name': child.given_name,
+            'birthday': child.birthday,
+            'gender': child.get_gender_display(),
+            'age_at_birth': child.age_at_birth,
+            'age': child.age,
+            'extra': child.additional_information
+        } for child in user.children.all()]
+        context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
+        context['studies'] = self.get_study_info()
+        return context
+
+    def get_study_info(self):
+        """ Pulls responses belonging to user and returns study info """
+        resps = Response.objects.filter(child__user=self.get_object())
+        orderby = self.request.GET.get('sort', None)
+        if orderby:
+            if 'date_modified' in orderby:
+                resps = resps.order_by(orderby)
+            elif 'completed' in orderby:
+                resps = resps.order_by(orderby.replace('-', '') if '-' in orderby else '-' + orderby)
+        studies = [{'modified': resp.date_modified, 'study': resp.study, 'name': resp.study.name, 'completed': resp.completed} for resp in resps]
+        if orderby and 'name' in orderby:
+            studies = sorted(studies, key=operator.itemgetter('name'), reverse=True if '-' in orderby else False)
+        return studies
 
     def get_success_url(self):
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})

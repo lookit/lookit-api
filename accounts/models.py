@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import uuid
+from datetime import date
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -235,7 +236,15 @@ class Child(models.Model):
 
     @property
     def age(self):
-        return timezone.now() - self.birthday
+        today = timezone.now().date()
+        birthday = self.birthday
+        age = today - birthday
+        if age.days > 730: # Child is older than two years
+            return str(today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))) + ' years'
+        elif age.days > 30:
+            return str(int(age.days/30)) + ' months'
+        else:
+            return str(age.days) + ' days'
 
     class Meta:
         ordering = ['-birthday']

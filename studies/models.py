@@ -127,14 +127,6 @@ class Study(models.Model):
                 return group
         return None
 
-    # @property
-    # def completed_responses_count(self):
-    #     return self.responses.filter(completed=True).count()
-    #
-    # @property
-    # def incomplete_responses_count(self):
-    #     return self.responses.filter(completed=False).count()
-
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
         user = ev.kwargs.get('user')
@@ -261,6 +253,7 @@ class Response(models.Model):
     exp_data = DateTimeAwareJSONField(default=dict)
     conditions = DateTimeAwareJSONField(default=dict)
     sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)
+    date_modified = models.DateTimeField(auto_now=True)
     global_event_timings = DateTimeAwareJSONField(default=dict)
     child = models.ForeignKey(Child, on_delete=models.DO_NOTHING)
     demographic_snapshot = models.ForeignKey(

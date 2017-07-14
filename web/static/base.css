@@ -202,6 +202,7 @@ button.account-row {
 .study-list-placeholder {
     font-size: 200px;
     text-align: center;
+    color: #333333;
 }
 
 .study-list-panel .caption {
@@ -257,8 +258,16 @@ button.account-row {
     width: 800px;
 }
 
+a.no-link-formatting {
+  color: black;
+  text-decoration: none;
+}
 
 /* STUDY DETAIL */
+
+.back-to-list-button {
+    margin-top: 15px;
+}
 
 .study-detail-thumbnail {
     max-width: 80%;
@@ -277,6 +286,18 @@ button.account-row {
 .study-detail-info {
     margin-top: 30px;
 }
+
+button:disabled#participate-button,
+button[disabled]#participate-button{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+#participate-button {
+    margin-top: 20px;
+}
+
 
 /* PARTICIPATE */
 #expContainer:fullscreen {

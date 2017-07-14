@@ -1,34 +1,122 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
+{% load exp_extras %}
 
-{% block title %}Users{% endblock %}
+{% block title %}Participants{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
 {% block content %}
-  <div class="container">
+  <div class="container mb-lg">
     <h1>Participants</h1>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Identifier</th>
-            <th>Identicon</th>
-            <th>Studies</th>
-            <th>Active</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user in object_list %}
-            <tr>
-              <td><a href="{% url 'exp:participant-detail' user.id %}">{{ user.uuid }}</a></td>
-              <td>{{ user.identicon_html }}</td>
-              <td>{% for us in user.studies %}{{ us.name }}, {% endfor %}</td>
-              <td>{{ user.is_active }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    <div class="row text-center mt-xl">
+       <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+           <form method="GET">
+               <input class="form-control" name="match" placeholder="{{ match|default:'Filter by name or email' }}" size="50" type="text">
+               <input type="hidden" name="sort" value={{ sort }}>
+           </form>
+       </div>
+   </div>
+   <div class="row mt-xs visible-xs visible-sm">
+       <div class="col-xs-12 col-sm-offset-1 col-sm-10 mt-lg mb-lg">
+           <div class="btn-group">
+               <div class="btn-group">
+                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    First Name <span class="caret"></span>
+                 </button>
+                 <ul class="dropdown-menu" role="menu">
+                   <li> <a aria-label="Sort ascending by first name" href="{% url 'exp:participant-list' %}?{% query_transform request sort='given_name' %}">Sort A-Z</a></li>
+                   <li> <a aria-label="Sort descending by first name" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-given_name' %}">Sort Z-A</a></li>
+                 </ul>
+             </div>
+             <div class="btn-group">
+               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  Last Name <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu" role="menu">
+                 <li><a aria-label="Sort ascending by last name" href="{% url 'exp:participant-list' %}?{% query_transform request sort='family_name' %}">Sort A-Z </a></li>
+                 <li><a aria-label="Sort descending by last name" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-family_name' %}">Sort Z-A </a></li>
+               </ul>
+             </div>
+             <div class="btn-group">
+               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  Email <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu" role="menu">
+                 <li><a aria-label="Sort ascending by email" href="{% url 'exp:participant-list' %}?{% query_transform request sort='username' %}">Sort A-Z</a></li>
+                 <li><a aria-label="Sort descending by email" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-username' %}">Sort Z-A</a></li>
+               </ul>
+             </div>
+             <div class="btn-group">
+               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  Active <span class="caret"></span>
+               </button>
+               <ul class="dropdown-menu" role="menu">
+                 <li><a aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='last_login' %}"> Sort Asc </a></li>
+                 <li><a aria-label="Sort descending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-last_login' %}"> Sort Desc </a></li>
+               </ul>
+             </div>
+          </div>
+       </div>
+   </div>
+   <div class="row mt-xl visible-md visible-lg visible-xl">
+       <div class="col-md-2">
+           <strong> First Name </strong>
+           <a class="pl-sm" aria-label="Sort ascending by first name" href="{% url 'exp:participant-list' %}?{% query_transform request sort='given_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+           <a aria-label="Sort descending by first name" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-given_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+       </div>
+
+       <div class="col-md-3">
+            <strong>Last Name</strong>
+            <a class="pl-sm" aria-label="Sort ascending by last name" href="{% url 'exp:participant-list' %}?{% query_transform request sort='family_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+            <a aria-label="Sort descending by last name" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-family_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+       </div>
+
+       <div class="col-md-3">
+           <strong>Email Address</strong>
+           <a class="pl-sm" aria-label="Sort ascending by email" href="{% url 'exp:participant-list' %}?{% query_transform request sort='username' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+           <a aria-label="Sort descending by email" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-username' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+       </div>
+
+       <div class="col-md-2">
+           <strong>Last Active</strong>
+           <a class="pl-sm" aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='last_login' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+           <a aria-label="Sort descending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-last_login' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+       </div>
+       <div class="col-md-2">
+       </div>
+   </div>
+   <hr class="visible-md visible-lg visible-xl">
+   {% if object_list %}
+       {% for user in object_list %}
+           <div class="row pt-xs">
+               <div class="col-md-2 hidden-xs hidden-sm">
+                   {{ user.given_name }}
+               </div>
+
+               <div class="col-md-3 hidden-xs hidden-sm">
+                   {{ user.family_name }}
+               </div>
+
+               <div class="col-xs-12 col-sm-offset-1 col-sm-11 visible-xs visible-sm">
+                   <a href="{% url 'exp:participant-detail' user.id %}"> {{ user.get_short_name }}</a>
+               </div>
+
+               <div class="col-xs-12 col-sm-offset-1 col-sm-11 col-md-3 col-md-offset-0">
+                   {{ user.username }}
+               </div>
+
+               <div class="col-xs-12 col-sm-offset-1 col-sm-11 col-md-2 col-md-offset-0">
+                   <span class="visible-xs visible-sm"> Last Active: {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
+                   <span class="hidden-xs hidden-sm"> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
+               </div>
+               <div class="col-md-2 hidden-xs hidden-sm">
+                   <a class='btn btn-primary btn-sm' href="{% url 'exp:participant-detail' user.id %}">View Profile</a>
+               </div>
+           </div>
+       {% endfor %}
+   {% else %}
+        <p><em> No participants found matching this query! </em></p>
+   {% endif %}
   </div>
 {% endblock %}

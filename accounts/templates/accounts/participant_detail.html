@@ -1,42 +1,289 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
+{% load exp_extras %}
 
-{% block title %}{{ user.uuid }}{% endblock %}
+{% block title %}{{ user.get_full_name }}{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
 {% block content %}
-  <div class="container">
-    <h1>{{ user.uuid }}</h1>
-    <table class="table table-compact">
-      <tbody>
-        <tr>
-          <th>
-            Identicon
-          </th>
-          <td>
-            {{ user.identicon_html }}
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Studies
-          </th>
-          <td>
-            {% for study in user.studies %}
-              {{ study.name }},
-            {% endfor %}
-          </td>
-        </tr>
-        <tr>
-            <th>Responses</th>
-            <td>
-                {% for resp in user.response_set.all %}
-                    <a href="{% url 'exp:response-detail' resp.id %}">{{ resp.study.name }}</a><br/>
+  <div class="container mb-lg">
+      <div class="row">
+          <div class="col-xs-12">
+              <a href="{% url 'exp:participant-list' %}"> All Participants </a> > {{ user.get_short_name }} </a>
+          </div>
+      </div>
+
+      <div class="row">
+          <div class="col-xs-12">
+              <h1> {{ user.get_full_name }} </h1>
+              <span class="pr-md"><label class='pr-xs'> Email: </label> {{ user.username }} </span>
+              <span><label class='pr-xs'> Last Active: </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
+          </div>
+      </div>
+
+    <div class='row'>
+        <div class='col-sm-6'>
+            <h3>Children</h3>
+            {% if children %}
+                {% for child in children %}
+                <div class="pb-md">
+                    <h4 class="child-name"><em>{{child.name}}</em></h4>
+                    <div class="pl-md">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <b> Birthday: </b>
+                            </div>
+                            <div class="col-xs-7">
+                                {{child.birthday|date:"n/d/Y"|default:"N/A"}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <b> Gender: </b>
+                            </div>
+                            <div class="col-xs-7">
+                                 {{child.gender}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <b> Gestational Age at Birth: </b>
+                            </div>
+                            <div class="col-xs-7">
+                                 {{child.age_at_birth}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <b> Age: </b>
+                            </div>
+                            <div class="col-xs-7">
+                                 {{child.age}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <b> Extra: </b>
+                            </div>
+                            <div class="col-xs-7">
+                                 {{child.extra}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
-            </td>
-        </tr>
-      </tbody>
-    </table>
+            {% else %}
+                <p><em> No children profiles registered! </em></p>
+            {% endif %}
+        </div>
+        <div class='col-sm-6'>
+            <h3>Latest Demographic Data</h3>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Number of Children: </b>
+                </div>
+                <div class="col-xs-7">
+                     {{ demographics.number_of_children }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b>  Children Birthdays: </b>
+                </div>
+                <div class="col-xs-7">
+                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Laguages Spoken at Home: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.languages_spoken_at_home }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Number of Guardians: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.number_of_guardians }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Explanation for Guardians: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.number_of_guardians_explanation }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Race: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.race_identification }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Age: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.age }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Gender: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.gender }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Education Level: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.education_level }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Spouse's Education Level: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.spouse_education_level }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Annual Income: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.annual_income }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Books at Home: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.number_of_books }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Additional Comments: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.additional_comments }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Country: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.country }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> State: </b>
+                </div>
+                <div class="col-xs-7">
+                     {{ demographics.state }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Density: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.density }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <h3>{{ user.given_name}}'s Studies</h3>
+    {% if studies %}
+            <div class="row hidden-xs hidden-sm pt-sm">
+                <div class="col-md-6 col-xs-12">
+                    Study Title
+                    <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    Completion Status
+                    <a aria-label="Sort user studies by completion status" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='completed' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-completed' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    Date Modified
+                    <a aria-label="Sort user studies by date modified" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                </div>
+                <hr>
+            </div>
+            <div class="row mt-xs visible-xs visible-sm">
+                <div class="col-xs-12 mt-lg mb-lg">
+                    <div class="btn-group">
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                             Title <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" role="menu">
+                            <li> <a aria-label="Sort ascending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}">Sort A-Z</a></li>
+                            <li> <a aria-label="Sort descending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}">Sort Z-A</a></li>
+                          </ul>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            Status <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a aria-label="Sort ascending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='completed' %}">Sort A-Z </a></li>
+                          <li><a aria-label="Sort descending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-completed' %}">Sort Z-A </a></li>
+                        </ul>
+                      </div>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            Modified <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a aria-label="Sort ascending by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='date_modified' %}">Sort Asc</a></li>
+                          <li><a aria-label="Sort descending by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-date_modified' %}">Sort Desc</a></li>
+                        </ul>
+                      </div>
+                   </div>
+                </div>
+            </div>
+            {% for study_dict in studies %}
+            <div class="row pt-sm">
+                <div class="col-md-6 col-xs-12">
+                    <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    <span class="visible-xs visible-sm">Status: </span>
+                    {% if study_dict.completed %}
+                        Completed
+                    {% else %}
+                        In Progress
+                    {% endif %}
+                </div>
+                <div class="col-md-3 col-xs-12">
+                    {{ study_dict.modified |date:"n/d/Y"|default:"N/A" }}
+                </div>
+            </div>
+          {% endfor %}
+    {% else %}
+      <p><em> User has not participated in any studies yet! </em></p>
+    {% endif %}
   </div>
+</div>
 {% endblock %}
