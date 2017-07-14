@@ -146,19 +146,20 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
     'DEFAULT_PAGINATION_CLASS':
-        'rest_framework_json_api.pagination.PageNumberPagination',
+        'api.pagination.PageNumberPagination',
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework_json_api.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'api.renderers.JSONRenderer',
+        'api.renderers.JSONAPIRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
 }
+
 JSON_API_FORMAT_KEYS = 'dasherize'
 JSON_API_PLURALIZE_TYPES = True
 
@@ -184,6 +185,35 @@ SITE_ID = 1
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/')
+ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get('ACCOUNT_LOGOUT_REDIRECT_URL', '/api/')
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'id'
+SOCIALACCOUNT_ADAPTER = 'osf_oauth2_adapter.views.OSFOAuth2Adapter'
+SOCIALACCOUNT_PROVIDERS = \
+    {'osf':
+        {
+            'METHOD': 'oauth2',
+            'SCOPE': ['osf.users.user_email', 'osf.users.email_read', 'osf.users.profile_read', ],
+            'AUTH_PARAMS': {'access_type': 'offline'},
+            # 'FIELDS': [
+            #     'id',
+            #     'email',
+            #     'name',
+            #     'first_name',
+            #     'last_name',
+            #     'verified',
+            #     'locale',
+            #     'timezone',
+            #     'link',
+            #     'gender',
+            #     'updated_time'],
+            # 'EXCHANGE_TOKEN': True,
+            # 'LOCALE_FUNC': 'path.to.callable',
+            # 'VERIFIED_EMAIL': False,
+            # 'VERSION': 'v2.4'
+        }
+     }
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')

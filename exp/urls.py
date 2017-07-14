@@ -14,15 +14,16 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 '''
-from django.conf.urls import include, url
+from django.conf.urls import url
+from django.urls import reverse_lazy
+from django.views.generic.base import RedirectView
 
-from exp.views import (AssignResearcherStudies, ExperimenterDashboard,
-                       OrganizationCreateView, OrganizationListView,
-                       ParticipantDetailView, ParticipantListView,
-                       ResearcherCreateView, ResearcherDetailView,
-                       ResearcherListView, ResponseDetailView,
-                       ResponseListView, StudyCreateView, StudyDetailView,
-                       StudyListView, StudyUpdateView)
+from exp.views import (AssignResearcherStudies, OrganizationCreateView,
+                       OrganizationListView, ParticipantDetailView,
+                       ParticipantListView, ResearcherCreateView,
+                       ResearcherDetailView, ResearcherListView,
+                       ResponseDetailView, ResponseListView, StudyCreateView,
+                       StudyDetailView, StudyListView, StudyUpdateView, StudyResponsesList)
 
 urlpatterns = [
     url(r'organizations/$', OrganizationListView.as_view(), name='organization-list'),
@@ -30,6 +31,7 @@ urlpatterns = [
     url(r'researchers/create/$', ResearcherCreateView.as_view(), name='researcher-create'),
     url(r'researchers/(?P<pk>\d+)/$', ResearcherDetailView.as_view(), name='researcher-detail'),
     url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
+    url(r'studies/(?P<pk>\d+)/responses/$', StudyResponsesList.as_view(), name='study-responses-list'),
     url(r'responses/$', ResponseListView.as_view(), name='response-list'),
     url(r'responses/(?P<pk>\d+)/$', ResponseDetailView.as_view(), name='response-detail'),
     url(r'researchers/(?P<pk>\d+)/assign-studies/$', AssignResearcherStudies.as_view(), name='assign-studies'),
@@ -39,5 +41,5 @@ urlpatterns = [
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
     url(r'studies/(?P<pk>\d+)/edit/$', StudyUpdateView.as_view(), name='study-edit'),
-    url(r'', ExperimenterDashboard.as_view(), name='dashboard')
+    url(r'', RedirectView.as_view(url=reverse_lazy('exp:study-list')), name='homepage')
 ]

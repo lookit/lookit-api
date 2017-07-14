@@ -49,7 +49,8 @@ class UserManager(BaseUserManager):
 
 
 class Organization(models.Model):
-    name = models.CharField(max_length=255, blank=False, null=False)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     url = models.URLField(verbose_name='Website')
 
     def __str__(self):
@@ -62,6 +63,7 @@ class Organization(models.Model):
             ('can_create_organization', _('Can Create Organization')),
             ('can_remove_organization', _('Can Remove Organization')),
         )
+        ordering = ['name']
 
 
 @receiver(post_save, sender=Organization)
@@ -83,8 +85,8 @@ def organization_post_save(sender, **kwargs):
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
-    username = models.EmailField(unique=True, verbose_name='Email address')
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
+    username = models.EmailField(unique=True, verbose_name='Email address', db_index=True)
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
@@ -170,7 +172,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f'{self.given_name} {self.middle_name} {self.family_name}'
 
     def __str__(self):
-        return f'<User: {self.uuid}>'
+        return f'<User: {self.get_short_name()}>'
 
     objects = UserManager()
 
@@ -187,6 +189,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ('can_view_user_permissions', _('Can View User Permissions')),
             ('can_edit_user_permissions', _('Can Edit User Permissions')),
         )
+        ordering = ['username']
 
 
 class Child(models.Model):
@@ -217,7 +220,7 @@ class Child(models.Model):
         ('39', _('39 weeks')),
         ('40>', _('40 or more weeks')),
     )
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     given_name = models.CharField(max_length=255)
     birthday = models.DateField()
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
@@ -233,7 +236,18 @@ class Child(models.Model):
 
     @property
     def age(self):
-        return date.today() - self.birthday
+        today = timezone.now().date()
+        birthday = self.birthday
+        age = today - birthday
+        if age.days > 730: # Child is older than two years
+            return str(today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))) + ' years'
+        elif age.days > 30:
+            return str(int(age.days/30)) + ' months'
+        else:
+            return str(age.days) + ' days'
+
+    class Meta:
+        ordering = ['-birthday']
 
     class JSONAPIMeta:
         resource_name = 'children'
@@ -342,7 +356,7 @@ class DemographicData(models.Model):
         ('rural', _('rural')),
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        User, on_delete=models.CASCADE, null=True,
         related_name='demographics', related_query_name='demographics'
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -352,7 +366,7 @@ class DemographicData(models.Model):
         related_query_name='next_demographic_data', null=True, blank=True
     )
 
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
     child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
     languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home')
@@ -370,6 +384,9 @@ class DemographicData(models.Model):
     state = USStateField(choices=('XX', _('Select a State')) + USPS_CHOICES[:])
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
     extra = DateTimeAwareJSONField(null=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     class JSONAPIMeta:
         resource_name = 'demographics'

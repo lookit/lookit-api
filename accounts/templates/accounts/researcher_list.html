@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 {% load exp_extras %}
 
-{% block title %}Users{% endblock %}
+{% block title %}Researchers{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
@@ -16,10 +16,10 @@
 </script>
   <div class="container mb-lg">
     <div class="row">
-        <div class="col-xs-9">
-            <h2 class="researchers-header">Researchers</h2>
+        <div class="col-xs-12 col-sm-9">
+            <h1 class="researchers-header">Researchers</h1>
         </div>
-        <div class="col-xs-3 pt-lg">
+        <div class="col-xs-12 col-sm-3 pt-lg">
             {% if perms.can_create_users %}
                 <a href="{% url 'exp:researcher-create' %}" class="btn btn-success" >
                     Create Researcher
@@ -27,7 +27,7 @@
             {% endif %}
         </div>
     </div>
-    <div class="row text-center mt-md">
+    <div class="row text-center mt-xl">
        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
            <form method="GET">
                <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
@@ -36,8 +36,10 @@
        </div>
    </div>
    <div class="row mt-xl">
-       <div class="col-xs-6 col-xs-offset-1">
-           <strong>Researcher Name</strong> <a aria-label="Sort researchers by name" class="sort-studies-button" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="family_name"%}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="family_name"></i></a>
+       <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+           <strong>Researcher Name</strong>
+           <a aria-label="Sort researchers by name" class="pl-sm" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="family_name"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+           <a aria-label="Reverse sort researchers by name" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="-family_name"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
        </div>
 
        <div class="col-xs-3">
@@ -50,15 +52,15 @@
    <hr>
    {% for user in object_list %}
    <div class="row pt-xs">
-        <div class="col-xs-6 col-xs-offset-1">
+        <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
             <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
         </div>
 
-        <div class="col-xs-3">
+        <div class="col-xs-3 col-sm-3">
             {{ user.display_permission }}
         </div>
 
-        <div class="col-xs-2">
+        <div class="col-xs-2 col-sm-2">
             {% if perms.can_remove_users %}
                 <a data-toggle="modal" id="{{ user.id }}" onclick="populateDeleteModal({{ user.id }}, '{{ user.get_short_name }}')" class="deleteResearcher btn btn-danger btn-sm" href="#deleteModal">Remove</a>
             {% endif %}

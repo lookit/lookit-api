@@ -1,4 +1,4 @@
-import operator
+import operator, json
 import uuid
 from functools import reduce
 
@@ -65,6 +65,10 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
     def get_queryset(self, *args, **kwargs):
         request = self.request.GET
         queryset = get_objects_for_user(self.request.user, 'studies.can_view_study').exclude(state='archived')
+        queryset = queryset.select_related('creator')
+        queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
+        queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
+
 
         state = request.get('state')
         if state and state != 'all':
@@ -88,10 +92,6 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
             elif 'endDate' in sort:
                 # TODO optimize using subquery
                 queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
-
-        queryset = queryset.select_related('creator')
-        queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
-        queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
 
         return queryset
 
@@ -121,6 +121,12 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
             clone.save()
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
+        queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
+        return queryset
 
     @property
     def study_logs(self):
@@ -241,5 +247,32 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
         return context
 
+
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
+
+
+class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
+    template_name = 'studies/study_responses.html'
+    model = Study
+    permission_required = 'studies.can_view_study_responses'
+    raise_exception = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        orderby = self.request.GET.get('sort', None)
+        study = context['study']
+        context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
+        context['response_data'] = [json.dumps({
+            'sequence': resp.sequence,
+            'conditions': resp.conditions,
+            'exp_data': resp.exp_data,
+            'participant_id': resp.child.user.id,
+            'global_event_timings': resp.global_event_timings,
+            'child_id': resp.child.id,
+            'completed': resp.completed,
+            'study_id': resp.study.id,
+            'response_id': resp.id,
+            }, indent=4) for resp in context['responses']]
+        context['all_responses'] = ', '.join(context['response_data'])
+        return context
