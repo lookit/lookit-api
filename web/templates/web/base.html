@@ -14,9 +14,12 @@
     {% bootstrap_css %}
     {% bootstrap_javascript jquery=True %}
     <link type="text/css" rel="stylesheet" href="/static/base.css" />
+    {% block head %}
+    {% endblock %}
+    <script src="https://use.fontawesome.com/41c082d3c2.js"></script>
   </head>
   <body>
-    <div class="container">
+    <div class="container-fluid">
       {% bootstrap_messages %}
       <header class="row">
           {% block header %}

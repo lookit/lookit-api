@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import uuid
+from datetime import date
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin

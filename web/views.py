@@ -19,10 +19,7 @@ class StudiesListView(generic.ListView):
     def get_queryset(self):
         # TODO if we need to filter by study demographics vs user demographics
         # TODO or by if they've taken the study before this is the spot
-        # self.request.user
-        qs = super().get_queryset()
-        qs = qs.filter(state='active', public=True)
-        return qs
+        return super().get_queryset().filter(state='active', public=True)
 
 
 class StudyDetailView(generic.DetailView):
@@ -55,6 +52,15 @@ class StudyDetailView(generic.DetailView):
             raise Http404(_('No %(verbose_name)s found matching the query') %
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        if self.request.user.is_authenticated:
+            context['has_demographic'] = self.request.user.latest_demographics
+            context['children'] = self.request.user.children.all()
+
+        return context
 
 
 class ParticipantSignupView(generic.CreateView):
