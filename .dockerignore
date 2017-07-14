@@ -1,0 +1,9 @@
+**/.git/
+**/*.pyc
+README.md
+Dockerfile
+docker-compose.yml
+.dockerignore
+.gitignore
+celerybeat.pid
+/static/
