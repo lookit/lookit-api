@@ -23,7 +23,7 @@ from exp.views import (AssignResearcherStudies, OrganizationCreateView,
                        ParticipantListView, ResearcherCreateView,
                        ResearcherDetailView, ResearcherListView,
                        ResponseDetailView, ResponseListView, StudyCreateView,
-                       StudyDetailView, StudyListView, StudyUpdateView)
+                       StudyDetailView, StudyListView, StudyUpdateView, StudyResponsesList)
 
 urlpatterns = [
     url(r'organizations/$', OrganizationListView.as_view(), name='organization-list'),
@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'researchers/create/$', ResearcherCreateView.as_view(), name='researcher-create'),
     url(r'researchers/(?P<pk>\d+)/$', ResearcherDetailView.as_view(), name='researcher-detail'),
     url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
+    url(r'studies/(?P<pk>\d+)/responses/$', StudyResponsesList.as_view(), name='study-responses-list'),
     url(r'responses/$', ResponseListView.as_view(), name='response-list'),
     url(r'responses/(?P<pk>\d+)/$', ResponseDetailView.as_view(), name='response-detail'),
     url(r'researchers/(?P<pk>\d+)/assign-studies/$', AssignResearcherStudies.as_view(), name='assign-studies'),

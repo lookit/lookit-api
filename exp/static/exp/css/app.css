@@ -3,6 +3,14 @@ body {
     font-size : 15px;
 }
 
+h1 {
+  font-size: 32px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
 .center {
     text-align: center;
 }
@@ -73,6 +81,15 @@ a.state-link {
 .pt-lg {
     padding-top: 20px;
 }
+.pt-xl {
+    padding-top: 25px;
+}
+.pt-xxl {
+    padding-top: 30px;
+}
+.pt-xxxl {
+    padding-top: 35px;
+}
 .pl-sm {
     padding-left: 5px;
 }
@@ -114,6 +131,15 @@ a.state-link {
 
 
 /* Study Detail */
+a.view-responses-link {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover.view-responses-link {
+    color: gray;
+}
+
 .study-detail-block {
     display: block;
     width:100%;
@@ -195,4 +221,11 @@ h2.researchers-label {
     display: block;
     width: 100%;
     height: 190px;
+}
+
+/* Participant Detail */
+.child-name {
+    background-color: #F5F5F5;
+    padding: 5px 5px 5px 10px;
+    border-radius: 5px;
 }
