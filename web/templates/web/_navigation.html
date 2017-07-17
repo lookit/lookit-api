@@ -23,6 +23,8 @@
         {% if user.is_authenticated %}
           {% if user.organization %}
             <li><a href="{% url 'exp:study-list' %}">Experimenter</a></li>
+          {% else %}
+            <li><a href="{% url 'web:participant-update' %}">Hi {{ user.given_name }}</a></li>
           {% endif %}
           <li><a href="{% url 'logout' %}">Logout</a></li>
         {% else %}

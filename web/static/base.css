@@ -179,6 +179,10 @@ button.account-row {
     width: 180px;
 }
 
+.account-edit {
+    margin-top: 20px;
+}
+
 
 /* STUDIES PAGE */
 .study-list-panel {

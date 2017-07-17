@@ -58,6 +58,18 @@ class ParticipantSignupForm(UserCreationForm):
         exclude = ('user_permissions', 'groups', '_identicon', 'organization',
                    'is_active', 'is_staff', 'is_superuser', 'last_login')
 
+class ParticipantUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+        self.fields['username'].widget.attrs['disabled'] = True
+
+    class Meta:
+        model = User
+        fields = ('username', 'given_name', 'middle_name', 'family_name',)
+        def clean_username(self):
+            return self.instance.username
+
 
 class DemographicDataForm(forms.ModelForm):
     class Meta:
