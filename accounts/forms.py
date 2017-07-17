@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, UserChangeForm
 
 from accounts.models import DemographicData, User
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
@@ -67,9 +67,10 @@ class ParticipantUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'given_name', 'middle_name', 'family_name',)
-        def clean_username(self):
-            return self.instance.username
 
+class ParticipantPasswordForm(PasswordChangeForm):
+    class Meta:
+        model = User
 
 class DemographicDataForm(forms.ModelForm):
     class Meta:

@@ -106,9 +106,35 @@ class ParticipantUpdateView(generic.UpdateView):
     template_name = 'web/participant-update.html'
     model = User
     form_class = forms.ParticipantUpdateForm
+    second_form_class = forms.ParticipantPasswordForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'form' not in context:
+            context['form'] = self.form_class(self.request.GET)
+        if 'form2' not in context:
+            context['form2'] = self.second_form_class(self.request.GET)
+        return context
 
     def get_object(self, queryset=None):
         return self.request.user;
 
     def get_success_url(self):
         return reverse('web:participant-update')
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        import pdb; pdb.set_trace()
+        if 'participant_update' in request.POST:
+            form_class = self.get_form_class()
+            form_name = 'form'
+        if 'password_update' in request.POST:
+            form_class = self.second_form_class
+            form_name = 'form2'
+
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(**{form_name: form})
