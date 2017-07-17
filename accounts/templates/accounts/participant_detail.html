@@ -16,7 +16,7 @@
 
       <div class="row">
           <div class="col-xs-12">
-              <h1> {{ user.get_full_name }} </h1>
+              <h1> {{ user.identicon_html }} {{ user.get_full_name }} </h1>
               <span class="pr-md"><label class='pr-xs'> Email: </label> {{ user.username }} </span>
               <span><label class='pr-xs'> Last Active: </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
           </div>
