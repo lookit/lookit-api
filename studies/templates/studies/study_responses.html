@@ -99,7 +99,7 @@
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="by_participant">
             <div class="row pt-md">
-                <div class="col-sm-5 col-xs-12">
+                <div class="col-md-5 col-xs-12">
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -108,6 +108,9 @@
                                         Participant ID
                                         <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
                                         <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
+                                    </th>
+                                    <th>
+                                        Status
                                     </th>
                                     <th>
                                         Date
@@ -120,6 +123,7 @@
                             {% for response in responses %}
                               <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}'>
                                 <td>{{ response.child.user.id }}</td>
+                                <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
                                 <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
                               </tr>
                             {% endfor %}
@@ -127,7 +131,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="col-sm-7 col-xs-12">
+                <div class="col-md-7 col-xs-12">
                     {% for response in response_data %}
                         <div class='response-data pt-xxxl' id='response-data-{{ forloop.counter }}' class='hidden'>
                             <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
