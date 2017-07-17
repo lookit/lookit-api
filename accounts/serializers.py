@@ -109,12 +109,12 @@ class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
     # included_serializers = {
     #     'user': UserSerializer,
     # }
+
     user = UUIDResourceRelatedField(
         queryset=User.objects,
         many=False,
-        related_link_view_name='child-users-list',
-        related_link_url_kwarg='child_uuid',
-        related_link_lookup_field='uuid',
+        related_link_view_name='user-detail',
+        related_link_lookup_field='uuid'
     )
 
     class Meta:
