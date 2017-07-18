@@ -7,7 +7,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
 
 from accounts import forms
-from accounts.models import DemographicData, User
+from accounts.models import DemographicData, User, Child
 from studies.models import Study
 
 
@@ -86,6 +86,31 @@ class ParticipantSignupView(generic.CreateView):
     def get_success_url(self):
         return reverse('web:demographic-data-create')
 
+class ChildrenListView(generic.CreateView):
+    """
+    Allows user to view a list of current children and add children
+    """
+    template_name = 'web/children-list.html'
+    model = Child
+    form_class = forms.ChildForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        children = Child.objects.filter(deleted = False, user=self.request.user)
+        context["objects"] = children
+        context["form_hidden"] = kwargs.get('form_hidden', True)
+        return context
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form, form_hidden=False))
+
+    def form_valid(self, form):
+        user = self.request.user
+        form.instance.user = user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('web:children-list')
 
 class DemographicDataCreateView(generic.CreateView):
     '''

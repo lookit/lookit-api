@@ -1,0 +1,98 @@
+{% extends 'web/base.html' %}
+{% load bootstrap3 %}
+{% block title %}Update account information{% endblock %}
+
+
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+    <script>
+        function toggleAddChildForm() {
+            form = $(document.getElementById('add-child-form')).toggle();
+        }
+        $(function() {
+           $("#toggleAddChildButton").click(function () {
+              $(this).text(function(i, text){
+                  return text === "Add Child" ? "Hide Form" : "Add Child";
+              })
+           });
+        })
+    </script>
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>My Account</h2>
+    </div>
+    <div class="container">
+        <div class="row account-edit">
+            <div class="col-sm-4">
+                <a class="btn btn-default btn-md btn-block" href="/account"><strong>Account information</strong><br> Change your name, email, or password.</a>
+                <a class="btn btn-default btn-md btn-block" href="/account/demographics"><strong>Demographic Survey</strong><br>Tell us more about yourself.</a>
+                <a class="btn btn-default btn-md btn-block active" href="/account/children"><strong>Children Information</strong><br>Add or edit participant information.</a>
+                <a class="btn btn-default btn-md btn-block" href="/account/email"><strong>Email Preferences</strong><br>Edit when you can be contacted.</a>
+            </div>
+            <div class="col-sm-8">
+                <div class="pull-right">
+                    <button id="toggleAddChildButton" onclick="toggleAddChildForm()"class="btn btn-primary">{% if form_hidden %}Add Child{% else %} Hide Form {% endif %}</button>
+                </div>
+                <div id="add-child-form" style="display:{% if form_hidden %} none {% else %} inline {% endif %}">
+                    <div class="panel-heading">
+                      <h1 class="panel-title">
+                          Add Child
+                      </h1>
+                    </div>
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                          <div class="panel-body">
+                            <form method="POST" action="">{% csrf_token %}
+                              {% bootstrap_form form %}
+                              {% buttons %}
+                              <div class="pull-right">
+                                  <a class="btn btn-default" href="{% url 'web:children-list' %}"> Cancel </a>
+                                  <button type="submit" class="btn btn-success">
+                                     Add Child
+                                  </button>
+                              </div>
+                              {% endbuttons %}
+                            </form>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2><label> Children </label></h2>
+                        {% if objects %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                  <thead>
+                                    <tr>
+                                      <th>Name</th>
+                                      <th>Birthday</th>
+                                      <th></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                      {% for child in objects %}
+                                          <tr>
+                                            <td>{{ child.given_name }}</td>
+                                            <td>{{ child.birthday }}</td>
+                                            <td> <a href="#" class="btn btn-sm btn-primary"> Update child </a></td>
+                                          </tr>
+                                      {% endfor %}
+                                  </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p><em> No child profiles registered! </em></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

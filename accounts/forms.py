@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, UserChangeForm
 
-from accounts.models import DemographicData, User
+from accounts.models import DemographicData, User, Child
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 from studies.models import Study
 
@@ -58,6 +58,7 @@ class ParticipantSignupForm(UserCreationForm):
         exclude = ('user_permissions', 'groups', '_identicon', 'organization',
                    'is_active', 'is_staff', 'is_superuser', 'last_login')
 
+
 class ParticipantUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
@@ -70,11 +71,26 @@ class ParticipantUpdateForm(forms.ModelForm):
         model = User
         fields = ('username', 'given_name', 'middle_name', 'family_name',)
 
+
 class ParticipantPasswordForm(PasswordChangeForm):
     class Meta:
         model = User
+
 
 class DemographicDataForm(forms.ModelForm):
     class Meta:
         model = DemographicData
         exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
+
+
+class ChildForm(forms.ModelForm):
+    class Meta:
+        model = Child
+        fields = ('given_name', 'birthday', 'gender', 'age_at_birth', 'additional_information')
+
+        labels = {
+            'given_name': 'First Name',
+            'birthday': "Birthday - YYYY-MM-DD ",
+            'age_at_birth': 'Gestational Age at Birth',
+            'additional_information': "Any additional information you'd like us to know"
+        }

@@ -1,0 +1,53 @@
+{% extends 'web/base.html' %}
+{% load bootstrap3 %}
+{% block title %}Update account information{% endblock %}
+
+
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>My Account</h2>
+    </div>
+    <div class="container">
+        <div class="row account-edit">
+            <div class="col-sm-4">
+                <a class="btn btn-default btn-md btn-block" href="/account"><strong>Account information</strong><br> Change your name, email, or password.</a>
+                <a class="btn btn-default btn-md btn-block active" href="/account/demographics"><strong>Demographic Survey</strong><br>Tell us more about yourself.</a>
+                <a class="btn btn-default btn-md btn-block" href="/account/children"><strong>Children Information</strong><br>Add or edit participant information.</a>
+                <a class="btn btn-default btn-md btn-block" href="/account/email"><strong>Email Preferences</strong><br>Edit when you can be contacted.</a>
+            </div>
+            <div class="col-sm-8">
+                <div class="panel-heading">
+                  <h1 class="panel-title">
+                      One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research.
+                      Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking
+                      multiple languages or having older siblings affect children's learning. Even if you allow your study videos to be published
+                      for scientific or publicity purposes, your demographic information is never published in conjunction with your video.
+                  </h1>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <form method="POST" action="">{% csrf_token %}
+                      {% bootstrap_form form %}
+                      {% buttons %}
+                      <div class="pull-right">
+                          <a class="btn btn-default" href="{% url 'web:demographic-data-update' %}"> Cancel </a>
+                          <button type="submit" class="btn btn-success">
+                             Save
+                          </button>
+                      </div>
+                      {% endbuttons %}
+                    </form>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
