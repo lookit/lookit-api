@@ -1,0 +1,40 @@
+{% extends 'web/base.html' %}
+{% load bootstrap3 %}
+{% block title %}Email Preferences{% endblock %}
+
+
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>My Account</h2>
+    </div>
+    <div class="container">
+        <div class="row account-edit">
+            <div class="col-md-4 mb-lg">
+                <a class="btn btn-default btn-md btn-block" href="/account"><strong>Account information</strong><br> Change your name, email, or password.</a>
+                <a class="btn btn-default btn-md btn-block" href="/account/demographics"><strong>Demographic Survey</strong><br>Tell us more about yourself.</a>
+                <a class="btn btn-default btn-md btn-block" href="/account/children"><strong>Children Information</strong><br>Add or edit participant information.</a>
+                <a class="btn btn-default btn-md btn-block active" href="/account/email"><strong>Email Preferences</strong><br>Edit when you can be contacted.</a>
+            </div>
+            <div class="col-md-8">
+                <div class="panel-heading">
+                  <h1 class="panel-title">
+                    Email Preferences
+                  </h1>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                     <h1> TODO </h1>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

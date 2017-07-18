@@ -209,6 +209,24 @@ class DemographicDataUpdateView(DemographicDataCreateView):
             demographic_data.pop('uuid')
         return demographic_data
 
+
+class ParticipantEmailPreferencesView(generic.UpdateView):
+    """
+    Allows a participant to update their email preferences - when they can be contacted.
+    """
+    template_name = 'web/participant-email-preferences.html'
+    model = User
+    form_class = forms.ParticipantUpdateForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return super().dispatch(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('login'))
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+
 class ParticipantUpdateView(generic.UpdateView):
     """
     Allows a participant to update their names and password
