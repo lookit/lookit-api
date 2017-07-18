@@ -14,6 +14,7 @@ RUN apt-get update \
         # psycopg2
         python-dev \
         libpq-dev \
+        libgraphviz-dev \
     && apt-get clean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
@@ -44,6 +45,7 @@ RUN pip install -U pip
 COPY ./requirements/defaults.txt /code/requirements/defaults.txt
 RUN pip install --no-cache-dir -r /code/requirements/defaults.txt
 
+RUN pip install pygraphviz==1.3.1 --install-option="--library-path=/usr/local/lib/" --install-option="--include-path=/usr/local/include/"
 RUN pip install \
     uwsgi==2.0.13 \
     gevent==1.1.1 \
