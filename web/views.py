@@ -104,7 +104,28 @@ class DemographicDataCreateView(generic.CreateView):
     def get_success_url(self):
         return reverse('web:studies-list')
 
+class DemographicDataUpdateView(DemographicDataCreateView):
+    """
+    Allows user to update demographic data - but actually creates new version instead of updating old one.
+    """
+    template_name = 'web/demographic-data-update.html'
+
+    def get_success_url(self):
+        return reverse('web:demographic-data-update')
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        demographic_data = self.request.user.latest_demographics.__dict__
+        demographic_data.pop('id')
+        demographic_data.pop('uuid')
+        return demographic_data
+
 class ParticipantUpdateView(generic.UpdateView):
+    """
+    Allows a participant to update their names and password
+    """
     template_name = 'web/participant-update.html'
     model = User
     form_class = forms.ParticipantUpdateForm

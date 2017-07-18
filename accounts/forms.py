@@ -77,4 +77,4 @@ class ParticipantPasswordForm(PasswordChangeForm):
 class DemographicDataForm(forms.ModelForm):
     class Meta:
         model = DemographicData
-        exclude = ('created_at', 'previous', 'user', 'extra', )
+        exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
