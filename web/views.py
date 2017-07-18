@@ -94,6 +94,11 @@ class ChildrenListView(generic.CreateView):
     model = Child
     form_class = forms.ChildForm
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return super().dispatch(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('login'))
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         children = Child.objects.filter(deleted = False, user=self.request.user)
@@ -119,6 +124,11 @@ class ChildUpdateView(generic.UpdateView):
     template_name = 'web/child-update.html'
     model = Child
     form_class = forms.ChildForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return super().dispatch(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('login'))
 
     def get_success_url(self):
         return reverse('web:children-list')
@@ -160,6 +170,11 @@ class DemographicDataCreateView(generic.CreateView):
     model = DemographicData
     form_class = forms.DemographicDataForm
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return super().dispatch(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('login'))
+
     def form_valid(self, form):
         resp = super().form_valid(form)
         self.object.user = self.request.user
@@ -174,6 +189,11 @@ class DemographicDataUpdateView(DemographicDataCreateView):
     Allows user to update demographic data - but actually creates new version instead of updating old one.
     """
     template_name = 'web/demographic-data-update.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return super().dispatch(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('login'))
 
     def get_success_url(self):
         return reverse('web:demographic-data-update')
@@ -195,6 +215,11 @@ class ParticipantUpdateView(generic.UpdateView):
     model = User
     form_class = forms.ParticipantUpdateForm
     second_form_class = forms.ParticipantPasswordForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return super().dispatch(request, *args, **kwargs)
+        return HttpResponseRedirect(reverse('login'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
