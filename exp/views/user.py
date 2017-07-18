@@ -14,7 +14,7 @@ from guardian.shortcuts import get_objects_for_user
 from django.db.models import Q
 
 from accounts.forms import UserStudiesForm
-from accounts.models import User, Child
+from accounts.models import User
 from accounts.utils import build_org_group_name
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
