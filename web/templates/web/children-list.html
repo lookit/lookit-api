@@ -1,6 +1,6 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
-{% block title %}Update account information{% endblock %}
+{% block title %}Children{% endblock %}
 
 
 {% block flash %}
@@ -54,7 +54,7 @@
                               <div class="pull-right">
                                   <a class="btn btn-default" href="{% url 'web:children-list' %}"> Cancel </a>
                                   <button type="submit" class="btn btn-success">
-                                     Add Child
+                                     {% bootstrap_icon "plus" %} Add Child
                                   </button>
                               </div>
                               {% endbuttons %}
@@ -81,7 +81,7 @@
                                           <tr>
                                             <td>{{ child.given_name }}</td>
                                             <td>{{ child.birthday }}</td>
-                                            <td> <a href="#" class="btn btn-sm btn-primary"> Update child </a></td>
+                                            <td> <a href="{% url 'web:child-update' child.uuid %}" class="btn btn-sm btn-primary"> Update child </a></td>
                                           </tr>
                                       {% endfor %}
                                   </tbody>

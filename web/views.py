@@ -112,6 +112,46 @@ class ChildrenListView(generic.CreateView):
     def get_success_url(self):
         return reverse('web:children-list')
 
+class ChildUpdateView(generic.UpdateView):
+    """
+    Allows user to view a list of current children and add children
+    """
+    template_name = 'web/child-update.html'
+    model = Child
+    form_class = forms.ChildForm
+
+    def get_success_url(self):
+        return reverse('web:children-list')
+
+    def get_object(self, queryset=None):
+        '''
+        Returns the object the view is displaying.
+        By default this requires `self.queryset` and a `pk` or `slug` argument
+        in the URLconf, but subclasses can override this to return any object.
+        '''
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        uuid = self.kwargs.get('uuid')
+
+        if uuid is not None:
+            queryset = queryset.filter(uuid=uuid)
+        try:
+            # Get the single item from the filtered queryset
+            obj = queryset.get()
+        except queryset.model.DoesNotExist:
+            raise Http404(_('No %(verbose_name)s found matching the query') %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        return obj
+
+    def post(self, request, *args, **kwargs):
+        if 'deleteChild' in self.request.POST and self.request.method == 'POST':
+            child = self.get_object()
+            child.deleted = True
+            child.save()
+            return HttpResponseRedirect(self.get_success_url())
+        return super().post(request, *args, **kwargs)
+
 class DemographicDataCreateView(generic.CreateView):
     '''
     Allows a participant to provide demographic data
