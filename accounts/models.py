@@ -146,7 +146,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def is_org_read(self):
         if self.is_org_admin:
             return True
-        return self.groups.filter(name=build_org_group_name(self.organization. name, 'read')).exists()
+        return self.groups.filter(name=build_org_group_name(self.organization.name, 'read')).exists()
 
     @property
     def display_permission(self):
