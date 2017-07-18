@@ -246,6 +246,9 @@ class Child(models.Model):
         else:
             return str(age.days) + ' days'
 
+    def __str__(self):
+        return f'<Child: {self.given_name}, child of {self.user.get_short_name()}>'
+
     class Meta:
         ordering = ['-birthday']
 
