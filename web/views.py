@@ -4,6 +4,7 @@ from django.shortcuts import reverse
 from django.utils.translation import ugettext as _
 from django.views import generic
 from django.contrib.auth import update_session_auth_hash
+from django.http import HttpResponseRedirect
 
 from accounts import forms
 from accounts.models import DemographicData, User
@@ -112,8 +113,11 @@ class ParticipantUpdateView(generic.UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        # context['form'] = self.form_class(initial={'username': user.username, 'given_name':user.given_name, 'middle_name':user.middle_name, 'family_name':user.family_name})
-        # context['form2'] = self.second_form_class(self.request.POST)
+        if 'participant_update' in self.request.POST:
+            context['form2'].is_bound = False
+        if 'password_update' in self.request.POST:
+            context['form'].is_bound = False
+            context['form'].initial = {'username': user.username, 'given_name': user.given_name, 'middle_name': user.middle_name, 'family_name': user.family_name}
         if 'form' not in context:
             context['form'] = self.form_class(self.request.GET)
         if 'form2' not in context:
@@ -150,10 +154,9 @@ class ParticipantUpdateView(generic.UpdateView):
         form = self.get_form(form_class)
         if form.is_valid():
             form.save()
-            # Updating the password logs out all other sessions for the user
-            # except the current one.
-            if form == self.second_form_class:
+            if form_name == 'form2':
                 update_session_auth_hash(self.request, form.user)
+                return HttpResponseRedirect(self.get_success_url())
             return super().form_valid(form)
         else:
             return self.form_invalid(**{form_name: form})
