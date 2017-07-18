@@ -76,6 +76,17 @@ class ParticipantPasswordForm(PasswordChangeForm):
     class Meta:
         model = User
 
+class EmailPreferencesForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('email_next_session', 'email_new_studies', 'email_results_published', 'email_personally')
+        labels = {
+            'email_next_session': "It's time for another session of a study we are currently participating in",
+            'email_new_studies': "A new study is available for one of my children",
+            'email_results_published': "The results of a study we participated in are published",
+            'email_personally': "A researcher needs to email me personally if I report a technical problem or there are questions about my responses (for example, if I reported two different birthdates for a child and they're not sure whether he's 3 or 5)."
+        }
+
 
 class DemographicDataForm(forms.ModelForm):
     class Meta:

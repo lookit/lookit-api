@@ -100,6 +100,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
+    email_next_session = models.BooleanField(default=True)
+    email_new_studies = models.BooleanField(default=True)
+    email_results_published = models.BooleanField(default=True)
+    email_personally = models.BooleanField(default=True)
+
     @property
     def identicon(self):
         if not self._identicon:

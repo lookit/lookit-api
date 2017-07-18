@@ -26,12 +26,22 @@
             <div class="col-md-8">
                 <div class="panel-heading">
                   <h1 class="panel-title">
-                    Email Preferences
+                    I would like to be contacted when:
                   </h1>
                 </div>
                 <div class="panel panel-default">
                   <div class="panel-body">
-                     <h1> TODO </h1>
+                      <form method="POST" action="">{% csrf_token %}
+                          {% bootstrap_form form %}
+                          {% buttons %}
+                          <div class="pull-right">
+                              <a class="btn btn-default" href="{% url 'web:email-preferences' %}"> Cancel </a>
+                              <button name="password_update" type="submit" class="btn btn-success">
+                                 Save
+                              </button>
+                          </div>
+                          {% endbuttons %}
+                      </form>
                 </div>
               </div>
             </div>

@@ -216,7 +216,7 @@ class ParticipantEmailPreferencesView(generic.UpdateView):
     """
     template_name = 'web/participant-email-preferences.html'
     model = User
-    form_class = forms.ParticipantUpdateForm
+    form_class = forms.EmailPreferencesForm
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
@@ -225,6 +225,9 @@ class ParticipantEmailPreferencesView(generic.UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_success_url(self):
+        return reverse('web:email-preferences')
 
 
 class ParticipantUpdateView(generic.UpdateView):
