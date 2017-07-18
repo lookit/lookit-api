@@ -1,6 +1,6 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
-{% block title %}Update account information{% endblock %}
+{% block title %}Update demographics{% endblock %}
 
 
 {% block flash %}
@@ -17,19 +17,20 @@
     </div>
     <div class="container">
         <div class="row account-edit">
-            <div class="col-sm-4">
+            <div class="col-md-4 mb-lg">
                 <a class="btn btn-default btn-md btn-block" href="/account"><strong>Account information</strong><br> Change your name, email, or password.</a>
                 <a class="btn btn-default btn-md btn-block active" href="/account/demographics"><strong>Demographic Survey</strong><br>Tell us more about yourself.</a>
                 <a class="btn btn-default btn-md btn-block" href="/account/children"><strong>Children Information</strong><br>Add or edit participant information.</a>
                 <a class="btn btn-default btn-md btn-block" href="/account/email"><strong>Email Preferences</strong><br>Edit when you can be contacted.</a>
             </div>
-            <div class="col-sm-8">
+            <div class="col-md-8">
                 <div class="panel-heading">
                   <h1 class="panel-title">
-                      One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research.
+                      <p> One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research.
                       Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking
-                      multiple languages or having older siblings affect children's learning. Even if you allow your study videos to be published
-                      for scientific or publicity purposes, your demographic information is never published in conjunction with your video.
+                      multiple languages or having older siblings affect children's learning. </p>
+                      <p> Even if you allow your study videos to be published
+                      for scientific or publicity purposes, your demographic information is never published in conjunction with your video. </p>
                   </h1>
                 </div>
                 <div class="panel panel-default">

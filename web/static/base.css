@@ -329,3 +329,6 @@ button[disabled]#participate-button{
 .textarea-full {
     width: 100%;
 }
+.mb-lg {
+    margin-bottom: 20px;
+}
