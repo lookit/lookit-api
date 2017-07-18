@@ -202,9 +202,11 @@ class DemographicDataUpdateView(DemographicDataCreateView):
         """
         Returns the initial data to use for forms on this view.
         """
-        demographic_data = self.request.user.latest_demographics.__dict__
-        demographic_data.pop('id')
-        demographic_data.pop('uuid')
+        demographic_data = self.request.user.latest_demographics or None
+        if demographic_data:
+            demographic_data = demographic_data.__dict__
+            demographic_data.pop('id')
+            demographic_data.pop('uuid')
         return demographic_data
 
 class ParticipantUpdateView(generic.UpdateView):
