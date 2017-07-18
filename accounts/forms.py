@@ -60,6 +60,8 @@ class ParticipantSignupForm(UserCreationForm):
 
 class ParticipantUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
+        if 'user' in kwargs:
+            kwargs.pop('user')
         super().__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
         self.fields['username'].widget.attrs['disabled'] = True
