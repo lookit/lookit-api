@@ -14,6 +14,9 @@ RUN apt-get update \
         # psycopg2
         python-dev \
         libpq-dev \
+        graphviz \
+        libgraphviz-dev \
+        pkg-config \
     && apt-get clean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*

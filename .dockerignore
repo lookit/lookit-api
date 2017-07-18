@@ -7,3 +7,4 @@ docker-compose.yml
 .gitignore
 celerybeat.pid
 /static/
+cloudbuild.yaml
