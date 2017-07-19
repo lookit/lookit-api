@@ -104,6 +104,15 @@ class DemographicDataCreateView(generic.CreateView):
 
     def get_success_url(self):
         return reverse('web:studies-list')
+        
+
+class ExperimentAssetsProxyView(ProxyView):
+    upstream = settings.EXPERIMENT_BASE_URL
+
+    def dispatch(self, request, path, *args, **kwargs):
+        if request.user.is_anonymous:
+            raise PermissionDenied()
+        return super().dispatch(request, path)
 
 
 class ExperimentProxyView(ProxyView):
