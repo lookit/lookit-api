@@ -239,18 +239,6 @@ class Child(models.Model):
         related_query_name='children'
     )
 
-    @property
-    def age(self):
-        today = timezone.now().date()
-        birthday = self.birthday
-        age = today - birthday
-        if age.days > 730: # Child is older than two years
-            return str(today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))) + ' years'
-        elif age.days > 30:
-            return str(int(age.days/30)) + ' months'
-        else:
-            return str(age.days) + ' days'
-
     def __str__(self):
         return f'<Child: {self.given_name}, child of {self.user.get_short_name()}>'
 

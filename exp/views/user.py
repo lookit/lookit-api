@@ -69,7 +69,6 @@ class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic
             'birthday': child.birthday,
             'gender': child.get_gender_display(),
             'age_at_birth': child.age_at_birth,
-            'age': child.age,
             'extra': child.additional_information
         } for child in user.children.all()]
         context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
