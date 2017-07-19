@@ -80,7 +80,8 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
         queryset=DemographicData.objects,
         many=False,
         related_link_view_name='demographicdata-detail',
-        related_link_lookup_field='uuid'
+        related_link_lookup_field='uuid',
+        required = False
     )
 
     class Meta:

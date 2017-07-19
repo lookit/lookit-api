@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django_filters',
 
     # third-party
     'django_extensions',
@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'bootstrap3',
     'debug_toolbar',
     'ace_overlay',
+    'corsheaders',
+    'rest_framework.authtoken',
+    'rest_framework_json_api',
 
     # our stuff
     'api',
@@ -66,6 +69,7 @@ INSTALLED_APPS = [
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -114,11 +118,11 @@ DATABASES = {
     'default': {
         'CONN_MAX_AGE': 0,
         'ENGINE': 'django.db.backends.postgresql',  # django.db.backends.postgresql
-        'NAME': os.environ.get('LOOKIT_DB_NAME', 'lookit'),
-        'USER': os.environ.get('LOOKIT_DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('LOOKIT_DB_PASSWORD', ''),
-        'HOST': os.environ.get('LOOKIT_DB_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('LOOKIT_DB_PORT', '5432'),
+        'NAME': os.environ.get('DB_NAME', 'lookit'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
         'ATOMIC_REQUESTS': True,
     }
 }
@@ -143,6 +147,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
     'PAGE_SIZE': 10,
     'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
     'DEFAULT_PAGINATION_CLASS':
@@ -158,7 +166,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
-}
+    }
 
 JSON_API_FORMAT_KEYS = 'dasherize'
 JSON_API_PLURALIZE_TYPES = True
@@ -217,3 +225,7 @@ SOCIALACCOUNT_PROVIDERS = \
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# Configuration for cross-site requests
+CORS_ORIGIN_ALLOW_ALL = True # Needs to be changed before production!
+CORS_ORIGIN_WHITELIST = ()
