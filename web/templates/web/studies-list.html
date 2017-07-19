@@ -36,9 +36,8 @@
             <div class="lookit-row studies-row">
                 <div class="container">
                     <div id="suggested-studies">
-                        {% if object_list %}
-                            <p class="study-detail-caption">Here are some studies that we're currently running:</p>
-                            <div class="row">
+                        <div class="row">
+                              <p class="study-detail-caption">Here are some studies that we're currently running:</p>
                               {% for obj in object_list %}
                               <div class="col-md-4">
                                   <div class="study-list-panel thumbnail">
@@ -68,12 +67,11 @@
                                       </a>
                                   </div>
                                 </div>
+                              {% empty %}
+                                <p><em> We are not running any studies at this time! </em></p>
                               {% endfor %}
-                            </div>
                         </div>
-                        {% else %}
-                            <p><em> We are not currently running any studies at this time! </em></p>
-                        {% endif %}                
+                    </div>
                 </div>
             </div>
         </div>

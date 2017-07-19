@@ -25,57 +25,55 @@
     <div class='row'>
         <div class='col-sm-6'>
             <h3>Children</h3>
-            {% if children %}
-                {% for child in children %}
-                <div class="pb-md">
-                    <h4 class="child-name"><em>{{child.name}}</em></h4>
-                    <div class="pl-md">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <b> Birthday: </b>
-                            </div>
-                            <div class="col-xs-7">
-                                {{child.birthday|date:"n/d/Y"|default:"N/A"}}
-                            </div>
+            {% for child in user.children.all %}
+            <div class="pb-md">
+                <h4 class="child-name"><em>{{child.given_name}}</em></h4>
+                <div class="pl-md">
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <b> Birthday: </b>
                         </div>
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <b> Gender: </b>
-                            </div>
-                            <div class="col-xs-7">
-                                 {{child.gender}}
-                            </div>
+                        <div class="col-xs-7">
+                            {{child.birthday|date:"n/d/Y"|default:"N/A"}}
                         </div>
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <b> Gestational Age at Birth: </b>
-                            </div>
-                            <div class="col-xs-7">
-                                 {{child.age_at_birth}}
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <b> Gender: </b>
                         </div>
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <b> Age: </b>
-                            </div>
-                            <div class="col-xs-7">
-                                 {{child.birthday | timesince}}
-                            </div>
+                        <div class="col-xs-7">
+                             {{child.get_gender_display}}
                         </div>
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <b> Extra: </b>
-                            </div>
-                            <div class="col-xs-7">
-                                 {{child.extra}}
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <b> Gestational Age at Birth: </b>
+                        </div>
+                        <div class="col-xs-7">
+                             {{child.age_at_birth}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <b> Age: </b>
+                        </div>
+                        <div class="col-xs-7">
+                             {{child.birthday | timesince}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <b> Extra: </b>
+                        </div>
+                        <div class="col-xs-7">
+                             {{child.additional_information}}
                         </div>
                     </div>
                 </div>
-                {% endfor %}
-            {% else %}
+            </div>
+            {% empty %}
                 <p><em> No children profiles registered! </em></p>
-            {% endif %}
+            {% endfor %}
         </div>
         <div class='col-sm-6'>
             <h3>Latest Demographic Data</h3>
