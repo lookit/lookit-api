@@ -1,11 +1,14 @@
 from django.contrib.auth import authenticate, login
+from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import reverse
 from django.utils.translation import ugettext as _
 from django.views import generic
 
 from accounts import forms
-from accounts.models import DemographicData, User
+from accounts.models import Child, DemographicData, User
+from project import settings
+from revproxy.views import ProxyView
 from studies.models import Study
 
 
@@ -101,3 +104,19 @@ class DemographicDataCreateView(generic.CreateView):
 
     def get_success_url(self):
         return reverse('web:studies-list')
+
+
+class ExperimentProxyView(ProxyView):
+    upstream = settings.EXPERIMENT_BASE_URL
+
+    def dispatch(self, request, path, *args, **kwargs):
+        try:
+            child = Child.objects.get(uuid=kwargs.get('child_id', None))
+        except Child.DoesNotExist:
+            raise Http404()
+
+        if request.user.is_anonymous or child.user != request.user:
+            # requesting user doesn't belong to that child
+            raise PermissionDenied()
+
+        return super().dispatch(request, path)
