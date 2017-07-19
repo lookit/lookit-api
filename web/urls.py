@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^contact_us/?$', flatpages_views.flatpage, dict(url='/contact_us/'), name='contact_us'),
     url(r'^(?P<path>assets/.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-assets-proxy'),
     url(r'^(?P<path>fonts/.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-fonts-proxy'),
-    url(r'^(?P<path>ember-cli-live-reload.js)$', views.ExperimentAssetsProxyView.as_view(), name='ember-cli-live-reload-proxy'),  # we shouldn't need this in prod
+    url(r'^(?P<path>ember-cli-live-reload\.js)$', views.ExperimentAssetsProxyView.as_view(), name='ember-cli-live-reload-proxy'),  # we shouldn't need this in prod
+    url(r'^(?P<path>VideoRecorder\.swf)$', views.ExperimentAssetsProxyView.as_view(), name='videorecorder-proxy'),
     url(r'^$', flatpages_views.flatpage, dict(url='/'), name='home'),
 ]
