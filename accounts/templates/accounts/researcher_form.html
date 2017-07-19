@@ -14,7 +14,7 @@
   <div class="container">
     <div class="row">
         <div class="col-xs-12">
-            <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> > Create Researcher </a>
+            <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> &gt; Create Researcher </a>
         </div>
     </div>
     <div class="mt-xl panel panel-default">
@@ -26,11 +26,13 @@
             {{ researchers.management_form }}
             {% bootstrap_form form exclude="is_active,is_staff,is_superuser,password" %}
             {% if perms.can_create_users %}
-                {% buttons %}
-                  <button type="submit" class="btn btn-success">
-                    {% bootstrap_icon "plus" %} Create Researcher
-                  </button>
-                {% endbuttons %}
+                <div class="pull-right">
+                    {% buttons %}
+                      <button type="submit" class="btn btn-success">
+                        {% bootstrap_icon "plus" %} Create Researcher
+                      </button>
+                    {% endbuttons %}
+                </div>
             {% endif %}
         </form>
     </div>
