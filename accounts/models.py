@@ -116,7 +116,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @property
     def latest_demographics(self):
-        return self.demographics.last()
+        return self.demographics.first()
 
     @property
     def identicon_small_html(self):
