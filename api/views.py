@@ -1,11 +1,15 @@
-from django_filters import rest_framework as filters
+from collections import OrderedDict
+
+from rest_framework import status
 
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   OrganizationSerializer, UserSerializer)
+from django_filters import rest_framework as filters
 from rest_framework_json_api import views
 from studies.models import Response, Study
-from studies.serializers import ResponseSerializer, StudySerializer
+from studies.serializers import (ResponseWriteableSerializer, ResponseSerializer,
+                                 StudySerializer)
 
 
 class FilterByUrlKwargsMixin(views.ModelViewSet):
@@ -67,6 +71,7 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     filter_fields = [('response', 'responses'), ]
 
+
 class ResponseFilter(filters.FilterSet):
     child = filters.UUIDFilter(name='child__uuid')
 
@@ -74,11 +79,18 @@ class ResponseFilter(filters.FilterSet):
         model = Response
         fields = ['child']
 
+
 class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'responses'
     queryset = Response.objects.all()
     serializer_class = ResponseSerializer
     lookup_field = 'uuid'
-    filter_fields = [('study', 'study') ]
+    filter_fields = [('study', 'study'), ]
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ResponseFilter
+
+    def get_serializer_class(self):
+        """Return a different serializer for create views"""
+        if self.action == 'create':
+            return ResponseWriteableSerializer
+        return super().get_serializer_class()
