@@ -43,6 +43,6 @@ urlpatterns = [
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
     url(r'studies/(?P<pk>\d+)/edit/$', StudyUpdateView.as_view(), name='study-edit'),
     url(r'studies/(?P<pk>\d+)/edit/build/$', StudyBuildView.as_view(), name='study-build'),
-    url(r'^studies/(?P<study_uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/preview/?$', PreviewProxyView.as_view(), name='preview-proxy'),
+    url(r'^studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/preview/?$', PreviewProxyView.as_view(), name='preview-proxy'),
     url(r'', RedirectView.as_view(url=reverse_lazy('exp:study-list')), name='homepage')
 ]
