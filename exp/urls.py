@@ -23,7 +23,8 @@ from exp.views import (AssignResearcherStudies, OrganizationCreateView,
                        ParticipantListView, ResearcherCreateView,
                        ResearcherDetailView, ResearcherListView,
                        ResponseDetailView, ResponseListView, StudyCreateView,
-                       StudyDetailView, StudyListView, StudyUpdateView, StudyResponsesList)
+                       StudyDetailView, StudyListView, StudyUpdateView, StudyResponsesList,
+                       StudyBuildView)
 
 urlpatterns = [
     url(r'organizations/$', OrganizationListView.as_view(), name='organization-list'),
@@ -41,5 +42,6 @@ urlpatterns = [
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
     url(r'studies/(?P<pk>\d+)/edit/$', StudyUpdateView.as_view(), name='study-edit'),
+    url(r'studies/(?P<pk>\d+)/edit/build/$', StudyBuildView.as_view(), name='study-build'),
     url(r'', RedirectView.as_view(url=reverse_lazy('exp:study-list')), name='homepage')
 ]

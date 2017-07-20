@@ -18,8 +18,20 @@ from accounts.utils import (get_permitted_triggers, status_tooltip_text,
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import (get_objects_for_user, get_perms,
                                 get_users_with_perms)
-from studies.forms import StudyEditForm, StudyForm
+from studies.forms import StudyEditForm, StudyForm, StudyBuildForm
 from studies.models import Study, StudyLog
+
+
+class StudyBuildView(generic.UpdateView):
+    """
+    StudyBuildView allows user to modify study structure - JSON field.
+    """
+    model = Study
+    form_class = StudyBuildForm
+    template_name = 'studies/study_json.html'
+
+    def get_success_url(self):
+        return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
 
 class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
@@ -27,13 +39,10 @@ class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
     '''
-    fields = ('name', 'organization', 'blocks', )
     model = Study
     permission_required = 'studies.can_create_study'
     raise_exception = True
-
-    def get_form_class(self):
-        return StudyForm
+    form_class = StudyForm
 
     def form_valid(self, form):
         user = self.request.user

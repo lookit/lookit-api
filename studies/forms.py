@@ -44,3 +44,10 @@ class StudyEditForm(forms.ModelForm):
 
 class StudyForm(StudyEditForm):
     structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False)
+
+class StudyBuildForm(forms.ModelForm):
+    structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False)
+
+    class Meta:
+        model = Study
+        fields = ['structure']
