@@ -183,15 +183,24 @@ class DemographicDataUpdateView(DemographicDataCreateView):
     def get_success_url(self):
         return reverse('web:demographic-data-update')
 
+    def form_valid(self, form):
+        resp = super().form_valid(form)
+        self.object.user = self.request.user
+        self.object.previous = self.request.user.latest_demographics or None
+        self.object.save()
+        return resp
+
     def get_initial(self):
         """
         Returns the initial data to use for forms on this view.
         """
         demographic_data = self.request.user.latest_demographics or None
         if demographic_data:
-            demographic_data = demographic_data.__dict__
-            demographic_data.pop('id')
-            demographic_data.pop('uuid')
+            demographic_data_dict = demographic_data.__dict__
+            demographic_data_dict['previous'] = demographic_data
+            demographic_data_dict.pop('id')
+            demographic_data_dict.pop('uuid')
+            return demographic_data_dict
         return demographic_data
 
 
