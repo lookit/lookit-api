@@ -91,18 +91,13 @@ class ParticipantSignupView(generic.CreateView):
     def get_success_url(self):
         return reverse('web:demographic-data-create')
 
-class ChildrenListView(generic.CreateView):
+class ChildrenListView(LoginRequiredMixin, generic.CreateView):
     """
     Allows user to view a list of current children and add children
     """
     template_name = 'web/children-list.html'
     model = Child
     form_class = forms.ChildForm
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return super().dispatch(request, *args, **kwargs)
-        return HttpResponseRedirect(reverse('login'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -122,18 +117,13 @@ class ChildrenListView(generic.CreateView):
     def get_success_url(self):
         return reverse('web:children-list')
 
-class ChildUpdateView(generic.UpdateView):
+class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
     Allows user to view a list of current children and add children
     """
     template_name = 'web/child-update.html'
     model = Child
     form_class = forms.ChildForm
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return super().dispatch(request, *args, **kwargs)
-        return HttpResponseRedirect(reverse('login'))
 
     def get_success_url(self):
         return reverse('web:children-list')
@@ -167,18 +157,13 @@ class ChildUpdateView(generic.UpdateView):
             return HttpResponseRedirect(self.get_success_url())
         return super().post(request, *args, **kwargs)
 
-class DemographicDataCreateView(generic.CreateView):
+class DemographicDataCreateView(LoginRequiredMixin, generic.CreateView):
     '''
     Allows a participant to provide demographic data
     '''
     template_name = 'web/demographic-data-create.html'
     model = DemographicData
     form_class = forms.DemographicDataForm
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return super().dispatch(request, *args, **kwargs)
-        return HttpResponseRedirect(reverse('login'))
 
     def form_valid(self, form):
         resp = super().form_valid(form)
@@ -195,11 +180,6 @@ class DemographicDataUpdateView(DemographicDataCreateView):
     """
     template_name = 'web/demographic-data-update.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return super().dispatch(request, *args, **kwargs)
-        return HttpResponseRedirect(reverse('login'))
-
     def get_success_url(self):
         return reverse('web:demographic-data-update')
 
@@ -215,18 +195,13 @@ class DemographicDataUpdateView(DemographicDataCreateView):
         return demographic_data
 
 
-class ParticipantEmailPreferencesView(generic.UpdateView):
+class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
     """
     Allows a participant to update their email preferences - when they can be contacted.
     """
     template_name = 'web/participant-email-preferences.html'
     model = User
     form_class = forms.EmailPreferencesForm
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return super().dispatch(request, *args, **kwargs)
-        return HttpResponseRedirect(reverse('login'))
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -235,7 +210,7 @@ class ParticipantEmailPreferencesView(generic.UpdateView):
         return reverse('web:email-preferences')
 
 
-class ParticipantUpdateView(generic.UpdateView):
+class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
     Allows a participant to update their names and password
     """
@@ -243,11 +218,6 @@ class ParticipantUpdateView(generic.UpdateView):
     model = User
     form_class = forms.ParticipantUpdateForm
     second_form_class = forms.ParticipantPasswordForm
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return super().dispatch(request, *args, **kwargs)
-        return HttpResponseRedirect(reverse('login'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
