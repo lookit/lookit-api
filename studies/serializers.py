@@ -81,7 +81,7 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
         many=False,
         related_link_view_name='demographicdata-detail',
         related_link_lookup_field='uuid',
-        required = False
+        required=False
     )
 
     class Meta:
@@ -98,3 +98,18 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
             'study',
             'demographic_snapshot',
         )
+
+
+class ResponseWriteableSerializer(ResponseSerializer):
+    def create(self, validated_data):
+        """
+        Use the ids for objects so django rest framework doesn't
+        try to create new objects out of spite
+        """
+        study = validated_data.pop('study')
+        validated_data['study_id'] = study.id
+        # implicitly set the demographic data because we know what it will be
+        validated_data['demographic_snapshot_id'] = validated_data.get('child').user.latest_demographics.id
+        child = validated_data.pop('child')
+        validated_data['child_id'] = child.id
+        return super().create(validated_data)
