@@ -30,10 +30,7 @@
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg">
-                <a class="btn btn-default btn-md btn-block" href="/account"><strong>Account information</strong><br> Change your name, email, or password.</a>
-                <a class="btn btn-default btn-md btn-block" href="/account/demographics"><strong>Demographic Survey</strong><br>Tell us more about yourself.</a>
-                <a class="btn btn-default btn-md btn-block active" href="/account/children"><strong>Children Information</strong><br>Add or edit participant information.</a>
-                <a class="btn btn-default btn-md btn-block" href="/account/email"><strong>Email Preferences</strong><br>Edit when you can be contacted.</a>
+                 {% include 'web/account-navigation.html' with current_page="children-list" %} 
             </div>
             <div class="col-md-8">
                 <div class="pull-right">
