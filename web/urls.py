@@ -20,6 +20,6 @@ urlpatterns = [
     url(r'^contact_us/?$', flatpages_views.flatpage, dict(url='/contact_us/'), name='contact_us'),
     url(r'^(?P<path>assets/.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-assets-proxy'),
     url(r'^(?P<path>fonts/.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-fonts-proxy'),
-    url(r'^$', flatpages_views.flatpage, dict(url='/'), name='home'),
-    url(r'^(?P<path>.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-catchall-proxy'),
+    url(r'^$', flatpages_views.flatpage, dict(url=''), name='home'),
+    url(r'^(?P<path>(?!static|media).*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-catchall-proxy'),
 ]
