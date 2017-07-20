@@ -1,0 +1,47 @@
+{% extends 'web/base.html' %}
+{% load bootstrap3 %}
+{% block title %}Email Preferences{% endblock %}
+
+
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>My Account</h2>
+    </div>
+    <div class="container">
+        <div class="row account-edit">
+            <div class="col-md-4 mb-lg">
+                 {% include 'web/account-navigation.html' with current_page="email-preferences" %}
+            </div>
+            <div class="col-md-8">
+                <div class="panel-heading">
+                  <h1 class="panel-title">
+                    I would like to be contacted when:
+                  </h1>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                      <form method="POST" action="">{% csrf_token %}
+                          {% bootstrap_form form %}
+                          {% buttons %}
+                          <div class="pull-right">
+                              <a class="btn btn-default" href="{% url 'web:email-preferences' %}"> Cancel </a>
+                              <button name="password_update" type="submit" class="btn btn-success">
+                                 Save
+                              </button>
+                          </div>
+                          {% endbuttons %}
+                      </form>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

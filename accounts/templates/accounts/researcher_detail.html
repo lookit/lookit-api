@@ -29,7 +29,7 @@
 <div class="container mb-lg">
     <div class="row">
       <div class="col-xs-12">
-          <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> > {{ user.get_short_name }} </a>
+          <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> &gt; {{ user.get_short_name }} </a>
       </div>
     </div>
     <div class="row">
@@ -41,6 +41,11 @@
       </div>
     </div>
     <div class="row">
+      <div class="col-xs-12">
+           <p> {{ user.identicon_html }}
+      </div>
+    </div>
+    <div class="row mt-md">
       <div class="col-xs-12">
           <strong> Email address </strong>
            <p> {{ user.username }}

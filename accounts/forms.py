@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, UserChangeForm
 
-from accounts.models import DemographicData, User
+from accounts.models import DemographicData, User, Child
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 from studies.models import Study
 
@@ -59,7 +59,51 @@ class ParticipantSignupForm(UserCreationForm):
                    'is_active', 'is_staff', 'is_superuser', 'last_login')
 
 
+class ParticipantUpdateForm(forms.ModelForm):
+    username = forms.EmailField(disabled=True, label="Email")
+
+    def __init__(self, *args, **kwargs):
+        if 'user' in kwargs:
+            kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+        instance = getattr(self, 'instance', None)
+
+    class Meta:
+        model = User
+        fields = ('username', 'given_name', 'middle_name', 'family_name',)
+
+
+class ParticipantPasswordForm(PasswordChangeForm):
+    class Meta:
+        model = User
+
+
+class EmailPreferencesForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('email_next_session', 'email_new_studies', 'email_results_published', 'email_personally')
+        labels = {
+            'email_next_session': "It's time for another session of a study we are currently participating in",
+            'email_new_studies': "A new study is available for one of my children",
+            'email_results_published': "The results of a study we participated in are published",
+            'email_personally': "A researcher needs to email me personally if I report a technical problem or there are questions about my responses (for example, if I reported two different birthdates for a child)."
+        }
+
+
 class DemographicDataForm(forms.ModelForm):
     class Meta:
         model = DemographicData
-        exclude = ('created_at', 'previous', 'user', 'extra', )
+        exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
+
+
+class ChildForm(forms.ModelForm):
+    class Meta:
+        model = Child
+        fields = ('given_name', 'birthday', 'gender', 'age_at_birth', 'additional_information')
+
+        labels = {
+            'given_name': 'First Name',
+            'birthday': "Birthday - YYYY-MM-DD ",
+            'age_at_birth': 'Gestational Age at Birth',
+            'additional_information': "Any additional information you'd like us to know"
+        }

@@ -50,23 +50,29 @@
        </div>
    </div>
    <hr>
-   {% for user in object_list %}
-   <div class="row pt-xs">
-        <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
-            <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
-        </div>
+       {% for user in object_list %}
+       <div class="row pt-xs">
+            <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+                <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
+            </div>
 
-        <div class="col-xs-3 col-sm-3">
-            {{ user.display_permission }}
-        </div>
+            <div class="col-xs-3 col-sm-3">
+                {{ user.display_permission }}
+            </div>
 
-        <div class="col-xs-2 col-sm-2">
-            {% if perms.can_remove_users %}
-                <a data-toggle="modal" id="{{ user.id }}" onclick="populateDeleteModal({{ user.id }}, '{{ user.get_short_name }}')" class="deleteResearcher btn btn-danger btn-sm" href="#deleteModal">Remove</a>
-            {% endif %}
+            <div class="col-xs-2 col-sm-2">
+                {% if perms.can_remove_users %}
+                    <a data-toggle="modal" id="{{ user.id }}" onclick="populateDeleteModal({{ user.id }}, '{{ user.get_short_name }}')" class="deleteResearcher btn btn-danger btn-sm" href="#deleteModal">Remove</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
-   {% endfor %}
+       {% empty %}
+           <div class="row">
+                <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+                    <p><em> No researchers found! </em></p>
+                </div>
+            </div>
+       {% endfor %}
    <div class="modal fade" id="deleteModal">
        <form class="well" method="post">
          <div class="modal-header">

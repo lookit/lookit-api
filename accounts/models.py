@@ -100,6 +100,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
+    email_next_session = models.BooleanField(default=True)
+    email_new_studies = models.BooleanField(default=True)
+    email_results_published = models.BooleanField(default=True)
+    email_personally = models.BooleanField(default=True)
+
     @property
     def identicon(self):
         if not self._identicon:
@@ -146,7 +151,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def is_org_read(self):
         if self.is_org_admin:
             return True
-        return self.groups.filter(name=build_org_group_name(self.organization. name, 'read')).exists()
+        return self.groups.filter(name=build_org_group_name(self.organization.name, 'read')).exists()
 
     @property
     def display_permission(self):
@@ -234,17 +239,8 @@ class Child(models.Model):
         related_query_name='children'
     )
 
-    @property
-    def age(self):
-        today = timezone.now().date()
-        birthday = self.birthday
-        age = today - birthday
-        if age.days > 730: # Child is older than two years
-            return str(today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))) + ' years'
-        elif age.days > 30:
-            return str(int(age.days/30)) + ' months'
-        else:
-            return str(age.days) + ' days'
+    def __str__(self):
+        return f'<Child: {self.given_name}, child of {self.user.get_short_name()}>'
 
     class Meta:
         ordering = ['-birthday']

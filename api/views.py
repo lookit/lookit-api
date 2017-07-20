@@ -42,7 +42,7 @@ class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'children'
-    queryset = Child.objects.filter(user__demographics__isnull=False, user__is_active=True)
+    queryset = Child.objects.filter(user__demographics__isnull=False, user__is_active=True).distinct()
     serializer_class = ChildSerializer
     lookup_field = 'uuid'
     filter_fields = [('user', 'user'), ]
@@ -59,7 +59,7 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'users'
-    queryset = User.objects.filter(demographics__isnull=False)
+    queryset = User.objects.filter(demographics__isnull=False).distinct()
     serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
 

@@ -179,6 +179,10 @@ button.account-row {
     width: 180px;
 }
 
+.account-edit {
+    margin-top: 20px;
+}
+
 
 /* STUDIES PAGE */
 .study-list-panel {
@@ -324,4 +328,7 @@ button[disabled]#participate-button{
 
 .textarea-full {
     width: 100%;
+}
+.mb-lg {
+    margin-bottom: 20px;
 }

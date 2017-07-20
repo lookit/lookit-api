@@ -44,8 +44,8 @@ class ParticipantListView(LoginRequiredMixin, PermissionRequiredMixin, generic.L
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['match'] = self.request.GET.get('match') or ''
-        context['sort'] = self.request.GET.get('sort') or ''
+        context['match'] = self.request.GET.get('match', '')
+        context['sort'] = self.request.GET.get('sort', '')
         return context
 
 
@@ -64,14 +64,6 @@ class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic
     def get_context_data(self, **kwargs):
         context = super(ParticipantDetailView, self).get_context_data(**kwargs)
         user = context['user']
-        context['children'] = [{
-            'name': child.given_name,
-            'birthday': child.birthday,
-            'gender': child.get_gender_display(),
-            'age_at_birth': child.age_at_birth,
-            'age': child.age,
-            'extra': child.additional_information
-        } for child in user.children.all()]
         context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
         context['studies'] = self.get_study_info()
         return context

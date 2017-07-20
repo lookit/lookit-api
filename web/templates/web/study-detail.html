@@ -84,7 +84,7 @@
                         <select onchange="childSelected(this)">
                             <option value=none >None Selected</option>
                             {% for child in children %}
-                            <option value="{{child.age}}">{{child.given_name}}</option>
+                            <option value="{{child.uuid}}">{{child.given_name}}</option>
                             {% endfor %}
                         </select>
                         <p class="text-warning" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research! </p>

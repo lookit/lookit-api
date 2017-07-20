@@ -36,38 +36,40 @@
             <div class="lookit-row studies-row">
                 <div class="container">
                     <div id="suggested-studies">
-                        <p class="study-detail-caption">Here are some studies that we're currently running:</p>
                         <div class="row">
-                          {% for obj in object_list %}
-                          <div class="col-md-4">
-                              <div class="study-list-panel thumbnail">
-                                  <a class="no-link-formatting" href="{% url 'web:study-detail' uuid=obj.uuid %}">
-                                      <div class="study-list-thumbnail-wrapper text-center">
-                                        {% if obj.image %}
-                                          <p class="image-block">
-                                              <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="200" width="auto" src="{{ obj.image.url }}" width="300px">
-                                              <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
-                                                	<i class="fa fa-picture-o"></i>
+                              <p class="study-detail-caption">Here are some studies that we're currently running:</p>
+                              {% for obj in object_list %}
+                              <div class="col-md-4">
+                                  <div class="study-list-panel thumbnail">
+                                      <a class="no-link-formatting" href="{% url 'web:study-detail' uuid=obj.uuid %}">
+                                          <div class="study-list-thumbnail-wrapper text-center">
+                                            {% if obj.image %}
+                                              <p class="image-block">
+                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="200" width="auto" src="{{ obj.image.url }}" width="300px">
+                                                  <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
+                                                    	<i class="fa fa-picture-o"></i>
+                                                  </div>
+                                              </p>
+                                            {% else %}
+                                              <div class="study-list-placeholder">
+                                                  <i class="fa fa-picture-o"></i>
                                               </div>
-                                          </p>
-                                        {% else %}
-                                          <div class="study-list-placeholder">
-                                              <i class="fa fa-picture-o"></i>
+                                            {% endif %}
                                           </div>
-                                        {% endif %}
-                                      </div>
-                                      <div class="caption">
-                                          <h3>{{obj.name}}</h3>
-                                          <p>{{obj.short_description}}</p>
-                                          <div class="fadeout"></div>
-                                      </div>
-                                      <div class="full">
-                                          <p class="text-center"><a href="{% url 'web:study-detail' uuid=obj.uuid %}">See details</a></p>
-                                      </div
-                                  </a>
-                              </div>
-                            </div>
-                          {% endfor %}
+                                          <div class="caption">
+                                              <h3>{{obj.name}}</h3>
+                                              <p>{{obj.short_description}}</p>
+                                              <div class="fadeout"></div>
+                                          </div>
+                                          <div class="full">
+                                              <p class="text-center"><a href="{% url 'web:study-detail' uuid=obj.uuid %}">See details</a></p>
+                                          </div
+                                      </a>
+                                  </div>
+                                </div>
+                              {% empty %}
+                                <p><em> We are not running any studies at this time! </em></p>
+                              {% endfor %}
                         </div>
                     </div>
                 </div>

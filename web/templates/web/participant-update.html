@@ -1,0 +1,65 @@
+{% extends 'web/base.html' %}
+{% load bootstrap3 %}
+{% block title %}Update account information{% endblock %}
+
+
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>My Account</h2>
+    </div>
+    <div class="container">
+        <div class="row account-edit">
+            <div class="col-md-4 mb-lg ">
+                 {% include 'web/account-navigation.html' with current_page="participant-update" %} 
+            </div>
+            <div class="col-md-8">
+                <div class="panel-heading">
+                  <h1 class="panel-title">Account Information</h1>
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <form method="POST" action="">{% csrf_token %}
+                      {% bootstrap_form form %}
+                      <input type="hidden" name="username" value="{{ user.username }}">
+                      {% buttons %}
+                      <div class="pull-right">
+                          <a class="btn btn-default" href="{% url 'web:participant-update' %}"> Cancel </a>
+                          <button type="submit" name="participant_update" class="btn btn-success">
+                             Save
+                          </button>
+                      </div>
+                      {% endbuttons %}
+                    </form>
+                </div>
+              </div>
+
+              <div class="panel-heading">
+                <h1 class="panel-title"> Change Your Password </h1>
+              </div>
+              <div class="panel panel-default">
+                <div class="panel-body">
+                  <form method="POST" action="">{% csrf_token %}
+                      {% bootstrap_form form2 %}
+                      {% buttons %}
+                      <div class="pull-right">
+                          <a class="btn btn-default" href="{% url 'web:participant-update' %}"> Cancel </a>
+                          <button name="password_update" type="submit" class="btn btn-success">
+                             Save
+                          </button>
+                      </div>
+                      {% endbuttons %}
+                  </form>
+              </div>
+            </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
