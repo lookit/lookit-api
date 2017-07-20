@@ -30,6 +30,16 @@ class StudyBuildView(generic.UpdateView):
     form_class = StudyBuildForm
     template_name = 'studies/study_json.html'
 
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()
+        structure = self.object.structure
+        if structure:
+            initial['structure'] = json.dumps(structure)
+        return initial
+
     def get_success_url(self):
         return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
