@@ -50,7 +50,6 @@
        </div>
    </div>
    <hr>
-   {% if object_list %}
        {% for user in object_list %}
        <div class="row pt-xs">
             <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
@@ -67,14 +66,13 @@
                 {% endif %}
             </div>
         </div>
+       {% empty %}
+           <div class="row">
+                <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+                    <p><em> No researchers found! </em></p>
+                </div>
+            </div>
        {% endfor %}
-   {% else %}
-   <div class="row">
-        <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
-            <p><em> No researchers found! </em></p>
-        </div>
-    </div>
-   {% endif %}
    <div class="modal fade" id="deleteModal">
        <form class="well" method="post">
          <div class="modal-header">
