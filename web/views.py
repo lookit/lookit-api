@@ -197,7 +197,6 @@ class DemographicDataUpdateView(DemographicDataCreateView):
         demographic_data = self.request.user.latest_demographics or None
         if demographic_data:
             demographic_data_dict = demographic_data.__dict__
-            demographic_data_dict['previous'] = demographic_data
             demographic_data_dict.pop('id')
             demographic_data_dict.pop('uuid')
             return demographic_data_dict
