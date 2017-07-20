@@ -7,10 +7,12 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
+
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.views import generic
+from revproxy.views import ProxyView
 
 from accounts.models import User
 from accounts.utils import (get_permitted_triggers, status_tooltip_text,
@@ -20,6 +22,7 @@ from guardian.shortcuts import (get_objects_for_user, get_perms,
                                 get_users_with_perms)
 from studies.forms import StudyEditForm, StudyForm, StudyBuildForm
 from studies.models import Study, StudyLog
+from project import settings
 
 
 class StudyBuildView(generic.UpdateView):
@@ -37,6 +40,8 @@ class StudyBuildView(generic.UpdateView):
         initial = super().get_initial()
         structure = self.object.structure
         if structure:
+            # Ensures that json displayed in edit form is valid json w/ double quotes,
+            # so incorrect json is not saved back into the db
             initial['structure'] = json.dumps(structure)
         return initial
 
@@ -295,3 +300,10 @@ class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.De
             }, indent=4) for resp in context['responses']]
         context['all_responses'] = ', '.join(context['response_data'])
         return context
+
+
+class PreviewProxyView(ProxyView, LoginRequiredMixin):
+    upstream = settings.EXPERIMENT_BASE_URL
+
+    def dispatch(self, request, path, *args, **kwargs):
+        return super().dispatch(request, path)
