@@ -25,13 +25,15 @@ from studies.models import Study, StudyLog
 from project import settings
 
 
-class StudyBuildView(generic.UpdateView):
+class StudyBuildView(PermissionRequiredMixin, generic.UpdateView):
     """
     StudyBuildView allows user to modify study structure - JSON field.
     """
     model = Study
     form_class = StudyBuildForm
     template_name = 'studies/study_json.html'
+    permission_required = 'studies.can_edit_study'
+    raise_exception = True
 
     def get_initial(self):
         """
