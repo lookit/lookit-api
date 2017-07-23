@@ -95,7 +95,6 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
         queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
         queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
 
-
         state = request.get('state')
         if state and state != 'all':
             if state == 'myStudies':
