@@ -3,7 +3,7 @@ import uuid
 from functools import reduce
 
 from django import forms
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from guardian.mixins import PermissionRequiredMixin
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, Http404
@@ -166,7 +166,7 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         return context
 
 
-class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
+class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, PaginatorMixin):
     '''
     StudyUpdateView allows user to edit study.
     '''
@@ -197,15 +197,8 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         '''
         Builds paginated search results for researchers
         '''
-        paginator = Paginator(researchers_result, 5)
         page = self.request.GET.get('page')
-        try:
-            users = paginator.page(page)
-        except PageNotAnInteger:
-            users = paginator.page(1)
-        except EmptyPage:
-            users = paginator.page(paginator.num_pages)
-        return users
+        return self.paginated_queryset(researchers_result, page, 5)
 
     def manage_researcher_permissions(self):
         '''

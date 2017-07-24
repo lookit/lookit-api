@@ -2,7 +2,7 @@ import operator
 from functools import reduce
 
 from django.http import Http404
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from guardian.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q

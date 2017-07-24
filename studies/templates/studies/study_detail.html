@@ -15,7 +15,9 @@
         $( document).ready(function() {
           var origin  = window.location.origin;
           var privateLink = document.getElementById('private-study-link');
-          privateLink.value = origin + "/studies/" + "{{ study.uuid }}" + '/';
+          if (privateLink) {
+              privateLink.value = origin + "/studies/" + "{{ study.uuid }}" + '/';
+          }
         });
     </script>
   <div class="container">
@@ -24,13 +26,17 @@
             <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; {{ study.name }} </a>
         </div>
         <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3 button-toolbar pull-right">
-            <form method="POST" style="display:inline">{% csrf_token %}
-                <input type="hidden" name="clone_study" value="{{study.id}}"/>
-                <button type="submit" class="mr-md btn btn-default"> <i aria-hidden="true" class="fa fa-files-o"></i> Clone Study </button>
-            </form>
-            <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
-                <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Study
-            </a>
+            {% if perms.can_create_study %}
+                <form method="POST" style="display:inline">{% csrf_token %}
+                    <input type="hidden" name="clone_study" value="{{study.id}}"/>
+                    <button type="submit" class="mr-md btn btn-default"> <i aria-hidden="true" class="fa fa-files-o"></i> Clone Study </button>
+                </form>
+            {% endif %}
+            {% if perms.can_edit_study %}
+                <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
+                    <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Study
+                </a>
+            {% endif %}
         </div>
       </div>
       <div class="row">
