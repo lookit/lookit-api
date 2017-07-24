@@ -79,14 +79,12 @@ class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
 
 
-class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
+class StudyListView(LoginRequiredMixin, generic.ListView):
     '''
     StudyListView shows a list of studies that a user has permission to.
     '''
     model = Study
     template_name = 'studies/study_list.html'
-    permission_required = 'studies.can_view_study'
-    raise_exception = True
 
     def get_queryset(self, *args, **kwargs):
         request = self.request.GET
