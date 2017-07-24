@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework.authtoken',
     'rest_framework_json_api',
+    'storages',
 
     # our stuff
     'api',
@@ -190,10 +191,6 @@ SITE_ID = 1
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/static/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 # base url for experiments, should be s3 bucket in prod
 EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'http://google.com/')  # default to ember base url
 
@@ -226,9 +223,25 @@ SOCIALACCOUNT_PROVIDERS = \
         }
      }
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Configuration for cross-site requests
-CORS_ORIGIN_ALLOW_ALL = True # Needs to be changed before production!
+CORS_ORIGIN_ALLOW_ALL = True  # Needs to be changed before production!
 CORS_ORIGIN_WHITELIST = ()
+
+if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
+    STATICFILES_LOCATION = '/static'
+    STATICFILES_STORAGE = 'project.storages.LookitStaticStorage'
+    STATIC_URL = 'https://storage.googleapis.com/io-osf-lookit-staging2/static/'
+
+    MEDIAFILES_LOCATION = '/media'
+    DEFAULT_FILE_STORAGE = 'project.storages.LookitMediaStorage'
+    MEDIA_URL = 'https://storage.googleapis.com/io-osf-lookit-staging2/media/'
+
+    GS_BUCKET_NAME = 'io-osf-lookit-staging2'
+    GS_PROJECT_ID = 'cos-staging'
+else:
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')

@@ -105,7 +105,7 @@ flatpages = [
     		<div class="footer-row lookit-row">
     			<div class="container">
     				<div class="row">
-    					<div class="col-md-1"><img src="/static/images/nsf.gif"></div>
+    					<div class="col-md-1"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/nsf.gif"></div>
     					<div class="col-md-11">
     						This material is based upon work supported by the National Science Foundation (NSF) under Grant No. 1429216; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation.
     					</div>
@@ -170,7 +170,7 @@ flatpages = [
     								<p>If we receive a consent form that does NOT clearly demonstrate informed consent--for instance, we see a parent and child but the parent does not read the statement--any other video collected during that session will be deleted without viewing.</p>
     								<div class="row">
     									<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-    										<video controls="true" src="/static/videos/consent.mp4"></video>
+    										<video controls="true" src="https://storage.googleapis.com/io-osf-lookit-staging2/static/videos/consent.mp4"></video>
     									</div>
     								</div>
     							</div>
@@ -220,13 +220,13 @@ flatpages = [
     								<p>For children under about two years old, we usually design our studies to let their eyes do the talking! We're interested in where on the screen your child looks and/or how long your child looks at the screen rather than looking away. Our calibration videos (example shown below) help us get an idea of what it looks like when your child is looking to the right or the left, so we can code the rest of the video.</p>
     								<div class="row">
     									<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-    										<video controls="true" src="/static/videos/attentiongrabber.mp4"></video>
+    										<video controls="true" src="https://storage.googleapis.com/io-osf-lookit-staging2/static/videos/attentiongrabber.mp4"></video>
     									</div>
     								</div>
     								<p>Here's an example of a few children watching our calibration video--it's easy to see that they look to one side and then the other.</p>
     								<div class="row">
     									<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-    										<video controls="true" src="/static/videos/spinningball.mp4"></video>
+    										<video controls="true" src="https://storage.googleapis.com/io-osf-lookit-staging2/static/videos/spinningball.mp4"></video>
     									</div>
     								</div>
     								<p>Your child's decisions about where to look can give us lots of information about what he or she understands. Here are some of the techniques our lab uses to learn more about how children learn.</p>
@@ -239,7 +239,7 @@ flatpages = [
     								<p>Even when they seem to be passive observers, children are making lots of decisions about where to look and what to pay attention to. In this technique, we present children with a choice between two side-by-side images or videos, and see if children spend more time looking at one of them. We may additionally play audio that matches one of the videos. The video below shows a participant looking to her left when asked to "find clapping"; the display she's watching is shown at the top.</p>
     								<div class="row">
     									<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-    										<video controls="true" src="/static/videos/clapping.mp4"></video>
+    										<video controls="true" src="https://storage.googleapis.com/io-osf-lookit-staging2/static/videos/clapping.mp4"></video>
     									</div>
     								</div>
     								<h4>Predictive looking</h4>
@@ -248,7 +248,7 @@ flatpages = [
     								<p>Older children may simply be able to answer spoken questions about what they think is happening. For instance, in the "Learning from Others" study we ran last year, two women call an object two different made-up names, and children are asked which is the correct name for the object.</p>
     								<div class="row">
     									<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-    										<video controls="true" src="/static/videos/causal_ex2.mp4"></video>
+    										<video controls="true" src="https://storage.googleapis.com/io-osf-lookit-staging2/static/videos/causal_ex2.mp4"></video>
     									</div>
     								</div>
     								<p>Another way we can learn about how older children (and adults) think is to measure their reaction times. For instance, we might ask you to help your child learn to press one key when a circle appears and another key when a square appears, and then look at factors that influence how quickly they press a key.</p>
@@ -449,21 +449,21 @@ flatpages = [
     		<div class="container">
     			<div class="row">
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/kimandremy.png"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/kimandremy.png"></div>
     					<h3>Kim Scott</h3>
     					<p>Kim is a graduate student in the Early Childhood Cognition Lab and Mama to six-year-old Remy. She developed Lookit partly to enable other single parents to participate in research!</p>
     					<p>Research interests: Origins of conscious experience--or what it's like to be a baby</p>
     					<p>Hobbies: Board games, aerial silks, bicycling</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/laura.JPG"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/laura.JPG"></div>
     					<h3>Laura Schulz</h3>
     					<p>Laura is the PI of the Early Childhood Cognition Lab.</p>
     					<p>Research interests: How children arrive at a common-sense understanding of the physical and social world through exploration and instruction.</p>
     					<p>Hobbies: hiking, reading, and playing</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/molly.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/molly.jpg"></div>
     					<h3>Molly Dillon</h3>
     					<p>Molly is a graduate student in the Lab for Developmental Studies at Harvard. She’ll be starting her own lab in July 2017 as an Assistant Professor at NYU. Molly explores the origins of abstract thought, especially in the domains of geometry and number.</p>
     					<p>Hobbies: ballet, tennis, speaking French</p>
@@ -473,74 +473,74 @@ flatpages = [
     				<h3>Alumni &amp; Collaborators</h3>
     				<hr>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/jessica.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/jessica.jpg"></div>
     					<h3>Jessica Zhu</h3>
     					<p>Undergraduate, MIT</p>
     					<p>Hobbies: Playing cards, eating watermelon, and hanging out with friends</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/audrey.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/audrey.jpg"></div>
     					<h3>Audrey Ricks (Summer 2016)</h3>
     					<p>Undergraduate, MIT</p>
     					<p>Hobbies: Biking, learning and exploring</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/hope.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/hope.jpg"></div>
     					<h3>Hope Fuller-Becker (Sp 2015, Sp 2016)</h3>
     					<p>Undergraduate, Wellesley College</p>
     					<p>Hobbies: drawing, painting, reading and running</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/rianna.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/rianna.jpg"></div>
     					<h3>Rianna Shah (IAP, Sp, Fall 2015; IAP, Sp 2016)</h3>
     					<p>Undergraduate, MIT</p>
     					<p>Hobbies: Singing, playing the piano, and karate!</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/junyi.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/junyi.jpg"></div>
     					<h3>Junyi Chu (Summer 2015)</h3>
     					<p>Recent graduate, Vanderbilt University</p>
     					<p>Hobbies: Rock climbing, board and card games</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/joseph.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/joseph.jpg"></div>
     					<h3>Joseph Alvarez (Summer 2015)</h3>
     					<p>Undergraduate, Skidmore College</p>
     					<p>Hobbies: Creating, discovering, and playing electric guitar!</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/annie.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/annie.jpg"></div>
     					<h3>Annie Dai (IAP, Sp 2015)</h3>
     					<p>Undergraduate, MIT</p>
     					<p>Hobbies: Running, spending time outdoors, listening to music</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/jeanyu.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/jeanyu.jpg"></div>
     					<h3>Jean Yu (IAP, Sp 2015)</h3>
     					<p>Undergraduate, Wellesley College</p>
     					<p>Hobbies: ballet, figure skating, piano, making art, learning about art, reading about art, learning about the brain</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/daniela.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/daniela.jpg"></div>
     					<h3>Daniela Carrasco (Sp 2015)</h3>
     					<p>Undergraduate, MIT</p>
     					<p>Hobbies: Crossfit athlete, swimming, boxing, painting and sketching</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/jean.jpg"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/jean.jpg"></div>
     					<h3>Jean Chow (Fa 2014)</h3>
     					<p>Undergraduate, MIT</p>
     					<p>Research interests: cognitive development and learning in young children</p>
     					<p>Hobbies: Running, cycling, Taekwondo, art, being outdoors, chilling with her dog</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/melissa.png"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/melissa.png"></div>
     					<h3>Melissa Kline</h3>
     					<p>As a graduate student in the Early Childhood Cognition Lab, Melissa advised and designed stimuli for the "Learning New Verbs" study.</p>
     					<p>Hobbies: Sewing, tango, and singing.</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="/static/images/rachel.png"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/rachel.png"></div>
     					<h3>Rachel Magid</h3>
     					<p>Rachel is now a graduate student at ECCL; in her two years as our lab coordinator she helped get Lookit off the ground!</p>
     					<p>Hobbies: Reading historical fiction and cooking</p>
@@ -648,7 +648,7 @@ flatpages = [
     				<p><strong>What you'll need</strong>: At least ten small objects your child can pick up, like pegs or Cheerios</p>
     				<p><strong>A guided, online "give N" task is coming soon to Lookit!</strong></p>
     				<h4>Let your baby choose: understanding your infant's preferences</h4>
-    				<p><img src="/static/images/pacifier.png"></p>
+    				<p><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/pacifier.png"></p>
     				<p><strong>Age range</strong>: 0 to 6 months</p>
     				<p><strong>What you'll need</strong>: A pacifier that your infant will suck on for about 15 minutes at a time and the operant conditioning web tool.</p>
     				<p>In this lab, you'll let your baby control what sound is played by sucking faster or slower on a pacifier. We recommend starting by trying to observe his or her preference for hearing music or a heartbeat. <a href="http://www.mit.edu/~kimscott/instructions.html">Instructions</a></p>
