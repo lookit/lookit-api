@@ -7,10 +7,12 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
+
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.views import generic
+from revproxy.views import ProxyView
 
 from accounts.models import User
 from accounts.utils import (get_permitted_triggers, status_tooltip_text,
@@ -18,8 +20,35 @@ from accounts.utils import (get_permitted_triggers, status_tooltip_text,
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import (get_objects_for_user, get_perms,
                                 get_users_with_perms)
-from studies.forms import StudyEditForm, StudyForm
+from studies.forms import StudyEditForm, StudyForm, StudyBuildForm
 from studies.models import Study, StudyLog
+from project import settings
+
+
+class StudyBuildView(PermissionRequiredMixin, generic.UpdateView):
+    """
+    StudyBuildView allows user to modify study structure - JSON field.
+    """
+    model = Study
+    form_class = StudyBuildForm
+    template_name = 'studies/study_json.html'
+    permission_required = 'studies.can_edit_study'
+    raise_exception = True
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()
+        structure = self.object.structure
+        if structure:
+            # Ensures that json displayed in edit form is valid json w/ double quotes,
+            # so incorrect json is not saved back into the db
+            initial['structure'] = json.dumps(structure)
+        return initial
+
+    def get_success_url(self):
+        return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
 
 class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
@@ -27,13 +56,10 @@ class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
     '''
-    fields = ('name', 'organization', 'blocks', )
     model = Study
     permission_required = 'studies.can_create_study'
     raise_exception = True
-
-    def get_form_class(self):
-        return StudyForm
+    form_class = StudyForm
 
     def form_valid(self, form):
         user = self.request.user
@@ -53,14 +79,12 @@ class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
 
 
-class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
+class StudyListView(LoginRequiredMixin, generic.ListView):
     '''
     StudyListView shows a list of studies that a user has permission to.
     '''
     model = Study
     template_name = 'studies/study_list.html'
-    permission_required = 'studies.can_view_study'
-    raise_exception = True
 
     def get_queryset(self, *args, **kwargs):
         request = self.request.GET
@@ -68,7 +92,6 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
         queryset = queryset.select_related('creator')
         queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
         queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
-
 
         state = request.get('state')
         if state and state != 'all':
@@ -85,13 +108,15 @@ class StudyListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListVie
         sort = request.get('sort')
         if sort:
             if 'name' in sort:
-                queryset = queryset.order_by(sort)
+                queryset = queryset.order_by(Lower('name').desc() if '-' in sort else Lower('name').asc())
             elif 'beginDate' in sort:
                 # TODO optimize using subquery
                 queryset = sorted(queryset, key=lambda t: t.begin_date or timezone.now(), reverse=True if '-' in sort else False)
             elif 'endDate' in sort:
                 # TODO optimize using subquery
                 queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
+        else:
+            queryset = queryset.order_by(Lower('name'))
 
         return queryset
 
@@ -276,3 +301,10 @@ class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.De
             }, indent=4) for resp in context['responses']]
         context['all_responses'] = ', '.join(context['response_data'])
         return context
+
+
+class PreviewProxyView(ProxyView, LoginRequiredMixin):
+    upstream = settings.EXPERIMENT_BASE_URL
+
+    def dispatch(self, request, path, *args, **kwargs):
+        return super().dispatch(request, path)

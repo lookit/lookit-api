@@ -223,6 +223,15 @@ h2.researchers-label {
     height: 190px;
 }
 
+a.build-study-link {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover.build-study-link {
+    color: gray;
+}
+
 /* Participant Detail */
 .child-name {
     background-color: #F5F5F5;

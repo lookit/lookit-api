@@ -31,7 +31,7 @@
     <div class="row text-center mt-lg">
         <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
             <form method="GET">
-                <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
+                <input class="form-control" name="match" placeholder="{{ match|default:'Filter name or description' }}" size="50" type="text">
                 <input type="hidden" name="sort" value={{ sort }}>
                 <input type="hidden" name="state" value={{ state }}>
             </form>
@@ -66,23 +66,33 @@
                        <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="all" %}">All</a></li>
                   </ul>
             </div>
+            <div class="dropdown show">
+                  <a class="btn btn-default dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Change sort:  {{  sort|capfirst}}
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="stateDropdown">
+                       <li><a aria-label="Sort studies by name" class="dropdown-item" href="{% url 'exp:study-list' %}?{% query_transform request sort='name'%}">Name</a></li>
+                       <li><a aria-label="Sort studies by begin date" class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request sort='beginDate'%}">Begin Date</a></li>
+                       <li><a aria-label="Sort studies by end date" class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request sort='endDate'%}">End Date</a></li>
+                  </ul>
+            </div>
         </div>
     </div>
     <div class="row hidden-xs pt-md">
-        <div class="col-xs-12 col-md-10 col-md-offset-1">
+        <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
             <div class="row">
-                <div class="col-xs-8">
+                <div class="col-sm-6">
                     <strong>Name</strong>
                     <a aria-label="Sort studies by name" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request sort="name"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
                     <a aria-label="Reverse sort studies by name" href="{% url 'exp:study-list' %}?{% query_transform request sort="-name"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
                 </div>
-                <div class="col-xs-2">
+                <div class="col-sm-3">
                     <strong>Begin Date</strong>
                     <a aria-label="Sort studies by begin date" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request sort="beginDate"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
                     <a aria-label="Reverse sort studies by begin date" href="{% url 'exp:study-list' %}?{% query_transform request sort="-beginDate"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
 
                 </div>
-                <div class="col-xs-2">
+                <div class="col-sm-3">
                     <strong>End Date</strong>
                     <a aria-label="Sort studies by end date" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request sort="endDate"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="endDate"></i></a>
                     <a aria-label="Reverse sort studies by end date" href="{% url 'exp:study-list' %}?{% query_transform request sort="-endDate"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="endDate"></i></a>
@@ -94,16 +104,18 @@
     <hr>
     <div class="row results">
       {% for study in object_list %}
-          <div class="col-xs-12 col-md-10 col-md-offset-1 well">
+          <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 well">
               <div class="row table-block">
-                  <div class="col-xs-12 col-sm-8">
+                  <div class="col-xs-12 col-sm-6">
                       <a href="{% url 'exp:study-detail' pk=study.id %}"><strong>{{ study.name }}</strong></a>
                   </div>
-                  <div class="col-xs-12 col-sm-2">
-                      <strong>{{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
+                  <div class="col-xs-12 col-sm-3">
+                      <span class="visible-xs">Begin date: <strong> {{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong> </span>
+                      <strong class="hidden-xs"> {{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
                   </div>
-                  <div class="col-xs-12 col-sm-2">
-                      <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
+                  <div class="col-xs-12 col-sm-3">
+                      <span class="visible-xs">End date: <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong> </span>
+                      <strong class="hidden-xs"> {{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
                   </div>
               </div>
               <div class="row table-block">
@@ -121,20 +133,20 @@
                       <strong>Status:</strong> {{ study.state|title }}
                   </div>
                   <div class="col-sm-3">
-                      <strong>Last Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
+                      <strong><span class="hidden-sm">Last</span> Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
                   </div>
                   <div class="col-sm-3">
-                      <strong> Completed Responses: </strong> {{ study.completed_responses_count }}
+                      <strong> Compl<span class="hidden-sm">eted</span> Responses: </strong> {{ study.completed_responses_count }}
                   </div>
                   <div class="col-sm-3">
-                      <strong> Incomplete Responses: </strong> {{ study.incomplete_responses_count }}
+                      <strong> Inc<span class="hidden-sm hidden-md">omplete</span> Responses: </strong> {{ study.incomplete_responses_count }}
                   </div>
               </div>
           </div>
       {% empty %}
       <div class="row">
-          <div class="col-sm-10 col-sm-offset-1">
-              <p class="mb-lg"><em> No studies found matching this filter! </em></p>
+          <div class="col-xs-10 col-xs-offset-1 col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+              <p class="mb-lg"><em> No studies found! </em></p>
           </div>
       </div>
       {% endfor %}

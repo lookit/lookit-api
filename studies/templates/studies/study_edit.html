@@ -139,16 +139,18 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-4">
-                        <div class="well modify-study-block">
-                            <center class="mt-lg">
-                                <p><i aria-hidden="true" class="fa-2x fa fa-list"></i></p>
-                                <h4> Build Study </h4>
-                                <p> Add/Modify study components </p>
-                            </center>
-                        </div>
+                        <a class="build-study-link" href="{% url 'exp:study-build' pk=study.id %}">
+                            <div class="well modify-study-block">
+                                <center class="mt-lg">
+                                    <p><i aria-hidden="true" class="fa-2x fa fa-list"></i></p>
+                                    <h4> Build Study </h4>
+                                    <p> Add/Modify study components </p>
+                                </center>
+                            </div>
+                        </a>
                     </div>
                     <div class="col-md-8">
-                          {% include 'studies/study_status.html' with study=study %}
+                          {% include 'studies/_study_status.html' with study=study %}
                     </div>
                 </div>
             </div>

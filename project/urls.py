@@ -30,9 +30,9 @@ favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=
 urlpatterns = [
     url(r'^favicon\.ico$', favicon_view),
     url(r'^admin/', admin.site.urls),
-    url(r'^exp/', include(exp_urls, namespace='exp')),
     url(r'^api/', include(api_urls)),
     url(r'^', include('django.contrib.auth.urls')),
+    url(r'^exp/', include(exp_urls, namespace='exp')),
     url(r'^', include(web_urls, namespace='web')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

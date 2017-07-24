@@ -11,6 +11,7 @@
             $('select').change(function() {
                 //logic to compare the needed age (from $('#min-age')) to the selected age (value of selection). Hide/show warnings based on this
             });
+            $(".childDropdown").val("none");
         });
     </script>
     {{ form.media }}
@@ -36,6 +37,11 @@
         function childSelected(selected) {
             var participateButton = document.getElementById('participate-button');
             selected.value === 'none' ? participateButton.disabled = true : participateButton.disabled = false;
+            participateButton.value = selected.value;
+        }
+
+        function portToParticipate(selected) {
+            window.location.href = "/studies/" + "{{ study.uuid }}" + '/' + selected.value;
         }
     </script>
     <div class='lookit-row lookit-page-title'>
@@ -81,7 +87,7 @@
                         <!-- TODO: cant find the study's age requirements, need to go in here -->
                         <p class='hidden' id='min-age'>{{ object.min_age }}</p>
                         <p class='hidden' id='max-age'>{{ object.max_age }}</p>
-                        <select onchange="childSelected(this)">
+                        <select class="childDropdown" onchange="childSelected(this)">
                             <option value=none >None Selected</option>
                             {% for child in children %}
                             <option value="{{child.uuid}}">{{child.given_name}}</option>
@@ -90,7 +96,7 @@
                         <p class="text-warning" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research! </p>
         	            <p class="text-warning" id='too-old'>Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research.</p>
 
-                        <button type="button" disabled class="btn-lg btn-primary" id="participate-button"> Participate now! </button>
+                        <button type="button" onclick="portToParticipate(this)" disabled class="btn-lg btn-primary" id="participate-button"> Participate now! </button>
                     </div>
                     {% endif %}
                 </div>
