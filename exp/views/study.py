@@ -87,6 +87,10 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
     template_name = 'studies/study_list.html'
 
     def get_queryset(self, *args, **kwargs):
+        """
+        Returns the list of items for the StudyListView - handles filtering on state, match,
+        and sort.
+        """
         request = self.request.GET
         queryset = get_objects_for_user(self.request.user, 'studies.can_view_study').exclude(state='archived')
         queryset = queryset.select_related('creator')
@@ -120,10 +124,13 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
+        """
+        Gets the context for the StudyListView and supplements with the state, match, and sort query params.
+        """
         context = super().get_context_data(**kwargs)
         context['state'] = self.request.GET.get('state', 'all')
-        context['match'] = self.request.GET.get('match') or ''
-        context['sort'] = self.request.GET.get('sort') or ''
+        context['match'] = self.request.GET.get('match', '')
+        context['sort'] = self.request.GET.get('sort', 'name')
         return context
 
 
