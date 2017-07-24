@@ -25,7 +25,7 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 
 
-class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
+class StudyCreateView(LoginRequiredMixin, generic.CreateView, PermissionRequiredMixin):
     '''
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
@@ -121,6 +121,7 @@ class StudyListView(LoginRequiredMixin, generic.ListView, PaginatorMixin):
         context['state'] = self.request.GET.get('state', 'all')
         context['match'] = self.request.GET.get('match', '')
         context['sort'] = self.request.GET.get('sort', 'name')
+        context['can_create_study'] = self.request.user.has_perm('studies.can_create_study')
         return context
 
 

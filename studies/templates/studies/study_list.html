@@ -20,7 +20,7 @@
             <h1>  Manage Studies </h1>
         </div>
 
-        {% if perms.can_create_study %}
+        {% if can_create_study %}
             <div class="col-xs-12 col-sm-2 pt-lg pull-right">
                 <a class="btn btn-success" href="{% url 'exp:study-create' %}">
                     <i aria-hidden="true" class="fa fa-plus"></i> Create Study
