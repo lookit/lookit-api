@@ -151,6 +151,15 @@
       </div>
       {% endfor %}
     </div>
+    <div class="paginator">
+        {% if object_list %}
+            <div class="row pb-lg">
+                <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                    {% include 'studies/_paginator.html' with items=object_list %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}

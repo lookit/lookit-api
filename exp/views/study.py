@@ -4,7 +4,6 @@ from functools import reduce
 
 from django import forms
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect, Http404
@@ -22,6 +21,7 @@ from guardian.shortcuts import (get_objects_for_user, get_perms,
                                 get_users_with_perms)
 from studies.forms import StudyEditForm, StudyForm, StudyBuildForm
 from studies.models import Study, StudyLog
+from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 
 
@@ -79,7 +79,7 @@ class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
 
 
-class StudyListView(LoginRequiredMixin, generic.ListView):
+class StudyListView(LoginRequiredMixin, generic.ListView, PaginatorMixin):
     '''
     StudyListView shows a list of studies that a user has permission to.
     '''
@@ -88,7 +88,7 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self, *args, **kwargs):
         """
-        Returns the list of items for the StudyListView - handles filtering on state, match,
+        Returns paginated list of items for the StudyListView - handles filtering on state, match,
         and sort.
         """
         request = self.request.GET
@@ -121,7 +121,7 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
         else:
             queryset = queryset.order_by(Lower('name'))
 
-        return queryset
+        return self.paginated_queryset(queryset, request.get('page'), 10)
 
     def get_context_data(self, **kwargs):
         """
