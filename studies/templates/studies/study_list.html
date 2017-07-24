@@ -31,7 +31,7 @@
     <div class="row text-center mt-lg">
         <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
             <form method="GET">
-                <input class="form-control" name="match" placeholder="{{ match|default:'Filter name and description' }}" size="50" type="text">
+                <input class="form-control" name="match" placeholder="{{ match|default:'Filter name or description' }}" size="50" type="text">
                 <input type="hidden" name="sort" value={{ sort }}>
                 <input type="hidden" name="state" value={{ state }}>
             </form>
@@ -139,7 +139,7 @@
                       <strong> Compl<span class="hidden-sm">eted</span> Responses: </strong> {{ study.completed_responses_count }}
                   </div>
                   <div class="col-sm-3">
-                      <strong> Inc<span class="hidden-sm">omplete</span> Responses: </strong> {{ study.incomplete_responses_count }}
+                      <strong> Inc<span class="hidden-sm hidden-md">omplete</span> Responses: </strong> {{ study.incomplete_responses_count }}
                   </div>
               </div>
           </div>
