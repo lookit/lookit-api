@@ -11,6 +11,13 @@
   {% endif %}
 {% endblock %}
 {% block content %}
+    <script>
+        $( document).ready(function() {
+          var origin  = window.location.origin;
+          var privateLink = document.getElementById('private-study-link');
+          privateLink.value = origin + "/studies/" + "{{ study.uuid }}" + '/';
+        });
+    </script>
   <div class="container">
       <div class="row">
         <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9">
@@ -88,7 +95,7 @@
                   <div class="col-xs-12 col-sm-4">
                       {% if not study.public %}
                           <div class="input-group">
-                            <input type="text" class="form-control" id="private-study-link" value="https://lookit.mit.edu/studies/{{study.uuid }}" aria-describedby="copy-link-button">
+                            <input type="text" class="form-control" id="private-study-link" value="{% url 'web:study-detail' study.uuid %}" aria-describedby="copy-link-button">
                             <span onmouseout="removeTooltip(this)" data-toggle="tooltip" class="input-group-addon btn" id="copy-link-button" data-clipboard-target="#private-study-link" >
                                 <img src="/static/exp/img/clippy.svg" width="13"/>
                             </span>
