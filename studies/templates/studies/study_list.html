@@ -136,7 +136,7 @@
                       <strong><span class="hidden-sm">Last</span> Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
                   </div>
                   <div class="col-sm-3">
-                      <strong> Compl<span class="hidden-sm hidden-md">eted</span> Responses: </strong> {{ study.completed_responses_count }}
+                      <a href="{% url 'exp:study-responses-list' study.id %}"><strong> Compl<span class="hidden-sm hidden-md">eted</span> Responses: </strong> {{ study.completed_responses_count }} </a>
                   </div>
                   <div class="col-sm-3">
                       <strong> Inc<span class="hidden-sm hidden-md">omplete</span> Responses: </strong> {{ study.incomplete_responses_count }}
