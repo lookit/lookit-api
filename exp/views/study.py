@@ -105,16 +105,15 @@ class StudyListView(LoginRequiredMixin, generic.ListView):
             queryset = queryset.filter(reduce(operator.or_,
               (Q(name__icontains=term) | Q(short_description__icontains=term) for term in match.split())))
 
-        sort = request.get('sort')
-        if sort:
-            if 'name' in sort:
-                queryset = queryset.order_by(Lower('name').desc() if '-' in sort else Lower('name').asc())
-            elif 'beginDate' in sort:
-                # TODO optimize using subquery
-                queryset = sorted(queryset, key=lambda t: t.begin_date or timezone.now(), reverse=True if '-' in sort else False)
-            elif 'endDate' in sort:
-                # TODO optimize using subquery
-                queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
+        sort = request.get('sort', '')
+        if 'name' in sort:
+            queryset = queryset.order_by(Lower('name').desc() if '-' in sort else Lower('name').asc())
+        elif 'beginDate' in sort:
+            # TODO optimize using subquery
+            queryset = sorted(queryset, key=lambda t: t.begin_date or timezone.now(), reverse=True if '-' in sort else False)
+        elif 'endDate' in sort:
+            # TODO optimize using subquery
+            queryset = sorted(queryset, key=lambda t: t.end_date or timezone.now(), reverse=True if '-' in sort else False)
         else:
             queryset = queryset.order_by(Lower('name'))
 

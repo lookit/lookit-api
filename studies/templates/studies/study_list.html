@@ -68,7 +68,7 @@
             </div>
             <div class="dropdown show">
                   <a class="btn btn-default dropdown-toggle" href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Change sort:  {{  sort|capfirst}}
+                    Change sort: {% if sort == 'endDate' %} End Date {% elif sort == 'beginDate' %} Begin Date {% elif sort == "" %} Name {% else %} {{sort|capfirst}} {% endif %}
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="stateDropdown">
                        <li><a aria-label="Sort studies by name" class="dropdown-item" href="{% url 'exp:study-list' %}?{% query_transform request sort='name'%}">Name</a></li>
@@ -136,7 +136,7 @@
                       <strong><span class="hidden-sm">Last</span> Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
                   </div>
                   <div class="col-sm-3">
-                      <strong> Compl<span class="hidden-sm">eted</span> Responses: </strong> {{ study.completed_responses_count }}
+                      <strong> Compl<span class="hidden-sm hidden-md">eted</span> Responses: </strong> {{ study.completed_responses_count }}
                   </div>
                   <div class="col-sm-3">
                       <strong> Inc<span class="hidden-sm hidden-md">omplete</span> Responses: </strong> {{ study.incomplete_responses_count }}
