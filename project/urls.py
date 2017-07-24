@@ -25,19 +25,18 @@ from exp import urls as exp_urls
 from project import settings
 from web import urls as web_urls
 
-favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)
-
 urlpatterns = [
-    url(r'^favicon\.ico$', favicon_view),
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(api_urls)),
     url(r'^', include('django.contrib.auth.urls')),
     url(r'^exp/', include(exp_urls, namespace='exp')),
     url(r'^', include(web_urls, namespace='web')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
 
 if settings.DEBUG:
+    favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)
     import debug_toolbar
     urlpatterns = [
+        url(r'^favicon\.ico$', favicon_view),
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
