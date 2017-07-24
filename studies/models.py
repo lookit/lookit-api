@@ -100,14 +100,10 @@ class Study(models.Model):
 
     @property
     def end_date(self):
-        if not self.begin_date:
-            return None
         try:
-            end_date = self.logs.filter(action='deactivate').first().created_at
+            return self.logs.filter(action='deactivated').first().created_at
         except AttributeError:
             return None
-        else:
-            return end_date if end_date > begin_date else None
 
     @property
     def study_admin_group(self):
