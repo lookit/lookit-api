@@ -35,9 +35,7 @@
               </div>
               <div class="row">
                   <div class="col-xs-12">
-                      {% if study.image %}
-                        <p><img height="200" width="auto" src="{{ study.image.url }}" width="300px"></p>
-                      {% endif %}
+                      {% include "studies/_image_display.html" with object=study %}
                   </div>
               </div>
               <div class="row">
