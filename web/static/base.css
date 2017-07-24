@@ -32,7 +32,7 @@ body {
 /* JUMBOTRON */
 .home-jumbotron {
     border-bottom: 1px solid #eee;
-    background:#351306 url('static/images/lookit_collage.jpg') center top no-repeat;
+    background:#351306 url('images/lookit_collage.jpg') center top no-repeat;
 }
 
 .home-jumbotron .content  {
