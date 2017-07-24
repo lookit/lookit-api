@@ -229,17 +229,19 @@ CORS_ORIGIN_ALLOW_ALL = True  # Needs to be changed before production!
 CORS_ORIGIN_WHITELIST = ()
 
 if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
+    # if we're trying to use cloud storage
     STATICFILES_LOCATION = '/static'
     STATICFILES_STORAGE = 'project.storages.LookitStaticStorage'
-    STATIC_URL = 'https://storage.googleapis.com/io-osf-lookit-staging2/static/'
+    STATIC_URL = os.environ.get('STATIC_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/static/')
 
     MEDIAFILES_LOCATION = '/media'
     DEFAULT_FILE_STORAGE = 'project.storages.LookitMediaStorage'
-    MEDIA_URL = 'https://storage.googleapis.com/io-osf-lookit-staging2/media/'
+    MEDIA_URL = os.environ.get('MEDIA_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/media/')
 
-    GS_BUCKET_NAME = 'io-osf-lookit-staging2'
-    GS_PROJECT_ID = 'cos-staging'
+    GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', 'io-osf-lookit-staging2')
+    GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', 'cos-staging')
 else:
+    # we know nothing about cloud storage
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'
 
