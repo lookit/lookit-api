@@ -187,6 +187,7 @@ class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.
             else:
                 admin_group.user_set.remove(researcher)
                 read_group.user_set.remove(researcher)
+        self.object.is_active = True
         self.object.save()
         return retval
 
