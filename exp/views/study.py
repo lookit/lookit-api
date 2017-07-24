@@ -25,32 +25,6 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 
 
-class StudyBuildView(PermissionRequiredMixin, generic.UpdateView):
-    """
-    StudyBuildView allows user to modify study structure - JSON field.
-    """
-    model = Study
-    form_class = StudyBuildForm
-    template_name = 'studies/study_json.html'
-    permission_required = 'studies.can_edit_study'
-    raise_exception = True
-
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        initial = super().get_initial()
-        structure = self.object.structure
-        if structure:
-            # Ensures that json displayed in edit form is valid json w/ double quotes,
-            # so incorrect json is not saved back into the db
-            initial['structure'] = json.dumps(structure)
-        return initial
-
-    def get_success_url(self):
-        return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
-
-
 class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
     '''
     StudyCreateView allows a user to create a study and then redirects
@@ -62,21 +36,37 @@ class StudyCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Creat
     form_class = StudyForm
 
     def form_valid(self, form):
+        """
+        Add the logged-in user as the study creator and the user's organization as the
+        study's organization. If the form is valid, save the associated study and
+        redirect to the supplied URL
+        """
         user = self.request.user
         form.instance.creator = user
         form.instance.organization = user.organization
         self.object = form.save()
-        # TODO Should this be moved to the model - adding creator to study admin group on creation?
         self.add_creator_to_study_admin_group()
         return HttpResponseRedirect(self.get_success_url())
 
     def add_creator_to_study_admin_group(self):
+        """
+        Add the study's creator to the study admin group.
+        """
         study_admin_group = self.object.study_admin_group
         study_admin_group.user_set.add(self.request.user)
         return study_admin_group
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
+
+    def get_initial(self):
+        """
+        Returns initial data to use for the create study form - make default
+        structure field data an empty dict
+        """
+        initial = super().get_initial()
+        initial['structure'] = {}
+        return initial
 
 
 class StudyListView(LoginRequiredMixin, generic.ListView, PaginatorMixin):
@@ -134,7 +124,7 @@ class StudyListView(LoginRequiredMixin, generic.ListView, PaginatorMixin):
         return context
 
 
-class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
+class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView, PaginatorMixin):
     '''
     StudyDetailView shows information about a study.
     '''
@@ -163,15 +153,8 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
     def study_logs(self):
         ''' Returns a page object with 10 study logs'''
         logs_list = self.object.logs.all().order_by('-created_at')
-        paginator = Paginator(logs_list, 10)
         page = self.request.GET.get('page')
-        try:
-            logs = paginator.page(page)
-        except PageNotAnInteger:
-            logs = paginator.page(1)
-        except EmptyPage:
-            logs = paginator.page(paginator.num_pages)
-        return logs
+        return self.paginated_queryset(logs_list, page, 10)
 
     def get_context_data(self, **kwargs):
         context = super(StudyDetailView, self).get_context_data(**kwargs)
@@ -281,6 +264,32 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
+
+
+class StudyBuildView(PermissionRequiredMixin, generic.UpdateView):
+    """
+    StudyBuildView allows user to modify study structure - JSON field.
+    """
+    model = Study
+    form_class = StudyBuildForm
+    template_name = 'studies/study_json.html'
+    permission_required = 'studies.can_edit_study'
+    raise_exception = True
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()
+        structure = self.object.structure
+        if structure:
+            # Ensures that json displayed in edit form is valid json w/ double quotes,
+            # so incorrect json is not saved back into the db
+            initial['structure'] = json.dumps(structure)
+        return initial
+
+    def get_success_url(self):
+        return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
 
 class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
