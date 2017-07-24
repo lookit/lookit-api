@@ -242,6 +242,7 @@ if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
     GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', 'cos-staging')
 else:
     # we know nothing about cloud storage
+    print('-------------------Why yes, we are using local assets!-------------------------')
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'
 
