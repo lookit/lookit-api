@@ -37,7 +37,7 @@ class Study(models.Model):
     )
     structure = DateTimeAwareJSONField(default=dict)
     display_full_screen = models.BooleanField(default=True)
-    exit_url = models.URLField(default='https://lookit.mit.edu/')
+    exit_url = models.URLField(default='')
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
