@@ -129,7 +129,8 @@ class Study(models.Model):
         user = ev.kwargs.get('user')
         if user.is_superuser:
             return
-        raise
+        # raise TODO NOT RAISING ANYTHING
+        return
 
     def clone(self):
         ''' Create a new, unsaved copy of this study. '''
