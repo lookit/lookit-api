@@ -84,6 +84,7 @@ class Study(models.Model):
             ('can_view_study_responses', 'Can View Study Responses'),
             ('can_view_study_video_responses', 'Can View Study Video Responses'),
             ('can_view_study_demographics', 'Can View Study Demographics'),
+            ('can_archive_study', 'Can Archive Study')
         )
         ordering = ['name']
 
