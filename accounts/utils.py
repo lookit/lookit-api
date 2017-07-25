@@ -51,7 +51,6 @@ def get_permitted_triggers(view_instance, triggers):
 
     return permitted_triggers
 
-
 def update_trigger(view_instance):
     ''' Transition to next state in study workflow '''
     trigger = view_instance.request.POST.get('trigger')

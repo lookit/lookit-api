@@ -18,7 +18,7 @@ import pydenticon
 from accounts.utils import build_org_group_name
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, assign_perm
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
@@ -81,6 +81,14 @@ def organization_post_save(sender, **kwargs):
             group_instance, created = Group.objects.get_or_create(
                 name=build_org_group_name(organization.name, group)
             )
+            if created:
+                for perm, _ in Organization._meta.permissions:
+                    # Add can_view_organization permission for the org to the org_read and org_admin groups
+                    if 'can_view' in perm:
+                        assign_perm(perm, group_instance, obj=organization)
+                    # Add can_edit organization permission for the org to the org_admin group
+                    if 'can_edit' in perm and group == 'admin':
+                        assign_perm(perm, group_instance, obj=organization)
 
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
