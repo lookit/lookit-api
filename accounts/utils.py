@@ -31,7 +31,6 @@ def get_permitted_triggers(view_instance, triggers):
     permitted_triggers = []
     user = view_instance.request.user
     study = view_instance.object
-    organization_permissions = get_perms(user, study)
     study_permissions = get_perms(user, view_instance.object )
 
     admin_triggers = ['approve', 'reject']
