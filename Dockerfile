@@ -49,7 +49,7 @@ RUN pip install --no-cache-dir -r /code/requirements/defaults.txt
 
 RUN pip install \
     uwsgi==2.0.13 \
-    gevent==1.1.1 \
+    gevent==1.2.2 \
     psycogreen==1.0
 
 RUN apt-get remove -y gcc
