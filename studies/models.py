@@ -313,6 +313,7 @@ class ResponseLog(Log):
         index_together = (
             ('response', 'action')
         )
+
     class JSONAPIMeta:
         resource_name = 'response-logs'
         lookup_field = 'uuid'
