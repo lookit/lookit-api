@@ -70,11 +70,13 @@ class StudyCreateView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic
         return initial
 
 
-class StudyListView(LoginRequiredMixin, generic.ListView, PaginatorMixin):
+class StudyListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView, PaginatorMixin):
     '''
     StudyListView shows a list of studies that a user has permission to.
     '''
     model = Study
+    permission_required = 'accounts.can_view_experimenter'
+    raise_exception = True
     template_name = 'studies/study_list.html'
 
     def get_queryset(self, *args, **kwargs):
