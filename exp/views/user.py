@@ -175,16 +175,23 @@ class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.
         if self.request.POST.get('name') == 'user_permissions':
             new_perm_short = self.request.POST['value']
             org_name = self.get_object().organization.name
+
             admin_group = Group.objects.get(name=build_org_group_name(org_name, 'admin'))
             read_group = Group.objects.get(name=build_org_group_name(org_name, 'read'))
+            researcher_group = Group.objects.get(name=build_org_group_name(org_name, 'researcher'))
+
             researcher = self.get_object()
 
             if new_perm_short == 'org_admin':
                 admin_group.user_set.add(researcher)
+                read_group.user_set.remove(researcher)
+                researcher_group.user_set.remove(researcher)
             elif new_perm_short == 'org_read':
                 read_group.user_set.add(researcher)
                 admin_group.user_set.remove(researcher)
+                researcher_group.user_set.remove(researcher)
             else:
+                researcher_group.user_set.add(researcher)
                 admin_group.user_set.remove(researcher)
                 read_group.user_set.remove(researcher)
         self.object.is_active = True

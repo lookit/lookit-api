@@ -4,7 +4,7 @@ import uuid
 from datetime import date
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin, Permission
 from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
@@ -77,7 +77,7 @@ def organization_post_save(sender, **kwargs):
 
     if created:
         from django.contrib.auth.models import Group
-        for group in ['read', 'admin']:
+        for group in ['researcher', 'read', 'admin']:
             group_instance, created = Group.objects.get_or_create(
                 name=build_org_group_name(organization.name, group)
             )
@@ -89,6 +89,9 @@ def organization_post_save(sender, **kwargs):
                     # Add can_edit organization permission for the org to the org_admin group
                     if 'can_edit' in perm and group == 'admin':
                         assign_perm(perm, group_instance, obj=organization)
+                create_study = Permission.objects.filter(codename='can_create_study')[0]
+                # Add can_create_study permissions to every group in the org
+                group_instance.permissions.add(create_study)
 
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):

@@ -3,6 +3,7 @@ import uuid
 from functools import reduce
 
 from django import forms
+from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
 from guardian.mixins import PermissionRequiredMixin
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
@@ -25,7 +26,7 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 
 
-class StudyCreateView(LoginRequiredMixin, generic.CreateView, PermissionRequiredMixin):
+class StudyCreateView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
     '''
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
