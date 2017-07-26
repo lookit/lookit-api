@@ -62,6 +62,7 @@ class Organization(models.Model):
             ('can_edit_organization', _('Can Edit Organization')),
             ('can_create_organization', _('Can Create Organization')),
             ('can_remove_organization', _('Can Remove Organization')),
+            ('can_view_experimenter', _('Can View Experimenter')),
         )
         ordering = ['name']
 
@@ -84,14 +85,17 @@ def organization_post_save(sender, **kwargs):
             if created:
                 for perm, _ in Organization._meta.permissions:
                     # Add can_view_organization permission for the org to the org_read and org_admin groups
-                    if 'can_view' in perm:
+                    if 'can_view_organization' in perm:
                         assign_perm(perm, group_instance, obj=organization)
                     # Add can_edit organization permission for the org to the org_admin group
                     if 'can_edit' in perm and group == 'admin':
                         assign_perm(perm, group_instance, obj=organization)
                 create_study = Permission.objects.filter(codename='can_create_study')[0]
+                view_experimenter = Permission.objects.filter(codename='can_view_experimenter')[0]
                 # Add can_create_study permissions to every group in the org
                 group_instance.permissions.add(create_study)
+                # Adds can_view_experimenter permissions to every group in the org
+                group_instance.permissions.add(view_experimenter)
 
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
