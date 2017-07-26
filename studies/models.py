@@ -133,7 +133,7 @@ class Study(models.Model):
         return
 
     def clone(self):
-        ''' Create a new, unsaved copy of this study. '''
+        ''' Create a new, unsaved copy of the study. '''
         copy = self.__class__.objects.get(pk=self.pk)
         copy.id = None
         copy.public = False

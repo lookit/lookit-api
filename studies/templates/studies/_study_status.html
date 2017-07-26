@@ -20,10 +20,22 @@
             $('[data-toggle="tooltip"]').tooltip('hide')
         }
     });
+    function statusSelected(status) {
+        var commentsBlock = document.getElementById("rejectionComments");
+        if (status.value === 'reject' && "{{ study_perms }}".indexOf('can_approve_study') !== -1) {
+            rejectionComments.disabled = false;
+            rejectionComments.classList.remove("comments-text");
+
+        } else {
+            rejectionComments.disabled = true;
+            rejectionComments.className += " comments-text";
+            rejectionComments.value = "{{ study.comments }}";
+        }
+    }
 </script>
 <div class="well study-detail-block">
     <div class="row">
-        <div class="col-sm-6 col-xs-12">
+        <div class="col-xs-12">
             <div >
                 <h2 class="study-status"> <span class="pr-sm"> Status:</span> </h2>
                 <span style="white-space: nowrap;">
@@ -31,19 +43,29 @@
                     <i aria-label="Status information: {{ status_tooltip }}"title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon fa fa-question-circle-o"></i>
                  </span>
             </div>
-            {% if triggers %}
-              <div>
-                  <form class="change-status pt-md" method="POST" action=""> {% csrf_token %}
-                    <div class="change-status btn-group" role="group" aria-label="study actions">
-                      {% for trigger in triggers %}
-                        <button type="submit" class="btn {% if trigger == 'archive' %}btn-danger {% else %}btn-success {% endif %}" name="trigger" value="{{ trigger }}">{{ trigger|title }}</button>
-                      {% endfor %}
-                    </div>
-                  </form>
-              </div>
-            {% endif %}
+            <div>
+              <form class="change-status" method="POST" action=""> {% csrf_token %}
+                   {% if triggers %}
+                        <div class="form-group">
+                          <select onchange="statusSelected(this)" name=trigger class="form-control" id="statusSelector">
+                              <option value="" selected disabled>Change status ... </option>
+                              {% for trigger in triggers %}
+                                <option name="trigger" value="{{ trigger }}">{{ trigger|title }}</option>
+                              {% endfor %}
+                          </select>
+                        </div>
+                        <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
+                        {% get_obj_perms request.user for study as "study_perms" %}
+                        <em><textarea id="rejectionComments" class="comments-text rejection-comments" name="comments-text" disabled rows="4" cols="34">{{study.comments}}</textarea></em>
+                        <div class="submit-comments-panel">
+                            <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
+                            <button {% if 'can_edit_study' not in study_perms %}disabled{% endif %} name="submit" value="submit" class="btn btn-default" type="submit">Save</button>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
         </div>
-        <form class="submit-comments" method="POST"> {% csrf_token %}
+        <!-- <form class="submit-comments" method="POST"> {% csrf_token %}
             <div class="col-sm-6 col-xs-12">
                     <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
                     {% get_obj_perms request.user for study as "study_perms" %}
@@ -53,6 +75,6 @@
                         <button aria-label="Update rejection comments" name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' or "can_approve_study" not in study_perms %} disabled{% endif %} type="submit"><i aria-hidden="true" class="fa fa-check"></i></button>
                     </div>
             </div>
-        </form>
+        </form> -->
     </div>
 </div>
