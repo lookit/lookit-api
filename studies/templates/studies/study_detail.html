@@ -116,15 +116,17 @@
                       {% include 'studies/_study_status.html' with study=study %}
                   </div>
                   <div class="col-md-4">
-                      <a class="view-responses-link" href="{% url 'exp:study-responses-list' pk=study.id %}">
-                          <div class="well view-response-block">
-                            <center class="mt-sm">
-                                <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
-                                <h4> View <strong>{{study.completed_responses_count|default:"0" }}</strong> {% if study.completed_responses_count == 1 %} Response {% else %} Responses {% endif %} </h4>
-                                <p> Inspect responses from completed studies </p>
-                            </center>
-                        </div>
-                     </a>
+                      {% if "can_view_study_responses" in study_perms %}
+                          <a class="view-responses-link" href="{% url 'exp:study-responses-list' pk=study.id %}">
+                              <div class="well view-response-block">
+                                <center class="mt-sm">
+                                    <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
+                                    <h4> View <strong>{{study.completed_responses_count|default:"0" }}</strong> {% if study.completed_responses_count == 1 %} Response {% else %} Responses {% endif %} </h4>
+                                    <p> Inspect responses from completed studies </p>
+                                </center>
+                            </div>
+                         </a>
+                     {% endif %}
                      {% if perms.studies.can_create_study %}
                          <form id="cloneForm"method="POST" style="display:inline">{% csrf_token %}
                              <input type="hidden" name="clone_study" value="{{study.id}}"/>

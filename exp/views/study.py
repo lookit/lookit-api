@@ -141,7 +141,7 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
     def post(self, *args, **kwargs):
         """
         Post method can update the trigger if the state of the study has changed.  If "clone" study
-        button is pressed, clonses study and redirects to the clone.
+        button is pressed, clones study and redirects to the clone.
         """
         update_trigger(self)
         if self.request.POST.get('clone_study'):
