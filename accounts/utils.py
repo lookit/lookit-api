@@ -12,6 +12,7 @@ def build_study_group_name(org_name, study_name, study_pk, group):
     '''Returns org group name in the form of <ORGNAME>_ORG_<GROUP>'''
     return f'{slugify({org_name})}_{slugify({study_name})}_{study_pk}_STUDY_{group}'.upper()
 
+# Dictionary with the states for the study and tooltip text for providing additional information
 status_tooltip_text = {
     'created': 'Study has not been submitted for approval',
     'active': 'Study is collecting data',
@@ -27,7 +28,8 @@ status_tooltip_text = {
 
 
 def get_permitted_triggers(view_instance, triggers):
-    ''' Get permitted triggers for study state '''
+    '''Takes in the available triggers (next possible states) for a study and restricts that list
+    based on the current user's permissions '''
     permitted_triggers = []
     user = view_instance.request.user
     study = view_instance.object

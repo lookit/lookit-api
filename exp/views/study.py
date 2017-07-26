@@ -130,7 +130,8 @@ class StudyListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.L
 
 class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView, PaginatorMixin):
     '''
-    StudyDetailView shows information about a study.
+    StudyDetailView shows information about a study. Can view basic metadata about a study, can view
+    study logs, and can change a study's state.
     '''
     template_name = 'studies/study_detail.html'
     model = Study
@@ -138,6 +139,10 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
     raise_exception = True
 
     def post(self, *args, **kwargs):
+        """
+        Post method can update the trigger if the state of the study has changed.  If "clone" study
+        button is pressed, clonses study and redirects to the clone.
+        """
         update_trigger(self)
         if self.request.POST.get('clone_study'):
             clone = self.get_object().clone()
@@ -148,6 +153,10 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
 
     def get_queryset(self):
+        """
+        Returns the queryset that is used to lookup the study object. Annotates
+        the queryset with the completed and incomplete responses counts.
+        """
         queryset = super().get_queryset()
         queryset = queryset.annotate(completed_responses_count=Count(Case(When(responses__completed=True, then=1))))
         queryset = queryset.annotate(incomplete_responses_count=Count(Case(When(responses__completed=False, then=1))))
@@ -155,12 +164,16 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
 
     @property
     def study_logs(self):
-        ''' Returns a page object with 10 study logs'''
+        """ Returns a page object with 10 study logs"""
         logs_list = self.object.logs.all().order_by('-created_at')
         page = self.request.GET.get('page')
         return self.paginated_queryset(logs_list, page, 10)
 
     def get_context_data(self, **kwargs):
+        """
+        Adds several items to the context dictionary - the study, applicable triggers for the study,
+        paginated study logs, and a tooltip that is dependent on the study's current state
+        """
         context = super(StudyDetailView, self).get_context_data(**kwargs)
         context['triggers'] = get_permitted_triggers(self,
             self.object.machine.get_triggers(self.object.state))
@@ -247,13 +260,15 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
 
     def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.
+        """
         context = super().get_context_data(**kwargs)
         state = self.object.state
 
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
         context['search_query'] = self.request.GET.get('match')
-
         context['status_tooltip'] = status_tooltip_text.get(state, state)
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
         return context
