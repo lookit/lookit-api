@@ -21,25 +21,22 @@
               privateLink.value = origin + "/studies/" + "{{ study.uuid }}" + '/';
           }
         });
+        function cloneStudy() {
+            document.getElementById('cloneForm').submit()
+        }
     </script>
   <div class="container">
       <div class="row">
         <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9">
             <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; {{ study.name }} </a>
         </div>
-        <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3 button-toolbar">
-            <div class="float-lg-right">
+        <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3">
+            <div class="edit-study-button">
                 {% get_obj_perms user for study as "study_perms" %}
                 {% if "can_edit_study" in study_perms %}
                     <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
                         <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Study
                     </a>
-                {% endif %}
-                {% if perms.studies.can_create_study %}
-                    <form method="POST" style="display:inline">{% csrf_token %}
-                        <input type="hidden" name="clone_study" value="{{study.id}}"/>
-                        <button type="submit" class="mr-md btn btn-default"> <i aria-hidden="true" class="fa fa-files-o"></i> Clone Study </button>
-                    </form>
                 {% endif %}
             </div>
         </div>
@@ -121,13 +118,26 @@
                   <div class="col-md-4">
                       <a class="view-responses-link" href="{% url 'exp:study-responses-list' pk=study.id %}">
                           <div class="well view-response-block">
-                            <center class="mt-lg">
+                            <center class="mt-sm">
                                 <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
                                 <h4> View <strong>{{study.completed_responses_count|default:"0" }}</strong> {% if study.completed_responses_count == 1 %} Response {% else %} Responses {% endif %} </h4>
                                 <p> Inspect responses from completed studies </p>
                             </center>
                         </div>
                      </a>
+                     {% if perms.studies.can_create_study %}
+                         <form id="cloneForm"method="POST" style="display:inline">{% csrf_token %}
+                             <input type="hidden" name="clone_study" value="{{study.id}}"/>
+                             <div onclick="cloneStudy()"class="view-responses-link" role="button" type="submit">
+                                <div class="well view-response-block">
+                                    <center class="mt-sm">
+                                        <p><i aria-hidden="true" class="fa-2x fa fa-files-o"></i></p>
+                                        <h4> Clone Study </h4>
+                                        <p> Copy study structure and details </p>
+                                    </center>
+                                </div>
+                            </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="row">

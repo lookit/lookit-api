@@ -140,23 +140,33 @@ a:hover.view-responses-link {
     color: gray;
 }
 
+#cloneForm:hover {
+    color:gray;
+}
+
 .study-detail-block {
     display: block;
     width:100%;
-    height: 325px;
+    height: 340px;
 }
 .view-response-block {
     display: block;
     width: 100%;
-    height: 190px;
+    height: 160px;
 }
 @media (max-width: 780px) {
-  .comments-block.comments-label {
-      margin-top: 30px;
-  }
   .button-toolbar {
       padding-top: 20px;
   }
+  .edit-study-button {
+      padding-top: 15px;
+  }
+}
+
+@media (min-width: 780px) {
+    .edit-study-button {
+        float: right;
+    }
 }
 
 h2.study-status {
@@ -187,8 +197,9 @@ textarea.rejection-comments {
     margin-top: -10px;
 }
 
-.submit-comments-panel {
+.submit-status-panel {
     text-align: right;
+    padding-top: 10px;
 }
 
 h3.study-logs-label {

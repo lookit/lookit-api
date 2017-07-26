@@ -44,9 +44,9 @@
                  </span>
             </div>
             <div>
-              <form class="change-status" method="POST" action=""> {% csrf_token %}
+              <form class="change-status pt-sm" method="POST" action=""> {% csrf_token %}
                    {% if triggers %}
-                        <div class="form-group">
+                        <div class="form-group mt-sm">
                           <select onchange="statusSelected(this)" name=trigger class="form-control" id="statusSelector">
                               <option value="" selected disabled>Change status ... </option>
                               {% for trigger in triggers %}
@@ -54,27 +54,18 @@
                               {% endfor %}
                           </select>
                         </div>
-                        <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
-                        {% get_obj_perms request.user for study as "study_perms" %}
-                        <em><textarea id="rejectionComments" class="comments-text rejection-comments" name="comments-text" disabled rows="4" cols="34">{{study.comments}}</textarea></em>
-                        <div class="submit-comments-panel">
+                        <div class="pt-md">
+                            <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
+                            {% get_obj_perms request.user for study as "study_perms" %}
+                            <em><textarea id="rejectionComments" class="comments-text rejection-comments" name="comments-text" disabled rows="4" cols="34">{{study.comments}}</textarea></em>
+                        </div>
+                        <div class="submit-status-panel">
                             <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
-                            <button {% if 'can_edit_study' not in study_perms %}disabled{% endif %} name="submit" value="submit" class="btn btn-default" type="submit">Save</button>
+                            <button {% if 'can_edit_study' not in study_perms %}disabled{% endif %} name="submit" value="submit" class="btn btn-success" type="submit">Save</button>
                         </div>
                     {% endif %}
                 </form>
             </div>
         </div>
-        <!-- <form class="submit-comments" method="POST"> {% csrf_token %}
-            <div class="col-sm-6 col-xs-12">
-                    <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
-                    {% get_obj_perms request.user for study as "study_perms" %}
-                    <em><textarea class="rejection-comments {% if study.state != 'rejected' or "can_approve_study" not in study_perms %}comments-text{% endif %}" name="comments-text" {% if study.state != 'rejected' or "can_approve_study" not in study_perms %}disabled{% endif %} rows="4" cols="34">{{study.comments}}</textarea></em>
-                    <div class="submit-comments-panel">
-                        <button aria-label="Cancel change rejection comments" name="cancel" value="reset" class="btn btn-default" {% if study.state != 'rejected' or "can_approve_study" not in study_perms %}disabled{% endif %} type="reset"><i aria-hidden="true" class="fa fa-times"></i></button>
-                        <button aria-label="Update rejection comments" name="submit" value="submit" class="btn btn-default" {% if study.state != 'rejected' or "can_approve_study" not in study_perms %} disabled{% endif %} type="submit"><i aria-hidden="true" class="fa fa-check"></i></button>
-                    </div>
-            </div>
-        </form> -->
     </div>
 </div>
