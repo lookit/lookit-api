@@ -56,8 +56,6 @@ RUN apt-get remove -y gcc
 
 COPY ./ /code/
 
-RUN python manage.py collectstatic --noinput
-
 ARG GIT_TAG=
 ARG GIT_COMMIT=
 ENV VERSION ${GIT_TAG}
