@@ -185,7 +185,8 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
 
 class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, PaginatorMixin):
     '''
-    StudyUpdateView allows user to edit study.
+    StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
+    Also allows you to update the study status. 
     '''
     template_name = 'studies/study_edit.html'
     form_class = StudyEditForm

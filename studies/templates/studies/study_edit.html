@@ -40,9 +40,7 @@
                     {% bootstrap_form form %}
                     <div class="pull-right">
                         {% buttons %}
-                            <button type="cancel" class="btn btn-default">
-                              Cancel
-                            </button>
+                              <a class="btn btn-default"href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>
                               <button type="submit" class="btn btn-success">
                                  Save Changes
                               </button>
