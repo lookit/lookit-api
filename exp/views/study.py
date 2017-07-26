@@ -186,7 +186,7 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
 class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, PaginatorMixin):
     '''
     StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
-    Also allows you to update the study status. 
+    Also allows you to update the study status.
     '''
     template_name = 'studies/study_edit.html'
     form_class = StudyEditForm
@@ -205,7 +205,7 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         researchers_result = None
         if search_query:
             current_researcher_ids = self.get_study_researchers().values_list('id', flat=True)
-            user_queryset = User.objects.filter(organization=self.request.user.organization,is_active=True)
+            user_queryset = User.objects.filter(organization=self.get_object().organization,is_active=True)
             researchers_result = user_queryset.filter(reduce(operator.or_,
               (Q(family_name__icontains=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in search_query.split()))).exclude(id__in=current_researcher_ids).distinct().order_by(Lower('family_name').asc())
             researchers_result = self.build_researchers_paginator(researchers_result)
@@ -233,17 +233,21 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
              permissions = self.request.POST.get('value')
 
         if add_user:
+            # Adds user to study read by default
             study_read_group.user_set.add(User.objects.get(pk=add_user))
         if remove_user:
+            # Removes user from both study read and study admin groups
             remove = User.objects.get(pk=remove_user)
             study_read_group.user_set.remove(remove)
             study_admin_group.user_set.remove(remove)
         if update_user:
             update = User.objects.get(pk=update_user)
             if permissions == 'study_admin':
+                # if admin, removes user from study read and adds to study admin
                 study_read_group.user_set.remove(update)
                 study_admin_group.user_set.add(update)
             if permissions == 'study_read':
+                # if read, removes user from study admin and adds to study read
                 study_read_group.user_set.add(update)
                 study_admin_group.user_set.remove(update)
 
@@ -272,6 +276,7 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         context['search_query'] = self.request.GET.get('match')
         context['status_tooltip'] = status_tooltip_text.get(state, state)
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
+        context['name'] = self.request.GET.get('match', None)
         return context
 
 
