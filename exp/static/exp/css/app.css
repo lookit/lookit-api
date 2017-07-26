@@ -157,6 +157,9 @@ a:hover.view-responses-link {
   .comments-block.comments-label {
       margin-top: 30px;
   }
+  .button-toolbar {
+      padding-top: 20px;
+  }
 }
 
 h2.study-status {

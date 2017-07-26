@@ -29,7 +29,9 @@ status_tooltip_text = {
 
 def get_permitted_triggers(view_instance, triggers):
     '''Takes in the available triggers (next possible states) for a study and restricts that list
-    based on the current user's permissions '''
+    based on the current user's permissions.
+    The view_instance is the StudyDetailView or the StudyUpdateView.
+    '''
     permitted_triggers = []
     user = view_instance.request.user
     study = view_instance.object
