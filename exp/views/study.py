@@ -149,8 +149,17 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.save()
+            self.add_creator_to_study_admin_group(clone)
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
+
+    def add_creator_to_study_admin_group(self, clone):
+            """
+            Add the study's creator to the clone's study admin group.
+            """
+            study_admin_group = clone.study_admin_group
+            study_admin_group.user_set.add(self.request.user)
+            return study_admin_group
 
     def get_queryset(self):
         """
