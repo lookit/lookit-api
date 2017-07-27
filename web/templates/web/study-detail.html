@@ -68,7 +68,7 @@
                     {% if not request.user.is_authenticated %}
                     <a class="btn btn-lg btn-default" href='/login'>Log in to participate</a>
                     {% elif not children %}
-                    <a class="btn btn-lg btn-default" href='/account/children/'>Add child profile to participate</a>
+                    <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">Add child profile to participate</a>
                     {% elif not has_demographic %}
                     <a class="btn btn-lg btn-default" href="/account/demographics">Complete demographic survey to participate</a>
                     {% else %}
