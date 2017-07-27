@@ -86,28 +86,6 @@ class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
 
 
-class ResponseListView(LoginRequiredMixin, generic.ListView):
-    '''
-    Displays a list of responses for studies that the current user can view.
-    '''
-    template_name = 'accounts/response_list.html'
-
-    def get_queryset(self):
-        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
-        return Response.objects.filter(study__in=studies).order_by('study__name')
-
-
-class ResponseDetailView(LoginRequiredMixin, generic.DetailView):
-    '''
-    Displays a response.
-    '''
-    template_name = 'accounts/response_detail.html'
-
-    def get_queryset(self):
-        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
-        return Response.objects.filter(study__in=studies).order_by('study__name')
-
-
 class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
     '''
     Displays a list of researchers in the same organization as the current user.
@@ -197,32 +175,7 @@ class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.
         self.object.is_active = True
         self.object.save()
         return retval
-
-
-class AssignResearcherStudies(LoginRequiredMixin, generic.UpdateView):
-    '''
-    AssignUserStudies lists studies available and let's someone assign permissions
-    to users.
-    '''
-    template_name = 'accounts/assign_studies_form.html'
-    queryset = User.objects.filter(demographics__isnull=True)
-    form_class = UserStudiesForm
-
-    def get_success_url(self):
-        return reverse('exp:researcher-list')
-
-    def get_initial(self):
-        permissions = ['studies.can_view_study', 'studies.can_edit_study']
-        initial = super(AssignResearcherStudies, self).get_initial()
-        initial['studies'] = get_objects_for_user(self.object, permissions)
-        return initial
-
-    def get_context_data(self, **kwargs):
-        context = super(AssignResearcherStudies, self).get_context_data(**kwargs)
-        # only show studies in their organization
-        context['studies'] = Study.objects.filter(organization=context['user'].organization)
-        return context
-
+        
 
 class ResearcherCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
     '''

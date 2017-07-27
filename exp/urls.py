@@ -18,31 +18,24 @@ from django.conf.urls import url
 from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
 
-from exp.views import (AssignResearcherStudies, OrganizationCreateView,
-                       OrganizationListView, ParticipantDetailView,
+from exp.views import (ParticipantDetailView,
                        ParticipantListView, ResearcherCreateView,
-                       ResearcherDetailView, ResearcherListView,
-                       ResponseDetailView, ResponseListView, StudyCreateView,
+                       ResearcherDetailView, ResearcherListView, StudyCreateView,
                        StudyDetailView, StudyListView, StudyUpdateView, StudyResponsesList,
                        StudyBuildView, PreviewProxyView)
 
 urlpatterns = [
-    url(r'organizations/$', OrganizationListView.as_view(), name='organization-list'),
-    url(r'organizations/create/$', OrganizationCreateView.as_view(), name='organization-create'),
+    url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
     url(r'researchers/create/$', ResearcherCreateView.as_view(), name='researcher-create'),
     url(r'researchers/(?P<pk>\d+)/$', ResearcherDetailView.as_view(), name='researcher-detail'),
-    url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
-    url(r'studies/(?P<pk>\d+)/responses/$', StudyResponsesList.as_view(), name='study-responses-list'),
-    url(r'responses/$', ResponseListView.as_view(), name='response-list'),
-    url(r'responses/(?P<pk>\d+)/$', ResponseDetailView.as_view(), name='response-detail'),
-    url(r'researchers/(?P<pk>\d+)/assign-studies/$', AssignResearcherStudies.as_view(), name='assign-studies'),
-    url(r'participants/(?P<pk>\d+)/$', ParticipantDetailView.as_view(), name='participant-detail'),
     url(r'participants/$', ParticipantListView.as_view(), name='participant-list'),
+    url(r'participants/(?P<pk>\d+)/$', ParticipantDetailView.as_view(), name='participant-detail'),
     url(r'studies/$', StudyListView.as_view(), name='study-list'),
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
     url(r'studies/(?P<pk>\d+)/edit/$', StudyUpdateView.as_view(), name='study-edit'),
     url(r'studies/(?P<pk>\d+)/edit/build/$', StudyBuildView.as_view(), name='study-build'),
+    url(r'studies/(?P<pk>\d+)/responses/$', StudyResponsesList.as_view(), name='study-responses-list'),
     url(r'studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/preview/?$', PreviewProxyView.as_view(), name='preview-proxy'),
     url(r'', RedirectView.as_view(url=reverse_lazy('exp:study-list')), name='homepage')
 ]
