@@ -281,7 +281,7 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
 
 
     def get_success_url(self):
-        return reverse('exp:study-detail', kwargs={'pk': self.object.id})
+        return reverse('exp:study-edit', kwargs={'pk': self.object.id})
 
 
 class StudyBuildView(PermissionRequiredMixin, generic.UpdateView):
