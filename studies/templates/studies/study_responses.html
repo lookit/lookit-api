@@ -20,8 +20,10 @@
             });
             var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.all-data').html());
             var elem = $('#download-all-data')[0];
-            elem.href = data;
-            elem.download = '{{study.name}}-all-data.json';
+            if (data && elem) {        
+                elem.href = data;
+                elem.download = '{{study.name}}-all-data.json';
+            }
 
             $(function(){
                 var hash = window.location.hash;
@@ -96,7 +98,7 @@
                     </li>
                 </ul>
             {% else %}
-                <p class="pt-md"><em>No responses recorded! </em></p>
+                <p class="pt-md"><em>No completed responses recorded! </em></p>
             {% endif %}
         </div>
     </div>

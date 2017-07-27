@@ -121,10 +121,8 @@
                               <div class="well view-response-block">
                                 <center class="mt-sm">
                                     <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
-                                    <h4> View {% if study.responses %} Responses {% else %} Response {% endif %} </h4>
-                                    <p> Inspect  <strong>{{study.completed_responses_count|default:"0" }}</strong>
-                                        completed response{{ study.completed_responses_count|pluralize }} and <strong>{{study.incomplete_responses_count|default:"0" }}</strong>
-                                        incomplete response{{ study.incomplete_responses_count|pluralize }} </p>
+                                    <h4> View <strong>{{study.completed_responses_count|default:"0" }}</strong> Response{{ study.completed_responses_count|pluralize}}</h4>
+                                    <p> Inspect responses from completed studies </p>
                                 </center>
                             </div>
                          </a>
