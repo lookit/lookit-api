@@ -1,0 +1,10 @@
+Dear {{study.organization.name}} Admin,
+
+{% if action == 'submitted' %}{{researcher.given_name}} {{researcher.family_name}} has submitted a study for approval: {{study.name}}
+
+You can approve or disapprove the study here: {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+{% elif action == 'retracted' %}{{researcher.given_name}} {{researcher.family_name}} has retracted the submission of a study: {{study.name}}
+{% elif action == 'active' %}{{researcher.given_name}} {{researcher.family_name}} has started the study {{study.name}}. {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+{% elif action == 'paused' %}{{researcher.given_name}} {{researcher.family_name}} has paused the study {{study.name}}. {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+{% elif action == 'deactivated' %}{{researcher.given_name}} {{researcher.family_name}} has deactivated the study {{study.name}}. {{base_url}}{{% url 'exp:study-detail' pk=study.id %}
+{% endif %}
