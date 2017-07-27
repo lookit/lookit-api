@@ -285,7 +285,7 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         return reverse('exp:study-edit', kwargs={'pk': self.object.id})
 
 
-class StudyBuildView(PermissionRequiredMixin, generic.UpdateView):
+class StudyBuildView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
     """
     StudyBuildView allows user to modify study structure - JSON field.
     """
