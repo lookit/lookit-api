@@ -320,18 +320,21 @@ class StudyBuildView(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
         return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
 
-class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
+class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView, PaginatorMixin):
+    """
+    Study Responses View allows user to view responses to a study. Responses can be viewed individually,
+    all responses can be downloaded, and study attachments can be downloaded.
+    """
     template_name = 'studies/study_responses.html'
     model = Study
     permission_required = 'studies.can_view_study_responses'
     raise_exception = True
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get('sort', None)
-        study = context['study']
-        context['responses'] = study.responses.all().order_by(orderby) if orderby else study.responses.all()
-        context['response_data'] = [json.dumps({
+    def build_responses(self, responses):
+        """
+        Builds the JSON response data for the researcher to download
+        """
+        return [json.dumps({
             'sequence': resp.sequence,
             'conditions': resp.conditions,
             'exp_data': resp.exp_data,
@@ -341,8 +344,22 @@ class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.De
             'completed': resp.completed,
             'study_id': resp.study.id,
             'response_id': resp.id,
-            }, indent=4) for resp in context['responses']]
-        context['all_responses'] = ', '.join(context['response_data'])
+            'demographic_id': resp.demographic_snapshot.id
+            }, indent=4) for resp in responses]
+
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.  Study results
+        are paginated.
+        """
+        context = super().get_context_data(**kwargs)
+        orderby = self.request.GET.get('sort', 'id')
+        page = self.request.GET.get('page', None)
+        study = context['study']
+        responses = study.responses.all().order_by(orderby) if orderby else study.responses.all()
+        context['responses'] = self.paginated_queryset(responses, page, 10)
+        context['response_data'] = self.build_responses(context['responses'])
+        context['all_responses'] = ', '.join(self.build_responses(responses))
         return context
 
 
