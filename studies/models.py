@@ -235,7 +235,7 @@ def study_post_save(sender, **kwargs):
             )
             for perm, _ in Study._meta.permissions:
                 # add only view permissions to non-admin
-                if group == 'read' and perm != 'can_view_study':
+                if group == 'read' and 'view' not in perm:
                     continue
                 if 'approve' not in perm:
                     assign_perm(perm, study_group_instance, obj=study)
