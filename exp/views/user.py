@@ -92,15 +92,20 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
     Displays a list of researchers in the same organization as the current user.
     '''
     template_name = 'accounts/researcher_list.html'
-    queryset = User.objects.filter(demographics__isnull=True)
+    # TODO needs to change once oauth in
+    queryset = User.objects.filter(demographics__isnull=True, is_active=True)
     model = User
     permission_required = 'accounts.can_view_organization'
     raise_exception = True
 
     def get_queryset(self):
         qs = super(ResearcherListView, self).get_queryset()
-        # TODO this should probably use permissions eventually, just to be safe
-        queryset = qs.filter(organization=self.request.user.organization, is_active=True)
+        user_org_name = self.request.user.organization.name
+        admin_group = Group.objects.get(name=build_org_group_name(user_org_name, 'admin'))
+        read_group = Group.objects.get(name=build_org_group_name(user_org_name, 'read'))
+        researcher_group = Group.objects.get(name=build_org_group_name(user_org_name, 'researcher'))
+        queryset = qs.filter(Q(groups__name=admin_group.name) | Q(groups__name=read_group.name) | Q(groups__name=researcher_group.name)).distinct().order_by(Lower('family_name').asc())
+
         match = self.request.GET.get('match')
         if match:
             queryset = queryset.filter(reduce(operator.or_,
