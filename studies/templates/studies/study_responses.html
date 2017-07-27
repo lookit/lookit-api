@@ -20,7 +20,7 @@
             });
             var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.all-data').html());
             var elem = $('#download-all-data')[0];
-            if (data && elem) {        
+            if (data && elem) {
                 elem.href = data;
                 elem.download = '{{study.name}}-all-data.json';
             }
@@ -177,7 +177,7 @@
                 <div class="row text-center mt-lg">
                     <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
                         <form method="GET">
-                            <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
+                            <input class="form-control" name="match" placeholder="{{ match|default:'Filter attachment name' }}" size="50" type="text">
                             <input type="hidden" name="sort" value={{ sort }}>
                         </form>
                     </div>
@@ -206,7 +206,7 @@
                                   <tr>
                                     <td>{{ response.attachment.name|default:"No_file.mov" }}</td>
                                     <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
-                                    <td><a class='btn btn-primary' href="{{ response.attachment.download_url }}">Download</a></td>
+                                    <td><a class='btn btn-primary btn-sm' href="{{ response.attachment.download_url }}">Download</a></td>
                                   </tr>
                                 {% endfor %}
                                 </tbody>
