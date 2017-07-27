@@ -77,23 +77,27 @@
     </div>
     <div class="row">
         <div class="col-xs-12">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="active">
-                    <a href="#by_participant" role="tab" data-toggle="tab">
-                        Individual <span class="hidden-xs"> Responses </span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#all_data" role="tab" data-toggle="tab">
-                        All <span class="hidden-xs"> Responses </span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#all_attachments" role="tab" data-toggle="tab">
-                        <span class="hidden-xs"> All </span> Attachments
-                    </a>
-                </li>
-            </ul>
+            {% if responses %}
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active">
+                        <a href="#by_participant" role="tab" data-toggle="tab">
+                            Individual <span class="hidden-xs"> Responses </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#all_data" role="tab" data-toggle="tab">
+                            All <span class="hidden-xs"> Responses </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#all_attachments" role="tab" data-toggle="tab">
+                            <span class="hidden-xs"> All </span> Attachments
+                        </a>
+                    </li>
+                </ul>
+            {% else %}
+                <p class="pt-md"><em>No responses recorded! </em></p>
+            {% endif %}
         </div>
     </div>
     <div class="tab-content">
@@ -101,34 +105,36 @@
             <div class="row pt-md">
                 <div class="col-md-5 col-xs-12">
                     <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Participant ID
-                                        <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
-                                    </th>
-                                    <th>
-                                        Status
-                                    </th>
-                                    <th>
-                                        Date
-                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for response in responses %}
-                              <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}'>
-                                <td>{{ response.child.user.id }}</td>
-                                <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
-                                <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
-                              </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        {% if responses %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Participant ID
+                                            <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
+                                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+                                            Date
+                                            <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
+                                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for response in responses %}
+                                  <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}'>
+                                    <td>{{ response.child.user.id }}</td>
+                                    <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
+                                    <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
+                                  </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-md-7 col-xs-12">
