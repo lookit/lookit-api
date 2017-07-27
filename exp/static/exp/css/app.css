@@ -161,6 +161,12 @@ a:hover.view-responses-link {
   .edit-study-button {
       padding-top: 15px;
   }
+  .researcher-name {
+      padding-top: 10px;
+  }
+  .researcher-delete {
+      padding-top: 5px;
+  }
 }
 
 @media (min-width: 780px) {
@@ -231,7 +237,7 @@ h2.researchers-label {
 .modify-study-block {
     display: block;
     width: 100%;
-    height: 190px;
+    height: 160px;
 }
 
 a.build-study-link {

@@ -29,6 +29,7 @@
             <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; <a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }} </a> &gt; Edit
         </div>
     </div>
+    {% get_obj_perms user for study as "study_perms" %}
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
             <div class="mt-xl panel panel-default">
@@ -93,7 +94,7 @@
                     </div>
                     <div class="col-sm-7">
                         <h2 class="researchers-label"> Researchers </h2>
-                        <div class="row">
+                        <div class="row hidden-xs">
                             <div class="col-xs-6">
                                 <label> Name </label>
                             </div>
@@ -106,13 +107,13 @@
                         {% for researcher in current_researchers %}
                             {% get_obj_perms researcher for study as "study_perms" %}
                             <div class="row pt-xs">
-                                <div class="col-xs-6">
+                                <div class="col-sm-6 researcher-name">
                                     <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.identicon_small_html }} {{ researcher.get_short_name }} </a>
                                     {% if researcher.is_org_admin %}
                                         <span class="small"><em> *{{ study.organization.name }} Admin </em></span>
                                     {% endif %}
                                 </div>
-                                <div class="col-xs-3">
+                                <div class="col-sm-3">
                                     <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
                                         {% if "can_edit_study" in study_perms %}
                                             Admin
@@ -121,7 +122,7 @@
                                         {% endif %}
                                     </a>
                                 </div>
-                                <div class="col-xs-3">
+                                <div class="col-sm-3 researcher-delete">
                                     <form method="POST">{% csrf_token %}
                                         <input type="hidden" name="remove_user" value="{{researcher.id}}"/>
                                         <button type="submit" class="btn btn-danger btn-sm"> Remove </button>
@@ -139,7 +140,7 @@
                     <div class="col-md-4">
                         <a class="build-study-link" href="{% url 'exp:study-build' pk=study.id %}">
                             <div class="well modify-study-block">
-                                <center class="mt-lg">
+                                <center class="mt-sm">
                                     <p><i aria-hidden="true" class="fa-2x fa fa-list"></i></p>
                                     <h4> Build Study </h4>
                                     <p> Add/Modify study components </p>
