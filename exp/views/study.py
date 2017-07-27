@@ -195,9 +195,10 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
     raise_exception = True
 
     def get_study_researchers(self):
-        '''  Pulls researchers that belong to Study Admin and Study Read groups '''
+        '''  Pulls researchers that belong to Study Admin and Study Read groups - Not showing Org Admin and Org Read in this list (even though they technically
+        can view the project.) '''
         study = self.get_object()
-        return User.objects.filter(Q(groups__name=self.get_object().study_admin_group.name) | Q(groups__name=self.get_object().study_read_group.name)).distinct()
+        return User.objects.filter(Q(groups__name=self.get_object().study_admin_group.name) | Q(groups__name=self.get_object().study_read_group.name)).distinct().order_by(Lower('family_name').asc())
 
     def search_researchers(self):
         ''' Searches user first, last, and middle names for search query. Does not display researchers that are already on project '''
