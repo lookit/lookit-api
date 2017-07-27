@@ -61,7 +61,7 @@
             </div>
 
             <div class="col-xs-2 col-sm-2">
-                {% if perms.can_remove_users %}
+                {% if perms.accounts.can_edit_organization %}
                     <a data-toggle="modal" id="{{ user.id }}" onclick="populateDeleteModal({{ user.id }}, '{{ user.get_short_name }}')" class="deleteResearcher btn btn-danger btn-sm" href="#deleteModal">Remove</a>
                 {% endif %}
             </div>

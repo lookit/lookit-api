@@ -82,20 +82,18 @@ def organization_post_save(sender, **kwargs):
             group_instance, created = Group.objects.get_or_create(
                 name=build_org_group_name(organization.name, group)
             )
-            if created:
-                for perm, _ in Organization._meta.permissions:
-                    # Add can_view_organization permission for the org to the org_read and org_admin groups
-                    if 'can_view_organization' in perm:
-                        assign_perm(perm, group_instance, obj=organization)
-                    # Add can_edit organization permission for the org to the org_admin group
-                    if 'can_edit' in perm and group == 'admin':
-                        assign_perm(perm, group_instance, obj=organization)
-                create_study = Permission.objects.filter(codename='can_create_study')[0]
-                view_experimenter = Permission.objects.filter(codename='can_view_experimenter')[0]
-                # Add can_create_study permissions to every group in the org
-                group_instance.permissions.add(create_study)
-                # Adds can_view_experimenter permissions to every group in the org
-                group_instance.permissions.add(view_experimenter)
+            create_study = Permission.objects.filter(codename='can_create_study')[0]
+            view_experimenter = Permission.objects.filter(codename='can_view_experimenter')[0]
+            view_organization = Permission.objects.filter(codename='can_view_organization')[0]
+            edit_organization = Permission.objects.filter(codename='can_edit_organization')[0]
+
+            group_instance.permissions.add(create_study)
+            group_instance.permissions.add(view_experimenter)
+            if group == 'admin':
+                group_instance.permissions.add(view_organization)
+                group_instance.permissions.add(edit_organization)
+            if group == 'read':
+                group_instance.permissions.add(view_organization)
 
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):

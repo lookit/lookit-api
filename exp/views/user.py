@@ -3,6 +3,7 @@ from functools import reduce
 
 from django.http import Http404
 from guardian.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -86,14 +87,14 @@ class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
 
 
-class ResearcherListView(LoginRequiredMixin, PermissionRequiredMixin, generic.ListView):
+class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView):
     '''
     Displays a list of researchers in the same organization as the current user.
     '''
     template_name = 'accounts/researcher_list.html'
     queryset = User.objects.filter(demographics__isnull=True)
     model = User
-    permission_required = 'accounts.can_view_users'
+    permission_required = 'accounts.can_view_organization'
     raise_exception = True
 
     def get_queryset(self):
@@ -175,7 +176,7 @@ class ResearcherDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.
         self.object.is_active = True
         self.object.save()
         return retval
-        
+
 
 class ResearcherCreateView(LoginRequiredMixin, PermissionRequiredMixin, generic.CreateView):
     '''
