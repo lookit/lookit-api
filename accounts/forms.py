@@ -94,6 +94,9 @@ class DemographicDataForm(forms.ModelForm):
     class Meta:
         model = DemographicData
         exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
+        labels = {
+            'child_birthdays': "Children's Birthdays: YYYY-MM-DD, YYYY-MM-DD, ..."
+        }
 
 
 class ChildForm(forms.ModelForm):
