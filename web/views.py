@@ -155,60 +155,6 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
             return self.form_invalid(**{form_name: form})
 
 
-class StudiesListView(generic.ListView):
-    '''
-    List all active studies.
-    '''
-    template_name = 'web/studies-list.html'
-    model = Study
-
-    def get_queryset(self):
-        # TODO if we need to filter by study demographics vs user demographics
-        # TODO or by if they've taken the study before this is the spot
-        return super().get_queryset().filter(state='active', public=True)
-
-
-class StudyDetailView(generic.DetailView):
-    '''
-    Show the details of a study, should offer to allow a participant
-    to take the study and forward/proxy them to the js application
-    '''
-    template_name = 'web/study-detail.html'
-    model = Study
-
-    def get_object(self, queryset=None):
-        '''
-        Returns the object the view is displaying.
-        By default this requires `self.queryset` and a `pk` or `slug` argument
-        in the URLconf, but subclasses can override this to return any object.
-        '''
-        # Use a custom queryset if provided; this is required for subclasses
-        # like DateDetailView
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        uuid = self.kwargs.get('uuid')
-
-        if uuid is not None:
-            queryset = queryset.filter(uuid=uuid)
-        try:
-            # Get the single item from the filtered queryset
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
-            raise Http404(_('No %(verbose_name)s found matching the query') %
-                          {'verbose_name': queryset.model._meta.verbose_name})
-        return obj
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        if self.request.user.is_authenticated:
-            context['has_demographic'] = self.request.user.latest_demographics
-            context['children'] = self.request.user.children.all()
-
-        return context
-
-
 class ChildrenListView(LoginRequiredMixin, generic.CreateView):
     """
     Allows user to view a list of current children and add children
@@ -218,6 +164,10 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
     form_class = forms.ChildForm
 
     def get_context_data(self, **kwargs):
+        """
+        Add children that have not been deleted that belong to the current user
+        to the context_dict.  Also add info to hide the Add Child form on page load.
+        """
         context = super().get_context_data(**kwargs)
         children = Child.objects.filter(deleted = False, user=self.request.user)
         context["objects"] = children
@@ -225,9 +175,15 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         return context
 
     def form_invalid(self, form):
+        """
+        If form invalid, add child form needs to be open when page reloads.
+        """
         return self.render_to_response(self.get_context_data(form=form, form_hidden=False))
 
     def form_valid(self, form):
+        """
+        Add the current user to the child before saving the child.
+        """
         user = self.request.user
         form.instance.user = user
         return super().form_valid(form)
@@ -238,7 +194,7 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
 
 class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
-    Allows user to view a list of current children and add children
+    Allows user to update or delete a child.
     """
     template_name = 'web/child-update.html'
     model = Child
@@ -255,7 +211,8 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
         '''
         if queryset is None:
             queryset = self.get_queryset()
-
+        # ChildUpdate View needs to be called with slug or pk - uuid in URLconf
+        # instead so use this to lookup child
         uuid = self.kwargs.get('uuid')
 
         if uuid is not None:
@@ -269,6 +226,9 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
         return obj
 
     def post(self, request, *args, **kwargs):
+        '''
+        If deleteChild form submitted, mark child as deleted in the db.
+        '''
         if 'deleteChild' in self.request.POST and self.request.method == 'POST':
             child = self.get_object()
             child.deleted = True
@@ -292,11 +252,73 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         return reverse('web:email-preferences')
 
 
+class StudiesListView(generic.ListView):
+    '''
+    List all active, public studies.
+    '''
+    template_name = 'web/studies-list.html'
+    model = Study
+
+    def get_queryset(self):
+        # TODO if we need to filter by study demographics vs user demographics
+        # TODO or by if they've taken the study before this is the spot
+        return super().get_queryset().filter(state='active', public=True)
+
+
+class StudyDetailView(generic.DetailView):
+    '''
+    Show the details of a study.  If the user has selected a child, they can
+    participate in the study and be forwarded/proxied to the js application
+    '''
+    template_name = 'web/study-detail.html'
+    model = Study
+
+    def get_queryset(self):
+        return super().get_queryset().filter(state='active', public=True)
+
+    def get_object(self, queryset=None):
+        '''
+        Needed because view expecting pk or slug, but url has UUID. Looks up
+        study by uuid.
+        '''
+        # Use a custom queryset if provided; this is required for subclasses
+        # like DateDetailView
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        uuid = self.kwargs.get('uuid')
+
+        if uuid is not None:
+            queryset = queryset.filter(uuid=uuid)
+        try:
+            # Get the single item from the filtered queryset
+            obj = queryset.get()
+        except queryset.model.DoesNotExist:
+            raise Http404(_('No %(verbose_name)s found matching the query') %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        return obj
+
+    def get_context_data(self, **kwargs):
+        '''
+        If authenticated, add demographic presence, and children to context data dict
+        '''
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        if self.request.user.is_authenticated:
+            context['has_demographic'] = self.request.user.latest_demographics
+            context['children'] = self.request.user.children.all()
+
+        return context
+
+
 class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
 
 
 class ExperimentProxyView(ProxyView, LoginRequiredMixin):
+    '''
+    Proxy view to forward user to participate page in the Ember app
+    '''
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):

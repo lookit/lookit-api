@@ -364,6 +364,9 @@ class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.De
 
 
 class PreviewProxyView(ProxyView, LoginRequiredMixin):
+    '''
+    Proxy view to forward researcher to preview page in the Ember app
+    '''
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
