@@ -89,7 +89,8 @@ class ParticipantSignupView(generic.CreateView):
         return resp
 
     def get_success_url(self):
-        return reverse('web:demographic-data-create')
+        return reverse('web:demographic-data-update')
+
 
 class ChildrenListView(LoginRequiredMixin, generic.CreateView):
     """
@@ -116,6 +117,7 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
 
     def get_success_url(self):
         return reverse('web:children-list')
+
 
 class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
@@ -157,28 +159,14 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
             return HttpResponseRedirect(self.get_success_url())
         return super().post(request, *args, **kwargs)
 
-class DemographicDataCreateView(LoginRequiredMixin, generic.CreateView):
-    '''
-    Allows a participant to provide demographic data
-    '''
-    template_name = 'web/demographic-data-create.html'
-    model = DemographicData
-    form_class = forms.DemographicDataForm
 
-    def form_valid(self, form):
-        resp = super().form_valid(form)
-        self.object.user = self.request.user
-        self.object.save()
-        return resp
-
-    def get_success_url(self):
-        return reverse('web:studies-list')
-
-class DemographicDataUpdateView(DemographicDataCreateView):
+class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
     """
     Allows user to update demographic data - but actually creates new version instead of updating old one.
     """
     template_name = 'web/demographic-data-update.html'
+    model = DemographicData
+    form_class = forms.DemographicDataForm
 
     def get_success_url(self):
         return reverse('web:demographic-data-update')
@@ -201,6 +189,9 @@ class DemographicDataUpdateView(DemographicDataCreateView):
             demographic_data_dict.pop('uuid')
             return demographic_data_dict
         return demographic_data
+
+    def get_success_url(self):
+        return reverse('web:studies-list')
 
 
 class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
@@ -277,6 +268,7 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
             return super().form_valid(form)
         else:
             return self.form_invalid(**{form_name: form})
+
 
 class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
