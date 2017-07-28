@@ -16,15 +16,8 @@
 </script>
   <div class="container mb-lg">
     <div class="row">
-        <div class="col-xs-12 col-sm-9">
+        <div class="col-xs-12">
             <h1 class="researchers-header">Researchers</h1>
-        </div>
-        <div class="col-xs-12 col-sm-3 pt-lg">
-            {% if perms.can_create_users %}
-                <a href="{% url 'exp:researcher-create' %}" class="btn btn-success" >
-                    Create Researcher
-                </a>
-            {% endif %}
         </div>
     </div>
     <div class="row text-center mt-xl">

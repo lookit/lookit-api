@@ -19,14 +19,13 @@ from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
 
 from exp.views import (ParticipantDetailView,
-                       ParticipantListView, ResearcherCreateView,
+                       ParticipantListView,
                        ResearcherDetailView, ResearcherListView, StudyCreateView,
                        StudyDetailView, StudyListView, StudyUpdateView, StudyResponsesList,
                        StudyBuildView, PreviewProxyView)
 
 urlpatterns = [
     url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
-    url(r'researchers/create/$', ResearcherCreateView.as_view(), name='researcher-create'),
     url(r'researchers/(?P<pk>\d+)/$', ResearcherDetailView.as_view(), name='researcher-detail'),
     url(r'participants/$', ParticipantListView.as_view(), name='participant-list'),
     url(r'participants/(?P<pk>\d+)/$', ParticipantDetailView.as_view(), name='participant-detail'),
