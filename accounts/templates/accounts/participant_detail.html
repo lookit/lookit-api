@@ -81,7 +81,7 @@
                     <b> Number of Children: </b>
                 </div>
                 <div class="col-xs-7">
-                     {{ demographics.number_of_children }}
+                     {{ demographics.number_of_children|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -89,7 +89,7 @@
                     <b>  Children Birthdays: </b>
                 </div>
                 <div class="col-xs-7">
-                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% empty %} No Response{% endfor %}
                 </div>
             </div>
             <div class="row">
@@ -97,7 +97,7 @@
                     <b> Laguages Spoken at Home: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.languages_spoken_at_home }}
+                    {{ demographics.languages_spoken_at_home|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -105,7 +105,7 @@
                     <b> Number of Guardians: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.number_of_guardians }}
+                    {{ demographics.number_of_guardians|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -113,7 +113,7 @@
                     <b> Explanation for Guardians: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.number_of_guardians_explanation }}
+                    {{ demographics.number_of_guardians_explanation|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -121,7 +121,7 @@
                     <b> Race: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.race_identification }}
+                    {{ demographics.race_identification|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -129,7 +129,7 @@
                     <b> Age: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.age }}
+                    {{ demographics.age|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -137,7 +137,7 @@
                     <b> Gender: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.gender }}
+                    {{ demographics.gender|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -145,7 +145,7 @@
                     <b> Education Level: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.education_level }}
+                    {{ demographics.education_level|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -153,7 +153,7 @@
                     <b> Spouse's Education Level: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.spouse_education_level }}
+                    {{ demographics.spouse_education_level|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -161,7 +161,7 @@
                     <b> Annual Income: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.annual_income }}
+                    {{ demographics.annual_income|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -169,7 +169,7 @@
                     <b> Books at Home: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.number_of_books }}
+                    {{ demographics.number_of_books|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -177,7 +177,7 @@
                     <b> Additional Comments: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.additional_comments }}
+                    {{ demographics.additional_comments|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -185,7 +185,7 @@
                     <b> Country: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.country }}
+                    {{ demographics.country|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -193,7 +193,7 @@
                     <b> State: </b>
                 </div>
                 <div class="col-xs-7">
-                     {{ demographics.state }}
+                     {{ demographics.state|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -201,7 +201,7 @@
                     <b> Density: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.density }}
+                    {{ demographics.density|default:"No Response" }}
                 </div>
             </div>
         </div>
@@ -285,7 +285,7 @@
             </div>
           {% endfor %}
     {% else %}
-      <p><em> User has not participated in any studies yet! </em></p>
+      <p><em> {{ user.given_name }} has not participated in any studies yet! </em></p>
     {% endif %}
     <div class="row pt-xl">
         <div class="col-md-11 col-md-offset-1">

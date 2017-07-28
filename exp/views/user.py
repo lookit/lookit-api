@@ -34,6 +34,9 @@ class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gen
     model = User
 
     def get_queryset(self):
+        '''
+        Returns users that researcher has permission to view. Handles sorting and pagination.
+        '''
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
         study_ids = studies.values_list('id', flat=True)
         qs = User.objects.filter(children__response__study__id__in=study_ids).distinct()
@@ -48,6 +51,9 @@ class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gen
         return self.paginated_queryset(qs.order_by(order), self.request.GET.get('page'), 10)
 
     def get_context_data(self, **kwargs):
+        """
+        Adds match and sort query params to context_data dict
+        """
         context = super().get_context_data(**kwargs)
         context['match'] = self.request.GET.get('match', '')
         context['sort'] = self.request.GET.get('sort', '')
@@ -67,16 +73,20 @@ class ParticipantDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, g
     model = User
 
     def get_context_data(self, **kwargs):
-        context = super(ParticipantDetailView, self).get_context_data(**kwargs)
+        """
+        Adds user's latest demographics and studies to the context_data dictionary
+        """
+        context = super().get_context_data(**kwargs)
         user = context['user']
         context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
         context['studies'] = self.get_study_info()
         return context
 
     def get_study_info(self):
-        """ Pulls responses belonging to user and returns paginated responses with
-        the study title, response id, completion status, and date modified.
-         """
+        """
+        Returns paginated responses from a user with the study title, response
+        id, completion status, and date modified.
+        """
         resps = Response.objects.filter(child__user=self.get_object())
         orderby = self.request.GET.get('sort', None)
         if orderby:
