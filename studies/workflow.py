@@ -33,9 +33,15 @@ transitions = [
     },
     {
         'trigger': 'reject',
-        'source': ['submitted', 'approved', 'active', 'paused', 'deactivated'],
+        'source': ['submitted', 'active', 'paused', 'deactivated'],
         'dest': 'rejected',
         'after': 'notify_submitter_of_rejection',
+    },
+    {
+        'trigger': 'reject',
+        'source': 'approved',
+        'dest': 'rejected',
+        'after': 'notify_submitter_of_recission',
     },
     {
         'trigger': 'archive',
@@ -56,7 +62,7 @@ transitions = [
     },
     {
         'trigger': 'activate',
-        'source': ['approved','paused'],
+        'source': ['approved', 'paused'],
         'dest': 'active',
         'after': 'notify_administrators_of_activation'
     },
