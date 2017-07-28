@@ -1,5 +1,6 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
+{% block title %}Studies{% endblock %}
 
 {% block flash %}
   {% bootstrap_messages %}
@@ -37,7 +38,9 @@
                 <div class="container">
                     <div id="suggested-studies">
                         <div class="row">
-                              <p class="study-detail-caption">Here are some studies that we're currently running:</p>
+                            <div class="col-xs-12">
+                                <p class="study-detail-caption">Here are some studies that we're currently running:</p>
+                            </div>
                               {% for obj in object_list %}
                               <div class="col-md-4">
                                   <div class="study-list-panel thumbnail">
@@ -68,7 +71,9 @@
                                   </div>
                                 </div>
                               {% empty %}
-                                <p><em> We are not running any studies at this time! </em></p>
+                                <div class="col-xs-12">
+                                    <p><em> We are not running any studies at this time! </em></p>
+                                </div>
                               {% endfor %}
                         </div>
                     </div>

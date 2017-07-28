@@ -60,17 +60,16 @@
                       <p><strong>Eligibility criteria:</strong> {{ object.criteria }}</p>
                       <p><strong>Duration:</strong> {{ object.duration }}</p>
                       <p><strong>What happens:</strong> {{ object.short_description }}</p>
-                      <p><strong>What are we studying?:</strong> {{ object.long_description }}</p>
+                      <p><strong>What are we studying? </strong> {{ object.long_description }}</p>
                     </div>
                 </div>
                 <div class='col-md-3'>
-                    <!-- TODO: Find out where is the login, add children and add proper hrefs -->
                     {% if not request.user.is_authenticated %}
-                    <a class="btn btn-lg btn-default" href='/login'>Log in to participate</a>
+                        <a class="btn btn-lg btn-default" href="{% url 'login' %}">Log in to participate</a>
                     {% elif not children %}
-                    <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">Add child profile to participate</a>
+                        <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">Add child profile to participate</a>
                     {% elif not has_demographic %}
-                    <a class="btn btn-lg btn-default" href="/account/demographics">Complete demographic survey to participate</a>
+                        <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">Complete demographic survey to participate</a>
                     {% else %}
                     <div class="form-group">
                         <label>Select a child:</label>
