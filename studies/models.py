@@ -11,9 +11,11 @@ from accounts.models import Child, DemographicData, Organization, User
 from accounts.utils import build_study_group_name
 from guardian.shortcuts import assign_perm, get_groups_with_perms
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
+from project.settings import EMAIL_FROM_ADDRESS
 from transitions.extensions import GraphMachine as Machine
 
-from . import workflow
+from studies import workflow
+from studies.helpers import send_mail
 
 
 class Study(models.Model):
@@ -115,6 +117,15 @@ class Study(models.Model):
         return None
 
     @property
+    def study_organization_admin_group(self):
+        ''' Fetches the study organization admin group '''
+        groups = get_groups_with_perms(self)
+        for group in groups:
+            if 'ORG' in group.name and 'ADMIN' in group.name:
+                return group
+        return None
+
+    @property
     def study_read_group(self):
         ''' Fetches the study read group '''
         groups = get_groups_with_perms(self)
@@ -149,32 +160,66 @@ class Study(models.Model):
         return copy
 
     def notify_administrators_of_submission(self, ev):
-        # TODO
-        pass
+        context = {
+            'study': self,
+            'action': ev.transition.dest,
+            'researcher': ev.kwargs.get('user')
+        }
+        send_mail('notify_admins_of_study_action', 'Study Submission Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_submitter_of_approval(self, ev):
-        # TODO
-        pass
+        context = {
+            'study': self,
+            'approved': True,
+            'comments': self.comments
+        }
+        send_mail('notify_researchers_of_approval_decision', '{} Approval Notification'.format(self.name), EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_submitter_of_rejection(self, ev):
-        # TODO
-        pass
+        context = {
+            'study': self,
+            'approved': False,
+            'comments': self.comments
+        }
+        send_mail('notify_researchers_of_approval_decision', '{} Rejection Notification'.format(self.name), EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
+
+    def notify_submitter_of_recission(self, ev):
+        context = {
+            'study': self,
+        }
+        send_mail('notify_researchers_of_approval_rescission', '{} Rescinded Notification'.format(self.name), EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_retraction(self, ev):
-        # TODO
-        pass
+        context = {
+            'study': self,
+            'action': ev.transition.dest,
+            'researcher': ev.kwargs.get('user')
+        }
+        send_mail('notify_admins_of_study_action', 'Study Retraction Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_activation(self, ev):
-        # TODO
-        pass
+        context = {
+            'study': self,
+            'action': ev.transition.dest,
+            'researcher': ev.kwargs.get('user')
+        }
+        send_mail('notify_admins_of_study_action', 'Study Activation Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_pause(self, ev):
-        # TODO
-        pass
+        context = {
+            'study': self,
+            'action': ev.transition.dest,
+            'researcher': ev.kwargs.get('user')
+        }
+        send_mail('notify_admins_of_study_action', 'Study Pause Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_deactivation(self, ev):
-        # TODO
-        pass
+        context = {
+            'study': self,
+            'action': ev.transition.dest,
+            'researcher': ev.kwargs.get('user')
+        }
+        send_mail('notify_admins_of_study_action', 'Study Deactivation Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     # Runs for every transition to log action
     def _log_action(self, ev):

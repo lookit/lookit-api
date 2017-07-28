@@ -193,6 +193,7 @@ SITE_ID = 1
 
 # base url for experiments, should be s3 bucket in prod
 EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'http://google.com/')  # default to ember base url
+BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')  # default to ember base url
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/')
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get('ACCOUNT_LOGOUT_REDIRECT_URL', '/api/')
@@ -248,3 +249,11 @@ else:
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'D4nkM3m35C4n'
+EMAIL_HOST_PASSWORD = 'M31tSt331B34m5'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_FROM_ADDRESS = 'lookit.robot@some.domain'
+EMAIL_BACKEND = f"django.core.mail.backends.{'smtp' if not DEBUG else 'console'}.EmailBackend"

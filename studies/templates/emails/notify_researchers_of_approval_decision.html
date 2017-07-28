@@ -1,0 +1,32 @@
+<p>
+  Dear Study Admin,
+</p>
+<p>
+  Your study {{study.name}} has been
+  {% if approved %}
+    approved
+  {% else %}
+    disapproved
+  {% endif %}
+  to run on {{study.organization.name}}. Comments from the Organization Admin, if there are any, appear below.
+</p>
+<p>
+  {% if approved %}
+    To start your study, login to Experimenter, navigate to the study, and click “Start study.”
+  {% else %}
+    You can modify your study and resubmit for approval. 
+  {% endif %}
+  <br>
+  Your study can be found here: {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+</p>
+{% if comments %}
+  <p>
+  Comments from the Organization Admin: 
+  <br>
+  {{comments}}
+  </p>
+{% endif %}
+<p>
+  Best,
+  {{study.organization.name}} Admin
+</p>
