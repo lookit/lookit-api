@@ -20,12 +20,13 @@ from accounts.utils import build_org_group_name
 from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
+from exp.mixins.paginator_mixin import PaginatorMixin
 
 
-class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView):
+class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView, PaginatorMixin):
     '''
-    ParticipantListView shows a list of participants that have participated in studies
-    related to organizations that the current user has permissions to.
+    ParticipantListView shows a list of participants that have responded to the studies the
+    user has permission to view.
     '''
     template_name = 'accounts/participant_list.html'
     permission_required = 'accounts.can_view_experimenter'
@@ -37,11 +38,14 @@ class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gen
         study_ids = studies.values_list('id', flat=True)
         qs = User.objects.filter(children__response__study__id__in=study_ids).distinct()
         match = self.request.GET.get('match', False)
-        order = self.request.GET.get('sort', False) or 'family_name' # to prevent empty string overriding default here
+        order = self.request.GET.get('sort', 'family_name')
+        if 'given_name' not in order and 'family_name' not in order and 'last_login' not in order:
+            order = 'family_name'
+
         if match:
             qs = qs.filter(reduce(operator.or_,
               (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(username__icontains=term) for term in match.split())))
-        return qs.order_by(order)
+        return self.paginated_queryset(qs.order_by(order), self.request.GET.get('page'), 10)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
