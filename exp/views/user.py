@@ -89,7 +89,7 @@ class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic
 
 class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView):
     '''
-    Displays a list of researchers in the same organization as the current user.
+    Displays a list of researchers that belong to the org admin, org read, or org researcher groups.
     '''
     template_name = 'accounts/researcher_list.html'
     # TODO needs to change once oauth in
@@ -98,15 +98,27 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
     permission_required = 'accounts.can_view_organization'
     raise_exception = True
 
-    def get_queryset(self):
-        qs = super(ResearcherListView, self).get_queryset()
+    def get_org_groups(self):
+        """
+        Fetches the org admin, org read, and org researcher groups for the organization that
+        the current user belongs to
+        """
         user_org_name = self.request.user.organization.name
         admin_group = Group.objects.get(name=build_org_group_name(user_org_name, 'admin'))
         read_group = Group.objects.get(name=build_org_group_name(user_org_name, 'read'))
         researcher_group = Group.objects.get(name=build_org_group_name(user_org_name, 'researcher'))
+        return admin_group, read_group, researcher_group
+
+    def get_queryset(self):
+        """
+        Restricts queryset on active users that belong to the org admin, org read, or org researcher groups. Handles filtering on name and sorting.
+        """
+        qs = super(ResearcherListView, self).get_queryset()
+        admin_group, read_group, researcher_group = self.get_org_groups()
         queryset = qs.filter(Q(groups__name=admin_group.name) | Q(groups__name=read_group.name) | Q(groups__name=researcher_group.name)).distinct().order_by(Lower('family_name').asc())
 
         match = self.request.GET.get('match')
+        # Can filter on first, middle, and last names
         if match:
             queryset = queryset.filter(reduce(operator.or_,
               (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(middle_name__icontains=term) for term in match.split())))
@@ -118,12 +130,24 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
         return queryset
 
     def post(self, request, *args, **kwargs):
+        """
+        Post form for disabling a researcher. If researcher is deleted - is actually disabled, then removed
+        from org admin, org read, and org researcher groups.
+        """
         retval = super().get(request, *args, **kwargs)
         if 'disable' in self.request.POST and self.request.method == 'POST':
             researcher = User.objects.get(pk=self.request.POST['disable'])
             researcher.is_active = False
             researcher.save()
+            self.remove_researcher_from_org_groups(researcher)
         return retval
+
+    def remove_researcher_from_org_groups(self, researcher):
+        admin_group, read_group, researcher_group = self.get_org_groups()
+        admin_group.user_set.remove(researcher)
+        read_group.user_set.remove(researcher)
+        researcher_group.user_set.remove(researcher)
+        return
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

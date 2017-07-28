@@ -167,13 +167,19 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return self.groups.filter(name=build_org_group_name(self.organization.name, 'read')).exists()
 
     @property
+    def is_org_researcher(self):
+        return self.groups.filter(name=build_org_group_name(self.organization.name, 'researcher')).exists()
+
+    @property
     def display_permission(self):
         if self.is_org_admin:
             return 'Organization Admin'
         elif self.is_org_read:
             return 'Organization Read'
-        else:
+        elif self.is_org_researcher:
             return 'Researcher'
+        else:
+            return 'No organization groups'
 
     def _make_rainbow(self):
         rbw = []
