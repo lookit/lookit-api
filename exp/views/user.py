@@ -28,14 +28,14 @@ class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gen
     related to organizations that the current user has permissions to.
     '''
     template_name = 'accounts/participant_list.html'
-    queryset = User.objects.all().exclude(demographics__isnull=True)
     permission_required = 'accounts.can_view_experimenter'
     raise_exception = True
     model = User
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        # TODO this should probably use permissions eventually, just to be safe
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        study_ids = studies.values_list('id', flat=True)
+        qs = User.objects.filter(children__response__study__id__in=study_ids).distinct()
         match = self.request.GET.get('match', False)
         order = self.request.GET.get('sort', False) or 'family_name' # to prevent empty string overriding default here
         if match:
