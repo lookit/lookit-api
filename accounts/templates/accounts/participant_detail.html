@@ -17,7 +17,6 @@
       <div class="row">
           <div class="col-xs-12">
               <h1> {{ user.identicon_html }} {{ user.get_full_name }} </h1>
-              <span class="pr-md"><label class='pr-xs'> Email: </label> {{ user.username }} </span>
               <span><label class='pr-xs'> Last Active: </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
           </div>
       </div>
@@ -211,10 +210,13 @@
     <h3>{{ user.given_name}}'s Studies</h3>
     {% if studies %}
             <div class="row hidden-xs hidden-sm pt-sm">
-                <div class="col-md-6 col-xs-12">
+                <div class="col-md-4 col-xs-12">
                     Study Title
                     <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                </div>
+                <div class="col-md-2 col-xs-12">
+                    Response ID
                 </div>
                 <div class="col-md-3 col-xs-12">
                     Completion Status
@@ -263,8 +265,11 @@
             </div>
             {% for study_dict in studies %}
             <div class="row pt-sm">
-                <div class="col-md-6 col-xs-12">
+                <div class="col-md-4 col-xs-12">
                     <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
+                </div>
+                <div class="col-md-2 col-xs-12">
+                    <span class="visible-xs visible-sm">Response ID: </span>{{ study_dict.response.id }}
                 </div>
                 <div class="col-md-3 col-xs-12">
                     <span class="visible-xs visible-sm">Status: </span>
@@ -282,6 +287,13 @@
     {% else %}
       <p><em> User has not participated in any studies yet! </em></p>
     {% endif %}
+    <div class="row pt-xl">
+        <div class="col-md-11 col-md-offset-1">
+            <div class="pull-right">
+                {% include 'studies/_paginator.html' with items=studies request=request %}
+            </div>
+        </div>
+    </div>
   </div>
 </div>
 {% endblock %}

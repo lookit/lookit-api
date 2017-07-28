@@ -54,7 +54,7 @@ class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gen
         return context
 
 
-class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
+class ParticipantDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.UpdateView,  PaginatorMixin):
     '''
     ParticipantDetailView shows information about a participant that has participated in studies
     related to organizations that the current user has permission to.
@@ -62,7 +62,7 @@ class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic
     queryset = User.objects.exclude(demographics__isnull=True)
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
-    permission_required = 'accounts.can_view_users'
+    permission_required = 'accounts.can_view_experimenter'
     raise_exception = True
     model = User
 
@@ -74,7 +74,9 @@ class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic
         return context
 
     def get_study_info(self):
-        """ Pulls responses belonging to user and returns study info """
+        """ Pulls responses belonging to user and returns paginated responses with
+        the study title, response id, completion status, and date modified.
+         """
         resps = Response.objects.filter(child__user=self.get_object())
         orderby = self.request.GET.get('sort', None)
         if orderby:
@@ -82,10 +84,10 @@ class ParticipantDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic
                 resps = resps.order_by(orderby)
             elif 'completed' in orderby:
                 resps = resps.order_by(orderby.replace('-', '') if '-' in orderby else '-' + orderby)
-        studies = [{'modified': resp.date_modified, 'study': resp.study, 'name': resp.study.name, 'completed': resp.completed} for resp in resps]
+        studies = [{'modified': resp.date_modified, 'study': resp.study, 'name': resp.study.name, 'completed': resp.completed, 'response': resp} for resp in resps]
         if orderby and 'name' in orderby:
             studies = sorted(studies, key=operator.itemgetter('name'), reverse=True if '-' in orderby else False)
-        return studies
+        return self.paginated_queryset(studies, self.request.GET.get('page'), 10)
 
     def get_success_url(self):
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
