@@ -62,15 +62,22 @@ class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gen
 
 class ParticipantDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.UpdateView,  PaginatorMixin):
     '''
-    ParticipantDetailView shows information about a participant that has participated in studies
-    related to organizations that the current user has permission to.
+    ParticipantDetailView shows demographic information, children information, and
+    studies that a participant has responded to.
     '''
-    queryset = User.objects.exclude(demographics__isnull=True)
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
     permission_required = 'accounts.can_view_experimenter'
     raise_exception = True
     model = User
+
+    def get_queryset(self):
+        '''
+        Restricts queryset to participants that a researcher has permission to view.
+        '''
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        study_ids = studies.values_list('id', flat=True)
+        return User.objects.filter(children__response__study__id__in=study_ids).distinct()
 
     def get_context_data(self, **kwargs):
         """
