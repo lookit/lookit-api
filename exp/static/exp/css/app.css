@@ -167,6 +167,10 @@ a:hover.view-responses-link {
   .researcher-delete {
       padding-top: 5px;
   }
+  .password-button {
+      margin-top: 5px;
+      margin-bottom: 5px;
+  }
 }
 
 @media (min-width: 780px) {

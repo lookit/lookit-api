@@ -18,8 +18,7 @@ from django.conf.urls import url
 from django.urls import reverse_lazy
 from django.views.generic.base import RedirectView
 
-from exp.views import (ParticipantDetailView,
-                       ParticipantListView,
+from exp.views import (ParticipantDetailView, ParticipantListView,
                        ResearcherDetailView, ResearcherListView, StudyCreateView,
                        StudyDetailView, StudyListView, StudyUpdateView, StudyResponsesList,
                        StudyBuildView, PreviewProxyView)
