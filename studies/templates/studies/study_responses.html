@@ -17,10 +17,10 @@
             $('.selectable-participant').click(function() {
                 // Shows selected individual's response data
                 var id = $(this)[0].id;
-                var index = extractIdNumber(id)
+                var index = extractIdNumber(id);
                 $('.selectable-participant').removeClass('selected');
                 $('#' + id).addClass('selected');
-                hideResponses()
+                hideResponses();
                 showResponse($('#data-type-selector').val(), index);
             });
 
