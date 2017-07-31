@@ -21,25 +21,21 @@ from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 from exp.mixins.paginator_mixin import PaginatorMixin
+from exp.mixins.participant_mixin import ParticipantMixin
 
 
-class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView, PaginatorMixin):
+class ParticipantListView(LoginRequiredMixin, ParticipantMixin, generic.ListView, PaginatorMixin):
     '''
     ParticipantListView shows a list of participants that have responded to the studies the
     user has permission to view.
     '''
     template_name = 'accounts/participant_list.html'
-    permission_required = 'accounts.can_view_experimenter'
-    raise_exception = True
-    model = User
 
     def get_queryset(self):
         '''
         Returns users that researcher has permission to view. Handles sorting and pagination.
         '''
-        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
-        study_ids = studies.values_list('id', flat=True)
-        qs = User.objects.filter(children__response__study__id__in=study_ids).distinct()
+        qs =  super().get_queryset()
         match = self.request.GET.get('match', False)
         order = self.request.GET.get('sort', 'family_name')
         if 'given_name' not in order and 'family_name' not in order and 'last_login' not in order:
@@ -60,24 +56,13 @@ class ParticipantListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gen
         return context
 
 
-class ParticipantDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.UpdateView,  PaginatorMixin):
+class ParticipantDetailView(LoginRequiredMixin, ParticipantMixin, generic.UpdateView, PaginatorMixin):
     '''
     ParticipantDetailView shows demographic information, children information, and
     studies that a participant has responded to.
     '''
     fields = ('is_active', )
     template_name = 'accounts/participant_detail.html'
-    permission_required = 'accounts.can_view_experimenter'
-    raise_exception = True
-    model = User
-
-    def get_queryset(self):
-        '''
-        Restricts queryset to participants that a researcher has permission to view.
-        '''
-        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
-        study_ids = studies.values_list('id', flat=True)
-        return User.objects.filter(children__response__study__id__in=study_ids).distinct()
 
     def get_context_data(self, **kwargs):
         """
