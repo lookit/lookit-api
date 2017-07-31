@@ -114,6 +114,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    is_researcher = models.BooleanField(default=False)
 
     email_next_session = models.BooleanField(default=True)
     email_new_studies = models.BooleanField(default=True)
@@ -158,18 +159,22 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @cached_property
     def is_org_admin(self):
-        if not self.organization:
+        if not self.organization_id:
             return False
         return self.groups.filter(name=build_org_group_name(self.organization.name, 'admin')).exists()
 
     @property
     def is_org_read(self):
+        if not self.organization_id:
+            return False
         if self.is_org_admin:
             return True
         return self.groups.filter(name=build_org_group_name(self.organization.name, 'read')).exists()
 
     @property
     def is_org_researcher(self):
+        if not self.organization_id:
+            return False
         return self.groups.filter(name=build_org_group_name(self.organization.name, 'researcher')).exists()
 
     @property
