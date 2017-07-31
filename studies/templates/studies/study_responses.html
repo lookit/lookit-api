@@ -8,10 +8,13 @@
     <script type="application/javascript">
         $(document).ready(function(){
             hideResponses();
+            prepareDataForDownload('all-data', 'json');
+            $(".all-csv-data").hide();
             $( ".selectable-participant" ).first().addClass('selected');
             $( ".response-data" ).first().show();
 
             $('.selectable-participant').click(function() {
+                // Shows selected individual's response data
                 var id = $(this)[0].id;
                 var index = extractIdNumber(id)
                 $('.selectable-participant').removeClass('selected');
@@ -21,17 +24,35 @@
             });
 
             $('#data-type-selector').on('change', function(){
+                // Toggles individual responses between CSV and JSON format
                 var selected = $(this).find("option:selected").val();
-                var index = extractIdNumber($('.selectable-participant.selected')[0].id)
+                var index = extractIdNumber($('.selectable-participant.selected')[0].id);
                 hideResponses();
                 showResponse(selected, index);
             });
 
-            var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.all-data').html());
-            var elem = $('#download-all-data')[0];
-            if (data && elem) {
-                elem.href = data;
-                elem.download = '{{study.name}}-all-data.json';
+            $('#data-type-selector-all').on('change', function(){
+                // Toggles combined responses between CSV and JSON format
+                var selected = $(this).find("option:selected").val();
+                $('.all-data').hide();
+                $('.all-csv-data').hide();
+                if (selected === 'CSV'){
+                    $('.all-csv-data').show();
+                    prepareDataForDownload('all-csv-data', 'csv');
+                } else {
+                    $('.all-data').show();
+                    prepareDataForDownload('all-data', 'json');
+                }
+            });
+
+            function prepareDataForDownload(dataClass, ext) {
+                // Preps Download All button to download either all JSON or all CSV responses
+                var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.' + dataClass).html());
+                var elem = $('#download-all-data')[0];
+                if (data && elem) {
+                    elem.href = data;
+                    elem.download = '{{study.name}}-' + dataClass + '.' + ext;
+                }
             }
 
             function extractIdNumber(id) {
@@ -39,6 +60,7 @@
             }
 
             function showResponse(dataType, index) {
+                // Shows individual response
                 if (dataType === 'JSON') {
                     $('#response-data-' + index).show();
                 } else if (dataType === 'CSV') {
@@ -48,6 +70,7 @@
             }
 
             function hideResponses() {
+                // Hides all responses
                 $('.response-data').hide();
                 $('.csv-response-data').hide();
             };
@@ -197,13 +220,24 @@
                     <h3 class='col-sm-9 col-xs-12'>
                         All Data
                     </h4>
-                    <a id='download-all-data' class='mt-md btn btn-primary col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2'>
-                        Download All Data
-                    </a>
                 </div>
                 <div class='row pt-sm'>
-                    <div class="col-xs-12">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                          <select class="form-control" id="data-type-selector-all">
+                            <option>JSON</option>
+                            <option>CSV</option>
+                          </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <a id='download-all-data' class='btn btn-primary'>
+                            Download All Data
+                        </a>
+                    </div>
+                    <div class="col-xs-12 pt-md">
                         <pre class='all-data'>{{ all_responses }}</pre>
+                        <pre class='all-csv-data'>{{ csv_responses }}</pre>
                     </div>
                 </div>
             </div>
