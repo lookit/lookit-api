@@ -17,7 +17,6 @@
       <div class="row">
           <div class="col-xs-12">
               <h1> {{ user.identicon_html }} {{ user.get_full_name }} </h1>
-              <span class="pr-md"><label class='pr-xs'> Email: </label> {{ user.username }} </span>
               <span><label class='pr-xs'> Last Active: </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
           </div>
       </div>
@@ -82,7 +81,7 @@
                     <b> Number of Children: </b>
                 </div>
                 <div class="col-xs-7">
-                     {{ demographics.number_of_children }}
+                     {{ demographics.number_of_children|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -90,7 +89,7 @@
                     <b>  Children Birthdays: </b>
                 </div>
                 <div class="col-xs-7">
-                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% empty %} No Response{% endfor %}
                 </div>
             </div>
             <div class="row">
@@ -98,7 +97,7 @@
                     <b> Laguages Spoken at Home: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.languages_spoken_at_home }}
+                    {{ demographics.languages_spoken_at_home|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -106,7 +105,7 @@
                     <b> Number of Guardians: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.number_of_guardians }}
+                    {{ demographics.number_of_guardians|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -114,7 +113,7 @@
                     <b> Explanation for Guardians: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.number_of_guardians_explanation }}
+                    {{ demographics.number_of_guardians_explanation|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -122,7 +121,7 @@
                     <b> Race: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.race_identification }}
+                    {{ demographics.race_identification|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -130,7 +129,7 @@
                     <b> Age: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.age }}
+                    {{ demographics.age|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -138,7 +137,7 @@
                     <b> Gender: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.gender }}
+                    {{ demographics.gender|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -146,7 +145,7 @@
                     <b> Education Level: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.education_level }}
+                    {{ demographics.education_level|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -154,7 +153,7 @@
                     <b> Spouse's Education Level: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.spouse_education_level }}
+                    {{ demographics.spouse_education_level|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -162,7 +161,7 @@
                     <b> Annual Income: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.annual_income }}
+                    {{ demographics.annual_income|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -170,7 +169,7 @@
                     <b> Books at Home: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.number_of_books }}
+                    {{ demographics.number_of_books|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -178,7 +177,7 @@
                     <b> Additional Comments: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.additional_comments }}
+                    {{ demographics.additional_comments|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -186,7 +185,7 @@
                     <b> Country: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.country }}
+                    {{ demographics.country|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -194,7 +193,7 @@
                     <b> State: </b>
                 </div>
                 <div class="col-xs-7">
-                     {{ demographics.state }}
+                     {{ demographics.state|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -202,7 +201,7 @@
                     <b> Density: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.density }}
+                    {{ demographics.density|default:"No Response" }}
                 </div>
             </div>
         </div>
@@ -211,10 +210,13 @@
     <h3>{{ user.given_name}}'s Studies</h3>
     {% if studies %}
             <div class="row hidden-xs hidden-sm pt-sm">
-                <div class="col-md-6 col-xs-12">
+                <div class="col-md-4 col-xs-12">
                     Study Title
                     <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                </div>
+                <div class="col-md-2 col-xs-12">
+                    Response ID
                 </div>
                 <div class="col-md-3 col-xs-12">
                     Completion Status
@@ -263,8 +265,11 @@
             </div>
             {% for study_dict in studies %}
             <div class="row pt-sm">
-                <div class="col-md-6 col-xs-12">
+                <div class="col-md-4 col-xs-12">
                     <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
+                </div>
+                <div class="col-md-2 col-xs-12">
+                    <span class="visible-xs visible-sm">Response ID: </span>{{ study_dict.response.id }}
                 </div>
                 <div class="col-md-3 col-xs-12">
                     <span class="visible-xs visible-sm">Status: </span>
@@ -280,8 +285,15 @@
             </div>
           {% endfor %}
     {% else %}
-      <p><em> User has not participated in any studies yet! </em></p>
+      <p><em> {{ user.given_name }} has not participated in any studies yet! </em></p>
     {% endif %}
+    <div class="row pt-xl">
+        <div class="col-md-11 col-md-offset-1">
+            <div class="pull-right">
+                {% include 'studies/_paginator.html' with items=studies request=request %}
+            </div>
+        </div>
+    </div>
   </div>
 </div>
 {% endblock %}

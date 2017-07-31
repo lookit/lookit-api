@@ -1,5 +1,6 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
+{% block title %}Studies{% endblock %}
 
 {% block flash %}
   {% bootstrap_messages %}
@@ -37,7 +38,9 @@
                 <div class="container">
                     <div id="suggested-studies">
                         <div class="row">
-                              <p class="study-detail-caption">Here are some studies that we're currently running:</p>
+                            <div class="col-xs-12">
+                                <p class="study-detail-caption">Here are some studies that we're currently running:</p>
+                            </div>
                               {% for obj in object_list %}
                               <div class="col-md-4">
                                   <div class="study-list-panel thumbnail">
@@ -47,12 +50,12 @@
                                               <p class="image-block">
                                                   <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="200" width="auto" src="{{ obj.image.url }}" width="300px">
                                                   <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
-                                                    	<i class="fa fa-picture-o"></i>
+                                                    	<i aria-hidden="true" class="fa fa-picture-o"></i>
                                                   </div>
                                               </p>
                                             {% else %}
                                               <div class="study-list-placeholder">
-                                                  <i class="fa fa-picture-o"></i>
+                                                  <i aria-hidden="true" class="fa fa-picture-o"></i>
                                               </div>
                                             {% endif %}
                                           </div>
@@ -68,7 +71,9 @@
                                   </div>
                                 </div>
                               {% empty %}
-                                <p><em> We are not running any studies at this time! </em></p>
+                                <div class="col-xs-12">
+                                    <p><em> We are not running any studies at this time! </em></p>
+                                </div>
                               {% endfor %}
                         </div>
                     </div>

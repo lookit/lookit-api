@@ -140,23 +140,43 @@ a:hover.view-responses-link {
     color: gray;
 }
 
+#cloneForm:hover {
+    color:gray;
+}
+
 .study-detail-block {
     display: block;
     width:100%;
-    height: 190px;
+    height: 340px;
 }
 .view-response-block {
     display: block;
     width: 100%;
-    height: 190px;
+    height: 160px;
 }
 @media (max-width: 780px) {
-  .study-detail-block {
-      height:350px;
+  .button-toolbar {
+      padding-top: 20px;
   }
-  .comments-block.comments-label {
-      margin-top: 30px;
+  .edit-study-button {
+      padding-top: 15px;
   }
+  .researcher-name {
+      padding-top: 10px;
+  }
+  .researcher-delete {
+      padding-top: 5px;
+  }
+  .password-button {
+      margin-top: 5px;
+      margin-bottom: 5px;
+  }
+}
+
+@media (min-width: 780px) {
+    .edit-study-button {
+        float: right;
+    }
 }
 
 h2.study-status {
@@ -187,8 +207,9 @@ textarea.rejection-comments {
     margin-top: -10px;
 }
 
-.submit-comments-panel {
+.submit-status-panel {
     text-align: right;
+    padding-top: 10px;
 }
 
 h3.study-logs-label {
@@ -220,7 +241,7 @@ h2.researchers-label {
 .modify-study-block {
     display: block;
     width: 100%;
-    height: 190px;
+    height: 160px;
 }
 
 a.build-study-link {

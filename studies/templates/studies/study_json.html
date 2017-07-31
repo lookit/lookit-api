@@ -1,7 +1,7 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 
-{% block title %}Build Study{% endblock %}
+{% block title %}Build | {{ study.name }}{% endblock %}
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
@@ -32,9 +32,9 @@
             <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; <a href="{% url 'exp:study-detail' study.id %}"> {{ study.name }} </a> &gt; <a href="{% url 'exp:study-edit' study.id %}"> Edit </a> &gt; Build Study
         </div>
     </div>
-    <div class="row">
+    <div class="row mt-sm pb-lg">
         <div class="col-sm-10 col-sm-offset-1">
-            <div class="panel panel-default mt-md">
+            <div class="panel panel-default mt-xl">
               <div class="panel-heading">
                 <h1 class="panel-title">Study Editor </h1>
               </div>
@@ -43,7 +43,7 @@
                     {% bootstrap_form form %}
                     <div>
                         {% buttons %}
-                          <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}"> Discard changes </a>
+                          <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
                           <button type="submit" class="btn btn-success">
                              Save
                           </button>

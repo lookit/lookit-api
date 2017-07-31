@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.shortcuts import reverse
+from django.shortcuts import reverse, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views import generic
 from django.contrib.auth import update_session_auth_hash
@@ -16,63 +16,9 @@ from project import settings
 from studies.models import Study
 
 
-class StudiesListView(generic.ListView):
-    '''
-    List all active studies.
-    '''
-    template_name = 'web/studies-list.html'
-    model = Study
-
-    def get_queryset(self):
-        # TODO if we need to filter by study demographics vs user demographics
-        # TODO or by if they've taken the study before this is the spot
-        return super().get_queryset().filter(state='active', public=True)
-
-
-class StudyDetailView(generic.DetailView):
-    '''
-    Show the details of a study, should offer to allow a participant
-    to take the study and forward/proxy them to the js application
-    '''
-    template_name = 'web/study-detail.html'
-    model = Study
-
-    def get_object(self, queryset=None):
-        '''
-        Returns the object the view is displaying.
-        By default this requires `self.queryset` and a `pk` or `slug` argument
-        in the URLconf, but subclasses can override this to return any object.
-        '''
-        # Use a custom queryset if provided; this is required for subclasses
-        # like DateDetailView
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        uuid = self.kwargs.get('uuid')
-
-        if uuid is not None:
-            queryset = queryset.filter(uuid=uuid)
-        try:
-            # Get the single item from the filtered queryset
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
-            raise Http404(_('No %(verbose_name)s found matching the query') %
-                          {'verbose_name': queryset.model._meta.verbose_name})
-        return obj
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        if self.request.user.is_authenticated:
-            context['has_demographic'] = self.request.user.latest_demographics
-            context['children'] = self.request.user.children.all()
-
-        return context
-
-
 class ParticipantSignupView(generic.CreateView):
     '''
-    Allows a participant to sign up
+    Allows a participant to sign up. Redirects them to a page to add their demographic data.
     '''
     template_name = 'web/participant-signup.html'
     model = User
@@ -89,101 +35,25 @@ class ParticipantSignupView(generic.CreateView):
         return resp
 
     def get_success_url(self):
-        return reverse('web:demographic-data-create')
+        return reverse('web:demographic-data-update')
 
-class ChildrenListView(LoginRequiredMixin, generic.CreateView):
-    """
-    Allows user to view a list of current children and add children
-    """
-    template_name = 'web/children-list.html'
-    model = Child
-    form_class = forms.ChildForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        children = Child.objects.filter(deleted = False, user=self.request.user)
-        context["objects"] = children
-        context["form_hidden"] = kwargs.get('form_hidden', True)
-        return context
-
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form, form_hidden=False))
-
-    def form_valid(self, form):
-        user = self.request.user
-        form.instance.user = user
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse('web:children-list')
-
-class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
-    """
-    Allows user to view a list of current children and add children
-    """
-    template_name = 'web/child-update.html'
-    model = Child
-    form_class = forms.ChildForm
-
-    def get_success_url(self):
-        return reverse('web:children-list')
-
-    def get_object(self, queryset=None):
-        '''
-        Returns the object the view is displaying.
-        By default this requires `self.queryset` and a `pk` or `slug` argument
-        in the URLconf, but subclasses can override this to return any object.
-        '''
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        uuid = self.kwargs.get('uuid')
-
-        if uuid is not None:
-            queryset = queryset.filter(uuid=uuid)
-        try:
-            # Get the single item from the filtered queryset
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
-            raise Http404(_('No %(verbose_name)s found matching the query') %
-                          {'verbose_name': queryset.model._meta.verbose_name})
-        return obj
-
-    def post(self, request, *args, **kwargs):
-        if 'deleteChild' in self.request.POST and self.request.method == 'POST':
-            child = self.get_object()
-            child.deleted = True
-            child.save()
-            return HttpResponseRedirect(self.get_success_url())
-        return super().post(request, *args, **kwargs)
-
-class DemographicDataCreateView(LoginRequiredMixin, generic.CreateView):
-    '''
-    Allows a participant to provide demographic data
-    '''
-    template_name = 'web/demographic-data-create.html'
-    model = DemographicData
-    form_class = forms.DemographicDataForm
-
-    def form_valid(self, form):
-        resp = super().form_valid(form)
-        self.object.user = self.request.user
-        self.object.save()
-        return resp
-
-    def get_success_url(self):
-        return reverse('web:studies-list')
-
-class DemographicDataUpdateView(DemographicDataCreateView):
+class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
     """
     Allows user to update demographic data - but actually creates new version instead of updating old one.
     """
     template_name = 'web/demographic-data-update.html'
+    model = DemographicData
+    form_class = forms.DemographicDataForm
 
     def get_success_url(self):
         return reverse('web:demographic-data-update')
 
     def form_valid(self, form):
+        """
+        Before saving form, adds user relationship to demographic data, and sets "previous"
+         as the last saved demographic data.
+        """
         resp = super().form_valid(form)
         self.object.user = self.request.user
         self.object.previous = self.request.user.latest_demographics or None
@@ -192,7 +62,8 @@ class DemographicDataUpdateView(DemographicDataCreateView):
 
     def get_initial(self):
         """
-        Returns the initial data to use for forms on this view.
+        Returns the initial data to use for forms on this view. Prepopulates
+        demographic data form with the latest demographic data.
         """
         demographic_data = self.request.user.latest_demographics or None
         if demographic_data:
@@ -202,25 +73,14 @@ class DemographicDataUpdateView(DemographicDataCreateView):
             return demographic_data_dict
         return demographic_data
 
-
-class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
-    """
-    Allows a participant to update their email preferences - when they can be contacted.
-    """
-    template_name = 'web/participant-email-preferences.html'
-    model = User
-    form_class = forms.EmailPreferencesForm
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
     def get_success_url(self):
-        return reverse('web:email-preferences')
+        return reverse('web:studies-list')
 
 
 class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
-    Allows a participant to update their names and password
+    Allows a participant to update their name and password -
+    extra code in this view because there are multiple forms on this page.
     """
     template_name = 'web/participant-update.html'
     model = User
@@ -228,6 +88,11 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
     second_form_class = forms.ParticipantPasswordForm
 
     def get_context_data(self, **kwargs):
+        """
+        Adds the context for form1 and form2 on the page - a little extra code due to the
+        two forms on the page.  The form that was not edited is unbound so data
+        is not validated.
+        """
         context = super().get_context_data(**kwargs)
         user = self.request.user
         if 'participant_update' in self.request.POST:
@@ -248,6 +113,10 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         return reverse('web:participant-update')
 
     def get_form_kwargs(self):
+        """
+        Returns the keyword arguments for instantiating the form. -
+        if updating password section, need the 'user' kwarg
+        """
         kwargs = super().get_form_kwargs()
         if 'password_update' in self.request.POST:
             kwargs['user'] =  kwargs.pop('instance')
@@ -260,7 +129,13 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         return self.render_to_response(self.get_context_data(**kwargs))
 
     def post(self, request, *args, **kwargs):
+        """
+        Returns the keyword arguments for instantiating the form. -
+        if updating password section, need the 'user' kwarg
+        """
         self.object = self.get_object()
+        # Depending on the keywords in the POST, choose the participant update
+        # or the password update form.
         if 'participant_update' in request.POST:
             form_class = self.get_form_class()
             form_name = 'form'
@@ -272,17 +147,150 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         if form.is_valid():
             form.save()
             if form_name == 'form2':
+                # If updating password, need to reauthenticate
                 update_session_auth_hash(self.request, form.user)
                 return HttpResponseRedirect(self.get_success_url())
             return super().form_valid(form)
         else:
             return self.form_invalid(**{form_name: form})
 
+
+class ChildrenListView(LoginRequiredMixin, generic.CreateView):
+    """
+    Allows user to view a list of current children and add children
+    """
+    template_name = 'web/children-list.html'
+    model = Child
+    form_class = forms.ChildForm
+
+    def get_context_data(self, **kwargs):
+        """
+        Add children that have not been deleted that belong to the current user
+        to the context_dict.  Also add info to hide the Add Child form on page load.
+        """
+        context = super().get_context_data(**kwargs)
+        children = Child.objects.filter(deleted = False, user=self.request.user)
+        context["objects"] = children
+        context["form_hidden"] = kwargs.get('form_hidden', True)
+        return context
+
+    def form_invalid(self, form):
+        """
+        If form invalid, add child form needs to be open when page reloads.
+        """
+        return self.render_to_response(self.get_context_data(form=form, form_hidden=False))
+
+    def form_valid(self, form):
+        """
+        Add the current user to the child before saving the child.
+        """
+        user = self.request.user
+        form.instance.user = user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('web:children-list')
+
+
+class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
+    """
+    Allows user to update or delete a child.
+    """
+    template_name = 'web/child-update.html'
+    model = Child
+    form_class = forms.ChildForm
+
+    def get_success_url(self):
+        return reverse('web:children-list')
+
+    def get_object(self, queryset=None):
+        '''
+        Returns the object the view is displaying.
+        ChildUpdate View needs to be called with slug or pk - but uuid in URLconf
+        instead so use this to lookup child
+        '''
+        uuid = self.kwargs.get('uuid')
+        return get_object_or_404(Child, uuid=uuid)
+
+    def post(self, request, *args, **kwargs):
+        '''
+        If deleteChild form submitted, mark child as deleted in the db.
+        '''
+        if 'deleteChild' in self.request.POST and self.request.method == 'POST':
+            child = self.get_object()
+            child.deleted = True
+            child.save()
+            return HttpResponseRedirect(self.get_success_url())
+        return super().post(request, *args, **kwargs)
+
+
+class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
+    """
+    Allows a participant to update their email preferences - when they can be contacted.
+    """
+    template_name = 'web/participant-email-preferences.html'
+    model = User
+    form_class = forms.EmailPreferencesForm
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_success_url(self):
+        return reverse('web:email-preferences')
+
+
+class StudiesListView(generic.ListView):
+    '''
+    List all active, public studies.
+    '''
+    template_name = 'web/studies-list.html'
+    model = Study
+
+    def get_queryset(self):
+        # TODO if we need to filter by study demographics vs user demographics
+        # TODO or by if they've taken the study before this is the spot
+        return super().get_queryset().filter(state='active', public=True)
+
+
+class StudyDetailView(generic.DetailView):
+    '''
+    Show the details of a study.  If the user has selected a child, they can
+    participate in the study and be forwarded/proxied to the js application
+    '''
+    template_name = 'web/study-detail.html'
+    model = Study
+
+    def get_queryset(self):
+        return super().get_queryset().filter(state='active', public=True)
+
+    def get_object(self, queryset=None):
+        '''
+        Needed because view expecting pk or slug, but url has UUID. Looks up
+        study by uuid.
+        '''
+        uuid = self.kwargs.get('uuid')
+        return get_object_or_404(Study, uuid=uuid)
+
+    def get_context_data(self, **kwargs):
+        '''
+        If authenticated, add demographic presence, and children to context data dict
+        '''
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['has_demographic'] = self.request.user.latest_demographics
+            context['children'] = self.request.user.children.all()
+
+        return context
+
+
 class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
 
 
 class ExperimentProxyView(ProxyView, LoginRequiredMixin):
+    '''
+    Proxy view to forward user to participate page in the Ember app
+    '''
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):

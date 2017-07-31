@@ -1,5 +1,6 @@
 {% load bootstrap3 %}
 {% load static %}
+{% load guardian_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,11 +16,11 @@
     {% block head %}
         {% bootstrap_css %}
         {% bootstrap_javascript jquery=True %}
-        <link href="{% static '/static/exp/css/app.css' %}" rel="stylesheet" />
+        <link href="{% static '/exp/css/app.css' %}" rel="stylesheet" />
         {% if request.user.is_superuser %}
         <style>
           body {
-              background: url('{% static '/static/exp/img/su-mode.svg' %}') repeat transparent;
+              background: url('{% static '/exp/img/su-mode.svg' %}') repeat transparent;
               background-size: 400px 400px;
           }
         </style>

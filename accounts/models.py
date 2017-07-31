@@ -4,7 +4,7 @@ import uuid
 from datetime import date
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin, Permission
 from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
@@ -18,7 +18,7 @@ import pydenticon
 from accounts.utils import build_org_group_name
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, assign_perm
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
@@ -62,6 +62,7 @@ class Organization(models.Model):
             ('can_edit_organization', _('Can Edit Organization')),
             ('can_create_organization', _('Can Create Organization')),
             ('can_remove_organization', _('Can Remove Organization')),
+            ('can_view_experimenter', _('Can View Experimenter')),
         )
         ordering = ['name']
 
@@ -77,10 +78,23 @@ def organization_post_save(sender, **kwargs):
 
     if created:
         from django.contrib.auth.models import Group
-        for group in ['read', 'admin']:
+        for group in ['researcher', 'read', 'admin']:
             group_instance, created = Group.objects.get_or_create(
                 name=build_org_group_name(organization.name, group)
             )
+
+            create_study = Permission.objects.get(codename='can_create_study')
+            view_experimenter = Permission.objects.get(codename='can_view_experimenter')
+            view_organization = Permission.objects.get(codename='can_view_organization')
+            edit_organization = Permission.objects.get(codename='can_edit_organization')
+
+            group_instance.permissions.add(create_study)
+            group_instance.permissions.add(view_experimenter)
+            if group == 'admin':
+                group_instance.permissions.add(view_organization)
+                group_instance.permissions.add(edit_organization)
+            if group == 'read':
+                group_instance.permissions.add(view_organization)
 
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
@@ -154,13 +168,19 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return self.groups.filter(name=build_org_group_name(self.organization.name, 'read')).exists()
 
     @property
+    def is_org_researcher(self):
+        return self.groups.filter(name=build_org_group_name(self.organization.name, 'researcher')).exists()
+
+    @property
     def display_permission(self):
         if self.is_org_admin:
             return 'Organization Admin'
         elif self.is_org_read:
             return 'Organization Read'
-        else:
+        elif self.is_org_researcher:
             return 'Researcher'
+        else:
+            return 'No organization groups'
 
     def _make_rainbow(self):
         rbw = []

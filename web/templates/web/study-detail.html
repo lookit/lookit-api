@@ -29,11 +29,6 @@
 
 {% block content %}
     <script>
-        function imgError(image, index) {
-            image.style.display = 'none';
-            var placeholder = document.getElementById('image-placeholder');
-            placeholder.style.display = 'block';
-        }
         function childSelected(selected) {
             var participateButton = document.getElementById('participate-button');
             selected.value === 'none' ? participateButton.disabled = true : participateButton.disabled = false;
@@ -56,12 +51,7 @@
     <div class='container'>
         <div class="lookit-row"><div class='col-md-10 col-md-offset-1'>
             <div class='row'><div class='col-xs-12'>
-                <p class="image-block">
-                    <img class="study-detail-thumbnail" onerror="imgError(this)" src="{{ object.image.url }}" width="300px">
-                    <div style="display:none;" class="study-list-placeholder" id="image-placeholder">
-                          <i class="fa fa-picture-o"></i>
-                    </div>
-                </p>
+                {% include "studies/_image_display.html" with object=object %}
             </div></div>
             <div class='row'>
                 <div class='col-md-9'>
@@ -70,17 +60,16 @@
                       <p><strong>Eligibility criteria:</strong> {{ object.criteria }}</p>
                       <p><strong>Duration:</strong> {{ object.duration }}</p>
                       <p><strong>What happens:</strong> {{ object.short_description }}</p>
-                      <p><strong>What are we studying?:</strong> {{ object.long_description }}</p>
+                      <p><strong>What are we studying? </strong> {{ object.long_description }}</p>
                     </div>
                 </div>
                 <div class='col-md-3'>
-                    <!-- TODO: Find out where is the login, add children and add proper hrefs -->
                     {% if not request.user.is_authenticated %}
-                    <a class="btn btn-lg btn-default" href='/login'>Log in to participate</a>
+                        <a class="btn btn-lg btn-default" href="{% url 'login' %}">Log in to participate</a>
                     {% elif not children %}
-                    <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">Add child profile to participate</a>
+                        <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">Add child profile to participate</a>
                     {% elif not has_demographic %}
-                    <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-create' }">Complete demographic survey to participate</a>
+                        <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">Complete demographic survey to participate</a>
                     {% else %}
                     <div class="form-group">
                         <label>Select a child:</label>

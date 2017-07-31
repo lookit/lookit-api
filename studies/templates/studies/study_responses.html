@@ -2,14 +2,14 @@
 {% load bootstrap3 %}
 {% load exp_extras %}
 
-{% block title %}Studies{% endblock %}
+{% block title %}Responses | {{ study.name }}{% endblock %}
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
         $(document).ready(function(){
             $('.response-data').hide();
-            $('#response-participant-1').addClass('selected');
-            $('#response-data-1').show();
+            $( ".selectable-participant" ).first().addClass('selected');
+            $( ".response-data" ).first().show();
             $('.selectable-participant').click(function() {
                 var id = $(this)[0].id;
                 var index = id.split('-').slice(-1)[0];
@@ -20,8 +20,10 @@
             });
             var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.all-data').html());
             var elem = $('#download-all-data')[0];
-            elem.href = data;
-            elem.download = '{{study.name}}-all-data.json';
+            if (data && elem) {
+                elem.href = data;
+                elem.download = '{{study.name}}-all-data.json';
+            }
 
             $(function(){
                 var hash = window.location.hash;
@@ -31,7 +33,7 @@
                     $(this).tab('show');
                     var scroll = $('body').scrollTop() || $('html').scrollTop();
                     window.location.hash = this.hash;
-                    $('html,body').scrollTop(scrollmem);
+                    $('html,body').scrollTop(scroll);
               });
             });
         });
@@ -77,132 +79,143 @@
     </div>
     <div class="row">
         <div class="col-xs-12">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="active">
-                    <a href="#by_participant" role="tab" data-toggle="tab">
-                        Individual <span class="hidden-xs"> Responses </span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#all_data" role="tab" data-toggle="tab">
-                        All <span class="hidden-xs"> Responses </span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#all_attachments" role="tab" data-toggle="tab">
-                        <span class="hidden-xs"> All </span> Attachments
-                    </a>
-                </li>
-            </ul>
+            {% if responses %}
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active">
+                        <a href="#by_participant" role="tab" data-toggle="tab">
+                            Individual <span class="hidden-xs"> Responses </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#all_data" role="tab" data-toggle="tab">
+                            All <span class="hidden-xs"> Responses </span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#all_attachments" role="tab" data-toggle="tab">
+                            <span class="hidden-xs"> All </span> Attachments
+                        </a>
+                    </li>
+                </ul>
+            {% else %}
+                <p class="pt-md"><em>No completed responses recorded! </em></p>
+            {% endif %}
         </div>
     </div>
-    <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="by_participant">
-            <div class="row pt-md">
-                <div class="col-md-5 col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Participant ID
-                                        <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
-                                    </th>
-                                    <th>
-                                        Status
-                                    </th>
-                                    <th>
-                                        Date
-                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for response in responses %}
-                              <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}'>
-                                <td>{{ response.child.user.id }}</td>
-                                <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
-                                <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
-                              </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="col-md-7 col-xs-12">
-                    {% for response in response_data %}
-                        <div class='response-data pt-xxxl' id='response-data-{{ forloop.counter }}' class='hidden'>
-                            <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
-                            <h5>Attachments</h5>
-                            <p> TODO: Use some sort of zip solution for attachment + json </p>
+    {% if responses %}
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="by_participant">
+                <div class="row pt-md">
+                    <div class="col-md-6 col-xs-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            User ID
+                                            <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
+                                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        </th>
+                                        <th>
+                                            Response ID
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+                                            Date
+                                            <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}#by_participant"><i class="fa fa-chevron-up" role="button"></i></a>
+                                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}#by_participant"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for response in responses %}
+                                  <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}'>
+                                    <td>{{ response.child.user.id }}</td>
+                                    <td>{{ response.id}} </td>
+                                    <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
+                                    <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
+                                  </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                    {% endfor %}
+                        {% include 'studies/_paginator.html' with items=responses request=request %}
+                    </div>
+                    <div class="col-md-6 col-xs-12">
+                        {% for response in response_data %}
+                            <div class='response-data pt-xxxl' id='response-data-{{ forloop.counter }}' class='hidden'>
+                                <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
+                                <h5>Attachments</h5>
+                                <p> TODO: Use some sort of zip solution for attachment + json </p>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
-        <div role="tabpanel" class="tab-pane" id="all_data">
-            <div class='row'>
-                <h3 class='col-sm-9 col-xs-12'>
-                    All Data
-                </h4>
-                <a id='download-all-data' class='mt-md btn btn-primary col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2'>
-                    Download All Data
-                </a>
-            </div>
-            <div class='row pt-sm'>
-                <div class="col-xs-12">
-                    <pre class='all-data'>{{ all_responses }}</pre>
+            <div role="tabpanel" class="tab-pane" id="all_data">
+                <div class='row'>
+                    <h3 class='col-sm-9 col-xs-12'>
+                        All Data
+                    </h4>
+                    <a id='download-all-data' class='mt-md btn btn-primary col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2'>
+                        Download All Data
+                    </a>
+                </div>
+                <div class='row pt-sm'>
+                    <div class="col-xs-12">
+                        <pre class='all-data'>{{ all_responses }}</pre>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div role="tabpanel" class="tab-pane" id="all_attachments">
-            <div class='row'>
-                <h3 class='col-sm-9 col-xs-12'>Attachments</h3>
-                <a class='mt-md btn btn-primary col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2' href="{{ study.all_attachments_download_url }}">Download all attachments</a>
-            </div>
-            <div class="row text-center mt-lg">
-                <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
-                    <form method="GET">
-                        <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
-                        <input type="hidden" name="sort" value={{ sort }}>
-                    </form>
+            <div role="tabpanel" class="tab-pane" id="all_attachments">
+                <div class='row'>
+                    <h3 class='col-sm-9 col-xs-12'>Attachments</h3>
+                    <a class='mt-md btn btn-primary col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2' href="{{ study.all_attachments_download_url }}">Download all attachments</a>
                 </div>
-            </div>
-            <div class='row mt-md'>
-                <div class="col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Name
-                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#all_attachments"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#all_attachments"><i class="fa fa-chevron-down" role="button"></i></a>
-                                    </th>
-                                    <th>
-                                        Date
-                                        <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}#all_attachments"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}#all_attachments"><i class="fa fa-chevron-down" role="button"></i></a>
-                                    </th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for response in responses %}
-                              <tr>
-                                <td>{{ response.attachment.name|default:"No_file.mov" }}</td>
-                                <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
-                                <td><a class='btn btn-primary' href="{{ response.attachment.download_url }}">Download</a></td>
-                              </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="row text-center mt-lg">
+                    <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+                        <form method="GET">
+                            <input class="form-control" name="match" placeholder="{{ match|default:'Filter attachment name' }}" size="50" type="text">
+                            <input type="hidden" name="sort" value={{ sort }}>
+                        </form>
+                    </div>
+                </div>
+                <div class='row mt-md'>
+                    <div class="col-xs-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Name
+                                            <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}#all_attachments"><i class="fa fa-chevron-up" role="button"></i></a>
+                                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}#all_attachments"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        </th>
+                                        <th>
+                                            Date
+                                            <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}#all_attachments"><i class="fa fa-chevron-up" role="button"></i></a>
+                                            <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}#all_attachments"><i class="fa fa-chevron-down" role="button"></i></a>
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for response in responses %}
+                                  <tr>
+                                    <td>{{ response.attachment.name|default:"No_file.mov" }}</td>
+                                    <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
+                                    <td><a class='btn btn-primary btn-sm' href="{{ response.attachment.download_url }}">Download</a></td>
+                                  </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 </div>
 {% endblock %}

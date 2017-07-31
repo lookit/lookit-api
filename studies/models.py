@@ -86,6 +86,7 @@ class Study(models.Model):
             ('can_view_study_responses', 'Can View Study Responses'),
             ('can_view_study_video_responses', 'Can View Study Video Responses'),
             ('can_view_study_demographics', 'Can View Study Demographics'),
+            ('can_archive_study', 'Can Archive Study')
         )
         ordering = ['name']
 
@@ -139,10 +140,11 @@ class Study(models.Model):
         user = ev.kwargs.get('user')
         if user.is_superuser:
             return
-        raise
+        # raise TODO NOT RAISING ANYTHING
+        return
 
     def clone(self):
-        ''' Create a new, unsaved copy of this study. '''
+        ''' Create a new, unsaved copy of the study. '''
         copy = self.__class__.objects.get(pk=self.pk)
         copy.id = None
         copy.public = False
@@ -278,7 +280,7 @@ def study_post_save(sender, **kwargs):
             )
             for perm, _ in Study._meta.permissions:
                 # add only view permissions to non-admin
-                if group == 'read' and perm != 'can_view_study':
+                if group == 'read' and 'view' not in perm:
                     continue
                 if 'approve' not in perm:
                     assign_perm(perm, study_group_instance, obj=study)

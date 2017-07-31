@@ -5,7 +5,6 @@ from web import views
 
 urlpatterns = [
     url(r'^signup/?$', views.ParticipantSignupView.as_view(), name='participant-signup'),
-    url(r'^demographic_data/?$', views.DemographicDataCreateView.as_view(), name='demographic-data-create'),
     url(r'^account/?$', views.ParticipantUpdateView.as_view(), name='participant-update'),
     url(r'^account/demographics/?$', views.DemographicDataUpdateView.as_view(), name='demographic-data-update'),
     url(r'^account/children/?$', views.ChildrenListView.as_view(), name='children-list'),
