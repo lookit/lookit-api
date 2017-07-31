@@ -276,7 +276,6 @@ class StudyDetailView(generic.DetailView):
         If authenticated, add demographic presence, and children to context data dict
         '''
         context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
         if self.request.user.is_authenticated:
             context['has_demographic'] = self.request.user.latest_demographics
             context['children'] = self.request.user.children.all()
