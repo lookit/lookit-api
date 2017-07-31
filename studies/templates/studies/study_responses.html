@@ -7,27 +7,50 @@
     {{ block.super }}
     <script type="application/javascript">
         $(document).ready(function(){
-            $('.response-data').hide();
-            $('.csv-response-data').hide();
+            hideResponses();
             $( ".selectable-participant" ).first().addClass('selected');
             $( ".response-data" ).first().show();
-            $( ".csv-response-data" ).first().show();
+
             $('.selectable-participant').click(function() {
                 var id = $(this)[0].id;
-                var index = id.split('-').slice(-1)[0];
+                var index = extractIdNumber(id)
                 $('.selectable-participant').removeClass('selected');
                 $('#' + id).addClass('selected');
-                $('.response-data').hide();
-                $('.csv-response-data').hide();
-                $('#response-data-' + index).show();
-                $('#csv-response-data-' + index).show();
+                hideResponses()
+                showResponse($('#data-type-selector').val(), index);
             });
+
+            $('#data-type-selector').on('change', function(){
+                var selected = $(this).find("option:selected").val();
+                var index = extractIdNumber($('.selectable-participant.selected')[0].id)
+                hideResponses();
+                showResponse(selected, index);
+            });
+
             var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.all-data').html());
             var elem = $('#download-all-data')[0];
             if (data && elem) {
                 elem.href = data;
                 elem.download = '{{study.name}}-all-data.json';
             }
+
+            function extractIdNumber(id) {
+                return id.split('-').slice(-1)[0];
+            }
+
+            function showResponse(dataType, index) {
+                if (dataType === 'JSON') {
+                    $('#response-data-' + index).show();
+                } else if (dataType === 'CSV') {
+                    $('#csv-response-data-' + index).show();
+                }
+                return;
+            }
+
+            function hideResponses() {
+                $('.response-data').hide();
+                $('.csv-response-data').hide();
+            };
 
             $(function(){
                 var hash = window.location.hash;
