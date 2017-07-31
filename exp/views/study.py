@@ -1,5 +1,7 @@
 import operator, json
 import uuid
+import io
+import csv
 from functools import reduce
 
 from django import forms
@@ -347,6 +349,21 @@ class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.De
             'demographic_id': resp.demographic_snapshot.id
             }, indent=4) for resp in responses]
 
+    def build_csv(self, responses):
+        headers = ['sequence', 'conditions', 'exp_data', 'participant_id', 'global_event_timings',
+        'child_id', 'completed', 'study_id', 'response_id', 'demographic_id']
+        
+        csv_responses = []
+        for resp in responses:
+            output = io.StringIO()
+            writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+            writer.writerow(headers)
+            writer.writerow([resp.sequence, resp.conditions, resp.exp_data, resp.child.user.id,
+            resp.global_event_timings, resp.child.id, resp.completed, resp.study.id, resp.id,
+            resp.demographic_snapshot.id])
+            csv_responses.append(output.getvalue())
+        return csv_responses
+
     def get_context_data(self, **kwargs):
         """
         In addition to the study, adds several items to the context dictionary.  Study results
@@ -359,6 +376,7 @@ class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.De
         responses = study.responses.filter(completed=True).order_by(orderby) if orderby else study.responses.all()
         context['responses'] = self.paginated_queryset(responses, page, 10)
         context['response_data'] = self.build_responses(context['responses'])
+        context['csv_data'] = self.build_csv(context['responses'])
         context['all_responses'] = ', '.join(self.build_responses(responses))
         return context
 

@@ -8,15 +8,19 @@
     <script type="application/javascript">
         $(document).ready(function(){
             $('.response-data').hide();
+            $('.csv-response-data').hide();
             $( ".selectable-participant" ).first().addClass('selected');
             $( ".response-data" ).first().show();
+            $( ".csv-response-data" ).first().show();
             $('.selectable-participant').click(function() {
                 var id = $(this)[0].id;
                 var index = id.split('-').slice(-1)[0];
                 $('.selectable-participant').removeClass('selected');
                 $('#' + id).addClass('selected');
                 $('.response-data').hide();
+                $('.csv-response-data').hide();
                 $('#response-data-' + index).show();
+                $('#csv-response-data-' + index).show();
             });
             var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.all-data').html());
             var elem = $('#download-all-data')[0];
@@ -144,13 +148,24 @@
                         {% include 'studies/_paginator.html' with items=responses request=request %}
                     </div>
                     <div class="col-md-6 col-xs-12">
+                        <div class="form-group pt-xxxl">
+                          <select class="form-control" id="data-type-selector">
+                            <option>JSON</option>
+                            <option>CSV</option>
+                          </select>
+                        </div>
                         {% for response in response_data %}
-                            <div class='response-data pt-xxxl' id='response-data-{{ forloop.counter }}' class='hidden'>
+                            <div class='response-data' id='response-data-{{ forloop.counter }}' class='hidden'>
                                 <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
                                 <h5>Attachments</h5>
-                                <p> TODO: Use some sort of zip solution for attachment + json </p>
                             </div>
                         {% endfor %}
+                        {% for csv in csv_data %}
+                            <div class='csv-response-data' id='csv-response-data-{{ forloop.counter }}'>
+                                <pre class='csv-data' id='csv-data-{{ forloop.counter }}'>{{ csv }}</pre>
+                            </div>
+                        {% endfor %}
+                        <p> TODO: Use some sort of zip solution for attachment + json </p>
                     </div>
                 </div>
             </div>
