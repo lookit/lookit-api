@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.shortcuts import reverse
+from django.shortcuts import reverse, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views import generic
 from django.contrib.auth import update_session_auth_hash
@@ -206,24 +206,11 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_object(self, queryset=None):
         '''
         Returns the object the view is displaying.
-        By default this requires `self.queryset` and a `pk` or `slug` argument
-        in the URLconf, but subclasses can override this to return any object.
+        ChildUpdate View needs to be called with slug or pk - but uuid in URLconf
+        instead so use this to lookup child
         '''
-        if queryset is None:
-            queryset = self.get_queryset()
-        # ChildUpdate View needs to be called with slug or pk - uuid in URLconf
-        # instead so use this to lookup child
         uuid = self.kwargs.get('uuid')
-
-        if uuid is not None:
-            queryset = queryset.filter(uuid=uuid)
-        try:
-            # Get the single item from the filtered queryset
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
-            raise Http404(_('No %(verbose_name)s found matching the query') %
-                          {'verbose_name': queryset.model._meta.verbose_name})
-        return obj
+        return get_object_or_404(Child, uuid=uuid)
 
     def post(self, request, *args, **kwargs):
         '''
@@ -281,22 +268,8 @@ class StudyDetailView(generic.DetailView):
         Needed because view expecting pk or slug, but url has UUID. Looks up
         study by uuid.
         '''
-        # Use a custom queryset if provided; this is required for subclasses
-        # like DateDetailView
-        if queryset is None:
-            queryset = self.get_queryset()
-
         uuid = self.kwargs.get('uuid')
-
-        if uuid is not None:
-            queryset = queryset.filter(uuid=uuid)
-        try:
-            # Get the single item from the filtered queryset
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
-            raise Http404(_('No %(verbose_name)s found matching the query') %
-                          {'verbose_name': queryset.model._meta.verbose_name})
-        return obj
+        return get_object_or_404(Study, uuid=uuid)
 
     def get_context_data(self, **kwargs):
         '''
