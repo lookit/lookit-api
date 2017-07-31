@@ -60,9 +60,22 @@ class Study(models.Model):
             before_state_change='check_permission',
             after_state_change='_finalize_state_change'
         )
+        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age', 'min_age', 'image', 'exit_url']
+        for field in self.__monitoring_fields:
+            setattr(self, '__original_%s' % field, getattr(self, field))
 
     def __str__(self):
         return f'<Study: {self.name}>'
+
+    def important_fields_changed(self):
+        """
+        Check if fields in self.__monitoring fields have changed.
+        """
+        for field in self.__monitoring_fields:
+            orig = '__original_%s' % field
+            if getattr(self, orig) != getattr(self, field):
+                return True
+        return False
 
     class JSONAPIMeta:
         lookup_field = 'uuid'
@@ -249,6 +262,22 @@ def add_study_created_log(sender, instance, created, **kwargs):
             user=instance.creator
         )
 
+@receiver(post_save, sender=Study)
+def check_modification_of_approved_study(sender, instance, created, **kwargs):
+    """
+    Puts study back in "rejected" state if study is modified after it's already been approved.
+    Leaves comment for user with explanation.
+    """
+    approved_states = ['approved', 'active', 'paused', 'deactived']
+    if instance.important_fields_changed() and instance.state in approved_states:
+        instance.state = 'rejected'
+        instance.comments = 'Your study has been modified following approval.  You must resubmit this study to get it approved again.'
+        instance.save()
+        StudyLog.objects.create(
+            action='rejected',
+            study=instance,
+            user=instance.creator
+    )
 
 @receiver(post_save, sender=Study)
 def study_post_save(sender, **kwargs):
