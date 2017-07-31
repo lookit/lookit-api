@@ -43,12 +43,12 @@
                     {% bootstrap_form form %}
                     <div>
                         {% buttons %}
-                          <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
-                          <button type="submit" class="btn btn-success">
-                             Save
-                          </button>
+                         <a class="btn btn-primary" target="_blank" href="{% url 'exp:preview-proxy' study.uuid %}"> Try Experiment </a>
                           <span class="pull-right">
-                               <a class="btn btn-primary" target="_blank" href="{% url 'exp:preview-proxy' study.uuid %}"> Try Experiment </a>
+                              <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
+                              <button type="submit" class="btn btn-success">
+                                 Save
+                              </button>
                           </span>
                         {% endbuttons %}
                     </div>
