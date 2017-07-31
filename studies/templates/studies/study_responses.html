@@ -8,7 +8,8 @@
     <script type="application/javascript">
         $(document).ready(function(){
             hideResponses();
-            prepareDataForDownload('all-data', 'json');
+            prepareDataForDownload('.all-data', 'download-all-data', 'json');
+            prepareDataForDownload('#json-data-1', 'download-individual-data', 'json');
             $(".all-csv-data").hide();
             $( ".selectable-participant" ).first().addClass('selected');
             $( ".response-data" ).first().show();
@@ -38,20 +39,24 @@
                 $('.all-csv-data').hide();
                 if (selected === 'CSV'){
                     $('.all-csv-data').show();
-                    prepareDataForDownload('all-csv-data', 'csv');
+                    prepareDataForDownload('.all-csv-data', 'download-all-data', 'csv');
                 } else {
                     $('.all-data').show();
-                    prepareDataForDownload('all-data', 'json');
+                    prepareDataForDownload('.all-data', 'download-all-data', 'json');
                 }
             });
 
-            function prepareDataForDownload(dataClass, ext) {
+            function prepareDataForDownload(dataClassOrId, buttonId, ext) {
                 // Preps Download All button to download either all JSON or all CSV responses
-                var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.' + dataClass).html());
-                var elem = $('#download-all-data')[0];
+                var data = "data:text/json;charset=utf-8," + encodeURIComponent($(dataClassOrId).html());
+                var elem = $('#' + buttonId)[0];
+                var fileName = 'all-data';
+                if (buttonId.includes('individual')) {
+                    fileName = 'individual-data';
+                }
                 if (data && elem) {
                     elem.href = data;
-                    elem.download = '{{study.name}}-' + dataClass + '.' + ext;
+                    elem.download = '{{study.name}}-' + fileName + '-.' + ext;
                 }
             }
 
@@ -63,8 +68,11 @@
                 // Shows individual response
                 if (dataType === 'JSON') {
                     $('#response-data-' + index).show();
+                    prepareDataForDownload('#json-data-' + index, 'download-individual-data', 'json');
+
                 } else if (dataType === 'CSV') {
                     $('#csv-response-data-' + index).show();
+                    prepareDataForDownload('#csv-data-' + index, 'download-individual-data', 'csv');
                 }
                 return;
             }
@@ -203,7 +211,6 @@
                         {% for response in response_data %}
                             <div class='response-data' id='response-data-{{ forloop.counter }}' class='hidden'>
                                 <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
-                                <h5>Attachments</h5>
                             </div>
                         {% endfor %}
                         {% for csv in csv_data %}
@@ -211,7 +218,11 @@
                                 <pre class='csv-data' id='csv-data-{{ forloop.counter }}'>{{ csv }}</pre>
                             </div>
                         {% endfor %}
-                        <p> TODO: Use some sort of zip solution for attachment + json </p>
+                        <div class="pull-right">
+                            <a id='download-individual-data' class='btn btn-primary'>
+                                Download Individual Data
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
