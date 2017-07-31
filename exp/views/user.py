@@ -102,7 +102,7 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
     '''
     template_name = 'accounts/researcher_list.html'
     # TODO needs to change once oauth in
-    queryset = User.objects.filter(demographics__isnull=True, is_active=True)
+    queryset = User.objects.filter(is_researcher=True, is_active=True)
     model = User
     permission_required = 'accounts.can_view_organization'
     raise_exception = True
@@ -124,7 +124,7 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
         """
         qs = super().get_queryset()
         admin_group, read_group, researcher_group = self.get_org_groups()
-        queryset = qs.filter(Q(groups__name=admin_group.name) | Q(groups__name=read_group.name) | Q(groups__name=researcher_group.name)).distinct().order_by(Lower('family_name').asc())
+        queryset = qs.filter(Q(Q(Q(groups=admin_group) | Q(groups=read_group) | Q(groups=researcher_group)) | Q(is_researcher=True, groups__isnull=True, organization__isnull=True))).distinct().order_by(Lower('family_name').asc())
 
         match = self.request.GET.get('match')
         # Can filter on first, middle, and last names
@@ -179,7 +179,7 @@ class ResearcherDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, ge
     ResearcherDetailView shows information about a researcher and allows toggling the permissions
     on a user or modifying.
     '''
-    queryset = User.objects.filter(demographics__isnull=True, is_active=True)
+    queryset = User.objects.filter(is_researcher=True, is_active=True)
     fields = ('is_active', )
     template_name = 'accounts/researcher_detail.html'
     model = User
@@ -189,9 +189,10 @@ class ResearcherDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, ge
     def get_queryset(self):
         """
         Restrict queryset so org admins can only modify users in their organization
+        or unaffiliated researchers.
         """
         qs = super().get_queryset()
-        return qs.filter(organization=self.request.user.organization)
+        return qs.filter(Q(Q(organization=self.request.user.organization) | Q(is_researcher=True, groups__isnull=True, organization__isnull=True)))
 
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
@@ -210,6 +211,8 @@ class ResearcherDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, ge
         elif changed_field == 'family_name':
             self.object.family_name = self.request.POST['value']
         self.object.is_active = True
+        if not self.object.organization:
+            self.object.organization = request.user.organization
         self.object.save()
         if self.request.POST.get('name') == 'user_permissions':
             self.modify_researcher_permissions()

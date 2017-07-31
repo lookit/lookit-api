@@ -16,8 +16,8 @@ def create_socialapp(apps, schema_editor):
             name='OSF',
             provider='osf',
             # Defaults are valid for staging
-            client_id=os.environ.get('OSF_OAUTH_CLIENT_ID', 'b73fff80f83f4a5db8a60ff101718f03'),
-            secret=os.environ.get('OSF_OAUTH_SECRET', 'AdaI80f8vFLJo2OqE9m8fefpARAfptD5134HJd4X'),
+            client_id=os.environ.get('OSF_OAUTH_CLIENT_ID', '3518b74e12584abf9e48565ff6aee6f3'),
+            secret=os.environ.get('OSF_OAUTH_SECRET', 'vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU'),
         )
         app.sites.add(Site.objects.get(domain='osf.io'))
 

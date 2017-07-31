@@ -38,7 +38,7 @@ class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
         username = data.get('username')
         first_name = data.get('first_name')
         last_name = data.get('last_name')
-        email = data.get('email')
+        email = username
         name = data.get('name')
         time_zone = data.get('time_zone')
         locale = data.get('locale')
@@ -47,11 +47,13 @@ class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
         user_username(user, username or '')
         user_email(user, valid_email_or_none(email) or '')
         name_parts = (name or '').partition(' ')
-        user_field(user, 'first_name', first_name or name_parts[0])
-        user_field(user, 'last_name', last_name or name_parts[2])
+        user_field(user, 'given_name', first_name or name_parts[0])
+        user.is_active = True
+        user_field(user, 'family_name', last_name or name_parts[2])
         user_field(user, 'time_zone', time_zone)
         user_field(user, 'locale', locale)
         user_field(user, 'gravatar', gravatar)
+
         return user
 
     def complete_login(self, request, app, access_token, **kwargs):

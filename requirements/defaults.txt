@@ -27,3 +27,4 @@ django-multiselectfield==0.1.7
 -e git+https://github.com/jschneier/django-storages.git#egg=django-storages
 google-cloud==0.26.1
 django-allauth==0.32.0
+django-revproxy==0.9.13

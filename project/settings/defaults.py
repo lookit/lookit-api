@@ -54,9 +54,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_json_api',
     'storages',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
 
     # our stuff
     'osf_oauth2_adapter',
@@ -69,6 +66,11 @@ INSTALLED_APPS = [
     # at the bottom so overriding form widget templates have a fallback
     'django.forms',
     'django.contrib.admin',
+    
+    # at the bottom so overriding templates is possible
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -202,13 +204,13 @@ BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')  # default to emb
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/')
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get('ACCOUNT_LOGOUT_REDIRECT_URL', '/api/')
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'id'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 SOCIALACCOUNT_ADAPTER = 'osf_oauth2_adapter.views.OSFOAuth2Adapter'
 SOCIALACCOUNT_PROVIDERS = \
     {'osf':
         {
             'METHOD': 'oauth2',
-            'SCOPE': ['osf.users.user_email', 'osf.users.email_read', 'osf.users.profile_read', ],
+            'SCOPE': ['osf.users.email_read', 'osf.users.profile_read', ],
             'AUTH_PARAMS': {'access_type': 'offline'},
             # 'FIELDS': [
             #     'id',
@@ -231,7 +233,7 @@ SOCIALACCOUNT_PROVIDERS = \
 
 
 # Configuration for cross-site requests
-CORS_ORIGIN_ALLOW_ALL = True  # Needs to be changed before production!
+CORS_ORIGIN_ALLOW_ALL = True  # TODO Needs to be changed before production!
 CORS_ORIGIN_WHITELIST = ()
 
 if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
