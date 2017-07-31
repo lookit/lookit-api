@@ -82,10 +82,11 @@ def organization_post_save(sender, **kwargs):
             group_instance, created = Group.objects.get_or_create(
                 name=build_org_group_name(organization.name, group)
             )
-            create_study = Permission.objects.filter(codename='can_create_study')[0]
-            view_experimenter = Permission.objects.filter(codename='can_view_experimenter')[0]
-            view_organization = Permission.objects.filter(codename='can_view_organization')[0]
-            edit_organization = Permission.objects.filter(codename='can_edit_organization')[0]
+
+            create_study = Permission.objects.get(codename='can_create_study')
+            view_experimenter = Permission.objects.get(codename='can_view_experimenter')
+            view_organization = Permission.objects.get(codename='can_view_organization')
+            edit_organization = Permission.objects.get(codename='can_edit_organization')
 
             group_instance.permissions.add(create_study)
             group_instance.permissions.add(view_experimenter)
