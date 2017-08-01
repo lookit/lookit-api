@@ -42,10 +42,39 @@
                     <div class="pull-right">
                         {% buttons %}
                               <a class="btn btn-default"href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>
-                              <button type="submit" class="btn btn-success">
-                                 Save Changes
-                              </button>
+                              {% if save_confirmation %}
+                                <a data-toggle="modal" class="btn btn-danger" href="#saveStudyConfirmation">Save Changes</a>
+                              {% else %}
+                                  <button type="submit" class="btn btn-success">
+                                     Save Changes
+                                  </button>
+                              {% endif %}
                         {% endbuttons %}
+                        <div class="modal fade" id="saveStudyConfirmation">
+                            <form class="well" method="post">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">×</button>
+                                      <h3> Are you sure you want to make changes to {{ study.name }}? </h3>
+                                    </div>
+                                    <div class="modal-body">
+                                         {% csrf_token %}
+                                         <p>
+                                             This study has already been <strong><em>approved</em></strong>. If you edit this study, the system will
+                                             automatically give it a rejected status. You will have to resubmit the study so your changes can
+                                             be reviewed.
+                                         </p>
+                                         <p>(If your only change is toggling the study between private/public, your study will stay in its {{study.state}} state.) </p>
+                                    </div>
+                                    <div class="modal-footer"> {% csrf_token %}
+                                         <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>
+                                         <button type="submit" class="btn btn-danger">
+                                            Save Changes
+                                         </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </form>
             </div>

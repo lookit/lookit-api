@@ -289,6 +289,7 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         context['status_tooltip'] = status_tooltip_text.get(state, state)
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
         context['name'] = self.request.GET.get('match', None)
+        context['save_confirmation'] = state in ['approved', 'active', 'paused', 'deactivated']
         return context
 
 
