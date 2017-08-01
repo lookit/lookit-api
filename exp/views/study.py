@@ -319,6 +319,14 @@ class StudyBuildView(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
             initial['structure'] = json.dumps(structure)
         return initial
 
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds whether save confirmation is needed to study.
+        """
+        context = super().get_context_data(**kwargs)
+        context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
+        return context
+
     def get_success_url(self):
         return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
