@@ -62,7 +62,7 @@ class Study(models.Model):
         )
         self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age', 'min_age', 'image', 'exit_url']
         for field in self.__monitoring_fields:
-            setattr(self, '__original_%s' % field, getattr(self, field))
+            setattr(self, f'__original_{field}', getattr(self, field))
 
     def __str__(self):
         return f'<Study: {self.name}>'
@@ -72,8 +72,7 @@ class Study(models.Model):
         Check if fields in self.__monitoring fields have changed.
         """
         for field in self.__monitoring_fields:
-            orig = '__original_%s' % field
-            if getattr(self, orig) != getattr(self, field):
+            if getattr(self, f'__original_{field}') != getattr(self, field):
                 return True
         return False
 
