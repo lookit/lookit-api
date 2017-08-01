@@ -267,8 +267,8 @@ def check_modification_of_approved_study(sender, instance, created, **kwargs):
     Puts study back in "rejected" state if study is modified after it's already been approved.
     Leaves comment for user with explanation.
     """
-    approved_states = ['approved', 'active', 'paused', 'deactived']
-    if instance.important_fields_changed() and instance.state in approved_states:
+    approved_states = ['approved', 'active', 'paused', 'deactivated']
+    if instance.state in approved_states and instance.important_fields_changed():
         instance.state = 'rejected'
         instance.comments = 'Your study has been modified following approval.  You must resubmit this study to get it approved again.'
         instance.save()
