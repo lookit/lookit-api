@@ -110,7 +110,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'studies'
-    queryset = Study.objects.filter(state='active', public=True)
+    queryset = Study.objects.filter(state='active')
     serializer_class = StudySerializer
     lookup_field = 'uuid'
     filter_fields = [('response', 'responses'), ]
