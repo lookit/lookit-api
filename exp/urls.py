@@ -15,13 +15,12 @@ Including another URLconf
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 '''
 from django.conf.urls import url
-from django.urls import reverse_lazy
-from django.views.generic.base import RedirectView
 
 from exp.views import (ParticipantDetailView, ParticipantListView,
-                       ResearcherDetailView, ResearcherListView, StudyCreateView,
-                       StudyDetailView, StudyListView, StudyUpdateView, StudyResponsesList,
-                       StudyBuildView, PreviewProxyView)
+                       PreviewProxyView, ResearcherDetailView,
+                       ResearcherListView, StudyBuildView, StudyCreateView,
+                       StudyDetailView, StudyListView, StudyResponsesList,
+                       StudyUpdateView, ExperimenterDashboardView)
 
 urlpatterns = [
     url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
@@ -35,5 +34,5 @@ urlpatterns = [
     url(r'studies/(?P<pk>\d+)/edit/build/$', StudyBuildView.as_view(), name='study-build'),
     url(r'studies/(?P<pk>\d+)/responses/$', StudyResponsesList.as_view(), name='study-responses-list'),
     url(r'studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/preview/?$', PreviewProxyView.as_view(), name='preview-proxy'),
-    url(r'', RedirectView.as_view(url=reverse_lazy('exp:study-list')), name='homepage')
+    url(r'', ExperimenterDashboardView.as_view(), name='dashboard')
 ]

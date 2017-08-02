@@ -1,32 +1,30 @@
-import operator, json
-import uuid
-import io
 import csv
+import io
+import json
+import operator
+import uuid
 from functools import reduce
 
-from django import forms
-from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
-from guardian.mixins import PermissionRequiredMixin
+from django.contrib import messages
+from django.contrib.auth.mixins import \
+    PermissionRequiredMixin as DjangoPermissionRequiredMixin
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
-from django.http import HttpResponseRedirect, Http404
-
+from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.views import generic
-from revproxy.views import ProxyView
 
 from accounts.models import User
 from accounts.utils import (get_permitted_triggers, status_tooltip_text,
                             update_trigger)
-from guardian.mixins import LoginRequiredMixin
-from guardian.shortcuts import (get_objects_for_user, get_perms,
-                                get_users_with_perms)
-from studies.forms import StudyEditForm, StudyForm, StudyBuildForm
-from studies.models import Study, StudyLog
 from exp.mixins.paginator_mixin import PaginatorMixin
-from django.contrib import messages
+from guardian.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from guardian.shortcuts import get_objects_for_user
 from project import settings
+from revproxy.views import ProxyView
+from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
+from studies.models import Study
 
 
 class StudyCreateView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
