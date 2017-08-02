@@ -1,11 +1,11 @@
 
-from django.views import generic
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views import generic
+from exp.views.mixins import ExperimenterLoginRequiredMixin
 
-from guardian.mixins import LoginRequiredMixin
 
-
-class ExperimenterDashboardView(LoginRequiredMixin, generic.TemplateView):
+class ExperimenterDashboardView(ExperimenterLoginRequiredMixin, generic.TemplateView):
     '''
     ExperimenterDashboard will show a customized view to each user based on the
     role and tasks that they perform.

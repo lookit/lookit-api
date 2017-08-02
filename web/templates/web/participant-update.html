@@ -17,7 +17,7 @@
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg ">
-                 {% include 'web/_account-navigation.html' with current_page="participant-update" %} 
+                 {% include 'web/_account-navigation.html' with current_page="participant-update" %}
             </div>
             <div class="col-md-8">
                 <div class="panel-heading">
@@ -39,7 +39,7 @@
                     </form>
                 </div>
               </div>
-
+              {% if not request.user.is_researcher %}
               <div class="panel-heading">
                 <h1 class="panel-title"> Change Your Password </h1>
               </div>
@@ -58,6 +58,7 @@
                   </form>
               </div>
             </div>
+            {% endif %}
             </div>
         </div>
     </div>
