@@ -456,7 +456,7 @@ flatpages = [
     					<p>Hobbies: Board games, aerial silks, bicycling</p>
     				</div>
     				<div class="lookit-scientist col-sm-6 col-md-4 col-lg-3">
-    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/laura.JPG"></div>
+    					<div class="profile-img"><img src="https://storage.googleapis.com/io-osf-lookit-staging2/static/images/laura.jpg"></div>
     					<h3>Laura Schulz</h3>
     					<p>Laura is the PI of the Early Childhood Cognition Lab.</p>
     					<p>Research interests: How children arrive at a common-sense understanding of the physical and social world through exploration and instruction.</p>

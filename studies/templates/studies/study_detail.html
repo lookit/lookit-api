@@ -105,7 +105,7 @@
                           <div class="input-group">
                             <input type="text" class="form-control" id="private-study-link" value="{% url 'web:study-detail' study.uuid %}" aria-describedby="copy-link-button">
                             <span onmouseout="removeTooltip(this)" data-toggle="tooltip" class="input-group-addon btn" id="copy-link-button" data-clipboard-target="#private-study-link" >
-                                <img src="{% static '/exp/img/clippy.svg' %}" width="13"/>
+                                <img src="{% static 'exp/img/clippy.svg' %}" width="13"/>
                             </span>
                           </div>
                       {% endif %}

@@ -43,14 +43,42 @@
                     {% bootstrap_form form %}
                     <div>
                         {% buttons %}
-                          <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
-                          <button type="submit" class="btn btn-success">
-                             Save
-                          </button>
+                         <a class="btn btn-primary" target="_blank" href="{% url 'exp:preview-proxy' study.uuid %}"> Try Experiment </a>
                           <span class="pull-right">
-                               <a class="btn btn-primary" target="_blank" href="{% url 'exp:preview-proxy' study.uuid %}"> Try Experiment </a>
+                              <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
+                              {% if save_confirmation %}
+                                <a data-toggle="modal" class="btn btn-danger" href="#saveStructureConfirmation">Save</a>
+                              {% else %}
+                                  <button type="submit" class="btn btn-success">
+                                     Save
+                                  </button>
+                              {% endif %}
                           </span>
                         {% endbuttons %}
+                        <div class="modal fade" id="saveStructureConfirmation">
+                            <form class="well" method="post">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">×</button>
+                                      <h3> Are you sure you want to modify the JSON in {{ study.name }}? </h3>
+                                    </div>
+                                    <div class="modal-body">
+                                         {% csrf_token %}
+                                         <p>
+                                             This study has already been <strong><em>approved</em></strong>. If you edit this study's structure, the system will
+                                             automatically give it a rejected status. You will have to resubmit the study so your changes can
+                                             be reviewed.
+                                         </p>
+                                    </div>
+                                    <div class="modal-footer"> {% csrf_token %}
+                                         <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard Changes </a>
+                                         <button type="submit" class="btn btn-danger">
+                                            Save
+                                         </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </form>
             </div>

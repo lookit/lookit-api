@@ -7,23 +7,81 @@
     {{ block.super }}
     <script type="application/javascript">
         $(document).ready(function(){
-            $('.response-data').hide();
+            hideResponses();
+            prepareDataForDownload('.all-data', 'download-all-data', 'json');
+            prepareDataForDownload('#json-data-1', 'download-individual-data', 'json');
+            $(".all-csv-data").hide();
             $( ".selectable-participant" ).first().addClass('selected');
             $( ".response-data" ).first().show();
+
             $('.selectable-participant').click(function() {
+                // Shows selected individual's response data
                 var id = $(this)[0].id;
-                var index = id.split('-').slice(-1)[0];
+                var index = extractIdNumber(id);
                 $('.selectable-participant').removeClass('selected');
                 $('#' + id).addClass('selected');
-                $('.response-data').hide();
-                $('#response-data-' + index).show();
+                hideResponses();
+                showResponse($('#data-type-selector').val(), index);
             });
-            var data = "data:text/json;charset=utf-8," + encodeURIComponent($('.all-data').html());
-            var elem = $('#download-all-data')[0];
-            if (data && elem) {
-                elem.href = data;
-                elem.download = '{{study.name}}-all-data.json';
+
+            $('#data-type-selector').on('change', function(){
+                // Toggles individual responses between CSV and JSON format
+                var selected = $(this).find("option:selected").val();
+                var index = extractIdNumber($('.selectable-participant.selected')[0].id);
+                hideResponses();
+                showResponse(selected, index);
+            });
+
+            $('#data-type-selector-all').on('change', function(){
+                // Toggles combined responses between CSV and JSON format
+                var selected = $(this).find("option:selected").val();
+                $('.all-data').hide();
+                $('.all-csv-data').hide();
+                if (selected === 'CSV'){
+                    $('.all-csv-data').show();
+                    prepareDataForDownload('.all-csv-data', 'download-all-data', 'csv');
+                } else {
+                    $('.all-data').show();
+                    prepareDataForDownload('.all-data', 'download-all-data', 'json');
+                }
+            });
+
+            function prepareDataForDownload(dataClassOrId, buttonId, ext) {
+                // Preps Download All button to download either all JSON or all CSV responses
+                var data = "data:text/json;charset=utf-8," + encodeURIComponent($(dataClassOrId).html());
+                var elem = $('#' + buttonId)[0];
+                var fileName = 'all-data';
+                if (buttonId.includes('individual')) {
+                    fileName = 'individual-data';
+                }
+                if (data && elem) {
+                    elem.href = data;
+                    elem.download = '{{study.name}}-' + fileName + '-.' + ext;
+                }
             }
+
+            function extractIdNumber(id) {
+                return id.split('-').slice(-1)[0];
+            }
+
+            function showResponse(dataType, index) {
+                // Shows individual response
+                if (dataType === 'JSON') {
+                    $('#response-data-' + index).show();
+                    prepareDataForDownload('#json-data-' + index, 'download-individual-data', 'json');
+
+                } else if (dataType === 'CSV') {
+                    $('#csv-response-data-' + index).show();
+                    prepareDataForDownload('#csv-data-' + index, 'download-individual-data', 'csv');
+                }
+                return;
+            }
+
+            function hideResponses() {
+                // Hides all responses
+                $('.response-data').hide();
+                $('.csv-response-data').hide();
+            };
 
             $(function(){
                 var hash = window.location.hash;
@@ -144,13 +202,27 @@
                         {% include 'studies/_paginator.html' with items=responses request=request %}
                     </div>
                     <div class="col-md-6 col-xs-12">
+                        <div class="form-group pt-xxxl">
+                          <select class="form-control" id="data-type-selector">
+                            <option>JSON</option>
+                            <option>CSV</option>
+                          </select>
+                        </div>
                         {% for response in response_data %}
-                            <div class='response-data pt-xxxl' id='response-data-{{ forloop.counter }}' class='hidden'>
+                            <div class='response-data' id='response-data-{{ forloop.counter }}' class='hidden'>
                                 <pre class='json-data' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
-                                <h5>Attachments</h5>
-                                <p> TODO: Use some sort of zip solution for attachment + json </p>
                             </div>
                         {% endfor %}
+                        {% for csv in csv_data %}
+                            <div class='csv-response-data' id='csv-response-data-{{ forloop.counter }}'>
+                                <pre class='csv-data' id='csv-data-{{ forloop.counter }}'>{{ csv }}</pre>
+                            </div>
+                        {% endfor %}
+                        <div class="pull-right">
+                            <a id='download-individual-data' class='btn btn-primary'>
+                                Download Individual Data
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -159,13 +231,24 @@
                     <h3 class='col-sm-9 col-xs-12'>
                         All Data
                     </h4>
-                    <a id='download-all-data' class='mt-md btn btn-primary col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2'>
-                        Download All Data
-                    </a>
                 </div>
                 <div class='row pt-sm'>
-                    <div class="col-xs-12">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                          <select class="form-control" id="data-type-selector-all">
+                            <option>JSON</option>
+                            <option>CSV</option>
+                          </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <a id='download-all-data' class='btn btn-primary'>
+                            Download All Data
+                        </a>
+                    </div>
+                    <div class="col-xs-12 pt-md">
                         <pre class='all-data'>{{ all_responses }}</pre>
+                        <pre class='all-csv-data'>{{ csv_responses }}</pre>
                     </div>
                 </div>
             </div>
