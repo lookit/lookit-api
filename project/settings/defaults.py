@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     # at the bottom so overriding form widget templates have a fallback
     'django.forms',
     'django.contrib.admin',
-    
+
     # at the bottom so overriding templates is possible
     'allauth',
     'allauth.account',
@@ -192,7 +192,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ID = 2
+SITE_ID = 1
+SITE_DOMAIN = os.environ.get('SITE_DOMAIN', 'localhost:8000')
+SITE_NAME = os.environ.get('SITE_NAME', 'Lookit')
 
 
 # Static files (CSS, JavaScript, Images)
