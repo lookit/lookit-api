@@ -40,7 +40,6 @@ class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
         free. For example, verifying whether or not the username
         already exists, is not a responsibility.
         """
-        import ipdb; ipdb.set_trace()
         username = data.get('username')
         first_name = data.get('first_name')
         last_name = data.get('last_name')
