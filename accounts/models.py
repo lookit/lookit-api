@@ -111,6 +111,8 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         null=True, blank=True
     )
     _identicon = models.TextField(verbose_name='identicon')
+    time_zone = models.CharField(max_length=255)
+    locale = models.CharField(max_length=255)
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)

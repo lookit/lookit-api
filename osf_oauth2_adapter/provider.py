@@ -77,8 +77,6 @@ class OSFProvider(OAuth2Provider):
                                   email_addresses=email_addresses)
         user = sociallogin.user = adapter.new_user(request, sociallogin)
         user.set_unusable_password()
-        user.is_researcher = True
-        user.identicon
         adapter.populate_user(request, sociallogin, common_fields)
         return sociallogin
 

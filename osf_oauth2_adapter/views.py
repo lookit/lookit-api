@@ -1,4 +1,5 @@
 import requests
+import base64
 
 from django.views.generic.base import TemplateView
 
@@ -21,6 +22,10 @@ class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
     authorize_url = base_url.format('authorize')
     profile_url = '{}v2/users/me/'.format(OsfOauth2AdapterConfig.osf_api_url)
 
+    def get_base64_gravatar(self, url):
+        resp = requests.get(url)
+        return "data:" + resp.headers['Content-Type'] + ";" + "base64," + str(base64.b64encode(resp.content).decode("utf-8"))
+
     def populate_user(self, request, sociallogin, data):
         """
         Hook that can be used to further populate the user instance.
@@ -35,24 +40,24 @@ class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
         free. For example, verifying whether or not the username
         already exists, is not a responsibility.
         """
+        import ipdb; ipdb.set_trace()
         username = data.get('username')
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         email = username
-        name = data.get('name')
         time_zone = data.get('time_zone')
         locale = data.get('locale')
         gravatar = data.get('profile_image_url')
         user = sociallogin.user
         user_username(user, username or '')
         user_email(user, valid_email_or_none(email) or '')
-        name_parts = (name or '').partition(' ')
         user_field(user, 'given_name', first_name or name_parts[0])
         user.is_active = True
+        user.is_researcher = True
         user_field(user, 'family_name', last_name or name_parts[2])
         user_field(user, 'time_zone', time_zone)
         user_field(user, 'locale', locale)
-        user_field(user, 'gravatar', gravatar)
+        user_field(user, '_identicon', self.get_base64_gravatar(gravatar))
 
         return user
 
