@@ -22,14 +22,17 @@
     });
     function statusSelected(status) {
         var commentsBlock = document.getElementById("rejectionComments");
+        var labelBlock = document.getElementsByClassName('comments-block')[0];
         if (status.value === 'reject' && "{{ study_perms }}".indexOf('can_approve_study') !== -1) {
             rejectionComments.disabled = false;
             rejectionComments.classList.remove("comments-text");
+            labelBlock.classList.remove("comments-label")
 
         } else {
             rejectionComments.disabled = true;
             rejectionComments.className += " comments-text";
             rejectionComments.value = "{{ study.comments }}";
+            labelBlock.className += " comments-label"
         }
     }
 </script>
@@ -55,7 +58,7 @@
                           </select>
                         </div>
                         <div class="pt-md">
-                            <label class="comments-block {% if study.state != 'rejected' %}comments-label{% endif %}"> Comments: </label>
+                            <label class="comments-block"> Comments: </label>
                             {% get_obj_perms request.user for study as "study_perms" %}
                             <em><textarea id="rejectionComments" class="comments-text rejection-comments" name="comments-text" disabled rows="4" cols="34">{{study.comments}}</textarea></em>
                         </div>
