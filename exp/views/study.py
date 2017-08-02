@@ -1,5 +1,7 @@
 import operator, json
 import uuid
+import io
+import csv
 from functools import reduce
 
 from django import forms
@@ -287,6 +289,7 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         context['status_tooltip'] = status_tooltip_text.get(state, state)
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
         context['name'] = self.request.GET.get('match', None)
+        context['save_confirmation'] = state in ['approved', 'active', 'paused', 'deactivated']
         return context
 
 
@@ -316,6 +319,14 @@ class StudyBuildView(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
             initial['structure'] = json.dumps(structure)
         return initial
 
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds whether save confirmation is needed to study.
+        """
+        context = super().get_context_data(**kwargs)
+        context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
+        return context
+
     def get_success_url(self):
         return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
@@ -329,6 +340,23 @@ class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.De
     model = Study
     permission_required = 'studies.can_view_study_responses'
     raise_exception = True
+
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.  Study results
+        are paginated.
+        """
+        context = super().get_context_data(**kwargs)
+        orderby = self.request.GET.get('sort', 'id')
+        page = self.request.GET.get('page', None)
+        study = context['study']
+        responses = study.responses.filter(completed=True).order_by(orderby)
+        context['responses'] = self.paginated_queryset(responses, page, 10)
+        context['response_data'] = self.build_responses(context['responses'])
+        context['csv_data'] = self.build_individual_csv(context['responses'])
+        context['all_responses'] = ', '.join(self.build_responses(responses))
+        context['csv_responses'] = self.build_all_csv(responses)
+        return context
 
     def build_responses(self, responses):
         """
@@ -347,20 +375,46 @@ class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.De
             'demographic_id': resp.demographic_snapshot.id
             }, indent=4) for resp in responses]
 
-    def get_context_data(self, **kwargs):
+    def get_csv_headers(self):
         """
-        In addition to the study, adds several items to the context dictionary.  Study results
-        are paginated.
+        Returns header row for csv data
         """
-        context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get('sort', 'id')
-        page = self.request.GET.get('page', None)
-        study = context['study']
-        responses = study.responses.filter(completed=True).order_by(orderby) if orderby else study.responses.all()
-        context['responses'] = self.paginated_queryset(responses, page, 10)
-        context['response_data'] = self.build_responses(context['responses'])
-        context['all_responses'] = ', '.join(self.build_responses(responses))
-        return context
+        return ['sequence', 'conditions', 'exp_data', 'participant_id', 'global_event_timings',
+            'child_id', 'completed', 'study_id', 'response_id', 'demographic_id']
+
+    def build_individual_csv(self, responses):
+        """
+        Builds CSV for individual responses and puts them in array
+        """
+        csv_responses = []
+        for resp in responses:
+            output, writer = self.csv_output_and_writer()
+            writer.writerow(self.get_csv_headers())
+            writer.writerow(self.csv_row_data(resp))
+            csv_responses.append(output.getvalue())
+        return csv_responses
+
+    def csv_row_data(self, resp):
+        """
+        Builds individual row for csv responses
+        """
+        return [resp.sequence, resp.conditions, resp.exp_data, resp.child.user.id,
+        resp.global_event_timings, resp.child.id, resp.completed, resp.study.id, resp.id,
+        resp.demographic_snapshot.id]
+
+    def csv_output_and_writer(self):
+        output = io.StringIO()
+        return output, csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+
+    def build_all_csv(self, responses):
+        """
+        Builds CSV file contents for all responses
+        """
+        output, writer = self.csv_output_and_writer()
+        writer.writerow(self.get_csv_headers())
+        for resp in responses:
+            writer.writerow(self.csv_row_data(resp))
+        return output.getvalue()
 
 
 class PreviewProxyView(ProxyView, LoginRequiredMixin):
