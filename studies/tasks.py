@@ -49,23 +49,25 @@ def get_repo_path(full_repo_path):
 
 
 def get_master_sha(repo_url):
-        api_url = f'https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs'
-        response = requests.get(api_url)
-        return response.json()[0]['object']['sha']
+    api_url = f'https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs'
+    response = requests.get(api_url)
+    return response.json()[0]['object']['sha']
 
 
 def unzip_file(file, destination_folder):
+    """
+    Github puts all files into a f`{repo_name}_{sha}`/ directory.
+    This strips off the top-level directory and uses the destination_folder
+    in it's place.
+    """
     os.makedirs(destination_folder, mode=0o777, exist_ok=True)
-    zip_file = zipfile.ZipFile(BytesIO(file))
-    files = zip_file.namelist()
-    parent_dir = files.pop(0)
-    for name in files:
-        orig_name = name
-        name = os.path.join(destination_folder, name.replace(parent_dir, ''))
-        if name.endswith('/'):
-            os.makedirs(name, mode=0o777, exist_ok=True)
-        else:
-            zip_file.extract(orig_name, path=name)
+    with zipfile.ZipFile(BytesIO(file)) as zip_file:
+        for member in zip_file.infolist():
+            if member.is_dir():
+                os.makedirs(os.path.join(destination_folder, member.filename.partition('/')[-1]), mode=0o777, exist_ok=True)
+                continue
+            with open(os.path.join(destination_folder, member.filename.partition('/')[-1]), 'wb') as outfile:
+                outfile.write(zip_file.read(member))
 
 
 def deploy_to_remote(folder_name):
@@ -73,9 +75,9 @@ def deploy_to_remote(folder_name):
 
 
 def download_repos(addons_sha=None, player_sha=None):
-    if addons_sha is None or not re.match('\b([a-f0-9]{40})\b', addons_sha):
+    if addons_sha is None or not re.match('([a-f0-9]{40})', addons_sha):
         addons_sha = get_master_sha(settings.EMBER_ADDONS_REPO)
-    if player_sha is None or not re.match('\b([a-f0-9]{40})\b', player_sha):
+    if player_sha is None or not re.match('([a-f0-9]{40})', player_sha):
         player_sha = get_master_sha(settings.EMBER_EXP_PLAYER_REPO)
 
     repo_destination_folder = f'./{player_sha}_{addons_sha}/'
@@ -105,6 +107,16 @@ def build_experiment(study_uuid, preview=True):
     addons_sha = getattr(study, 'last_known_addons_sha', None)
 
     repo_destination_folder = download_repos(addons_sha=addons_sha, player_sha=player_sha)
+
+    # cd repo_destination_folder
+    # yarn install --pure-lockfile
+    # bower install
+    # cd repo_destination_folder/lib/exp-player
+    # yarn install --pure-lockfile
+    # bower install
+    # cp VideoRecorder.swf repo_destination_folder/public
+    # cp .env into repo_destination_folder
+    # ember build?
 
 
 def cleanup_builds(older_than=None):
