@@ -58,7 +58,7 @@
                           </select>
                         </div>
                         <div class="pt-md">
-                            <label class="comments-block"> Comments: </label>
+                            <label class="comments-block comments-label"> Comments: </label>
                             {% get_obj_perms request.user for study as "study_perms" %}
                             <em><textarea id="rejectionComments" class="comments-text rejection-comments" name="comments-text" disabled rows="4" cols="34">{{study.comments}}</textarea></em>
                         </div>
