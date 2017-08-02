@@ -61,7 +61,7 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Show children that have 1) responded to studies you can view and 2) are your own children
         """
-        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
         return Child.objects.filter(Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)).distinct()
 
@@ -82,7 +82,7 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Shows 1) demographics attached to responses you can view, and 2) your own demographics
         """
-        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
         return DemographicData.objects.filter(Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)).distinct()
 
@@ -104,7 +104,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         Shows 1) users that have responded to studies you can view and 2) your own user object
         """
         # TODO should we further restrict on participants only?
-        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
         return User.objects.filter(Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)).distinct()
 
@@ -152,6 +152,8 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
     def get_queryset(self):
         """
+        Overrides queryset.
+
         Shows responses that you either have permission to view, or responses by your own children
         """
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
