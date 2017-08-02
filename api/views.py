@@ -38,6 +38,7 @@ class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     filter_fields = [('study', 'study'), ('user', 'user'), ]
+    http_method_names = [u'get', u'head', u'options']
 
 
 class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -46,6 +47,7 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     serializer_class = ChildSerializer
     lookup_field = 'uuid'
     filter_fields = [('user', 'user'), ]
+    http_method_names = [u'get', u'head', u'options']
 
 
 class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -54,6 +56,7 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
     filter_fields = [('user', 'user'), ]
+    http_method_names = [u'get', u'head', u'options']
 
 
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -62,6 +65,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = User.objects.filter(demographics__isnull=False).distinct()
     serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
+    http_method_names = [u'get', u'head', u'options']
 
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -70,6 +74,7 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     serializer_class = StudySerializer
     lookup_field = 'uuid'
     filter_fields = [('response', 'responses'), ]
+    http_method_names = [u'get', u'head', u'options']
 
 
 class ResponseFilter(filters.FilterSet):
@@ -88,6 +93,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_fields = [('study', 'study'), ]
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ResponseFilter
+    http_method_names = [u'get', u'post', u'put', u'patch', u'head', u'options']
 
     def get_serializer_class(self):
         """Return a different serializer for create views"""
