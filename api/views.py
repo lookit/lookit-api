@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from rest_framework import status
-
+from guardian.shortcuts import get_objects_for_user
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   OrganizationSerializer, UserSerializer)
@@ -70,12 +70,19 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'studies'
-    queryset = Study.objects.filter(state='active')
+    queryset = Study.objects.filter(state='active', public=True)
     serializer_class = StudySerializer
     lookup_field = 'uuid'
     filter_fields = [('response', 'responses'), ]
     http_method_names = [u'get', u'head', u'options']
 
+    def get_queryset(self):
+        """
+        Shows studies that are either 1) active and public or 2) studies you have permission to view.
+
+        "can_view_study" permissions allows the researcher to preview the study before it has been made active/public
+        """
+        return (super().get_queryset() | get_objects_for_user(self.request.user, 'studies.can_view_study')).distinct()
 
 class ResponseFilter(filters.FilterSet):
     child = filters.UUIDFilter(name='child__uuid')
