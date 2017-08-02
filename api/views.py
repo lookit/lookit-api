@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from guardian.shortcuts import get_objects_for_user
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
@@ -39,6 +40,7 @@ class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     serializer_class = OrganizationSerializer
     filter_fields = [('study', 'study'), ('user', 'user'), ]
     http_method_names = [u'get', u'head', u'options']
+    permission_classes = [IsAuthenticated]
 
 
 class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -48,6 +50,7 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     filter_fields = [('user', 'user'), ]
     http_method_names = [u'get', u'head', u'options']
+    permission_classes = [IsAuthenticated]
 
 
 class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -57,6 +60,7 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     serializer_class = DemographicDataSerializer
     filter_fields = [('user', 'user'), ]
     http_method_names = [u'get', u'head', u'options']
+    permission_classes = [IsAuthenticated]
 
 
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -66,6 +70,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
     http_method_names = [u'get', u'head', u'options']
+    permission_classes = [IsAuthenticated]
 
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -75,14 +80,15 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     filter_fields = [('response', 'responses'), ]
     http_method_names = [u'get', u'head', u'options']
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
-        Shows studies that are either 1) active and public or 2) studies you have permission to view.
+        Shows studies that are either 1) active and public or 2) studies you have permission to edit.
 
-        "can_view_study" permissions allows the researcher to preview the study before it has been made active/public
+        "can_edit_study" permissions allows the researcher to preview the study before it has been made active/public
         """
-        return (super().get_queryset() | get_objects_for_user(self.request.user, 'studies.can_view_study')).distinct()
+        return (super().get_queryset() | get_objects_for_user(self.request.user, 'studies.can_edit_study')).distinct()
 
 class ResponseFilter(filters.FilterSet):
     child = filters.UUIDFilter(name='child__uuid')
@@ -101,6 +107,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ResponseFilter
     http_method_names = [u'get', u'post', u'put', u'patch', u'head', u'options']
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         """Return a different serializer for create views"""
