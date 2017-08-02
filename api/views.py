@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from django.db.models import Q
 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -36,6 +37,8 @@ class FilterByUrlKwargsMixin(views.ModelViewSet):
 class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'organizations'
     lookup_field = 'uuid'
+    # TODO - maybe we should restrict more, but I think it's fine to show
+    # all orgs to everyone through the API
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     filter_fields = [('study', 'study'), ('user', 'user'), ]
@@ -52,26 +55,58 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     http_method_names = [u'get', u'head', u'options']
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Overrides queryset.
+
+        Show children that have 1) responded to studies you can view and 2) are your own children
+        """
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        study_ids = studies.values_list('id', flat=True)
+        return Child.objects.filter(Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)).distinct()
+
 
 class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'demographics'
+    # TODO modify when oauth in
     queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
     filter_fields = [('user', 'user'), ]
     http_method_names = [u'get', u'head', u'options']
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Overrides queryset.
+
+        Shows 1) demographics attached to responses you can view, and 2) your own demographics
+        """
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        study_ids = studies.values_list('id', flat=True)
+        return DemographicData.objects.filter(Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)).distinct()
+
 
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'users'
+    # TODO modify when oauth in
     queryset = User.objects.filter(demographics__isnull=False).distinct()
     serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
     http_method_names = [u'get', u'head', u'options']
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Overrides queryset.
+
+        Shows 1) users that have responded to studies you can view and 2) your own user object
+        """
+        # TODO should we further restrict on participants only?
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        study_ids = studies.values_list('id', flat=True)
+        return User.objects.filter(Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)).distinct()
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'studies'
@@ -114,3 +149,12 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if self.action == 'create':
             return ResponseWriteableSerializer
         return super().get_serializer_class()
+
+    def get_queryset(self):
+        """
+        Shows responses that you either have permission to view, or responses by your own children
+        """
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
+        study_ids = studies.values_list('id', flat=True)
+        children_ids = Child.objects.filter(user__id=self.request.user.id).values_list('id', flat=True)
+        return Response.objects.filter(Q(study__id__in=study_ids) | Q(child__id__in=children_ids)).distinct()
