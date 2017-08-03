@@ -100,7 +100,6 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
     Displays a list of researchers that belong to the org admin, org read, or org researcher groups.
     '''
     template_name = 'accounts/researcher_list.html'
-    # TODO needs to change once oauth in
     queryset = User.objects.filter(is_researcher=True, is_active=True)
     model = User
     permission_required = 'accounts.can_view_organization'
