@@ -190,7 +190,7 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         or unaffiliated researchers.
         """
         qs = super().get_queryset()
-        return qs.filter(Q(Q(organization=self.request.user.organization) | Q(is_researcher=True, groups__isnull=True, organization__isnull=True)))
+        return qs.filter(Q(Q(organization=self.request.user.organization) | Q(is_researcher=True, groups__isnull=True, organization__isnull=True))).distinct()
 
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
