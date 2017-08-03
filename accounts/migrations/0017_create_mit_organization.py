@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('contenttypes', '__latest__'),
         ('sites', '__latest__'),
-        ('accounts', '0015_user_is_researcher'),
+        ('accounts', '0016_auto_20170802_2311'),
     ]
 
     operations = [
