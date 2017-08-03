@@ -117,11 +117,16 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
     def get_queryset(self):
         """
-        Shows studies that are either 1) active and public or 2) studies you have permission to edit.
+        Shows studies that are either 1) active or 2) studies you have permission to edit.
 
         "can_edit_study" permissions allows the researcher to preview the study before it has been made active/public
         """
-        return (super().get_queryset() | get_objects_for_user(self.request.user, 'studies.can_edit_study')).distinct()
+        qs = super().get_queryset()
+        # List View restricted to public.  Detail view can show a private or public study.
+        if 'List' in self.get_view_name():
+            qs = qs.filter(public=True)
+
+        return (qs | get_objects_for_user(self.request.user, 'studies.can_edit_study')).distinct()
 
 class ResponseFilter(filters.FilterSet):
     child = filters.UUIDFilter(name='child__uuid')
