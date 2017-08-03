@@ -37,12 +37,10 @@ class FilterByUrlKwargsMixin(views.ModelViewSet):
 class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'organizations'
     lookup_field = 'uuid'
-    # TODO - maybe we should restrict more, but I think it's fine to show
-    # all orgs to everyone through the API
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     filter_fields = [('study', 'study'), ('user', 'user'), ]
-    http_method_names = [u'get', u'head', u'options']
+    http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
 
 
@@ -52,7 +50,7 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     serializer_class = ChildSerializer
     lookup_field = 'uuid'
     filter_fields = [('user', 'user'), ]
-    http_method_names = [u'get', u'head', u'options']
+    http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -73,7 +71,7 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
     filter_fields = [('user', 'user'), ]
-    http_method_names = [u'get', u'head', u'options']
+    http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -94,7 +92,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = User.objects.filter(demographics__isnull=False).distinct()
     serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
-    http_method_names = [u'get', u'head', u'options']
+    http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -114,7 +112,7 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     serializer_class = StudySerializer
     lookup_field = 'uuid'
     filter_fields = [('response', 'responses'), ]
-    http_method_names = [u'get', u'head', u'options']
+    http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -141,7 +139,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_fields = [('study', 'study'), ]
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ResponseFilter
-    http_method_names = [u'get', u'post', u'put', u'patch', u'head', u'options']
+    http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
