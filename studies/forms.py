@@ -31,7 +31,7 @@ class StudyEditForm(forms.ModelForm):
             'min_age': 'Minimum Age',
             'max_age': 'Maximum Age',
             'contact_info': 'Researcher/Contact Information',
-            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once approved?'
+            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?'
         }
         widgets = {
             'short_description': Textarea(attrs={'rows': 2}),
@@ -66,7 +66,7 @@ class StudyForm(forms.ModelForm):
             'min_age': 'Minimum Age',
             'max_age': 'Maximum Age',
             'contact_info': 'Researcher/Contact Information',
-            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once approved?'
+            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?'
         }
         widgets = {
             'short_description': Textarea(attrs={'rows': 2}),
