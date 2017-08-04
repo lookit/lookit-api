@@ -123,6 +123,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     email_results_published = models.BooleanField(default=True)
     email_personally = models.BooleanField(default=True)
 
+    @cached_property
+    def osf_profile_url(self):
+        return self.socialaccount_set.first().extra_data['data']['links']['html']
+
     @property
     def identicon(self):
         if not self._identicon:

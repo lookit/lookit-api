@@ -29,7 +29,7 @@
                     {{ request.user.identicon_small_html }} {{ request.user.get_short_name }} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#">OSF Profile</a></li>
+                    <li><a href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 </ul>
             </li>
