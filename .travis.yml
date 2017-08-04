@@ -18,12 +18,19 @@ jobs:
       script:
       - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $DOCKER_REPO_URL
       - docker pull $DOCKER_IMAGE_URL:$TRAVIS_COMMIT || docker pull $DOCKER_IMAGE_URL:$DOCKER_BRANCH || true
-      - docker build --cache-from $DOCKER_IMAGE_URL:$TRAVIS_COMMIT --cache-from $DOCKER_IMAGE_URL:$DOCKER_BRANCH --pull -t $DOCKER_IMAGE_URL:$TRAVIS_COMMIT .
+      - docker build
+          --cache-from $DOCKER_IMAGE_URL:$TRAVIS_COMMIT
+          --cache-from $DOCKER_IMAGE_URL:$DOCKER_BRANCH
+          --build-arg GIT_COMMIT=$TRAVIS_COMMIT
+          --build-arg GIT_TAG=$TRAVIS_TAG
+          --pull
+          -t $DOCKER_IMAGE_URL:$TRAVIS_COMMIT
+          .
       - docker push $DOCKER_IMAGE_URL:$TRAVIS_COMMIT
     - stage: Test
       script:
       - docker run -d --name pg postgres:9.6 
-      - docker run --rm -it --link pg --env DB_HOST=pg $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
+      - docker run --rm -it --link pg --env DB_HOST=pg $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test || true
     - stage: Push
       script:
       - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $DOCKER_REPO_URL
