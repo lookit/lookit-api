@@ -100,8 +100,33 @@ class DemographicDataForm(forms.ModelForm):
     class Meta:
         model = DemographicData
         exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
+        # help_texts = {
+        #     'child_birthdays': "Must be entered as comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ... "
+        # }
+        fields = ('country', 'density', 'languages_spoken_at_home', 'number_of_children', 'number_of_guardians',
+        'race_identification', 'age', 'gender', 'education_level', 'spouse_education_level', 'annual_income',
+        'number_of_books', 'additional_comments')
         labels = {
-            'child_birthdays': "Children's Birthdays: YYYY-MM-DD, YYYY-MM-DD, ..."
+            'country': 'What country do you live in?',
+            'density': 'How would you describe the area where you live?',
+            'languages_spoken_at_home': 'What language(s) does your family speak at home?',
+            'number_of_children': 'How many children do you have?',
+            'number_of_guardians': 'How many parents/guardians do your children live with?',
+            'race_identification': 'What category(ies) does your family identify as?',
+            'age': "What is your age?",
+            'gender': "What is your gender?",
+            'education_level': "What is the highest level of education you've completed?",
+            'spouse_education_level': 'What is the highest level of education your spouse has completed?',
+            'annual_income': 'What is your approximate family yearly income (in US dollars)?',
+            'number_of_books': "About how many children's books are there in your home?",
+            'additional_comments': "Anything else you'd like us to know?"
+        }
+        help_texts: {
+            'number_of_guardians': 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain below.'
+        }
+        widgets = {
+            'languages_spoken_at_home': forms.Textarea(attrs={'rows': 1}),
+            'additional_comments': forms.Textarea(attrs={'rows':2})
         }
 
 
