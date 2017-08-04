@@ -44,13 +44,8 @@ WORKDIR /code
 
 RUN pip install -U pip
 
-COPY ./requirements/defaults.txt /code/requirements/defaults.txt
-RUN pip install --no-cache-dir -r /code/requirements/defaults.txt
-
-RUN pip install \
-    uwsgi==2.0.13 \
-    gevent==1.2.2 \
-    psycogreen==1.0
+COPY ./requirements/release.txt /code/requirements/release.txt
+RUN pip install --no-cache-dir -r /code/requirements/release.txt
 
 RUN apt-get remove -y gcc
 
