@@ -53,10 +53,13 @@ class ParticipantSignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username',
-                  'given_name', 'middle_name', 'family_name', )
+        fields = ('username', 'given_name')
         exclude = ('user_permissions', 'groups', '_identicon', 'organization',
-                   'is_active', 'is_staff', 'is_superuser', 'last_login')
+                   'is_active', 'is_staff', 'is_superuser', 'last_login',
+                   'middle_name', 'last_name')
+        labels = {
+            'given_name': "Username"
+        }
 
 
 class ParticipantUpdateForm(forms.ModelForm):
@@ -70,7 +73,10 @@ class ParticipantUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'given_name', 'middle_name', 'family_name',)
+        fields = ('username', 'given_name')
+        labels = {
+            'given_name': "Username"
+        }
 
 
 class ParticipantPasswordForm(PasswordChangeForm):
