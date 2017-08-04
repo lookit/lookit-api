@@ -100,10 +100,13 @@ class DemographicDataForm(forms.ModelForm):
     class Meta:
         model = DemographicData
         exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
-        fields = ('density', 'languages_spoken_at_home', 'number_of_children', 'number_of_guardians',
+        fields = ('country', 'state', 'density', 'languages_spoken_at_home', 'number_of_children', 'child_birthdays', 'number_of_guardians',
         'race_identification', 'age', 'gender', 'education_level', 'spouse_education_level', 'annual_income',
         'number_of_books', 'additional_comments')
+
         labels = {
+            'country': 'What country do you live in?',
+            'state': 'What state do you live in?',
             'density': 'How would you describe the area where you live?',
             'languages_spoken_at_home': 'What language(s) does your family speak at home?',
             'number_of_children': 'How many children do you have?',
@@ -117,7 +120,9 @@ class DemographicDataForm(forms.ModelForm):
             'number_of_books': "About how many children's books are there in your home?",
             'additional_comments': "Anything else you'd like us to know?"
         }
+
         help_texts: {
+            'child_birthdays': "Please enter in comma-separated list YYYY-MM-DD, YYYY-MM-DD, YYYY-MM-DD, ... ",
             'number_of_guardians': 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain below.'
         }
         widgets = {
