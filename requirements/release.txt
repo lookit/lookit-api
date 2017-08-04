@@ -1,0 +1,5 @@
+-r ./defaults.txt
+
+uwsgi==2.0.13
+gevent==1.2.2
+psycogreen==1.0
