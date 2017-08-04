@@ -101,7 +101,7 @@
                       </p>
                   </div>
                   <div class="col-xs-12 col-sm-4">
-                      {% if not study.public %}
+                      {% if not study.public and study.state == 'active' %}
                           <div class="input-group">
                             <input type="text" class="form-control" id="private-study-link" value="{% url 'web:study-detail' study.uuid %}" aria-describedby="copy-link-button">
                             <span onmouseout="removeTooltip(this)" data-toggle="tooltip" class="input-group-addon btn" id="copy-link-button" data-clipboard-target="#private-study-link" >
