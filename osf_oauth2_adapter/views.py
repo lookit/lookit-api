@@ -1,18 +1,21 @@
-import requests
 import base64
 
-from django.views.generic.base import TemplateView
-
+import requests
+from allauth.account.utils import user_email, user_field, user_username
+from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-
+from allauth.socialaccount.providers.oauth2.views import (OAuth2Adapter,
+                                                          OAuth2CallbackView,
+                                                          OAuth2LoginView)
 from allauth.utils import valid_email_or_none
-
-from allauth.account.utils import user_email, user_username, user_field
-
-from .apps import OsfOauth2AdapterConfig
-from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2LoginView, OAuth2CallbackView
+from django.contrib.auth import get_user_model
+from django.urls import reverse_lazy
+from django.views.generic.base import TemplateView
+from django.shortcuts import redirect
 
 from osf_oauth2_adapter.provider import OSFProvider
+
+from .apps import OsfOauth2AdapterConfig
 
 
 class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
@@ -25,6 +28,12 @@ class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
     def get_base64_gravatar(self, url):
         resp = requests.get(url)
         return "data:" + resp.headers['Content-Type'] + ";" + "base64," + str(base64.b64encode(resp.content).decode("utf-8"))
+
+    def pre_social_login(self, request, sociallogin):
+        User = get_user_model()
+        if User.objects.filter(username=sociallogin.user.username).exists():
+            raise ImmediateHttpResponse(redirect(reverse_lazy('local-user-already-exists')))
+        return super().pre_social_login(request, sociallogin)
 
     def populate_user(self, request, sociallogin, data):
         """
@@ -79,3 +88,7 @@ class LoginErroredCancelledView(TemplateView):
 
 
 login_errored_cancelled = LoginErroredCancelledView.as_view()
+
+
+class LocalUserAlreadyExistsView(TemplateView):
+    template_name = 'account/local_user_exists.html'

@@ -1,8 +1,10 @@
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
+from django.urls import reverse_lazy
+from django.shortcuts import redirect
 
-from accounts.models import Organization
+from accounts.models import User
 
 from .apps import OsfOauth2AdapterConfig
 
@@ -73,6 +75,8 @@ class OSFProvider(OAuth2Provider):
         email_addresses = self.extract_email_addresses(response)
         self.cleanup_email_addresses(common_fields.get('email'),
                                      email_addresses)
+        if User.objects.filter(username=common_fields.get('email'), is_researcher=False).exists():
+            return redirect(reverse_lazy('local-user-already-exists'))
         sociallogin = SocialLogin(account=socialaccount,
                                   email_addresses=email_addresses)
         user = sociallogin.user = adapter.new_user(request, sociallogin)

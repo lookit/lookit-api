@@ -1,0 +1,27 @@
+{% extends "exp/base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+{% load bootstrap3 %}
+
+{% block head_title %}{% trans "Login Unsuccessful" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="jumbo" style="padding-top: 25px">
+      <h2 style="font-size: 48px; text-align: center; font-weight: 300;">
+          Login Unsuccessful
+      </h2>
+      <h3 style="text-align: center; font-weight: 300;">
+        A Lookit study participant exists with the email address for your OSF user account.
+        Create an OSF user with a different email address and try logging into Experimenter with that.
+      </h3>
+      <h3 style="text-align: center; font-weight: 300;">
+          If this should not have occurred and the issue persists, please report it to <a href="mailto:support@osf.io">support@osf.io</a>.
+      </h3>
+      <h4 style="text-align: center; font-weight: 300;">
+          <a href="/accounts/login/">Return to Experimenter</a>
+      </h4>
+  </div>
+</div>
+{% endblock %}
