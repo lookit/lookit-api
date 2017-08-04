@@ -2,7 +2,6 @@
 {% load bootstrap3 %}
 {% block title %}Update demographics{% endblock %}
 
-
 {% block flash %}
   {% bootstrap_messages %}
   {% if form.non_field_errors %}
@@ -12,13 +11,22 @@
   {% endif %}
 {% endblock %}
 {% block content %}
+    <script>
+        function checkCountry(selected) {
+            if (selected.value === 'US') {
+                $('#state-input').show();
+            } else {
+                $('#state-input').hide().prop('required',false)
+            }
+        }
+    </script>
     <div class='lookit-row lookit-page-title'>
         <h2 class='container'>My Account</h2>
     </div>
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg">
-                 {% include 'web/_account-navigation.html' with current_page="demographic-update" %} 
+                 {% include 'web/_account-navigation.html' with current_page="demographic-update" %}
             </div>
             <div class="col-md-8">
                 <div class="panel-heading">
@@ -33,6 +41,28 @@
                 <div class="panel panel-default">
                   <div class="panel-body">
                     <form method="POST" action="">{% csrf_token %}
+                        <div class="form-group">
+                            <label class="control-label" for="id_country">What country do you live in?</label>
+                            <select onchange="checkCountry(this)"name="country" class="form-control" title required id="id_country">
+                                <option value="" disabled="" selected="" hidden="">Please choose...</option>
+                                <option value="US">United States</option>
+                                <option disabled="">─────────────────────</option>
+                                {% for code, country in countries %}
+                                    {% if code != 'US' %}
+                                        <option value="{{code}}">{{ country }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div id="state-input" class="form-group" hidden>
+                            <label class="control-label" for="id_state">What state do you live in?</label>
+                            <select name="state" class="form-control" title="" id="id_state">
+                                <option value="" disabled="" selected="" hidden="">Please choose...</option>
+                                {% for code, state in states %}
+                                    <option value="{{code}}">{{ state }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                       {% bootstrap_form form %}
                       {% buttons %}
                       <div class="pull-right">

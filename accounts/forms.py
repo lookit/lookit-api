@@ -100,14 +100,10 @@ class DemographicDataForm(forms.ModelForm):
     class Meta:
         model = DemographicData
         exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
-        # help_texts = {
-        #     'child_birthdays': "Must be entered as comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ... "
-        # }
-        fields = ('country', 'density', 'languages_spoken_at_home', 'number_of_children', 'number_of_guardians',
+        fields = ('density', 'languages_spoken_at_home', 'number_of_children', 'number_of_guardians',
         'race_identification', 'age', 'gender', 'education_level', 'spouse_education_level', 'annual_income',
         'number_of_books', 'additional_comments')
         labels = {
-            'country': 'What country do you live in?',
             'density': 'How would you describe the area where you live?',
             'languages_spoken_at_home': 'What language(s) does your family speak at home?',
             'number_of_children': 'How many children do you have?',
