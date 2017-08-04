@@ -1,0 +1,32 @@
+# Config file for automatic testing at travis-ci.org
+
+sudo: true
+
+dist: trusty
+
+services:
+  - docker
+
+env:
+  global:
+    - DOCKER_BRANCH=${TRAVIS_BRANCH/\//-}
+    - DOCKER_IMAGE_URL=$DOCKER_REPO_URL/$DOCKER_REPO_OWNER/$DOCKER_REPO_NAME
+
+jobs:
+  include:
+    - stage: Build
+      script:
+      - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $DOCKER_REPO_URL
+      - docker pull $DOCKER_IMAGE_URL:$TRAVIS_COMMIT || docker pull $DOCKER_IMAGE_URL:$DOCKER_BRANCH || true
+      - docker build --cache-from $DOCKER_IMAGE_URL:$TRAVIS_COMMIT --cache-from $DOCKER_IMAGE_URL:$DOCKER_BRANCH --pull -t $DOCKER_IMAGE_URL:$TRAVIS_COMMIT .
+      - docker push $DOCKER_IMAGE_URL:$TRAVIS_COMMIT
+    - stage: Test
+      script:
+      - docker run -d --name pg postgres:9.6 
+      - docker run --rm -it --link pg --env DB_HOST=pg $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
+    - stage: Push
+      script:
+      - travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $DOCKER_REPO_URL
+      - docker pull $DOCKER_IMAGE_URL:$TRAVIS_COMMIT
+      - docker tag $DOCKER_IMAGE_URL:$TRAVIS_COMMIT $DOCKER_IMAGE_URL:$DOCKER_BRANCH
+      - docker push $DOCKER_IMAGE_URL:$DOCKER_BRANCH
