@@ -26,10 +26,10 @@ from project import settings
 from web import urls as web_urls
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^api/', include(api_urls)),
+    url(r'^admin/?', admin.site.urls),
+    url(r'^api/?', include(api_urls)),
     url(r'^', include('django.contrib.auth.urls')),
-    url(r'^exp/', include(exp_urls, namespace='exp')),
+    url(r'^exp/?', include(exp_urls, namespace='exp')),
     url(r'^', include(web_urls, namespace='web')),
 ]
 
