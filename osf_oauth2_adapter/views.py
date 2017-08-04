@@ -31,7 +31,7 @@ class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
 
     def pre_social_login(self, request, sociallogin):
         User = get_user_model()
-        if User.objects.filter(username=sociallogin.user.username).exists():
+        if User.objects.filter(username=sociallogin.user.username, is_researcher=False).exists():
             raise ImmediateHttpResponse(redirect(reverse_lazy('local-user-already-exists')))
         return super().pre_social_login(request, sociallogin)
 
