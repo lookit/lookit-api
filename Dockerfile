@@ -44,7 +44,7 @@ WORKDIR /code
 
 RUN pip install -U pip
 
-COPY ./requirements/release.txt /code/requirements/release.txt
+COPY ./requirements/ /code/requirements/
 RUN pip install --no-cache-dir -r /code/requirements/release.txt
 
 RUN apt-get remove -y gcc
