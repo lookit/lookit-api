@@ -86,7 +86,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-5">
-                        <form method="GET">
+                        <form method="GET" action="{% url 'exp:study-edit' study.id %}#manage-researchers">
                             <div class="input-group">
                                <input class="form-control" name="match" placeholder="{{ name|default:'Search organization' }}" size="50" type="text">
                                <span class="input-group-btn">
@@ -94,7 +94,7 @@
                                </span>
                             </div>
                         </form>
-                        <div class="researcher-search-results">
+                        <div id="manage-researchers" class="researcher-search-results">
                             {% if users_result %}
                                 <h2 class="researchers-label"> Results </h2>
                                 {% for user in users_result %}
@@ -103,7 +103,7 @@
                                             <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.identicon_small_html }} {{ user.get_short_name }} </a>
                                         </div>
                                         <div class="col-xs-3">
-                                            <form method="POST">{% csrf_token %}
+                                            <form method="POST" action="{% url 'exp:study-edit' study.id %}#manage-researchers">{% csrf_token %}
                                                 <input type="hidden" name="add_user" value="{{user.id}}"/>
                                                 <button aria-label="Add researcher to study" type="submit" value='{{user.id}}' class="btn btn-success btn-sm"><i aria-hidden="true" class="fa fa-plus"> </i></button>
                                             </form>
