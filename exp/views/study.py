@@ -25,6 +25,7 @@ from guardian.shortcuts import (get_objects_for_user, get_perms,
 from studies.forms import StudyEditForm, StudyForm, StudyBuildForm
 from studies.models import Study, StudyLog
 from exp.mixins.paginator_mixin import PaginatorMixin
+from django.contrib import messages
 from project import settings
 
 
@@ -49,6 +50,7 @@ class StudyCreateView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic
         form.instance.organization = user.organization
         self.object = form.save()
         self.add_creator_to_study_admin_group()
+        messages.success(self.request, "Study created!", extra_tags='msg')
         return HttpResponseRedirect(self.get_success_url())
 
     def add_creator_to_study_admin_group(self):
