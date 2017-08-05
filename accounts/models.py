@@ -396,7 +396,7 @@ class DemographicData(models.Model):
     spouse_education_level = models.CharField(max_length=5, choices=SPOUSE_EDUCATION_CHOICES)
     annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES)
     number_of_books = models.IntegerField()
-    additional_comments = models.TextField()
+    additional_comments = models.TextField(blank=True)
     country = CountryField()
     state = USStateField(blank=True, choices=('XX', _('Select a State')) + USPS_CHOICES[:])
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
