@@ -263,18 +263,19 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
                 study_read_group.user_set.add(update)
                 study_admin_group.user_set.remove(update)
 
-    def post(self, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         '''
         Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
         4) researcher delete 5) Changing study status / adding rejection comments
         '''
-        if 'short_description' in self.request.POST:
-            # Study metadata is being edited
-            super().post(*args, **kwargs)
-
         update_trigger(self)
         self.manage_researcher_permissions()
+        if 'short_description' in self.request.POST:
+            # Study metadata is being edited
+            return super().post(request, *args, **kwargs)
+
         return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
+
 
     def get_context_data(self, **kwargs):
         """
