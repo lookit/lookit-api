@@ -246,12 +246,13 @@ class Child(models.Model):
         ('39', _('39 weeks')),
         ('40>', _('40 or more weeks')),
     )
+
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     given_name = models.CharField(max_length=255)
     birthday = models.DateField()
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
-    age_at_birth = models.CharField(max_length=25)
-    additional_information = models.TextField()
+    age_at_birth = models.CharField(max_length=25, choices=AGE_AT_BIRTH_CHOICES)
+    additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)
 
     user = models.ForeignKey(

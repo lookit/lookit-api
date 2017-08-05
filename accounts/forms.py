@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, UserChangeForm
+from django.forms.widgets import DateInput
 
 from accounts.models import DemographicData, User, Child
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
@@ -139,13 +140,20 @@ class DemographicDataForm(forms.ModelForm):
 
 
 class ChildForm(forms.ModelForm):
+    birthday = forms.DateField(widget=DateInput(attrs={'type': 'date'}), help_text="This lets us figure out exactly how old your child when he or she participates in a study. We never publish children\'s birthdates or information that would allow a reader to calculate the birthdate.")
+
     class Meta:
         model = Child
         fields = ('given_name', 'birthday', 'gender', 'age_at_birth', 'additional_information')
 
         labels = {
             'given_name': 'First Name',
-            'birthday': "Birthday - YYYY-MM-DD ",
+            'birthday': "Birthday",
             'age_at_birth': 'Gestational Age at Birth',
             'additional_information': "Any additional information you'd like us to know"
+        }
+
+        help_texts = {
+            'given_name': 'This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child\'s name in email to you (for instance, "There\'s a new study available for Molly!") but will never publish names or use them in our research.',
+            'additional_information': "for instance, diagnosed developmental disorders or vision or hearing problems"
         }
