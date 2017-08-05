@@ -18,6 +18,7 @@
             }
             if ($('#id_number_of_children')[0].value === "0") {
                 hideField('child_birthdays');
+                $('.help-block').first().hide();
             }
 
             $('#id_country').on('change', function() {
@@ -25,18 +26,24 @@
                     showField('state');
                 } else {
                     hideField('state');
+                    $(`#id_state`)[0].value = '';
                 }
             });
             $('#id_number_of_children').on('change', function() {
                 if (this.value === "0") {
                     hideField('child_birthdays');
+                    $('.help-block').first().hide();
+                    $(`#id_child_birthdays`)[0].value = '';
+
                 } else {
                     showField('child_birthdays');
+                    $('.help-block').first().show();
+
                 }
             });
         });
         function hideField(field) {
-            $(`#id_${field}`).hide();
+            $(`#id_${field}`).hide().prop('required',false);
             $(`label[for=id_${field}]`).hide();
         }
         function showField(field) {

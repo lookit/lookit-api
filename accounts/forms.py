@@ -105,6 +105,7 @@ class DemographicDataForm(forms.ModelForm):
         'number_of_books', 'additional_comments')
         help_texts = {
             'number_of_guardians': 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain below.',
+            'child_birthdays': 'Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ...'
         }
 
         labels = {
@@ -113,7 +114,7 @@ class DemographicDataForm(forms.ModelForm):
             'density': 'How would you describe the area where you live?',
             'languages_spoken_at_home': 'What language(s) does your family speak at home?',
             'number_of_children': 'How many children do you have?',
-            'child_birthdays': 'For each child, please enter his or her birthdate below:',
+            'child_birthdays': 'For each child, please enter his or her birthdate:',
             'number_of_guardians': 'How many parents/guardians do your children live with?',
             'race_identification': 'What category(ies) does your family identify as?',
             'age': "What is your age?",

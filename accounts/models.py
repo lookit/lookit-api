@@ -384,7 +384,7 @@ class DemographicData(models.Model):
 
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
-    child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
+    child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays', blank=True)
     languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home')
     number_of_guardians = models.CharField(choices=GUARDIAN_CHOICES, max_length=6)
     number_of_guardians_explanation = models.TextField()
@@ -397,7 +397,7 @@ class DemographicData(models.Model):
     number_of_books = models.IntegerField()
     additional_comments = models.TextField()
     country = CountryField()
-    state = USStateField(choices=('XX', _('Select a State')) + USPS_CHOICES[:])
+    state = USStateField(blank=True, choices=('XX', _('Select a State')) + USPS_CHOICES[:])
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
     extra = DateTimeAwareJSONField(null=True)
 
