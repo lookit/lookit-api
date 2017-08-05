@@ -97,12 +97,18 @@ class EmailPreferencesForm(forms.ModelForm):
 
 
 class DemographicDataForm(forms.ModelForm):
+    race_identification = forms.MultipleChoiceField(
+        choices = DemographicData.RACE_CHOICES,
+        widget=forms.CheckboxSelectMultiple(),
+        label="What category(ies) does your family identify as?"
+    )
     class Meta:
         model = DemographicData
         exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
         fields = ('country', 'state', 'density', 'languages_spoken_at_home', 'number_of_children', 'child_birthdays', 'number_of_guardians',
         'race_identification', 'age', 'gender', 'education_level', 'spouse_education_level', 'annual_income',
         'number_of_books', 'additional_comments')
+
         help_texts = {
             'number_of_guardians': 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain below.',
             'child_birthdays': 'Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ...'

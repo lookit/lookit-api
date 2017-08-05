@@ -74,6 +74,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
             return demographic_data_dict
         return demographic_data
 
+
     def get_context_data(self, **kwargs):
         """
         Adds the context for form1 and form2 on the page - a little extra code due to the

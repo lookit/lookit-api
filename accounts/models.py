@@ -23,6 +23,7 @@ from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
+from multiselectfield import MultiSelectField
 
 
 class UserManager(BaseUserManager):
@@ -388,7 +389,7 @@ class DemographicData(models.Model):
     languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home')
     number_of_guardians = models.CharField(choices=GUARDIAN_CHOICES, max_length=6)
     number_of_guardians_explanation = models.TextField()
-    race_identification = models.CharField(max_length=16, choices=RACE_CHOICES)
+    race_identification = MultiSelectField(choices=RACE_CHOICES)
     age = models.CharField(max_length=5, choices=AGE_CHOICES)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
     education_level = models.CharField(max_length=5, choices=EDUCATION_CHOICES)
