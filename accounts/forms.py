@@ -103,6 +103,9 @@ class DemographicDataForm(forms.ModelForm):
         fields = ('country', 'state', 'density', 'languages_spoken_at_home', 'number_of_children', 'child_birthdays', 'number_of_guardians',
         'race_identification', 'age', 'gender', 'education_level', 'spouse_education_level', 'annual_income',
         'number_of_books', 'additional_comments')
+        help_texts = {
+            'number_of_guardians': 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain below.',
+        }
 
         labels = {
             'country': 'What country do you live in?',
@@ -110,6 +113,7 @@ class DemographicDataForm(forms.ModelForm):
             'density': 'How would you describe the area where you live?',
             'languages_spoken_at_home': 'What language(s) does your family speak at home?',
             'number_of_children': 'How many children do you have?',
+            'child_birthdays': 'For each child, please enter his or her birthdate below:',
             'number_of_guardians': 'How many parents/guardians do your children live with?',
             'race_identification': 'What category(ies) does your family identify as?',
             'age': "What is your age?",
@@ -121,10 +125,6 @@ class DemographicDataForm(forms.ModelForm):
             'additional_comments': "Anything else you'd like us to know?"
         }
 
-        help_texts: {
-            'child_birthdays': "Please enter in comma-separated list YYYY-MM-DD, YYYY-MM-DD, YYYY-MM-DD, ... ",
-            'number_of_guardians': 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain below.'
-        }
         widgets = {
             'languages_spoken_at_home': forms.Textarea(attrs={'rows': 1}),
             'additional_comments': forms.Textarea(attrs={'rows':2})
