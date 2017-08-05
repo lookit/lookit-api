@@ -45,9 +45,11 @@
         function hideField(field) {
             $(`#id_${field}`).hide().prop('required',false);
             $(`label[for=id_${field}]`).hide();
+            $(`#id_${field}`)[0].required = false;
         }
         function showField(field) {
             $(`#id_${field}`).show();
+            $(`#id_${field}`)[0].required = true;
             $(`label[for=id_${field}]`).show();
         }
     </script>
