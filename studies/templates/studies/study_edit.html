@@ -32,6 +32,7 @@
               success: function(response, newValue) {
                   // On success, populate the success message with the permissions the user was given
                   // and reveal the permission edit alert message.
+                  $('#add-researcher-messages').hide()
                   if (newValue === 'study_admin') {
                       $('#permission-edit-text').append(' given Admin Permissions to this study.');
                   } else {
@@ -110,7 +111,7 @@
                 {% if messages %}
                     {% for message in messages %}
                         {% if message.extra_tags == 'user_added' or message.extra_tags == 'user_removed' %}
-                            <div class="alert alert-success alert-dismissable">
+                            <div id="add-researcher-messages" class="alert alert-success alert-dismissable">
                                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                                  {{ message }}
                             </div>

@@ -148,7 +148,8 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         Post method can update the trigger if the state of the study has changed.  If "clone" study
         button is pressed, clones study and redirects to the clone.
         """
-        update_trigger(self)
+        if 'trigger' in self.request.POST:
+            update_trigger(self)
         if self.request.POST.get('clone_study'):
             clone = self.get_object().clone()
             clone.creator = self.request.user
@@ -276,7 +277,8 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
         Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
         4) researcher delete 5) Changing study status / adding rejection comments
         '''
-        update_trigger(self)
+        if 'trigger' in self.request.POST:
+            update_trigger(self)
         self.manage_researcher_permissions()
         if 'short_description' in self.request.POST:
             # Study metadata is being edited
