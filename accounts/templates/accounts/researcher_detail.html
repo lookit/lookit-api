@@ -22,15 +22,22 @@
                   {value: 'researcher', text: 'Researcher'},
                   {value: 'org_read', text: 'Organization Read'},
                   {value: 'org_admin', text: 'Organization Admin'}
-               ]
+              ],
+              success: function(response, newValue) {
+                   $('#researcher-edit').show();
+               }
         });
     });
 </script>
 <div class="container mb-lg">
     <div class="row">
-      <div class="col-xs-12">
-          <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> &gt; {{ user.get_short_name }} </a>
-      </div>
+        <div id="researcher-edit" class="alert alert-success alert-dismissable" style="display:none;">
+            <a href="#" class="close" onclick="$('.alert').hide()">&times;</a>
+            <div> Researcher details saved. </div>
+        </div>
+        <div class="col-xs-12">
+            <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> &gt; {{ user.get_short_name }} </a>
+        </div>
     </div>
     <div class="row">
       <div class="col-xs-12">
