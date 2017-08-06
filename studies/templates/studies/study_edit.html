@@ -4,16 +4,16 @@
 
 {% block title %}Edit | {{ study.name }}{% endblock %}
 {% block flash %}
-{% if messages %}
-    {% for message in messages %}
-        {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
-            <div class="alert alert-success alert-dismissable">
-                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                 {{ message }}
-            </div>
-        {% endif %}
-    {% endfor %}
-{% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
+                <div id="details" class="alert alert-success alert-dismissable">
+                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                     {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
   {% if form.non_field_errors %}
   <div class="alert alert-danger" role="alert">
       {{ form.non_field_errors }}
@@ -46,7 +46,7 @@
                 <h1 class="panel-title">Description and Discoverability</h1>
               </div>
               <div class="panel-body">
-                <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <form action="{% url 'exp:study-edit' study.id %}#details" method="post" enctype="multipart/form-data">{% csrf_token %}
                     {% bootstrap_form form %}
                     <div class="pull-right">
                         {% buttons %}
@@ -171,7 +171,7 @@
                                     </a>
                                 </div>
                                 <div class="col-sm-3 researcher-delete">
-                                    <form method="POST">{% csrf_token %}
+                                    <form method="POST" action="{% url 'exp:study-edit' study.id %}#manage-researchers">{% csrf_token %}
                                         <input type="hidden" name="remove_user" value="{{researcher.id}}"/>
                                         <button type="submit" class="btn btn-danger btn-sm"> Remove </button>
                                     </form>
