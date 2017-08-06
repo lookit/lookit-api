@@ -1,4 +1,5 @@
 from django.utils.text import slugify
+from django.contrib import messages
 
 from guardian.shortcuts import get_perms
 
@@ -66,4 +67,6 @@ def update_trigger(view_instance):
     if 'comments-text' in view_instance.request.POST.keys():
         object.comments = view_instance.request.POST['comments-text']
         object.save()
+    displayed_state = object.state if object.state != 'active' else 'activated'
+    messages.success(view_instance.request, f"Study {object.name} {displayed_state}.")
     return object
