@@ -4,7 +4,16 @@
 
 {% block title %}Edit | {{ study.name }}{% endblock %}
 {% block flash %}
-  {% bootstrap_messages %}
+{% if messages %}
+    {% for message in messages %}
+        {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
+            <div class="alert alert-success alert-dismissable">
+                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                 {{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
   {% if form.non_field_errors %}
   <div class="alert alert-danger" role="alert">
       {{ form.non_field_errors }}
@@ -81,9 +90,19 @@
           </div>
           <div class="mt-xl panel panel-default">
             <div class="panel-heading">
-              <h1 class="panel-title">Manage Researchers</h1>
+              <h1 id="manage-researchers" class="panel-title">Manage Researchers</h1>
             </div>
             <div class="panel-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.extra_tags == 'user_added' or message.extra_tags == 'user_removed' %}
+                            <div class="alert alert-success alert-dismissable">
+                                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                 {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 <div class="row">
                     <div class="col-sm-5">
                         <form method="GET" action="{% url 'exp:study-edit' study.id %}#manage-researchers">
@@ -94,7 +113,7 @@
                                </span>
                             </div>
                         </form>
-                        <div id="manage-researchers" class="researcher-search-results">
+                        <div class="researcher-search-results">
                             {% if users_result %}
                                 <h2 class="researchers-label"> Results </h2>
                                 {% for user in users_result %}

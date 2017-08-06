@@ -50,7 +50,8 @@ class StudyCreateView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic
         form.instance.organization = user.organization
         self.object = form.save()
         self.add_creator_to_study_admin_group()
-        messages.success(self.request, f"{self.object.name} created.", extra_tags='msg')
+        # Adds success message that study has been created.
+        messages.success(self.request, f"{self.object.name} created.")
         return HttpResponseRedirect(self.get_success_url())
 
     def add_creator_to_study_admin_group(self):
@@ -153,7 +154,8 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.save()
-            messages.success(self.request, f"{self.get_object().name} copied.", extra_tags='msg')
+            # Adds success message when study is cloned
+            messages.success(self.request, f"{self.get_object().name} copied.")
 
             self.add_creator_to_study_admin_group(clone)
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
@@ -250,12 +252,15 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
 
         if add_user:
             # Adds user to study read by default
-            study_read_group.user_set.add(User.objects.get(pk=add_user))
+            add_user_object = User.objects.get(pk=add_user)
+            study_read_group.user_set.add(add_user_object)
+            messages.success(self.request, f"{add_user_object.get_short_name()} given {self.get_object().name} Read Permissions", extra_tags='user_added')
         if remove_user:
             # Removes user from both study read and study admin groups
             remove = User.objects.get(pk=remove_user)
             study_read_group.user_set.remove(remove)
             study_admin_group.user_set.remove(remove)
+            messages.success(self.request, f"{remove.get_short_name()} removed from {self.get_object().name}", extra_tags='user_removed')
         if update_user:
             update = User.objects.get(pk=update_user)
             if permissions == 'study_admin':
@@ -280,6 +285,13 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
 
         return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
 
+    def form_valid(self, form):
+        """
+        Add success message that edits to study have been saved.
+        """
+        ret = super().form_valid(form)
+        messages.success(self.request, f"{self.get_object().name} study details saved.")
+        return ret
 
     def get_context_data(self, **kwargs):
         """
@@ -336,8 +348,11 @@ class StudyBuildView(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
         return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
     def form_valid(self, form):
+        """
+        Add success message that study JSON has been successfully saved.
+        """
         ret = super().form_valid(form)
-        messages.success(self.request, f"{self.get_object().name} study JSON saved.", extra_tags='msg')
+        messages.success(self.request, f"{self.get_object().name} study JSON saved.")
         return ret
 
 
