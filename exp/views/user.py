@@ -4,6 +4,7 @@ from functools import reduce
 from django.http import Http404
 from guardian.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
+from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -146,7 +147,9 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
         if 'disable' in self.request.POST and self.request.method == 'POST':
             researcher = User.objects.get(pk=self.request.POST['disable'])
             researcher.is_active = False
+            researcher.organization = None
             researcher.save()
+            messages.success(self.request, f"{researcher.get_short_name()} removed from the {self.request.user.organization.name} organization.")
             self.remove_researcher_from_org_groups(researcher)
         return retval
 

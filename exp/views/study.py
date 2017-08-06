@@ -254,13 +254,13 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
             # Adds user to study read by default
             add_user_object = User.objects.get(pk=add_user)
             study_read_group.user_set.add(add_user_object)
-            messages.success(self.request, f"{add_user_object.get_short_name()} given {self.get_object().name} Read Permissions", extra_tags='user_added')
+            messages.success(self.request, f"{add_user_object.get_short_name()} given {self.get_object().name} Read Permissions.", extra_tags='user_added')
         if remove_user:
             # Removes user from both study read and study admin groups
             remove = User.objects.get(pk=remove_user)
             study_read_group.user_set.remove(remove)
             study_admin_group.user_set.remove(remove)
-            messages.success(self.request, f"{remove.get_short_name()} removed from {self.get_object().name}", extra_tags='user_removed')
+            messages.success(self.request, f"{remove.get_short_name()} removed from {self.get_object().name}.", extra_tags='user_removed')
         if update_user:
             update = User.objects.get(pk=update_user)
             if permissions == 'study_admin':
