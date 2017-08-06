@@ -50,7 +50,7 @@ class StudyCreateView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic
         form.instance.organization = user.organization
         self.object = form.save()
         self.add_creator_to_study_admin_group()
-        messages.success(self.request, f"{self.object.name} created!", extra_tags='msg')
+        messages.success(self.request, f"{self.object.name} created.", extra_tags='msg')
         return HttpResponseRedirect(self.get_success_url())
 
     def add_creator_to_study_admin_group(self):
@@ -153,7 +153,7 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.save()
-            messages.success(self.request, f"{self.get_object().name} copied!", extra_tags='msg')
+            messages.success(self.request, f"{self.get_object().name} copied.", extra_tags='msg')
 
             self.add_creator_to_study_admin_group(clone)
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
