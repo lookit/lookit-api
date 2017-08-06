@@ -153,6 +153,8 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.save()
+            messages.success(self.request, f"{self.get_object().name} copied!", extra_tags='msg')
+
             self.add_creator_to_study_admin_group(clone)
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
