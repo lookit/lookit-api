@@ -335,6 +335,11 @@ class StudyBuildView(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
     def get_success_url(self):
         return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
 
+    def form_valid(self, form):
+        ret = super().form_valid(form)
+        messages.success(self.request, f"{self.get_object().name} study JSON saved.", extra_tags='msg')
+        return ret
+
 
 class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView, PaginatorMixin):
     """
