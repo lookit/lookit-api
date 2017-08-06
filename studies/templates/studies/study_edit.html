@@ -28,7 +28,21 @@
             source: [
                   {value: 'study_read', text: 'Read'},
                   {value: 'study_admin', text: 'Admin'}
-               ]
+              ],
+              success: function(response, newValue) {
+                  // On success, populate the success message with the permissions the user was given
+                  // and reveal the permission edit alert message.
+                  if (newValue === 'study_admin') {
+                      $('#permission-edit-text').append(' given Admin Permissions to this study.');
+                  } else {
+                      $('#permission-edit-text').append(' given Read Permissions to this study.');
+                  }
+                   $('#permission-edit').show();
+               }
+        }).on('click', function (e) {
+            // When clicking on a researcher, prepopulate success message with researcher name.
+             $('#permission-edit').hide();
+             $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
         });
     });
 </script>
@@ -103,6 +117,10 @@
                         {% endif %}
                     {% endfor %}
                 {% endif %}
+                <div id="permission-edit" class="alert alert-success alert-dismissable" style="display:none;">
+                     <a href="#manage-researchers" class="close" onclick="$('.alert').hide()">&times;</a>
+                     <div id="permission-edit-text"> </div>
+                </div>
                 <div class="row">
                     <div class="col-sm-5">
                         <form method="GET" action="{% url 'exp:study-edit' study.id %}#manage-researchers">
@@ -162,7 +180,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-sm-3">
-                                    <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
+                                    <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-id="{{ researcher.get_short_name }}"data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
                                         {% if "can_edit_study" in study_perms %}
                                             Admin
                                         {% else %}
