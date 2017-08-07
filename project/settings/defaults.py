@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'storages',
 
     # our stuff
+    'osf_oauth2_adapter',
     'api',
     'web',
     'accounts',
@@ -65,6 +66,11 @@ INSTALLED_APPS = [
     # at the bottom so overriding form widget templates have a fallback
     'django.forms',
     'django.contrib.admin',
+
+    # at the bottom so overriding templates is possible
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -86,10 +92,12 @@ INTERNAL_IPS = ['127.0.0.1', ]
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # this is default
     'guardian.backends.ObjectPermissionBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 ROOT_URLCONF = 'project.urls'
 LOGIN_URL = '/login/'
+EXPERIMENTER_LOGIN_URL = '/accounts/login/'
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
@@ -186,6 +194,8 @@ USE_L10N = True
 USE_TZ = True
 
 SITE_ID = 1
+SITE_DOMAIN = os.environ.get('SITE_DOMAIN', 'localhost:8000')
+SITE_NAME = os.environ.get('SITE_NAME', 'Lookit')
 
 
 # Static files (CSS, JavaScript, Images)
@@ -195,15 +205,15 @@ SITE_ID = 1
 EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'http://google.com/')  # default to ember base url
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')  # default to ember base url
 
-LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/')
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/exp/')
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get('ACCOUNT_LOGOUT_REDIRECT_URL', '/api/')
-ACCOUNT_USER_MODEL_USERNAME_FIELD = 'id'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 SOCIALACCOUNT_ADAPTER = 'osf_oauth2_adapter.views.OSFOAuth2Adapter'
 SOCIALACCOUNT_PROVIDERS = \
     {'osf':
         {
             'METHOD': 'oauth2',
-            'SCOPE': ['osf.users.user_email', 'osf.users.email_read', 'osf.users.profile_read', ],
+            'SCOPE': ['osf.users.email_read', 'osf.users.profile_read', ],
             'AUTH_PARAMS': {'access_type': 'offline'},
             # 'FIELDS': [
             #     'id',
@@ -226,7 +236,7 @@ SOCIALACCOUNT_PROVIDERS = \
 
 
 # Configuration for cross-site requests
-CORS_ORIGIN_ALLOW_ALL = True  # Needs to be changed before production!
+CORS_ORIGIN_ALLOW_ALL = True  # TODO Needs to be changed before production!
 CORS_ORIGIN_WHITELIST = ()
 
 if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
@@ -250,10 +260,10 @@ else:
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'D4nkM3m35C4n'
-EMAIL_HOST_PASSWORD = 'M31tSt331B34m5'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_FROM_ADDRESS = 'lookit.robot@some.domain'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.sendgrid.net')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'D4nkM3m35C4n')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'M31tSt331B34m5')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)
+EMAIL_FROM_ADDRESS = os.environ.get('EMAIL_FROM_ADDRESS', 'lookit.robot@some.domain')
 EMAIL_BACKEND = f"django.core.mail.backends.{'smtp' if not DEBUG else 'console'}.EmailBackend"
