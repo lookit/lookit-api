@@ -14,9 +14,25 @@
 <script>
     $.fn.editable.defaults.mode = 'inline';
     $(document).ready(function() {
-        $('#given_name').editable();
-        $('#middle_name').editable();
-        $('#family_name').editable();
+        $('#given_name').editable({
+            success: function(response, newValue) {
+                 $('#researcher-details').show();
+                 $('#researcher-edit').hide();
+             }
+        });
+        $('#middle_name').editable({
+            success: function(response, newValue) {
+                 $('#researcher-details').show();
+                 $('#researcher-edit').hide();
+
+             }
+        });
+        $('#family_name').editable({
+            success: function(response, newValue) {
+                 $('#researcher-details').show();
+                 $('#researcher-edit').hide();
+             }
+        });
         $('#user_permissions').editable({
             source: [
                   {value: 'researcher', text: 'Researcher'},
@@ -24,6 +40,7 @@
                   {value: 'org_admin', text: 'Organization Admin'}
               ],
               success: function(response, newValue) {
+                   $('#researcher-details').hide();
                    $('#researcher-edit').show();
                }
         });
@@ -32,6 +49,10 @@
 <div class="container mb-lg">
     <div class="row">
         <div id="researcher-edit" class="alert alert-success alert-dismissable" style="display:none;">
+            <a href="#" class="close" onclick="$('.alert').hide()">&times;</a>
+            <div> Researcher permissions saved. </div>
+        </div>
+        <div id="researcher-details" class="alert alert-success alert-dismissable" style="display:none;">
             <a href="#" class="close" onclick="$('.alert').hide()">&times;</a>
             <div> Researcher details saved. </div>
         </div>
