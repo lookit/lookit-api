@@ -18,6 +18,7 @@
             success: function(response, newValue) {
                  $('#researcher-details').show();
                  $('#researcher-edit').hide();
+                 $('#researcher-first')[0].innerHTML = newValue;
              }
         });
         $('#middle_name').editable({
@@ -31,6 +32,7 @@
             success: function(response, newValue) {
                  $('#researcher-details').show();
                  $('#researcher-edit').hide();
+                 $('#researcher-last')[0].innerHTML = newValue;
              }
         });
         $('#user_permissions').editable({
@@ -57,7 +59,7 @@
             <div> Researcher details saved. </div>
         </div>
         <div class="col-xs-12">
-            <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> &gt; {{ user.get_short_name }} </a>
+            <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> &gt; <span id="researcher-first">{{ user.given_name }} </span> <span id="researcher-last">{{ user.family_name }} </span></a>
         </div>
     </div>
     <div class="row">
