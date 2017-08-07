@@ -215,8 +215,11 @@
                     <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
                 </div>
-                <div class="col-md-2 col-xs-12">
-                    Response ID
+                <div class="col-md-1 col-xs-12">
+                    Response
+                </div>
+                <div class="col-md-1 col-xs-12">
+                    Child
                 </div>
                 <div class="col-md-3 col-xs-12">
                     Completion Status
@@ -268,8 +271,11 @@
                 <div class="col-md-4 col-xs-12">
                     <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
                 </div>
-                <div class="col-md-2 col-xs-12">
+                <div class="col-md-1 col-xs-12">
                     <span class="visible-xs visible-sm">Response ID: </span>{{ study_dict.response.id }}
+                </div>
+                <div class="col-md-1 col-xs-12">
+                    <span class="visible-xs visible-sm">Child ID: </span>{{ study_dict.response.child.id }}
                 </div>
                 <div class="col-md-3 col-xs-12">
                     <span class="visible-xs visible-sm">Status: </span>
