@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, UserChangeForm
+from django.forms.widgets import DateInput
 
 from accounts.models import DemographicData, User, Child
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
@@ -53,10 +54,13 @@ class ParticipantSignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username',
-                  'given_name', 'middle_name', 'family_name', )
+        fields = ('username', 'given_name')
         exclude = ('user_permissions', 'groups', '_identicon', 'organization',
-                   'is_active', 'is_staff', 'is_superuser', 'last_login')
+                   'is_active', 'is_staff', 'is_superuser', 'last_login',
+                   'middle_name', 'last_name')
+        labels = {
+            'given_name': "Username"
+        }
 
 
 class ParticipantUpdateForm(forms.ModelForm):
@@ -70,7 +74,10 @@ class ParticipantUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'given_name', 'middle_name', 'family_name',)
+        fields = ('username', 'given_name')
+        labels = {
+            'given_name': "Username"
+        }
 
 
 class ParticipantPasswordForm(PasswordChangeForm):
@@ -91,22 +98,62 @@ class EmailPreferencesForm(forms.ModelForm):
 
 
 class DemographicDataForm(forms.ModelForm):
+    race_identification = forms.MultipleChoiceField(
+        choices = DemographicData.RACE_CHOICES,
+        widget=forms.CheckboxSelectMultiple(),
+        label="What category(ies) does your family identify as?"
+    )
     class Meta:
         model = DemographicData
         exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
+        fields = ('country', 'state', 'density', 'languages_spoken_at_home', 'number_of_children', 'child_birthdays', 'number_of_guardians',
+        'race_identification', 'age', 'gender', 'education_level', 'spouse_education_level', 'annual_income',
+        'number_of_books', 'additional_comments')
+
+        help_texts = {
+            'number_of_guardians': 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain below.',
+            'child_birthdays': 'Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ...'
+        }
+
         labels = {
-            'child_birthdays': "Children's Birthdays: YYYY-MM-DD, YYYY-MM-DD, ..."
+            'country': 'What country do you live in?',
+            'state': 'What state do you live in?',
+            'density': 'How would you describe the area where you live?',
+            'languages_spoken_at_home': 'What language(s) does your family speak at home?',
+            'number_of_children': 'How many children do you have?',
+            'child_birthdays': 'For each child, please enter his or her birthdate:',
+            'number_of_guardians': 'How many parents/guardians do your children live with?',
+            'race_identification': 'What category(ies) does your family identify as?',
+            'age': "What is your age?",
+            'gender': "What is your gender?",
+            'education_level': "What is the highest level of education you've completed?",
+            'spouse_education_level': 'What is the highest level of education your spouse has completed?',
+            'annual_income': 'What is your approximate family yearly income (in US dollars)?',
+            'number_of_books': "About how many children's books are there in your home?",
+            'additional_comments': "Anything else you'd like us to know?"
+        }
+
+        widgets = {
+            'languages_spoken_at_home': forms.Textarea(attrs={'rows': 1}),
+            'additional_comments': forms.Textarea(attrs={'rows':2})
         }
 
 
 class ChildForm(forms.ModelForm):
+    birthday = forms.DateField(widget=DateInput(attrs={'type': 'date'}), help_text="This lets us figure out exactly how old your child when he or she participates in a study. We never publish children\'s birthdates or information that would allow a reader to calculate the birthdate.")
+
     class Meta:
         model = Child
         fields = ('given_name', 'birthday', 'gender', 'age_at_birth', 'additional_information')
 
         labels = {
             'given_name': 'First Name',
-            'birthday': "Birthday - YYYY-MM-DD ",
+            'birthday': "Birthday",
             'age_at_birth': 'Gestational Age at Birth',
             'additional_information': "Any additional information you'd like us to know"
+        }
+
+        help_texts = {
+            'given_name': 'This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child\'s name in email to you (for instance, "There\'s a new study available for Molly!") but will never publish names or use them in our research.',
+            'additional_information': "for instance, diagnosed developmental disorders or vision or hearing problems"
         }

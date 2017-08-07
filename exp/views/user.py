@@ -4,6 +4,7 @@ from functools import reduce
 from django.http import Http404
 from guardian.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
+from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -37,13 +38,13 @@ class ParticipantListView(LoginRequiredMixin, ParticipantMixin, generic.ListView
         '''
         qs =  super().get_queryset()
         match = self.request.GET.get('match', False)
-        order = self.request.GET.get('sort', 'family_name')
-        if 'given_name' not in order and 'family_name' not in order and 'last_login' not in order:
-            order = 'family_name'
+        order = self.request.GET.get('sort', 'given_name')
+        if 'given_name' not in order and 'last_login' not in order:
+            order = 'given_name'
 
         if match:
             qs = qs.filter(reduce(operator.or_,
-              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(username__icontains=term) for term in match.split())))
+              (Q(given_name__icontains=term) | Q(username__icontains=term) for term in match.split())))
         return self.paginated_queryset(qs.order_by(order), self.request.GET.get('page'), 10)
 
     def get_context_data(self, **kwargs):
@@ -146,7 +147,9 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
         if 'disable' in self.request.POST and self.request.method == 'POST':
             researcher = User.objects.get(pk=self.request.POST['disable'])
             researcher.is_active = False
+            researcher.organization = None
             researcher.save()
+            messages.success(self.request, f"{researcher.get_short_name()} removed from the {self.request.user.organization.name} organization.")
             self.remove_researcher_from_org_groups(researcher)
         return retval
 

@@ -31,7 +31,7 @@ class StudyEditForm(forms.ModelForm):
             'min_age': 'Minimum Age',
             'max_age': 'Maximum Age',
             'contact_info': 'Researcher/Contact Information',
-            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once approved?'
+            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?'
         }
         widgets = {
             'short_description': Textarea(attrs={'rows': 2}),
@@ -42,6 +42,9 @@ class StudyEditForm(forms.ModelForm):
             'max_age': Textarea(attrs={'rows': 1}),
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
+        }
+        help_texts = {
+            'image': 'Please keep your file size less than 1 MB'
         }
 
 class StudyForm(forms.ModelForm):
@@ -66,7 +69,7 @@ class StudyForm(forms.ModelForm):
             'min_age': 'Minimum Age',
             'max_age': 'Maximum Age',
             'contact_info': 'Researcher/Contact Information',
-            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once approved?'
+            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?'
         }
         widgets = {
             'short_description': Textarea(attrs={'rows': 2}),
@@ -77,6 +80,9 @@ class StudyForm(forms.ModelForm):
             'max_age': Textarea(attrs={'rows': 1}),
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
+        }
+        help_texts = {
+            'image': 'Please keep your file size less than 1 MB'
         }
 
 class StudyBuildForm(forms.ModelForm):

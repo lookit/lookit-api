@@ -25,6 +25,7 @@ from guardian.shortcuts import (get_objects_for_user, get_perms,
 from studies.forms import StudyEditForm, StudyForm, StudyBuildForm
 from studies.models import Study, StudyLog
 from exp.mixins.paginator_mixin import PaginatorMixin
+from django.contrib import messages
 from project import settings
 
 
@@ -49,6 +50,8 @@ class StudyCreateView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic
         form.instance.organization = user.organization
         self.object = form.save()
         self.add_creator_to_study_admin_group()
+        # Adds success message that study has been created.
+        messages.success(self.request, f"{self.object.name} created.")
         return HttpResponseRedirect(self.get_success_url())
 
     def add_creator_to_study_admin_group(self):
@@ -145,12 +148,15 @@ class StudyDetailView(LoginRequiredMixin, PermissionRequiredMixin, generic.Detai
         Post method can update the trigger if the state of the study has changed.  If "clone" study
         button is pressed, clones study and redirects to the clone.
         """
-        update_trigger(self)
+        if 'trigger' in self.request.POST:
+            update_trigger(self)
         if self.request.POST.get('clone_study'):
             clone = self.get_object().clone()
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.save()
+            # Adds success message when study is cloned
+            messages.success(self.request, f"{self.get_object().name} copied.")
             self.add_creator_to_study_admin_group(clone)
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
@@ -246,12 +252,15 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
 
         if add_user:
             # Adds user to study read by default
-            study_read_group.user_set.add(User.objects.get(pk=add_user))
+            add_user_object = User.objects.get(pk=add_user)
+            study_read_group.user_set.add(add_user_object)
+            messages.success(self.request, f"{add_user_object.get_short_name()} given {self.get_object().name} Read Permissions.", extra_tags='user_added')
         if remove_user:
             # Removes user from both study read and study admin groups
             remove = User.objects.get(pk=remove_user)
             study_read_group.user_set.remove(remove)
             study_admin_group.user_set.remove(remove)
+            messages.success(self.request, f"{remove.get_short_name()} removed from {self.get_object().name}.", extra_tags='user_removed')
         if update_user:
             update = User.objects.get(pk=update_user)
             if permissions == 'study_admin':
@@ -263,18 +272,27 @@ class StudyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, generic.Updat
                 study_read_group.user_set.add(update)
                 study_admin_group.user_set.remove(update)
 
-    def post(self, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         '''
         Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
         4) researcher delete 5) Changing study status / adding rejection comments
         '''
+        if 'trigger' in self.request.POST:
+            update_trigger(self)
+        self.manage_researcher_permissions()
         if 'short_description' in self.request.POST:
             # Study metadata is being edited
-            super().post(*args, **kwargs)
+            return super().post(request, *args, **kwargs)
 
-        update_trigger(self)
-        self.manage_researcher_permissions()
         return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
+
+    def form_valid(self, form):
+        """
+        Add success message that edits to study have been saved.
+        """
+        ret = super().form_valid(form)
+        messages.success(self.request, f"{self.get_object().name} study details saved.")
+        return ret
 
     def get_context_data(self, **kwargs):
         """
@@ -329,6 +347,14 @@ class StudyBuildView(LoginRequiredMixin, PermissionRequiredMixin, generic.Update
 
     def get_success_url(self):
         return reverse('exp:study-build', kwargs=dict(pk=self.object.id))
+
+    def form_valid(self, form):
+        """
+        Add success message that study JSON has been successfully saved.
+        """
+        ret = super().form_valid(form)
+        messages.success(self.request, f"{self.get_object().name} study JSON saved.")
+        return ret
 
 
 class StudyResponsesList(LoginRequiredMixin, PermissionRequiredMixin, generic.DetailView, PaginatorMixin):

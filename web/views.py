@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
-
+from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
 from revproxy.views import ProxyView
 
@@ -14,6 +14,7 @@ from accounts import forms
 from accounts.models import Child, DemographicData, User
 from project import settings
 from studies.models import Study
+from localflavor.us.us_states import USPS_CHOICES
 
 
 class ParticipantSignupView(generic.CreateView):
@@ -73,8 +74,18 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
             return demographic_data_dict
         return demographic_data
 
-    def get_success_url(self):
-        return reverse('web:studies-list')
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds the context for form1 and form2 on the page - a little extra code due to the
+        two forms on the page.  The form that was not edited is unbound so data
+        is not validated.
+        """
+        context = super().get_context_data(**kwargs)
+        context['countries'] = countries
+        context['states'] = USPS_CHOICES
+        return context
+
 
 
 class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):

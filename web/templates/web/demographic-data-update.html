@@ -2,7 +2,6 @@
 {% load bootstrap3 %}
 {% block title %}Update demographics{% endblock %}
 
-
 {% block flash %}
   {% bootstrap_messages %}
   {% if form.non_field_errors %}
@@ -12,13 +11,55 @@
   {% endif %}
 {% endblock %}
 {% block content %}
+    <script>
+        $(document).ready(function() {
+            if ($('#id_country')[0].value !== 'US') {
+                hideField('state');
+            }
+            if ($('#id_number_of_children')[0].value === "0") {
+                hideField('child_birthdays');
+                $('.help-block').first().hide();
+            }
+
+            $('#id_country').on('change', function() {
+                if ($(this)[0].value === 'US') {
+                    showField('state');
+                } else {
+                    hideField('state');
+                    $(`#id_state`)[0].value = '';
+                }
+            });
+            $('#id_number_of_children').on('change', function() {
+                if (this.value === "0") {
+                    hideField('child_birthdays');
+                    $('.help-block').first().hide();
+                    $(`#id_child_birthdays`)[0].value = '';
+
+                } else {
+                    showField('child_birthdays');
+                    $('.help-block').first().show();
+
+                }
+            });
+        });
+        function hideField(field) {
+            $(`#id_${field}`).hide().prop('required',false);
+            $(`label[for=id_${field}]`).hide();
+            $(`#id_${field}`)[0].required = false;
+        }
+        function showField(field) {
+            $(`#id_${field}`).show();
+            $(`#id_${field}`)[0].required = true;
+            $(`label[for=id_${field}]`).show();
+        }
+    </script>
     <div class='lookit-row lookit-page-title'>
         <h2 class='container'>My Account</h2>
     </div>
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg">
-                 {% include 'web/_account-navigation.html' with current_page="demographic-update" %} 
+                 {% include 'web/_account-navigation.html' with current_page="demographic-update" %}
             </div>
             <div class="col-md-8">
                 <div class="panel-heading">
@@ -29,6 +70,7 @@
                       <p> Even if you allow your study videos to be published
                       for scientific or publicity purposes, your demographic information is never published in conjunction with your video. </p>
                   </h1>
+
                 </div>
                 <div class="panel panel-default">
                   <div class="panel-body">

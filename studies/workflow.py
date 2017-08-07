@@ -56,7 +56,7 @@ transitions = [
     },
     {
         'trigger': 'resubmit',
-        'source': 'rejected',
+        'source': ['rejected', 'retracted'],
         'dest': 'submitted',
         'after': 'notify_administrators_of_submission'
     },

@@ -4,7 +4,16 @@
 
 {% block title %}Edit | {{ study.name }}{% endblock %}
 {% block flash %}
-  {% bootstrap_messages %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
+                <div id="details" class="alert alert-success alert-dismissable">
+                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                     {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
   {% if form.non_field_errors %}
   <div class="alert alert-danger" role="alert">
       {{ form.non_field_errors }}
@@ -19,7 +28,22 @@
             source: [
                   {value: 'study_read', text: 'Read'},
                   {value: 'study_admin', text: 'Admin'}
-               ]
+              ],
+              success: function(response, newValue) {
+                  // On success, populate the success message with the permissions the user was given
+                  // and reveal the permission edit alert message.
+                  $('#add-researcher-messages').hide()
+                  if (newValue === 'study_admin') {
+                      $('#permission-edit-text').append(' given Admin Permissions to this study.');
+                  } else {
+                      $('#permission-edit-text').append(' given Read Permissions to this study.');
+                  }
+                   $('#permission-edit').show();
+               }
+        }).on('click', function (e) {
+            // When clicking on a researcher, prepopulate success message with researcher name.
+             $('#permission-edit').hide();
+             $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
         });
     });
 </script>
@@ -37,7 +61,7 @@
                 <h1 class="panel-title">Description and Discoverability</h1>
               </div>
               <div class="panel-body">
-                <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                <form action="{% url 'exp:study-edit' study.id %}#details" method="post" enctype="multipart/form-data">{% csrf_token %}
                     {% bootstrap_form form %}
                     <div class="pull-right">
                         {% buttons %}
@@ -81,12 +105,26 @@
           </div>
           <div class="mt-xl panel panel-default">
             <div class="panel-heading">
-              <h1 class="panel-title">Manage Researchers</h1>
+              <h1 id="manage-researchers" class="panel-title">Manage Researchers</h1>
             </div>
             <div class="panel-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.extra_tags == 'user_added' or message.extra_tags == 'user_removed' %}
+                            <div id="add-researcher-messages" class="alert alert-success alert-dismissable">
+                                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                 {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <div id="permission-edit" class="alert alert-success alert-dismissable" style="display:none;">
+                     <a href="#manage-researchers" class="close" onclick="$('.alert').hide()">&times;</a>
+                     <div id="permission-edit-text"> </div>
+                </div>
                 <div class="row">
                     <div class="col-sm-5">
-                        <form method="GET">
+                        <form method="GET" action="{% url 'exp:study-edit' study.id %}#manage-researchers">
                             <div class="input-group">
                                <input class="form-control" name="match" placeholder="{{ name|default:'Search organization' }}" size="50" type="text">
                                <span class="input-group-btn">
@@ -103,7 +141,7 @@
                                             <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.identicon_small_html }} {{ user.get_short_name }} </a>
                                         </div>
                                         <div class="col-xs-3">
-                                            <form method="POST">{% csrf_token %}
+                                            <form method="POST" action="{% url 'exp:study-edit' study.id %}#manage-researchers">{% csrf_token %}
                                                 <input type="hidden" name="add_user" value="{{user.id}}"/>
                                                 <button aria-label="Add researcher to study" type="submit" value='{{user.id}}' class="btn btn-success btn-sm"><i aria-hidden="true" class="fa fa-plus"> </i></button>
                                             </form>
@@ -143,7 +181,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-sm-3">
-                                    <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
+                                    <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-id="{{ researcher.get_short_name }}"data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
                                         {% if "can_edit_study" in study_perms %}
                                             Admin
                                         {% else %}
@@ -152,7 +190,7 @@
                                     </a>
                                 </div>
                                 <div class="col-sm-3 researcher-delete">
-                                    <form method="POST">{% csrf_token %}
+                                    <form method="POST" action="{% url 'exp:study-edit' study.id %}#manage-researchers">{% csrf_token %}
                                         <input type="hidden" name="remove_user" value="{{researcher.id}}"/>
                                         <button type="submit" class="btn btn-danger btn-sm"> Remove </button>
                                     </form>

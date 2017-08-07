@@ -23,6 +23,7 @@ from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
+from multiselectfield import MultiSelectField
 
 
 class UserManager(BaseUserManager):
@@ -245,12 +246,13 @@ class Child(models.Model):
         ('39', _('39 weeks')),
         ('40>', _('40 or more weeks')),
     )
+
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     given_name = models.CharField(max_length=255)
     birthday = models.DateField()
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
-    age_at_birth = models.CharField(max_length=25)
-    additional_information = models.TextField()
+    age_at_birth = models.CharField(max_length=25, choices=AGE_AT_BIRTH_CHOICES)
+    additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)
 
     user = models.ForeignKey(
@@ -384,20 +386,20 @@ class DemographicData(models.Model):
 
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
-    child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
+    child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays', blank=True)
     languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home')
     number_of_guardians = models.CharField(choices=GUARDIAN_CHOICES, max_length=6)
     number_of_guardians_explanation = models.TextField()
-    race_identification = models.CharField(max_length=16, choices=RACE_CHOICES)
+    race_identification = MultiSelectField(choices=RACE_CHOICES)
     age = models.CharField(max_length=5, choices=AGE_CHOICES)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
     education_level = models.CharField(max_length=5, choices=EDUCATION_CHOICES)
     spouse_education_level = models.CharField(max_length=5, choices=SPOUSE_EDUCATION_CHOICES)
     annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES)
     number_of_books = models.IntegerField()
-    additional_comments = models.TextField()
+    additional_comments = models.TextField(blank=True)
     country = CountryField()
-    state = USStateField(choices=('XX', _('Select a State')) + USPS_CHOICES[:])
+    state = USStateField(blank=True, choices=('XX', _('Select a State')) + USPS_CHOICES[:])
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
     extra = DateTimeAwareJSONField(null=True)
 
