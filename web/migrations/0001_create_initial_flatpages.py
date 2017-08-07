@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
+from django.conf import settings
 from django.db import migrations
 
 flatpages = [
@@ -1253,7 +1254,10 @@ flatpages = [
 
 
 def make_pages(*args, **kwargs):
-    site, created = Site.objects.get_or_create(domain='example.com', defaults={'name': 'Example'})
+    site = Site.objects.first()
+    site.domain = settings.SITE_DOMAIN
+    site.name = settings.SITE_NAME
+    site.save()
     for page in flatpages:
         flatpage_obj, created = FlatPage.objects.get_or_create(**page)
         flatpage_obj.sites.add(site)

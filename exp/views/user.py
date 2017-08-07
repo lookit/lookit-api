@@ -11,21 +11,20 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.shortcuts import reverse
 from django.views import generic
-from guardian.mixins import LoginRequiredMixin
+from exp.views.mixins import ExperimenterLoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from django.db.models import Q
 
 from accounts.forms import UserStudiesForm
 from accounts.models import User
 from accounts.utils import build_org_group_name
-from guardian.mixins import LoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
 
 
-class ParticipantListView(LoginRequiredMixin, ParticipantMixin, generic.ListView, PaginatorMixin):
+class ParticipantListView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.ListView, PaginatorMixin):
     '''
     ParticipantListView shows a list of participants that have responded to the studies the
     user has permission to view.
@@ -57,7 +56,7 @@ class ParticipantListView(LoginRequiredMixin, ParticipantMixin, generic.ListView
         return context
 
 
-class ParticipantDetailView(LoginRequiredMixin, ParticipantMixin, generic.UpdateView, PaginatorMixin):
+class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.UpdateView, PaginatorMixin):
     '''
     ParticipantDetailView shows demographic information, children information, and
     studies that a participant has responded to.
@@ -96,13 +95,12 @@ class ParticipantDetailView(LoginRequiredMixin, ParticipantMixin, generic.Update
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
 
 
-class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView):
+class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView):
     '''
     Displays a list of researchers that belong to the org admin, org read, or org researcher groups.
     '''
     template_name = 'accounts/researcher_list.html'
-    # TODO needs to change once oauth in
-    queryset = User.objects.filter(demographics__isnull=True, is_active=True)
+    queryset = User.objects.filter(is_researcher=True, is_active=True)
     model = User
     permission_required = 'accounts.can_view_organization'
     raise_exception = True
@@ -124,7 +122,7 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
         """
         qs = super().get_queryset()
         admin_group, read_group, researcher_group = self.get_org_groups()
-        queryset = qs.filter(Q(groups__name=admin_group.name) | Q(groups__name=read_group.name) | Q(groups__name=researcher_group.name)).distinct().order_by(Lower('family_name').asc())
+        queryset = qs.filter(Q(Q(Q(groups=admin_group) | Q(groups=read_group) | Q(groups=researcher_group)) | Q(is_researcher=True, groups__isnull=True, organization__isnull=True))).distinct().order_by(Lower('family_name').asc())
 
         match = self.request.GET.get('match')
         # Can filter on first, middle, and last names
@@ -174,12 +172,12 @@ class ResearcherListView(LoginRequiredMixin, DjangoPermissionRequiredMixin, gene
         return context
 
 
-class ResearcherDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, generic.UpdateView):
+class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.UpdateView):
     '''
     ResearcherDetailView shows information about a researcher and allows toggling the permissions
     on a user or modifying.
     '''
-    queryset = User.objects.filter(demographics__isnull=True, is_active=True)
+    queryset = User.objects.filter(is_researcher=True, is_active=True)
     fields = ('is_active', )
     template_name = 'accounts/researcher_detail.html'
     model = User
@@ -189,9 +187,10 @@ class ResearcherDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, ge
     def get_queryset(self):
         """
         Restrict queryset so org admins can only modify users in their organization
+        or unaffiliated researchers.
         """
         qs = super().get_queryset()
-        return qs.filter(organization=self.request.user.organization)
+        return qs.filter(Q(Q(organization=self.request.user.organization) | Q(is_researcher=True, groups__isnull=True, organization__isnull=True))).distinct()
 
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
@@ -210,6 +209,8 @@ class ResearcherDetailView(LoginRequiredMixin, DjangoPermissionRequiredMixin, ge
         elif changed_field == 'family_name':
             self.object.family_name = self.request.POST['value']
         self.object.is_active = True
+        if not self.object.organization:
+            self.object.organization = request.user.organization
         self.object.save()
         if self.request.POST.get('name') == 'user_permissions':
             self.modify_researcher_permissions()

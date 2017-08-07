@@ -1,6 +1,21 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+{% load bootstrap3 %}
 
 {% block title %}Dashboard{% endblock %}
+{% block header %}{% endblock %}
 
 {% block content %}
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h1>{% trans "Dashboard" %}</h1>
+    </div>
+    <div class="panel-body">
+      <p>You've successfully signed into Experimenter. An administrator will be contacted to grant you permissions. You will receive a notification by email when this is completed.</p>
+  </div>
+  </div>
+</div>
 {% endblock %}

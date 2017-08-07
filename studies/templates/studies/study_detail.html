@@ -2,6 +2,7 @@
 {% load bootstrap3 %}
 {% load guardian_tags %}
 {% load static %}
+{% load tz %}
 
 {% block title %}{{ study.name }}{% endblock %}
 {% block flash %}
@@ -149,7 +150,9 @@
                         {% for log in logs %}
                             <div class="row pb-sm">
                                 <div class="col-sm-3">
+                                  {% timezone request.user.time_zone %}
                                     {{ log.created_at }}
+                                  {% endtimezone %}
                                  </div>
                                 <div class="col-sm-9">
                                     {{ log.study.name }} study {% if log.action == "active" %} activated {% else %} {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
