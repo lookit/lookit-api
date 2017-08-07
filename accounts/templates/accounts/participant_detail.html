@@ -10,13 +10,13 @@
   <div class="container mb-lg">
       <div class="row">
           <div class="col-xs-12">
-              <a href="{% url 'exp:participant-list' %}"> All Participants </a> &gt; {{ user.get_short_name }} </a>
+              <a href="{% url 'exp:participant-list' %}"> All Participants </a> &gt; {{ user.given_name }} </a>
           </div>
       </div>
 
       <div class="row">
           <div class="col-xs-12">
-              <h1> {{ user.identicon_html }} {{ user.get_full_name }} </h1>
+              <h1> {{ user.identicon_html }} {{ user.given_name }} </h1>
               <span><label class='pr-xs'> Last Active: </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
           </div>
       </div>

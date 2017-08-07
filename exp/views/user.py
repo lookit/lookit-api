@@ -38,13 +38,13 @@ class ParticipantListView(LoginRequiredMixin, ParticipantMixin, generic.ListView
         '''
         qs =  super().get_queryset()
         match = self.request.GET.get('match', False)
-        order = self.request.GET.get('sort', 'family_name')
-        if 'given_name' not in order and 'family_name' not in order and 'last_login' not in order:
-            order = 'family_name'
+        order = self.request.GET.get('sort', 'given_name')
+        if 'given_name' not in order and 'last_login' not in order:
+            order = 'given_name'
 
         if match:
             qs = qs.filter(reduce(operator.or_,
-              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(username__icontains=term) for term in match.split())))
+              (Q(given_name__icontains=term) | Q(username__icontains=term) for term in match.split())))
         return self.paginated_queryset(qs.order_by(order), self.request.GET.get('page'), 10)
 
     def get_context_data(self, **kwargs):
