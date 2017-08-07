@@ -22,6 +22,7 @@
     });
     function statusSelected(status) {
         document.getElementsByClassName('current-state')[0].innerHTML = status.value
+        document.getElementsByClassName('submit-status-panel')[0].style.display = 'inline';
         var commentsBlock = document.getElementById("rejectionComments");
         var labelBlock = document.getElementsByClassName('comments-block')[0];
         if (status.value === 'reject' && "{{ study_perms }}".indexOf('can_approve_study') !== -1) {
@@ -63,9 +64,9 @@
                             {% get_obj_perms request.user for study as "study_perms" %}
                             <em><textarea id="rejectionComments" class="comments-text rejection-comments" name="comments-text" disabled rows="4" cols="34">{{study.comments}}</textarea></em>
                         </div>
-                        <div class="submit-status-panel">
+                        <div class="submit-status-panel pull-right" style="display:none;">
                             <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
-                            <a data-toggle="modal" class="deleteResearcher btn btn-success btn-sm" href="#statusModal">Save</a>
+                            <a data-toggle="modal" class="deleteResearcher btn btn-success" href="#statusModal">Save</a>
                         </div>
                     {% endif %}
                     <div class="modal fade" id="statusModal">
@@ -77,7 +78,7 @@
                                 </div>
                                 <div class="modal-body">
                                    {% csrf_token %}
-                                   <p> This will <span class="current-state"> change the status of </span> this study.</p>
+                                   <p> This will <span class="current-state"> change the status of </span> the study.</p>
                                 </div>
                                 <div class="modal-footer"> {% csrf_token %}
                                     <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
