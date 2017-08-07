@@ -17,8 +17,11 @@
         });
 
         removeTooltip = function() {
-            $('[data-toggle="tooltip"]').tooltip('hide')
+            $('[data-toggle="tooltip"]').tooltip('hide');
         }
+        $('form').submit(function() {
+            $('#changeStatusButton').prop("disabled", "disabled");
+        });
     });
     function statusSelected(status) {
         document.getElementsByClassName('current-state')[0].innerHTML = status.value
@@ -28,13 +31,13 @@
         if (status.value === 'reject' && "{{ study_perms }}".indexOf('can_approve_study') !== -1) {
             rejectionComments.disabled = false;
             rejectionComments.classList.remove("comments-text");
-            labelBlock.classList.remove("comments-label")
+            labelBlock.classList.remove("comments-label");
 
         } else {
             rejectionComments.disabled = true;
             rejectionComments.className += " comments-text";
             rejectionComments.value = "{{ study.comments }}";
-            labelBlock.className += " comments-label"
+            labelBlock.className += " comments-label";
         }
     }
 </script>
@@ -82,7 +85,7 @@
                                 </div>
                                 <div class="modal-footer"> {% csrf_token %}
                                     <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
-                                   <button {% if 'can_edit_study' not in study_perms %}disabled{% endif %} name="submit" value="submit" class="btn btn-success" type="submit">Save</button>
+                                   <button id="changeStatusButton" {% if 'can_edit_study' not in study_perms %}disabled{% endif %} name="submit" value="submit" class="btn btn-success" type="submit">Save</button>
                                 </div>
                           </div>
                         </form>
