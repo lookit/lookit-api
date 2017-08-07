@@ -43,6 +43,9 @@ class StudyEditForm(forms.ModelForm):
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
         }
+        help_texts = {
+            'image': 'Please keep your file size less than 1 MB'
+        }
 
 class StudyForm(forms.ModelForm):
     structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False)
@@ -77,6 +80,9 @@ class StudyForm(forms.ModelForm):
             'max_age': Textarea(attrs={'rows': 1}),
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
+        }
+        help_texts = {
+            'image': 'Please keep your file size less than 1 MB'
         }
 
 class StudyBuildForm(forms.ModelForm):
