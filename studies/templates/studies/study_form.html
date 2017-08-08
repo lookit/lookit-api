@@ -50,9 +50,12 @@
                     {% bootstrap_form form %}
                     <div class="pull-right">
                         {% buttons %}
-                          <button type="submit" id="create-study-button" class="btn btn-success">
-                            {% bootstrap_icon "plus" %} Create Study
-                          </button>
+                            <a href="{% url 'exp:study-list' %}" class="btn btn-default">
+                                Cancel
+                            </a>
+                            <button type="submit" id="create-study-button" class="btn btn-success">
+                                {% bootstrap_icon "plus" %} Create Study
+                            </button>
                         {% endbuttons %}
                     </div>
                 </form>
