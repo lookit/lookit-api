@@ -149,12 +149,12 @@
                         <h3 class="study-logs-label"> Study Logs: </h3>
                         {% for log in logs %}
                             <div class="row pb-sm">
-                                <div class="col-sm-3">
+                                <div class="col-sm-3 col-sm-offset-1">
                                   {% timezone request.user.time_zone %}
                                     {{ log.created_at }}
                                   {% endtimezone %}
                                  </div>
-                                <div class="col-sm-9">
+                                <div class="col-sm-8">
                                     {{ log.study.name }} study {% if log.action == "active" %} activated {% else %} {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
                                 </div>
                             </div>
