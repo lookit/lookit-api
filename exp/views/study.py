@@ -375,7 +375,7 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
         orderby = self.request.GET.get('sort', 'id')
         page = self.request.GET.get('page', None)
         study = context['study']
-        responses = study.responses.filter(completed=True).order_by(orderby)
+        responses = study.responses.order_by(orderby)
         context['responses'] = self.paginated_queryset(responses, page, 10)
         context['response_data'] = self.build_responses(context['responses'])
         context['csv_data'] = self.build_individual_csv(context['responses'])
