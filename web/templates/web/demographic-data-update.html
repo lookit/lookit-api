@@ -20,6 +20,9 @@
                 hideField('child_birthdays');
                 $('.help-block').first().hide();
             }
+            if ($('#id_number_of_guardians')[0].value !== '') {
+                showField('number_of_guardians_explanation');
+            }
 
             $('#id_country').on('change', function() {
                 if ($(this)[0].value === 'US') {
@@ -41,15 +44,27 @@
 
                 }
             });
+            $('#id_number_of_guardians').on('change', function() {
+                if (this.value === '') {
+                    hideField('number_of_guardians_explanation');
+                } else {
+                    showField('number_of_guardians_explanation');
+                }
+            });
         });
         function hideField(field) {
             $(`#id_${field}`).hide().prop('required',false);
             $(`label[for=id_${field}]`).hide();
-            $(`#id_${field}`)[0].required = false;
+            if (field !== 'number_of_guardians_explanation') {
+                $(`#id_${field}`)[0].required = false;
+            }
+
         }
         function showField(field) {
             $(`#id_${field}`).show();
-            $(`#id_${field}`)[0].required = true;
+            if (field !== 'number_of_guardians_explanation') {
+                $(`#id_${field}`)[0].required = true;
+            }
             $(`label[for=id_${field}]`).show();
         }
     </script>
