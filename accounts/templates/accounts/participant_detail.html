@@ -267,26 +267,31 @@
                 </div>
             </div>
             {% for study_dict in studies %}
-            <div class="row pt-sm">
+            <div class="row pt-md">
                 <div class="col-md-4 col-xs-12">
                     <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
                 </div>
                 <div class="col-md-1 col-xs-12">
-                    <span class="visible-xs visible-sm">Response ID: </span>{{ study_dict.response.id }}
+                    <span class="visible-xs visible-sm">Response ID: {{ study_dict.response.id }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.response.id }} </span>
                 </div>
                 <div class="col-md-1 col-xs-12">
-                    <span class="visible-xs visible-sm">Child ID: </span>{{ study_dict.response.child.id }}
+                    <span class="visible-xs visible-sm">Child ID: {{ study_dict.response.child.id }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.response.child.id }} </span>
                 </div>
                 <div class="col-md-3 col-xs-12">
-                    <span class="visible-xs visible-sm">Status: </span>
+
                     {% if study_dict.completed %}
-                        Completed
+                        <span class="visible-xs visible-sm">Status: Completed </span>
+                        <span class="hidden-xs hidden-sm">Completed </span>
                     {% else %}
-                        In Progress
+                        <span class="visible-xs visible-sm">Status: In Progress </span>
+                        <span class="hidden-xs hidden-sm">In Progress </span>
                     {% endif %}
                 </div>
                 <div class="col-md-3 col-xs-12">
-                    {{ study_dict.modified |date:"n/d/Y"|default:"N/A" }}
+                    <span class="visible-xs visible-sm">Date Modified: {{ study_dict.modified |date:"n/d/Y"|default:"N/A" }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.modified |date:"n/d/Y"|default:"N/A" }} </span>
                 </div>
             </div>
           {% endfor %}
