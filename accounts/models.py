@@ -125,7 +125,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @cached_property
     def osf_profile_url(self):
-        return self.socialaccount_set.first().extra_data['data']['links']['html']
+        try:
+            return self.socialaccount_set.first().extra_data['data']['links']['html']
+        except AttributeError:
+            return '#'
 
     @property
     def identicon(self):
