@@ -14,6 +14,13 @@
             }
         })();
     </script>
+    <script>
+        $(document).ready(function(){
+            $('form').submit(function() {
+                $('#create-study-button').prop("disabled", "disabled");
+            });
+        });
+    </script>
     {{ form.media }}
 {% endblock %}
 
@@ -43,7 +50,7 @@
                     {% bootstrap_form form %}
                     <div class="pull-right">
                         {% buttons %}
-                          <button type="submit" class="btn btn-success">
+                          <button type="submit" id="create-study-button" class="btn btn-success">
                             {% bootstrap_icon "plus" %} Create Study
                           </button>
                         {% endbuttons %}
