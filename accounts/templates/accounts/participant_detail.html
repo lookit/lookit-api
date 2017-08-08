@@ -22,7 +22,7 @@
       </div>
 
     <div class='row'>
-        <div class='col-sm-6'>
+        <div class='col-md-6 col-sm-5'>
             <h3>Children</h3>
             {% for child in user.children.all %}
             <div class="pb-md">
@@ -34,6 +34,14 @@
                         </div>
                         <div class="col-xs-7">
                             {{child.birthday|date:"n/d/Y"|default:"N/A"}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <b> Age: </b>
+                        </div>
+                        <div class="col-xs-7">
+                             {{child.birthday | timesince}}
                         </div>
                     </div>
                     <div class="row">
@@ -54,18 +62,10 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> Age: </b>
+                            <b> Additional Info: </b>
                         </div>
                         <div class="col-xs-7">
-                             {{child.birthday | timesince}}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-5">
-                            <b> Extra: </b>
-                        </div>
-                        <div class="col-xs-7">
-                             {{child.additional_information}}
+                             {{child.additional_information|default:"No response"}}
                         </div>
                     </div>
                 </div>
@@ -74,8 +74,40 @@
                 <p><em> No children profiles registered! </em></p>
             {% endfor %}
         </div>
-        <div class='col-sm-6'>
+        <div class='col-md-6 col-sm-7'>
             <h3>Latest Demographic Data</h3>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Country: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.country|default:"No Response" }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> State: </b>
+                </div>
+                <div class="col-xs-7">
+                     {{ demographics.state|default:"No Response" }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Area description: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.density|default:"No Response" }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Laguages Spoken at Home: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.languages_spoken_at_home|default:"No Response" }}
+                </div>
+            </div>
             <div class="row">
                 <div class="col-xs-5">
                     <b> Number of Children: </b>
@@ -90,14 +122,6 @@
                 </div>
                 <div class="col-xs-7">
                     {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% empty %} No Response{% endfor %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <b> Laguages Spoken at Home: </b>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.languages_spoken_at_home|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -166,7 +190,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Books at Home: </b>
+                    <b> Children's Books at Home: </b>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.number_of_books|default:"No Response" }}
@@ -178,30 +202,6 @@
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.additional_comments|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <b> Country: </b>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.country|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <b> State: </b>
-                </div>
-                <div class="col-xs-7">
-                     {{ demographics.state|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <b> Density: </b>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.density|default:"No Response" }}
                 </div>
             </div>
         </div>
