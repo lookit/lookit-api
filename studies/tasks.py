@@ -108,6 +108,22 @@ def build_experiment(study_uuid, preview=True):
 
     repo_destination_folder = download_repos(addons_sha=addons_sha, player_sha=player_sha)
 
+    commands = [
+        # args                                   # cwd
+        (['yarn', 'install', '--pure-lockfile'], repo_destination_folder),
+        (['bower', 'install'], repo_destination_folder),
+        (['yarn', 'install', '--pure-lockfile'], os.path.join(repo_destination_folder, 'lib')),
+        (['bower', 'install'], os.path.join(repo_destination_folder, 'lib')),
+        (['ls', '-l'], os.path.join(repo_destination_folder, 'lib')),
+        (['cp', 'VideoRecorder.swf', os.path.join(repo_destination_folder, 'public')], os.path.abspath(os.path.join(os.path.curdir, 'studies/player_files'))),
+        (['cp', 'environment', os.path.join(repo_destination_folder, 'public', '.env')], os.path.abspath(os.path.curdir)),
+    ]
+    while ret_code == 0:
+        arguments, cwd = commands.pop()
+        logger.debug(f'Started {' '.join(arguments)} on {cwd}')
+        ret_code = subprocess.run(arguments, cwd=cwd)
+        logger.debug(f'Finished {' '.join(arguments)} on {cwd}')
+
     # cd repo_destination_folder
     # yarn install --pure-lockfile
     # bower install
