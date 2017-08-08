@@ -275,6 +275,15 @@ def check_modification_of_approved_study(sender, instance, created, **kwargs):
     )
 
 @receiver(post_save, sender=Study)
+def remove_rejection_comments_after_approved(sender, instance, created, **kwargs):
+    """
+    If study moved into approved state, remove any previous rejection comments
+    """
+    if instance.state == 'approved' and instance.comments != '':
+        instance.comments = ''
+        instance.save()
+
+@receiver(post_save, sender=Study)
 def study_post_save(sender, **kwargs):
     '''
     Add study permissions to organization groups and
