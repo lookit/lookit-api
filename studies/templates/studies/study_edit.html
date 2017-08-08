@@ -45,6 +45,10 @@
              $('#permission-edit').hide();
              $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
         });
+        $('form').submit(function() {
+            $('#save_study_details').prop("disabled", "disabled");
+            $('#save_study_details_confirm').prop("disabled", "disabled");
+        });
     });
 </script>
   <div class="container">
@@ -69,7 +73,7 @@
                               {% if save_confirmation %}
                                 <a data-toggle="modal" class="btn btn-danger" href="#saveStudyConfirmation">Save Changes</a>
                               {% else %}
-                                  <button type="submit" class="btn btn-success">
+                                  <button type="submit" id="save_study_details" class="btn btn-success">
                                      Save Changes
                                   </button>
                               {% endif %}
@@ -92,7 +96,7 @@
                                     </div>
                                     <div class="modal-footer"> {% csrf_token %}
                                          <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>
-                                         <button type="submit" class="btn btn-danger">
+                                         <button id="save_study_details_confirm" type="submit" class="btn btn-danger">
                                             Save Changes
                                          </button>
                                     </div>

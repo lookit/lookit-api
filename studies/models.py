@@ -248,10 +248,6 @@ class Study(models.Model):
         ev.model.save()
         self._log_action(ev)
 
-# TODO Need a post_save hook for edit that pulls studies out of approved state
-# TODO or disallows editing in pre_save if they are approved
-
-
 @receiver(post_save, sender=Study)
 def add_study_created_log(sender, instance, created, **kwargs):
     if created:
