@@ -134,7 +134,7 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
             if 'family_name' in sort:
                 queryset = queryset.order_by(Lower('family_name').desc()) if '-' in sort else queryset.order_by(Lower('family_name').asc())
         queryset = queryset.select_related('organization')
-        return self.paginated_queryset(queryset, self.request.GET.get('page'), 20)
+        return self.paginated_queryset(queryset, self.request.GET.get('page'), 10)
 
     def post(self, request, *args, **kwargs):
         """
