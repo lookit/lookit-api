@@ -36,7 +36,9 @@
                 </ul>
             </li>
         {% else %} {# /if request.user.is_authenticated #}
-            <li><a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
+            {% if 'login' not in request.path %}
+                <li><a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
+            {% endif %}
         {% endif %}
       </ul>
     </div><!-- /.navbar-collapse -->
