@@ -403,7 +403,7 @@ class DemographicData(models.Model):
     child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays', blank=True)
     languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home')
     number_of_guardians = models.CharField(choices=GUARDIAN_CHOICES, max_length=6)
-    number_of_guardians_explanation = models.TextField()
+    number_of_guardians_explanation = models.TextField(blank=True)
     race_identification = MultiSelectField(choices=RACE_CHOICES)
     age = models.CharField(max_length=5, choices=AGE_CHOICES)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)

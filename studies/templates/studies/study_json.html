@@ -14,6 +14,14 @@
             }
         })();
     </script>
+    <script>
+    $(document).ready(function() {
+        $('form').submit(function() {
+            $('#save-study-json').prop("disabled", "disabled");
+            $('#save-study-json-confirmation').prop("disabled", "disabled");
+        });
+    });
+    </script>
     {{ form.media }}
 {% endblock %}
 
@@ -49,7 +57,7 @@
                               {% if save_confirmation %}
                                 <a data-toggle="modal" class="btn btn-danger" href="#saveStructureConfirmation">Save</a>
                               {% else %}
-                                  <button type="submit" class="btn btn-success">
+                                  <button id="save-study-json" type="submit" class="btn btn-success">
                                      Save
                                   </button>
                               {% endif %}
@@ -72,7 +80,7 @@
                                     </div>
                                     <div class="modal-footer"> {% csrf_token %}
                                          <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard Changes </a>
-                                         <button type="submit" class="btn btn-danger">
+                                         <button id="save-study-json-confirmation" type="submit" class="btn btn-danger">
                                             Save
                                          </button>
                                     </div>

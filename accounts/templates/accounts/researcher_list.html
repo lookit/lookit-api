@@ -50,7 +50,7 @@
                     <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
                 {% else %}
                     <strong>{{ user.get_short_name }}</strong>
-                {% endif %}    
+                {% endif %}
             </div>
 
             <div class="col-xs-3 col-sm-3">
@@ -87,6 +87,15 @@
               </button>
          </div>
        </form>
+   </div>
+   <div class="paginator pt-lg">
+       {% if object_list %}
+           <div class="row pb-lg">
+               <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                   {% include 'studies/_paginator.html' with items=object_list %}
+               </div>
+           </div>
+       {% endif %}
    </div>
   </div>
 {% endblock %}

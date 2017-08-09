@@ -22,7 +22,7 @@
       </div>
 
     <div class='row'>
-        <div class='col-sm-6'>
+        <div class='col-md-6 col-sm-5'>
             <h3>Children</h3>
             {% for child in user.children.all %}
             <div class="pb-md">
@@ -34,6 +34,14 @@
                         </div>
                         <div class="col-xs-7">
                             {{child.birthday|date:"n/d/Y"|default:"N/A"}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <b> Age: </b>
+                        </div>
+                        <div class="col-xs-7">
+                             {{child.birthday | timesince}}
                         </div>
                     </div>
                     <div class="row">
@@ -54,18 +62,10 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> Age: </b>
+                            <b> Additional Info: </b>
                         </div>
                         <div class="col-xs-7">
-                             {{child.birthday | timesince}}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-5">
-                            <b> Extra: </b>
-                        </div>
-                        <div class="col-xs-7">
-                             {{child.additional_information}}
+                             {{child.additional_information|default:"No response"}}
                         </div>
                     </div>
                 </div>
@@ -74,8 +74,40 @@
                 <p><em> No children profiles registered! </em></p>
             {% endfor %}
         </div>
-        <div class='col-sm-6'>
+        <div class='col-md-6 col-sm-7'>
             <h3>Latest Demographic Data</h3>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Country: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.country|default:"No Response" }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> State: </b>
+                </div>
+                <div class="col-xs-7">
+                     {{ demographics.state|default:"No Response" }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Area description: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.density|default:"No Response" }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Laguages Spoken at Home: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.languages_spoken_at_home|default:"No Response" }}
+                </div>
+            </div>
             <div class="row">
                 <div class="col-xs-5">
                     <b> Number of Children: </b>
@@ -90,14 +122,6 @@
                 </div>
                 <div class="col-xs-7">
                     {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% empty %} No Response{% endfor %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <b> Laguages Spoken at Home: </b>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.languages_spoken_at_home|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -166,7 +190,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Books at Home: </b>
+                    <b> Children's Books at Home: </b>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.number_of_books|default:"No Response" }}
@@ -178,30 +202,6 @@
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.additional_comments|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <b> Country: </b>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.country|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <b> State: </b>
-                </div>
-                <div class="col-xs-7">
-                     {{ demographics.state|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <b> Density: </b>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.density|default:"No Response" }}
                 </div>
             </div>
         </div>
@@ -267,26 +267,31 @@
                 </div>
             </div>
             {% for study_dict in studies %}
-            <div class="row pt-sm">
+            <div class="row pt-md">
                 <div class="col-md-4 col-xs-12">
                     <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
                 </div>
                 <div class="col-md-1 col-xs-12">
-                    <span class="visible-xs visible-sm">Response ID: </span>{{ study_dict.response.id }}
+                    <span class="visible-xs visible-sm">Response ID: {{ study_dict.response.id }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.response.id }} </span>
                 </div>
                 <div class="col-md-1 col-xs-12">
-                    <span class="visible-xs visible-sm">Child ID: </span>{{ study_dict.response.child.id }}
+                    <span class="visible-xs visible-sm">Child ID: {{ study_dict.response.child.id }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.response.child.id }} </span>
                 </div>
                 <div class="col-md-3 col-xs-12">
-                    <span class="visible-xs visible-sm">Status: </span>
+
                     {% if study_dict.completed %}
-                        Completed
+                        <span class="visible-xs visible-sm">Status: Completed </span>
+                        <span class="hidden-xs hidden-sm">Completed </span>
                     {% else %}
-                        In Progress
+                        <span class="visible-xs visible-sm">Status: In Progress </span>
+                        <span class="hidden-xs hidden-sm">In Progress </span>
                     {% endif %}
                 </div>
                 <div class="col-md-3 col-xs-12">
-                    {{ study_dict.modified |date:"n/d/Y"|default:"N/A" }}
+                    <span class="visible-xs visible-sm">Date Modified: {{ study_dict.modified |date:"n/d/Y"|default:"N/A" }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.modified |date:"n/d/Y"|default:"N/A" }} </span>
                 </div>
             </div>
           {% endfor %}

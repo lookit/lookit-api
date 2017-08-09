@@ -14,6 +14,10 @@ class ExperimenterDashboardView(ExperimenterLoginRequiredMixin, generic.Template
     template_name = 'exp/dashboard.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if self.request.user.groups.exists():
-            return redirect(reverse_lazy('exp:study-list'))
-        return super().dispatch(request, *args, **kwargs)
+        if self.request.path.endswith('/'):
+            if self.request.user.groups.exists():
+                # Redirect to manage studies if user has been approved
+                return redirect(reverse_lazy('exp:study-list'))
+            return super().dispatch(request, *args, **kwargs)
+        # If no trailing slash, append slash and redirect.
+        return redirect(self.request.path + '/')

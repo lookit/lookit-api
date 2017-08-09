@@ -42,12 +42,14 @@
        </div>
    </div>
    <div class="row mt-xl visible-md visible-lg visible-xl">
-       <div class="col-md-3 col-md-offset-2">
+       <div class="col-md-3 col-md-offset-1">
            <strong> Username </strong>
            <a class="pl-sm" aria-label="Sort ascending by username" href="{% url 'exp:participant-list' %}?{% query_transform request sort='given_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
            <a aria-label="Sort descending by username" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-given_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
        </div>
-
+       <div class="col-md-2">
+           <strong> User ID </strong>
+       </div>
        <div class="col-md-3">
            <strong>Last Active</strong>
            <a class="pl-sm" aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='last_login' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
@@ -59,12 +61,17 @@
    <hr class="visible-md visible-lg visible-xl">
    {% for user in object_list %}
        <div class="row pt-xs">
-           <div class="col-md-3 col-md-offset-2 hidden-xs hidden-sm">
+           <div class="col-md-3 col-md-offset-1 hidden-xs hidden-sm">
                {{ user.given_name }}
            </div>
 
            <div class="col-xs-12 col-sm-offset-1 col-sm-11 visible-xs visible-sm pt-xs">
-               <a href="{% url 'exp:participant-detail' user.id %}"> {{ user.get_short_name }}</a>
+               <a href="{% url 'exp:participant-detail' user.id %}"> {{ user.given_name }}</a>
+           </div>
+
+           <div class="col-md-2 col-sm-offset-1 col-md-offset-0">
+               <span class="visible-xs visible-sm">User ID: {{ user.id }} </span>
+               <span class="hidden-xs hidden-sm">{{ user.id }} </span>
            </div>
 
            <div class="col-xs-12 col-sm-offset-1 col-sm-11 col-md-3 col-md-offset-0">
@@ -77,7 +84,7 @@
        </div>
    {% empty %}
     <div class="row pt-xs">
-        <div class="col-sm-10 col-sm-offset-1 col-md-10 col-md-offset-1">
+        <div class="col-sm-10 col-sm-offset-1 col-md-8">
              <p><em> No participants found! </em></p>
         </div>
     </div>

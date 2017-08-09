@@ -67,7 +67,6 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'demographics'
-    # TODO modify when oauth in
     queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
     filter_fields = [('user', 'user'), ]
@@ -100,7 +99,6 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Shows 1) users that have responded to studies you can view and 2) your own user object
         """
-        # TODO should we further restrict on participants only?
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
         return User.objects.filter(Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)).distinct()

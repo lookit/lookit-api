@@ -95,7 +95,7 @@ class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, ge
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
 
 
-class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView):
+class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView, PaginatorMixin):
     '''
     Displays a list of researchers that belong to the org admin, org read, or org researcher groups.
     '''
@@ -134,7 +134,7 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
             if 'family_name' in sort:
                 queryset = queryset.order_by(Lower('family_name').desc()) if '-' in sort else queryset.order_by(Lower('family_name').asc())
         queryset = queryset.select_related('organization')
-        return queryset
+        return self.paginated_queryset(queryset, self.request.GET.get('page'), 10)
 
     def post(self, request, *args, **kwargs):
         """

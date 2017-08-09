@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.shortcuts import reverse, get_object_or_404
+from django.shortcuts import reverse, get_object_or_404, redirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 from django.contrib.auth import update_session_auth_hash
@@ -296,6 +296,12 @@ class StudyDetailView(generic.DetailView):
 
 class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
+
+    def dispatch(self, request, path, *args, **kwargs):
+        path = self.request.path
+        if path.endswith('/') or 'js' in path or 'css' in path:
+            return super().dispatch(request, path, *args, **kwargs)
+        return redirect(self.request.path + '/')
 
 
 class ExperimentProxyView(ProxyView, LoginRequiredMixin):
