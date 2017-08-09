@@ -32,7 +32,7 @@
                     {% if request.user.osf_profile_url != '#' %}
                         <li><a href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
                     {% endif %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <li><a href="{% url 'logout' %}?next=/exp/">Logout</a></li>
                 </ul>
             </li>
         {% else %} {# /if request.user.is_authenticated #}
