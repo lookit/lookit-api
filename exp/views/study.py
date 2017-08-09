@@ -70,10 +70,7 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
         structure field data an empty dict
         """
         initial = super().get_initial()
-        initial['structure'] = json.dumps({
-            "frames": {},
-            "sequence": []
-        })
+        initial['structure'] = json.dumps(Study._meta.get_field('structure').default)
         return initial
 
 

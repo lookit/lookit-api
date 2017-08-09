@@ -37,7 +37,10 @@ class Study(models.Model):
         related_name='studies',
         related_query_name='study'
     )
-    structure = DateTimeAwareJSONField(default=dict)
+    structure = DateTimeAwareJSONField(default={
+        "frames": {},
+        "sequence": []
+    })
     display_full_screen = models.BooleanField(default=True)
     exit_url = models.URLField(default='')
     state = models.CharField(
