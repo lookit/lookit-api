@@ -7,6 +7,10 @@
     {{ block.super }}
     <script type="application/javascript">
         $(document).ready(function(){
+            if ("{{ match }}" !== '') {
+                document.getElementById("search-attachments").value = "{{ match }}";
+            }
+
             hideResponses();
             prepareDataForDownload('.all-data', 'download-all-data', 'json');
             prepareDataForDownload('#json-data-1', 'download-individual-data', 'json');
@@ -260,7 +264,7 @@
                 <div class="row text-center mt-lg">
                     <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
                         <form method="GET">
-                            <input class="form-control" name="match" placeholder="{{ match|default:'Filter attachment name' }}" size="50" type="text">
+                            <input id="search-attachments" class="form-control" name="match" placeholder="Filter attachment name" size="50" type="text">
                             <input type="hidden" name="sort" value={{ sort }}>
                         </form>
                     </div>

@@ -384,7 +384,8 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
         context['csv_data'] = self.build_individual_csv(context['responses'])
         context['all_responses'] = ', '.join(self.build_responses(responses))
         context['csv_responses'] = self.build_all_csv(responses)
-        context['attachments'] = self.get_study_attachments(study)
+        context['attachments'] = self.get_study_attachments(study, orderby, match)
+        context['match'] = match
         return context
 
     def build_responses(self, responses):
@@ -445,9 +446,12 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
             writer.writerow(self.csv_row_data(resp))
         return output.getvalue()
 
-    def get_study_attachments(self, study):
-        attachments = get_study_attachments.get_all_study_attachments(str(study.uuid))
-        return [ attachment for attachment in attachments if "PREVIEW_DATA_DISREGARD" not in attachment.key ]
+    def get_study_attachments(self, study, orderby, match):
+        sort = 'last_modified' if 'date_modified' in orderby else 'key'
+        attachments = [att for att in get_study_attachments.get_all_study_attachments(str(study.uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
+        if match:
+            attachments = [att for att in attachments if match in att.key]
+        return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
