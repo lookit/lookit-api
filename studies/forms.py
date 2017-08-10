@@ -43,8 +43,12 @@ class StudyEditForm(forms.ModelForm):
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
         }
+
         help_texts = {
-            'image': 'Please keep your file size less than 1 MB'
+            'image': 'Please keep your file size less than 1 MB',
+            'exit_url': "Specify the page where you want to send your participants after they've completed the study.",
+            'short_description': 'Give your study a description here.',
+            'long_description': 'Explain the purpose of your study here.'
         }
 
 class StudyForm(forms.ModelForm):
@@ -82,7 +86,10 @@ class StudyForm(forms.ModelForm):
             'contact_info': Textarea(attrs={'rows': 1}),
         }
         help_texts = {
-            'image': 'Please keep your file size less than 1 MB'
+            'image': 'Please keep your file size less than 1 MB',
+            'exit_url': "Specify the page where you want to send your participants after they've completed the study.",
+            'short_description': 'Give your study a description here.',
+            'long_description': 'Explain the purpose of your study here.'
         }
 
 class StudyBuildForm(forms.ModelForm):

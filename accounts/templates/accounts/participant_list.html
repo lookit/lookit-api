@@ -61,15 +61,11 @@
    <hr class="visible-md visible-lg visible-xl">
    {% for user in object_list %}
        <div class="row pt-xs">
-           <div class="col-md-3 col-md-offset-1 hidden-xs hidden-sm">
-               {{ user.given_name }}
+           <div class="col-md-3 col-md-offset-1 col-sm-11 col-sm-offset-1 col-xs-12">
+                <a href="{% url 'exp:participant-detail' user.id %}"> {{ user.given_name }}</a>
            </div>
 
-           <div class="col-xs-12 col-sm-offset-1 col-sm-11 visible-xs visible-sm pt-xs">
-               <a href="{% url 'exp:participant-detail' user.id %}"> {{ user.given_name }}</a>
-           </div>
-
-           <div class="col-md-2 col-sm-offset-1 col-md-offset-0">
+           <div class="col-md-2 col-sm-offset-1 col-md-offset-0 col-xs-12">
                <span class="visible-xs visible-sm">User ID: {{ user.id }} </span>
                <span class="hidden-xs hidden-sm">{{ user.id }} </span>
            </div>

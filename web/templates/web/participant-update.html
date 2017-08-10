@@ -40,24 +40,24 @@
                 </div>
               </div>
               {% if not request.user.is_researcher %}
-              <div class="panel-heading">
-                <h1 class="panel-title"> Change Your Password </h1>
-              </div>
-              <div class="panel panel-default">
-                <div class="panel-body">
-                  <form method="POST" action="">{% csrf_token %}
-                      {% bootstrap_form form2 %}
-                      {% buttons %}
-                      <div class="pull-right">
-                          <a class="btn btn-default" href="{% url 'web:participant-update' %}"> Cancel </a>
-                          <button name="password_update" type="submit" class="btn btn-success">
-                             Save
-                          </button>
-                      </div>
-                      {% endbuttons %}
-                  </form>
-              </div>
-            </div>
+                  <div class="panel-heading">
+                    <h1 class="panel-title"> Change Your Password </h1>
+                  </div>
+                  <div class="panel panel-default">
+                    <div class="panel-body">
+                      <form method="POST" action="">{% csrf_token %}
+                          {% bootstrap_form form2 %}
+                          {% buttons %}
+                          <div class="pull-right">
+                              <a class="btn btn-default" href="{% url 'web:participant-update' %}"> Cancel </a>
+                              <button name="password_update" type="submit" class="btn btn-success">
+                                 Save
+                              </button>
+                          </div>
+                          {% endbuttons %}
+                      </form>
+                  </div>
+                </div>
             {% endif %}
             </div>
         </div>

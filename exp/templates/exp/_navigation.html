@@ -7,7 +7,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{% url 'exp:study-list' %}">Experimenter</a>
+      {% if request.user.groups.exists %}
+        <a class="navbar-brand" href="{% url 'exp:study-list' %}">Experimenter</a>
+      {% else %}
+        <span class="navbar-brand"> Experimenter </span>
+      {% endif %}
+
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -30,13 +35,15 @@
                 </a>
                 <ul class="dropdown-menu">
                     {% if request.user.osf_profile_url != '#' %}
-                        <li><a href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
+                        <li><a target="_blank" href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
                     {% endif %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <li><a href="{% url 'logout' %}?next=/exp/">Logout</a></li>
                 </ul>
             </li>
         {% else %} {# /if request.user.is_authenticated #}
-            <li><a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
+            {% if 'login' not in request.path %}
+                <li><a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
+            {% endif %}
         {% endif %}
       </ul>
     </div><!-- /.navbar-collapse -->

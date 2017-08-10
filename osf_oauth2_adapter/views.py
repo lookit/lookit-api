@@ -59,10 +59,10 @@ class OSFOAuth2Adapter(OAuth2Adapter, DefaultSocialAccountAdapter):
         user = sociallogin.user
         user_username(user, username or '')
         user_email(user, valid_email_or_none(email) or '')
-        user_field(user, 'given_name', first_name or name_parts[0])
+        user_field(user, 'given_name', first_name or '')
         user.is_active = True
         user.is_researcher = True
-        user_field(user, 'family_name', last_name or name_parts[2])
+        user_field(user, 'family_name', last_name or '')
         user_field(user, 'time_zone', time_zone)
         user_field(user, 'locale', locale)
         user_field(user, '_identicon', self.get_base64_gravatar(gravatar))
