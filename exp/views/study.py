@@ -26,6 +26,7 @@ from project import settings
 from revproxy.views import ProxyView
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.models import Study
+import get_study_attachments
 
 
 class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
@@ -382,6 +383,7 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
         context['csv_data'] = self.build_individual_csv(context['responses'])
         context['all_responses'] = ', '.join(self.build_responses(responses))
         context['csv_responses'] = self.build_all_csv(responses)
+        context['attachments'] = self.get_study_attachments(study)
         return context
 
     def build_responses(self, responses):
@@ -441,6 +443,10 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
         for resp in responses:
             writer.writerow(self.csv_row_data(resp))
         return output.getvalue()
+
+    def get_study_attachments(self, study):
+        attachments = get_study_attachments.get_all_study_attachments(str(study.uuid))
+        return attachments
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
