@@ -42,13 +42,13 @@
     <div class="row text-center button-block hidden-xs">
         <div style="display: inline-block; float: none;">
             <ul class="nav nav-pills">
-                <li class="multi-toggle-filter {% if state == "active" %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="active" %}">Active</a></li>
-                <li class="multi-toggle-filter {% if state == "submitted" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="submitted" %}">Submitted</a></li>
-                <li class="multi-toggle-filter {% if state == "approved" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="approved" %}">Approved</a></li>
-                <li class="multi-toggle-filter {% if state == "created" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="created" %}">Created</a></li>
-                <li class="multi-toggle-filter {% if state == "deactivated" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="deactivated" %}">Deactivated</a></li>
-                <li class="multi-toggle-filter {% if state == "myStudies" %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="myStudies" %}">My Studies</a></li>
-                <li class="multi-toggle-filter {% if state == "all" %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request state="all" %}">All</a></li>
+                <li class="multi-toggle-filter {% if state == 'active' %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='active' %}">Active</a></li>
+                <li class="multi-toggle-"filter" {% if state == 'submitted' %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='submitted' %}">Submitted</a></li>
+                <li class="multi-toggle-filter {% if state == 'approved' %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='approved' %}">Approved</a></li>
+                <li class="multi-toggle-filter {% if state == 'created' %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='created' %}">Created</a></li>
+                <li class="multi-toggle-filter {% if state == 'deactivated' %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='deactivated' %}">Deactivated</a></li>
+                <li class="multi-toggle-filter {% if state == 'myStudies' %}active {% endif %}"><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='myStudies' %}">My Studies</a></li>
+                <li class="multi-toggle-filter {% if state == 'all' %}active {% endif %} "><a class='state-link' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='all' %}">All</a></li>
             </ul>
         </div>
     </div>
@@ -59,12 +59,12 @@
                     Change filter:  {{  state|capfirst}}
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="stateDropdown">
-                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="active" %}">Active</a></li>
-                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="submitted" %}">Submitted</a></li>
-                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="created" %}">Created</a></li>
-                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="deactivated" %}">Deactivated</a></li>
-                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="myStudies" %}">My Studies</a></li>
-                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request state="all" %}">All</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='active' %}">Active</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='submitted' %}">Submitted</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='created' %}">Created</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='deactivated' %}">Deactivated</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='myStudies' %}">My Studies</a></li>
+                       <li><a class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='all' %}">All</a></li>
                   </ul>
             </div>
             <div class="dropdown show">
@@ -72,9 +72,9 @@
                     Change sort: {% if sort == 'endDate' %} End Date {% elif sort == 'beginDate' %} Begin Date {% elif sort == "" %} Name {% else %} {{sort|capfirst}} {% endif %}
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="stateDropdown">
-                       <li><a aria-label="Sort studies by name" class="dropdown-item" href="{% url 'exp:study-list' %}?{% query_transform request sort='name'%}">Name</a></li>
-                       <li><a aria-label="Sort studies by begin date" class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request sort='beginDate'%}">Begin Date</a></li>
-                       <li><a aria-label="Sort studies by end date" class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request sort='endDate'%}">End Date</a></li>
+                       <li><a aria-label="Sort studies by name" class="dropdown-item" href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='name'%}">Name</a></li>
+                       <li><a aria-label="Sort studies by begin date" class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='beginDate'%}">Begin Date</a></li>
+                       <li><a aria-label="Sort studies by end date" class='dropdown-item' href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='endDate'%}">End Date</a></li>
                   </ul>
             </div>
         </div>
@@ -84,19 +84,19 @@
             <div class="row">
                 <div class="col-sm-6">
                     <strong>Name</strong>
-                    <a aria-label="Sort studies by name" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request page="1" sort="name"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
-                    <a aria-label="Reverse sort studies by name" href="{% url 'exp:study-list' %}?{% query_transform request page="1" sort="-name"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
+                    <a aria-label="Sort studies by name" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='name'%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+                    <a aria-label="Reverse sort studies by name" href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-name'%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
                 </div>
                 <div class="col-sm-3">
                     <strong>Begin Date</strong>
-                    <a aria-label="Sort studies by begin date" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request page="1" sort="beginDate"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
-                    <a aria-label="Reverse sort studies by begin date" href="{% url 'exp:study-list' %}?{% query_transform request page="1" sort="-beginDate"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
+                    <a aria-label="Sort studies by begin date" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='beginDate'%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+                    <a aria-label="Reverse sort studies by begin date" href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-beginDate'%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
 
                 </div>
                 <div class="col-sm-3">
                     <strong>End Date</strong>
-                    <a aria-label="Sort studies by end date" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request page="1" sort="endDate"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="endDate"></i></a>
-                    <a aria-label="Reverse sort studies by end date" href="{% url 'exp:study-list' %}?{% query_transform request page="1" sort="-endDate"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="endDate"></i></a>
+                    <a aria-label="Sort studies by end date" class="pl-sm" href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='endDate'%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="endDate"></i></a>
+                    <a aria-label="Reverse sort studies by end date" href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-endDate'%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="endDate"></i></a>
 
                 </div>
             </div>
