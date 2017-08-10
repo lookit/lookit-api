@@ -9,7 +9,7 @@ def get_all_study_attachments(study_uuid):
     bucket = s3.Bucket(BUCKET_NAME)
     study_files = []
     for key in bucket.objects.filter(Prefix=f'videoStream_{study_uuid}'):
-        study_files.append(key.key)
+        study_files.append(key)
     return study_files
 
 if __name__ == '__main__':
