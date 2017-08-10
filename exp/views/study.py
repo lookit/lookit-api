@@ -374,7 +374,8 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get('sort', 'id')
+        orderby = self.request.GET.get('sort', 'id') or 'id'
+        match = self.request.GET.get('match', '')
         page = self.request.GET.get('page', None)
         study = context['study']
         responses = study.responses.order_by(orderby)
