@@ -43,6 +43,7 @@
               ],
               success: function(response, newValue) {
                    $('#researcher-details').hide();
+                   $('#no-org-explanation').hide();
                    $('#researcher-edit').show();
                }
         });
@@ -130,7 +131,11 @@
                 {% if perms.accounts.can_edit_organization  %}
                     <a href="#" id="user_permissions" data-type="select" data-url="{% url 'exp:researcher-detail' user.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-pk="{{ user.id }}" data-url="/post" data-title="Select permissions">
                         {{ user.display_permission }}
+
                     </a>
+                    {% if user.display_permission == 'No organization groups' %}
+                        <p id="no-org-explanation" class="small"><em> * Assigning this researcher permissions will add the user to {{ request.user.organization.name }}.</em></p>
+                    {% endif %}
                 {% else %}
                     {{ user.display_permission }}
                 {% endif %}
