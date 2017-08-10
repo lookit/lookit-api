@@ -24,7 +24,19 @@
         });
     });
     function statusSelected(status) {
-        document.getElementsByClassName('current-state')[0].innerHTML = status.value
+        document.getElementsByClassName('current-state')[0].innerHTML = status.value;
+        statusMoreInformation = document.getElementsByClassName('status-additional-information')[0];
+        if (status.value === 'deactivate') {
+            statusMoreInformation.innerHTML = 'You will not be able to activate your study again without contacting an administrator.';
+        } else if (status.value === 'archive') {
+            statusMoreInformation.innerHTML = 'This means you do not intend to collect more data.  We will remove this study from search results.'
+
+        } else {
+            statusMoreInformation.innerHTML = '';
+        }
+        toggleCommentsAvailability(status);    
+    };
+    function toggleCommentsAvailability(status) {
         document.getElementsByClassName('submit-status-panel')[0].style.display = 'inline';
         var commentsBlock = document.getElementById("rejectionComments");
         var labelBlock = document.getElementsByClassName('comments-block')[0];
@@ -32,14 +44,14 @@
             rejectionComments.disabled = false;
             rejectionComments.classList.remove("comments-text");
             labelBlock.classList.remove("comments-label");
-            document.getElementById('comments-explanation').style.display = 'none'
+            document.getElementById('comments-explanation').style.display = 'none';
 
         } else {
             rejectionComments.disabled = true;
             rejectionComments.className += " comments-text";
             rejectionComments.value = "{{ study.comments }}";
             labelBlock.className += " comments-label";
-            document.getElementById('comments-explanation').style.display = 'inline-block'
+            document.getElementById('comments-explanation').style.display = 'inline-block';
         }
     }
 </script>
@@ -86,7 +98,10 @@
                                 </div>
                                 <div class="modal-body">
                                    {% csrf_token %}
-                                   <p> This will <span class="current-state"> change the status of </span> the study.</p>
+                                   <p>
+                                       This will <span class="current-state"> change the status of </span> the study.
+                                       <span class="status-additional-information"> </span>
+                                   </p>
                                 </div>
                                 <div class="modal-footer"> {% csrf_token %}
                                     <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
