@@ -14,6 +14,13 @@
 {% endblock %}
 
 {% block content %}
+<script>
+    $(document).ready(function() {
+        if ("{{ match }}" !== '') {
+            document.getElementById("search-studies").value = "{{ match }}";
+        }
+    });
+</script>
 <div class="container">
     <div class="row">
         <div class="col-sm-10 col-lg-8 col-xs-12">
@@ -31,7 +38,7 @@
     <div class="row text-center mt-lg">
         <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
             <form method="GET">
-                <input class="form-control" name="match" placeholder="{{ match|default:'Filter name or description' }}" size="50" type="text">
+                <input id="search-studies" class="form-control" name="match" placeholder="Filter name or description" size="50" type="text">
                 <input type="hidden" name="sort" value={{ sort }}>
                 <input type="hidden" name="state" value={{ state }}>
                 <input type="hidden" name="page" value="1">
