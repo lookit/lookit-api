@@ -25,14 +25,15 @@
            <form method="GET">
                <input class="form-control" name="match" placeholder="{{ match|default:'Filter by researcher name' }}" size="50" type="text">
                <input type="hidden" name="sort" value={{ sort }}>
+               <input type="hidden" name="page" value="1">
            </form>
        </div>
    </div>
    <div class="row mt-xl">
        <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
            <strong>Researcher Name</strong>
-           <a aria-label="Sort researchers by name" class="pl-sm" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="family_name"%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
-           <a aria-label="Reverse sort researchers by name" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="-family_name"%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
+           <a aria-label="Sort researchers by name" class="pl-sm" href="{% url 'exp:researcher-list' %}?{% query_transform request page='1' sort='family_name'%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+           <a aria-label="Reverse sort researchers by name" href="{% url 'exp:researcher-list' %}?{% query_transform request page='1' sort='-family_name'%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
        </div>
 
        <div class="col-xs-3">
