@@ -35,7 +35,7 @@
                 </a>
                 <ul class="dropdown-menu">
                     {% if request.user.osf_profile_url != '#' %}
-                        <li><a href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
+                        <li><a target="_blank" href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
                     {% endif %}
                     <li><a href="{% url 'logout' %}?next=/exp/">Logout</a></li>
                 </ul>
