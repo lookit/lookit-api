@@ -1,7 +1,7 @@
 #!/bin/sh
 # copy git checkout into local env for faster development
 # could probably be removed in production
-cp -r /checkouts/$CHECKOUT_DIR/ /checkout-dir/
+cp -r $CHECKOUT_DIR /checkout-dir/
 
 # Copy in required files
 cp /environment /checkout-dir/.env
@@ -22,7 +22,7 @@ cd /checkout-dir/
 ember build
 
 # clean up the old one
-rm -rf /deployments/$STUDY_OUTPUT_DIR/
-mkdir -p /deployments/$STUDY_OUTPUT_DIR/
+rm -rf $STUDY_OUTPUT_DIR
+mkdir -p $STUDY_OUTPUT_DIR
 # copy the built ember app into the output dir
-cp -r /checkout-dir/dist/* /deployments/$STUDY_OUTPUT_DIR/
+cp -r /checkout-dir/dist/* $STUDY_OUTPUT_DIR
