@@ -446,7 +446,7 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
 
     def get_study_attachments(self, study):
         attachments = get_study_attachments.get_all_study_attachments(str(study.uuid))
-        return attachments
+        return [ attachment for attachment in attachments if "PREVIEW_DATA_DISREGARD" not in attachment ]
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
