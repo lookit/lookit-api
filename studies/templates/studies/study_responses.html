@@ -285,13 +285,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {% for response in responses %}
-                                  <tr>
-                                    <td>{{ response.attachment.name|default:"No_file.mov" }}</td>
-                                    <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
-                                    <td><a class='btn btn-primary btn-sm' href="{{ response.attachment.download_url }}">Download</a></td>
-                                  </tr>
-                                {% endfor %}
+                                    {% for attachment in attachments %}
+                                        <tr>
+                                            <td> {{ attachment }} </td>
+                                            <td>  </td>
+                                            <td><a class='btn btn-primary btn-sm' href="{{ response.attachment.download_url }}">Download</a></td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
