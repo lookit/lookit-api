@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import subprocess
 import time
 import zipfile
 from io import BytesIO
@@ -12,6 +13,9 @@ from django.utils import timezone
 from studies.models import Study
 
 logger = logging.getLogger()
+
+
+EMBER_BUILD_ROOT_PATH = os.path.join(settings.BASE_DIR, '../ember_build')
 
 
 #   - pull the study model instance
@@ -80,18 +84,25 @@ def download_repos(addons_sha=None, player_sha=None):
     if player_sha is None or not re.match('([a-f0-9]{40})', player_sha):
         player_sha = get_master_sha(settings.EMBER_EXP_PLAYER_REPO)
 
-    repo_destination_folder = f'./{player_sha}_{addons_sha}/'
+    repo_destination_folder = f'{player_sha}_{addons_sha}'
+    local_repo_destination_folder = os.path.join('./ember_build/checkouts/', repo_destination_folder)
 
-    if os.path.isdir(repo_destination_folder):
+    if os.path.isdir(local_repo_destination_folder):
+        print(f'Found directory {local_repo_destination_folder}')
         return repo_destination_folder
 
     addons_zip_path = f'{settings.EMBER_ADDONS_REPO}/archive/{addons_sha}.zip'
     player_zip_path = f'{settings.EMBER_EXP_PLAYER_REPO}/archive/{player_sha}.zip'
 
-    unzip_file(requests.get(player_zip_path).content, repo_destination_folder)
-    unzip_file(requests.get(addons_zip_path).content, os.path.join(repo_destination_folder, 'lib'))
+    unzip_file(requests.get(player_zip_path).content, local_repo_destination_folder)
+    unzip_file(requests.get(addons_zip_path).content, os.path.join(local_repo_destination_folder, 'lib'))
 
     return repo_destination_folder
+
+
+def build_docker_image():
+    # this is broken out so that it can be more complicated if it needs to be
+    subprocess.run(['docker', 'build', '-t', 'ember_build', '.'], cwd=EMBER_BUILD_ROOT_PATH)
 
 
 def build_experiment(study_uuid, preview=True):
@@ -101,38 +112,32 @@ def build_experiment(study_uuid, preview=True):
     except Study.DoesNotExist as ex:
         logger.error(f'Study with uuid {study_uuid} does not exist. {ex}')
         raise
-    player_destination_folder = f'./{study_uuid}_{time.mktime(now.timetuple())}'
+    destination_directory = f'{study_uuid}_{time.mktime(now.timetuple())}'
 
     player_sha = getattr(study, 'last_known_player_sha', None)
     addons_sha = getattr(study, 'last_known_addons_sha', None)
 
-    repo_destination_folder = download_repos(addons_sha=addons_sha, player_sha=player_sha)
+    checkout_directory = download_repos(addons_sha=addons_sha, player_sha=player_sha)
 
-    commands = [
-        # args                                   # cwd
-        (['yarn', 'install', '--pure-lockfile'], repo_destination_folder),
-        (['bower', 'install'], repo_destination_folder),
-        (['yarn', 'install', '--pure-lockfile'], os.path.join(repo_destination_folder, 'lib')),
-        (['bower', 'install'], os.path.join(repo_destination_folder, 'lib')),
-        # (['ls', '-l'], os.path.join(repo_destination_folder, 'lib')),
-        (['cp', 'VideoRecorder.swf', os.path.join(repo_destination_folder, 'public')], os.path.abspath(os.path.join(os.path.curdir, 'studies/player_files'))),
-        (['cp', 'environment', os.path.join(repo_destination_folder, 'public', '.env')], os.path.abspath(os.path.curdir)),
+    container_checkout_directory = os.path.join('/checkouts/', checkout_directory)
+    container_destination_directory = os.path.join('/deployments/', destination_directory)
+
+    build_docker_image()
+    local_checkout_path = os.path.join(EMBER_BUILD_ROOT_PATH, 'checkouts')
+    local_deployments_path = os.path.join(EMBER_BUILD_ROOT_PATH, 'deployments')
+
+    build_command = [
+        'docker',
+        'run',
+        '-e', f'CHECKOUT_DIR={container_checkout_directory}',
+        '-e', f'STUDY_OUTPUT_DIR={container_destination_directory}',
+        '-v', f'{local_checkout_path}:/checkouts',
+        '-v', f'{local_deployments_path}:/deployments',
+        'ember_build'
     ]
-    while ret_code == 0:
-        arguments, cwd = commands.pop()
-        logger.debug(f'Started {' '.join(arguments)} on {cwd}')
-        ret_code = subprocess.run(arguments, cwd=cwd)
-        logger.debug(f'Finished {' '.join(arguments)} on {cwd}')
 
-    # cd repo_destination_folder
-    # yarn install --pure-lockfile
-    # bower install
-    # cd repo_destination_folder/lib/exp-player
-    # yarn install --pure-lockfile
-    # bower install
-    # cp VideoRecorder.swf repo_destination_folder/public
-    # cp .env into repo_destination_folder
-    # ember build?
+    ret_code = subprocess.run(build_command, cwd=EMBER_BUILD_ROOT_PATH)
+    return ret_code
 
 
 def cleanup_builds(older_than=None):
