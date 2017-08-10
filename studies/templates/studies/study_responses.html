@@ -287,8 +287,8 @@
                                 <tbody>
                                     {% for attachment in attachments %}
                                         <tr>
-                                            <td> {{ attachment }} </td>
-                                            <td>  </td>
+                                            <td> {{ attachment.key }} </td>
+                                            <td> {{ attachment.last_modified }} </td>
                                             <td><a class='btn btn-primary btn-sm' href="{{ response.attachment.download_url }}">Download</a></td>
                                         </tr>
                                     {% endfor %}
