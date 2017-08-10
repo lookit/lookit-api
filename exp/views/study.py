@@ -128,6 +128,7 @@ class StudyListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixi
         context['state'] = self.request.GET.get('state', 'all')
         context['match'] = self.request.GET.get('match', '')
         context['sort'] = self.request.GET.get('sort', 'name')
+        context['page'] = self.request.GET.get('page', '1')
         context['can_create_study'] = self.request.user.has_perm('studies.can_create_study')
         return context
 

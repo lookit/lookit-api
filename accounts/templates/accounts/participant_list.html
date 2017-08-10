@@ -8,12 +8,20 @@
 {% endblock %}
 {% block content %}
   <div class="container mb-lg">
+    <script>
+        $(document).ready(function() {
+            if ("{{ match }}" !== '') {
+                document.getElementById("search-participants").value = "{{ match }}";
+            }
+        });
+    </script>
     <h1>Participants</h1>
     <div class="row text-center mt-xl">
        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
            <form method="GET">
-               <input class="form-control" name="match" placeholder="{{ match|default:'Filter by name' }}" size="50" type="text">
+               <input id="search-participants" class="form-control" name="match" placeholder="Filter by name" size="50" type="text">
                <input type="hidden" name="sort" value={{ sort }}>
+               <input type="hidden" name="page" value="1">
            </form>
        </div>
    </div>
@@ -25,8 +33,8 @@
                     Username <span class="caret"></span>
                  </button>
                  <ul class="dropdown-menu" role="menu">
-                   <li> <a aria-label="Sort ascending by username" href="{% url 'exp:participant-list' %}?{% query_transform request sort='given_name' %}">Sort A-Z</a></li>
-                   <li> <a aria-label="Sort descending by username" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-given_name' %}">Sort Z-A</a></li>
+                   <li> <a aria-label="Sort ascending by username" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='given_name' %}">Sort A-Z</a></li>
+                   <li> <a aria-label="Sort descending by username" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-given_name' %}">Sort Z-A</a></li>
                  </ul>
              </div>
              <div class="btn-group">
@@ -34,8 +42,8 @@
                   Active <span class="caret"></span>
                </button>
                <ul class="dropdown-menu" role="menu">
-                 <li><a aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='last_login' %}"> Sort Asc </a></li>
-                 <li><a aria-label="Sort descending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-last_login' %}"> Sort Desc </a></li>
+                 <li><a aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='last_login' %}"> Sort Asc </a></li>
+                 <li><a aria-label="Sort descending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-last_login' %}"> Sort Desc </a></li>
                </ul>
              </div>
           </div>
@@ -44,16 +52,16 @@
    <div class="row mt-xl visible-md visible-lg visible-xl">
        <div class="col-md-3 col-md-offset-1">
            <strong> Username </strong>
-           <a class="pl-sm" aria-label="Sort ascending by username" href="{% url 'exp:participant-list' %}?{% query_transform request sort='given_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-           <a aria-label="Sort descending by username" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-given_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+           <a class="pl-sm" aria-label="Sort ascending by username" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='given_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+           <a aria-label="Sort descending by username" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-given_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
        </div>
        <div class="col-md-2">
            <strong> User ID </strong>
        </div>
        <div class="col-md-3">
            <strong>Last Active</strong>
-           <a class="pl-sm" aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='last_login' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-           <a aria-label="Sort descending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request sort='-last_login' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+           <a class="pl-sm" aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='last_login' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+           <a aria-label="Sort descending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-last_login' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
        </div>
        <div class="col-md-2">
        </div>
