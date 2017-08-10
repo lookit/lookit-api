@@ -134,7 +134,7 @@
 
                     </a>
                     {% if user.display_permission == 'No organization groups' %}
-                        <p id="no-org-explanation" class="small"><em> * Assigning this researcher permissions will add the user to {{ request.user.organization.name }}.</em></p>
+                        <p id="no-org-explanation" class="small"><em> * Assigning permissions to this researcher will add the user to {{ request.user.organization.name }}.</em></p>
                     {% endif %}
                 {% else %}
                     {{ user.display_permission }}
