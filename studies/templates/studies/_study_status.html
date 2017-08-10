@@ -34,7 +34,7 @@
         } else {
             statusMoreInformation.innerHTML = '';
         }
-        toggleCommentsAvailability(status);    
+        toggleCommentsAvailability(status);
     };
     function toggleCommentsAvailability(status) {
         document.getElementsByClassName('submit-status-panel')[0].style.display = 'inline';
@@ -82,7 +82,7 @@
                             </label>
                             {% get_obj_perms request.user for study as "study_perms" %}
                             <em><textarea id="rejectionComments" class="comments-text rejection-comments" name="comments-text" disabled rows="4" cols="34">{{study.comments}}</textarea></em>
-                            <div id="comments-explanation" class="small comments-text"><em> You can only leave comments if you are rejecting this study. </em></div>
+                            <div id="comments-explanation" class="small comments-text"><em> You can only leave comments when you are rejecting this study. </em></div>
                         </div>
                         <div class="submit-status-panel pull-right" style="display:none;">
                             <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
