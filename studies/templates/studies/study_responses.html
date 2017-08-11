@@ -293,7 +293,11 @@
                                         <tr>
                                             <td> {{ attachment.key }} </td>
                                             <td> {{ attachment.last_modified }} </td>
-                                            <td><a class='btn btn-primary btn-sm' href="{{ response.attachment.download_url }}">Download</a></td>
+                                            <td>
+                                                <form method="POST"> {% csrf_token %}
+                                                    <button name="attachment" type="submit" value="{{attachment.key}}" class="btn btn-primary btn-sm">Download</button>
+                                                </form>
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
