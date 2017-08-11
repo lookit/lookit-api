@@ -19,7 +19,3 @@ def get_download_url(video_key):
     """
     s3Client = boto3.client('s3')
     return s3Client.generate_presigned_url('get_object', Params = {'Bucket': BUCKET_NAME, 'Key': video_key}, ExpiresIn = 60)
-
-if __name__ == '__main__':
-    study_uuid = sys.argv[1]
-    get_study_keys(study_uuid)
