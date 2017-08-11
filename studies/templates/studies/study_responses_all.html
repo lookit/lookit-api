@@ -1,0 +1,93 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+{% load exp_extras %}
+
+{% block title %}All Responses | {{ study.name }}{% endblock %}
+{% block head %}
+    {{ block.super }}
+    <script type="application/javascript">
+        $(document).ready(function(){
+            prepareDataForDownload('.all-data', 'json');
+            $(".all-csv-data").hide();
+
+            $('#data-type-selector-all').on('change', function(){
+                // Toggles combined responses between CSV and JSON format
+                var selected = $(this).find("option:selected").val();
+                $('.all-data').hide();
+                $('.all-csv-data').hide();
+                if (selected === 'CSV'){
+                    $('.all-csv-data').show();
+                    prepareDataForDownload('.all-csv-data', 'csv');
+                } else {
+                    $('.all-data').show();
+                    prepareDataForDownload('.all-data', 'json');
+                }
+            });
+
+            function prepareDataForDownload(dataClassOrId, ext) {
+                // Preps Download All button to download either all JSON or all CSV responses
+                var data = "data:text/json;charset=utf-8," + encodeURIComponent($(dataClassOrId).html());
+                var elem = $('#download-all-data')[0];
+                if (data && elem) {
+                    elem.href = data;
+                    elem.download = '{{study.name}}-' + 'all-data' + '.' + ext;
+                }
+            }
+        });
+    </script>
+    {{ form.media }}
+{% endblock %}
+
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class='container mb-lg'>
+    <div class='row'>
+        <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9">
+            <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; <a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name}} </a> &gt; All Responses
+        </div>
+    </div>
+    <div class='row'>
+        <div class="col-xs-12">
+            <h1>All Responses</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            {% if all_responses %}
+                {% include 'studies/_response_nav_tabs.html' with active="all" %}
+            {% else %}
+                <p class="pt-md"><em>No responses recorded! </em></p>
+            {% endif %}
+        </div>
+    </div>
+    {% if all_responses %}
+        <div class='row pt-xl'>
+            <div class="col-sm-3">
+                <div class="form-group">
+                  <select class="form-control" id="data-type-selector-all">
+                    <option>JSON</option>
+                    <option>CSV</option>
+                  </select>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <a id='download-all-data' class='btn btn-primary'>
+                    Download All Data
+                </a>
+            </div>
+            <div class="col-xs-12 pt-md">
+                <pre class='all-data'>{{ all_responses }}</pre>
+                <pre class='all-csv-data'>{{ csv_responses }}</pre>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
