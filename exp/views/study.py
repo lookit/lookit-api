@@ -375,6 +375,7 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         context['responses'] = self.paginated_queryset(responses, page, 10)
         context['response_data'] = self.build_responses(context['responses'])
         context['csv_data'] = self.build_individual_csv(context['responses'])
+        context['attachment_list'] = self.sort_attachments_by_response(context['responses'])
         return context
 
     def build_individual_csv(self, responses):
@@ -389,6 +390,26 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
             csv_responses.append(output.getvalue())
         return csv_responses
 
+    def get_study_attachments(self, study):
+        """
+        Fetches study attachments from s3
+        """
+        return [att for att in get_study_attachments.get_all_study_attachments(str(study.uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
+
+    def sort_attachments_by_response(self, responses):
+        """
+        Build a list of list of videos for each response
+        """
+        attachments = self.get_study_attachments(self.get_object())
+        all_attachments = []
+        for response in responses:
+            uuid = str(response.uuid)
+            att_list = []
+            for attachment in attachments:
+                if uuid in attachment.key:
+                    att_list.append(attachment)
+            all_attachments.append(att_list)
+        return all_attachments
 
 
 class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
