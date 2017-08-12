@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import \
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
-from django.shortcuts import reverse, redirect
+from django.shortcuts import reverse
 from django.utils import timezone
 from django.views import generic
 
@@ -441,14 +441,11 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         return output.getvalue()
 
 
-class StudyAttachments(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView, PaginatorMixin):
+class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
     StudyAttachments View shows video attachments for the study
     """
     template_name = 'studies/study_attachments.html'
-    model = Study
-    permission_required = 'studies.can_view_study_responses'
-    raise_exception = True
 
     def get_context_data(self, **kwargs):
         """
@@ -471,17 +468,6 @@ class StudyAttachments(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, 
         if match:
             attachments = [att for att in attachments if match in att.key]
         return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)
-
-    def post(self, request, *args, **kwargs):
-        '''
-        Downloads study video
-        '''
-        attachment = self.request.POST.get('attachment')
-        if attachment:
-            download_url = get_study_attachments.get_download_url(attachment)
-            return redirect(download_url)
-
-        return HttpResponseRedirect(reverse('exp:study-responses-list', kwargs=dict(pk=self.get_object().pk)))
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):

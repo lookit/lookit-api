@@ -3,13 +3,16 @@ import csv
 import json
 from guardian.shortcuts import get_objects_for_user
 from guardian.mixins import PermissionRequiredMixin
+from django.shortcuts import redirect
 
 from studies.models import Study
 from exp.views.mixins import ExperimenterLoginRequiredMixin
+import get_study_attachments
 
 class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, object):
     """
-    Mixin with shared items for StudyResponsesList and StudyResponsesAll views
+    Mixin with shared items for StudyResponsesList, StudyResponsesAll, and
+    StudyAttachments Views
     """
     model = Study
     permission_required = 'studies.can_view_study_responses'
@@ -50,3 +53,14 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         """
         return ['sequence', 'conditions', 'exp_data', 'participant_id', 'global_event_timings',
             'child_id', 'completed', 'study_id', 'response_id', 'demographic_id']
+
+    def post(self, request, *args, **kwargs):
+        '''
+        Downloads study video
+        '''
+        attachment = self.request.POST.get('attachment')
+        if attachment:
+            download_url = get_study_attachments.get_download_url(attachment)
+            return redirect(download_url)
+
+        return HttpResponseRedirect(reverse('exp:study-responses-list', kwargs=dict(pk=self.get_object().pk)))

@@ -150,6 +150,9 @@
                     <option>CSV</option>
                   </select>
                 </div>
+                <a id='download-individual-data' class='mb-md btn btn-primary'>
+                    Download Individual Data
+                </a>
                 {% for response in response_data %}
                     <div class='response-data' id='response-data-{{ forloop.counter }}' style="display:none">
                         <pre class='json-data individual-block' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
@@ -161,14 +164,13 @@
                     </div>
                 {% endfor %}
                 <div class="pb-md">
-                    <a id='download-individual-data' class='btn btn-primary'>
-                        Download Individual Data
-                    </a>
                     <p class="pt-md"><label> Attachments </label> </p>
                     {% for attachments in attachment_list %}
                         <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
                             {% for attachment in attachments %}
-                                <div class="small"> {{ attachment.key }} </div>
+                                <form method="POST"> {% csrf_token %}
+                                    <button name="attachment" type="submit" value="{{attachment.key}}" class="mt-sm btn btn-primary btn-xs">Download Video {{ forloop.counter }}</button>
+                                </form>
                             {% endfor %}
                         </div>
                     {% endfor %}
