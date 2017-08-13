@@ -30,6 +30,7 @@
                 var index = extractIdNumber($('.selectable-participant.selected')[0].id);
                 hideResponses();
                 showResponse(selected, index);
+                $('#download-data-label').text(selected);
             });
 
             function prepareDataForDownload(dataClassOrId, buttonId, ext) {
@@ -150,8 +151,8 @@
                     <option>CSV</option>
                   </select>
                 </div>
-                <a id='download-individual-data' class='mb-md btn btn-primary'>
-                    Download Individual Data
+                <a id='download-individual-data' class='mb-sm btn btn-primary'>
+                    Download Individual <span id="download-data-label">JSON <span>
                 </a>
                 {% for response in response_data %}
                     <div class='response-data' id='response-data-{{ forloop.counter }}' style="display:none">
@@ -164,7 +165,7 @@
                     </div>
                 {% endfor %}
                 <div class="pb-md">
-                    <p class="pt-md"><label> Attachments </label> </p>
+                    <h2> Attachments </h2>
                     {% for attachments in attachment_list %}
                         <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
                             {% for attachment in attachments %}
@@ -174,7 +175,7 @@
                                             {{ attachment.display }}
                                         </div>
                                         <div class="col-xs-3">
-                                            <button name="attachment" type="submit" value="{{attachment.key}}" class="btn btn-primary btn-xs"> Download </button>
+                                            <button name="attachment" type="submit" value="{{attachment.key}}" class="btn btn-primary btn-sm"> Download </button>
                                         </div>
                                 </div>
 

@@ -22,6 +22,7 @@
                     $('.all-data').show();
                     prepareDataForDownload('.all-data', 'json');
                 }
+                $('#download-data-label').text(selected);
             });
 
             function prepareDataForDownload(dataClassOrId, ext) {
@@ -30,7 +31,7 @@
                 var elem = $('#download-all-data')[0];
                 if (data && elem) {
                     elem.href = data;
-                    elem.download = '{{study.name}}-' + 'all-data' + '.' + ext;
+                    elem.download = '{{study.name}}-' + dataClassOrId + '.' + ext;
                 }
             }
         });
@@ -80,10 +81,10 @@
             </div>
             <div class="col-sm-3">
                 <a id='download-all-data' class='btn btn-primary'>
-                    Download All Data
+                    Download All <span id="download-data-label"> JSON</span>
                 </a>
             </div>
-            <div class="col-xs-12 pt-md">
+            <div class="col-xs-12 pt-sm">
                 <pre class='all-data'>{{ all_responses }}</pre>
                 <pre class='all-csv-data'>{{ csv_responses }}</pre>
             </div>
