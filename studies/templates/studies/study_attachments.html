@@ -36,12 +36,13 @@
             <h1>Attachments</h1>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-12">
-            {% include 'studies/_response_nav_tabs.html' with active="attachments" %}
-        </div>
-    </div>
     {% if attachments %}
+        <div class="row">
+            <div class="col-xs-12">
+                {% include 'studies/_response_nav_tabs.html' with active="attachments" %}
+            </div>
+        </div>
+
         <div class='row'>
             <div class="col-xs-12">
                 <div class="pull-right">
@@ -81,7 +82,7 @@
                         <tbody>
                             {% for attachment in attachments %}
                                 <tr>
-                                    <td> {{ attachment.key }} </td>
+                                    <td> <span class="small">{{ attachment.key }} </span> </td>
                                     <td> {{ attachment.last_modified }} </td>
                                     <td>
                                         <form method="POST"> {% csrf_token %}
@@ -95,6 +96,8 @@
                 </div>
             </div>
         </div>
+    {% else %}
+        <p class="pt-md"><em> No attachments saved! </em></p>
     {% endif %}
 </div>
 {% endblock %}
