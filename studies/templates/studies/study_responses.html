@@ -42,6 +42,7 @@
                 }
             }
             function showAttachments(index) {
+                $('.response-attachments').hide();
                 $('#resp-attachment-' + index).show();
             }
 
@@ -66,7 +67,6 @@
                 // Hides all responses
                 $('.response-data').hide();
                 $('.csv-response-data').hide();
-                $('.response-attachments').hide();
             };
         });
 
@@ -168,8 +168,16 @@
                     {% for attachments in attachment_list %}
                         <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
                             {% for attachment in attachments %}
-                                <form method="POST"> {% csrf_token %}
-                                    <button name="attachment" type="submit" value="{{attachment.key}}" class="mt-sm btn btn-primary btn-xs">Download Video {{ forloop.counter }}</button>
+                                <div class="row pt-xs">
+                                    <form method="POST"> {% csrf_token %}
+                                        <div class="col-xs-9">
+                                            {{ attachment.display }}
+                                        </div>
+                                        <div class="col-xs-3">
+                                            <button name="attachment" type="submit" value="{{attachment.key}}" class="btn btn-primary btn-xs"> Download </button>
+                                        </div>
+                                </div>
+
                                 </form>
                             {% endfor %}
                         </div>

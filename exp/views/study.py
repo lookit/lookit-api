@@ -400,16 +400,23 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         """
         Build a list of list of videos for each response
         """
-        attachments = self.get_study_attachments(self.get_object())
+        study = self.get_object()
+        attachments = self.get_study_attachments(study)
         all_attachments = []
         for response in responses:
             uuid = str(response.uuid)
             att_list = []
             for attachment in attachments:
                 if uuid in attachment.key:
-                    att_list.append(attachment)
+                    att_list.append({'key': attachment.key, 'display': self.build_video_display_name(str(study.uuid), uuid, attachment.key) })
             all_attachments.append(att_list)
         return all_attachments
+
+    def build_video_display_name(self, study_uuid, response_uuid, vid_name):
+        """
+        Strips study_uuid and response_uuid out of video responses titles for better display.
+        """
+        return '. . .'+ '. . .'.join(vid_name.split(study_uuid + '_')[1].split('_' + response_uuid + '_'))
 
 
 class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
