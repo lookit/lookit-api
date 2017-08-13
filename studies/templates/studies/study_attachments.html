@@ -47,9 +47,11 @@
         <div class='row'>
             <div class="col-xs-12">
                 <div class="pull-right">
-                    <a class='mt-md btn btn-primary' href="{{ study.all_attachments_download_url }}">
-                        Download all attachments
-                    </a>
+                    <form method="POST"> {% csrf_token %}
+                        <button name="all-attachments" type="submit" value="all" class="mt-md btn btn-primary">
+                            Download all attachments
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
