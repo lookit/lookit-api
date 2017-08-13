@@ -1,6 +1,7 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 {% load exp_extras %}
+{% load tz %}
 
 {% block title %}Attachments | {{ study.name }}{% endblock %}
 {% block head %}
@@ -83,7 +84,9 @@
                             {% for attachment in attachments %}
                                 <tr>
                                     <td> <span class="small">{{ attachment.key }} </span> </td>
-                                    <td> {{ attachment.last_modified }} </td>
+                                    {% timezone request.user.time_zone %}
+                                      <td> {{ attachment.last_modified }} </td>
+                                    {% endtimezone %}
                                     <td>
                                         <form method="POST"> {% csrf_token %}
                                             <button name="attachment" type="submit" value="{{attachment.key}}" class="btn btn-primary btn-sm">Download</button>
