@@ -22,18 +22,43 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         """
         Builds the JSON response data for the researcher to download
         """
-        return [json.dumps({
-            'sequence': resp.sequence,
-            'conditions': resp.conditions,
-            'exp_data': resp.exp_data,
-            'participant_id': resp.child.user.id,
-            'global_event_timings': resp.global_event_timings,
-            'child_id': resp.child.id,
-            'completed': resp.completed,
-            'study_id': resp.study.id,
-            'response_id': resp.id,
-            'demographic_id': resp.demographic_snapshot.id
-            }, indent=4) for resp in responses]
+        json_responses = []
+        for resp in responses:
+            latest_dem = resp.demographic_snapshot
+            json_responses.append(json.dumps({
+                'sequence': resp.sequence,
+                'conditions': resp.conditions,
+                'exp_data': resp.exp_data,
+                'participant_id': resp.child.user.id,
+                'global_event_timings': resp.global_event_timings,
+                'child_id': resp.child.id,
+                'completed': resp.completed,
+                'study_id': resp.study.id,
+                'response_id': resp.id,
+                'participant': {
+                    "participant_id": resp.child.user.id,
+                    "demographics_info": {
+                        "demographic_id": latest_dem.id,
+                        "number_of_children": latest_dem.number_of_children,
+                        "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
+                        "number_of_guardians": latest_dem.number_of_guardians,
+                        "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
+                        "race_identification": latest_dem.race_identification,
+                        "age": latest_dem.age,
+                        "gender": latest_dem.gender,
+                        "education_level": latest_dem.gender,
+                        "spouse_education_level": latest_dem.spouse_education_level,
+                        "annual_income": latest_dem.annual_income,
+                        "number_of_books": latest_dem.number_of_books,
+                        "additional_comments": latest_dem.additional_comments,
+                        "country": latest_dem.country.name,
+                        "state": latest_dem.state.name,
+                        "density": latest_dem.density,
+                        "extra": latest_dem.extra
+                    }
+
+                }}, indent=4))
+        return json_responses
 
     def csv_output_and_writer(self):
         output = io.StringIO()
