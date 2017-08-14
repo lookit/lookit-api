@@ -2,7 +2,6 @@
 {% load bootstrap3 %}
 {% block title %}Children{% endblock %}
 
-
 {% block flash %}
   {% bootstrap_messages %}
   {% if form.non_field_errors %}
@@ -13,6 +12,43 @@
 {% endblock %}
 {% block content %}
     <script>
+        $(document).ready(function() {
+            $('.datepicker').datepicker({})
+            .on('change', function () {
+               var age = getAge(this);
+               if (document.getElementById('age_calc')) {
+                   document.getElementById('age_calc').innerHTML = `Age: ${age}`;
+               } else {
+                   var x = document.createElement("p");
+                   x.setAttribute("id", "age_calc");
+                   x.setAttribute("class", "age_format")
+                   var t = document.createTextNode(`Age: ${age}`);
+                   x.appendChild(t);
+                   document.getElementsByClassName("form-group")[1].insertBefore(x,document.getElementById("id_birthday"));
+               }
+           });
+        });
+        function getAge(dateValue) {
+            var birthday = new Date(dateValue.value);
+            var years = new Date(new Date() - birthday) / ( 1000 * 60 * 60 * 24 * 365 );
+            var months = 12 * (years % 1);
+            var days = Math.floor(30 * (months % 1));
+
+            var years = Math.floor(years)
+            var months = Math.floor(months)
+            if (years > 0) {
+                if (years === 1) {
+                    return '1 year ' + months + `${months === 1 ? ' month': ' months'}`
+                } else {
+                    return years + ' years'
+                }
+            } else if (months > 0) {
+                return months + `${months === 1 ? ' month': ' months'}`
+            } else {
+                return days + `${days === 1 ? ' day': ' days'}`
+            }
+        }
+
         function toggleAddChildForm() {
             form = $(document.getElementById('add-child-form')).toggle();
         }
@@ -30,7 +66,7 @@
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg">
-                 {% include 'web/_account-navigation.html' with current_page="children-list" %} 
+                 {% include 'web/_account-navigation.html' with current_page="children-list" %}
             </div>
             <div class="col-md-8">
                 <div class="pull-right">

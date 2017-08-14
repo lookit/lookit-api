@@ -332,3 +332,7 @@ button[disabled]#participate-button{
 .mb-lg {
     margin-bottom: 20px;
 }
+
+.age_format {
+    font-style: italic;
+}
