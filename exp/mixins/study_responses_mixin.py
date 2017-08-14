@@ -1,6 +1,7 @@
 import io
 import csv
 import json
+import datetime
 from guardian.shortcuts import get_objects_for_user
 from guardian.mixins import PermissionRequiredMixin
 from django.shortcuts import redirect
@@ -17,6 +18,11 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
     model = Study
     permission_required = 'studies.can_view_study_responses'
     raise_exception = True
+
+    def convert_to_string(self, object):
+        if isinstance(object, datetime.date):
+            return object.__str__()
+        return object
 
     def build_responses(self, responses):
         """
@@ -40,6 +46,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                     "demographics_info": {
                         "demographic_id": latest_dem.id,
                         "number_of_children": latest_dem.number_of_children,
+                        "child_birthdays": latest_dem.child_birthdays,
                         "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
                         "number_of_guardians": latest_dem.number_of_guardians,
                         "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
@@ -52,12 +59,11 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                         "number_of_books": latest_dem.number_of_books,
                         "additional_comments": latest_dem.additional_comments,
                         "country": latest_dem.country.name,
-                        "state": latest_dem.state.name,
+                        "state": latest_dem.state,
                         "density": latest_dem.density,
                         "extra": latest_dem.extra
                     }
-
-                }}, indent=4))
+                }}, indent=4, default = self.convert_to_string))
         return json_responses
 
     def csv_output_and_writer(self):
