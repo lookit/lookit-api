@@ -29,3 +29,11 @@ class LookitStaticStorage(LocationPrefixedPublicGoogleCloudStorage):
 
 class LookitMediaStorage(LocationPrefixedPublicGoogleCloudStorage):
     location = settings.MEDIAFILES_LOCATION
+
+
+class LookitExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
+    location = settings.EXPERIMENT_LOCATION
+
+
+class LookitPreviewExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
+    location = settings.PREVIEW_EXPERIMENT_LOCATION

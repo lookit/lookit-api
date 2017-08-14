@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import shutil
 import subprocess
 import time
 import zipfile
@@ -8,15 +9,13 @@ from io import BytesIO
 
 import requests
 from django.conf import settings
+from django.core.files import File
 from django.utils import timezone
 
+from project import storages
 from studies.models import Study
 
 logger = logging.getLogger()
-
-
-EMBER_BUILD_ROOT_PATH = os.path.join(settings.BASE_DIR, '../ember_build')
-
 
 #   - pull the study model instance
 #   - check to see if it is simple or advanced
@@ -48,6 +47,7 @@ EMBER_BUILD_ROOT_PATH = os.path.join(settings.BASE_DIR, '../ember_build')
 #       - launch a new browser window at proxy view that requires login to the url of the temporary build folder
 #       - task to clean up the temporary build folders nightly, weekly, monthly?
 
+
 def get_repo_path(full_repo_path):
     return re.search('https://github.com/(.*)', full_repo_path).group(1)
 
@@ -64,6 +64,7 @@ def unzip_file(file, destination_folder):
     This strips off the top-level directory and uses the destination_folder
     in it's place.
     """
+    print(f'Unzipping {file} into {destination_folder}...')
     os.makedirs(destination_folder, mode=0o777, exist_ok=True)
     with zipfile.ZipFile(BytesIO(file)) as zip_file:
         for member in zip_file.infolist():
@@ -74,8 +75,14 @@ def unzip_file(file, destination_folder):
                 outfile.write(zip_file.read(member))
 
 
-def deploy_to_remote(folder_name):
-    pass
+def deploy_to_remote(local_path, storage):
+    for root_directory, dirs, files in os.walk(local_path, topdown=True):
+        for filename in files:
+            full_path = os.path.join(root_directory, filename)
+            with open(full_path, mode='rb') as f:
+                remote_path = full_path.split('../ember_build/deployments/')[1]
+                print(f'Uploading {full_path} to {storage.location}/{remote_path}...')
+                storage.save(remote_path, File(f))
 
 
 def download_repos(addons_sha=None, player_sha=None):
@@ -94,7 +101,9 @@ def download_repos(addons_sha=None, player_sha=None):
     addons_zip_path = f'{settings.EMBER_ADDONS_REPO}/archive/{addons_sha}.zip'
     player_zip_path = f'{settings.EMBER_EXP_PLAYER_REPO}/archive/{player_sha}.zip'
 
+    print(f'Downloading {player_zip_path}...')
     unzip_file(requests.get(player_zip_path).content, local_repo_destination_folder)
+    print(f'Downloading {addons_zip_path}...')
     unzip_file(requests.get(addons_zip_path).content, os.path.join(local_repo_destination_folder, 'lib'))
 
     return repo_destination_folder
@@ -102,7 +111,8 @@ def download_repos(addons_sha=None, player_sha=None):
 
 def build_docker_image():
     # this is broken out so that it can be more complicated if it needs to be
-    subprocess.run(['docker', 'build', '-t', 'ember_build', '.'], cwd=EMBER_BUILD_ROOT_PATH)
+    print(f'Running docker build...')
+    subprocess.run(['docker', 'build', '-t', 'ember_build', '.'], cwd=settings.EMBER_BUILD_ROOT_PATH)
 
 
 def build_experiment(study_uuid, preview=True):
@@ -112,7 +122,7 @@ def build_experiment(study_uuid, preview=True):
     except Study.DoesNotExist as ex:
         logger.error(f'Study with uuid {study_uuid} does not exist. {ex}')
         raise
-    destination_directory = f'{study_uuid}_{time.mktime(now.timetuple())}'
+    destination_directory = f'{study_uuid}'
 
     player_sha = getattr(study, 'last_known_player_sha', None)
     addons_sha = getattr(study, 'last_known_addons_sha', None)
@@ -123,24 +133,54 @@ def build_experiment(study_uuid, preview=True):
     container_destination_directory = os.path.join('/deployments/', destination_directory)
 
     build_docker_image()
-    local_checkout_path = os.path.join(EMBER_BUILD_ROOT_PATH, 'checkouts')
-    local_deployments_path = os.path.join(EMBER_BUILD_ROOT_PATH, 'deployments')
+    local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
+    local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
+
+    replacement_string = f"prepend: '{settings.EXPERIMENT_BASE_URL}{study_uuid}/'"
 
     build_command = [
         'docker',
         'run',
+        '--rm',
         '-e', f'CHECKOUT_DIR={container_checkout_directory}',
+        '-e', f'REPLACEMENT={re.escape(replacement_string)}',
         '-e', f'STUDY_OUTPUT_DIR={container_destination_directory}',
         '-v', f'{local_checkout_path}:/checkouts',
         '-v', f'{local_deployments_path}:/deployments',
         'ember_build'
     ]
 
-    ret_code = subprocess.run(build_command, cwd=EMBER_BUILD_ROOT_PATH)
-    return ret_code
+    print(f'Running build.sh for {container_checkout_directory}...')
+    ret_code = subprocess.run(build_command, cwd=settings.EMBER_BUILD_ROOT_PATH)
+
+    if preview:
+        storage = storages.LookitPreviewExperimentStorage()
+    else:
+        storage = storages.LookitExperimentStorage()
+
+    cloud_deployment_directory = os.path.join(local_deployments_path, destination_directory)
+
+    deploy_to_remote(cloud_deployment_directory, storage)
+
+
+def cleanup_old_directories(root_path, older_than):
+    if not older_than:
+        older_than = timezone.now() - timezone.timedelta(days=1)
+    else:
+        assert type(older_than) == timezone.datetime, 'older_than must be an instance of datetime'
+
+    with os.scandir(root_path) as sd:
+        for entry in sd:
+            if entry.is_dir() and entry.stat().st_mtime < time.mktime(older_than.timetuple()):
+                print(f'Deleting {entry.path}...')
+                shutil.rmtree(entry.path)
 
 
 def cleanup_builds(older_than=None):
-    if not older_than:
-        older_than = timezone.now() - timezone.timedelta(days=1)
-    pass
+    deployments = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
+    cleanup_old_directories(deployments, older_than)
+
+
+def cleanup_checkouts(older_than=None):
+    checkouts = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
+    cleanup_old_directories(checkouts, older_than)

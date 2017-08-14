@@ -90,7 +90,6 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         return context
 
 
-
 class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
     Allows a participant to update their name and password -
@@ -332,5 +331,9 @@ class ExperimentProxyView(ProxyView, LoginRequiredMixin):
         if child.user != request.user:
             # requesting user doesn't belong to that child
             raise PermissionDenied()
+        if path[-1] == '/':
+            path = f"{path.split('/')[0]}/index.html"
+
+        request.META['HTTP_X-EXPERIMENT-CHILD-ID'] = path.split('/')[1]
 
         return super().dispatch(request, path)
