@@ -161,3 +161,23 @@ class ChildForm(forms.ModelForm):
             'given_name': 'This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child\'s name in email to you (for instance, "There\'s a new study available for Molly!") but will never publish names or use them in our research.',
             'additional_information': "for instance, diagnosed developmental disorders or vision or hearing problems"
         }
+
+
+class ChildUpdateForm(forms.ModelForm):
+    birthday = forms.DateField(disabled=True, help_text='YYYY-MM-DD')
+
+    class Meta:
+        model = Child
+        fields = ('given_name', 'birthday', 'gender', 'age_at_birth', 'additional_information')
+
+        labels = {
+            'given_name': 'First Name',
+            'birthday': "Birthday",
+            'age_at_birth': 'Gestational Age at Birth',
+            'additional_information': "Any additional information you'd like us to know"
+        }
+
+        help_texts = {
+            'given_name': 'This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child\'s name in email to you (for instance, "There\'s a new study available for Molly!") but will never publish names or use them in our research.',
+            'additional_information': "for instance, diagnosed developmental disorders or vision or hearing problems",
+        }

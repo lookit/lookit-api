@@ -214,7 +214,7 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
     template_name = 'web/child-update.html'
     model = Child
-    form_class = forms.ChildForm
+    form_class = forms.ChildUpdateForm
 
     def get_success_url(self):
         return reverse('web:children-list')
