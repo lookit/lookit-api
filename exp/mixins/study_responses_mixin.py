@@ -74,16 +74,25 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         """
         Builds individual row for csv responses
         """
+        latest_dem = resp.demographic_snapshot
         return [resp.sequence, resp.conditions, resp.exp_data, resp.child.user.id,
-        resp.global_event_timings, resp.child.id, resp.completed, resp.study.id, resp.id,
-        resp.demographic_snapshot.id]
+            resp.global_event_timings, resp.child.id, resp.completed, resp.study.id, resp.id,
+            resp.demographic_snapshot.id, latest_dem.number_of_children, [self.convert_to_string(birthday) for birthday in latest_dem.child_birthdays],
+            latest_dem.languages_spoken_at_home, latest_dem.number_of_guardians, latest_dem.number_of_guardians_explanation,
+            latest_dem.race_identification, latest_dem.age, latest_dem.gender, latest_dem.education_level, latest_dem.spouse_education_level,
+            latest_dem.annual_income, latest_dem.number_of_books, latest_dem.additional_comments, latest_dem.country.name,
+            latest_dem.state, latest_dem.density, latest_dem.extra
+        ]
 
     def get_csv_headers(self):
         """
         Returns header row for csv data
         """
         return ['sequence', 'conditions', 'exp_data', 'participant_id', 'global_event_timings',
-            'child_id', 'completed', 'study_id', 'response_id', 'demographic_id']
+            'child_id', 'completed', 'study_id', 'response_id', 'demographic_id', 'number_of_children',
+            'child_birthdays', 'languages_spoken_at_home', 'number_of_guardians', 'number_of_guardians_explanation',
+            'race_identification', 'age', 'gender', 'education_level', 'spouse_education_level', 'annual_income',
+            'number_of_books', 'additional_comments', 'country', 'state', 'density', 'extra']
 
     def post(self, request, *args, **kwargs):
         '''
