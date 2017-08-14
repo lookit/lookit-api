@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
 from revproxy.views import ProxyView
@@ -33,6 +34,7 @@ class ParticipantSignupView(generic.CreateView):
             password=form.cleaned_data['password1']
         )
         login(self.request, new_user, backend='django.contrib.auth.backends.ModelBackend')
+        messages.success(self.request, "Participant created.")
         return resp
 
     def get_success_url(self):
@@ -59,6 +61,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         self.object.user = self.request.user
         self.object.previous = self.request.user.latest_demographics or None
         self.object.save()
+        messages.success(self.request, "Demographic data saved.")
         return resp
 
     def get_initial(self):
@@ -157,6 +160,7 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         form = self.get_form(form_class)
         if form.is_valid():
             form.save()
+            messages.success(self.request, "Participant information saved.")
             if form_name == 'form2':
                 # If updating password, need to reauthenticate
                 update_session_auth_hash(self.request, form.user)
@@ -197,6 +201,7 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         """
         user = self.request.user
         form.instance.user = user
+        messages.success(self.request, "Child added.")
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -231,7 +236,9 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
             child = self.get_object()
             child.deleted = True
             child.save()
+            messages.success(self.request, "Child deleted.")
             return HttpResponseRedirect(self.get_success_url())
+        messages.success(self.request, "Child updated.")
         return super().post(request, *args, **kwargs)
 
 
@@ -249,6 +256,12 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
     def get_success_url(self):
         return reverse('web:email-preferences')
 
+    def form_valid(self, form):
+        """
+        Adds success message
+        """
+        messages.success(self.request, "Email preferences saved.")
+        return super().form_valid(form)
 
 class StudiesListView(generic.ListView):
     '''
