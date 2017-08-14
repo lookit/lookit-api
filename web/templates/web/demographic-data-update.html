@@ -56,16 +56,9 @@
         function hideField(field) {
             $(`#id_${field}`).hide().prop('required',false);
             $(`label[for=id_${field}]`).hide();
-            if (field !== 'number_of_guardians_explanation') {
-                $(`#id_${field}`)[0].required = false;
-            }
-
         }
         function showField(field) {
             $(`#id_${field}`).show();
-            if (field !== 'number_of_guardians_explanation') {
-                $(`#id_${field}`)[0].required = true;
-            }
             $(`label[for=id_${field}]`).show();
         }
     </script>

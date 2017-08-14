@@ -101,7 +101,8 @@ class DemographicDataForm(forms.ModelForm):
     race_identification = forms.MultipleChoiceField(
         choices = DemographicData.RACE_CHOICES,
         widget=forms.CheckboxSelectMultiple(),
-        label="What category(ies) does your family identify as?"
+        label="What category(ies) does your family identify as?",
+        required=False
     )
     class Meta:
         model = DemographicData
