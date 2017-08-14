@@ -20,7 +20,7 @@
                 hideField('child_birthdays');
                 $('.help-block').first().hide();
             }
-            if ($('#id_number_of_guardians')[0].value !== '') {
+            if ($('#id_number_of_guardians')[0].value === 'varies') {
                 showField('number_of_guardians_explanation');
             }
 
@@ -45,10 +45,11 @@
                 }
             });
             $('#id_number_of_guardians').on('change', function() {
-                if (this.value === '') {
-                    hideField('number_of_guardians_explanation');
-                } else {
+                if (this.value === 'varies') {
                     showField('number_of_guardians_explanation');
+                } else {
+                    hideField('number_of_guardians_explanation');
+                    $(`#id_number_of_guardians_explanation`)[0].value = '';
                 }
             });
         });
