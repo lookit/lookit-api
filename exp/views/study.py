@@ -480,44 +480,6 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
             attachments = [att for att in attachments if match in att.key]
         return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)
 
-    def download_all_files(self):
-        """
-        Downloads all attachments associated with study and puts into zipfile
-        """
-        all = self.get_study_attachments(self.get_object(), 'last_modified', '')
-        zip_subdir = "study_attachments"
-        zip_filename = "%s.zip" % zip_subdir
-        s = io.BytesIO()
-        zip = zipfile.ZipFile(s, "w")
-        for attachment in all:
-            filename = attachment.key
-            file_response = requests.get(get_study_attachments.get_download_url(filename))
-
-            f1 = open(filename , 'wb')
-            f1.write(file_response.content)
-            f1.close()
-            fdir, fname = os.path.split(filename)
-            zip_path = os.path.join(zip_subdir, fname)
-            zip.write(filename, zip_path)
-        zip.close()
-        resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
-        resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
-        return resp
-
-    def post(self, request, *args, **kwargs):
-        '''
-        Downloads study video
-        '''
-        attachment = self.request.POST.get('attachment')
-        if attachment:
-            download_url = get_study_attachments.get_download_url(attachment)
-            return redirect(download_url)
-
-        if self.request.POST.get('all-attachments'):
-            return self.download_all_files()
-
-        return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
-
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
     '''
