@@ -105,6 +105,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
+    contact_name = models.CharField(max_length=255, blank=True)
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE,
         related_name='users', related_query_name='user',
