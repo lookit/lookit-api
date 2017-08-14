@@ -3,6 +3,8 @@
 # could probably be removed in production
 cp -r $CHECKOUT_DIR /checkout-dir/
 
+# sed -i ".bak" "s/prepend: ''/$NEEDLE$REPLACEMENT/g" /checkout-dir/ember-cli-build.js
+
 # Copy in required files
 cp /environment /checkout-dir/.env
 cp /VideoRecorder.swf /checkout-dir/public/
@@ -19,7 +21,7 @@ bower install --allow-root
 
 cd /checkout-dir/
 # build ember app
-ember build
+ember build -prod
 
 # clean up the old one
 rm -rf $STUDY_OUTPUT_DIR

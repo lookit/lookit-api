@@ -16,7 +16,8 @@ import raven
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# root path for ember builds
+EMBER_BUILD_ROOT_PATH = os.path.join(BASE_DIR, '../ember_build')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -88,6 +89,17 @@ if not DEBUG:
         'release': os.environ.get('GIT_COMMIT', 'No version'),
     }
 
+
+if not DEBUG:
+    INSTALLED_APPS += [
+        'raven.contrib.django.raven_compat',
+    ]
+    RAVEN_CONFIG = {
+        'dsn': os.environ.get('RAVEN_DSN', None),
+        # If you are using git, you can also automatically configure the
+        # release based on the git info.
+        'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
+    }
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -218,7 +230,7 @@ SITE_NAME = os.environ.get('SITE_NAME', 'Lookit')
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 # base url for experiments, should be s3 bucket in prod
-EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'http://google.com/')  # default to ember base url
+EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/experiments/')  # default to ember base url
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')  # default to ember base url
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/exp/')
@@ -264,6 +276,9 @@ if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
     MEDIAFILES_LOCATION = '/media'
     DEFAULT_FILE_STORAGE = 'project.storages.LookitMediaStorage'
     MEDIA_URL = os.environ.get('MEDIA_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/media/')
+
+    EXPERIMENT_LOCATION = '/experiments'
+    PREVIEW_EXPERIMENT_LOCATION = '/preview_experiments'
 
     GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', 'io-osf-lookit-staging2')
     GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', 'cos-staging')
