@@ -108,7 +108,7 @@ class DemographicDataForm(forms.ModelForm):
         exclude = ('created_at', 'previous', 'user', 'extra', 'uuid' )
         fields = ('country', 'state', 'density', 'languages_spoken_at_home', 'number_of_children', 'child_birthdays', 'number_of_guardians',
         'number_of_guardians_explanation', 'race_identification', 'age', 'gender', 'education_level', 'spouse_education_level', 'annual_income',
-        'number_of_books', 'additional_comments')
+        'number_of_books', 'lookit_referrer', 'additional_comments')
 
         help_texts = {
             'child_birthdays': 'Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ...'
@@ -130,13 +130,15 @@ class DemographicDataForm(forms.ModelForm):
             'annual_income': 'What is your approximate family yearly income (in US dollars)?',
             'number_of_books': "About how many children's books are there in your home?",
             'additional_comments': "Anything else you'd like us to know?",
+            'lookit_referrer': 'How did you hear about Lookit?',
             'number_of_guardians_explanation': 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain.',
         }
 
         widgets = {
             'languages_spoken_at_home': forms.Textarea(attrs={'rows': 1}),
             'additional_comments': forms.Textarea(attrs={'rows':2}),
-            'number_of_guardians_explanation': forms.Textarea(attrs={'rows':2})
+            'number_of_guardians_explanation': forms.Textarea(attrs={'rows':2}),
+            'lookit_referrer': forms.Textarea(attrs={'rows':2})
         }
 
 

@@ -416,6 +416,7 @@ class DemographicData(models.Model):
     country = CountryField()
     state = USStateField(blank=True, choices=('XX', _('Select a State')) + USPS_CHOICES[:])
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
+    lookit_referrer = models.TextField(blank=True)
     extra = DateTimeAwareJSONField(null=True)
 
     class Meta:
