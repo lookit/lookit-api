@@ -516,7 +516,7 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         if self.request.POST.get('all-attachments'):
             return self.download_all_files()
 
-        return HttpResponseRedirect(reverse('exp:study-responses-list', kwargs=dict(pk=self.get_object().pk)))
+        return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
