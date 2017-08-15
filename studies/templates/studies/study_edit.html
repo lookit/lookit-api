@@ -118,7 +118,7 @@
                 {% if messages %}
                     {% for message in messages %}
                         {% if message.extra_tags == 'user_added' or message.extra_tags == 'user_removed' %}
-                            <div id="add-researcher-messages" class="alert alert-success alert-dismissable">
+                            <div id="add-researcher-messages" class="alert {{ message.tags }} alert-dismissable">
                                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                                  {{ message }}
                             </div>
