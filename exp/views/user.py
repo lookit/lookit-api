@@ -112,7 +112,7 @@ class ParticipantEmailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         Adds email to the context_data dictionary
         """
         context = super().get_context_data(**kwargs)
-        context['sender'] = settings.NO_REPLY
+        context['sender'] = settings.EMAIL_FROM_ADDRESS
         return context
 
     def get_queryset(self):
