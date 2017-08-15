@@ -15,6 +15,7 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from django.db.models import Q
 
+from project import settings
 from accounts.forms import UserStudiesForm
 from accounts.models import User
 from accounts.utils import build_org_group_name
@@ -100,6 +101,14 @@ class ParticipantEmailView(ExperimenterLoginRequiredMixin, ParticipantMixin, gen
     ParticipantEmailView allows user to send a custom email to a participant.
     '''
     template_name = 'accounts/participant_email.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds email to the context_data dictionary
+        """
+        context = super().get_context_data(**kwargs)
+        context['sender'] = settings.NO_REPLY
+        return context
 
     def get_success_url(self):
         return reverse('exp:participant-email', kwargs={'pk': self.object.id})

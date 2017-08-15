@@ -4,7 +4,9 @@ from accounts.models import User
 from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
 
 class ParticipantMixin(DjangoPermissionRequiredMixin, object):
-    """Mixin with shared items for Participant Detail and Participant List Views"""
+    """
+    Mixin with shared items for Participant Detail and Participant List and Participant Email Views
+    """
 
     permission_required = 'accounts.can_view_experimenter'
     raise_exception = True

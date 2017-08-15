@@ -25,9 +25,42 @@
          </div>
      </div>
      <div class="row">
-         <div class="col-xs-12">
-             <h1> Contact Form </h1>
-
+         <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1">
+             <div class="panel panel-default">
+               <div class="panel-heading">
+                 <h1 class="panel-title">Contact Form</h1>
+               </div>
+               <div class="panel-body">
+                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                     <div class="form-group">
+                        <label for="recipients">Recipients</label>
+                        <input class="form-control" placeholder="To" id="recipients">
+                     </div>
+                     <div class="form-group">
+                        <label for="pwd">Sender</label>
+                        <input placeholder="From" value="{{ sender }}" class="form-control" id="sender">
+                     </div>
+                     <div class="form-group">
+                         <label for="subject">Subject</label>
+                         <input class="form-control" id="subject">
+                     </div>
+                     <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea class="form-control" rows="5" id="message"></textarea>
+                     </div>
+                     {% buttons %}
+                         <a href="{% url 'exp:participant-email' %}" class="btn btn-default">
+                             <i class="fa fa-trash-o" aria-hidden="true"></i>
+                         </a>
+                         <div class="pull-right">
+                             <button type="submit" id="send-email-button" class="btn btn-success">
+                                 Send
+                             </button>
+                         </div>
+                     {% endbuttons %}
+                 </form>
+             </div>
+           </div>
          </div>
      </div>
 </div>

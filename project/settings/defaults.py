@@ -30,6 +30,9 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'accounts.User'
 GUARDIAN_MONKEY_PATCH = False
 
+# TODO No reply email, maybe should be on organization?
+NO_REPLY='no-reply@lookit.mit.edu'
+
 # Application definition
 
 INSTALLED_APPS = [
