@@ -2,6 +2,7 @@ import operator
 from functools import reduce
 
 from django.http import Http404
+from django.http import HttpResponseRedirect
 from guardian.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
 from django.contrib import messages
@@ -19,6 +20,7 @@ from project import settings
 from accounts.forms import UserStudiesForm
 from accounts.models import User
 from accounts.utils import build_org_group_name
+from studies.helpers import send_mail
 from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 from exp.mixins.paginator_mixin import PaginatorMixin
@@ -122,8 +124,23 @@ class ParticipantEmailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         study_ids = studies.values_list('id', flat=True)
         return User.objects.filter(Q(children__response__study__id__in=study_ids) & Q(email_personally=True)).distinct()
 
+    def post(self, request, *args, **kwargs):
+        """
+        Post form for emailing participants.
+        """
+        retval = super().get(request, *args, **kwargs)
+        email_form = self.request.POST
+
+        sender = email_form['sender']
+        subject = email_form['subject']
+        message = email_form['message']
+        recipients = list(User.objects.filter(pk__in=email_form['recipients']).values_list('username', flat=True))
+        send_mail(subject, recipients, from_address=sender, template_name=None, custom_message=message, cc=None, bcc=recipients)
+        messages.success(self.request, "Your message has been sent.")
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
-        return reverse('exp:participant-email', kwargs={'pk': self.object.id})
+        return reverse('exp:participant-list')
 
 
 class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView, PaginatorMixin):
