@@ -57,13 +57,17 @@
   <div class="container">
     <div class="row">
         <div class="col-xs-12">
-            <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; <a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }} </a> &gt; Edit
+            <ol class="breadcrumb">
+              <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+              <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
+              <li class="active"> Edit </li>
+            </ol>
         </div>
     </div>
     {% get_obj_perms user for study as "study_perms" %}
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
-            <div class="mt-xl panel panel-default">
+            <div class="mt-sm panel panel-default">
               <div class="panel-heading">
                 <h1 class="panel-title">Description and Discoverability</h1>
               </div>

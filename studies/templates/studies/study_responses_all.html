@@ -51,8 +51,12 @@
 {% block content %}
 <div class='container mb-lg'>
     <div class='row'>
-        <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9">
-            <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; <a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name}} </a> &gt; All Responses
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+              <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+              <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
+              <li class="active"> All Responses </li>
+            </ol>
         </div>
     </div>
     <div class='row'>

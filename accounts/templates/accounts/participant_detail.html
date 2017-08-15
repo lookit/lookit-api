@@ -8,9 +8,12 @@
 {% endblock %}
 {% block content %}
   <div class="container mb-lg">
-      <div class="row">
+      <div class='row'>
           <div class="col-xs-12">
-              <a href="{% url 'exp:participant-list' %}"> All Participants </a> &gt; {{ user.given_name }} </a>
+              <ol class="breadcrumb">
+                <li><a href="{% url 'exp:participant-list' %}"> All Participants </a></li>
+                <li class="active"> {{ user.given_name }} </li>
+              </ol>
           </div>
       </div>
 

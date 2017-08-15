@@ -37,10 +37,15 @@
   <div class="container">
     <div class="row">
         <div class="col-xs-12">
-            <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; <a href="{% url 'exp:study-detail' study.id %}"> {{ study.name }} </a> &gt; <a href="{% url 'exp:study-edit' study.id %}"> Edit </a> &gt; Build Study
+            <ol class="breadcrumb">
+              <li><a href="{% url 'exp:study-list' %}"> Manage Studies </a></li>
+              <li><a href="{% url 'exp:study-detail' study.id %}"> {{ study.name}} </a></li>
+              <li><a href="{% url 'exp:study-edit' study.id %}"> Edit </a></li>
+              <li class="active">Build Study</li>
+            </ol>
         </div>
     </div>
-    <div class="row mt-sm pb-lg">
+    <div class="row pb-lg">
         <div class="col-sm-10 col-sm-offset-1">
             <div class="panel panel-default mt-xl">
               <div class="panel-heading">
