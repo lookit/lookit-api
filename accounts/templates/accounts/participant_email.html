@@ -14,7 +14,8 @@
 <script>
     $(document).ready(function() {
         $('form').submit(function() {
-            $('#send-email').prop("disabled", "disabled");
+            $("#send-email").text("Sending...");
+            $("#send-email").attr("disabled", "disabled");
         });
     });
 </script>
