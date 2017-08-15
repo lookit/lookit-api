@@ -144,7 +144,7 @@ class DemographicDataForm(forms.ModelForm):
 
 
 class ChildForm(forms.ModelForm):
-    birthday = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}), help_text="This lets us figure out exactly how old your child is when he or she participates in a study. We never publish children\'s birthdates or information that would allow a reader to calculate the birthdate.")
+    birthday = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}), help_text="This lets us figure out exactly how old your child is when they participate in a study. We never publish children\'s birthdates or information that would allow a reader to calculate the birthdate.")
     class Meta:
         model = Child
         fields = ('given_name', 'birthday', 'gender', 'age_at_birth', 'additional_information')
