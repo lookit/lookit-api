@@ -10,7 +10,7 @@ from studies.models import Study
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 import get_study_attachments
 
-class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, object):
+class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixin):
     """
     Mixin with shared items for StudyResponsesList, StudyResponsesAll, and
     StudyAttachments Views
