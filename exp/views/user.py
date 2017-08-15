@@ -2,6 +2,7 @@ import operator
 from functools import reduce
 
 from django.http import Http404
+from django.core.mail import BadHeaderError
 from django.http import HttpResponseRedirect
 from guardian.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
@@ -135,13 +136,16 @@ class ParticipantEmailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         subject = email_form['subject']
         message = email_form['message']
         recipients = list(User.objects.filter(pk__in=email_form.getlist('recipients')).values_list('username', flat=True))
-        send_mail(None, subject, recipients, bcc=recipients, custom_message=message, from_email=sender)
-        messages.success(self.request, "Your message has been sent.")
-        return HttpResponseRedirect(self.get_success_url())
+        try:
+            send_mail(None, subject, recipients, bcc=recipients, custom_message=message, from_email=sender)
+            messages.success(self.request, "Your message has been sent.")
+            return HttpResponseRedirect(self.get_success_url())
+        except BadHeaderError:
+            messages.error(self.request, "Invalid header found.")
+        return HttpResponseRedirect(reverse('exp:participant-email'))
 
     def get_success_url(self):
         return reverse('exp:participant-list')
-
 
 class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView, PaginatorMixin):
     '''
