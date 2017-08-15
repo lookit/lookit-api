@@ -57,7 +57,7 @@ class ParticipantListView(ExperimenterLoginRequiredMixin, ParticipantMixin, gene
         return context
 
 
-class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.UpdateView, PaginatorMixin):
+class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.DetailView, PaginatorMixin):
     '''
     ParticipantDetailView shows demographic information, children information, and
     studies that a participant has responded to.
@@ -96,11 +96,14 @@ class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, ge
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
 
 
-class ParticipantEmailView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.ListView):
+class ParticipantEmailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView):
     '''
     ParticipantEmailView allows user to send a custom email to a participant.
     '''
     template_name = 'accounts/participant_email.html'
+    permission_required = 'accounts.can_view_experimenter'
+    raise_exception = True
+    model = User
 
     def get_context_data(self, **kwargs):
         """
@@ -109,6 +112,15 @@ class ParticipantEmailView(ExperimenterLoginRequiredMixin, ParticipantMixin, gen
         context = super().get_context_data(**kwargs)
         context['sender'] = settings.NO_REPLY
         return context
+
+    def get_queryset(self):
+        '''
+        Restricts queryset to participants that a researcher has permission to view as well as participants
+        that have given their permission to be emailed personally
+        '''
+        studies = get_objects_for_user(self.request.user, 'studies.can_view_study')
+        study_ids = studies.values_list('id', flat=True)
+        return User.objects.filter(Q(children__response__study__id__in=study_ids) & Q(email_personally=True)).distinct()
 
     def get_success_url(self):
         return reverse('exp:participant-email', kwargs={'pk': self.object.id})

@@ -33,27 +33,32 @@
                <div class="panel-body">
                  <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                      <div class="form-group">
-                        <label for="recipients">Recipients</label>
-                        <input class="form-control" placeholder="To" id="recipients">
+                        <label for="pwd">Sender</label>
+                        <input placeholder="From" value="{{ sender }}" class="form-control" id="sender" required>
                      </div>
                      <div class="form-group">
-                        <label for="pwd">Sender</label>
-                        <input placeholder="From" value="{{ sender }}" class="form-control" id="sender">
+                         <label for="recipients">Recipients</label>
+                         <select multiple class="form-control" id="recipients" required>
+                             {% for participant in object_list %}
+                                <option>{{ participant.given_name }}, ID: {{ participant.id }}</option>
+                             {% endfor %}
+                         </select>
+                         <p class="small">Hold down the Ctrl (windows) / Command (Mac) button to select multiple participants.</p>
                      </div>
                      <div class="form-group">
                          <label for="subject">Subject</label>
-                         <input class="form-control" id="subject">
+                         <input class="form-control" id="subject" required>
                      </div>
                      <div class="form-group">
                         <label for="message">Message</label>
-                        <textarea class="form-control" rows="5" id="message"></textarea>
+                        <textarea class="form-control" rows="5" id="message" required></textarea>
                      </div>
                      {% buttons %}
                          <a href="{% url 'exp:participant-email' %}" class="btn btn-default">
                              <i class="fa fa-trash-o" aria-hidden="true"></i>
                          </a>
                          <div class="pull-right">
-                             <button type="submit" id="send-email-button" class="btn btn-success">
+                             <button type="submit" id="send-email" class="btn btn-success">
                                  Send
                              </button>
                          </div>
