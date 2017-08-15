@@ -95,6 +95,25 @@ class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, ge
         return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
 
 
+class ParticipantEmailView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.DetailView):
+    '''
+    ParticipantEmailView allows user to send a custom email to a participant.
+    '''
+    template_name = 'accounts/participant_email.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds user's latest demographics and studies to the context_data dictionary
+        """
+        context = super().get_context_data(**kwargs)
+        user = context['user']
+        context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
+        return context
+
+    def get_success_url(self):
+        return reverse('exp:participant-email', kwargs={'pk': self.object.id})
+
+
 class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView, PaginatorMixin):
     '''
     Displays a list of researchers that belong to the org admin, org read, or org researcher groups.

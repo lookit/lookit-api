@@ -1,0 +1,24 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+
+{% block title %}Participant Email {% endblock %}
+{% block flash %}
+  {% bootstrap_messages %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+<script>
+    $(document).ready(function() {
+    });
+</script>
+<div class="container mb-lg">
+    <div class="row">
+        <h1> Send Email </h1>
+
+    </div>
+</div>
+{% endblock %}
