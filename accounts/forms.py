@@ -54,7 +54,7 @@ class ParticipantSignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'given_name')
+        fields = ('username', 'given_name', 'contact_name')
         exclude = ('user_permissions', 'groups', '_identicon', 'organization',
                    'is_active', 'is_staff', 'is_superuser', 'last_login',
                    'middle_name', 'last_name')
@@ -74,7 +74,7 @@ class ParticipantUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'given_name')
+        fields = ('username', 'given_name', 'contact_name')
         labels = {
             'given_name': "Username"
         }
