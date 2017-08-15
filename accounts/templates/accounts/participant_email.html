@@ -13,6 +13,9 @@
 {% block content %}
 <script>
     $(document).ready(function() {
+        $('form').submit(function() {
+            $('#send-email').prop("disabled", "disabled");
+        });
     });
 </script>
 <div class="container mb-lg">
@@ -69,7 +72,7 @@
              </div>
              {% else %}
                 <p> No eligible participants to email. </p>
-             {% endif %}     
+             {% endif %}
          </div>
      </div>
 </div>
