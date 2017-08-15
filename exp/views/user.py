@@ -2,7 +2,6 @@ import operator
 from functools import reduce
 
 from django.http import Http404
-from django.http import HttpResponseRedirect
 from guardian.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
 from django.contrib import messages
@@ -16,7 +15,6 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from django.db.models import Q
 
-from project import settings
 from accounts.forms import UserStudiesForm
 from accounts.models import User
 from accounts.utils import build_org_group_name
