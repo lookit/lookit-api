@@ -134,8 +134,8 @@ class ParticipantEmailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         sender = email_form['sender']
         subject = email_form['subject']
         message = email_form['message']
-        recipients = list(User.objects.filter(pk__in=email_form['recipients']).values_list('username', flat=True))
-        send_mail(subject, recipients, from_address=sender, template_name=None, custom_message=message, cc=None, bcc=recipients)
+        recipients = list(User.objects.filter(pk__in=email_form.getlist('recipients')).values_list('username', flat=True))
+        send_mail(None, subject, recipients, bcc=recipients, custom_message=message, from_email=sender)
         messages.success(self.request, "Your message has been sent.")
         return HttpResponseRedirect(self.get_success_url())
 
