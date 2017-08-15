@@ -237,8 +237,10 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         return self.paginated_queryset(researchers_result, page, 5)
 
     def adequate_study_admins(self, admin_group, researcher):
+        # Returns true if researchers's permissions can be edited, or researcher deleted,
+        # with the constraint of there being at least one study admin at all times
         admins = User.objects.filter(groups__name=admin_group.name)
-        return len(admins) - (researcher in admins)
+        return len(admins) - (researcher in admins) > 0
 
     def manage_researcher_permissions(self):
         '''
@@ -266,7 +268,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
                 study_admin_group.user_set.remove(remove)
                 messages.success(self.request, f"{remove.get_short_name()} removed from {self.get_object().name}.", extra_tags='user_removed')
             else:
-                messages.error(self.request, "Could not delete this user. There must be at least one study admin.", extra_tags='user_removed')
+                messages.error(self.request, "Could not delete this researcher. There must be at least one study admin.", extra_tags='user_removed')
         if update_user:
             update = User.objects.get(pk=update_user)
             if permissions == 'study_admin':
@@ -275,8 +277,10 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
                 study_admin_group.user_set.add(update)
             if permissions == 'study_read':
                 # if read, removes user from study admin and adds to study read
-                study_read_group.user_set.add(update)
-                study_admin_group.user_set.remove(update)
+                if self.adequate_study_admins(study_admin_group, update):
+                    study_read_group.user_set.add(update)
+                    study_admin_group.user_set.remove(update)
+        return
 
     def post(self, request, *args, **kwargs):
         '''
@@ -306,6 +310,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         """
         context = super().get_context_data(**kwargs)
         state = self.object.state
+        admin_group = self.get_object().study_admin_group
 
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
@@ -314,7 +319,8 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
         context['name'] = self.request.GET.get('match', None)
         context['save_confirmation'] = state in ['approved', 'active', 'paused', 'deactivated']
-        context['multiple_admins'] = len(User.objects.filter(groups__name=self.get_object().study_admin_group.name)) > 1
+        context['multiple_admins'] = len(User.objects.filter(groups__name=admin_group.name)) > 1
+        context['study_admins'] = User.objects.filter(groups__name=admin_group.name).values_list('id', flat=True)
         return context
 
 
