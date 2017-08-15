@@ -5,6 +5,7 @@ import operator
 import uuid
 from functools import reduce
 
+from django.core.mail import BadHeaderError
 from django.contrib import messages
 from django.contrib.auth.mixins import \
     PermissionRequiredMixin as DjangoPermissionRequiredMixin
@@ -23,6 +24,7 @@ from guardian.mixins import PermissionRequiredMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 from project import settings
+from studies.helpers import send_mail
 from revproxy.views import ProxyView
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.models import Study
@@ -198,6 +200,54 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         state = self.object.state
         context['status_tooltip'] = status_tooltip_text.get(state, state)
         return context
+
+
+class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
+    '''
+    StudyParticipantEmailView allows user to send a custom email to a participant.
+    '''
+    model = Study
+    permission_required = 'studies.can_view_study'
+    raise_exception = True
+    template_name = 'studies/study_participant_email.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds email to the context_data dictionary
+        """
+        context = super().get_context_data(**kwargs)
+        context['sender'] = settings.EMAIL_FROM_ADDRESS
+        context['participants'] = self.get_study_participants()
+        return context
+
+    def get_study_participants(self):
+        '''
+        Restricts list to participants that have responded to this study as well as participants
+        that have given their permission to be emailed personally
+        '''
+        return User.objects.filter(Q(children__response__study__id=self.get_object().id) & Q(email_personally=True)).distinct()
+
+    def post(self, request, *args, **kwargs):
+        """
+        Post form for emailing participants.
+        """
+        retval = super().get(request, *args, **kwargs)
+        email_form = self.request.POST
+
+        sender = email_form['sender']
+        subject = email_form['subject']
+        message = email_form['message']
+        recipients = list(User.objects.filter(pk__in=email_form.getlist('recipients')).values_list('username', flat=True))
+        try:
+            send_mail(None, subject, recipients, bcc=recipients, custom_message=message, from_email=sender)
+            messages.success(self.request, "Your message has been sent.")
+            return HttpResponseRedirect(self.get_success_url())
+        except BadHeaderError:
+            messages.error(self.request, "Invalid header found.")
+        return HttpResponseRedirect(reverse('exp:study-participant-email'))
+
+    def get_success_url(self):
+        return reverse('exp:study-detail', kwargs={'pk': self.object.id})
 
 
 class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, PaginatorMixin):
