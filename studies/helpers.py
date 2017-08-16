@@ -5,7 +5,7 @@ from project.settings import EMAIL_FROM_ADDRESS, BASE_URL
 
 
 # TODO: celery taskify
-def send_mail(template_name, subject, to_addresses, cc=None, bcc=None, custom_message=None, from_email=None, **context):
+def send_mail(template_name, subject, to_addresses, cc=None, bcc=None, from_email=None, **context):
     """
     Helper for sending templated email
 
@@ -20,13 +20,8 @@ def send_mail(template_name, subject, to_addresses, cc=None, bcc=None, custom_me
     """
     context['base_url'] = BASE_URL
 
-    if template_name:
-        text_content = get_template('emails/{}.txt'.format(template_name)).render(context)
-        html_content = get_template('emails/{}.html'.format(template_name)).render(context)
-
-    if custom_message:
-        text_content = custom_message
-        html_content = custom_message
+    text_content = get_template('emails/{}.txt'.format(template_name)).render(context)
+    html_content = get_template('emails/{}.html'.format(template_name)).render(context)
 
     if not isinstance(to_addresses, list):
         to_addresses = [to_addresses]

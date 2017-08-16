@@ -244,7 +244,10 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         message = email_form['message']
         recipients = list(User.objects.filter(pk__in=email_form.getlist('recipients')).values_list('username', flat=True))
         try:
-            send_mail(None, subject, None, bcc=recipients, custom_message=message, from_email=sender)
+            context = {
+                'custom_message': message
+            }
+            send_mail('custom_email', subject, None, bcc=recipients, from_email=sender, **context)
             messages.success(self.request, "Your message has been sent.")
             self.create_email_log(researcher, recipients, message, subject)
             return HttpResponseRedirect(self.get_success_url())
