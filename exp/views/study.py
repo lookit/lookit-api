@@ -465,6 +465,35 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         return output.getvalue()
 
 
+class StudyDemographics(StudyResponsesMixin, generic.DetailView):
+    """
+    StudyParticiapnts view shows participant demographic snapshots associated
+    with each response to the study
+    """
+    template_name = 'studies/study_demographics.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.  Study results
+        are paginated.
+        """
+        context = super().get_context_data(**kwargs)
+        responses = context['study'].responses.order_by('id')
+        context['all_participant_responses'] = ', '.join(self.build_participant_data(responses))
+        context['all_participant_csv_responses'] = self.build_all_participant_csv(responses)
+        return context
+
+    def build_all_participant_csv(self, responses):
+        """
+        Builds CSV file contents for all participant data
+        """
+        output, writer = self.csv_output_and_writer()
+        writer.writerow(self.get_csv_participant_headers())
+        for resp in responses:
+            writer.writerow(self.build_csv_participant_row_data(resp))
+        return output.getvalue()
+
+
 class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
     StudyAttachments View shows video attachments for the study

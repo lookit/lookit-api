@@ -24,13 +24,73 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
             return object.__str__()
         return object
 
+    def build_participant_data(self, responses):
+        json_responses = []
+        for resp in responses:
+            latest_dem = resp.demographic_snapshot
+            json_responses.append(json.dumps({
+                "response": {
+                    'id': resp.id
+                },
+                "participant": {
+                    'id': resp.child.user.id,
+                    'username': resp.child.user.given_name
+                },
+                "demographic_snapshot": {
+                    "demographic_id": latest_dem.id,
+                    "number_of_children": latest_dem.number_of_children,
+                    "child_birthdays": latest_dem.child_birthdays,
+                    "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
+                    "number_of_guardians": latest_dem.number_of_guardians,
+                    "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
+                    "race_identification": latest_dem.race_identification,
+                    "age": latest_dem.age,
+                    "gender": latest_dem.gender,
+                    "education_level": latest_dem.gender,
+                    "spouse_education_level": latest_dem.spouse_education_level,
+                    "annual_income": latest_dem.annual_income,
+                    "number_of_books": latest_dem.number_of_books,
+                    "additional_comments": latest_dem.additional_comments,
+                    "country": latest_dem.country.name,
+                    "state": latest_dem.state,
+                    "density": latest_dem.density,
+                    "lookit_referrer": latest_dem.lookit_referrer,
+                    "extra": latest_dem.extra
+                }}, indent=4, default = self.convert_to_string))
+        return json_responses
+
+    def build_csv_participant_row_data(self, resp):
+        """
+        Returns row of csv participant data
+        """
+        latest_dem = resp.demographic_snapshot
+
+        return [resp.id, resp.child.user.id, resp.child.user.given_name, latest_dem.id,
+            latest_dem.number_of_children, [self.convert_to_string(birthday) for birthday in latest_dem.child_birthdays],
+            latest_dem.languages_spoken_at_home, latest_dem.number_of_guardians, latest_dem.number_of_guardians_explanation,
+            latest_dem.race_identification, latest_dem.age, latest_dem.gender, latest_dem.education_level, latest_dem.spouse_education_level,
+            latest_dem.annual_income, latest_dem.number_of_books, latest_dem.additional_comments, latest_dem.country.name,
+            latest_dem.state, latest_dem.density, latest_dem.lookit_referrer, latest_dem.extra]
+
+    def get_csv_participant_headers(self):
+        """
+        Returns header row for csv participant data
+        """
+        return ['response_id', 'participant_id', 'participant_username', 'demographic_id',
+        'demographic_number_of_children', 'demographic_child_birthdays', 'demographic_languages_spoken_at_home',
+        'demographic_number_of_guardians', 'demographic_number_of_guardians_explanation',
+        'demographic_race_identification', 'demographic_age', 'demographic_gender',
+        'demographic_education_level', 'demographic_spouse_education_level',
+        'demographic_annual_income', 'demographic_number_of_books', 'demographic_additional_comments',
+        'demographic_country', 'demographic_state', 'demographic_density', 'demographic_lookit_referrer',
+        'demographic_extra']
+
     def build_responses(self, responses):
         """
         Builds the JSON response data for the researcher to download
         """
         json_responses = []
         for resp in responses:
-            latest_dem = resp.demographic_snapshot
             json_responses.append(json.dumps({
                 'response': {
                     'id': resp.id,
@@ -44,7 +104,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                     'id': resp.study.id
                 },
                 'participant': {
-                    'id': resp.child.user_id,
+                    'id': resp.child.user.id,
                     'username': resp.child.user.given_name
                 },
                 'child': {
@@ -70,10 +130,9 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
             resp.child.age_at_birth, resp.child.additional_information
         ]
 
-
     def get_csv_headers(self):
         """
-        Returns header row for csv data
+        Returns header row for csv response data
         """
         return ['response_id', 'response_sequence', 'response_conditions', 'response_exp_data', 'response_global_event_timings',
             'response_completed', 'study_id', 'participant_id', 'participant_username', 'child_id', 'child_name',
