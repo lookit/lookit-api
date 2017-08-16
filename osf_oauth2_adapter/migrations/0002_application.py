@@ -8,30 +8,6 @@ import os
 from django.db import migrations
 
 
-def create_socialapp(apps, schema_editor):
-    Site = apps.get_model('sites', 'site')
-    SocialApp = apps.get_model('socialaccount', 'socialapp')
-    if not SocialApp.objects.exists():
-        app = SocialApp.objects.using(schema_editor.connection.alias).create(
-            key='',
-            name='OSF',
-            provider='osf',
-            # Defaults are valid for staging
-            client_id=os.environ.get('OSF_OAUTH_CLIENT_ID', '3518b74e12584abf9e48565ff6aee6f3'),
-            secret=os.environ.get('OSF_OAUTH_SECRET', 'vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU'),
-        )
-        app.sites.clear()
-        app.sites.add(Site.objects.first())
-
-
-def create_site(apps, schema_editor):
-    Site = apps.get_model('sites', 'site')
-    site = Site.objects.first()
-    site.domain = settings.SITE_DOMAIN
-    site.name = settings.SITE_NAME
-    site.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -40,6 +16,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_site),
-        migrations.RunPython(create_socialapp),
     ]

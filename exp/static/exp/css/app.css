@@ -102,6 +102,15 @@ a.state-link {
 .pl-xl {
     padding-left: 20px;
 }
+.mb-xs {
+    margin-bottom:10px;
+}
+.mb-sm {
+    margin-bottom: 15px;
+}
+.mb-md {
+    margin-bottom: 20px;
+}
 .mb-lg {
     margin-bottom: 25px;
 }
@@ -159,7 +168,7 @@ a:hover.view-responses-link {
       padding-top: 20px;
   }
   .edit-study-button {
-      padding-top: 15px;
+      padding-top: 5px;
   }
   .researcher-name {
       padding-top: 10px;
@@ -263,3 +272,26 @@ a:hover.build-study-link {
     padding: 5px 5px 5px 10px;
     border-radius: 5px;
 }
+
+.selectable-participant {
+    cursor: pointer;
+}
+.selectable-participant.selected {
+    background-color: #B7D4EE;
+}
+.table-striped>tbody>tr {
+    background-color: transparent;
+}
+.table-striped>tbody>tr.selected {
+    background-color: #B7D4EE;
+}
+
+pre.individual-block {
+    height: auto;
+    max-height: 300px;
+    overflow: auto;
+    background-color: #eeeeee;
+    word-break: normal !important;
+    word-wrap: normal !important;
+    white-space: pre !important;
+}​
