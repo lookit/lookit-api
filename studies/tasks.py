@@ -64,7 +64,7 @@ def unzip_file(file, destination_folder):
     This strips off the top-level directory and uses the destination_folder
     in it's place.
     """
-    print(f'Unzipping {file} into {destination_folder}...')
+    print(f'Unzipping into {destination_folder}...')
     os.makedirs(destination_folder, mode=0o777, exist_ok=True)
     with zipfile.ZipFile(BytesIO(file)) as zip_file:
         for member in zip_file.infolist():
@@ -136,7 +136,8 @@ def build_experiment(study_uuid, preview=True):
     local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
     local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
 
-    replacement_string = f"prepend: '{settings.EXPERIMENT_BASE_URL}{study_uuid}/'"
+    replacement_string = f"prepend: '/studies/{study_uuid}/'"
+    recorder_replacement_string = f'/studies/{study_uuid}/VideoRecorder.swf'
 
     build_command = [
         'docker',
@@ -144,6 +145,7 @@ def build_experiment(study_uuid, preview=True):
         '--rm',
         '-e', f'CHECKOUT_DIR={container_checkout_directory}',
         '-e', f'REPLACEMENT={re.escape(replacement_string)}',
+        '-e', f'RECORDER_REPLACEMENT={re.escape(recorder_replacement_string)}',
         '-e', f'STUDY_OUTPUT_DIR={container_destination_directory}',
         '-v', f'{local_checkout_path}:/checkouts',
         '-v', f'{local_deployments_path}:/deployments',

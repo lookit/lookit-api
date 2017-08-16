@@ -3,7 +3,8 @@
 # could probably be removed in production
 cp -r $CHECKOUT_DIR /checkout-dir/
 
-# sed -i ".bak" "s/prepend: ''/$NEEDLE$REPLACEMENT/g" /checkout-dir/ember-cli-build.js
+sed -i "s/prepend: ''/$REPLACEMENT/g" /checkout-dir/ember-cli-build.js
+sed -i "s/VideoRecorder.swf/$RECORDER_REPLACEMENT/g" /checkout-dir/lib/exp-player/addon/services/video-recorder.js
 
 # Copy in required files
 cp /environment /checkout-dir/.env

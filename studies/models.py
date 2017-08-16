@@ -411,6 +411,7 @@ class StudyLog(Log):
     class JSONAPIMeta:
         resource_name = 'study-logs'
         lookup_field = 'uuid'
+        
     class Meta:
         index_together = (
             ('study', 'action')
