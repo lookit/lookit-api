@@ -60,7 +60,10 @@
             <div> Researcher details saved. </div>
         </div>
         <div class="col-xs-12">
-            <a href="{% url 'exp:researcher-list' %}"> Manage Organization </a> &gt; <span id="researcher-first">{{ user.given_name }} </span> <span id="researcher-last">{{ user.family_name }} </span></a>
+            <ol class="breadcrumb">
+              <li><a href="{% url 'exp:researcher-list' %}"> Manage Organization </a></li>
+              <li class="active"><span id="researcher-first">{{ user.given_name }} </span> <span id="researcher-last">{{ user.family_name }} </span></li>
+            </ol>
         </div>
     </div>
     <div class="row">

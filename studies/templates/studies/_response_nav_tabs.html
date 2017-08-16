@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs">
+    <li {% if active == 'individual' %} class="active" {% endif %}>
+        <a href="{% url 'exp:study-responses-list' study.id %}">
+            Individual <span class="hidden-xs"> Responses </span>
+        </a>
+    </li>
+    <li {% if active == 'all' %} class="active" {% endif %}>
+        <a href="{% url 'exp:study-responses-all' study.id %}">
+            All <span class="hidden-xs"> Responses </span>
+        </a>
+    </li>
+    <li {% if active == 'attachments' %} class="active" {% endif %}>
+        <a href="{% url 'exp:study-attachments' study.id %}">
+            Attachments
+        </a>
+    </li>
+</ul>

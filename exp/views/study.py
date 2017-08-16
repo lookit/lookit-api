@@ -1,8 +1,10 @@
-import csv
-import io
-import json
 import operator
 import uuid
+import json
+import requests
+import os
+import io
+import zipfile
 from functools import reduce
 
 from django.contrib import messages
@@ -10,8 +12,8 @@ from django.contrib.auth.mixins import \
     PermissionRequiredMixin as DjangoPermissionRequiredMixin
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
-from django.http import HttpResponseRedirect
-from django.shortcuts import reverse
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import reverse, redirect
 from django.utils import timezone
 from django.views import generic
 
@@ -19,6 +21,7 @@ from accounts.models import User
 from accounts.utils import (get_permitted_triggers, status_tooltip_text,
                             update_trigger)
 from exp.mixins.paginator_mixin import PaginatorMixin
+from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from guardian.mixins import PermissionRequiredMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 from guardian.shortcuts import get_objects_for_user
@@ -26,6 +29,7 @@ from project import settings
 from revproxy.views import ProxyView
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.models import Study
+import get_study_attachments
 
 
 class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
@@ -370,15 +374,11 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
         return ret
 
 
-class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView, PaginatorMixin):
+class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
-    Study Responses View allows user to view responses to a study. Responses can be viewed individually,
-    all responses can be downloaded, and study attachments can be downloaded.
+    Study Responses View allows user to view individual responses to a study.
     """
     template_name = 'studies/study_responses.html'
-    model = Study
-    permission_required = 'studies.can_view_study_responses'
-    raise_exception = True
 
     def get_context_data(self, **kwargs):
         """
@@ -386,40 +386,14 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get('sort', 'id')
+        orderby = self.request.GET.get('sort', 'id') or 'id'
         page = self.request.GET.get('page', None)
-        study = context['study']
-        responses = study.responses.order_by(orderby)
+        responses = context['study'].responses.order_by(orderby)
         context['responses'] = self.paginated_queryset(responses, page, 10)
         context['response_data'] = self.build_responses(context['responses'])
         context['csv_data'] = self.build_individual_csv(context['responses'])
-        context['all_responses'] = ', '.join(self.build_responses(responses))
-        context['csv_responses'] = self.build_all_csv(responses)
+        context['attachment_list'] = self.sort_attachments_by_response(context['responses'])
         return context
-
-    def build_responses(self, responses):
-        """
-        Builds the JSON response data for the researcher to download
-        """
-        return [json.dumps({
-            'sequence': resp.sequence,
-            'conditions': resp.conditions,
-            'exp_data': resp.exp_data,
-            'participant_id': resp.child.user.id,
-            'global_event_timings': resp.global_event_timings,
-            'child_id': resp.child.id,
-            'completed': resp.completed,
-            'study_id': resp.study.id,
-            'response_id': resp.id,
-            'demographic_id': resp.demographic_snapshot.id
-            }, indent=4) for resp in responses]
-
-    def get_csv_headers(self):
-        """
-        Returns header row for csv data
-        """
-        return ['sequence', 'conditions', 'exp_data', 'participant_id', 'global_event_timings',
-            'child_id', 'completed', 'study_id', 'response_id', 'demographic_id']
 
     def build_individual_csv(self, responses):
         """
@@ -433,17 +407,52 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
             csv_responses.append(output.getvalue())
         return csv_responses
 
-    def csv_row_data(self, resp):
+    def get_study_attachments(self, study):
         """
-        Builds individual row for csv responses
+        Fetches study attachments from s3
         """
-        return [resp.sequence, resp.conditions, resp.exp_data, resp.child.user.id,
-        resp.global_event_timings, resp.child.id, resp.completed, resp.study.id, resp.id,
-        resp.demographic_snapshot.id]
+        return [att for att in get_study_attachments.get_all_study_attachments(str(study.uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
 
-    def csv_output_and_writer(self):
-        output = io.StringIO()
-        return output, csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+    def sort_attachments_by_response(self, responses):
+        """
+        Build a list of list of videos for each response
+        """
+        study = self.get_object()
+        attachments = self.get_study_attachments(study)
+        all_attachments = []
+        for response in responses:
+            uuid = str(response.uuid)
+            att_list = []
+            for attachment in attachments:
+                if uuid in attachment.key:
+                    att_list.append({'key': attachment.key, 'display': self.build_video_display_name(str(study.uuid), uuid, attachment.key) })
+            all_attachments.append(att_list)
+        return all_attachments
+
+    def build_video_display_name(self, study_uuid, response_uuid, vid_name):
+        """
+        Strips study_uuid and response_uuid out of video responses titles for better display.
+        """
+        return '. . .'+ '. . .'.join(vid_name.split(study_uuid + '_')[1].split('_' + response_uuid + '_'))
+
+
+class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
+    """
+    StudyResponsesAll shows all study responses in JSON and CSV format.
+    Either format can be downloaded
+    """
+    template_name = 'studies/study_responses_all.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.  Study results
+        are paginated.
+        """
+        context = super().get_context_data(**kwargs)
+        responses = context['study'].responses.order_by('id')
+        context['all_responses'] = ', '.join(self.build_responses(responses))
+        context['csv_responses'] = self.build_all_csv(responses)
+        return context
 
     def build_all_csv(self, responses):
         """
@@ -454,6 +463,73 @@ class StudyResponsesList(ExperimenterLoginRequiredMixin, PermissionRequiredMixin
         for resp in responses:
             writer.writerow(self.csv_row_data(resp))
         return output.getvalue()
+
+
+class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
+    """
+    StudyAttachments View shows video attachments for the study
+    """
+    template_name = 'studies/study_attachments.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.  Study results
+        are paginated.
+        """
+        context = super().get_context_data(**kwargs)
+        orderby = self.request.GET.get('sort', 'id') or 'id'
+        match = self.request.GET.get('match', '')
+        context['attachments'] = self.get_study_attachments(context['study'], orderby, match)
+        context['match'] = match
+        return context
+
+    def get_study_attachments(self, study, orderby, match):
+        """
+        Fetches study attachments from s3
+        """
+        sort = 'last_modified' if 'date_modified' in orderby else 'key'
+        attachments = [att for att in get_study_attachments.get_all_study_attachments(str(study.uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
+        if match:
+            attachments = [att for att in attachments if match in att.key]
+        return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)
+
+    # TODO move to celery task
+    def download_all_files(self):
+         """
+         Downloads all attachments associated with study and puts into zipfile
+         """
+         all = self.get_study_attachments(self.get_object(), 'last_modified', '')
+         zip_subdir = "study_attachments"
+         zip_filename = "%s.zip" % zip_subdir
+         s = io.BytesIO()
+         zip = zipfile.ZipFile(s, "w")
+         for attachment in all:
+             filename = attachment.key
+             file_response = requests.get(get_study_attachments.get_download_url(filename))
+             f1 = open(filename , 'wb')
+             f1.write(file_response.content)
+             f1.close()
+             fdir, fname = os.path.split(filename)
+             zip_path = os.path.join(zip_subdir, fname)
+             zip.write(filename, zip_path)
+         zip.close()
+         resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
+         resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+         return resp
+
+    def post(self, request, *args, **kwargs):
+        '''
+        Downloads study video
+        '''
+        attachment = self.request.POST.get('attachment')
+        if attachment:
+            download_url = get_study_attachments.get_download_url(attachment)
+            return redirect(download_url)
+
+        if self.request.POST.get('all-attachments'):
+            return self.download_all_files()
+
+        return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):

@@ -3,7 +3,7 @@ from guardian.shortcuts import get_objects_for_user
 from accounts.models import User
 from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
 
-class ParticipantMixin(DjangoPermissionRequiredMixin, object):
+class ParticipantMixin(DjangoPermissionRequiredMixin):
     """Mixin with shared items for Participant Detail and Participant List Views"""
 
     permission_required = 'accounts.can_view_experimenter'
