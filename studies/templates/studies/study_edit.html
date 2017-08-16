@@ -35,12 +35,44 @@
               success: function(response, newValue) {
                   // On success, populate the success message with the permissions the user was given
                   // and reveal the permission edit alert message.
+
+                  // This is necessary b/c we're using x-editable here. Page is not reloaded.
                   $('#add-researcher-messages').hide()
                   if (newValue === 'study_admin') {
                       $('#permission-edit-text').append(' given Admin Permissions to this study.');
+                      // Another user given admin permissions so all users' permissions are editable.
+                      $('.disabledPermissionDisplay').hide()
+                      $('.permissionDisplay').show()
                   } else {
                       $('#permission-edit-text').append(' given Read Permissions to this study.');
+                      var numAdmins = 0;
+                      var adminStatus = [];
+                      $('a.researcher_permissions').each(function(index) {
+                          // Loops through current researchers to figure out current number of admins, and
+                          // each researcher's current status
+                          if (this.innerHTML.trim() === 'Admin') {
+                              numAdmins++;
+                              adminStatus.push(1);
+                          } else {
+                              adminStatus.push(0);
+                          }
+                          if (this.className.indexOf('editable-open') > -1) {
+                              // Changed researcher was given read permissions
+                              adminStatus[index] = 0;
+                          }
+                      });
+                      $('.disabledPermissionDisplay').each(function(index) {
+                          // Modifies display as to whether or not researcher's permissions can be edited
+                          if (numAdmins - 1 - adminStatus[index] === 0) {
+                              this.style.display = 'inline-block';
+                              $('.permissionDisplay')[index].style.display = 'none';
+                          } else {
+                              this.style.display = 'none';
+                              $('.permissionDisplay')[index].style.display = 'inline-block';
+                          }
+                      });
                   }
+                  // Shows success message
                    $('#permission-edit').show();
                }
         }).on('click', function (e) {
@@ -122,7 +154,7 @@
                 {% if messages %}
                     {% for message in messages %}
                         {% if message.extra_tags == 'user_added' or message.extra_tags == 'user_removed' %}
-                            <div id="add-researcher-messages" class="alert alert-success alert-dismissable">
+                            <div id="add-researcher-messages" class="alert {{ message.tags }} alert-dismissable">
                                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                                  {{ message }}
                             </div>
@@ -137,11 +169,11 @@
                     <div class="col-sm-5">
                         <form method="GET" action="./#manage-researchers">
                             <div class="input-group">
-                               <input id="search-organization" class="form-control" name="match" placeholder="Search organization" size="50" type="text">
+                               <input id="search-organization" class="form-control" name="match" placeholder="Search organization" type="text">
                                <span class="input-group-btn">
+                                    <input type="hidden" name="page" value="1">
                                     <button class="btn btn-default" type="submit" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
                                </span>
-                               <input type="hidden" name="page" value="1">
                             </div>
                         </form>
                         <div class="researcher-search-results">
@@ -173,6 +205,14 @@
                     </div>
                     <div class="col-sm-7">
                         <h2 class="researchers-label"> Researchers </h2>
+                        <div class="row">
+                            <div class="col-xs-12 small pb-sm">
+                                <em>
+                                    Researchers belonging to this study's admin and read groups. {{ study.organization.name }} Admins will automatically be
+                                    able to edit this study, regardless of study group.
+                                </em>
+                            </div>
+                        </div>
                         <div class="row hidden-xs">
                             <div class="col-xs-6">
                                 <label> Name </label>
@@ -193,13 +233,18 @@
                                     {% endif %}
                                 </div>
                                 <div class="col-sm-4">
-                                    <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-id="{{ researcher.get_short_name }}"data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
-                                        {% if "can_edit_study" in study_perms %}
-                                            Admin
-                                        {% else %}
-                                            Read
-                                        {% endif %}
-                                    </a>
+                                    <div class="disabledPermissionDisplay" style="display:{% if researcher.id in study_admins and not multiple_admins%}inline-block; {% else %}none; {% endif %}">
+                                        Admin
+                                    </div>
+                                    <div class="permissionDisplay" style="display:{% if researcher.id not in study_admins or multiple_admins %}inline-block; {% else %}none; {% endif %}">
+                                        <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-id="{{ researcher.get_short_name }}"data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
+                                            {% if researcher.id in study_admins %}
+                                                Admin
+                                            {% else %}
+                                                Read
+                                            {% endif %}
+                                        </a>
+                                    </div>
                                 </div>
                                 <div class="col-sm-2 researcher-delete">
                                     <form method="POST" action="./#manage-researchers">{% csrf_token %}
