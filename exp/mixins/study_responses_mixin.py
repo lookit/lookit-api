@@ -56,43 +56,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                     'additional_information': resp.child.additional_information
                 }}, indent=4, default = self.convert_to_string))
         return json_responses
-# 'participant': {
-#     "participant_id": resp.child.user.id,
-#     "demographics_info": {
-#         "demographic_id": latest_dem.id,
-#         "number_of_children": latest_dem.number_of_children,
-#         "child_birthdays": latest_dem.child_birthdays,
-#         "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
-#         "number_of_guardians": latest_dem.number_of_guardians,
-#         "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
-#         "race_identification": latest_dem.race_identification,
-#         "age": latest_dem.age,
-#         "gender": latest_dem.gender,
-#         "education_level": latest_dem.gender,
-#         "spouse_education_level": latest_dem.spouse_education_level,
-#         "annual_income": latest_dem.annual_income,
-#         "number_of_books": latest_dem.number_of_books,
-#         "additional_comments": latest_dem.additional_comments,
-#         "country": latest_dem.country.name,
-#         "state": latest_dem.state,
-#         "density": latest_dem.density,
-#         "extra": latest_dem.extra
-#     }
-    # return [resp.sequence, resp.conditions, resp.exp_data, resp.child.user.id,
-    #     resp.global_event_timings, resp.child.id, resp.completed, resp.study.id, resp.id,
-    #     resp.demographic_snapshot.id, latest_dem.number_of_children, [self.convert_to_string(birthday) for birthday in latest_dem.child_birthdays],
-    #     latest_dem.languages_spoken_at_home, latest_dem.number_of_guardians, latest_dem.number_of_guardians_explanation,
-    #     latest_dem.race_identification, latest_dem.age, latest_dem.gender, latest_dem.education_level, latest_dem.spouse_education_level,
-    #     latest_dem.annual_income, latest_dem.number_of_books, latest_dem.additional_comments, latest_dem.country.name,
-    #     latest_dem.state, latest_dem.density, latest_dem.extra
-    # ]
-    # return [resp.sequence, resp.conditions, resp.exp_data, resp.child.user.id,
-    #     resp.global_event_timings, resp.child.id, resp.completed, resp.study.id, resp.id,
-    #     resp.demographic_snapshot.id, latest_dem.number_of_children, [self.convert_to_string(birthday) for birthday in latest_dem.child_birthdays],
-    #     latest_dem.languages_spoken_at_home, latest_dem.number_of_guardians, latest_dem.number_of_guardians_explanation,
-    #     latest_dem.race_identification, latest_dem.age, latest_dem.gender, latest_dem.education_level, latest_dem.spouse_education_level,
-    #     latest_dem.annual_income, latest_dem.number_of_books, latest_dem.additional_comments, latest_dem.country.name,
-    #     latest_dem.state, latest_dem.density, latest_dem.extra
+
     def csv_output_and_writer(self):
         output = io.StringIO()
         return output, csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
