@@ -479,8 +479,8 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         """
         context = super().get_context_data(**kwargs)
         responses = context['study'].responses.order_by('id')
-        context['all_participant_responses'] = ', '.join(self.build_participant_data(responses))
-        context['all_participant_csv_responses'] = self.build_all_participant_csv(responses)
+        context['all_responses'] = ', '.join(self.build_participant_data(responses))
+        context['csv_responses'] = self.build_all_participant_csv(responses)
         return context
 
     def build_all_participant_csv(self, responses):
