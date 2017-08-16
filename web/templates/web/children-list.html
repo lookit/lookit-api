@@ -29,24 +29,8 @@
            });
         });
         function getAge(dateValue) {
-            var birthday = new Date(dateValue.value);
-            var years = new Date(new Date() - birthday) / ( 1000 * 60 * 60 * 24 * 365 );
-            var months = 12 * (years % 1);
-            var days = Math.floor(30 * (months % 1));
-
-            var years = Math.floor(years)
-            var months = Math.floor(months)
-            if (years > 0) {
-                if (years === 1) {
-                    return '1 year ' + months + `${months === 1 ? ' month': ' months'}`
-                } else {
-                    return years + ' years'
-                }
-            } else if (months > 0) {
-                return months + `${months === 1 ? ' month': ' months'}`
-            } else {
-                return days + `${days === 1 ? ' day': ' days'}`
-            }
+            var birthday = new Date(dateValue.value)
+            return moment(birthday, "YYYYMMDD").fromNow(true);
         }
 
         function toggleAddChildForm() {
