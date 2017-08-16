@@ -229,7 +229,7 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         Restricts list to participants that have responded to this study as well as participants
         that have given their permission to be emailed personally
         '''
-        return User.objects.filter(Q(children__response__study__id=self.get_object().id) & Q(email_personally=True)).distinct()
+        return User.objects.filter(Q(children__response__study=self.get_object()) & Q(email_personally=True)).distinct()
 
     def post(self, request, *args, **kwargs):
         """
@@ -237,7 +237,6 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         """
         retval = super().get(request, *args, **kwargs)
         email_form = self.request.POST
-        researcher = User.objects.get(id=self.request.user.id)
 
         sender = email_form['sender']
         subject = email_form['subject']
@@ -249,18 +248,18 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
             }
             send_mail('custom_email', subject, None, bcc=recipients, from_email=sender, **context)
             messages.success(self.request, "Your message has been sent.")
-            self.create_email_log(researcher, recipients, message, subject)
+            self.create_email_log(recipients, message, subject)
             return HttpResponseRedirect(self.get_success_url())
         except BadHeaderError:
             messages.error(self.request, "Invalid header found.")
         return HttpResponseRedirect(reverse('exp:study-participant-email'))
 
-    def create_email_log(self, researcher, recipients, body, subject ):
+    def create_email_log(self, recipients, body, subject ):
         return StudyLog.objects.create(
-                extra={"researcher_id": researcher.id, "participant_ids": recipients, "body": body, "subject": subject},
+                extra={"researcher_id": self.request.user.id, "participant_ids": recipients, "body": body, "subject": subject},
                 action="email sent",
                 study=self.get_object(),
-                user=researcher
+                user=self.request.user
             )
 
     def get_success_url(self):

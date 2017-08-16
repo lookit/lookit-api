@@ -27,7 +27,7 @@ def send_mail(template_name, subject, to_addresses, cc=None, bcc=None, from_emai
         to_addresses = [to_addresses]
 
     from_address = from_email or EMAIL_FROM_ADDRESS
-
+    import pdb; pdb.set_trace()
     email = EmailMultiAlternatives(subject, text_content, from_address, to_addresses, cc=cc, bcc=bcc)
     email.attach_alternative(html_content, 'text/html')
     email.send()
