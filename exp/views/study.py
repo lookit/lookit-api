@@ -27,7 +27,7 @@ from project import settings
 from studies.helpers import send_mail
 from revproxy.views import ProxyView
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
-from studies.models import Study
+from studies.models import Study, StudyLog
 
 
 class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
@@ -233,6 +233,7 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         """
         retval = super().get(request, *args, **kwargs)
         email_form = self.request.POST
+        researcher = User.objects.get(id=self.request.user.id)
 
         sender = email_form['sender']
         subject = email_form['subject']
@@ -241,10 +242,19 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         try:
             send_mail(None, subject, recipients, bcc=recipients, custom_message=message, from_email=sender)
             messages.success(self.request, "Your message has been sent.")
+            self.create_email_log(researcher, recipients, message, subject)
             return HttpResponseRedirect(self.get_success_url())
         except BadHeaderError:
             messages.error(self.request, "Invalid header found.")
         return HttpResponseRedirect(reverse('exp:study-participant-email'))
+
+    def create_email_log(self, researcher, recipients, body, subject ):
+        return StudyLog.objects.create(
+                extra={"researcher_id": researcher.id, "participant_ids": recipients, "body": body, "subject": subject},
+                action="email sent",
+                study=self.get_object(),
+                user=researcher
+            )
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
