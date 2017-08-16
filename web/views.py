@@ -310,10 +310,9 @@ class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
-        path = self.request.path
-        if path.endswith('/') or 'js' in path or 'css' in path:
-            return super().dispatch(request, path, *args, **kwargs)
-        return redirect(self.request.path + '/')
+        kwargs.pop('uuid')
+        path = f"{path.split('/')[0]}{request.path.split(path)[1]}"
+        return super().dispatch(request, path, *args, **kwargs)
 
 
 class ExperimentProxyView(ProxyView, LoginRequiredMixin):
@@ -331,9 +330,10 @@ class ExperimentProxyView(ProxyView, LoginRequiredMixin):
         if child.user != request.user:
             # requesting user doesn't belong to that child
             raise PermissionDenied()
-        if path[-1] == '/':
-            path = f"{path.split('/')[0]}/index.html"
 
         request.META['HTTP_X-EXPERIMENT-CHILD-ID'] = path.split('/')[1]
+
+        if request.path[-1] == '/':
+            path = f"{path.split('/')[0]}/index.html"
 
         return super().dispatch(request, path)
