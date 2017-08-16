@@ -358,7 +358,6 @@ class Log(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    extra = DateTimeAwareJSONField(null=True)
 
     def __str__(self):
         return f'<{self.__class__.name}: {self.action} @ {self.created_at:%c}>'
@@ -370,6 +369,7 @@ class Log(models.Model):
 
 class StudyLog(Log):
     action = models.CharField(max_length=128, db_index=True)
+    extra = DateTimeAwareJSONField(null=True)
     study = models.ForeignKey(
         Study,
         on_delete=models.DO_NOTHING,
