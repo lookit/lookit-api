@@ -207,7 +207,7 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
     StudyParticipantEmailView allows user to send a custom email to a participant.
     '''
     model = Study
-    permission_required = 'studies.can_view_study'
+    permission_required = 'studies.can_edit_study'
     raise_exception = True
     template_name = 'studies/study_participant_email.html'
 

@@ -32,12 +32,12 @@
             <a href="{% url 'exp:study-list' %}"> Manage Studies </a> &gt; {{ study.name }} </a>
         </div>
         <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3">
-            <a class="btn btn-default" href="{% url 'exp:study-participant-email' pk=study.id %}">
-                <i class="fa fa-envelope-o" aria-hidden="true"></i> Email Participants
-            </a>
             <div class="edit-study-button">
                 {% get_obj_perms user for study as "study_perms" %}
                 {% if "can_edit_study" in study_perms %}
+                    <a class="btn btn-default" href="{% url 'exp:study-participant-email' pk=study.id %}">
+                        <i class="fa fa-envelope-o" aria-hidden="true"></i> Email Participants
+                    </a>
                     <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
                         <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Study
                     </a>
