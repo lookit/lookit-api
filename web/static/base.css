@@ -233,7 +233,7 @@ button.account-row {
 }
 
 .study-feedback-label {
-    margin-top: 30px;
+    margin-top: 5px;
 }
 
 .study-feedback-text {
@@ -331,6 +331,88 @@ button[disabled]#participate-button{
 }
 .mb-lg {
     margin-bottom: 20px;
+}
+
+.pb-xs {
+    padding-bottom: 5px;
+}
+.pb-sm {
+    padding-bottom: 10px;
+}
+.pb-md {
+    padding-bottom: 15px;
+}
+.pb-lg {
+    padding-bottom: 20px;
+}
+.pr-xs {
+    padding-right: 5px;
+}
+.pr-sm {
+    padding-right: 10px;
+}
+.pr-md {
+    padding-right: 15px;
+}
+.pr-lg {
+    padding-right: 20px;
+}
+.pt-xs {
+    padding-top: 5px;
+}
+.pt-sm {
+    padding-top: 10px;
+}
+.pt-md {
+    padding-top: 15px;
+}
+.pt-lg {
+    padding-top: 20px;
+}
+.pt-xl {
+    padding-top: 25px;
+}
+.pt-xxl {
+    padding-top: 30px;
+}
+.pt-xxxl {
+    padding-top: 35px;
+}
+.pl-sm {
+    padding-left: 5px;
+}
+.pl-md {
+    padding-left: 10px;
+}
+.pl-lg {
+    padding-left: 15px;
+}
+.pl-xl {
+    padding-left: 20px;
+}
+.mb-xs {
+    margin-bottom:10px;
+}
+.mb-sm {
+    margin-bottom: 15px;
+}
+.mb-md {
+    margin-bottom: 20px;
+}
+.mb-lg {
+    margin-bottom: 25px;
+}
+.mt-sm {
+    margin-top: 10px;
+}
+.mt-md {
+    margin-top: 15px;
+}
+.mt-lg {
+    margin-top: 20px;
+}
+.mt-xl {
+    margin-top: 25px;
 }
 
 .age_format {

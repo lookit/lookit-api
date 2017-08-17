@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import reverse, get_object_or_404, redirect
 from django.utils.translation import ugettext as _
@@ -14,7 +15,7 @@ from revproxy.views import ProxyView
 from accounts import forms
 from accounts.models import Child, DemographicData, User
 from project import settings
-from studies.models import Study
+from studies.models import Study, Response
 from localflavor.us.us_states import USPS_CHOICES
 
 
@@ -275,6 +276,18 @@ class StudiesListView(generic.ListView):
         # TODO or by if they've taken the study before this is the spot
         return super().get_queryset().filter(state='active', public=True)
 
+
+class StudiesHistoryView(generic.ListView):
+    '''
+    List all active, public studies.
+    '''
+    template_name = 'web/studies-history.html'
+    model = Study
+
+    def get_queryset(self):
+        children_ids = Child.objects.filter(user__id=self.request.user.id).values_list('id', flat=True)
+        study_ids = Response.objects.filter(Q(child__id__in=children_ids)).values_list('study_id', flat=True)
+        return Study.objects.filter(id__in=study_ids)
 
 class StudyDetailView(generic.DetailView):
     '''
