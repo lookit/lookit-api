@@ -418,3 +418,11 @@ button[disabled]#participate-button{
 .age_format {
     font-style: italic;
 }
+
+li.response-feedback {
+    margin-left: -20px;
+}
+
+.response-feedback-none {
+    margin-left: -40px;
+}
