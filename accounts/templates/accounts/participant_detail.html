@@ -2,7 +2,7 @@
 {% load bootstrap3 %}
 {% load exp_extras %}
 
-{% block title %}{{ user.get_full_name }}{% endblock %}
+{% block title %}{{ user.nickname }}{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
@@ -12,14 +12,14 @@
           <div class="col-xs-12">
               <ol class="breadcrumb">
                 <li><a href="{% url 'exp:participant-list' %}"> All Participants </a></li>
-                <li class="active"> {{ user.given_name }} </li>
+                <li class="active"> {{ user.nickname }} </li>
               </ol>
           </div>
       </div>
 
       <div class="row">
           <div class="col-xs-12">
-              <h1> {{ user.identicon_html }} {{ user.given_name }} </h1>
+              <h1> {{ user.identicon_html }} {{ user.nickname }} </h1>
               <span><label class='pr-xs'> Last Active: </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
           </div>
       </div>
@@ -210,7 +210,7 @@
         </div>
     </div>
     <hr>
-    <h3>{{ user.given_name}}'s Studies</h3>
+    <h3>{{ user.nickname}}'s Studies</h3>
     {% if studies %}
             <div class="row hidden-xs hidden-sm pt-sm">
                 <div class="col-md-4 col-xs-12">
@@ -299,7 +299,7 @@
             </div>
           {% endfor %}
     {% else %}
-      <p><em> {{ user.given_name }} has not participated in any studies yet! </em></p>
+      <p><em> {{ user.nickname }} has not participated in any studies yet! </em></p>
     {% endif %}
     <div class="row pt-xl">
         <div class="col-md-11 col-md-offset-1">

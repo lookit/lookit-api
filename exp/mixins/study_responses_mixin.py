@@ -34,7 +34,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                 },
                 "participant": {
                     'id': resp.child.user.id,
-                    'username': resp.child.user.given_name
+                    'nickname': resp.child.user.nickname
                 },
                 "demographic_snapshot": {
                     "demographic_id": latest_dem.id,
@@ -65,7 +65,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         """
         latest_dem = resp.demographic_snapshot
 
-        return [resp.id, resp.child.user.id, resp.child.user.given_name, latest_dem.id,
+        return [resp.id, resp.child.user.id, resp.child.user.nickname, latest_dem.id,
             latest_dem.number_of_children, [self.convert_to_string(birthday) for birthday in latest_dem.child_birthdays],
             latest_dem.languages_spoken_at_home, latest_dem.number_of_guardians, latest_dem.number_of_guardians_explanation,
             latest_dem.race_identification, latest_dem.age, latest_dem.gender, latest_dem.education_level, latest_dem.spouse_education_level,
@@ -76,7 +76,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         """
         Returns header row for csv participant data
         """
-        return ['response_id', 'participant_id', 'participant_username', 'demographic_id',
+        return ['response_id', 'participant_id', 'participant_nickname', 'demographic_id',
         'demographic_number_of_children', 'demographic_child_birthdays', 'demographic_languages_spoken_at_home',
         'demographic_number_of_guardians', 'demographic_number_of_guardians_explanation',
         'demographic_race_identification', 'demographic_age', 'demographic_gender',
@@ -105,7 +105,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                 },
                 'participant': {
                     'id': resp.child.user.id,
-                    'username': resp.child.user.given_name
+                    'nickname': resp.child.user.nickname
                 },
                 'child': {
                     'id': resp.child.id,
@@ -126,7 +126,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         Builds individual row for csv responses
         """
         return [resp.id, resp.sequence, resp.conditions, resp.exp_data, resp.global_event_timings, resp.completed, resp.study.id,
-            resp.child.user.id, resp.child.user.given_name, resp.child.id, resp.child.given_name, resp.child.birthday, resp.child.gender,
+            resp.child.user.id, resp.child.user.nickname, resp.child.id, resp.child.given_name, resp.child.birthday, resp.child.gender,
             resp.child.age_at_birth, resp.child.additional_information
         ]
 
@@ -135,7 +135,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         Returns header row for csv response data
         """
         return ['response_id', 'response_sequence', 'response_conditions', 'response_exp_data', 'response_global_event_timings',
-            'response_completed', 'study_id', 'participant_id', 'participant_username', 'child_id', 'child_name',
+            'response_completed', 'study_id', 'participant_id', 'participant_nickname', 'child_id', 'child_name',
             'child_birthday', 'child_gender', 'child_age_at_birth', 'child_additional_information']
 
     def post(self, request, *args, **kwargs):

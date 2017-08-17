@@ -37,13 +37,13 @@ class ParticipantListView(ExperimenterLoginRequiredMixin, ParticipantMixin, gene
         '''
         qs =  super().get_queryset()
         match = self.request.GET.get('match', False)
-        order = self.request.GET.get('sort', 'given_name')
-        if 'given_name' not in order and 'last_login' not in order:
-            order = 'given_name'
+        order = self.request.GET.get('sort', 'nickname')
+        if 'nickname' not in order and 'last_login' not in order:
+            order = 'nickname'
 
         if match:
             qs = qs.filter(reduce(operator.or_,
-              (Q(given_name__icontains=term) | Q(username__icontains=term) for term in match.split())))
+              (Q(nickname__icontains=term) for term in match.split())))
         return self.paginated_queryset(qs.order_by(order), self.request.GET.get('page'), 10)
 
     def get_context_data(self, **kwargs):

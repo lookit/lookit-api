@@ -43,6 +43,7 @@ class UserStudiesForm(forms.Form):
 
 
 class ParticipantSignupForm(UserCreationForm):
+    nickname = forms.CharField(required=True, max_length=255)
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
@@ -54,17 +55,15 @@ class ParticipantSignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'given_name', 'contact_name')
+        fields = ('username', 'nickname')
         exclude = ('user_permissions', 'groups', '_identicon', 'organization',
                    'is_active', 'is_staff', 'is_superuser', 'last_login',
                    'middle_name', 'last_name')
-        labels = {
-            'given_name': "Username"
-        }
 
 
 class ParticipantUpdateForm(forms.ModelForm):
     username = forms.EmailField(disabled=True, label="Email")
+    nickname = forms.CharField(required=True, max_length=255)
 
     def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
@@ -74,10 +73,7 @@ class ParticipantUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'given_name', 'contact_name')
-        labels = {
-            'given_name': "Username"
-        }
+        fields = ('username', 'nickname')
 
 
 class ParticipantPasswordForm(PasswordChangeForm):
