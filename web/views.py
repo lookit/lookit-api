@@ -78,6 +78,12 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
             return demographic_data_dict
         return demographic_data
 
+    def get_success_url(self):
+        if self.request.user.children.exists():
+            return reverse('web:studies-list')
+        else:
+            return reverse('web:children-list')
+
 
     def get_context_data(self, **kwargs):
         """
