@@ -64,7 +64,7 @@ def unzip_file(file, destination_folder):
     This strips off the top-level directory and uses the destination_folder
     in it's place.
     """
-    print(f'Unzipping into {destination_folder}...')
+    logger.debug(f'Unzipping into {destination_folder}...')
     os.makedirs(destination_folder, mode=0o777, exist_ok=True)
     with zipfile.ZipFile(BytesIO(file)) as zip_file:
         for member in zip_file.infolist():
@@ -81,7 +81,7 @@ def deploy_to_remote(local_path, storage):
             full_path = os.path.join(root_directory, filename)
             with open(full_path, mode='rb') as f:
                 remote_path = full_path.split('../ember_build/deployments/')[1]
-                print(f'Uploading {full_path} to {storage.location}/{remote_path}...')
+                logger.debug(f'Uploading {full_path} to {storage.location}/{remote_path}...')
                 storage.save(remote_path, File(f))
 
 
@@ -95,15 +95,15 @@ def download_repos(addons_sha=None, player_sha=None):
     local_repo_destination_folder = os.path.join('./ember_build/checkouts/', repo_destination_folder)
 
     if os.path.isdir(local_repo_destination_folder):
-        print(f'Found directory {local_repo_destination_folder}')
+        logger.debug(f'Found directory {local_repo_destination_folder}')
         return repo_destination_folder
 
     addons_zip_path = f'{settings.EMBER_ADDONS_REPO}/archive/{addons_sha}.zip'
     player_zip_path = f'{settings.EMBER_EXP_PLAYER_REPO}/archive/{player_sha}.zip'
 
-    print(f'Downloading {player_zip_path}...')
+    logger.debug(f'Downloading {player_zip_path}...')
     unzip_file(requests.get(player_zip_path).content, local_repo_destination_folder)
-    print(f'Downloading {addons_zip_path}...')
+    logger.debug(f'Downloading {addons_zip_path}...')
     unzip_file(requests.get(addons_zip_path).content, os.path.join(local_repo_destination_folder, 'lib'))
 
     return repo_destination_folder
@@ -111,7 +111,7 @@ def download_repos(addons_sha=None, player_sha=None):
 
 def build_docker_image():
     # this is broken out so that it can be more complicated if it needs to be
-    print(f'Running docker build...')
+    logger.debug(f'Running docker build...')
     subprocess.run(['docker', 'build', '-t', 'ember_build', '.'], cwd=settings.EMBER_BUILD_ROOT_PATH)
 
 
@@ -152,7 +152,7 @@ def build_experiment(study_uuid, preview=True):
         'ember_build'
     ]
 
-    print(f'Running build.sh for {container_checkout_directory}...')
+    logger.debug(f'Running build.sh for {container_checkout_directory}...')
     ret_code = subprocess.run(build_command, cwd=settings.EMBER_BUILD_ROOT_PATH)
 
     if preview:
@@ -174,7 +174,7 @@ def cleanup_old_directories(root_path, older_than):
     with os.scandir(root_path) as sd:
         for entry in sd:
             if entry.is_dir() and entry.stat().st_mtime < time.mktime(older_than.timetuple()):
-                print(f'Deleting {entry.path}...')
+                logger.debug(f'Deleting {entry.path}...')
                 shutil.rmtree(entry.path)
 
 
