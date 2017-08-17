@@ -69,6 +69,7 @@ class ParticipantUpdateForm(forms.ModelForm):
             kwargs.pop('user')
         super().__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
+        self.fields['username'].widget.attrs['autofocus'] = 'autofocus'
 
     class Meta:
         model = User
