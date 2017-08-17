@@ -30,7 +30,17 @@
         }
     </script>
     <div class='lookit-row lookit-page-title'>
-        <h2 class='container'>Studies</h2>
+        <h2 class='container'>Suggested Studies</h2>
+    </div>
+    <div>
+        <ul class="pt-sm nav nav-tabs">
+            <li class="active">
+                <a href="{% url 'web:studies-list'%}">Suggested Studies</a>
+            </li>
+            <li>
+                <a href="{% url 'web:studies-history'%}">Past Studies</a>
+            </li>
+        </ul>
     </div>
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active">

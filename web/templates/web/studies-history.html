@@ -35,12 +35,12 @@
 				<h2>Past Studies</h2>
 			</div>
 		</div>
-		<ul class="nav nav-tabs">
+		<ul class="pt-sm nav nav-tabs">
 			<li>
-				<a href="#">Suggested Studies</a>
+				<a href="{% url 'web:studies-list'%}">Suggested Studies</a>
 			</li>
-			<li>
-				<a href="#">Past Studies</a>
+			<li class="active">
+				<a href="{% url 'web:studies-history'%}">Past Studies</a>
 			</li>
 		</ul>
 	</div>
@@ -100,10 +100,10 @@
                                                         {% if response.child.user == request.user %}
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <strong>{{ response.child.given_name}}</strong>
+                                                                    {{ response.child.given_name}}
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    <strong>{{ response.date_modified}}</strong>
+                                                                    {{ response.date_modified |date:"M d Y"}}</strong>
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <strong>Feedback should go here.</strong>
