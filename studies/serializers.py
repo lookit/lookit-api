@@ -2,7 +2,7 @@ from accounts.models import Child, DemographicData, Organization, User
 from api.serializers import (ModelSerializer, UUIDResourceRelatedField,
                              UUIDSerializerMixin)
 from rest_framework_json_api import serializers
-from studies.models import Response, Study
+from studies.models import Response, Study, Feedback
 
 
 class StudySerializer(UUIDSerializerMixin, ModelSerializer):
@@ -50,12 +50,48 @@ class StudySerializer(UUIDSerializerMixin, ModelSerializer):
             'responses',
         )
 
+class FeedbackSerializer(UUIDSerializerMixin, ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='feedback-detail',
+        lookup_field='uuid'
+    )
+    response = UUIDResourceRelatedField(
+        queryset=Response.objects,
+        many=False,
+        related_link_view_name='response-detail',
+        related_link_lookup_field='uuid',
+    )
+    researcher = UUIDResourceRelatedField(
+        queryset=User.objects,
+        many=False,
+        related_link_view_name='user-detail',
+        related_link_lookup_field='uuid',
+    )
+
+    class Meta:
+        model = Feedback
+        fields = (
+            'url',
+            'comment',
+            'researcher',
+            'response'
+        )
+
 
 class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='response-detail',
         lookup_field='uuid'
     )
+
+    feedback = UUIDResourceRelatedField(
+        queryset=Feedback.objects,
+        many=True,
+        related_link_view_name='response-feedback-list',
+        related_link_url_kwarg='response_uuid',
+        related_link_lookup_field='uuid',
+    )
+
     study = UUIDResourceRelatedField(
         queryset=Study.objects,
         many=False,
@@ -96,6 +132,7 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
             'child',
             'user',
             'study',
+            'feedback',
             'demographic_snapshot',
         )
 

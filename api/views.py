@@ -9,9 +9,9 @@ from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   OrganizationSerializer, UserSerializer)
 from django_filters import rest_framework as filters
 from rest_framework_json_api import views
-from studies.models import Response, Study
+from studies.models import Response, Study, Feedback
 from studies.serializers import (ResponseWriteableSerializer, ResponseSerializer,
-                                 StudySerializer)
+                                 StudySerializer, FeedbackSerializer)
 
 
 class FilterByUrlKwargsMixin(views.ModelViewSet):
@@ -144,12 +144,6 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
     permission_classes = [IsAuthenticated]
 
-    def get_serializer_class(self):
-        """Return a different serializer for create views"""
-        if self.action == 'create':
-            return ResponseWriteableSerializer
-        return super().get_serializer_class()
-
     def get_queryset(self):
         """
         Overrides queryset.
@@ -160,3 +154,12 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         study_ids = studies.values_list('id', flat=True)
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list('id', flat=True)
         return Response.objects.filter(Q(study__id__in=study_ids) | Q(child__id__in=children_ids)).distinct()
+
+
+class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    resource_name = 'feedback'
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer
+    lookup_field = 'uuid'
+    http_method_names = ['get', 'post']
+    permission_classes = [IsAuthenticated]
