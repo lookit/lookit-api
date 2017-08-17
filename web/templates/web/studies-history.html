@@ -85,30 +85,32 @@
                                                         </div>
                                                     </div><!-- Responses -->
                                                     <h4 class="study-feedback-label">Study Responses</h4>
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <strong>Child</strong>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <strong>Date</strong>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <strong>Feedback</strong>
-                                                        </div>
-                                                    </div><!-- each session -->
-                                                    <div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                Child
+                                                                <strong>Child</strong>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                08/15/2017
+                                                                <strong>Date</strong>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                No Feedback
+                                                                <strong>Feedback</strong>
                                                             </div>
-                                                        </div><!---->
-                                                    </div>
+                                                        </div>
+                                                    {% for response in study.responses.all %}
+                                                        {% if response.child.user == request.user %}
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <strong>{{ response.child.given_name}}</strong>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <strong>{{ response.date_modified}}</strong>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <strong>Feedback should go here.</strong>
+                                                                </div>
+                                                            </div><!-- each response -->
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </div>
                                             </div>
                                         </div>

@@ -277,7 +277,7 @@ class StudiesListView(generic.ListView):
         return super().get_queryset().filter(state='active', public=True)
 
 
-class StudiesHistoryView(generic.ListView):
+class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
     '''
     List all active, public studies.
     '''
