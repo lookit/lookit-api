@@ -110,11 +110,11 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         """
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        if 'participant_update' in self.request.POST:
+        if 'participant_update' in self.request.POST and context.get('form2'):
             context['form2'].is_bound = False
         if 'password_update' in self.request.POST:
             context['form'].is_bound = False
-            context['form'].initial = {'username': user.username, 'given_name': user.given_name, 'middle_name': user.middle_name, 'family_name': user.family_name}
+            context['form'].initial = {'username': user.username, 'nickname': user.nickname}
         if 'form' not in context:
             context['form'] = self.form_class(self.request.GET)
         if 'form2' not in context:

@@ -62,7 +62,6 @@ class ParticipantSignupForm(UserCreationForm):
 
 
 class ParticipantUpdateForm(forms.ModelForm):
-    username = forms.EmailField(disabled=True, label="Email")
     nickname = forms.CharField(required=True, max_length=255)
 
     def __init__(self, *args, **kwargs):
@@ -74,6 +73,9 @@ class ParticipantUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'nickname')
+        labels = {
+            'username': 'Email address'
+        }
 
 
 class ParticipantPasswordForm(PasswordChangeForm):

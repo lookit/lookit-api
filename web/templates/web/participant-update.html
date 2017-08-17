@@ -27,7 +27,6 @@
                   <div class="panel-body">
                     <form method="POST" action="">{% csrf_token %}
                       {% bootstrap_form form %}
-                      <input type="hidden" name="username" value="{{ user.username }}">
                       {% buttons %}
                       <div class="pull-right">
                           <a class="btn btn-default" href="{% url 'web:participant-update' %}"> Cancel </a>
