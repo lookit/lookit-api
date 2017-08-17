@@ -29,3 +29,4 @@ google-cloud==0.26.1
 django-allauth==0.32.0
 django-revproxy==0.9.13
 boto3==1.4.5
+raven==6.1.0
