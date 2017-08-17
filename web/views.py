@@ -328,7 +328,13 @@ class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
-        kwargs.pop('uuid')
+        uuid = kwargs.pop('uuid', None)
+        filename = kwargs.pop('filename', None)
+        if filename:
+            referer = request.META['HTTP_REFERER']
+            study_uuid = referer.split('/')[-3]
+            path = f"{study_uuid}/{filename}"
+            return super().dispatch(request, path, *args, **kwargs)
         path = f"{path.split('/')[0]}{request.path.split(path)[1]}"
         return super().dispatch(request, path, *args, **kwargs)
 

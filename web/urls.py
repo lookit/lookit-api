@@ -22,5 +22,5 @@ urlpatterns = [
     url(r'^(?P<path>assets/.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-assets-proxy'),
     url(r'^(?P<path>fonts/.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-fonts-proxy'),
     url(r'^$', flatpages_views.flatpage, dict(url=''), name='home'),
-    url(r'^(?P<path>.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-catchall-proxy'),
+    url(r'^(?P<path>(?P<filename>avc_settings\.(php|asp)|loading\.swf|translations\/.*|audio_video_quality_profiles\/.*))$', views.ExperimentAssetsProxyView.as_view(), name='experiment-assets-proxy'),
 ]

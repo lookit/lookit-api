@@ -301,7 +301,7 @@ EMAIL_BACKEND = f"django.core.mail.backends.{'smtp' if not DEBUG else 'console'}
 # disable smtp backend for now
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # United States will show up first in the countries list on the Demographic Data form
-COUNTRIES_FIRST=['US']
+COUNTRIES_FIRST = ['US']
 
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
