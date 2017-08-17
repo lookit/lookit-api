@@ -38,6 +38,9 @@
             <div class="edit-study-button">
                 {% get_obj_perms user for study as "study_perms" %}
                 {% if "can_edit_study" in study_perms %}
+                    <a class="btn btn-default" href="{% url 'exp:study-participant-email' pk=study.id %}">
+                        <i class="fa fa-envelope-o" aria-hidden="true"></i> Email Participants
+                    </a>
                     <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
                         <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Study
                     </a>
@@ -143,6 +146,7 @@
                                     </center>
                                 </div>
                             </div>
+                        </form>
                     {% endif %}
                 </div>
             </div>

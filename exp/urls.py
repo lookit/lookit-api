@@ -16,7 +16,7 @@ Including another URLconf
 '''
 from django.conf.urls import url
 
-from exp.views import (ParticipantDetailView, ParticipantListView,
+from exp.views import (ParticipantDetailView, ParticipantListView, StudyParticipantEmailView,
                        PreviewProxyView, ResearcherDetailView,
                        ResearcherListView, StudyBuildView, StudyCreateView,
                        StudyDetailView, StudyListView, StudyResponsesList,
@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'studies/$', StudyListView.as_view(), name='study-list'),
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
+    url(r'studies/(?P<pk>\d+)/email/$', StudyParticipantEmailView.as_view(), name='study-participant-email'),
     url(r'studies/(?P<pk>\d+)/edit/$', StudyUpdateView.as_view(), name='study-edit'),
     url(r'studies/(?P<pk>\d+)/edit/build/$', StudyBuildView.as_view(), name='study-build'),
     url(r'studies/(?P<pk>\d+)/responses/$', StudyResponsesList.as_view(), name='study-responses-list'),
