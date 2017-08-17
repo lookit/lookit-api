@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 from django.contrib.messages import constants as messages
+import raven
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'c*si4oji5r=#)5+6e$bi@an%v)(n2be2+1(s985uh4mu3jq!qt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -77,6 +78,17 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 ]
+if not DEBUG:
+    INSTALLED_APPS += [
+        'raven.contrib.django.raven_compat',
+    ]
+    RAVEN_CONFIG = {
+        'dsn': os.environ.get('RAVEN_DSN', None),
+        # If you are using git, you can also automatically configure the
+        # release based on the git info.
+        'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
+    }
+
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
