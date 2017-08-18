@@ -9,6 +9,7 @@ from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   OrganizationSerializer, UserSerializer)
 from django_filters import rest_framework as filters
 from rest_framework_json_api import views
+from api.permissions import FeedbackPermissions
 from studies.models import Response, Study, Feedback
 from studies.serializers import (ResponseWriteableSerializer, ResponseSerializer,
                                  StudySerializer, FeedbackSerializer)
@@ -142,7 +143,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ResponseFilter
     http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         """
@@ -161,5 +162,19 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
     lookup_field = 'uuid'
-    http_method_names = ['get', 'post']
-    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post', 'head', 'options']
+    permission_classes = [IsAuthenticated, FeedbackPermissions]
+
+    def perform_create(self, serializer):
+        # Adds logged-in user as researcher on feedback
+        serializer.save(researcher=self.request.user)
+
+    def get_queryset(self):
+        """
+        Overrides queryset.
+
+        Shows feedback for studies you can edit, or feedback left on your created response
+        """
+        qs = super().get_queryset()
+        study_ids = get_objects_for_user(self.request.user, 'studies.can_edit_study').values_list('id', flat=True)
+        return qs.filter(Q(response__study__id__in=study_ids) | Q(response__child__user=self.request.user))

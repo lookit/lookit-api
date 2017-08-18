@@ -62,7 +62,7 @@ class FeedbackSerializer(UUIDSerializerMixin, ModelSerializer):
         related_link_lookup_field='uuid',
     )
     researcher = UUIDResourceRelatedField(
-        queryset=User.objects,
+        read_only=True,
         many=False,
         related_link_view_name='user-detail',
         related_link_lookup_field='uuid',
@@ -73,9 +73,10 @@ class FeedbackSerializer(UUIDSerializerMixin, ModelSerializer):
         fields = (
             'url',
             'comment',
-            'researcher',
-            'response'
+            'response',
+            'researcher'
         )
+        read_only_fields = ('researcher',)
 
 
 class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
