@@ -84,14 +84,6 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
         lookup_field='uuid'
     )
 
-    feedback = UUIDResourceRelatedField(
-        queryset=Feedback.objects,
-        many=True,
-        related_link_view_name='response-feedback-list',
-        related_link_url_kwarg='response_uuid',
-        related_link_lookup_field='uuid',
-    )
-
     study = UUIDResourceRelatedField(
         queryset=Study.objects,
         many=False,
@@ -132,7 +124,6 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
             'child',
             'user',
             'study',
-            'feedback',
             'demographic_snapshot',
         )
 
