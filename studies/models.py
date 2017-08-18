@@ -1,21 +1,39 @@
 import uuid
 
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.text import slugify
+from guardian.shortcuts import assign_perm, get_groups_with_perms
 from kombu.utils import cached_property
+from transitions.extensions import GraphMachine as Machine
 
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.utils import build_study_group_name
-from guardian.shortcuts import assign_perm, get_groups_with_perms
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
-from transitions.extensions import GraphMachine as Machine
-
 from studies import workflow
 from studies.helpers import send_mail
+
+
+class StudyType(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+    configuration = DateTimeAwareJSONField(default={
+        # task module should have a build_experiment method decorated as a
+        # celery task that takes a study uuid and a preview kwarg which
+        # defaults to true
+        "task_module": "studies.tasks",
+        "metadata": {
+            # defines the default metadata fields for that type of study
+            "fields": {
+                "addons_repo_url": settings.EMBER_ADDONS_REPO,
+                "last_known_player_sha": None,
+                "last_known_addons_sha": None
+            }
+        }
+    })
 
 
 class Study(models.Model):
@@ -31,6 +49,7 @@ class Study(models.Model):
     min_age = models.TextField(default='')
     image = models.ImageField(null=True, upload_to='study_images/')
     comments = models.TextField(blank=True, null=True)
+    study_type = models.ForeignKey('StudyType', on_delete=models.DO_NOTHING, null=False, blank=False, verbose_name='type')
     organization = models.ForeignKey(
         Organization,
         on_delete=models.DO_NOTHING,
@@ -52,9 +71,7 @@ class Study(models.Model):
     public = models.BooleanField(default=False)
     creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
-    last_known_player_sha = models.CharField(max_length=255, blank=True)
-    last_known_addons_sha = models.CharField(max_length=255, blank=True)
-    remote_folder_url = models.URLField(blank=True)
+    metadata = DateTimeAwareJSONField(default={})
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
@@ -82,9 +99,6 @@ class Study(models.Model):
             if getattr(self, f'__original_{field}') != getattr(self, field):
                 return True
         return False
-
-    class JSONAPIMeta:
-        lookup_field = 'uuid'
 
     class Meta:
         permissions = (
@@ -411,7 +425,7 @@ class StudyLog(Log):
     class JSONAPIMeta:
         resource_name = 'study-logs'
         lookup_field = 'uuid'
-        
+
     class Meta:
         index_together = (
             ('study', 'action')
