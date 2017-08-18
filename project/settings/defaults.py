@@ -231,6 +231,8 @@ SITE_NAME = os.environ.get('SITE_NAME', 'Lookit')
 
 # base url for experiments, should be s3 bucket in prod
 EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/experiments/')  # default to ember base url
+PREVIEW_EXPERIMENT_BASE_URL = os.environ.get('PREVIEW_EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/preview_experiments/')  # default to ember base url
+
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')  # default to ember base url
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/exp/')

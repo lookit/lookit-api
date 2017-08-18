@@ -96,7 +96,7 @@ def download_repos(addons_sha=None, player_sha=None):
 
     if os.path.isdir(local_repo_destination_folder):
         logger.debug(f'Found directory {local_repo_destination_folder}')
-        return repo_destination_folder
+        return (repo_destination_folder, addons_sha, player_sha)
 
     addons_zip_path = f'{settings.EMBER_ADDONS_REPO}/archive/{addons_sha}.zip'
     player_zip_path = f'{settings.EMBER_EXP_PLAYER_REPO}/archive/{player_sha}.zip'
@@ -106,7 +106,7 @@ def download_repos(addons_sha=None, player_sha=None):
     logger.debug(f'Downloading {addons_zip_path}...')
     unzip_file(requests.get(addons_zip_path).content, os.path.join(local_repo_destination_folder, 'lib'))
 
-    return repo_destination_folder
+    return (repo_destination_folder, addons_sha, player_sha)
 
 
 def build_docker_image():
@@ -127,7 +127,7 @@ def build_experiment(study_uuid, preview=True):
     player_sha = getattr(study, 'last_known_player_sha', None)
     addons_sha = getattr(study, 'last_known_addons_sha', None)
 
-    checkout_directory = download_repos(addons_sha=addons_sha, player_sha=player_sha)
+    checkout_directory, addons_sha, player_sha = download_repos(addons_sha=addons_sha, player_sha=player_sha)
 
     container_checkout_directory = os.path.join('/checkouts/', checkout_directory)
     container_destination_directory = os.path.join('/deployments/', destination_directory)
