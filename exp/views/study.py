@@ -598,7 +598,9 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
     '''
     Proxy view to forward researcher to preview page in the Ember app
     '''
-    upstream = settings.EXPERIMENT_BASE_URL
+    upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
+        if request.path[-1] == '/':
+            path = f"{path.split('/')[0]}/index.html"
         return super().dispatch(request, path)

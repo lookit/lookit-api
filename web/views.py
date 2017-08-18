@@ -310,13 +310,18 @@ class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
+        referer = request.META.get('HTTP_REFERER', None)
+        if (referer and 'preview' in referer):
+            # if they're trying to preview use the preview base_url
+            self.upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
         uuid = kwargs.pop('uuid', None)
         filename = kwargs.pop('filename', None)
         if filename:
-            referer = request.META['HTTP_REFERER']
+            # if it's one of the hdfv files
             study_uuid = referer.split('/')[-3]
             path = f"{study_uuid}/{filename}"
             return super().dispatch(request, path, *args, **kwargs)
+        # if it's just regular assets remove the child_id from the path
         path = f"{path.split('/')[0]}{request.path.split(path)[1]}"
         return super().dispatch(request, path, *args, **kwargs)
 
