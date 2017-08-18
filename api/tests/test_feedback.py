@@ -39,6 +39,46 @@ class FeedbackPostTestCase(APITestCase):
           }
         }
 
+    def testGetFeedbackListUnauthenticated(self):
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def testGetFeedbackListAsAdminAuthenticated(self):
+        assign_perm('studies.can_edit_study', self.researcher, self.study)
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This was very helpful.")
+        self.client.force_authenticate(user=self.researcher)
+
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['links']['meta']['count'], 1)
+
+    def testGetFeedbackListAsReadAuthenticated(self):
+        assign_perm('studies.can_view_study', self.researcher, self.study)
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This was very helpful.")
+        self.client.force_authenticate(user=self.researcher)
+
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['links']['meta']['count'], 0)
+
+    def testGetFeedbackListAsParticipant(self):
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This was very helpful.")
+        self.client.force_authenticate(user=self.participant)
+
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['links']['meta']['count'], 1)
+
+    def testGetFeedbackListAsUnaffiliatedParticipant(self):
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This was very helpful.")
+        self.participant2 = G(User, is_active=True)
+
+        self.client.force_authenticate(user=self.participant2)
+
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['links']['meta']['count'], 0)
+
     def testPostFeedbackUnauthenticated(self):
         assign_perm('studies.can_edit_study', self.researcher, self.study)
 
@@ -77,7 +117,7 @@ class FeedbackPostTestCase(APITestCase):
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
-    def testPostFeedbackInvalidResponseUUID(self):
+    def testPostFeedbackBadResponseUUID(self):
         self.client.force_authenticate(user=self.researcher)
         assign_perm('studies.can_edit_study', self.researcher, self.study)
 
@@ -102,6 +142,32 @@ class FeedbackPostTestCase(APITestCase):
         self.assertEqual(Feedback.objects.count(), 0)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
+
+    # def testPostFeedbackInvalidResponseUUID(self):
+    #     self.client.force_authenticate(user=self.researcher)
+    #     assign_perm('studies.can_edit_study', self.researcher, self.study)
+    #
+    #     data = {
+    #       "data": {
+    #         "attributes": {
+    #           "comment": "This is a test"
+    #         },
+    #         "relationships": {
+    #           "response": {
+    #             "data": {
+    #               "type": "responses",
+    #               "id": "12345"
+    #             }
+    #           }
+    #         },
+    #         "type": "feedback"
+    #       }
+    #     }
+    #     api_response = self.client.post(self.url, json.dumps(data), content_type="application/vnd.api+json")
+    #     self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
+    #     self.assertEqual(Feedback.objects.count(), 0)
+    #     self.assertEqual(Response.objects.count(), 1)
+    #     self.assertEqual(Study.objects.count(), 1)
 
     def testPostFeedbackInvalidType(self):
         self.client.force_authenticate(user=self.researcher)
