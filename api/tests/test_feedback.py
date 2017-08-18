@@ -38,7 +38,7 @@ class FeedbackPostTestCase(APITestCase):
             "type": "feedback"
           }
         }
-
+    # Feedback GET LIST Tests
     def testGetFeedbackListUnauthenticated(self):
         api_response = self.client.get(self.url, content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -79,6 +79,43 @@ class FeedbackPostTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data['links']['meta']['count'], 0)
 
+    # Feedback GET DETAIL Tests
+    def testGetFeedbackDetailUnauthenticated(self):
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This was very helpful.")
+        api_response = self.client.get(self.url + str(feedback.uuid) + '/', content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def testGetFeedbackDetailAsAdminAuthenticated(self):
+        assign_perm('studies.can_edit_study', self.researcher, self.study)
+        self.client.force_authenticate(user=self.researcher)
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This is some new feedback.")
+        api_response = self.client.get(self.url + str(feedback.uuid) + '/', content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['comment'], "This is some new feedback.")
+
+    def testGetFeedbackDetailAsReadAuthenticated(self):
+        assign_perm('studies.can_view_study', self.researcher, self.study)
+        self.client.force_authenticate(user=self.researcher)
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This is some new feedback.")
+        api_response = self.client.get(self.url + str(feedback.uuid) + '/', content_type="application/vnd.api+json")
+        # Is throwing Not Found because feedback not in queryset that user can access
+        self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testGetFeedbackDetailAsParticipant(self):
+        self.client.force_authenticate(user=self.participant)
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This is some new feedback.")
+        api_response = self.client.get(self.url + str(feedback.uuid) + '/', content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['comment'], "This is some new feedback.")
+
+    def testGetFeedbackDetailAsUnaffiliatedParticipant(self):
+        self.participant2 = G(User, is_active=True)
+        self.client.force_authenticate(user=self.participant2)
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This is some new feedback.")
+        api_response = self.client.get(self.url + str(feedback.uuid) + '/', content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # Feedback POST Tests
     def testPostFeedbackUnauthenticated(self):
         assign_perm('studies.can_edit_study', self.researcher, self.study)
 
