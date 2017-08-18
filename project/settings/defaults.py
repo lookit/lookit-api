@@ -284,7 +284,8 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)
 EMAIL_FROM_ADDRESS = os.environ.get('EMAIL_FROM_ADDRESS', 'lookit.robot@some.domain')
 EMAIL_BACKEND = f"django.core.mail.backends.{'smtp' if not DEBUG else 'console'}.EmailBackend"
-
+# disable smtp backend for now
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # United States will show up first in the countries list on the Demographic Data form
 COUNTRIES_FIRST=['US']
 
