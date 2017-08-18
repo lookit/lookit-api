@@ -180,31 +180,32 @@ class FeedbackPostTestCase(APITestCase):
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
-    # def testPostFeedbackInvalidResponseUUID(self):
-    #     self.client.force_authenticate(user=self.researcher)
-    #     assign_perm('studies.can_edit_study', self.researcher, self.study)
-    #
-    #     data = {
-    #       "data": {
-    #         "attributes": {
-    #           "comment": "This is a test"
-    #         },
-    #         "relationships": {
-    #           "response": {
-    #             "data": {
-    #               "type": "responses",
-    #               "id": "12345"
-    #             }
-    #           }
-    #         },
-    #         "type": "feedback"
-    #       }
-    #     }
-    #     api_response = self.client.post(self.url, json.dumps(data), content_type="application/vnd.api+json")
-    #     self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
-    #     self.assertEqual(Feedback.objects.count(), 0)
-    #     self.assertEqual(Response.objects.count(), 1)
-    #     self.assertEqual(Study.objects.count(), 1)
+    # TODO This gives a 500 error because UUID is not a UUID-type.
+    def testPostFeedbackInvalidResponseUUID(self):
+        self.client.force_authenticate(user=self.researcher)
+        assign_perm('studies.can_edit_study', self.researcher, self.study)
+
+        data = {
+          "data": {
+            "attributes": {
+              "comment": "This is a test"
+            },
+            "relationships": {
+              "response": {
+                "data": {
+                  "type": "responses",
+                  "id": "12345"
+                }
+              }
+            },
+            "type": "feedback"
+          }
+        }
+        api_response = self.client.post(self.url, json.dumps(data), content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Feedback.objects.count(), 0)
+        self.assertEqual(Response.objects.count(), 1)
+        self.assertEqual(Study.objects.count(), 1)
 
     def testPostFeedbackInvalidType(self):
         self.client.force_authenticate(user=self.researcher)
@@ -274,3 +275,36 @@ class FeedbackPostTestCase(APITestCase):
         self.assertEqual(Feedback.objects.count(), 0)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
+
+    def testPatchFeedback(self):
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This was very helpful.")
+        self.client.force_authenticate(user=self.researcher)
+        assign_perm('studies.can_edit_study', self.researcher, self.study)
+        data = {
+          "data": {
+            "attributes": {
+                "content": "changed feedback"
+            },
+            "relationships": {
+              "response": {
+                "data": {
+                  "type": "responses",
+                  "id": str(self.response.uuid)
+                }
+              }
+            },
+            "type": "feedback",
+            "id": str(feedback.uuid)
+          }
+        }
+
+        api_response = self.client.patch(self.url + str(feedback.uuid) + '/', json.dumps(data), content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def testDeleteFeedback(self):
+        feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This was very helpful.")
+        self.client.force_authenticate(user=self.researcher)
+        assign_perm('studies.can_edit_study', self.researcher, self.study)
+
+        api_response = self.client.delete(self.url + str(feedback.uuid) + '/', content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
