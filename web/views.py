@@ -84,7 +84,6 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         else:
             return reverse('web:children-list')
 
-
     def get_context_data(self, **kwargs):
         """
         Adds the context for form1 and form2 on the page - a little extra code due to the
@@ -95,7 +94,6 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         context['countries'] = countries
         context['states'] = USPS_CHOICES
         return context
-
 
 
 class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
