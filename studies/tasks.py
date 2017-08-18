@@ -8,6 +8,7 @@ import zipfile
 from io import BytesIO
 
 import requests
+from celery import app
 from django.conf import settings
 from django.core.files import File
 from django.utils import timezone
@@ -16,36 +17,6 @@ from project import storages
 from studies.models import Study
 
 logger = logging.getLogger()
-
-#   - pull the study model instance
-#   - check to see if it is simple or advanced
-#   - simple:
-#       - save sha of current head of ember experimenter to study model instance
-#       - save sha of current head of ember addons to study model instance
-#       - create a build directory based on the uuid of the study and a timestamp
-#       - create package.json referencing those as dependencies
-#       - use yarn or npm to install dependencies
-#       - ember-build to create a packagable application
-#       - zip up packaged application
-#       - delete temporary build directory
-#       - create folder on s3 bucket
-#       - transfer files to folder on s3 bucket
-#       - save the url of the s3 bucket folder in study model instance
-#       - send notification that deployment is completed
-#   - advanced:
-#       - user uploads a file with experiment
-#       - file is saved in temporary location
-#       - file is extracted to a temporary location
-#       - create folder on s3 bucket
-#       - transfer files to folder on s3 bucket
-#       - delete temporary build directory
-#       - save the url of the s3 bucket folder in the study model instance
-#       - send notification that deployment is complete
-#   - preview
-#       - create a random build folder name based on the uuid of the study and a timestamp
-#       - Do the deployment steps without copying to s3
-#       - launch a new browser window at proxy view that requires login to the url of the temporary build folder
-#       - task to clean up the temporary build folders nightly, weekly, monthly?
 
 
 def get_repo_path(full_repo_path):
@@ -85,9 +56,9 @@ def deploy_to_remote(local_path, storage):
                 storage.save(remote_path, File(f))
 
 
-def download_repos(addons_sha=None, player_sha=None):
+def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
     if addons_sha is None or not re.match('([a-f0-9]{40})', addons_sha):
-        addons_sha = get_master_sha(settings.EMBER_ADDONS_REPO)
+        addons_sha = get_master_sha(addons_repo_url)
     if player_sha is None or not re.match('([a-f0-9]{40})', player_sha):
         player_sha = get_master_sha(settings.EMBER_EXP_PLAYER_REPO)
 
@@ -115,7 +86,9 @@ def build_docker_image():
     subprocess.run(['docker', 'build', '-t', 'ember_build', '.'], cwd=settings.EMBER_BUILD_ROOT_PATH)
 
 
+@app.task
 def build_experiment(study_uuid, preview=True):
+    save_versions = preview
     now = timezone.now()
     try:
         study = Study.objects.get(uuid=study_uuid)
@@ -124,10 +97,21 @@ def build_experiment(study_uuid, preview=True):
         raise
     destination_directory = f'{study_uuid}'
 
-    player_sha = getattr(study, 'last_known_player_sha', None)
-    addons_sha = getattr(study, 'last_known_addons_sha', None)
+    player_sha = getattr(study.metadata, 'last_known_player_sha', None)
+    addons_sha = getattr(study.metadata, 'last_known_addons_sha', None)
+    addons_repo_url = getattr(study.metadata, 'addons_repo_url', settings.EMBER_ADDONS_REPO)
 
-    checkout_directory, addons_sha, player_sha = download_repos(addons_sha=addons_sha, player_sha=player_sha)
+    if preview and player_sha is None and addons_sha is None:
+        # if they're previewing and the sha's on their study aren't set
+        # save the latest master sha of both repos
+        save_versions = True
+
+    checkout_directory, addons_sha, player_sha = download_repos(addons_repo_url, addons_sha=addons_sha, player_sha=player_sha)
+
+    if save_versions:
+        study.metadata['last_known_addons_sha'] = addons_sha
+        study.metadata['last_known_player_sha'] = player_sha
+        study.save()
 
     container_checkout_directory = os.path.join('/checkouts/', checkout_directory)
     container_destination_directory = os.path.join('/deployments/', destination_directory)
@@ -156,8 +140,10 @@ def build_experiment(study_uuid, preview=True):
     ret_code = subprocess.run(build_command, cwd=settings.EMBER_BUILD_ROOT_PATH)
 
     if preview:
+        # if they're previewing put things in the preview directory
         storage = storages.LookitPreviewExperimentStorage()
     else:
+        # otherwise put them in the experiment directory
         storage = storages.LookitExperimentStorage()
 
     cloud_deployment_directory = os.path.join(local_deployments_path, destination_directory)
@@ -178,11 +164,13 @@ def cleanup_old_directories(root_path, older_than):
                 shutil.rmtree(entry.path)
 
 
+@app.task
 def cleanup_builds(older_than=None):
     deployments = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
     cleanup_old_directories(deployments, older_than)
 
 
+@app.task
 def cleanup_checkouts(older_than=None):
     checkouts = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
     cleanup_old_directories(checkouts, older_than)
