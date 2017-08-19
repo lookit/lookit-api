@@ -8,13 +8,13 @@ import zipfile
 from io import BytesIO
 
 import requests
-from celery import app
 from django.conf import settings
 from django.core.files import File
 from django.utils import timezone
 
 from project import storages
-from studies.models import Study
+from project.celery import app
+from studies.helpers import send_mail
 
 logger = logging.getLogger()
 
@@ -88,6 +88,8 @@ def build_docker_image():
 
 @app.task
 def build_experiment(study_uuid, preview=True):
+    from studies.models import Study
+
     save_versions = preview
     now = timezone.now()
     try:
@@ -149,6 +151,27 @@ def build_experiment(study_uuid, preview=True):
     cloud_deployment_directory = os.path.join(local_deployments_path, destination_directory)
 
     deploy_to_remote(cloud_deployment_directory, storage)
+
+    context = {
+        'study': study,
+        'action': 'previewed' if preview else 'deployed'
+    }
+    send_mail(
+        'notify_admins_of_study_action',
+        'Study Deployed',
+        settings.EMAIL_FROM_ADDRESS,
+        bcc=list(study.study_organization_admin_group.user_set.values_list('username', flat=True)),
+        **context
+    )
+    send_mail(
+        'notify_researchers_of_deployment',
+        'Study Deployed',
+        settings.EMAIL_FROM_ADDRESS,
+        bcc=list(study.study_admin_group.user_set.values_list('username', flat=True)),
+        **context
+    )
+    study.state = 'active'
+    study.save()
 
 
 def cleanup_old_directories(root_path, older_than):

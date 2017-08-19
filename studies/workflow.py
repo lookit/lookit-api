@@ -12,7 +12,7 @@ states = [
     'active',
     'paused',
     'deactivated',
-    'archived'
+    'archived',
 ]
 state_tuples = tuple((x, _(x.title())) for x in states)
 
@@ -64,7 +64,7 @@ transitions = [
         'trigger': 'activate',
         'source': ['approved', 'paused'],
         'dest': 'active',
-        'after': 'notify_administrators_of_activation'
+        'after': ['notify_administrators_of_activation', 'deploy_study']
     },
     {
         'trigger': 'pause',
