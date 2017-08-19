@@ -143,7 +143,13 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ResponseFilter
     http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+         """Return a different serializer for create views"""
+         if self.action == 'create':
+             return ResponseWriteableSerializer
+         return super().get_serializer_class()
 
     def get_queryset(self):
         """
