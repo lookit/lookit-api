@@ -1,0 +1,10 @@
+<p>
+  Dear Study Researchers,
+</p>
+<p>
+  {% if action == 'previewed' %}
+    Your study {{study.name}} has been previewed. You can access it <a href="{{base_url}}{% url 'exp:study-detail' pk=study.id %}">here</a>
+  {% elif action == 'deployed' %}
+    Your study {{study.name}} has been deployed. You can access it <a href="{{base_url}}{% url 'exp:study-detail' pk=study.id %}">here</a>
+  {% endif %}
+</p>
