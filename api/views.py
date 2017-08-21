@@ -60,9 +60,10 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Show children that have 1) responded to studies you can view and 2) are your own children
         """
+        qs_ids = super().get_queryset().values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
-        return Child.objects.filter(Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)).distinct()
+        return Child.objects.filter((Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)), (Q(id__in=qs_ids))).distinct()
 
 
 class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
