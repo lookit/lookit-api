@@ -89,7 +89,7 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'users'
-    queryset = User.objects.filter(is_researcher=False).distinct()
+    queryset = User.objects.filter(is_researcher=False)
     serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
     http_method_names = ['get', 'head', 'options']
@@ -101,9 +101,10 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Shows 1) users that have responded to studies you can view and 2) your own user object
         """
+        qs_ids = super().get_queryset().values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
-        return User.objects.filter(Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)).distinct()
+        return User.objects.filter((Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)), Q(id__in=qs_ids)).distinct()
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'studies'
