@@ -31,7 +31,7 @@
                 var elem = $('#download-all-data')[0];
                 if (data && elem) {
                     elem.href = data;
-                    elem.download = '{{study.name}}-' + dataClassOrId + '.' + ext;
+                    elem.download = '{{study.name}}-' + '{{download_name}}' + '.' + ext;
                 }
             }
         });
