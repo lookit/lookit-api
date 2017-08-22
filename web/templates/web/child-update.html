@@ -4,7 +4,6 @@
 
 
 {% block flash %}
-  {% bootstrap_messages %}
   {% if form.non_field_errors %}
   <div class="alert alert-danger" role="alert">
       {{ form.non_field_errors }}
@@ -15,6 +14,7 @@
     <div class='lookit-row lookit-page-title'>
         <h2 class='container'>My Account</h2>
     </div>
+    {% bootstrap_messages %}
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg">
