@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 from django.contrib.messages import constants as messages
+import raven
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,9 +25,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'c*si4oji5r=#)5+6e$bi@an%v)(n2be2+1(s985uh4mu3jq!qt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [h for h in os.environ.get('ALLOWED_HOSTS', '').split(' ') if h]
 
 AUTH_USER_MODEL = 'accounts.User'
 GUARDIAN_MONKEY_PATCH = False
@@ -76,6 +77,17 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 ]
+if not DEBUG:
+    INSTALLED_APPS += [
+        'raven.contrib.django.raven_compat',
+    ]
+    RAVEN_CONFIG = {
+        'dsn': os.environ.get('RAVEN_DSN', None),
+        # If you are using git, you can also automatically configure the
+        # release based on the git info.
+        'release': os.environ.get('GIT_COMMIT', 'No version'),
+    }
+
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -271,7 +283,8 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)
 EMAIL_FROM_ADDRESS = os.environ.get('EMAIL_FROM_ADDRESS', 'lookit.robot@some.domain')
 EMAIL_BACKEND = f"django.core.mail.backends.{'smtp' if not DEBUG else 'console'}.EmailBackend"
-
+# disable smtp backend for now
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # United States will show up first in the countries list on the Demographic Data form
 COUNTRIES_FIRST=['US']
 

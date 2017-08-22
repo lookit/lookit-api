@@ -393,6 +393,7 @@ class Log(models.Model):
 
 class StudyLog(Log):
     action = models.CharField(max_length=128, db_index=True)
+    extra = DateTimeAwareJSONField(null=True)
     study = models.ForeignKey(
         Study,
         on_delete=models.DO_NOTHING,

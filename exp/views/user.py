@@ -56,7 +56,7 @@ class ParticipantListView(ExperimenterLoginRequiredMixin, ParticipantMixin, gene
         return context
 
 
-class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.UpdateView, PaginatorMixin):
+class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.DetailView, PaginatorMixin):
     '''
     ParticipantDetailView shows demographic information, children information, and
     studies that a participant has responded to.
