@@ -11,6 +11,7 @@ from studies.models import Response, Study, Feedback
 from accounts.models import Child, User, Organization
 from django_dynamic_fixture import G
 
+
 class OrganizationTestCase(APITestCase):
     def setUp(self):
         self.organization = G(Organization, name='COS')

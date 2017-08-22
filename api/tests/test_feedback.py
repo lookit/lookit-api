@@ -12,7 +12,7 @@ from accounts.models import Child, User
 from django_dynamic_fixture import G
 
 
-class FeedbackPostTestCase(APITestCase):
+class FeedbackTestCase(APITestCase):
     def setUp(self):
         self.researcher = G(User, is_active=True, is_researcher=True)
         self.participant = G(User, is_active=True)
