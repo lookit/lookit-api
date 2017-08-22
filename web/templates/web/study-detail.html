@@ -42,6 +42,8 @@
         }
 
         function modifyTemplateWithAgeCheck(selected) {
+            document.getElementById('too-old').style.display = 'none';
+            document.getElementById('too-young').style.display = 'none';
             var birthday = selected.value.split('|')[1];
             var age = calculateAgeInDays(birthday);
             if (!isEligible(age)) {
