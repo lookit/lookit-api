@@ -31,9 +31,10 @@ class StudiesTestCase(APITestCase):
             )
         self.study.save()
 
-        self.response = G(Response, child=self.child, study=self.study)
+        self.response = G(Response, child=self.child, study=self.study, exp_data={'first':'response'})
         self.url = reverse('study-list',  kwargs={'version':'v1'})
         self.study_detail_url = self.url + str(self.study.uuid) + '/'
+        self.study_responses_url = self.url + str(self.study.uuid) + '/responses/'
         self.client = APIClient()
 
     # Studies GET LIST Tests
@@ -102,3 +103,27 @@ class StudiesTestCase(APITestCase):
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.delete(self.study_detail_url, content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def testStudyResponses(self):
+        # Accessing study responses restricts queryset to responses of that particular study
+        self.study2 = G(Study, creator=self.researcher)
+        self.response2 = self.response = G(Response, child=self.child, study=self.study2, exp_data={'second':'response'})
+
+        self.client.force_authenticate(user=self.researcher)
+        assign_perm('studies.can_view_study_responses', self.researcher, self.study)
+        assign_perm('studies.can_view_study_responses', self.researcher, self.study2)
+        api_response = self.client.get(self.study_responses_url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['links']['meta']['count'], 1)
+        self.assertEqual( api_response.data['results'][0]['exp_data'], {'first':'response'})
+
+    def testStudyResponsesAsParticipant(self):
+        # Participants can only see the study responses they created
+        self.study2 = G(Study, creator=self.researcher)
+        self.response2 = self.response = G(Response, child=self.child, study=self.study2, exp_data={'second':'response'})
+
+        self.client.force_authenticate(user=self.participant)
+        api_response = self.client.get(self.study_responses_url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['links']['meta']['count'], 1)
+        self.assertEqual( api_response.data['results'][0]['exp_data'], {'first':'response'})

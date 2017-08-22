@@ -3,6 +3,7 @@ from django.db.models import Q
 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 from guardian.shortcuts import get_objects_for_user
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
@@ -160,9 +161,23 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Shows responses that you either have permission to view, or responses by your own children
         """
+
+        children_ids = Child.objects.filter(user__id=self.request.user.id).values_list('id', flat=True)
+
+        # if this viewset is accessed via the 'study-responses' route,
+        # it wll have been passed the `study_uuid` kwarg and the queryset
+        # needs to be filtered accordingly; if it was accessed via the
+        # unnested '/responses' route, the queryset should include all responses you can view
+        if 'study_uuid' in self.kwargs:
+            study_uuid = self.kwargs['study_uuid']
+            queryset = Response.objects.filter(study__uuid=study_uuid)
+            if self.request.user.has_perm('studies.can_view_study_responses', get_object_or_404(Study, uuid=study_uuid)):
+                return queryset
+            else:
+                return queryset.filter(child__id__in=children_ids)
+
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
-        children_ids = Child.objects.filter(user__id=self.request.user.id).values_list('id', flat=True)
         return Response.objects.filter(Q(study__id__in=study_ids) | Q(child__id__in=children_ids)).distinct()
 
 

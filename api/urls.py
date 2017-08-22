@@ -22,7 +22,6 @@ study_router.register(r'responses', api_views.ResponseViewSet, base_name='study-
 child_router = routers.NestedSimpleRouter(router, r'children', lookup='child')
 
 response_router = routers.NestedSimpleRouter(router, r'responses', lookup='response')
-response_router.register(r'feedback', api_views.FeedbackViewSet, base_name='response-feedback')
 
 feedback_router = routers.NestedSimpleRouter(router, r'feedback', lookup='feedback')
 
