@@ -47,7 +47,7 @@
                              <label for="recipients">Recipients</label>
                              <select multiple class="form-control" id="recipients" required name="recipients">
                                  {% for participant in participants %}
-                                    <option value="{{participant.id}}">{{ participant.given_name }}, {% if participant.contact_name %} {{ participant.contact_name }}, {% endif %}Id: {{ participant.id }}</option>
+                                    <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
                                  {% endfor %}
                              </select>
                              <p class="small">Hold down the Ctrl (windows) / Command (Mac) button to select multiple participants.</p>
