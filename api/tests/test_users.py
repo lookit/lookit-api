@@ -30,11 +30,11 @@ class UserTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def testGetResearchersInParticipantList(self):
-        # Researchers do not show up in user list, only participants
+        # As a researcher, can view yourself
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(self.url, content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data['links']['meta']['count'], 0)
+        self.assertEqual(api_response.data['links']['meta']['count'], 1)
 
     def testParticipantCanViewThemselves(self):
         # As a participant, can view yourself
@@ -49,7 +49,7 @@ class UserTestCase(APITestCase):
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(self.url, content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data['links']['meta']['count'], 0)
+        self.assertEqual(api_response.data['links']['meta']['count'], 1)
 
     def testGetParticipantListCanViewStudyResponsesPermissions(self):
         # As a researcher, need can_view_study_responses permissions to view participants
@@ -57,7 +57,9 @@ class UserTestCase(APITestCase):
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(self.url, content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data['results'][0]['given_name'], "Participant 1")
+        self.assertEqual(api_response.data['links']['meta']['count'], 2)
+        self.assertEqual(api_response.data['results'][0]['given_name'], "Researcher 1")
+        self.assertEqual(api_response.data['results'][1]['given_name'], "Participant 1")
 
     # Participant GET Detail Tests
     def testGetParticipantDetailUnauthenticated(self):

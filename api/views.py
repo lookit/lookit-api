@@ -90,7 +90,7 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'users'
-    queryset = User.objects.filter(is_researcher=False)
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
     http_method_names = ['get', 'head', 'options']
