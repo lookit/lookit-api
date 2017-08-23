@@ -585,15 +585,14 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)
 
     # TODO move to celery task
-    def download_multiple_files(self, all, folder_name):
+    def download_multiple_files(self, files, zip_subdir):
          """
          Downloads all attachments associated with study and puts into zipfile
          """
-         zip_subdir = folder_name
          zip_filename = "%s.zip" % zip_subdir
          s = io.BytesIO()
          zip = zipfile.ZipFile(s, "w")
-         for attachment in all:
+         for attachment in files:
              filename = attachment.key
              file_response = requests.get(get_study_attachments.get_download_url(filename))
              f1 = open(filename , 'wb')
@@ -618,11 +617,11 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
 
         if self.request.POST.get('all-attachments'):
             all = self.get_study_attachments(self.get_object(), 'last_modified', '')
-            return self.download_multiple_files(all, 'all_attachments')
+            return self.download_multiple_files(all, f'{self.get_object().uuid}_all_attachments')
 
         if self.request.POST.get('all-consent-videos'):
             all = [att for att in get_study_attachments.get_consent_videos(str(self.get_object().uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
-            return self.download_multiple_files(all, 'all_consent')
+            return self.download_multiple_files(all, f'{self.get_object().uuid}_all_consent')
 
         return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
 
