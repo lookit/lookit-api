@@ -124,6 +124,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     email_results_published = models.BooleanField(default=True)
     email_personally = models.BooleanField(default=True)
 
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        if self.id:
+            setattr(self, f'__original_groups', self.groups.all())
+
     @cached_property
     def osf_profile_url(self):
         try:
