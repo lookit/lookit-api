@@ -291,6 +291,14 @@ class Child(models.Model):
         resource_name = 'children'
         lookup_field = 'uuid'
 
+@receiver(post_save, sender=User)
+def send_email_when_receive_groups(sender, instance, created, **kwargs):
+    """
+    If researcher is given groups for the first time, send an email letting them know.
+    """
+    if instance.is_researcher and hasattr(instance, '__original_groups'):
+        if not getattr(instance, '__original_groups').exists() and set(instance.groups.all()) != set(instance.__original_groups):
+            print("Send email")
 
 class DemographicData(models.Model):
     RACE_CHOICES = Choices(
