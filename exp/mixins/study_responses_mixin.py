@@ -33,7 +33,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                     'id': resp.id
                 },
                 "participant": {
-                    'id': resp.child.user.id,
+                    'id': resp.child.user_id,
                     'nickname': resp.child.user.nickname
                 },
                 "demographic_snapshot": {
@@ -65,7 +65,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         """
         latest_dem = resp.demographic_snapshot
 
-        return [resp.id, resp.child.user.id, resp.child.user.nickname, latest_dem.id,
+        return [resp.id, resp.child.user_id, resp.child.user.nickname, latest_dem.id,
             latest_dem.number_of_children, [self.convert_to_string(birthday) for birthday in latest_dem.child_birthdays],
             latest_dem.languages_spoken_at_home, latest_dem.number_of_guardians, latest_dem.number_of_guardians_explanation,
             latest_dem.race_identification, latest_dem.age, latest_dem.gender, latest_dem.education_level, latest_dem.spouse_education_level,
@@ -104,7 +104,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                     'id': resp.study.id
                 },
                 'participant': {
-                    'id': resp.child.user.id,
+                    'id': resp.child.user_id,
                     'nickname': resp.child.user.nickname
                 },
                 'child': {
@@ -126,7 +126,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         Builds individual row for csv responses
         """
         return [resp.id, resp.sequence, resp.conditions, resp.exp_data, resp.global_event_timings, resp.completed, resp.study.id,
-            resp.child.user.id, resp.child.user.nickname, resp.child.id, resp.child.given_name, resp.child.birthday, resp.child.gender,
+            resp.child.user_id, resp.child.user.nickname, resp.child.id, resp.child.given_name, resp.child.birthday, resp.child.gender,
             resp.child.age_at_birth, resp.child.additional_information
         ]
 
