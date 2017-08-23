@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import reverse, get_object_or_404, redirect
 from django.utils.translation import ugettext as _
@@ -14,7 +15,7 @@ from revproxy.views import ProxyView
 from accounts import forms
 from accounts.models import Child, DemographicData, User
 from project import settings
-from studies.models import Study
+from studies.models import Study, Response
 from localflavor.us.us_states import USPS_CHOICES
 
 
@@ -77,6 +78,11 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
             return demographic_data_dict
         return demographic_data
 
+    def get_success_url(self):
+        if self.request.user.children.exists():
+            return reverse('web:studies-list')
+        else:
+            return reverse('web:children-list')
 
     def get_context_data(self, **kwargs):
         """
@@ -88,7 +94,6 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         context['countries'] = countries
         context['states'] = USPS_CHOICES
         return context
-
 
 
 class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -109,11 +114,11 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         """
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        if 'participant_update' in self.request.POST:
+        if 'participant_update' in self.request.POST and context.get('form2'):
             context['form2'].is_bound = False
         if 'password_update' in self.request.POST:
             context['form'].is_bound = False
-            context['form'].initial = {'username': user.username, 'given_name': user.given_name, 'middle_name': user.middle_name, 'family_name': user.family_name}
+            context['form'].initial = {'username': user.username, 'nickname': user.nickname}
         if 'form' not in context:
             context['form'] = self.form_class(self.request.GET)
         if 'form2' not in context:
@@ -275,6 +280,18 @@ class StudiesListView(generic.ListView):
         # TODO or by if they've taken the study before this is the spot
         return super().get_queryset().filter(state='active', public=True)
 
+
+class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
+    '''
+    List all active, public studies.
+    '''
+    template_name = 'web/studies-history.html'
+    model = Study
+
+    def get_queryset(self):
+        children_ids = Child.objects.filter(user__id=self.request.user.id).values_list('id', flat=True)
+        study_ids = Response.objects.filter(Q(child__id__in=children_ids)).values_list('study_id', flat=True)
+        return Study.objects.filter(id__in=study_ids)
 
 class StudyDetailView(generic.DetailView):
     '''

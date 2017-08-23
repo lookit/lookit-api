@@ -9,6 +9,11 @@
             All <span class="hidden-xs"> Responses </span>
         </a>
     </li>
+    <li {% if active == 'demographics' %} class="active" {% endif %}>
+        <a href="{% url 'exp:study-demographics' study.id %}">
+            Demographic <span class="hidden-xs"> Snapshots </span>
+        </a>
+    </li>
     <li {% if active == 'attachments' %} class="active" {% endif %}>
         <a href="{% url 'exp:study-attachments' study.id %}">
             Attachments

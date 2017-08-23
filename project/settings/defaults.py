@@ -35,7 +35,6 @@ GUARDIAN_MONKEY_PATCH = False
 # S3 Bucket name where video attachments are stored
 BUCKET_NAME = os.environ.get('BUCKET_NAME', 'fakeBucketName')
 
-
 # Application definition
 
 INSTALLED_APPS = [

@@ -34,11 +34,11 @@
            <div class="btn-group">
                <div class="btn-group">
                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    Username <span class="caret"></span>
+                    Nickname <span class="caret"></span>
                  </button>
                  <ul class="dropdown-menu" role="menu">
-                   <li> <a aria-label="Sort ascending by username" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='given_name' %}">Sort A-Z</a></li>
-                   <li> <a aria-label="Sort descending by username" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-given_name' %}">Sort Z-A</a></li>
+                   <li> <a aria-label="Sort ascending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}">Sort A-Z</a></li>
+                   <li> <a aria-label="Sort descending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-nickname' %}">Sort Z-A</a></li>
                  </ul>
              </div>
              <div class="btn-group">
@@ -55,9 +55,9 @@
    </div>
    <div class="row mt-xl visible-md visible-lg visible-xl">
        <div class="col-md-3 col-md-offset-1">
-           <strong> Username </strong>
-           <a class="pl-sm" aria-label="Sort ascending by username" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='given_name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-           <a aria-label="Sort descending by username" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-given_name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+           <strong> Nickname </strong>
+           <a class="pl-sm" aria-label="Sort ascending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+           <a aria-label="Sort descending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-nickname' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
        </div>
        <div class="col-md-2">
            <strong> User ID </strong>
@@ -74,7 +74,7 @@
    {% for user in object_list %}
        <div class="row pt-xs">
            <div class="col-md-3 col-md-offset-1 col-sm-11 col-sm-offset-1 col-xs-12">
-                <a href="{% url 'exp:participant-detail' user.id %}"> {{ user.given_name }}</a>
+                <a href="{% url 'exp:participant-detail' user.id %}"> {{ user.nickname }}</a>
            </div>
 
            <div class="col-md-2 col-sm-offset-1 col-md-offset-0 col-xs-12">

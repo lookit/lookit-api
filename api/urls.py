@@ -10,6 +10,7 @@ router.register(r'demographics', api_views.DemographicDataViewSet)
 router.register(r'children', api_views.ChildViewSet)
 router.register(r'responses', api_views.ResponseViewSet)
 router.register(r'organizations', api_views.OrganizationViewSet)
+router.register(r'feedback', api_views.FeedbackViewSet)
 
 user_router = routers.NestedSimpleRouter(router, r'users', lookup='user')
 user_router.register(r'demographics', api_views.DemographicDataViewSet, base_name='user-demographics')
@@ -22,10 +23,13 @@ child_router = routers.NestedSimpleRouter(router, r'children', lookup='child')
 
 response_router = routers.NestedSimpleRouter(router, r'responses', lookup='response')
 
+feedback_router = routers.NestedSimpleRouter(router, r'feedback', lookup='feedback')
+
 urlpatterns = [
     url(r'^(?P<version>(v1|v2))/', include(user_router.urls)),
     url(r'^(?P<version>(v1|v2))/', include(study_router.urls)),
     url(r'^(?P<version>(v1|v2))/', include(child_router.urls)),
     url(r'^(?P<version>(v1|v2))/', include(response_router.urls)),
+    url(r'^(?P<version>(v1|v2))/', include(feedback_router.urls)),
     url(r'^(?P<version>(v1|v2))/', include(router.urls)),
 ]

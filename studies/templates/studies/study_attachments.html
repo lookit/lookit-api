@@ -49,16 +49,19 @@
         </div>
         <div class='row'>
              <div class="col-xs-12">
-                 <div class="pull-right">
+                 <span class="pull-right">
                      <form method="POST"> {% csrf_token %}
                          <button name="all-attachments" type="submit" value="all" class="mt-md btn btn-primary">
                              Download all attachments
                          </button>
-                 </form>
-                 </div>
+                         <button name="all-consent-videos" type="submit" value="all" class="mt-md btn btn-primary">
+                             Download all consent videos
+                         </button>
+                     </form
+                 </span>
              </div>
          </div>
-         <div class="row text-center mt-sm">
+         <div class="row text-center mt-md">
             <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
                 <form method="GET">
                     <input id="search-attachments" class="form-control" name="match" placeholder="Filter attachment name" size="50" type="text">

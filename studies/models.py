@@ -354,6 +354,30 @@ class Response(models.Model):
         lookup_field = 'uuid'
 
 
+class Feedback(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    response = models.ForeignKey(
+        Response, on_delete=models.DO_NOTHING,
+        related_name='feedback'
+    )
+    researcher = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING,
+    )
+    comment = models.TextField()
+
+    def __str__(self):
+        return f'<Feedback: on {self.response} by {self.researcher}>'
+
+    class Meta:
+        permissions = (
+            ('can_view_feedback', 'Can View Feedback'),
+        )
+
+    class JSONAPIMeta:
+        resource_name = 'responses'
+        lookup_field = 'uuid'
+
+
 class Log(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)

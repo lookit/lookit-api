@@ -527,6 +527,35 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         return output.getvalue()
 
 
+class StudyDemographics(StudyResponsesMixin, generic.DetailView):
+    """
+    StudyParticiapnts view shows participant demographic snapshots associated
+    with each response to the study
+    """
+    template_name = 'studies/study_demographics.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.  Study results
+        are paginated.
+        """
+        context = super().get_context_data(**kwargs)
+        responses = context['study'].responses.order_by('id')
+        context['all_responses'] = ', '.join(self.build_participant_data(responses))
+        context['csv_responses'] = self.build_all_participant_csv(responses)
+        return context
+
+    def build_all_participant_csv(self, responses):
+        """
+        Builds CSV file contents for all participant data
+        """
+        output, writer = self.csv_output_and_writer()
+        writer.writerow(self.get_csv_participant_headers())
+        for resp in responses:
+            writer.writerow(self.build_csv_participant_row_data(resp))
+        return output.getvalue()
+
+
 class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
     StudyAttachments View shows video attachments for the study
@@ -556,16 +585,14 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)
 
     # TODO move to celery task
-    def download_all_files(self):
+    def download_multiple_files(self, files, zip_subdir):
          """
          Downloads all attachments associated with study and puts into zipfile
          """
-         all = self.get_study_attachments(self.get_object(), 'last_modified', '')
-         zip_subdir = "study_attachments"
-         zip_filename = "%s.zip" % zip_subdir
+         zip_filename = f'{zip_subdir}.zip'
          s = io.BytesIO()
          zip = zipfile.ZipFile(s, "w")
-         for attachment in all:
+         for attachment in files:
              filename = attachment.key
              file_response = requests.get(get_study_attachments.get_download_url(filename))
              f1 = open(filename , 'wb')
@@ -576,7 +603,7 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
              zip.write(filename, zip_path)
          zip.close()
          resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
-         resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+         resp['Content-Disposition'] = f'attachment; filename={zip_filename}'
          return resp
 
     def post(self, request, *args, **kwargs):
@@ -589,7 +616,12 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
             return redirect(download_url)
 
         if self.request.POST.get('all-attachments'):
-            return self.download_all_files()
+            all = self.get_study_attachments(self.get_object(), 'last_modified', '')
+            return self.download_multiple_files(all, f'{self.get_object().uuid}_all_attachments')
+
+        if self.request.POST.get('all-consent-videos'):
+            all = [att for att in get_study_attachments.get_consent_videos(str(self.get_object().uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
+            return self.download_multiple_files(all, f'{self.get_object().uuid}_all_consent')
 
         return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
 

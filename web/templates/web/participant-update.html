@@ -3,7 +3,6 @@
 {% block title %}Update account information{% endblock %}
 
 {% block flash %}
-  {% bootstrap_messages %}
   {% if form.non_field_errors %}
   <div class="alert alert-danger" role="alert">
       {{ form.non_field_errors }}
@@ -14,6 +13,7 @@
     <div class='lookit-row lookit-page-title'>
         <h2 class='container'>My Account</h2>
     </div>
+    {% bootstrap_messages %}
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg ">
@@ -27,7 +27,6 @@
                   <div class="panel-body">
                     <form method="POST" action="">{% csrf_token %}
                       {% bootstrap_form form %}
-                      <input type="hidden" name="username" value="{{ user.username }}">
                       {% buttons %}
                       <div class="pull-right">
                           <a class="btn btn-default" href="{% url 'web:participant-update' %}"> Cancel </a>

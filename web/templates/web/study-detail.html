@@ -18,7 +18,6 @@
 {% endblock %}
 
 {% block flash %}
-  {% bootstrap_messages %}
   {% if form.errors %}
   <div class="alert alert-danger" role="alert">
     <p>Your username and password didn't match. Please try again.</p>
@@ -31,23 +30,85 @@
     <script>
         function childSelected(selected) {
             var participateButton = document.getElementById('participate-button');
-            selected.value === 'none' ? participateButton.disabled = true : participateButton.disabled = false;
+            if (selected.value === 'none') {
+                participateButton.disabled = true;
+                document.getElementById('too-old').style.display = 'none';
+                document.getElementById('too-young').style.display = 'none';
+            } else {
+                participateButton.disabled = false;
+            }
             participateButton.value = selected.value;
+            modifyTemplateWithAgeCheck(selected);
+        }
+
+        function modifyTemplateWithAgeCheck(selected) {
+            document.getElementById('too-old').style.display = 'none';
+            document.getElementById('too-young').style.display = 'none';
+            var birthday = selected.value.split('|')[1];
+            var age = calculateAgeInDays(birthday);
+            if (!isEligible(age)) {
+                if (isOldEnough(age)) {
+                    document.getElementById('too-old').style.display = 'inline-block';
+                } else {
+                    document.getElementById('too-young').style.display = 'inline-block';
+                }
+            }
         }
 
         function portToParticipate(selected) {
-            window.location.href = "/studies/" + "{{ study.uuid }}" + '/' + selected.value;
+            window.location.href = '{% url 'web:study-detail' study.uuid %}' + selected.value.split('|')[0] + '/';
+        }
+
+        function calculateAgeInDays(birthday) {
+            var birthdayDate = new Date(birthday);
+            return moment.duration(moment()._d - birthdayDate).asDays();
+        }
+
+        function ageCheck(age) {
+            // Adapted from experiment model in exp-addons
+            var eligibilityMinAge = "{{ study.min_age }}"
+            var eligibilityMaxAge = "{{ study.max_age }}"
+
+            var minDays;
+            var maxDays;
+            if (eligibilityMinAge) {
+                var [minNumber, minUnit] = eligibilityMinAge.split(' ');
+                minDays = moment.duration(parseFloat(minNumber), minUnit).asDays();
+            }
+            if (eligibilityMaxAge) {
+                var [maxNumber, maxUnit] = eligibilityMaxAge.split(' ');
+                maxDays = moment.duration(parseFloat(maxNumber), maxUnit).asDays();
+            }
+            minDays = minDays || -1;
+            maxDays = maxDays || Number.MAX_SAFE_INTEGER;
+
+            if (age <= minDays) {
+                return age - minDays;
+            } else if (age >= maxDays) {
+                return age - maxDays;
+            } else {
+                return 0;
+            }
+        }
+
+        function isOldEnough(age) {
+            const check = this.ageCheck(age);
+            return check >= 0;
+        }
+
+        function isEligible(age) {
+            return this.ageCheck(age) === 0;
         }
     </script>
     <div class='lookit-row lookit-page-title'>
         <div class='container'>
             <div class='row'>
-
                 <h2 class='col-sm-10'>Participate in "{{ object.name }}"</h2>
                 <a href="{% url 'web:studies-list' %}" class="active col-sm-2 btn btn-lg btn-primary pull-right back-to-list-button">Back to list</a>
             </div>
         </div>
     </div>
+    {% bootstrap_messages %}
     <div class='container'>
         <div class="lookit-row"><div class='col-md-10 col-md-offset-1'>
             <div class='row'><div class='col-xs-12'>
@@ -79,12 +140,11 @@
                         <select class="childDropdown" onchange="childSelected(this)">
                             <option value=none >None Selected</option>
                             {% for child in children %}
-                            <option value="{{child.uuid}}">{{child.given_name}}</option>
+                            <option onemptied="" value="{{child.uuid}}|{{child.birthday}}">{{child.given_name}}</option>
                             {% endfor %}
                         </select>
-                        <p class="text-warning" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research! </p>
-        	            <p class="text-warning" id='too-old'>Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research.</p>
-
+                        <p class="text-warning" style="display:none" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research! </p>
+        	            <p class="text-warning" style="display:none" id='too-old'>Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research.</p>
                         <button type="button" onclick="portToParticipate(this)" disabled class="btn-lg btn-primary" id="participate-button"> Participate now! </button>
                     </div>
                     {% endif %}

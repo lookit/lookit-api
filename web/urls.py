@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^account/children/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/$', views.ChildUpdateView.as_view(), name='child-update'),
     url(r'^account/email/$', views.ParticipantEmailPreferencesView.as_view(), name='email-preferences'),
     url(r'^studies/$', views.StudiesListView.as_view(), name='studies-list'),
+    url(r'^studies/history/$', views.StudiesHistoryView.as_view(), name='studies-history'),
     url(r'^studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/$', views.StudyDetailView.as_view(), name='study-detail'),
     url(r'^studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/(?P<child_id>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/$', views.ExperimentProxyView.as_view(), name='experiment-proxy'),
     url(r'^faq/$', flatpages_views.flatpage, dict(url='/faq/'), name='faq'),

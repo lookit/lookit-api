@@ -105,7 +105,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
-    contact_name = models.CharField(max_length=255, blank=True)
+    nickname = models.CharField(max_length=255, blank=True)
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE,
         related_name='users', related_query_name='user',
@@ -411,7 +411,7 @@ class DemographicData(models.Model):
     education_level = models.CharField(max_length=5, choices=EDUCATION_CHOICES, blank=True)
     spouse_education_level = models.CharField(max_length=5, choices=SPOUSE_EDUCATION_CHOICES, blank=True)
     annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES, blank=True)
-    number_of_books = models.IntegerField(blank=True)
+    number_of_books = models.IntegerField(blank=True, default=0)
     additional_comments = models.TextField(blank=True)
     country = CountryField(blank=True)
     state = USStateField(blank=True, choices=('XX', _('Select a State')) + USPS_CHOICES[:])

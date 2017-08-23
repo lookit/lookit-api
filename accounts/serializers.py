@@ -21,6 +21,8 @@ class OrganizationSerializer(UUIDSerializerMixin, ModelSerializer):
 
 class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
     resource_name = 'demographics'
+    country = serializers.CharField(default='')
+
     url = serializers.HyperlinkedIdentityField(
         view_name='demographicdata-detail',
         lookup_field='uuid'

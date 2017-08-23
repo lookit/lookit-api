@@ -20,7 +20,7 @@ from exp.views import (ParticipantDetailView, ParticipantListView, StudyParticip
                        PreviewProxyView, ResearcherDetailView,
                        ResearcherListView, StudyBuildView, StudyCreateView,
                        StudyDetailView, StudyListView, StudyResponsesList,
-                       StudyResponsesAll, StudyAttachments,
+                       StudyResponsesAll, StudyDemographics, StudyAttachments,
                        StudyUpdateView, ExperimenterDashboardView)
 
 urlpatterns = [
@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'studies/(?P<pk>\d+)/edit/build/$', StudyBuildView.as_view(), name='study-build'),
     url(r'studies/(?P<pk>\d+)/responses/$', StudyResponsesList.as_view(), name='study-responses-list'),
     url(r'studies/(?P<pk>\d+)/responses/all/$', StudyResponsesAll.as_view(), name='study-responses-all'),
+    url(r'studies/(?P<pk>\d+)/responses/demographics/$', StudyDemographics.as_view(), name='study-demographics'),
     url(r'studies/(?P<pk>\d+)/responses/attachments/$', StudyAttachments.as_view(), name='study-attachments'),
     url(r'studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/preview/$', PreviewProxyView.as_view(), name='preview-proxy'),
     url(r'', ExperimenterDashboardView.as_view(), name='dashboard')
