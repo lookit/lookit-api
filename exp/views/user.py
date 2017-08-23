@@ -211,9 +211,9 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         self.object.is_active = True
         if not self.object.organization:
             self.object.organization = request.user.organization
-        self.object.save()
         if self.request.POST.get('name') == 'user_permissions':
             self.modify_researcher_permissions()
+        self.object.save()
         return retval
 
     def modify_researcher_permissions(self):
@@ -228,7 +228,7 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         read_group = Group.objects.get(name=build_org_group_name(org_name, 'read'))
         researcher_group = Group.objects.get(name=build_org_group_name(org_name, 'researcher'))
 
-        researcher = self.get_object()
+        researcher = self.object
 
         if new_perm == 'org_admin':
             admin_group.user_set.add(researcher)
