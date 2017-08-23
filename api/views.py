@@ -64,28 +64,14 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         qs_ids = super().get_queryset().values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
-        return Child.objects.filter((Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)), (Q(id__in=qs_ids))).distinct()
+        return qs_ids.model.objects.filter((Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)), (Q(id__in=qs_ids))).distinct()
 
 
-class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
-    lookup_field = 'uuid'
+class DemographicDataViewSet(ChildViewSet):
     resource_name = 'demographics'
     queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
     filter_fields = [('user', 'user'), ]
-    http_method_names = ['get', 'head', 'options']
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        """
-        Overrides queryset.
-
-        Shows 1) demographics attached to responses you can view, and 2) your own demographics
-        """
-        qs_ids = super().get_queryset().values_list('id', flat=True)
-        studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
-        study_ids = studies.values_list('id', flat=True)
-        return DemographicData.objects.filter((Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)), (Q(id__in=qs_ids))).distinct()
 
 
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
