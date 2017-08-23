@@ -46,13 +46,13 @@ class ChildrenTestCase(APITestCase):
         self.assertEqual(api_response.data['links']['meta']['count'], 1)
 
     def testGetChildrenListNoResearchers(self):
-        # Only children of participants are returned, not researchers
+        # Researchers can see their children
         self.participant.is_researcher = True
         self.participant.save()
         self.client.force_authenticate(user=self.participant)
         api_response = self.client.get(self.url, content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data['links']['meta']['count'], 0)
+        self.assertEqual(api_response.data['links']['meta']['count'], 1)
 
     def testGetChildrenListCanViewStudyPermissions(self):
         # Cannot see children if only have can_view_study permissions
@@ -93,12 +93,12 @@ class ChildrenTestCase(APITestCase):
         self.assertEqual(api_response.data['given_name'], 'Sally')
 
     def testGetChildDetailResearcher(self):
-        # Cannot see a child of a researcher
+        # A researcher can see their child
         self.participant.is_researcher = True
         self.participant.save()
         self.client.force_authenticate(user=self.participant)
         api_response = self.client.get(self.child_detail_url, content_type="application/vnd.api+json")
-        self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
 
     def testGetChildDetailCanViewStudyPermissions(self):
         # Can't see a child with just can_view_study permissions

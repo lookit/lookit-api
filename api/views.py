@@ -48,7 +48,7 @@ class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     resource_name = 'children'
-    queryset = Child.objects.filter(user__is_researcher=False, user__is_active=True).distinct()
+    queryset = Child.objects.filter(user__is_active=True).distinct()
     serializer_class = ChildSerializer
     lookup_field = 'uuid'
     filter_fields = [('user', 'user'), ]
