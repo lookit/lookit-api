@@ -56,7 +56,7 @@
         }
 
         function portToParticipate(selected) {
-            window.location.href = "/studies/" + "{{ study.uuid }}" + '/' + selected.value.split('|')[0];
+            window.location.href = '{% url 'web:study-detail' study.uuid %}' + selected.value.split('|')[0] + '/';
         }
 
         function calculateAgeInDays(birthday) {
