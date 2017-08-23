@@ -589,7 +589,7 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
          """
          Downloads all attachments associated with study and puts into zipfile
          """
-         zip_filename = "%s.zip" % zip_subdir
+         zip_filename = f'{zip_subdir}.zip'
          s = io.BytesIO()
          zip = zipfile.ZipFile(s, "w")
          for attachment in files:
@@ -603,7 +603,7 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
              zip.write(filename, zip_path)
          zip.close()
          resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
-         resp['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
+         resp['Content-Disposition'] = f'attachment; filename={zip_filename}'
          return resp
 
     def post(self, request, *args, **kwargs):
