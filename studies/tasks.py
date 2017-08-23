@@ -170,8 +170,9 @@ def build_experiment(study_uuid, preview=True):
         bcc=list(study.study_admin_group.user_set.values_list('username', flat=True)),
         **context
     )
-    study.state = 'active'
-    study.save()
+    if not preview:
+        study.state = 'active'
+        study.save()
 
 
 def cleanup_old_directories(root_path, older_than):
