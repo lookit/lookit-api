@@ -50,9 +50,11 @@
     			<div class="lookit-row studies-row">
     				<div class="container">
     					<div id="past-studies">
-    						<div class="row study-detail-caption mb-lg">
-    							Here you can view your studies and see comments left by researchers:
-    						</div>
+                            {% if object_list %}
+                                <div class="row study-detail-caption mb-lg">
+        							Here you can view your studies and see comments left by researchers:
+        						</div>
+                            {% endif %}
     						<div class="row">
     							<div>
                                     {% for study in object_list %}
@@ -121,6 +123,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {% empty %}
+                                        <p><em> You have not yet participated in any studies. </em></p>
                                     {% endfor %}
     							</div>
     						</div>
