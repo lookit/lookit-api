@@ -230,7 +230,7 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         Restricts list to participants that have responded to this study as well as participants
         that have given their permission to be emailed personally
         '''
-        return User.objects.filter(Q(children__response__study=self.get_object()) & Q(email_personally=True)).distinct()
+        return User.objects.filter(Q(children__response__study=self.get_object()) & Q(email_response_questions=True)).distinct()
 
     def post(self, request, *args, **kwargs):
         """

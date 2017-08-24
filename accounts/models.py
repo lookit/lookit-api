@@ -123,8 +123,8 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     email_next_session = models.BooleanField(default=True)
     email_new_studies = models.BooleanField(default=True)
-    email_results_published = models.BooleanField(default=True)
-    email_personally = models.BooleanField(default=True)
+    email_study_updates = models.BooleanField(default=True)
+    email_response_questions = models.BooleanField(default=True)
 
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
