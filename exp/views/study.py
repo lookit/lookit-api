@@ -1,37 +1,38 @@
-import operator
-import uuid
-import json
-import requests
-import os
 import io
+import json
+import operator
+import os
 import zipfile
 from functools import reduce
 
-from django.core.mail import BadHeaderError
+import requests
 from django.contrib import messages
 from django.contrib.auth.mixins import \
     PermissionRequiredMixin as DjangoPermissionRequiredMixin
+from django.core.mail import BadHeaderError
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import reverse, redirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, reverse
 from django.utils import timezone
 from django.views import generic
+from guardian.mixins import PermissionRequiredMixin
+from guardian.shortcuts import get_objects_for_user, get_perms
+from localflavor import pk
+from revproxy.views import ProxyView
 
+import get_study_attachments
 from accounts.models import User
 from accounts.utils import (get_permitted_triggers, status_tooltip_text,
                             update_trigger)
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
-from guardian.mixins import PermissionRequiredMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin
-from guardian.shortcuts import get_objects_for_user
 from project import settings
-from studies.helpers import send_mail
-from revproxy.views import ProxyView
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
+from studies.helpers import send_mail
 from studies.models import Study, StudyLog
-import get_study_attachments
+from studies.tasks import build_experiment
 
 
 class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
@@ -592,6 +593,61 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
             return self.download_all_files()
 
         return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
+
+
+class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
+    '''
+    Checks to make sure an existing build isn't running, that the user has permissions
+    to preview, and then triggers a preview build.
+    '''
+    http_method_names = ['post', ]
+    model = Study
+    _object = None
+
+    @property
+    def object(self):
+        if not self._object:
+            self._object = self.get_object(queryset=self.get_queryset())
+        return self._object
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse('exp:study-build', kwargs={'pk': str(self.object.pk)})
+
+    def post(self, request, *args, **kwargs):
+        study_permissions = get_perms(request.user, self.object)
+
+        if study_permissions and 'can_edit_study' in study_permissions:
+            self.object.state = 'previewing'
+            self.object.save()
+            build_experiment.delay(self.object.uuid, preview=True)
+            messages.success(request, f"Scheduled Study {self.object.name} for preview. You will be emailed when it's completed.")
+        return super().post(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        """
+        Returns the object the view is displaying.
+        By default this requires `self.queryset` and a `pk` or `slug` argument
+        in the URLconf, but subclasses can override this to return any object.
+        """
+        # Use a custom queryset if provided; this is required for subclasses
+        # like DateDetailView
+        if queryset is None:
+            queryset = self.get_queryset()
+        uuid = self.kwargs.get('uuid')
+        if uuid is not None:
+            queryset = queryset.filter(uuid=uuid)
+
+        if uuid is None:
+            raise AttributeError("View %s must be called with "
+                                 "a uuid."
+                                 % self.__class__.__name__)
+        try:
+            # Get the single item from the filtered queryset
+            obj = queryset.get()
+        except queryset.model.DoesNotExist:
+            raise Http404(_("No %(verbose_name)s found matching the query") %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        return obj
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
