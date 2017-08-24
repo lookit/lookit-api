@@ -290,6 +290,18 @@ else:
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'
 
+    STATICFILES_LOCATION = '/static'
+    STATICFILES_STORAGE = None
+
+    MEDIAFILES_LOCATION = '/media'
+    DEFAULT_FILE_STORAGE = 'project.storages.LookitMediaStorage'
+
+    EXPERIMENT_LOCATION = '/experiments'
+    PREVIEW_EXPERIMENT_LOCATION = '/preview_experiments'
+
+    GS_BUCKET_NAME = None
+    GS_PROJECT_ID = None
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
@@ -314,3 +326,9 @@ MESSAGE_TAGS = {
 }
 EMBER_EXP_PLAYER_REPO = 'https://github.com/pattisdr/ember-frame-player'
 EMBER_ADDONS_REPO = 'https://github.com/centerforopenscience/exp-addons'
+
+CELERY_TASK_ROUTES = {
+    'studies.tasks.build_experiment': {'queue': 'builds'},
+    'studies.tasks.cleanup*': {'queue': 'cleanup'},
+    'studies.helpers.send_mail': {'queue': 'email'}
+}
