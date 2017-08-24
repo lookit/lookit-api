@@ -222,15 +222,18 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         """
         context = super().get_context_data(**kwargs)
         context['sender'] = settings.EMAIL_FROM_ADDRESS
-        context['participants'] = self.get_study_participants()
+        context['email_next_session'] = self.get_study_participants('email_next_session')
+        context['email_new_studies'] = self.get_study_participants('email_new_studies')
+        context['email_study_updates'] = self.get_study_participants('email_study_updates')
+        context['email_response_questions'] = self.get_study_participants('email_response_questions')
         return context
 
-    def get_study_participants(self):
+    def get_study_participants(self, email_field):
         '''
         Restricts list to participants that have responded to this study as well as participants
         that have given their permission to be emailed personally
         '''
-        return User.objects.filter(Q(children__response__study=self.get_object()) & Q(email_response_questions=True)).distinct()
+        return User.objects.filter(Q(children__response__study=self.get_object()) & Q(**{f'{email_field}': True })).distinct()
 
     def post(self, request, *args, **kwargs):
         """
