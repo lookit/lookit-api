@@ -356,8 +356,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context = {
             'study': self.get_object(),
             'permission': permission,
-            'researcher': user,
-            'study_url': self.request.META['HTTP_HOST'] + reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk))
+            'researcher': user
         }
         send_mail('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=EMAIL_FROM_ADDRESS, **context)
 
