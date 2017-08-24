@@ -360,8 +360,6 @@ class ExperimentProxyView(ProxyView, LoginRequiredMixin):
             # requesting user doesn't belong to that child
             raise PermissionDenied()
 
-        request.META['HTTP_X-EXPERIMENT-CHILD-ID'] = path.split('/')[1]
-
         if request.path[-1] == '/':
             path = f"{path.split('/')[0]}/index.html"
 
