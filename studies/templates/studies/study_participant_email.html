@@ -17,6 +17,24 @@
             $("#send-email").text("Sending...");
             $("#send-email").attr("disabled", "disabled");
         });
+        $('#email-type').on('change', function(selected) {
+            var allEmails = $('.email-list');
+            allEmails.hide();
+            $('.email-list').hide()
+            for(var i = 0; i < allEmails.length; i++) {
+                allEmails[i].required = false;
+                allEmails[i].name = '';
+            }
+            if (selected && selected.currentTarget.value !== 'none') {
+                $('#contact-form').show()
+                $(`#${selected.currentTarget.value}`).show();
+                $(`#${selected.currentTarget.value}`)[0].required = true;
+                $(`#${selected.currentTarget.value}`)[0].name = 'recipients';
+            } else {
+                $('#contact-form').hide()
+            }
+
+        })
     });
 </script>
 <div class="container mb-lg">
@@ -29,58 +47,76 @@
              </ol>
          </div>
      </div>
-     {% if participants %}
-        <div class="row">
-             <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1">
-                 <div class="panel panel-default">
-                   <div class="panel-heading">
-                     <h1 class="panel-title">Contact Form</h1>
-                   </div>
-                   <div class="panel-body">
-                     <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                         <div class="form-group">
-                            <label for="pwd">Sender</label>
-                            <input type="text" placeholder="From" value="{{ sender }}" class="form-control" id="sender" name="sender" required>
-                             <p class="small">Override to receive responses.</p>
+    <div class="row">
+         <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1">
+             <div class="form-group">
+                <label for="email-type">Select email type:</label>
+                <select class="form-control" id="email-type">
+                  <option value="none" selected >Select type of email you wish to send to participant(s)</option>
+                  <option value="email_next_session">Another study session available for child</option>
+                  <option value="email_new_studies">New study available for child</option>
+                  <option value="email_study_updates">Study updates available</option>
+                  <option value="email_response_questions">Questions about participant responses</option>
+                </select>
+             </div>
+             <div id="contact-form" class="panel panel-default" style="display:none">
+               <div class="panel-heading">
+                 <h1 class="panel-title">Contact Form</h1>
+               </div>
+               <div class="panel-body">
+                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                     <div class="form-group">
+                        <label for="pwd">Sender</label>
+                        <input type="text" placeholder="From" value="{{ sender }}" class="form-control" id="sender" name="sender" required>
+                         <p class="small">Override to receive responses.</p>
+                     </div>
+                     <div class="form-group">
+                         <label>Recipients</label>
+                         <select style="display:none" id="email_next_session" multiple class="email-list form-control">
+                             {% for participant in email_next_session %}
+                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
+                             {% endfor %}
+                         </select>
+                         <select style="display:none" id="email_new_studies" multiple class="email-list form-control">
+                             {% for participant in email_new_studies %}
+                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
+                             {% endfor %}
+                         </select>
+                         <select style="display:none" id="email_study_updates" multiple class="email-list form-control">
+                             {% for participant in email_study_updates %}
+                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
+                             {% endfor %}
+                         </select>
+                         <select style="display:none" id="email_response_questions" multiple class="email-list form-control">
+                             {% for participant in email_response_questions %}
+                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
+                             {% endfor %}
+                         </select>
+                         <p class="small">Hold down the Ctrl (windows) / Command (Mac) button to select multiple participants.</p>
+                     </div>
+                     <div class="form-group">
+                         <label for="subject">Subject</label>
+                         <input type="text" class="form-control" id="subject" required name="subject">
+                     </div>
+                     <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea class="form-control" rows="5" id="message" required name="message"></textarea>
+                     </div>
+                     {% buttons %}
+                         <a href="{% url 'exp:study-participant-email' study.id %}" class="btn btn-default">
+                             <i class="fa fa-trash-o" aria-hidden="true"></i>
+                         </a>
+                         <div class="pull-right">
+                             <button type="submit" id="send-email" class="btn btn-success">
+                                 Send
+                             </button>
                          </div>
-                         <div class="form-group">
-                             <label for="recipients">Recipients</label>
-                             <select multiple class="form-control" id="recipients" required name="recipients">
-                                 {% for participant in participants %}
-                                    <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
-                                 {% endfor %}
-                             </select>
-                             <p class="small">Hold down the Ctrl (windows) / Command (Mac) button to select multiple participants.</p>
-                         </div>
-                         <div class="form-group">
-                             <label for="subject">Subject</label>
-                             <input type="text" class="form-control" id="subject" required name="subject">
-                         </div>
-                         <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea class="form-control" rows="5" id="message" required name="message"></textarea>
-                         </div>
-                         {% buttons %}
-                             <a href="{% url 'exp:study-participant-email' study.id %}" class="btn btn-default">
-                                 <i class="fa fa-trash-o" aria-hidden="true"></i>
-                             </a>
-                             <div class="pull-right">
-                                 <button type="submit" id="send-email" class="btn btn-success">
-                                     Send
-                                 </button>
-                             </div>
-                         {% endbuttons %}
-                     </form>
-                 </div>
+                     {% endbuttons %}
+                 </form>
              </div>
          </div>
      </div>
-     {% else %}
-        <div class="row">
-            <div class="col-xs-12">
-                <p class="pt-md"><em> No eligible participants to email. </em></p>
-            </div>
-        </div>
-    {% endif %}
+ </div>
+
 </div>
 {% endblock %}
