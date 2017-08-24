@@ -103,10 +103,12 @@ def build_experiment(study_uuid, preview=True):
     addons_sha = getattr(study.metadata, 'last_known_addons_sha', None)
     addons_repo_url = getattr(study.metadata, 'addons_repo_url', settings.EMBER_ADDONS_REPO)
 
-    if preview and player_sha is None and addons_sha is None:
-        # if they're previewing and the sha's on their study aren't set
-        # save the latest master sha of both repos
-        save_versions = True
+    if preview:
+        current_state = study.state
+        if player_sha is None and addons_sha is None:
+            # if they're previewing and the sha's on their study aren't set
+            # save the latest master sha of both repos
+            save_versions = True
 
     checkout_directory, addons_sha, player_sha = download_repos(addons_repo_url, addons_sha=addons_sha, player_sha=player_sha)
 
@@ -172,7 +174,9 @@ def build_experiment(study_uuid, preview=True):
     )
     if not preview:
         study.state = 'active'
-        study.save()
+    else:
+        study.state = current_state
+    study.save()
 
 
 def cleanup_old_directories(root_path, older_than):
@@ -190,11 +194,13 @@ def cleanup_old_directories(root_path, older_than):
 
 @app.task
 def cleanup_builds(older_than=None):
+    logger.debug('Cleaning up builds...')
     deployments = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
     cleanup_old_directories(deployments, older_than)
 
 
 @app.task
 def cleanup_checkouts(older_than=None):
+    logger.debug('Cleaning up checkouts...')
     checkouts = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
     cleanup_old_directories(checkouts, older_than)
