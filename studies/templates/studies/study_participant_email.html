@@ -21,17 +21,26 @@
             var allEmails = $('.email-list');
             allEmails.hide();
             $('.email-list').hide()
-            for(var i = 0; i < allEmails.length; i++) {
+            $('#no-participants').hide();
+            for (var i = 0; i < allEmails.length; i++) {
                 allEmails[i].required = false;
                 allEmails[i].name = '';
             }
             if (selected && selected.currentTarget.value !== 'none') {
-                $('#contact-form').show()
-                $(`#${selected.currentTarget.value}`).show();
-                $(`#${selected.currentTarget.value}`)[0].required = true;
-                $(`#${selected.currentTarget.value}`)[0].name = 'recipients';
+                var value = selected.currentTarget.value
+                if ($('#' + value)[0].options.length > 0) {
+                    $('#contact-form').show()
+                    $(`#${value}`).show();
+                    $(`#${value}`)[0].required = true;
+                    $(`#${value}`)[0].name = 'recipients';
+                } else {
+                    $('#contact-form').hide();
+                    $('#no-participants').show();
+                }
+
             } else {
-                $('#contact-form').hide()
+                $('#contact-form').hide();
+                $('#no-participants').hide();
             }
 
         })
@@ -58,6 +67,9 @@
                   <option value="email_study_updates">Study updates available</option>
                   <option value="email_response_questions">Questions about participant responses</option>
                 </select>
+             </div>
+             <div id="no-participants" style="display:none">
+                 <p><em> No participants eligible to email. </em></p>
              </div>
              <div id="contact-form" class="panel panel-default" style="display:none">
                <div class="panel-heading">
