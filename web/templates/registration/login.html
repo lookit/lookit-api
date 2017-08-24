@@ -10,11 +10,9 @@
   {% endif %}
 {% endblock %}
 
-{% block header %}<div class="navbar"></div>{% endblock %}
-
 {% block content %}
 <div class="container">
-    <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12 col-xs-offset-0">
+    <div class="pt-lg col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12 col-xs-offset-0">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h3 class="panel-title">Participant Login</h3>
@@ -31,7 +29,7 @@
             </form>
 
             {# Assumes you setup the password_reset view in your URLconf #}
-            <p class="text-center"><a href="{% url 'password_reset' %}">Lost password?</a></p>
+            <p class="text-center"><a href="{% url 'password_reset' %}">Forgot password?</a></p>
             <p class="text-center">New to Experimenter? <a href="{% url 'web:participant-signup' %}"> Create an account </a></p>
           </div>
         </div>
