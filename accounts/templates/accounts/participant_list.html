@@ -74,7 +74,7 @@
    {% for user in object_list %}
        <div class="row pt-xs">
            <div class="col-md-3 col-md-offset-1 col-sm-11 col-sm-offset-1 col-xs-12">
-                <a href="{% url 'exp:participant-detail' user.id %}"> {{ user.nickname }}</a>
+                <a href="{% url 'exp:participant-detail' user.id %}"> {% if user.nickname %} {{ user.nickname }}{% else %} Participant ID {{ user.id }} {% endif %}</a>
            </div>
 
            <div class="col-md-2 col-sm-offset-1 col-md-offset-0 col-xs-12">
