@@ -312,7 +312,7 @@ def send_email_when_receive_groups(sender, instance, created, **kwargs):
                 'researcher': instance,
                 'permission': permission,
             }
-            send_mail('notify_researcher_of_org_permissions', f'{instance.organization.name} Experimenter permissions granted', instance.username, from_address=EMAIL_FROM_ADDRESS, **context)
+            send_mail('notify_researcher_of_org_permissions', f'Invitation to access studies on {instance.organization.name}', instance.username, from_address=EMAIL_FROM_ADDRESS, **context)
 
 class DemographicData(models.Model):
     RACE_CHOICES = Choices(
