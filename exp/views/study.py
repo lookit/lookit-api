@@ -246,7 +246,7 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
             context = {
                 'custom_message': message
             }
-            send_mail('custom_email', subject, None, bcc=recipients, from_email=sender, **context)
+            send_mail.delay('custom_email', subject, None, bcc=recipients, from_email=sender, **context)
             messages.success(self.request, "Your message has been sent.")
             self.create_email_log(recipients, message, subject)
             return HttpResponseRedirect(self.get_success_url())

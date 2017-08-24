@@ -156,14 +156,14 @@ def build_experiment(study_uuid, preview=True):
         'study': study,
         'action': 'previewed' if preview else 'deployed'
     }
-    send_mail(
+    send_mail.delay(
         'notify_admins_of_study_action',
         'Study Deployed',
         settings.EMAIL_FROM_ADDRESS,
         bcc=list(study.study_organization_admin_group.user_set.values_list('username', flat=True)),
         **context
     )
-    send_mail(
+    send_mail.delay(
         'notify_researchers_of_deployment',
         'Study Deployed',
         settings.EMAIL_FROM_ADDRESS,
