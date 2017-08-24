@@ -32,6 +32,7 @@ from revproxy.views import ProxyView
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.models import Study, StudyLog
 import get_study_attachments
+from project.settings import EMAIL_FROM_ADDRESS
 
 
 class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
@@ -326,6 +327,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             add_user_object = User.objects.get(pk=add_user)
             study_read_group.user_set.add(add_user_object)
             messages.success(self.request, f"{add_user_object.get_short_name()} given {self.get_object().name} Read Permissions.", extra_tags='user_added')
+            self.send_study_email(add_user_object, 'read')
         if remove_user:
             # Removes user from both study read and study admin groups
             remove = User.objects.get(pk=remove_user)
@@ -341,12 +343,22 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
                 # if admin, removes user from study read and adds to study admin
                 study_read_group.user_set.remove(update)
                 study_admin_group.user_set.add(update)
+                self.send_study_email(update, 'admin')
             if permissions == 'study_read':
                 # if read, removes user from study admin and adds to study read
                 if self.adequate_study_admins(study_admin_group, update):
                     study_read_group.user_set.add(update)
                     study_admin_group.user_set.remove(update)
+                    self.send_study_email(update, 'read')
         return
+
+    def send_study_email(self, user, permission):
+        context = {
+            'study': self.get_object(),
+            'permission': permission,
+            'researcher': user
+        }
+        send_mail('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=EMAIL_FROM_ADDRESS, **context)
 
     def post(self, request, *args, **kwargs):
         '''
