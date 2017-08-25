@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^studies/history/$', views.StudiesHistoryView.as_view(), name='studies-history'),
     url(r'^studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/$', views.StudyDetailView.as_view(), name='study-detail'),
     url(r'^studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/(?P<child_id>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/$', views.ExperimentProxyView.as_view(), name='experiment-proxy'),
+    url(r'^studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/.*$', views.ExperimentAssetsProxyView.as_view(), name='experiment-assets-proxy'),
     url(r'^faq/$', flatpages_views.flatpage, dict(url='/faq/'), name='faq'),
     url(r'^scientists/$', flatpages_views.flatpage, dict(url='/scientists/'), name='scientists'),
     url(r'^resources/$', flatpages_views.flatpage, dict(url='/resources/'), name='resources'),
@@ -21,5 +22,5 @@ urlpatterns = [
     url(r'^(?P<path>assets/.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-assets-proxy'),
     url(r'^(?P<path>fonts/.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-fonts-proxy'),
     url(r'^$', flatpages_views.flatpage, dict(url=''), name='home'),
-    url(r'^(?P<path>.*)$', views.ExperimentAssetsProxyView.as_view(), name='experiment-catchall-proxy'),
+    url(r'^(?P<path>(?P<filename>avc_settings\.(php|asp)|loading\.swf|translations\/.*|audio_video_quality_profiles\/.*))$', views.ExperimentAssetsProxyView.as_view(), name='experiment-assets-proxy'),
 ]

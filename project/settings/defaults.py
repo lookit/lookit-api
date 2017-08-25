@@ -16,7 +16,8 @@ import raven
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# root path for ember builds
+EMBER_BUILD_ROOT_PATH = os.path.join(BASE_DIR, '../ember_build')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -88,6 +89,17 @@ if not DEBUG:
         'release': os.environ.get('GIT_COMMIT', 'No version'),
     }
 
+
+if not DEBUG:
+    INSTALLED_APPS += [
+        'raven.contrib.django.raven_compat',
+    ]
+    RAVEN_CONFIG = {
+        'dsn': os.environ.get('RAVEN_DSN', None),
+        # If you are using git, you can also automatically configure the
+        # release based on the git info.
+        'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
+    }
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -201,7 +213,7 @@ JSON_API_PLURALIZE_TYPES = True
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -218,7 +230,9 @@ SITE_NAME = os.environ.get('SITE_NAME', 'Lookit')
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 # base url for experiments, should be s3 bucket in prod
-EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'http://google.com/')  # default to ember base url
+EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/experiments/')  # default to ember base url
+PREVIEW_EXPERIMENT_BASE_URL = os.environ.get('PREVIEW_EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/preview_experiments/')  # default to ember base url
+
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')  # default to ember base url
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/exp/')
@@ -259,19 +273,32 @@ if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
     # if we're trying to use cloud storage
     STATICFILES_LOCATION = '/static'
     STATICFILES_STORAGE = 'project.storages.LookitStaticStorage'
-    STATIC_URL = os.environ.get('STATIC_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/static/')
+    STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
     MEDIAFILES_LOCATION = '/media'
     DEFAULT_FILE_STORAGE = 'project.storages.LookitMediaStorage'
-    MEDIA_URL = os.environ.get('MEDIA_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/media/')
+    MEDIA_URL = os.environ.get('MEDIA_URL', '/media/')
 
-    GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', 'io-osf-lookit-staging2')
-    GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', 'cos-staging')
+    EXPERIMENT_LOCATION = '/experiments'
+    PREVIEW_EXPERIMENT_LOCATION = '/preview_experiments'
+
+    GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', '')
+    GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', '')
 else:
     # we know nothing about cloud storage
     print('-------------------Why yes, we are using local assets!-------------------------')
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'
+
+    STATICFILES_LOCATION = '/static'
+
+    MEDIAFILES_LOCATION = '/media'
+
+    EXPERIMENT_LOCATION = '/experiments'
+    PREVIEW_EXPERIMENT_LOCATION = '/preview_experiments'
+
+    GS_BUCKET_NAME = None
+    GS_PROJECT_ID = None
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -286,7 +313,7 @@ EMAIL_BACKEND = f"django.core.mail.backends.{'smtp' if not DEBUG else 'console'}
 # disable smtp backend for now
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # United States will show up first in the countries list on the Demographic Data form
-COUNTRIES_FIRST=['US']
+COUNTRIES_FIRST = ['US']
 
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
@@ -294,4 +321,12 @@ MESSAGE_TAGS = {
     messages.SUCCESS: 'alert-success',
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
+}
+EMBER_EXP_PLAYER_REPO = 'https://github.com/CenterForOpenScience/ember-lookit-frameplayer'
+EMBER_ADDONS_REPO = 'https://github.com/centerforopenscience/exp-addons'
+
+CELERY_TASK_ROUTES = {
+    'studies.tasks.build_experiment': {'queue': 'builds'},
+    'studies.tasks.cleanup*': {'queue': 'cleanup'},
+    'studies.helpers.send_mail': {'queue': 'email'}
 }
