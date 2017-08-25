@@ -69,7 +69,7 @@ class ParticipantUpdateForm(forms.ModelForm):
             kwargs.pop('user')
         super().__init__(*args, **kwargs)
         instance = getattr(self, 'instance', None)
-        self.fields['username'].widget.attrs['autofocus'] = 'autofocus'
+        self.fields['username'].widget.attrs.pop("autofocus", None)
 
     class Meta:
         model = User
@@ -80,6 +80,10 @@ class ParticipantUpdateForm(forms.ModelForm):
 
 
 class ParticipantPasswordForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['old_password'].widget.attrs.pop("autofocus", None)
+
     class Meta:
         model = User
 
