@@ -291,10 +291,8 @@ else:
     MEDIA_URL = '/media/'
 
     STATICFILES_LOCATION = '/static'
-    STATICFILES_STORAGE = None
 
     MEDIAFILES_LOCATION = '/media'
-    DEFAULT_FILE_STORAGE = 'project.storages.LookitMediaStorage'
 
     EXPERIMENT_LOCATION = '/experiments'
     PREVIEW_EXPERIMENT_LOCATION = '/preview_experiments'
@@ -324,7 +322,7 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
-EMBER_EXP_PLAYER_REPO = 'https://github.com/pattisdr/ember-frame-player'
+EMBER_EXP_PLAYER_REPO = 'https://github.com/CenterForOpenScience/ember-lookit-frameplayer'
 EMBER_ADDONS_REPO = 'https://github.com/centerforopenscience/exp-addons'
 
 CELERY_TASK_ROUTES = {
