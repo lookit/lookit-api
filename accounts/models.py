@@ -24,6 +24,8 @@ from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from multiselectfield import MultiSelectField
+from studies.helpers import send_mail
+from project.settings import EMAIL_FROM_ADDRESS
 
 
 class UserManager(BaseUserManager):
@@ -121,8 +123,13 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     email_next_session = models.BooleanField(default=True)
     email_new_studies = models.BooleanField(default=True)
-    email_results_published = models.BooleanField(default=True)
-    email_personally = models.BooleanField(default=True)
+    email_study_updates = models.BooleanField(default=True)
+    email_response_questions = models.BooleanField(default=True)
+
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        if self.id:
+            setattr(self, f'__original_groups', self.groups.all())
 
     @cached_property
     def osf_profile_url(self):
@@ -286,6 +293,26 @@ class Child(models.Model):
         resource_name = 'children'
         lookup_field = 'uuid'
 
+@receiver(post_save, sender=User)
+def send_email_when_receive_groups(sender, instance, created, **kwargs):
+    """
+    If researcher is given groups for the first time, send an email letting them know.
+    """
+    if instance.is_researcher and hasattr(instance, '__original_groups'):
+        original_groups = getattr(instance, '__original_groups')
+        if not original_groups and set(instance.groups.all()) != set(instance.__original_groups):
+            if instance.is_org_admin:
+                permission = 'admin'
+            elif instance.is_org_read:
+                permission = 'read'
+            else:
+                permission = 'researcher'
+
+            context = {
+                'researcher': instance,
+                'permission': permission,
+            }
+            send_mail('notify_researcher_of_org_permissions', f'Invitation to access studies on {instance.organization.name}', instance.username, from_address=EMAIL_FROM_ADDRESS, **context)
 
 class DemographicData(models.Model):
     RACE_CHOICES = Choices(

@@ -1,0 +1,13 @@
+<p>
+  Dear {{ researcher.get_short_name}},
+</p>
+<p>
+    You have been given {{ permission }} permissions to collaborate on {{ study.name }}.
+</p>
+<p>
+    Here is a link to start collaborating: {{ base_url }}{% url 'exp:study-detail' study.id %}'.
+</p>
+<p>
+    Best,
+    <div> {{ researcher.organization.name }} Admin </div>
+</p>

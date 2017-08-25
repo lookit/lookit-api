@@ -187,4 +187,4 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         """
         qs = super().get_queryset()
         study_ids = get_objects_for_user(self.request.user, 'studies.can_edit_study').values_list('id', flat=True)
-        return qs.filter(Q(response__study__id__in=study_ids) | Q(response__child__user=self.request.user))
+        return qs.filter(Q(response__study__id__in=study_ids) | Q(response__child__user=self.request.user)).distinct()
