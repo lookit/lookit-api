@@ -1,10 +1,10 @@
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import get_template
-
+from project.celery import app
 from project.settings import EMAIL_FROM_ADDRESS, BASE_URL
 
 
-# TODO: celery taskify
+@app.task
 def send_mail(template_name, subject, to_addresses, cc=None, bcc=None, from_email=None, **context):
     """
     Helper for sending templated email
