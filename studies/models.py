@@ -72,6 +72,7 @@ class Study(models.Model):
     creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     metadata = DateTimeAwareJSONField(default={})
+    previewed = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
@@ -84,7 +85,7 @@ class Study(models.Model):
             before_state_change='check_permission',
             after_state_change='_finalize_state_change'
         )
-        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age', 'min_age', 'image', 'exit_url']
+        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age', 'min_age', 'image', 'exit_url', 'previewed']
         for field in self.__monitoring_fields:
             setattr(self, f'__original_{field}', getattr(self, field))
 
@@ -243,7 +244,7 @@ class Study(models.Model):
     def deploy_study(self, ev):
         self.state = 'deploying'
         self.save()
-        build_experiment.delay(self.uuid, preview=False)
+        build_experiment.delay(self.uuid, ev.kwargs.get('user').uuid, preview=False)
 
     def notify_administrators_of_pause(self, ev):
         context = {
