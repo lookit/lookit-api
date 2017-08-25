@@ -273,17 +273,17 @@ if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
     # if we're trying to use cloud storage
     STATICFILES_LOCATION = '/static'
     STATICFILES_STORAGE = 'project.storages.LookitStaticStorage'
-    STATIC_URL = os.environ.get('STATIC_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/static/')
+    STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
     MEDIAFILES_LOCATION = '/media'
     DEFAULT_FILE_STORAGE = 'project.storages.LookitMediaStorage'
-    MEDIA_URL = os.environ.get('MEDIA_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/media/')
+    MEDIA_URL = os.environ.get('MEDIA_URL', '/media/')
 
     EXPERIMENT_LOCATION = '/experiments'
     PREVIEW_EXPERIMENT_LOCATION = '/preview_experiments'
 
-    GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', 'io-osf-lookit-staging2')
-    GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', 'cos-staging')
+    GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', '')
+    GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', '')
 else:
     # we know nothing about cloud storage
     print('-------------------Why yes, we are using local assets!-------------------------')
