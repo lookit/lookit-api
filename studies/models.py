@@ -238,17 +238,21 @@ class Study(models.Model):
 
     def notify_administrators_of_retraction(self, ev):
         context = {
-            'study': self,
+            'org_name': self.organization.name,
+            'study_name': self.name,
+            'study_id': self.pk,
+            'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
-            'researcher': ev.kwargs.get('user')
         }
         send_mail.delay('notify_admins_of_study_action', 'Study Retraction Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_activation(self, ev):
         context = {
-            'study': self,
+            'org_name': self.organization.name,
+            'study_name': self.name,
+            'study_id': self.pk,
+            'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
-            'researcher': ev.kwargs.get('user')
         }
         send_mail.delay('notify_admins_of_study_action', 'Study Activation Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
@@ -259,17 +263,21 @@ class Study(models.Model):
 
     def notify_administrators_of_pause(self, ev):
         context = {
-            'study': self,
+            'org_name': self.organization.name,
+            'study_name': self.name,
+            'study_id': self.pk,
+            'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
-            'researcher': ev.kwargs.get('user')
         }
         send_mail.delay('notify_admins_of_study_action', 'Study Pause Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_deactivation(self, ev):
         context = {
-            'study': self,
+            'org_name': self.organization.name,
+            'study_name': self.name,
+            'study_id': self.pk,
+            'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
-            'researcher': ev.kwargs.get('user')
         }
         send_mail.delay('notify_admins_of_study_action', 'Study Deactivation Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
