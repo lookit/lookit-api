@@ -4,7 +4,7 @@ Your study {{study_name}} has been {% if approved %}approved{% else %}disapprove
 Comments from the Organization Admin, if there are any, appear below.
 
 {% if approved %}
-To start your study, login to Experimenter, navigate to the study, and select "Activate" from the dropdown.”
+To start your study, login to Experimenter, navigate to the study, and select "Activate" from the dropdown.
 {% else %}
 You can modify your study and resubmit for approval.
 {% endif %}
