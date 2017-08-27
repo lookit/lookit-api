@@ -12,6 +12,7 @@ from accounts.utils import build_study_group_name
 from guardian.shortcuts import assign_perm, get_groups_with_perms
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
+from project import settings
 from transitions.extensions import GraphMachine as Machine
 
 from studies import workflow
