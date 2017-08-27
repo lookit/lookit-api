@@ -179,7 +179,9 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
         deploy_to_remote(cloud_deployment_directory, storage)
 
         context = {
-            'study': study,
+            'org_name': study.organization.name,
+            'study_name': study.name,
+            'study_id': study.pk,
             'action': 'previewed' if preview else 'deployed'
         }
         send_mail.delay(

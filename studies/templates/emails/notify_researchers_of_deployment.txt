@@ -1,7 +1,7 @@
 Dear Study Researchers,
 
 {% if action == 'previewed' %}
-  Your study {{study.name}} has been previewed. You can access it here: {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+  Your study {{ study_name }} has been previewed. You can access it here: {{base_url}}{% url 'exp:study-detail' pk=study_id %}
 {% elif action == 'deployed' %}
-  Your study {{study.name}} has been deployed. You can access it here: {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+  Your study {{ study_name }} has been deployed. You can access it here: {{base_url}}{% url 'exp:study-detail' pk=study_id %}
 {% endif %}
