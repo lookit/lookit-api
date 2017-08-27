@@ -356,10 +356,13 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         return
 
     def send_study_email(self, user, permission):
+        study = self.get_object()
         context = {
-            'study': self.get_object(),
             'permission': permission,
-            'researcher': user
+            'study_name': study.name,
+            'study_id': study.id,
+            'org_name': user.organization.name,
+            'researcher_name': user.get_short_name()
         }
         send_mail('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=settings.EMAIL_FROM_ADDRESS, **context)
 
