@@ -364,7 +364,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             'org_name': user.organization.name,
             'researcher_name': user.get_short_name()
         }
-        send_mail('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=settings.EMAIL_FROM_ADDRESS, **context)
+        send_mail.delay('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=settings.EMAIL_FROM_ADDRESS, **context)
 
     def post(self, request, *args, **kwargs):
         '''
