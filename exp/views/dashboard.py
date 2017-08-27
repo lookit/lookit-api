@@ -14,7 +14,7 @@ class ExperimenterDashboardView(ExperimenterLoginRequiredMixin, generic.Template
     template_name = 'exp/dashboard.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_researcher:
+        if hasattr(request.user, 'is_researcher') and not request.user.is_researcher:
             return redirect(reverse_lazy('web:home'))
         if self.request.path.endswith('/'):
             if self.request.user.groups.exists():
