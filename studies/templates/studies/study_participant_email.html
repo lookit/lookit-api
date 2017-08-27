@@ -13,6 +13,7 @@
 {% block content %}
 <script>
     $(document).ready(function() {
+        document.getElementById("email-type").value = "none";
         $('form').submit(function() {
             $("#send-email").text("Sending...");
             $("#send-email").attr("disabled", "disabled");
