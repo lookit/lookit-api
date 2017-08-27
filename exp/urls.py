@@ -16,12 +16,13 @@ Including another URLconf
 '''
 from django.conf.urls import url
 
-from exp.views import (ParticipantDetailView, ParticipantListView, StudyParticipantEmailView,
-                       PreviewProxyView, ResearcherDetailView,
-                       ResearcherListView, StudyBuildView, StudyCreateView,
-                       StudyDetailView, StudyListView, StudyResponsesList,
-                       StudyResponsesAll, StudyDemographics, StudyAttachments,
-                       StudyUpdateView, ExperimenterDashboardView)
+from exp.views import (ExperimenterDashboardView, ParticipantDetailView,
+                       ParticipantListView, PreviewProxyView,
+                       ResearcherDetailView, ResearcherListView,
+                       StudyAttachments, StudyBuildView, StudyCreateView,
+                       StudyDemographics, StudyDetailView, StudyListView,
+                       StudyParticipantEmailView, StudyPreviewBuildView,
+                       StudyResponsesAll, StudyResponsesList, StudyUpdateView)
 
 urlpatterns = [
     url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
@@ -38,6 +39,7 @@ urlpatterns = [
     url(r'studies/(?P<pk>\d+)/responses/all/$', StudyResponsesAll.as_view(), name='study-responses-all'),
     url(r'studies/(?P<pk>\d+)/responses/demographics/$', StudyDemographics.as_view(), name='study-demographics'),
     url(r'studies/(?P<pk>\d+)/responses/attachments/$', StudyAttachments.as_view(), name='study-attachments'),
+    url(r'studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/preview_build/$', StudyPreviewBuildView.as_view(), name='study-preview-build'),
     url(r'studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/preview/$', PreviewProxyView.as_view(), name='preview-proxy'),
     url(r'', ExperimenterDashboardView.as_view(), name='dashboard')
 ]

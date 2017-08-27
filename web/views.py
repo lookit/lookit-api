@@ -328,10 +328,20 @@ class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
-        path = self.request.path
-        if path.endswith('/') or 'js' in path or 'css' in path:
+        referer = request.META.get('HTTP_REFERER', None)
+        if (referer and 'preview' in referer):
+            # if they're trying to preview use the preview base_url
+            self.upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
+        uuid = kwargs.pop('uuid', None)
+        filename = kwargs.pop('filename', None)
+        if filename:
+            # if it's one of the hdfv files
+            study_uuid = referer.split('/')[-3]
+            path = f"{study_uuid}/{filename}"
             return super().dispatch(request, path, *args, **kwargs)
-        return redirect(self.request.path + '/')
+        # if it's just regular assets remove the child_id from the path
+        path = f"{path.split('/')[0]}{request.path.split(path)[1]}"
+        return super().dispatch(request, path, *args, **kwargs)
 
 
 class ExperimentProxyView(ProxyView, LoginRequiredMixin):
@@ -349,5 +359,8 @@ class ExperimentProxyView(ProxyView, LoginRequiredMixin):
         if child.user != request.user:
             # requesting user doesn't belong to that child
             raise PermissionDenied()
+
+        if request.path[-1] == '/':
+            path = f"{path.split('/')[0]}/index.html"
 
         return super().dispatch(request, path)

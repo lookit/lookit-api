@@ -52,11 +52,13 @@
                 <h1 class="panel-title">Study Editor </h1>
               </div>
               <div class="panel-body">
+                <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
+                  <input class="btn btn-primary" type="submit" value="Try Experiment" />
+                </form>
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
                     <div>
                         {% buttons %}
-                         <a class="btn btn-primary" target="_blank" href="{% url 'exp:preview-proxy' study.uuid %}"> Try Experiment </a>
                           <span class="pull-right">
                               <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
                               {% if save_confirmation %}

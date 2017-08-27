@@ -9,7 +9,7 @@ class LocationPrefixedPublicGoogleCloudStorage(GoogleCloudStorage):
 
     def _normalize_name(self, name):
         if self.location:
-            return super()._normalize_name(safe_join(self.location, name.lower()))
+            return super()._normalize_name(safe_join(self.location, name))
         return super()._normalize_name(name.lower())
 
     def url(self, name):
@@ -23,9 +23,22 @@ class LocationPrefixedPublicGoogleCloudStorage(GoogleCloudStorage):
         return f"/{name.lstrip('/')}"
 
 
-class LookitStaticStorage(LocationPrefixedPublicGoogleCloudStorage):
+class LowercaseNameMixin(GoogleCloudStorage):
+    def _normalize_name(self, name):
+        return super()._normalize_name(name.lower())
+
+
+class LookitStaticStorage(LowercaseNameMixin, LocationPrefixedPublicGoogleCloudStorage):
     location = settings.STATICFILES_LOCATION
 
 
-class LookitMediaStorage(LocationPrefixedPublicGoogleCloudStorage):
+class LookitMediaStorage(LowercaseNameMixin, LocationPrefixedPublicGoogleCloudStorage):
     location = settings.MEDIAFILES_LOCATION
+
+
+class LookitExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
+    location = settings.EXPERIMENT_LOCATION
+
+
+class LookitPreviewExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
+    location = settings.PREVIEW_EXPERIMENT_LOCATION

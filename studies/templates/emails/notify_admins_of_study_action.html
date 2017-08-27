@@ -13,6 +13,10 @@
   {% elif action == 'paused' %}
     {{researcher.given_name}} {{researcher.family_name}} has paused the study {{ study_name }}. {{base_url}}{% url 'exp:study-detail' study_id %}
   {% elif action == 'deactivated' %}
-    {{researcher.given_name}} {{researcher.family_name}} has deactivated the study {{ study_name }}. {{base_url}}{{% url 'exp:study-detail' study_id %}
+    {{researcher.given_name}} {{researcher.family_name}} has deactivated the study {{study.name}}. {{base_url}}{{% url 'exp:study-detail' pk=study.id %}
+  {% elif action == 'deployed' %}
+     {{study.name}} has been deployed. {{base_url}}{{% url 'exp:study-detail' pk=study.id %}
+  {% elif action == 'previewed' %}
+     {{study.name}} has been previewed. {{base_url}}{{% url 'exp:study-detail' pk=study.id %}
   {% endif %}
 </p>
