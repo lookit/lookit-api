@@ -1,8 +1,8 @@
-Dear {{ researcher.get_short_name}},
+Dear {{ researcher_name }},
 
-You have been given {{ permission }} permissions for the organization {{ researcher.organization.name }}.
+You have been given {{ permission }} permissions for the organization {{ org_name }}.
 
 Here is a link to this organization’s studies: {{ base_url }}{% url 'exp:study-list' %}'.
 
 Best,
-{{ researcher.organization.name }} Admin
+{{ org_name }} Admin

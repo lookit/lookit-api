@@ -309,10 +309,11 @@ def send_email_when_receive_groups(sender, instance, created, **kwargs):
                 permission = 'researcher'
 
             context = {
-                'researcher': instance,
+                'researcher_name': instance.get_short_name(),
+                'org_name': instance.organization.name,
                 'permission': permission,
             }
-            send_mail('notify_researcher_of_org_permissions', f'Invitation to access studies on {instance.organization.name}', instance.username, from_address=EMAIL_FROM_ADDRESS, **context)
+            send_mail.delay('notify_researcher_of_org_permissions', f'Invitation to access studies on {instance.organization.name}', instance.username, from_address=EMAIL_FROM_ADDRESS, **context)
 
 class DemographicData(models.Model):
     RACE_CHOICES = Choices(
