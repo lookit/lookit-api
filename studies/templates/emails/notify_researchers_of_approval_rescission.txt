@@ -1,6 +1,6 @@
 Dear Study Admin,
 
-Approval for your study {{study.name}} on {{study.organization.name}} has been rescinded. Any collected data can still be accessed in your account, but no more participants will be able to take part in your study unless it is re-approved.
+Approval for your study {{study_name}} on {{ org_name }} has been rescinded. Any collected data can still be accessed in your account, but no more participants will be able to take part in your study unless it is re-approved.
 
 Best,
-{{study.organization.name}} Admin
+{{ org_name }} Admin

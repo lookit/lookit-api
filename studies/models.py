@@ -231,7 +231,8 @@ class Study(models.Model):
 
     def notify_submitter_of_recission(self, ev):
         context = {
-            'study': self,
+            'study_name': self.name,
+            'org_name':  self.organization.name,
         }
         send_mail.delay('notify_researchers_of_approval_rescission', '{} Rescinded Notification'.format(self.name), settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
 
