@@ -179,33 +179,39 @@ class Study(models.Model):
 
     def notify_administrators_of_submission(self, ev):
         context = {
-            'study': self,
+            'org_name': self.organization.name,
+            'study_name': self.name,
+            'study_id': self.pk,
+            'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
-            'researcher': ev.kwargs.get('user')
         }
-        send_mail('notify_admins_of_study_action', 'Study Submission Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
+        send_mail.delay('notify_admins_of_study_action', 'Study Submission Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_submitter_of_approval(self, ev):
         context = {
-            'study': self,
+            'study_name': self.name,
+            'org_name': self.organization.name,
+            'study_id': self.pk,
             'approved': True,
             'comments': self.comments
         }
-        send_mail('notify_researchers_of_approval_decision', '{} Approval Notification'.format(self.name), EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
+        send_mail.delay('notify_researchers_of_approval_decision', '{} Approval Notification'.format(self.name), settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_submitter_of_rejection(self, ev):
         context = {
-            'study': self,
+            'study_name': self.name,
+            'org_name': self.organization.name,
+            'study_id': self.pk,
             'approved': False,
             'comments': self.comments
         }
-        send_mail('notify_researchers_of_approval_decision', '{} Rejection Notification'.format(self.name), EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
+        send_mail.delay('notify_researchers_of_approval_decision', '{} Rejection Notification'.format(self.name), settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_submitter_of_recission(self, ev):
         context = {
             'study': self,
         }
-        send_mail('notify_researchers_of_approval_rescission', '{} Rescinded Notification'.format(self.name), EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
+        send_mail.delay('notify_researchers_of_approval_rescission', '{} Rescinded Notification'.format(self.name), settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_retraction(self, ev):
         context = {
@@ -213,7 +219,7 @@ class Study(models.Model):
             'action': ev.transition.dest,
             'researcher': ev.kwargs.get('user')
         }
-        send_mail('notify_admins_of_study_action', 'Study Retraction Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
+        send_mail.delay('notify_admins_of_study_action', 'Study Retraction Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_activation(self, ev):
         context = {
@@ -221,7 +227,12 @@ class Study(models.Model):
             'action': ev.transition.dest,
             'researcher': ev.kwargs.get('user')
         }
-        send_mail('notify_admins_of_study_action', 'Study Activation Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
+        send_mail.delay('notify_admins_of_study_action', 'Study Activation Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
+
+    def deploy_study(self, ev):
+        self.state = 'deploying'
+        self.save()
+        build_experiment.delay(self.uuid, preview=False)
 
     def notify_administrators_of_pause(self, ev):
         context = {
@@ -229,7 +240,7 @@ class Study(models.Model):
             'action': ev.transition.dest,
             'researcher': ev.kwargs.get('user')
         }
-        send_mail('notify_admins_of_study_action', 'Study Pause Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
+        send_mail.delay('notify_admins_of_study_action', 'Study Pause Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def notify_administrators_of_deactivation(self, ev):
         context = {
@@ -237,7 +248,7 @@ class Study(models.Model):
             'action': ev.transition.dest,
             'researcher': ev.kwargs.get('user')
         }
-        send_mail('notify_admins_of_study_action', 'Study Deactivation Notification', EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
+        send_mail.delay('notify_admins_of_study_action', 'Study Deactivation Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     # Runs for every transition to log action
     def _log_action(self, ev):
