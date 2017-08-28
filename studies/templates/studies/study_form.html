@@ -67,22 +67,7 @@
               <div class="panel-body">
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
-                    <div id="study-type-metadata" style="display:none">
-                        <div class="row">
-                            <div class="col-xs-10 col-xs-offset-1">
-                                {% for type in types %}
-                                    <div class='type-fields' id='type-metadata-{{ forloop.counter }}'>
-                                        {% for key, values in type.items %}
-                                            <div class="form-group">
-                                                <label>{{ key }} </label>
-                                                <input name="{{key}}" type="text" value="{{values}}" class="form-control">
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
+                    {% include "studies/_study_type.html" with types=types %}
                     <div class="pull-right">
                         {% buttons %}
                             <a href="{% url 'exp:study-list' %}" class="btn btn-default">
