@@ -1293,5 +1293,6 @@ def post_migrate_create_flatpages(sender, **kwargs):
     site.save()
 
     for page in flatpages:
-        flatpage_obj, created = FlatPage.objects.get_or_create(**page)
+        defaults = dict(content=page.pop('content'))
+        flatpage_obj, created = FlatPage.objects.get_or_create(defaults=defaults, **page)
         flatpage_obj.sites.add(site)
