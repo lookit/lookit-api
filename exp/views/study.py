@@ -45,6 +45,17 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
     raise_exception = True
     form_class = StudyForm
 
+    def extract_type_metadata(self, form):
+        """
+        Pull the metadata related to the selected StudyType from the POST request
+        """
+        study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
+        type_fields = study_type.configuration['metadata']['fields']
+        metadata = {}
+        for key in type_fields:
+            metadata[key] = self.request.POST.get(key, None)
+        return metadata
+
     def form_valid(self, form):
         """
         Add the logged-in user as the study creator and the user's organization as the
@@ -52,6 +63,7 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
         redirect to the supplied URL
         """
         user = self.request.user
+        form.instance.metadata = self.extract_type_metadata(form)
         form.instance.creator = user
         form.instance.organization = user.organization
         self.object = form.save()
