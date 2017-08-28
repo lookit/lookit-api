@@ -67,7 +67,7 @@
               <div class="panel-body">
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
-                    {% include "studies/_study_type.html" with types=types %}
+                    {% include "studies/_study_type.html" with types=types create=1 %}
                     <div class="pull-right">
                         {% buttons %}
                             <a href="{% url 'exp:study-list' %}" class="btn btn-default">

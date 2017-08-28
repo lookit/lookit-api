@@ -1,20 +1,29 @@
 <script>
     $(document).ready(function(){
-        document.getElementById("id_study_type").value = '';
-        $('#study-type-metadata').hide()
+        if (parseInt("{{ create }}")) {
+            document.getElementById("id_study_type").value = '';
+            $('#study-type-metadata').hide();
+        } else {
+            revealMetadata("{{ currentType }}")
+
+        }
         $('#id_study_type').on('change', function(selected) {
             if (selected.currentTarget.value) {
                 var selectedVal = parseInt(selected.currentTarget.value);
-                $('#study-type-metadata').show();
-                $('.type-fields').hide();
-                $('.type-fields > .form-group > input').attr("disabled", true);
-                $(`#type-metadata-${selectedVal}> .form-group > input`).prop("disabled", false);
-                $(`#type-metadata-${selectedVal}`).show();
+                revealMetadata(selectedVal);
             } else {
                 $('#study-type-metadata').hide()
                 $('.type-fields > .form-group > input').prop("disabled", true);
             }
         });
+
+        function revealMetadata(id) {
+            $('#study-type-metadata').show();
+            $('.type-fields').hide();
+            $('.type-fields > .form-group > input').attr("disabled", true);
+            $(`#type-metadata-${id}> .form-group > input`).prop("disabled", false);
+            $(`#type-metadata-${id}`).show();
+        }
     });
 </script>
 <div id="study-type-metadata" style="display:none">

@@ -56,18 +56,22 @@
                     <div class="form-group">
                         <label class="control-label" for="id_study_type">Type</label>
                         <select name="study_type" class="form-control" title="" required="" id="id_study_type">
-                             <option value="" selected="">---------</option>
+                             <option value="">---------</option>
                             {% for option in study_types %}
-                                <option value="{{ option.id }}"> {{ option.name }}</option>
+                                <option {% if option.name == study.study_type.name %} selected {% endif %} value="{{ option.id }}"> {{ option.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    {% include "studies/_study_type.html" with types=types %}
+                    {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
+                    <div class="pull-right">
+                        <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
+                        <button type="submit" class="btn btn-success"> Save </button>
+                    </div>
                 </form>
-                <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
-                  <input class="btn btn-primary" type="submit" value="Try Experiment" />
-                </form>
-                <form class="pt-md" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                <br>
+                <br>
+                <br>
+                <form class="pt-lg" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
                     <div>
                         {% buttons %}
@@ -107,6 +111,9 @@
                             </form>
                         </div>
                     </div>
+                </form>
+                <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
+                  <input class="btn btn-primary" type="submit" value="Try Experiment" />
                 </form>
             </div>
           </div>

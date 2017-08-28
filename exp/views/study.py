@@ -461,6 +461,9 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
         """
         context = super().get_context_data(**kwargs)
         context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
+        context['study_types'] = StudyType.objects.all()
+        context['types'] = [type.configuration['metadata']['fields'] for type in context['study_types']]
+
         return context
 
     def get_success_url(self):
