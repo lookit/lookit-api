@@ -313,6 +313,8 @@ MESSAGE_TAGS = {
 EMBER_EXP_PLAYER_REPO = 'https://github.com/CenterForOpenScience/ember-lookit-frameplayer'
 EMBER_ADDONS_REPO = 'https://github.com/centerforopenscience/exp-addons'
 
+CELERY_BROKER_URL = os.environ.get('BROKER_URL', default='amqp://guest:guest@localhost:5672//')
+
 CELERY_TASK_ROUTES = {
     'studies.tasks.build_experiment': {'queue': 'builds'},
     'studies.tasks.cleanup*': {'queue': 'cleanup'},
