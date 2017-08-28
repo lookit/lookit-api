@@ -64,7 +64,7 @@ class StudyForm(forms.ModelForm):
 
     class Meta:
         model = Study
-        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age', 'max_age', 'duration', 'contact_info', 'public', 'structure']
+        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age', 'max_age', 'duration', 'contact_info', 'public', 'structure', 'study_type']
         labels = {
             'short_description': 'Short Description',
             'long_description': 'Purpose',
