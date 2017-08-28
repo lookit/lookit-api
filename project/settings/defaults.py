@@ -291,15 +291,10 @@ else:
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.sendgrid.net')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'D4nkM3m35C4n')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'M31tSt331B34m5')
-EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)
 EMAIL_FROM_ADDRESS = os.environ.get('EMAIL_FROM_ADDRESS', 'lookit.robot@some.domain')
 
 EMAIL_BACKEND = "sgbackend.SendGridBackend" if not DEBUG else "django.core.mail.backends.console.EmailBackend"
-SENDGRID_API_KEY = os.environ.get('EMAIL_HOST_PASSWORD', 'M31tSt331B34m5')
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', 'M31tSt331B34m5')
 
 # United States will show up first in the countries list on the Demographic Data form
 COUNTRIES_FIRST = ['US']
