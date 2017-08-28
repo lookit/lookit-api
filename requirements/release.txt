@@ -3,4 +3,4 @@
 uwsgi==2.0.13
 gevent==1.2.2
 psycogreen==1.0
-django-sendgrid==1.0.1
+sendgrid-django==4.0.4
