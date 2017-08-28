@@ -316,7 +316,8 @@ RABBITMQ_PORT = os.environ.get('RABBITMQ_PORT', '5672')
 RABBITMQ_VHOST = os.environ.get('RABBITMQ_VHOST', '/')
 
 CELERY_BROKER_URL = os.environ.get('BROKER_URL', f'amqp://{RABBITMQ_USERNAME}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}')
-
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
 CELERY_TASK_ROUTES = {
     'studies.tasks.build_experiment': {'queue': 'builds'},
     'studies.tasks.cleanup*': {'queue': 'cleanup'},
