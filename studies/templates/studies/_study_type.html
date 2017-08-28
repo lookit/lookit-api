@@ -1,3 +1,5 @@
+{% load exp_extras %}
+
 <script>
     $(document).ready(function(){
         if (parseInt("{{ create }}")) {
@@ -5,7 +7,6 @@
             $('#study-type-metadata').hide();
         } else {
             revealMetadata("{{ currentType }}")
-
         }
         $('#id_study_type').on('change', function(selected) {
             if (selected.currentTarget.value) {
@@ -34,7 +35,7 @@
                     {% for key, values in type.items %}
                         <div class="form-group">
                             <label>{{ key }} </label>
-                            <input name="{{key}}" type="text" value="{{values}}" class="form-control">
+                            <input name="{{key}}" type="text" value="{% if forloop.parentloop.counter == currentType and not create %} {{ study.metadata|get_key:key }} {% else %} {{values}} {% endif %}" class="form-control">
                         </div>
                     {% endfor %}
                 </div>

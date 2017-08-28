@@ -52,7 +52,7 @@
                 <h1 class="panel-title">Study Editor </h1>
               </div>
               <div class="panel-body">
-                <form>
+                <form method="POST">{% csrf_token %}
                     <div class="form-group">
                         <label class="control-label" for="id_study_type">Type</label>
                         <select name="study_type" class="form-control" title="" required="" id="id_study_type">
@@ -68,10 +68,7 @@
                         <button type="submit" class="btn btn-success"> Save </button>
                     </div>
                 </form>
-                <br>
-                <br>
-                <br>
-                <form class="pt-lg" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                <form class="large-break" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
                     <div>
                         {% buttons %}

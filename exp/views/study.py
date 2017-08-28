@@ -27,7 +27,7 @@ from accounts.utils import (get_permitted_triggers, status_tooltip_text,
                             update_trigger)
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
-from exp.views.mixins import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
@@ -35,7 +35,7 @@ from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment
 
 
-class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
+class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView, StudyTypeMixin):
     '''
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
@@ -45,17 +45,6 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
     raise_exception = True
     form_class = StudyForm
 
-    def extract_type_metadata(self, form):
-        """
-        Pull the metadata related to the selected StudyType from the POST request
-        """
-        study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
-        type_fields = study_type.configuration['metadata']['fields']
-        metadata = {}
-        for key in type_fields:
-            metadata[key] = self.request.POST.get(key, None)
-        return metadata
-
     def form_valid(self, form):
         """
         Add the logged-in user as the study creator and the user's organization as the
@@ -63,7 +52,7 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
         redirect to the supplied URL
         """
         user = self.request.user
-        form.instance.metadata = self.extract_type_metadata(form)
+        form.instance.metadata = self.extract_type_metadata()
         form.instance.creator = user
         form.instance.organization = user.organization
         self.object = form.save()
@@ -433,7 +422,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         return reverse('exp:study-edit', kwargs={'pk': self.object.id})
 
 
-class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
+class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, StudyTypeMixin):
     """
     StudyBuildView allows user to modify study structure - JSON field.
     """
@@ -455,13 +444,25 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
             initial['structure'] = json.dumps(structure)
         return initial
 
+    def post(self, request, *args, **kwargs):
+        """
+        Form for allowing user to change study type and study metadata fields
+        """
+        study = self.get_object()
+        study.metadata = self.extract_type_metadata()
+        study.study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
+        study.save()
+        return HttpResponseRedirect(reverse('exp:study-build', kwargs=dict(pk=study.pk)))
+
     def get_context_data(self, **kwargs):
         """
-        In addition to the study, adds whether save confirmation is needed to study.
+        In addition to the study, adds whether save confirmation is needed to study, as well as all study_types
+        and current metadata
         """
         context = super().get_context_data(**kwargs)
         context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
         context['study_types'] = StudyType.objects.all()
+        context['study_metadata'] = self.object.metadata
         context['types'] = [type.configuration['metadata']['fields'] for type in context['study_types']]
 
         return context

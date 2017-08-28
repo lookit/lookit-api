@@ -20,3 +20,7 @@ def query_transform(request, **kwargs):
         updated['sort'] = kwargs.get('sort')
 
     return updated.urlencode()
+
+@register.filter
+def get_key(dictionary, key):
+    return dictionary.get(key)
