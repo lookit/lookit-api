@@ -16,8 +16,17 @@
     </script>
     <script>
         $(document).ready(function(){
+            document.getElementById("id_study_type").value = '';
+            $('#study-type-metadata').hide()
             $('form').submit(function() {
                 $('#create-study-button').prop("disabled", "disabled");
+            });
+            $('#id_study_type').on('change', function(selected) {
+                if (selected.currentTarget.value) {
+                    $('#study-type-metadata').show();
+                } else {
+                    $('#study-type-metadata').hide()
+                }
             });
         });
     </script>
@@ -51,6 +60,9 @@
               <div class="panel-body">
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
+                    <div id="study-type-metadata" style="display:none">
+                        Type selected
+                    </div>
                     <div class="pull-right">
                         {% buttons %}
                             <a href="{% url 'exp:study-list' %}" class="btn btn-default">
