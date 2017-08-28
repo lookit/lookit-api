@@ -313,7 +313,13 @@ MESSAGE_TAGS = {
 EMBER_EXP_PLAYER_REPO = 'https://github.com/CenterForOpenScience/ember-lookit-frameplayer'
 EMBER_ADDONS_REPO = 'https://github.com/centerforopenscience/exp-addons'
 
-CELERY_BROKER_URL = os.environ.get('BROKER_URL', default='amqp://guest:guest@localhost:5672//')
+RABBITMQ_USERNAME = os.environ.get('RABBITMQ_USERNAME', 'guest')
+RABBITMQ_PASSWORD = os.environ.get('RABBITMQ_PASSWORD', 'guest')
+RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST', 'localhost')
+RABBITMQ_PORT = os.environ.get('RABBITMQ_PORT', '5672')
+RABBITMQ_VHOST = os.environ.get('RABBITMQ_VHOST', '/')
+
+CELERY_BROKER_URL = os.environ.get('BROKER_URL', f'amqp://{RABBITMQ_USERNAME}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}/{RABBITMQ_VHOST}')
 
 CELERY_TASK_ROUTES = {
     'studies.tasks.build_experiment': {'queue': 'builds'},
