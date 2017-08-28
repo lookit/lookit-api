@@ -38,6 +38,8 @@ class StudyType(models.Model):
             }
         }
     })
+    def __str__(self):
+        return f'<Study Type: {self.name}>'
 
 
 class Study(models.Model):
