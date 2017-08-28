@@ -297,7 +297,10 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'M31tSt331B34m5')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', 587)
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', True)
 EMAIL_FROM_ADDRESS = os.environ.get('EMAIL_FROM_ADDRESS', 'lookit.robot@some.domain')
-EMAIL_BACKEND = f"django.core.mail.backends.{'smtp' if not DEBUG else 'console'}.EmailBackend"
+
+EMAIL_BACKEND = "sgbackend.SendGridBackend" if not DEBUG else "django.core.mail.backends.console.EmailBackend"
+SENDGRID_API_KEY = os.environ.get('EMAIL_HOST_PASSWORD', 'M31tSt331B34m5')
+
 # United States will show up first in the countries list on the Demographic Data form
 COUNTRIES_FIRST = ['US']
 
