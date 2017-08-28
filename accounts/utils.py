@@ -31,7 +31,7 @@ status_tooltip_text = {
     'paused': 'Study is not collecting data',
     'deactivated': 'Study is not collecting data',
     'archived': 'Study has been archived and removed from search.',
-    'deploying': 'Study is being built and deployed to S3'
+    'deploying': 'Study is being built and deployed to Google Cloud Storage'
 }
 
 
