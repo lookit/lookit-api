@@ -23,7 +23,10 @@
             });
             $('#id_study_type').on('change', function(selected) {
                 if (selected.currentTarget.value) {
+                    var selectedVal = parseInt(selected.currentTarget.value);
                     $('#study-type-metadata').show();
+                    $('.type-fields').hide();
+                    $(`#type-metadata-${selectedVal}`).show();
                 } else {
                     $('#study-type-metadata').hide()
                 }
@@ -61,7 +64,16 @@
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
                     <div id="study-type-metadata" style="display:none">
-                        Type selected
+                        {% for type in types %}
+                            <div class='type-fields' id='type-metadata-{{ forloop.counter }}'>
+                                {% for key, values in type.items %}
+                                    <div class="form-group">
+                                        <label for="usr">{{ key }} </label>
+                                        <input name="{{key}}" type="text" class="form-control">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
                     </div>
                     <div class="pull-right">
                         {% buttons %}

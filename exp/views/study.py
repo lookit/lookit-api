@@ -31,7 +31,7 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin
 from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import Study, StudyLog
+from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment
 
 
@@ -70,6 +70,14 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds study types to get_context_data
+        """
+        context = super().get_context_data(**kwargs)
+        context['types'] = [type.configuration['metadata']['fields'] for type in StudyType.objects.all()] 
+        return context
 
     def get_initial(self):
         """
