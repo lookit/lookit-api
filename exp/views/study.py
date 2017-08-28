@@ -250,7 +250,7 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
             context = {
                 'custom_message': message
             }
-            send_mail('custom_email', subject, None, bcc=recipients, from_email=sender, **context)
+            send_mail.delay('custom_email', subject, None, bcc=recipients, from_email=sender, **context)
             messages.success(self.request, "Your message has been sent.")
             self.create_email_log(recipients, message, subject)
             return HttpResponseRedirect(self.get_success_url())
@@ -356,12 +356,15 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         return
 
     def send_study_email(self, user, permission):
+        study = self.get_object()
         context = {
-            'study': self.get_object(),
             'permission': permission,
-            'researcher': user
+            'study_name': study.name,
+            'study_id': study.id,
+            'org_name': user.organization.name,
+            'researcher_name': user.get_short_name()
         }
-        send_mail('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=settings.EMAIL_FROM_ADDRESS, **context)
+        send_mail.delay('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=settings.EMAIL_FROM_ADDRESS, **context)
 
     def post(self, request, *args, **kwargs):
         '''

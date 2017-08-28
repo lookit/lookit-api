@@ -61,7 +61,7 @@
             <div >
                 <h2 class="study-status"> <span class="pr-sm"> Status:</span> </h2>
                 <span style="white-space: nowrap;">
-                    <h2 class="study-status"><em>{{study.get_state_display}}</em></h2>
+                    <h2 class="study-status"><em>{{study.get_state_display|capfirst}}</em></h2>
                     <i aria-label="Status information: {{ status_tooltip }}"title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon fa fa-question-circle-o"></i>
                  </span>
             </div>

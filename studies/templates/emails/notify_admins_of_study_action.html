@@ -1,22 +1,22 @@
 <p>
-  Dear {{study.organization.name}} Admin,
+  Dear {{ org_name }} Admin,
 </p>
 <p>
   {% if action == 'submitted' %}
-    {{researcher.given_name}} {{researcher.family_name}} has submitted a study for approval: {{study.name}}
+    {{ researcher_name }} has submitted a study for approval: {{ study_name }}
     <br>
-    You can approve or disapprove the study here: {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+    You can approve or disapprove the study here: {{base_url}}{% url 'exp:study-detail' study_id %}
   {% elif action == 'retracted' %}
-    {{researcher.given_name}} {{researcher.family_name}} has retracted the submission of a study: {{study.name}}
+    {{ researcher_name }} has retracted the submission of a study: {{ study_name }}
   {% elif action == 'active' %}
-    {{researcher.given_name}} {{researcher.family_name}} has started the study {{study.name}}. {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+    {{ researcher_name }} has started the study {{ study_name }}. {{base_url}}{% url 'exp:study-detail' study_id %}
   {% elif action == 'paused' %}
-    {{researcher.given_name}} {{researcher.family_name}} has paused the study {{study.name}}. {{base_url}}{% url 'exp:study-detail' pk=study.id %}
+    {{ researcher_name }} has paused the study {{ study_name }}. {{base_url}}{% url 'exp:study-detail' study_id %}
   {% elif action == 'deactivated' %}
-    {{researcher.given_name}} {{researcher.family_name}} has deactivated the study {{study.name}}. {{base_url}}{{% url 'exp:study-detail' pk=study.id %}
+    {{ researcher_name }} has deactivated the study {{ study_name }}. {{base_url}}{{% url 'exp:study-detail' pk=study_id %}
   {% elif action == 'deployed' %}
-     {{study.name}} has been deployed. {{base_url}}{{% url 'exp:study-detail' pk=study.id %}
+     {{ study_name }} has been deployed. {{base_url}}{{% url 'exp:study-detail' pk=study_id %}
   {% elif action == 'previewed' %}
-     {{study.name}} has been previewed. {{base_url}}{{% url 'exp:study-detail' pk=study.id %}
+     {{ study_name }} has been previewed. {{base_url}}{{% url 'exp:study-detail' pk=study_id %}
   {% endif %}
 </p>

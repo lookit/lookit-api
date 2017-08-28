@@ -2,6 +2,7 @@ import operator
 from functools import reduce
 
 from django.http import Http404
+from django.core.exceptions import PermissionDenied
 from guardian.mixins import PermissionRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
 from django.contrib import messages
@@ -110,11 +111,15 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
         Fetches the org admin, org read, and org researcher groups for the organization that
         the current user belongs to
         """
-        user_org_name = self.request.user.organization.name
-        admin_group = Group.objects.get(name=build_org_group_name(user_org_name, 'admin'))
-        read_group = Group.objects.get(name=build_org_group_name(user_org_name, 'read'))
-        researcher_group = Group.objects.get(name=build_org_group_name(user_org_name, 'researcher'))
-        return admin_group, read_group, researcher_group
+        user_org = self.request.user.organization
+        if user_org:
+            user_org_name = user_org.name
+            admin_group = Group.objects.get(name=build_org_group_name(user_org_name, 'admin'))
+            read_group = Group.objects.get(name=build_org_group_name(user_org_name, 'read'))
+            researcher_group = Group.objects.get(name=build_org_group_name(user_org_name, 'researcher'))
+            return admin_group, read_group, researcher_group
+        else:
+            raise PermissionDenied
 
     def get_queryset(self):
         """

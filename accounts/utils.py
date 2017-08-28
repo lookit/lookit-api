@@ -30,7 +30,8 @@ status_tooltip_text = {
     'retracted': 'Study has been withdrawn',
     'paused': 'Study is not collecting data',
     'deactivated': 'Study is not collecting data',
-    'archived': 'Study has been archived and removed from search.'
+    'archived': 'Study has been archived and removed from search.',
+    'deploying': 'Study is being built and deployed to Google Cloud Storage'
 }
 
 

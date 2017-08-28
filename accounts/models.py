@@ -309,10 +309,11 @@ def send_email_when_receive_groups(sender, instance, created, **kwargs):
                 permission = 'researcher'
 
             context = {
-                'researcher': instance,
+                'researcher_name': instance.get_short_name(),
+                'org_name': instance.organization.name,
                 'permission': permission,
             }
-            send_mail('notify_researcher_of_org_permissions', f'Invitation to access studies on {instance.organization.name}', instance.username, from_address=EMAIL_FROM_ADDRESS, **context)
+            send_mail.delay('notify_researcher_of_org_permissions', f'Invitation to access studies on {instance.organization.name}', instance.username, from_address=EMAIL_FROM_ADDRESS, **context)
 
 class DemographicData(models.Model):
     RACE_CHOICES = Choices(
@@ -438,7 +439,7 @@ class DemographicData(models.Model):
     education_level = models.CharField(max_length=5, choices=EDUCATION_CHOICES, blank=True)
     spouse_education_level = models.CharField(max_length=5, choices=SPOUSE_EDUCATION_CHOICES, blank=True)
     annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES, blank=True)
-    number_of_books = models.IntegerField(blank=True, default=0)
+    number_of_books = models.IntegerField(null=True, blank=True, default=None)
     additional_comments = models.TextField(blank=True)
     country = CountryField(blank=True)
     state = USStateField(blank=True, choices=('XX', _('Select a State')) + USPS_CHOICES[:])
