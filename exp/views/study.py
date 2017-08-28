@@ -181,6 +181,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             clone = self.get_object().clone()
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
+            clone.study_type = self.get_object().study_type
             clone.save()
             # Adds success message when study is cloned
             messages.success(self.request, f"{self.get_object().name} copied.")
