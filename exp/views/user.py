@@ -225,9 +225,9 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
             'org_name': self.request.user.organization.name,
             'login_url': login_url
         }
-        subject = 'Resend OSF confirmation email to login to Experimenter'
+        subject = 'Confirm OSF account to login to Experimenter'
         send_mail.delay('resend_confirmation', subject, self.object.username, **context)
-        messages.success(self.request, f'Resend confirmation email to {self.object.username}.')
+        messages.success(self.request, f'Confirmation email resent to {self.object.username}.')
         return
 
     def post(self, request, *args, **kwargs):
