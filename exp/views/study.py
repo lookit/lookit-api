@@ -452,6 +452,7 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
         study.metadata = self.extract_type_metadata()
         study.study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
         study.save()
+        messages.success(self.request, f"{self.get_object().name} type and metadata saved.")
         return HttpResponseRedirect(reverse('exp:study-build', kwargs=dict(pk=study.pk)))
 
     def get_context_data(self, **kwargs):
