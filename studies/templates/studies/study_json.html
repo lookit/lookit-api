@@ -65,7 +65,37 @@
                     {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
                     <div class="pull-right">
                         <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
-                        <button type="submit" class="btn btn-success"> Save </button>
+                        {% if save_confirmation %}
+                          <a data-toggle="modal" class="btn btn-danger" href="#saveTypeConfirmation">Save</a>
+                        {% else %}
+                            <button id="save-study-type" type="submit" class="btn btn-success">
+                               Save
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="modal fade" id="saveTypeConfirmation">
+                        <form class="well" method="post">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal">×</button>
+                                  <h3> Are you sure you want to modify the study type and/or study metadata in {{ study.name }}? </h3>
+                                </div>
+                                <div class="modal-body">
+                                     {% csrf_token %}
+                                     <p>
+                                         This study has already been <strong><em>approved</em></strong>. If you edit this study's type and/or metadata, the system will
+                                         automatically give it a rejected status. You will have to resubmit the study so your changes can
+                                         be reviewed.
+                                     </p>
+                                </div>
+                                <div class="modal-footer"> {% csrf_token %}
+                                     <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard Changes </a>
+                                     <button id="save-study-json-confirmation" type="submit" class="btn btn-danger">
+                                        Save
+                                     </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </form>
                 <form class="large-break" action="" enctype="multipart/form-data" method="post">{% csrf_token %}
