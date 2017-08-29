@@ -451,7 +451,7 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
         study = self.get_object()
         if 'structure' not in self.request.POST:
             study.metadata = self.extract_type_metadata()
-            study.study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
+            study.study_type_id = StudyType.objects.filter(id=self.request.POST.get('study_type')).values_list('id', flat=True)[0]
             study.save()
             messages.success(self.request, f"{self.get_object().name} type and metadata saved.")
             return HttpResponseRedirect(reverse('exp:study-build', kwargs=dict(pk=study.pk)))
