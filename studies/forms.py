@@ -52,7 +52,7 @@ class StudyEditForm(forms.ModelForm):
         }
 
 class StudyForm(forms.ModelForm):
-    structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False)
+    structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False, help_text='Add the frames of your study as well as the sequence of those frames.  This can be added later.')
 
     def clean_structure(self):
          structure = self.cleaned_data['structure']
@@ -91,11 +91,11 @@ class StudyForm(forms.ModelForm):
             'exit_url': "Specify the page where you want to send your participants after they've completed the study.",
             'short_description': 'Give your study a description here.',
             'long_description': 'Explain the purpose of your study here.',
-            'study_type': 'Specify the build process as well as the parameters needed by the experiment builder.'
+            'study_type': "Specify the build process as well as the parameters needed by the experiment builder. If you don't know what this is, just select the default.",
         }
 
 class StudyBuildForm(forms.ModelForm):
-    structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False)
+    structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False, help_text='Add the frames of your study as well as the sequence of those frames.')
 
     def clean_structure(self):
          structure = self.cleaned_data['structure']
