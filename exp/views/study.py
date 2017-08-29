@@ -449,11 +449,13 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
         Form for allowing user to change study type and study metadata fields
         """
         study = self.get_object()
-        study.metadata = self.extract_type_metadata()
-        study.study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
-        study.save()
-        messages.success(self.request, f"{self.get_object().name} type and metadata saved.")
-        return HttpResponseRedirect(reverse('exp:study-build', kwargs=dict(pk=study.pk)))
+        if 'structure' not in self.request.POST:
+            study.metadata = self.extract_type_metadata()
+            study.study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
+            study.save()
+            messages.success(self.request, f"{self.get_object().name} type and metadata saved.")
+            return HttpResponseRedirect(reverse('exp:study-build', kwargs=dict(pk=study.pk)))
+        return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
