@@ -236,18 +236,24 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         user permissions
         """
         retval = super().post(request, *args, **kwargs)
-        changed_field = self.request.POST.get('name')
-        if changed_field == 'given_name':
-            self.object.given_name = self.request.POST['value']
-        elif changed_field == 'middle_name':
-            self.object.middle_name = self.request.POST['value']
-        elif changed_field == 'family_name':
-            self.object.family_name = self.request.POST['value']
+
+        if 'reset_password' in self.request.POST:
+            self.send_reset_password_email()
+        elif 'resend_confirmation' in self.request.POST:
+            self.send_resend_confirmation_email()
+        else:
+            changed_field = self.request.POST.get('name')
+            if changed_field == 'given_name':
+                self.object.given_name = self.request.POST['value']
+            elif changed_field == 'middle_name':
+                self.object.middle_name = self.request.POST['value']
+            elif changed_field == 'family_name':
+                self.object.family_name = self.request.POST['value']
+            if not self.object.organization:
+                self.object.organization = request.user.organization
+            if self.request.POST.get('name') == 'user_permissions':
+                self.modify_researcher_permissions()
         self.object.is_active = True
-        if not self.object.organization:
-            self.object.organization = request.user.organization
-        if self.request.POST.get('name') == 'user_permissions':
-            self.modify_researcher_permissions()
         self.object.save()
         return retval
 
