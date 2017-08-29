@@ -466,7 +466,7 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
         context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
         context['study_types'] = StudyType.objects.all()
         context['study_metadata'] = self.object.metadata
-        context['types'] = [type.configuration['metadata']['fields'] for type in context['study_types']]
+        context['types'] = [exp_type.configuration['metadata']['fields'] for exp_type in context['study_types']]
 
         return context
 
