@@ -1,6 +1,6 @@
 -r ./defaults.txt
 
 uwsgi==2.0.15
-gevent==1.2.1
+gevent==1.2.2
 psycogreen==1.0
 sendgrid-django==4.0.4
