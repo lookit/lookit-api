@@ -77,7 +77,7 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
         Adds study types to get_context_data
         """
         context = super().get_context_data(**kwargs)
-        context['types'] = [type.configuration['metadata']['fields'] for type in StudyType.objects.all()]
+        context['types'] = [study_type['metadata']['fields'] for study_type in StudyType.objects.all().values_list('configuration', flat=True)]
         return context
 
     def get_initial(self):
