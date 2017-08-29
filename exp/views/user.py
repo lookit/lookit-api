@@ -23,6 +23,8 @@ from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
+from studies.helpers import send_mail
+from project.settings import EXPERIMENTER_LOGIN_URL as login_url
 
 
 class ParticipantListView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.ListView, PaginatorMixin):
@@ -199,6 +201,34 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
 
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
+
+    def send_reset_password_email(self):
+        """
+        Send reset_password email to researcher
+        """
+        context = {
+            'researcher_name': self.object.get_short_name(),
+            'org_name': self.request.user.organization.name,
+            'login_url': login_url
+        }
+        subject = 'Reset OSF password to login to Experimenter'
+        send_mail.delay('reset_password', subject, self.object.username, **context)
+        messages.success(self.request, f'Reset password email sent to {self.object.username}.')
+        return
+
+    def send_resend_confirmation_email(self):
+        """
+        Send resend_confirmation_email to researcher
+        """
+        context = {
+            'researcher_name': self.object.get_short_name(),
+            'org_name': self.request.user.organization.name,
+            'login_url': login_url
+        }
+        subject = 'Resend OSF confirmation email to login to Experimenter'
+        send_mail.delay('resend_confirmation', subject, self.object.username, **context)
+        messages.success(self.request, f'Resend confirmation email to {self.object.username}.')
+        return
 
     def post(self, request, *args, **kwargs):
         """
