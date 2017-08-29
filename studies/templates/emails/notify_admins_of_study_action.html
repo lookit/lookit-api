@@ -16,7 +16,11 @@
     {{ researcher_name }} has deactivated the study {{ study_name }}. {{base_url}}{% url 'exp:study-detail' pk=study_id %}
   {% elif action == 'deployed' %}
      {{ study_name }} has been deployed. {{base_url}}{% url 'exp:study-detail' pk=study_id %}
+
+     This study can be previewed here: {{base_url}}{% url 'exp:preview-proxy' path=study_uuid %}
   {% elif action == 'previewed' %}
      {{ study_name }} has been previewed. {{base_url}}{% url 'exp:study-detail' pk=study_id %}
+
+     This study can be previewed here: {{base_url}}{% url 'exp:preview-proxy' path=study_uuid %}
   {% endif %}
 </p>

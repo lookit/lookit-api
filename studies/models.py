@@ -210,6 +210,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
@@ -247,6 +248,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
@@ -257,6 +259,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
@@ -272,6 +275,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
@@ -282,6 +286,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
