@@ -27,15 +27,15 @@ from accounts.utils import (get_permitted_triggers, status_tooltip_text,
                             update_trigger)
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
-from exp.views.mixins import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import Study, StudyLog
+from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment
 
 
-class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView):
+class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView, StudyTypeMixin):
     '''
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
@@ -52,6 +52,7 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
         redirect to the supplied URL
         """
         user = self.request.user
+        form.instance.metadata = self.extract_type_metadata()
         form.instance.creator = user
         form.instance.organization = user.organization
         self.object = form.save()
@@ -70,6 +71,14 @@ class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMi
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs=dict(pk=self.object.id))
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds study types to get_context_data
+        """
+        context = super().get_context_data(**kwargs)
+        context['types'] = [study_type['metadata']['fields'] for study_type in StudyType.objects.all().values_list('configuration', flat=True)]
+        return context
 
     def get_initial(self):
         """
@@ -161,6 +170,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             clone = self.get_object().clone()
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
+            clone.study_type = self.get_object().study_type
             clone.save()
             # Adds success message when study is cloned
             messages.success(self.request, f"{self.get_object().name} copied.")
@@ -412,7 +422,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         return reverse('exp:study-edit', kwargs={'pk': self.object.id})
 
 
-class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView):
+class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, StudyTypeMixin):
     """
     StudyBuildView allows user to modify study structure - JSON field.
     """
@@ -434,12 +444,30 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
             initial['structure'] = json.dumps(structure)
         return initial
 
+    def post(self, request, *args, **kwargs):
+        """
+        Form for allowing user to change study type and study metadata fields
+        """
+        study = self.get_object()
+        if 'structure' not in self.request.POST:
+            study.metadata = self.extract_type_metadata()
+            study.study_type_id = StudyType.objects.filter(id=self.request.POST.get('study_type')).values_list('id', flat=True)[0]
+            study.save()
+            messages.success(self.request, f"{self.get_object().name} type and metadata saved.")
+            return HttpResponseRedirect(reverse('exp:study-build', kwargs=dict(pk=study.pk)))
+        return super().post(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         """
-        In addition to the study, adds whether save confirmation is needed to study.
+        In addition to the study, adds whether save confirmation is needed to study, as well as all study_types
+        and current metadata
         """
         context = super().get_context_data(**kwargs)
         context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
+        context['study_types'] = StudyType.objects.all()
+        context['study_metadata'] = self.object.metadata
+        context['types'] = [exp_type.configuration['metadata']['fields'] for exp_type in context['study_types']]
+
         return context
 
     def get_success_url(self):

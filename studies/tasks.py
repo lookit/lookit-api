@@ -182,6 +182,7 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
             'org_name': study.organization.name,
             'study_name': study.name,
             'study_id': study.pk,
+            'study_uuid': str(self.uuid),
             'action': 'previewed' if preview else 'deployed'
         }
         send_mail.delay(

@@ -266,6 +266,10 @@ a:hover.build-study-link {
     color: gray;
 }
 
+.large-break {
+    padding-top: 100px;
+}
+
 /* Participant Detail */
 .child-name {
     background-color: #F5F5F5;

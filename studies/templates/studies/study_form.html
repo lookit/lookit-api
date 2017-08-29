@@ -16,8 +16,24 @@
     </script>
     <script>
         $(document).ready(function(){
+            document.getElementById("id_study_type").value = '';
+            $('#study-type-metadata').hide()
+            $('.type-fields > .form-group > input').prop("disabled", true);
             $('form').submit(function() {
                 $('#create-study-button').prop("disabled", "disabled");
+            });
+            $('#id_study_type').on('change', function(selected) {
+                if (selected.currentTarget.value) {
+                    var selectedVal = parseInt(selected.currentTarget.value);
+                    $('#study-type-metadata').show();
+                    $('.type-fields').hide();
+                    $('.type-fields > .form-group > input').attr("disabled", true);
+                    $(`#type-metadata-${selectedVal}> .form-group > input`).prop("disabled", false);
+                    $(`#type-metadata-${selectedVal}`).show();
+                } else {
+                    $('#study-type-metadata').hide()
+                    $('.type-fields > .form-group > input').prop("disabled", true);
+                }
             });
         });
     </script>
@@ -51,6 +67,7 @@
               <div class="panel-body">
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
+                    {% include "studies/_study_type.html" with types=types create=1 %}
                     <div class="pull-right">
                         {% buttons %}
                             <a href="{% url 'exp:study-list' %}" class="btn btn-default">

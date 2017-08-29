@@ -1,0 +1,45 @@
+{% load exp_extras %}
+
+<script>
+    $(document).ready(function(){
+        if (parseInt("{{ create }}")) {
+            document.getElementById("id_study_type").value = '';
+            $('#study-type-metadata').hide();
+        } else {
+            revealMetadata("{{ currentType }}")
+        }
+        $('#id_study_type').on('change', function(selected) {
+            if (selected.currentTarget.value) {
+                var selectedVal = parseInt(selected.currentTarget.value);
+                revealMetadata(selectedVal);
+            } else {
+                $('#study-type-metadata').hide()
+                $('.type-fields > .form-group > input').prop("disabled", true);
+            }
+        });
+
+        function revealMetadata(id) {
+            $('#study-type-metadata').show();
+            $('.type-fields').hide();
+            $('.type-fields > .form-group > input').attr("disabled", true);
+            $(`#type-metadata-${id}> .form-group > input`).prop("disabled", false);
+            $(`#type-metadata-${id}`).show();
+        }
+    });
+</script>
+<div id="study-type-metadata" style="display:none">
+    <div class="row">
+        <div class="col-xs-10 col-xs-offset-1">
+            {% for type in types %}
+                <div class='type-fields' id='type-metadata-{{ forloop.counter }}'>
+                    {% for key, values in type.items %}
+                        <div class="form-group">
+                            <label>{{ key }} </label>
+                            <input name="{{key}}" type="text" value="{% if forloop.parentloop.counter == currentType and not create %}{{study.metadata|get_key:key}}{% else %}{{values}}{% endif %}" class="form-control">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

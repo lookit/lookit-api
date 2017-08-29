@@ -38,6 +38,8 @@ class StudyType(models.Model):
             }
         }
     })
+    def __str__(self):
+        return f'<Study Type: {self.name}>'
 
 
 class Study(models.Model):
@@ -89,9 +91,13 @@ class Study(models.Model):
             before_state_change='check_permission',
             after_state_change='_finalize_state_change'
         )
-        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age', 'min_age', 'image', 'exit_url', 'previewed']
+        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age', 'min_age', 'image', 'exit_url', 'previewed', 'metadata', 'study_type']
         for field in self.__monitoring_fields:
-            setattr(self, f'__original_{field}', getattr(self, field))
+            try:
+                setattr(self, f'__original_{field}', getattr(self, field))
+            except StudyType.DoesNotExist:
+                setattr(self, f'__original_{field}', None)
+
 
     def __str__(self):
         return f'<Study: {self.name}>'
@@ -204,6 +210,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
@@ -241,6 +248,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
@@ -251,6 +259,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
@@ -266,6 +275,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
@@ -276,6 +286,7 @@ class Study(models.Model):
             'org_name': self.organization.name,
             'study_name': self.name,
             'study_id': self.pk,
+            'study_uuid': str(self.uuid),
             'researcher_name': ev.kwargs.get('user').get_short_name(),
             'action': ev.transition.dest,
         }
