@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'localflavor',
     'rest_framework',
     'bootstrap3',
-    'debug_toolbar',
     'ace_overlay',
     'corsheaders',
     'rest_framework.authtoken',
@@ -78,17 +77,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 ]
-if not DEBUG:
-    INSTALLED_APPS += [
-        'raven.contrib.django.raven_compat',
-    ]
-    RAVEN_CONFIG = {
-        'dsn': os.environ.get('RAVEN_DSN', None),
-        # If you are using git, you can also automatically configure the
-        # release based on the git info.
-        'release': os.environ.get('GIT_COMMIT', 'No version'),
-    }
-
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -100,8 +88,21 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+if not DEBUG:
+    INSTALLED_APPS += [
+        'raven.contrib.django.raven_compat',
+    ]
+    RAVEN_CONFIG = {
+        'dsn': os.environ.get('RAVEN_DSN', None),
+        # If you are using git, you can also automatically configure the
+        # release based on the git info.
+        'release': os.environ.get('GIT_COMMIT', 'No version'),
+    }
+else:
+    MIDDLEWARE_CLASSES += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
+    INSTALLED_APPS += ['debug_toolbar', ]
 
 INTERNAL_IPS = ['127.0.0.1', ]
 
