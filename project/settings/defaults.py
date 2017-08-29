@@ -100,9 +100,11 @@ if not DEBUG:
         # release based on the git info.
         'release': os.environ.get('GIT_COMMIT', 'No version'),
     }
-else:
-    MIDDLEWARE_CLASSES += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
+
+if DEBUG:
     INSTALLED_APPS += ['debug_toolbar', ]
+    MIDDLEWARE_CLASSES += ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
+
 
 INTERNAL_IPS = ['127.0.0.1', ]
 
