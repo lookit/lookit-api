@@ -109,13 +109,16 @@
               <div class="panel-body">
                 <form method="POST">{% csrf_token %}
                     <div class="form-group">
-                        <label class="control-label" for="id_study_type">Type</label>
+                        <label class="control-label" for="id_study_type">Study Type</label>
                         <select name="study_type" class="form-control" title="" required="" id="id_study_type">
                              <option value="">---------</option>
                             {% for option in study_types %}
                                 <option {% if option.name == study.study_type.name %} selected {% endif %} value="{{ option.id }}"> {{ option.name }}</option>
                             {% endfor %}
                         </select>
+                        <div class="help-block">
+                            Specify the build process as well as the parameters needed by the experiment builder.
+                        </div>
                     </div>
                     {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
                     <div class="pull-right">

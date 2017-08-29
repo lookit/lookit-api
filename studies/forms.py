@@ -73,7 +73,8 @@ class StudyForm(forms.ModelForm):
             'min_age': 'Minimum Age',
             'max_age': 'Maximum Age',
             'contact_info': 'Researcher/Contact Information',
-            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?'
+            'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?',
+            'study_type': 'Study Type'
         }
         widgets = {
             'short_description': Textarea(attrs={'rows': 2}),
@@ -89,7 +90,8 @@ class StudyForm(forms.ModelForm):
             'image': 'Please keep your file size less than 1 MB',
             'exit_url': "Specify the page where you want to send your participants after they've completed the study.",
             'short_description': 'Give your study a description here.',
-            'long_description': 'Explain the purpose of your study here.'
+            'long_description': 'Explain the purpose of your study here.',
+            'study_type': 'Specify the build process as well as the parameters needed by the experiment builder.'
         }
 
 class StudyBuildForm(forms.ModelForm):
