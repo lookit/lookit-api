@@ -1,3 +1,5 @@
+-r ./defaults.txt
+
 Werkzeug==0.12.1
 ipdb==0.10.2
 ipython==6.0.0

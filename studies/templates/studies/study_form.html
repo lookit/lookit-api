@@ -14,6 +14,29 @@
             }
         })();
     </script>
+    <script>
+        $(document).ready(function(){
+            document.getElementById("id_study_type").value = '';
+            $('#study-type-metadata').hide()
+            $('.type-fields > .form-group > input').prop("disabled", true);
+            $('form').submit(function() {
+                $('#create-study-button').prop("disabled", "disabled");
+            });
+            $('#id_study_type').on('change', function(selected) {
+                if (selected.currentTarget.value) {
+                    var selectedVal = parseInt(selected.currentTarget.value);
+                    $('#study-type-metadata').show();
+                    $('.type-fields').hide();
+                    $('.type-fields > .form-group > input').attr("disabled", true);
+                    $(`#type-metadata-${selectedVal}> .form-group > input`).prop("disabled", false);
+                    $(`#type-metadata-${selectedVal}`).show();
+                } else {
+                    $('#study-type-metadata').hide()
+                    $('.type-fields > .form-group > input').prop("disabled", true);
+                }
+            });
+        });
+    </script>
     {{ form.media }}
 {% endblock %}
 
@@ -29,11 +52,14 @@
   <div class="container">
     <div class="row">
         <div class="col-xs-12">
-            <a href="{% url 'exp:study-list' %}"> Manage Studies </a> > Create Study
+            <ol class="breadcrumb">
+              <li><a href="{% url 'exp:study-list' %}"> Manage Studies </a></li>
+              <li class="active">Create Study</li>
+            </ol>
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1">
+        <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1">
             <div class="panel panel-default mt-md">
               <div class="panel-heading">
                 <h1 class="panel-title">Create Study</h1>
@@ -41,11 +67,15 @@
               <div class="panel-body">
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% bootstrap_form form %}
+                    {% include "studies/_study_type.html" with types=types create=1 %}
                     <div class="pull-right">
                         {% buttons %}
-                          <button type="submit" class="btn btn-success">
-                            {% bootstrap_icon "plus" %} Create Study
-                          </button>
+                            <a href="{% url 'exp:study-list' %}" class="btn btn-default">
+                                Cancel
+                            </a>
+                            <button type="submit" id="create-study-button" class="btn btn-success">
+                                {% bootstrap_icon "plus" %} Create Study
+                            </button>
                         {% endbuttons %}
                     </div>
                 </form>

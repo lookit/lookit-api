@@ -3,6 +3,14 @@ body {
     font-size : 15px;
 }
 
+h1 {
+  font-size: 32px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
 .center {
     text-align: center;
 }
@@ -73,6 +81,15 @@ a.state-link {
 .pt-lg {
     padding-top: 20px;
 }
+.pt-xl {
+    padding-top: 25px;
+}
+.pt-xxl {
+    padding-top: 30px;
+}
+.pt-xxxl {
+    padding-top: 35px;
+}
 .pl-sm {
     padding-left: 5px;
 }
@@ -84,6 +101,15 @@ a.state-link {
 }
 .pl-xl {
     padding-left: 20px;
+}
+.mb-xs {
+    margin-bottom:10px;
+}
+.mb-sm {
+    margin-bottom: 15px;
+}
+.mb-md {
+    margin-bottom: 20px;
 }
 .mb-lg {
     margin-bottom: 25px;
@@ -114,23 +140,56 @@ a.state-link {
 
 
 /* Study Detail */
+a.view-responses-link {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover.view-responses-link {
+    color: gray;
+}
+
+#cloneForm:hover {
+    color:gray;
+}
+
 .study-detail-block {
     display: block;
     width:100%;
-    height: 190px;
+    height: 340px;
 }
 .view-response-block {
     display: block;
     width: 100%;
-    height: 190px;
+    height: 160px;
 }
 @media (max-width: 780px) {
-  .study-detail-block {
-      height:350px;
+  .button-toolbar {
+      padding-top: 20px;
   }
-  .comments-block.comments-label {
-      margin-top: 30px;
+  .edit-study-button {
+      padding-top: 5px;
   }
+  .researcher-name {
+      padding-top: 10px;
+  }
+  .researcher-delete {
+      padding-top: 5px;
+  }
+  .password-button {
+      margin-top: 5px;
+      margin-bottom: 5px;
+  }
+  .researcher-emails {
+      padding-top: 20px;
+      padding-bottom: 20px;
+  }
+}
+
+@media (min-width: 780px) {
+    .edit-study-button {
+        float: right;
+    }
 }
 
 h2.study-status {
@@ -161,8 +220,9 @@ textarea.rejection-comments {
     margin-top: -10px;
 }
 
-.submit-comments-panel {
+.submit-status-panel {
     text-align: right;
+    padding-top: 10px;
 }
 
 h3.study-logs-label {
@@ -194,5 +254,48 @@ h2.researchers-label {
 .modify-study-block {
     display: block;
     width: 100%;
-    height: 190px;
+    height: 160px;
 }
+
+a.build-study-link {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover.build-study-link {
+    color: gray;
+}
+
+.large-break {
+    padding-top: 100px;
+}
+
+/* Participant Detail */
+.child-name {
+    background-color: #F5F5F5;
+    padding: 5px 5px 5px 10px;
+    border-radius: 5px;
+}
+
+.selectable-participant {
+    cursor: pointer;
+}
+.selectable-participant.selected {
+    background-color: #B7D4EE;
+}
+.table-striped>tbody>tr {
+    background-color: transparent;
+}
+.table-striped>tbody>tr.selected {
+    background-color: #B7D4EE;
+}
+
+pre.individual-block {
+    height: auto;
+    max-height: 300px;
+    overflow: auto;
+    background-color: #eeeeee;
+    word-break: normal !important;
+    word-wrap: normal !important;
+    white-space: pre !important;
+}​

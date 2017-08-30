@@ -1,8 +1,8 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
+{% block title %}Studies{% endblock %}
 
 {% block flash %}
-  {% bootstrap_messages %}
   {% if form.errors %}
   <div class="alert alert-danger" role="alert">
     <p>Your username and password didn't match. Please try again.</p>
@@ -20,23 +20,75 @@
   </div>
   {% endif %}
 {% endblock %}
-
 {% block content %}
-<div class="container">
-  <h1>Studies</h1>
-  <div class="row">
-    {% for obj in object_list %}
-      <div class="col-md-4">
-        <div class="thumbnail">
-          <img src="http://lorempixel.com/300/220/cats" width="300" height="220" />
-          <div class="caption">
-            <h3>{{ obj.name }}</h3>
-            <p>{{ obj.description|truncatewords:30 }}</p>
-            {{ obj.uuid }}
-            <p class="text-center"><a href="{% url 'web:study-detail' uuid=obj.uuid %}" class="btn btn-default">See details</a></p>
-          </div>
+    <script>
+        function imgError(image, index) {
+            image.style.display = 'none';
+            var placeholder = document.getElementById('image-placeholder-' + index);
+            placeholder.style.display = 'block';
+        }
+    </script>
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>Suggested Studies</h2>
+    </div>
+    {% bootstrap_messages %}
+    <div>
+        <ul class="pt-sm nav nav-tabs">
+            <li class="active">
+                <a href="{% url 'web:studies-list'%}">Suggested Studies</a>
+            </li>
+            <li>
+                <a href="{% url 'web:studies-history'%}">Past Studies</a>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active">
+            <div class="lookit-row studies-row">
+                <div class="container">
+                    <div id="suggested-studies">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p class="study-detail-caption">Here are some studies that we're currently running:</p>
+                            </div>
+                              {% for obj in object_list %}
+                              <div class="col-md-4">
+                                  <div class="study-list-panel thumbnail">
+                                      <a class="no-link-formatting" href="{% url 'web:study-detail' uuid=obj.uuid %}">
+                                          <div class="study-list-thumbnail-wrapper text-center">
+                                            {% if obj.image %}
+                                              <p class="image-block">
+                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="200" width="auto" src="{{ obj.image.url }}" width="300px">
+                                                  <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
+                                                    	<i aria-hidden="true" class="fa fa-picture-o"></i>
+                                                  </div>
+                                              </p>
+                                            {% else %}
+                                              <div class="study-list-placeholder">
+                                                  <i aria-hidden="true" class="fa fa-picture-o"></i>
+                                              </div>
+                                            {% endif %}
+                                          </div>
+                                          <div class="caption">
+                                              <h3>{{obj.name}}</h3>
+                                              <p>{{obj.short_description}}</p>
+                                              <div class="fadeout"></div>
+                                          </div>
+                                          <div class="full">
+                                              <p class="text-center"><a href="{% url 'web:study-detail' uuid=obj.uuid %}">See details</a></p>
+                                          </div
+                                      </a>
+                                  </div>
+                                </div>
+                              {% empty %}
+                                <div class="col-xs-12">
+                                    <p><em> We are not running any studies at this time! </em></p>
+                                </div>
+                              {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    {% endfor %}
-  </div>
+    </div>
 {% endblock %}

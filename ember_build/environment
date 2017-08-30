@@ -1,0 +1,2 @@
+WOWZA_PHP='{"minRecordTime":1,"showMenu":"false","showTimer":"false","enableBlinkingRec":1,"skipInitialScreen":1,"recordAgain":"false","showSoundBar":"true","connectionstring":"rtmps://lookit-streaming.mit.edu/hdfvr/_definst_"}'
+WOWZA_ASP='{"showMenu":"false","loopbackMic":"true","skipInitialScreen":1,"showSoundBar":"true","snapshotEnable":"false", "microphoneGain": 60}'

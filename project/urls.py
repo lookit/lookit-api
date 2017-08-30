@@ -24,20 +24,23 @@ from api import urls as api_urls
 from exp import urls as exp_urls
 from project import settings
 from web import urls as web_urls
-
-favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)
+from osf_oauth2_adapter import views as osf_oauth2_adapter_views
 
 urlpatterns = [
-    url(r'^favicon\.ico$', favicon_view),
     url(r'^admin/', admin.site.urls),
-    url(r'^exp/', include(exp_urls, namespace='exp')),
     url(r'^api/', include(api_urls)),
-    url(r'^', include(web_urls, namespace='web')),
+    url(r'^accounts/social/login/cancelled/$', osf_oauth2_adapter_views.login_errored_cancelled),
+    url(r'^accounts/social/login/error/$', osf_oauth2_adapter_views.login_errored_cancelled),
+    url(r'^accounts/', include('allauth.urls')),
+    url(r'^exp/', include(exp_urls, namespace='exp')),
     url(r'^', include('django.contrib.auth.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    url(r'^', include(web_urls, namespace='web')),
+]
 
 if settings.DEBUG:
+    favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)
     import debug_toolbar
     urlpatterns = [
+        url(r'^favicon\.ico$', favicon_view),
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

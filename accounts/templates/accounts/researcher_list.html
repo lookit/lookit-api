@@ -2,12 +2,17 @@
 {% load bootstrap3 %}
 {% load exp_extras %}
 
-{% block title %}Users{% endblock %}
+{% block title %}Researchers{% endblock %}
 {% block flash %}
   {% bootstrap_messages %}
 {% endblock %}
 {% block content %}
 <script>
+    $(document).ready(function() {
+        if ("{{ match }}" !== '') {
+            document.getElementById("search-researchers").value = "{{ match }}";
+        }
+    });
     function populateDeleteModal(userId, userName) {
         document.getElementById("delete-researcher-button").value = userId;
         document.getElementById("deletingResearchName").innerHTML = userName;
@@ -16,28 +21,24 @@
 </script>
   <div class="container mb-lg">
     <div class="row">
-        <div class="col-xs-9">
-            <h2 class="researchers-header">Researchers</h2>
-        </div>
-        <div class="col-xs-3 pt-lg">
-            {% if perms.can_create_users %}
-                <a href="{% url 'exp:researcher-create' %}" class="btn btn-success" >
-                    Create Researcher
-                </a>
-            {% endif %}
+        <div class="col-xs-12">
+            <h1 class="researchers-header">Researchers</h1>
         </div>
     </div>
-    <div class="row text-center mt-md">
+    <div class="row text-center mt-xl">
        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
            <form method="GET">
-               <input class="form-control" name="match" placeholder="{{ match|default:'Filter' }}" size="50" type="text">
+               <input id="search-researchers" class="form-control" name="match" placeholder="Filter by researcher name" size="50" type="text">
                <input type="hidden" name="sort" value={{ sort }}>
+               <input type="hidden" name="page" value="1">
            </form>
        </div>
    </div>
    <div class="row mt-xl">
-       <div class="col-xs-6 col-xs-offset-1">
-           <strong>Researcher Name</strong> <a aria-label="Sort researchers by name" class="sort-studies-button" href="{% url 'exp:researcher-list' %}?{% query_transform request sort="family_name"%}"><i aria-hidden="true" class="fa fa-sort btn" role="button" name="family_name"></i></a>
+       <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+           <strong>Researcher Name</strong>
+           <a aria-label="Sort researchers by name" class="pl-sm" href="{% url 'exp:researcher-list' %}?{% query_transform request page='1' sort='family_name'%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+           <a aria-label="Reverse sort researchers by name" href="{% url 'exp:researcher-list' %}?{% query_transform request page='1' sort='-family_name'%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
        </div>
 
        <div class="col-xs-3">
@@ -48,23 +49,33 @@
        </div>
    </div>
    <hr>
-   {% for user in object_list %}
-   <div class="row pt-xs">
-        <div class="col-xs-6 col-xs-offset-1">
-            <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
-        </div>
+       {% for user in object_list %}
+       <div class="row pt-xs">
+            <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+                {% if perms.accounts.can_edit_organization %}
+                    <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
+                {% else %}
+                    <strong>{{ user.get_short_name }}</strong>
+                {% endif %}
+            </div>
 
-        <div class="col-xs-3">
-            {{ user.display_permission }}
-        </div>
+            <div class="col-xs-3 col-sm-3">
+                {{ user.display_permission }}
+            </div>
 
-        <div class="col-xs-2">
-            {% if perms.can_remove_users %}
-                <a data-toggle="modal" id="{{ user.id }}" onclick="populateDeleteModal({{ user.id }}, '{{ user.get_short_name }}')" class="deleteResearcher btn btn-danger btn-sm" href="#deleteModal">Remove</a>
-            {% endif %}
+            <div class="col-xs-2 col-sm-2">
+                {% if perms.accounts.can_edit_organization %}
+                    <a data-toggle="modal" id="{{ user.id }}" onclick="populateDeleteModal({{ user.id }}, '{{ user.get_short_name }}')" class="deleteResearcher btn btn-danger btn-sm" href="#deleteModal">Remove</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
-   {% endfor %}
+       {% empty %}
+           <div class="row">
+                <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+                    <p><em> No researchers found! </em></p>
+                </div>
+            </div>
+       {% endfor %}
    <div class="modal fade" id="deleteModal">
        <form class="well" method="post">
          <div class="modal-header">
@@ -75,13 +86,22 @@
               {% csrf_token %}
               <p> Deleting <span id="deletingResearchName"> this researcher </span> cannot be undone. </p>
          </div>
-         <div class="modal-footer">
+         <div class="modal-footer"> {% csrf_token %}
               <input name="cancel" class="btn btn-default" type="submit" value="Cancel"/>
               <button id="delete-researcher-button" name='disable' class="btn btn-danger" type="submit">
                   Remove
               </button>
          </div>
        </form>
+   </div>
+   <div class="paginator pt-lg">
+       {% if object_list %}
+           <div class="row pb-lg">
+               <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                   {% include 'studies/_paginator.html' with items=object_list %}
+               </div>
+           </div>
+       {% endif %}
    </div>
   </div>
 {% endblock %}

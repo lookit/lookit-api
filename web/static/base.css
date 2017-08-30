@@ -179,6 +179,10 @@ button.account-row {
     width: 180px;
 }
 
+.account-edit {
+    margin-top: 20px;
+}
+
 
 /* STUDIES PAGE */
 .study-list-panel {
@@ -202,6 +206,7 @@ button.account-row {
 .study-list-placeholder {
     font-size: 200px;
     text-align: center;
+    color: #333333;
 }
 
 .study-list-panel .caption {
@@ -228,7 +233,7 @@ button.account-row {
 }
 
 .study-feedback-label {
-    margin-top: 30px;
+    margin-top: 5px;
 }
 
 .study-feedback-text {
@@ -257,8 +262,16 @@ button.account-row {
     width: 800px;
 }
 
+a.no-link-formatting {
+  color: black;
+  text-decoration: none;
+}
 
 /* STUDY DETAIL */
+
+.back-to-list-button {
+    margin-top: 15px;
+}
 
 .study-detail-thumbnail {
     max-width: 80%;
@@ -277,6 +290,18 @@ button.account-row {
 .study-detail-info {
     margin-top: 30px;
 }
+
+button:disabled#participate-button,
+button[disabled]#participate-button{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+#participate-button {
+    margin-top: 20px;
+}
+
 
 /* PARTICIPATE */
 #expContainer:fullscreen {
@@ -303,4 +328,101 @@ button.account-row {
 
 .textarea-full {
     width: 100%;
+}
+.mb-lg {
+    margin-bottom: 20px;
+}
+
+.pb-xs {
+    padding-bottom: 5px;
+}
+.pb-sm {
+    padding-bottom: 10px;
+}
+.pb-md {
+    padding-bottom: 15px;
+}
+.pb-lg {
+    padding-bottom: 20px;
+}
+.pr-xs {
+    padding-right: 5px;
+}
+.pr-sm {
+    padding-right: 10px;
+}
+.pr-md {
+    padding-right: 15px;
+}
+.pr-lg {
+    padding-right: 20px;
+}
+.pt-xs {
+    padding-top: 5px;
+}
+.pt-sm {
+    padding-top: 10px;
+}
+.pt-md {
+    padding-top: 15px;
+}
+.pt-lg {
+    padding-top: 20px;
+}
+.pt-xl {
+    padding-top: 25px;
+}
+.pt-xxl {
+    padding-top: 30px;
+}
+.pt-xxxl {
+    padding-top: 35px;
+}
+.pl-sm {
+    padding-left: 5px;
+}
+.pl-md {
+    padding-left: 10px;
+}
+.pl-lg {
+    padding-left: 15px;
+}
+.pl-xl {
+    padding-left: 20px;
+}
+.mb-xs {
+    margin-bottom:10px;
+}
+.mb-sm {
+    margin-bottom: 15px;
+}
+.mb-md {
+    margin-bottom: 20px;
+}
+.mb-lg {
+    margin-bottom: 25px;
+}
+.mt-sm {
+    margin-top: 10px;
+}
+.mt-md {
+    margin-top: 15px;
+}
+.mt-lg {
+    margin-top: 20px;
+}
+.mt-xl {
+    margin-top: 25px;
+}
+
+.age_format {
+    font-style: italic;
+}
+
+li.response-feedback {
+    margin-left: -20px;
+}
+
+.response-feedback-none {
+    margin-left: -40px;
 }

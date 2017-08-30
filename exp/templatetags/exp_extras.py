@@ -17,9 +17,10 @@ def query_transform(request, **kwargs):
         updated['match'] = kwargs.get('match')
 
     if kwargs.get('sort'):
-        sort_value = kwargs.get('sort')
-        previous_sort_value = request.GET.get('sort', '')
-        if sort_value in previous_sort_value and '-' not in previous_sort_value:
-            sort_value = '-' + sort_value
-        updated['sort'] = sort_value
+        updated['sort'] = kwargs.get('sort')
+
     return updated.urlencode()
+
+@register.filter
+def get_key(dictionary, key):
+    return dictionary.get(key)

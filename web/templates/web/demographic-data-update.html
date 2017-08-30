@@ -1,0 +1,102 @@
+{% extends 'web/base.html' %}
+{% load bootstrap3 %}
+{% block title %}Update demographics{% endblock %}
+
+{% block flash %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+    <script>
+        $(document).ready(function() {
+            if ($('#id_country')[0].value !== 'US') {
+                hideField('state');
+            }
+            if ($('#id_number_of_children')[0].value === "0" || $('#id_number_of_children')[0].value === '') {
+                hideField('child_birthdays');
+                $('.help-block').first().hide();
+            }
+            if ($('#id_number_of_guardians')[0].value !== 'varies') {
+                hideField('number_of_guardians_explanation');
+            }
+
+            $('#id_country').on('change', function() {
+                if ($(this)[0].value === 'US') {
+                    showField('state');
+                } else {
+                    hideField('state');
+                    $(`#id_state`)[0].value = '';
+                }
+            });
+            $('#id_number_of_children').on('change', function() {
+                if (this.value === "0" || this.value === '') {
+                    hideField('child_birthdays');
+                    $('.help-block').first().hide();
+                    $(`#id_child_birthdays`)[0].value = '';
+
+                } else {
+                    showField('child_birthdays');
+                    $('.help-block').first().show();
+
+                }
+            });
+            $('#id_number_of_guardians').on('change', function() {
+                if (this.value === 'varies') {
+                    showField('number_of_guardians_explanation');
+                } else {
+                    hideField('number_of_guardians_explanation');
+                    $(`#id_number_of_guardians_explanation`)[0].value = '';
+                }
+            });
+        });
+        function hideField(field) {
+            $(`#id_${field}`).hide().prop('required',false);
+            $(`label[for=id_${field}]`).hide();
+        }
+        function showField(field) {
+            $(`#id_${field}`).show();
+            $(`label[for=id_${field}]`).show();
+        }
+    </script>
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>My Account</h2>
+    </div>
+    {% bootstrap_messages %}
+    <div class="container">
+        <div class="row account-edit">
+            <div class="col-md-4 mb-lg">
+                 {% include 'web/_account-navigation.html' with current_page="demographic-update" %}
+            </div>
+            <div class="col-md-8">
+                <div class="panel-heading">
+                  <h1 class="panel-title">
+                      <p> One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research.
+                      Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking
+                      multiple languages or having older siblings affect children's learning. </p>
+                      <p> Even if you allow your study videos to be published
+                      for scientific or publicity purposes, your demographic information is never published in conjunction with your video. </p>
+                  </h1>
+
+                </div>
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <form method="POST" action="">{% csrf_token %}
+                      {% bootstrap_form form %}
+                      {% buttons %}
+                      <div class="pull-right">
+                          <a class="btn btn-default" href="{% url 'web:demographic-data-update' %}"> Cancel </a>
+                          <button type="submit" class="btn btn-success">
+                             Save
+                          </button>
+                      </div>
+                      {% endbuttons %}
+                    </form>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

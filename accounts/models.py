@@ -1,9 +1,10 @@
 import base64
 import hashlib
 import uuid
+from datetime import date
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin, Permission
 from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
@@ -17,11 +18,14 @@ import pydenticon
 from accounts.utils import build_org_group_name
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, assign_perm
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
+from multiselectfield import MultiSelectField
+from studies.helpers import send_mail
+from project.settings import EMAIL_FROM_ADDRESS
 
 
 class UserManager(BaseUserManager):
@@ -48,7 +52,8 @@ class UserManager(BaseUserManager):
 
 
 class Organization(models.Model):
-    name = models.CharField(max_length=255, blank=False, null=False)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     url = models.URLField(verbose_name='Website')
 
     def __str__(self):
@@ -60,7 +65,9 @@ class Organization(models.Model):
             ('can_edit_organization', _('Can Edit Organization')),
             ('can_create_organization', _('Can Create Organization')),
             ('can_remove_organization', _('Can Remove Organization')),
+            ('can_view_experimenter', _('Can View Experimenter')),
         )
+        ordering = ['name']
 
 
 @receiver(post_save, sender=Organization)
@@ -74,28 +81,62 @@ def organization_post_save(sender, **kwargs):
 
     if created:
         from django.contrib.auth.models import Group
-        for group in ['read', 'admin']:
+        for group in ['researcher', 'read', 'admin']:
             group_instance, created = Group.objects.get_or_create(
                 name=build_org_group_name(organization.name, group)
             )
 
+            create_study = Permission.objects.get(codename='can_create_study')
+            view_experimenter = Permission.objects.get(codename='can_view_experimenter')
+            view_organization = Permission.objects.get(codename='can_view_organization')
+            edit_organization = Permission.objects.get(codename='can_edit_organization')
+
+            group_instance.permissions.add(create_study)
+            group_instance.permissions.add(view_experimenter)
+            if group == 'admin':
+                group_instance.permissions.add(view_organization)
+                group_instance.permissions.add(edit_organization)
+            if group == 'read':
+                group_instance.permissions.add(view_organization)
+
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
-    username = models.EmailField(unique=True, verbose_name='Email address')
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
+    username = models.EmailField(unique=True, verbose_name='Email address', db_index=True)
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
+    nickname = models.CharField(max_length=255, blank=True)
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE,
         related_name='users', related_query_name='user',
         null=True, blank=True
     )
     _identicon = models.TextField(verbose_name='identicon')
+    time_zone = models.CharField(max_length=255)
+    locale = models.CharField(max_length=255)
 
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    is_researcher = models.BooleanField(default=False)
+
+    email_next_session = models.BooleanField(default=True)
+    email_new_studies = models.BooleanField(default=True)
+    email_study_updates = models.BooleanField(default=True)
+    email_response_questions = models.BooleanField(default=True)
+
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        if self.id:
+            setattr(self, f'__original_groups', self.groups.all())
+
+    @cached_property
+    def osf_profile_url(self):
+        try:
+            return self.socialaccount_set.first().extra_data['data']['links']['html']
+        except AttributeError:
+            return '#'
 
     @property
     def identicon(self):
@@ -113,7 +154,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @property
     def latest_demographics(self):
-        return self.demographics.last()
+        return self.demographics.first()
 
     @property
     def identicon_small_html(self):
@@ -135,15 +176,23 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @cached_property
     def is_org_admin(self):
-        if not self.organization:
+        if not self.organization_id:
             return False
         return self.groups.filter(name=build_org_group_name(self.organization.name, 'admin')).exists()
 
     @property
     def is_org_read(self):
+        if not self.organization_id:
+            return False
         if self.is_org_admin:
             return True
-        return self.groups.filter(name=build_org_group_name(self.organization. name, 'read')).exists()
+        return self.groups.filter(name=build_org_group_name(self.organization.name, 'read')).exists()
+
+    @property
+    def is_org_researcher(self):
+        if not self.organization_id:
+            return False
+        return self.groups.filter(name=build_org_group_name(self.organization.name, 'researcher')).exists()
 
     @property
     def display_permission(self):
@@ -151,8 +200,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             return 'Organization Admin'
         elif self.is_org_read:
             return 'Organization Read'
-        else:
+        elif self.is_org_researcher:
             return 'Researcher'
+        else:
+            return 'No organization groups'
 
     def _make_rainbow(self):
         rbw = []
@@ -169,7 +220,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f'{self.given_name} {self.middle_name} {self.family_name}'
 
     def __str__(self):
-        return f'<User: {self.uuid}>'
+        return f'<User: {self.get_short_name()}>'
 
     objects = UserManager()
 
@@ -186,6 +237,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ('can_view_user_permissions', _('Can View User Permissions')),
             ('can_edit_user_permissions', _('Can Edit User Permissions')),
         )
+        ordering = ['username']
 
 
 class Child(models.Model):
@@ -216,12 +268,13 @@ class Child(models.Model):
         ('39', _('39 weeks')),
         ('40>', _('40 or more weeks')),
     )
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
+
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     given_name = models.CharField(max_length=255)
     birthday = models.DateField()
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
-    age_at_birth = models.CharField(max_length=25)
-    additional_information = models.TextField()
+    age_at_birth = models.CharField(max_length=25, choices=AGE_AT_BIRTH_CHOICES)
+    additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)
 
     user = models.ForeignKey(
@@ -230,14 +283,37 @@ class Child(models.Model):
         related_query_name='children'
     )
 
-    @property
-    def age(self):
-        return timezone.now() - self.birthday
+    def __str__(self):
+        return f'<Child: {self.given_name}, child of {self.user.get_short_name()}>'
+
+    class Meta:
+        ordering = ['-birthday']
 
     class JSONAPIMeta:
         resource_name = 'children'
         lookup_field = 'uuid'
 
+@receiver(post_save, sender=User)
+def send_email_when_receive_groups(sender, instance, created, **kwargs):
+    """
+    If researcher is given groups for the first time, send an email letting them know.
+    """
+    if instance.is_researcher and hasattr(instance, '__original_groups'):
+        original_groups = getattr(instance, '__original_groups')
+        if not original_groups and set(instance.groups.all()) != set(instance.__original_groups):
+            if instance.is_org_admin:
+                permission = 'admin'
+            elif instance.is_org_read:
+                permission = 'read'
+            else:
+                permission = 'researcher'
+
+            context = {
+                'researcher_name': instance.get_short_name(),
+                'org_name': instance.organization.name,
+                'permission': permission,
+            }
+            send_mail.delay('notify_researcher_of_org_permissions', f'Invitation to access studies on {instance.organization.name}', instance.username, from_address=EMAIL_FROM_ADDRESS, **context)
 
 class DemographicData(models.Model):
     RACE_CHOICES = Choices(
@@ -341,7 +417,7 @@ class DemographicData(models.Model):
         ('rural', _('rural')),
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        User, on_delete=models.CASCADE, null=True,
         related_name='demographics', related_query_name='demographics'
     )
     created_at = models.DateTimeField(auto_now_add=True)
@@ -351,24 +427,28 @@ class DemographicData(models.Model):
         related_query_name='next_demographic_data', null=True, blank=True
     )
 
-    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4)
-    number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3)
-    child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays')
-    languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home')
-    number_of_guardians = models.CharField(choices=GUARDIAN_CHOICES, max_length=6)
-    number_of_guardians_explanation = models.TextField()
-    race_identification = models.CharField(max_length=16, choices=RACE_CHOICES)
-    age = models.CharField(max_length=5, choices=AGE_CHOICES)
-    gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
-    education_level = models.CharField(max_length=5, choices=EDUCATION_CHOICES)
-    spouse_education_level = models.CharField(max_length=5, choices=SPOUSE_EDUCATION_CHOICES)
-    annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES)
-    number_of_books = models.IntegerField()
-    additional_comments = models.TextField()
-    country = CountryField()
-    state = USStateField(choices=('XX', _('Select a State')) + USPS_CHOICES[:])
-    density = models.CharField(max_length=8, choices=DENSITY_CHOICES)
+    uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
+    number_of_children = models.CharField(choices=NO_CHILDREN_CHOICES, max_length=3, blank=True)
+    child_birthdays = ArrayField(models.DateField(), verbose_name='children\'s birthdays', blank=True)
+    languages_spoken_at_home = models.TextField(verbose_name='languages spoken at home', blank=True)
+    number_of_guardians = models.CharField(choices=GUARDIAN_CHOICES, max_length=6, blank=True)
+    number_of_guardians_explanation = models.TextField(blank=True)
+    race_identification = MultiSelectField(choices=RACE_CHOICES, blank=True)
+    age = models.CharField(max_length=5, choices=AGE_CHOICES, blank=True)
+    gender = models.CharField(max_length=2, choices=GENDER_CHOICES, blank=True)
+    education_level = models.CharField(max_length=5, choices=EDUCATION_CHOICES, blank=True)
+    spouse_education_level = models.CharField(max_length=5, choices=SPOUSE_EDUCATION_CHOICES, blank=True)
+    annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES, blank=True)
+    number_of_books = models.IntegerField(null=True, blank=True, default=None)
+    additional_comments = models.TextField(blank=True)
+    country = CountryField(blank=True)
+    state = USStateField(blank=True, choices=('XX', _('Select a State')) + USPS_CHOICES[:])
+    density = models.CharField(max_length=8, choices=DENSITY_CHOICES, blank=True)
+    lookit_referrer = models.TextField(blank=True)
     extra = DateTimeAwareJSONField(null=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     class JSONAPIMeta:
         resource_name = 'demographics'

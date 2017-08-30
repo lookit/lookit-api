@@ -7,29 +7,43 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Experimenter</a>
+      {% if request.user.groups.exists %}
+        <a class="navbar-brand" href="{% url 'exp:study-list' %}">Experimenter</a>
+      {% else %}
+        <span class="navbar-brand"> Experimenter </span>
+      {% endif %}
+
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
         {% if request.user.is_authenticated %}
-        {% if request.user.is_superuser %}
-        <li><a href="{% url 'exp:researcher-list' %}">Manage Organization</a></li>
-        <li role="separator" class="divider"></li>
-        <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-        {% endif %} {# /if request.user.is_superuser #}
-        <li role="separator" class="divider"></li>
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                {{ request.user.identicon_small_html }} {{ request.user.get_short_name }} <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-                <li><a href="#">OSF Profile</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-            </ul>
-        </li>
+            {% if perms.accounts.can_view_experimenter %}
+                <li><a href="{% url 'exp:participant-list' %}">See Participants</a></li>
+            {% endif %}
+            {% if perms.accounts.can_view_organization %}
+                <li><a href="{% url 'exp:researcher-list' %}">Manage Organization</a></li>
+            {% endif %}
+            <li role="separator" class="divider"></li>
+            {% if perms.accounts.can_view_experimenter %}
+                <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+            {% endif %}
+            <li role="separator" class="divider"></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {{ request.user.identicon_small_html }} {{ request.user.get_short_name }} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {% if request.user.osf_profile_url != '#' %}
+                        <li><a target="_blank" href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}?next=/exp/">Logout</a></li>
+                </ul>
+            </li>
         {% else %} {# /if request.user.is_authenticated #}
-        <li><a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
+            {% if 'login' not in request.path %}
+                <li><a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
+            {% endif %}
         {% endif %}
       </ul>
     </div><!-- /.navbar-collapse -->
