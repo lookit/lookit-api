@@ -319,7 +319,7 @@ class StudyDetailView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             context['has_demographic'] = self.request.user.latest_demographics
-            context['children'] = self.request.user.children.all()
+            context['children'] = self.request.user.children.filter(deleted = False)
 
         return context
 
