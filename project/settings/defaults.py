@@ -258,7 +258,7 @@ SOCIALACCOUNT_PROVIDERS = \
 
 
 # Configuration for cross-site requests
-CORS_ORIGIN_ALLOW_ALL = os.environ.get('CORS_ORIGIN_ALLOW_ALL', True)
+CORS_ORIGIN_ALLOW_ALL = bool(os.environ.get('CORS_ORIGIN_ALLOW_ALL', True))
 CORS_ORIGIN_WHITELIST = [h for h in os.environ.get('CORS_ORIGIN_WHITELIST', '').split(' ') if h]
 
 if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
