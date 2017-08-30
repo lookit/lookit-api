@@ -23,6 +23,8 @@ from guardian.shortcuts import get_objects_for_user
 from studies.models import Response, Study
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
+from studies.helpers import send_mail
+from project.settings import EXPERIMENTER_LOGIN_URL as login_url
 
 
 class ParticipantListView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.ListView, PaginatorMixin):
@@ -200,24 +202,58 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
     def get_success_url(self):
         return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
 
+    def send_reset_password_email(self):
+        """
+        Send reset_password email to researcher
+        """
+        context = {
+            'researcher_name': self.object.get_short_name(),
+            'org_name': self.request.user.organization.name,
+            'login_url': login_url
+        }
+        subject = 'Reset OSF password to login to Experimenter'
+        send_mail.delay('reset_password', subject, self.object.username, **context)
+        messages.success(self.request, f'Reset password email sent to {self.object.username}.')
+        return
+
+    def send_resend_confirmation_email(self):
+        """
+        Send resend_confirmation_email to researcher
+        """
+        context = {
+            'researcher_name': self.object.get_short_name(),
+            'org_name': self.request.user.organization.name,
+            'login_url': login_url
+        }
+        subject = 'Confirm OSF account to login to Experimenter'
+        send_mail.delay('resend_confirmation', subject, self.object.username, **context)
+        messages.success(self.request, f'Confirmation email resent to {self.object.username}.')
+        return
+
     def post(self, request, *args, **kwargs):
         """
         Handles modification of user given_name, middle_name, family_name as well as
         user permissions
         """
         retval = super().post(request, *args, **kwargs)
-        changed_field = self.request.POST.get('name')
-        if changed_field == 'given_name':
-            self.object.given_name = self.request.POST['value']
-        elif changed_field == 'middle_name':
-            self.object.middle_name = self.request.POST['value']
-        elif changed_field == 'family_name':
-            self.object.family_name = self.request.POST['value']
+
+        if 'reset_password' in self.request.POST:
+            self.send_reset_password_email()
+        elif 'resend_confirmation' in self.request.POST:
+            self.send_resend_confirmation_email()
+        else:
+            changed_field = self.request.POST.get('name')
+            if changed_field == 'given_name':
+                self.object.given_name = self.request.POST['value']
+            elif changed_field == 'middle_name':
+                self.object.middle_name = self.request.POST['value']
+            elif changed_field == 'family_name':
+                self.object.family_name = self.request.POST['value']
+            if not self.object.organization:
+                self.object.organization = request.user.organization
+            if self.request.POST.get('name') == 'user_permissions':
+                self.modify_researcher_permissions()
         self.object.is_active = True
-        if not self.object.organization:
-            self.object.organization = request.user.organization
-        if self.request.POST.get('name') == 'user_permissions':
-            self.modify_researcher_permissions()
         self.object.save()
         return retval
 

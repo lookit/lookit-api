@@ -3,7 +3,6 @@
 
 {% block title %}{{ user.get_full_name }}{% endblock %}
 {% block flash %}
-  {% bootstrap_messages %}
   {% if form.non_field_errors %}
   <div class="alert alert-danger" role="alert">
       {{ form.non_field_errors }}
@@ -16,6 +15,7 @@
     $(document).ready(function() {
         $('#given_name').editable({
             success: function(response, newValue) {
+                 $('.alert-success').hide()
                  $('#researcher-details').show();
                  $('#researcher-edit').hide();
                  $('#researcher-first')[0].innerHTML = newValue;
@@ -23,6 +23,7 @@
         });
         $('#middle_name').editable({
             success: function(response, newValue) {
+                 $('.alert-success').hide()
                  $('#researcher-details').show();
                  $('#researcher-edit').hide();
 
@@ -30,6 +31,7 @@
         });
         $('#family_name').editable({
             success: function(response, newValue) {
+                 $('.alert-success').hide()
                  $('#researcher-details').show();
                  $('#researcher-edit').hide();
                  $('#researcher-last')[0].innerHTML = newValue;
@@ -42,6 +44,7 @@
                   {value: 'org_admin', text: 'Organization Admin'}
               ],
               success: function(response, newValue) {
+                   $('.alert-success').hide()
                    $('#researcher-details').hide();
                    $('#no-org-explanation').hide();
                    $('#researcher-edit').show();
@@ -51,6 +54,7 @@
 </script>
 <div class="container mb-lg">
     <div class="row">
+        {% bootstrap_messages %}
         <div id="researcher-edit" class="alert alert-success alert-dismissable" style="display:none;">
             <a href="#" class="close" onclick="$('.alert').hide()">&times;</a>
             <div> Researcher permissions saved. </div>
@@ -69,8 +73,10 @@
     <div class="row">
       <div class="col-xs-12">
           <div class="pull-right researcher-emails ">
-              <button class="btn btn-default password-button"> Send password reset email </button>
-              <button class="btn btn-default password-button"> Resend confirmation email </button>
+              <form method="post">{% csrf_token %}
+                  <button type="submit" name="reset_password" class="btn btn-default password-button"> Send password reset email </button>
+                  <button type="submit" name="resend_confirmation" class="btn btn-default password-button"> Resend confirmation email </button>
+              </form>
           </div>
       </div>
     </div>
