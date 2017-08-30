@@ -95,7 +95,7 @@ if not DEBUG:
         'raven.contrib.django.raven_compat',
     ]
     RAVEN_CONFIG = {
-        'dsn': os.environ.get('RAVEN_DSN', None),
+        'dsn': os.environ.get('SENTRY_DSN', None),
         # If you are using git, you can also automatically configure the
         # release based on the git info.
         'release': os.environ.get('GIT_COMMIT', 'No version'),
@@ -258,8 +258,8 @@ SOCIALACCOUNT_PROVIDERS = \
 
 
 # Configuration for cross-site requests
-CORS_ORIGIN_ALLOW_ALL = True  # TODO Needs to be changed before production!
-CORS_ORIGIN_WHITELIST = ()
+CORS_ORIGIN_ALLOW_ALL = os.environ.get('CORS_ORIGIN_ALLOW_ALL', True)
+CORS_ORIGIN_WHITELIST = [h for h in os.environ.get('CORS_ORIGIN_WHITELIST', '').split(' ') if h]
 
 if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
     # if we're trying to use cloud storage

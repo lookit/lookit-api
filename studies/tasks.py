@@ -92,7 +92,7 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
 def build_docker_image():
     # this is broken out so that it can be more complicated if it needs to be
     logger.info(f'Running docker build...')
-    return subprocess.run(['docker', 'build', '-t', 'ember_build', '.'], cwd=settings.EMBER_BUILD_ROOT_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    return subprocess.run(['docker', 'build', '--pull', '--cache-from', 'ember_build', '-t', 'ember_build', '.'], cwd=settings.EMBER_BUILD_ROOT_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 
 @app.task
@@ -154,6 +154,7 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
             '-e', f'REPLACEMENT={re.escape(replacement_string)}',
             '-e', f'RECORDER_REPLACEMENT={re.escape(recorder_replacement_string)}',
             '-e', f'STUDY_OUTPUT_DIR={container_destination_directory}',
+            '-e', f"SENTRY_DSN={os.environ.get('SENTRY_DSN_JS', None)}",
             '-v', f'{local_checkout_path}:/checkouts',
             '-v', f'{local_deployments_path}:/deployments',
             'ember_build'
