@@ -28,8 +28,20 @@
            });
         });
         function getAge(dateValue) {
-            var birthday = new Date(dateValue.value)
-            return moment(birthday, "YYYYMMDD").fromNow(true);
+            if (dateValue.value === '') {
+                return "Empty birthday"
+            }
+            var years = moment().diff(new Date(dateValue.value), 'years');
+            if (years === 0) {
+                var months = moment().diff(new Date(dateValue.value), 'months');
+                if (months === 0) {
+                    var days = moment().diff(new Date(dateValue.value), 'days');
+                    return days === 1 ? days + ' day': days + ' days';
+                }
+                return months === 1 ? months + ' month': months + ' months';
+            } else {
+                return years === 1 ? years + ' year': years + ' years';
+            }
         }
 
         function toggleAddChildForm() {
