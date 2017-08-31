@@ -8,20 +8,20 @@ This is the codebase for Experimenter and Lookit.  Experimenter is a platform fo
 - Create a virtual environment with python 3.6
   - One way to do this:
   - `$  pip install virtualenv`
-  - `$ virtualenv -p python3 envname`, where `envname` is the name of your virtual environment.
-  - `$ source envname/bin/activate` Activate your virtual environment
+  - `$ virtualenv -p python3 envname`, *where `envname` is the name of your virtual environment.*
+  - `$ source envname/bin/activate` *Activates your virtual environment*
 - Install postgres
   - make sure you have brew `$ brew`
   - `$ brew install postgresql`
-  - `$ brew services start postgres` start up postgres
-  - `$ createdb lookit` - Create lookit database
+  - `$ brew services start postgres` *Starts up postgres*
+  - `$ createdb lookit` *Creates lookit database*
 
 ## Installation
 - `$ git clone https://github.com/CenterForOpenScience/lookit-api.git`
 - `$ cd lookit-api`
-- `$ sh up.sh` To install dependencies and run migrations
--  `$ python manage.py createsuperuser` To create superuser locally (has all user permissions)
-- `$ python manage.py runserver` To start up local server
+- `$ sh up.sh` *Installs dependencies and run migrations*
+-  `$ python manage.py createsuperuser` *Creates superuser locally (has all user permissions)*
+- `$ python manage.py runserver` *Starts up server*
 
 ## Useful features
 
