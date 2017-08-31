@@ -490,9 +490,9 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     def get_responses_orderby(self):
         """
-        Determine ordering and sort order. Sorting on id actually sorts on user id, not response id.
+        Determine sort field and order. Sorting on id actually sorts on user id, not response id.
         Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
-        "in progress" and "completed"    
+        "in progress" and "completed"
         """
         orderby = self.request.GET.get('sort', 'id') or 'id'
         reverse = '-' in orderby
