@@ -12,7 +12,7 @@
     You can modify your study and resubmit for approval.
   {% endif %}
   <br>
-  Your study can be found here: {{base_url}}{% url 'exp:study-detail' pk=study_id %}
+  Your study can be found <a href="{{base_url}}{% url 'exp:study-detail' pk=study_id %}">here</a>.
 </p>
 {% if comments %}
   <p>
