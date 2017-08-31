@@ -48,7 +48,9 @@ class StudyEditForm(forms.ModelForm):
             'image': 'Please keep your file size less than 1 MB',
             'exit_url': "Specify the page where you want to send your participants after they've completed the study.",
             'short_description': 'Give your study a description here.',
-            'long_description': 'Explain the purpose of your study here.'
+            'long_description': 'Explain the purpose of your study here.',
+            'min_age': 'Units please, e.g. 1 month or 1 year',
+            'max_age': 'Units please, e.g. 3 months or 3 years'
         }
 
 class StudyForm(forms.ModelForm):
@@ -92,6 +94,8 @@ class StudyForm(forms.ModelForm):
             'short_description': 'Give your study a description here.',
             'long_description': 'Explain the purpose of your study here.',
             'study_type': "Specify the build process as well as the parameters needed by the experiment builder. If you don't know what this is, just select the default.",
+            'min_age': 'Units please, e.g. 1 month or 1 year',
+            'max_age': 'Units please, e.g. 3 months or 3 years'
         }
 
 class StudyBuildForm(forms.ModelForm):
