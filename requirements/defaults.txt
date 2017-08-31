@@ -12,7 +12,7 @@ django-pdb==0.5.1
 django-prettyjson==0.2.2
 Django==1.11.2
 djangorestframework==3.6.2
-kombu==4.0.2
+kombu==4.1.0
 psycopg2==2.7.1
 pydenticon==0.3
 transitions==0.5.2
