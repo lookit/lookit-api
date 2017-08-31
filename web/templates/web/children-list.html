@@ -12,7 +12,13 @@
 {% block content %}
     <script>
         $(document).ready(function() {
-            $('.datepicker').datepicker({})
+            $('.datepicker').datepicker({
+               changeMonth: true,
+               changeYear: true,
+               showButtonPanel: true,
+               maxDate: 0,
+               yearRange: "1900:+nn"
+            })
             .on('change', function () {
                var age = getAge(this);
                if (document.getElementById('age_calc')) {
