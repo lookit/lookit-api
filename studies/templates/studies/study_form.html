@@ -40,14 +40,6 @@
     {{ form.media }}
 {% endblock %}
 
-{% block flash %}
-  {% bootstrap_messages %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
-{% endblock %}
 {% block content %}
   <div class="container">
     <div class="row">

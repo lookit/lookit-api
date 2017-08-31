@@ -225,7 +225,7 @@ EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'https://storage.goo
 PREVIEW_EXPERIMENT_BASE_URL = os.environ.get('PREVIEW_EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/preview_experiments/')  # default to ember base url
 
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')  # default to ember base url
-OSF_URL = os.environ.get('OSF_URL', 'http://staging.osf.io')  # default osf url used for oauth
+OSF_URL = os.environ.get('OSF_URL', 'https://staging.osf.io/')  # default osf url used for oauth
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/exp/')
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get('ACCOUNT_LOGOUT_REDIRECT_URL', '/api/')

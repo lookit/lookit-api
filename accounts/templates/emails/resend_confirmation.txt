@@ -1,6 +1,6 @@
 Dear {{ researcher_name }},
 
-Here is a link to verify your email address on the OSF: {{ osf_url}}/resend/.
+Here is a link to verify your email address on the OSF: {{ osf_url}}resend/.
 
 After verification, use your OSF credentials to login to Experimenter: {{ base_url }}{{ login_url }}.
 
