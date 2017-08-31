@@ -2,7 +2,8 @@
 
 This is the codebase for Experimenter and Lookit.  Experimenter is a platform for designing and administering research studies, meant for researchers. The Lookit platform is participant-facing, where users can signup and take part in studies. It is built using Django, PostgreSQL, and Ember.js (see Ember portion of codebase, [ ember-lookit-frameplayer](https://github.com/CenterForOpenScience/ember-lookit-frameplayer)), and is developed by the [Center for Open Science](https://cos.io/).
 
-## Prerequisites
+## Getting Started
+### Prerequisites
 - Make sure you have python 3.6: `$ python --version`.  If you don't have this, install from https://www.python.org/.
 - Make sure you have `pip`. `$ pip --version`
 - Create a virtual environment with python 3.6
@@ -16,7 +17,7 @@ This is the codebase for Experimenter and Lookit.  Experimenter is a platform fo
   - `$ brew services start postgres` *Starts up postgres*
   - `$ createdb lookit` *Creates lookit database*
 
-## Installation
+### Installation
 - `$ git clone https://github.com/CenterForOpenScience/lookit-api.git`
 - `$ cd lookit-api`
 - `$ sh up.sh` *Installs dependencies and run migrations*
