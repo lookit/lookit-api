@@ -488,15 +488,32 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
     """
     template_name = 'studies/study_responses.html'
 
+    def get_responses_orderby(self):
+        """
+        Determine ordering and sort order. Sorting on id actually sorts on user id, not response id.
+        Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
+        "in progress" and "completed"    
+        """
+        orderby = self.request.GET.get('sort', 'id') or 'id'
+        reverse = '-' in orderby
+        if 'id' in orderby:
+            orderby = 'child__user__id'
+        if 'status' in orderby:
+            reverse = '-' not in orderby
+            orderby = 'completed'
+        if 'date_modified' in orderby:
+            orderby = 'date_modified'
+        return orderby, reverse
+
     def get_context_data(self, **kwargs):
         """
         In addition to the study, adds several items to the context dictionary.  Study results
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get('sort', 'id') or 'id'
         page = self.request.GET.get('page', None)
-        responses = context['study'].responses.order_by(orderby)
+        orderby, reverse = self.get_responses_orderby()
+        responses = context['study'].responses.order_by(orderby).reverse() if reverse else context['study'].responses.order_by(orderby)
         context['responses'] = self.paginated_queryset(responses, page, 10)
         context['response_data'] = self.build_responses(context['responses'])
         context['csv_data'] = self.build_individual_csv(context['responses'])
