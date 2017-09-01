@@ -21,7 +21,7 @@ This is the codebase for Experimenter and Lookit.  Experimenter is a platform fo
 - `$ git clone https://github.com/CenterForOpenScience/lookit-api.git`
 - `$ cd lookit-api`
 - `$ sh up.sh` *Installs dependencies and run migrations*
--  `$ python manage.py createsuperuser` *Creates superuser locally (has all user permissions)*
+- `$ python manage.py createsuperuser` *Creates superuser locally (has all user permissions)*
 - `$ python manage.py runserver` *Starts up server*
 
 ## Useful features
