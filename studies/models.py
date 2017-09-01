@@ -96,7 +96,7 @@ class Study(models.Model):
             before_state_change='check_permission',
             after_state_change='_finalize_state_change'
         )
-        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age', 'min_age', 'image', 'exit_url', 'previewed', 'metadata', 'study_type']
+        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age_years', 'min_age_years', 'max_age_months', 'min_age_months', 'image', 'exit_url', 'previewed', 'metadata', 'study_type']
         for field in self.__monitoring_fields:
             try:
                 setattr(self, f'__original_{field}', getattr(self, field))

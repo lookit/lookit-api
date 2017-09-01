@@ -22,14 +22,14 @@ class ResponseForm(forms.ModelForm):
 class StudyEditForm(forms.ModelForm):
     class Meta:
         model = Study
-        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age', 'max_age', 'duration', 'contact_info', 'public']
+        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age_months', 'min_age_years', 'max_age_months', 'max_age_years', 'duration', 'contact_info', 'public']
         labels = {
             'short_description': 'Short Description',
             'long_description': 'Purpose',
             'exit_url': 'Exit URL',
             'criteria': 'Participant Eligibility',
-            'min_age': 'Minimum Age',
-            'max_age': 'Maximum Age',
+            'min_age_years': 'Minimum Age',
+            'max_age_years': 'Maximum Age',
             'contact_info': 'Researcher/Contact Information',
             'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?'
         }
@@ -38,8 +38,8 @@ class StudyEditForm(forms.ModelForm):
             'long_description': Textarea(attrs={'rows': 2}),
             'exit_url': Textarea(attrs={'rows': 1}),
             'criteria': Textarea(attrs={'rows': 1}),
-            'min_age': Textarea(attrs={'rows': 1}),
-            'max_age': Textarea(attrs={'rows': 1}),
+            'min_age_years': Textarea(attrs={'rows': 1}),
+            'max_age_years': Textarea(attrs={'rows': 1}),
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
         }
@@ -49,8 +49,8 @@ class StudyEditForm(forms.ModelForm):
             'exit_url': "Specify the page where you want to send your participants after they've completed the study.",
             'short_description': 'Give your study a description here.',
             'long_description': 'Explain the purpose of your study here.',
-            'min_age': 'Units please, e.g. 1 month or 1 year',
-            'max_age': 'Units please, e.g. 3 months or 3 years'
+            'min_age_years': 'Units please, e.g. 1 month or 1 year',
+            'max_age_years': 'Units please, e.g. 3 months or 3 years'
         }
 
 class StudyForm(forms.ModelForm):
@@ -66,14 +66,12 @@ class StudyForm(forms.ModelForm):
 
     class Meta:
         model = Study
-        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age', 'max_age', 'duration', 'contact_info', 'public', 'structure', 'study_type']
+        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age_years', 'min_age_months', 'max_age_years', 'max_age_months', 'duration', 'contact_info', 'public', 'structure', 'study_type']
         labels = {
             'short_description': 'Short Description',
             'long_description': 'Purpose',
             'exit_url': 'Exit URL',
             'criteria': 'Participant Eligibility',
-            'min_age': 'Minimum Age',
-            'max_age': 'Maximum Age',
             'contact_info': 'Researcher/Contact Information',
             'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?',
             'study_type': 'Study Type'
@@ -83,8 +81,6 @@ class StudyForm(forms.ModelForm):
             'long_description': Textarea(attrs={'rows': 2}),
             'exit_url': Textarea(attrs={'rows': 1}),
             'criteria': Textarea(attrs={'rows': 1}),
-            'min_age': Textarea(attrs={'rows': 1}),
-            'max_age': Textarea(attrs={'rows': 1}),
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
         }
@@ -94,8 +90,6 @@ class StudyForm(forms.ModelForm):
             'short_description': 'Give your study a description here.',
             'long_description': 'Explain the purpose of your study here.',
             'study_type': "Specify the build process as well as the parameters needed by the experiment builder. If you don't know what this is, just select the default.",
-            'min_age': 'Units please, e.g. 1 month or 1 year',
-            'max_age': 'Units please, e.g. 3 months or 3 years'
         }
 
 class StudyBuildForm(forms.ModelForm):
