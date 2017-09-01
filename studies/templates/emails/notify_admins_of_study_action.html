@@ -17,7 +17,7 @@
   {% elif action == 'deployed' %}
      <a href="{{base_url}}{% url 'exp:study-detail' pk=study_id %}">{{ study_name }}</a> has been deployed.
 
-    This study is located <a href="{{base_url}}{% url 'web:study-detail' path=study_uuid %}"> here</a>.
+    This study is located <a href="{{base_url}}{% url 'web:study-detail' uuid=study_uuid %}"> here</a>.
   {% elif action == 'previewed' %}
      <a href="{{base_url}}{% url 'exp:study-detail' pk=study_id %}">{{ study_name }}</a> has been previewed.
 
