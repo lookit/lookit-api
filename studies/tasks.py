@@ -92,11 +92,25 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
 def build_docker_image():
     # this is broken out so that it can be more complicated if it needs to be
     logger.info(f'Running docker build...')
-    return subprocess.run(['docker', 'build', '--pull', '--cache-from', 'ember_build', '-t', 'ember_build', '.'], cwd=settings.EMBER_BUILD_ROOT_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    return subprocess.run(
+        [
+            'docker',
+            'build',
+            '--pull',
+            '--cache-from',
+            'ember_build',
+            '-t',
+            'ember_build',
+            '.'
+        ],
+        cwd=settings.EMBER_BUILD_ROOT_PATH,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+    )
 
 
-@app.task
-def build_experiment(study_uuid, researcher_uuid, preview=True):
+@app.task(bind=True, max_retries=10, retry_backoff=10)
+def build_experiment(self, study_uuid, researcher_uuid, preview=True):
     ex = None
     try:
         from studies.models import Study, StudyLog
@@ -183,17 +197,17 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
             'org_name': study.organization.name,
             'study_name': study.name,
             'study_id': study.pk,
-            'study_uuid': str(self.uuid),
+            'study_uuid': str(study.uuid),
             'action': 'previewed' if preview else 'deployed'
         }
-        send_mail(
+        send_mail.delay(
             'notify_admins_of_study_action',
             'Study Deployed',
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(study.study_organization_admin_group.user_set.values_list('username', flat=True)),
             **context
         )
-        send_mail(
+        send_mail.delay(
             'notify_researchers_of_deployment',
             'Study Deployed',
             settings.EMAIL_FROM_ADDRESS,
@@ -209,6 +223,8 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
         study.save()
     except Exception as e:
         ex = e
+        logger.error(e)
+        raise self.retry(exc=e, countdown=30)
     finally:
         StudyLog.objects.create(
             study=study,
