@@ -49,8 +49,6 @@ class StudyEditForm(forms.ModelForm):
             'exit_url': "Specify the page where you want to send your participants after they've completed the study.",
             'short_description': 'Give your study a description here.',
             'long_description': 'Explain the purpose of your study here.',
-            'min_age_years': 'Units please, e.g. 1 month or 1 year',
-            'max_age_years': 'Units please, e.g. 3 months or 3 years'
         }
 
 class StudyForm(forms.ModelForm):
