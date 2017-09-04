@@ -28,8 +28,6 @@ class StudyEditForm(forms.ModelForm):
             'long_description': 'Purpose',
             'exit_url': 'Exit URL',
             'criteria': 'Participant Eligibility',
-            'min_age_years': 'Minimum Age',
-            'max_age_years': 'Maximum Age',
             'contact_info': 'Researcher/Contact Information',
             'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?'
         }
@@ -38,8 +36,6 @@ class StudyEditForm(forms.ModelForm):
             'long_description': Textarea(attrs={'rows': 2}),
             'exit_url': Textarea(attrs={'rows': 1}),
             'criteria': Textarea(attrs={'rows': 1}),
-            'min_age_years': Textarea(attrs={'rows': 1}),
-            'max_age_years': Textarea(attrs={'rows': 1}),
             'duration': Textarea(attrs={'rows': 1}),
             'contact_info': Textarea(attrs={'rows': 1}),
         }
