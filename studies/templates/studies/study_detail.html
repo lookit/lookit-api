@@ -89,8 +89,8 @@
               <div class="row">
                   <div class="col-xs-12">
                       <p>
-                        <span class="pr-md"><label class='pr-xs'> Minimum age: </label> {{ study.min_age_years }} </span>
-                        <span class="pr-md"><label class='pr-xs'> Maximum age: </label> {{ study.max_age_years }} </span>
+                        <span class="pr-md"><label class='pr-xs'> Minimum age cutoff: </label> {{ study.min_age_years }} years {{ study.min_age_months}} months </span>
+                        <span class="pr-md"><label class='pr-xs'> Maximum age cutoff: </label> {{ study.max_age_years }} years {{ study.max_age_months}} months </span>
                         <span class="pr-md"><label class='pr-xs'> Last edited: </label> {{ study.date_modified |date:"M d, Y" }} </span>
                       </p>
                   </div>
