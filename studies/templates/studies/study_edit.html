@@ -111,7 +111,7 @@
               </div>
               <div class="panel-body">
                 <form action="./#details" method="post" enctype="multipart/form-data">{% csrf_token %}
-                    {% bootstrap_form form %}
+                    {% include "studies/_study_fields.html" with form=form study=study %}
                     <div class="pull-right">
                         {% buttons %}
                               <a class="btn btn-default"href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>
