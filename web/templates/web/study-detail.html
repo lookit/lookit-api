@@ -123,8 +123,6 @@
                     {% else %}
                     <div class="form-group">
                         <label>Select a child:</label>
-                        <p class='hidden' id='min-age'>{{ object.min_age_years }}</p>
-                        <p class='hidden' id='max-age'>{{ object.max_age_years }}</p>
                         <select class="childDropdown" onchange="childSelected(this)">
                             <option value=none >None Selected</option>
                             {% for child in children %}
