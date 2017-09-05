@@ -24,8 +24,8 @@ class StudiesTestCase(APITestCase):
             criteria="Five years or older",
             duration="Twenty minutes",
             contact_info="my email",
-            max_age_years="four",
-            min_age_years="two",
+            max_age_years=2,
+            min_age_years=4,
             image="asd",
             exit_url="www.cos.io"
             )
