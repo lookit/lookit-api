@@ -494,16 +494,13 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
         "in progress" and "completed"
         """
-        orderby = self.request.GET.get('sort', 'id') or 'id'
+        orderby = self.request.GET.get('sort', 'id')
         reverse = '-' in orderby
         if 'id' in orderby:
-            orderby = 'child__user__id'
+            orderby = '-child__user__id' if reverse else 'child__user__id'
         if 'status' in orderby:
-            reverse = '-' not in orderby
-            orderby = 'completed'
-        if 'date_modified' in orderby:
-            orderby = 'date_modified'
-        return orderby, reverse
+            orderby = 'completed' if reverse else '-completed'
+        return orderby
 
     def get_context_data(self, **kwargs):
         """
@@ -512,8 +509,8 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         """
         context = super().get_context_data(**kwargs)
         page = self.request.GET.get('page', None)
-        orderby, reverse = self.get_responses_orderby()
-        responses = context['study'].responses.order_by(orderby).reverse() if reverse else context['study'].responses.order_by(orderby)
+        orderby = self.get_responses_orderby()
+        responses = context['study'].responses.order_by(orderby)
         context['responses'] = self.paginated_queryset(responses, page, 10)
         context['response_data'] = self.build_responses(context['responses'])
         context['csv_data'] = self.build_individual_csv(context['responses'])
