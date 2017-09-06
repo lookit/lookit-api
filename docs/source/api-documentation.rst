@@ -5,7 +5,7 @@ API Documentation
 =========
 API Tips
 =========
-- Most endpoints in this API are just meant for retrieving data. Typically, you can retrieve data associated with studies you have permission to view, or view any data that belongs to you.  You can only create responses and feedback through the API.  You can only update responses through the API.  There is nothing that is permitted to be deleted through the API.
+- Most endpoints in this API are just meant for retrieving data. Typically, you can retrieve data associated with studies you have permission to view, or view any data that belongs to you.  You can only create *responses* and *feedback* through the API.  You can only update *responses* through the API.  There is *nothing* that is permitted to be deleted through the API.
 
 - This API is paginated, so results are returned in batches of 10. Follow the pagination links in the API response to fetch the subsequent pages of data.  In the example below, the "links" section of the API response has the first, last, next, and previous links.
 
@@ -422,6 +422,90 @@ DELETE /api/v1/feedback/<feedback_id>/
 METHOD NOT ALLOWED.  Not permitted via the API.
 
 -------------
+Organizations
+-------------
+
+Viewing the list of organizations
+---------------------------------
+GET /api/v1/organizations/
+
+Permissions: Must be authenticated.
+
+*Sample Response:*
+
+.. code-block:: json
+
+    {
+        "links": {
+            "first": "http://localhost:8000/api/v1/organizations/?page=1",
+            "last": "http://localhost:8000/api/v1/organizations/?page=1",
+            "next": null,
+            "prev": null,
+            "meta": {
+                "page": 1,
+                "pages": 1,
+                "count": 1
+            }
+        },
+        "data": [
+            {
+                "type": "organizations",
+                "id": "665c4457-a02e-4842-bd72-7043de3d66d0",
+                "attributes": {
+                    "name": "MIT"
+                },
+                "links": {
+                    "self": "http://localhost:8000/api/v1/organizations/665c4457-a02e-4842-bd72-7043de3d66d0/"
+                }
+            }
+        ]
+    }
+
+Retrieving a single organization
+---------------------------------
+GET /api/v1/organizations/<organization_id>/
+
+Permissions: Must be authenticated.
+
+*Sample Response:*
+
+.. code-block:: json
+
+    {
+        "data": {
+            "type": "organizations",
+            "id": "665c4457-a02e-4842-bd72-7043de3d66d0",
+            "attributes": {
+                "name": "MIT"
+            },
+            "links": {
+                "self": "http://localhost:8000/api/v1/organizations/665c4457-a02e-4842-bd72-7043de3d66d0/"
+            }
+        }
+    }
+
+
+Creating an Organization
+---------------------------------
+POST /api/v1/organizations/
+
+METHOD NOT ALLOWED.  Not permitted via the API.
+
+
+Updating an Organization
+---------------------------------
+PUT /api/v1/organizations/<organization_id>/
+
+METHOD NOT ALLOWED.  Not permitted via the API.
+
+
+Deleting an Organization
+---------------------------------
+DELETE /api/v1/organizations/<organization_id>/
+
+METHOD NOT ALLOWED.  Not permitted via the API.
+
+-------------
 Responses
 -------------
 
@@ -560,21 +644,21 @@ Permissions: Must be authenticated.  Child in response must be your child.
 
     {
         "data": {
-        "attributes": {},
-        "relationships": {
-          "child": {
-            "data": {
-              "type": "children",
-              "id": "0b380366-31b9-45c1-86ef-0fd9ea238ff4"
-            }
-          },
-          "study": {
-            "data": {
-              "type": "studies",
-              "id": "a8a80880-5539-4650-9387-c62afa202d43"
-            }
-          }
-        },
+            "attributes": {},
+            "relationships": {
+              "child": {
+                "data": {
+                  "type": "children",
+                  "id": "0b380366-31b9-45c1-86ef-0fd9ea238ff4"
+                }
+              },
+              "study": {
+                "data": {
+                  "type": "studies",
+                  "id": "a8a80880-5539-4650-9387-c62afa202d43"
+                }
+              }
+            },
         "type": "responses"
         }
     }
@@ -605,14 +689,14 @@ DELETE /api/v1/responses/<response_id>/
 METHOD NOT ALLOWED.  Not permitted via the API.
 
 -------------
-Organizations
+Studies
 -------------
 
-Viewing the list of organizations
+Viewing the list of studies
 ---------------------------------
-GET /api/v1/organizations/
+GET /api/v1/studies/
 
-Permissions: Must be authenticated.
+Permissions: Must be authenticated. You can view studies that are active/public as well as studies you have permission to edit.
 
 *Sample Response:*
 
@@ -620,8 +704,8 @@ Permissions: Must be authenticated.
 
     {
         "links": {
-            "first": "http://localhost:8000/api/v1/organizations/?page=1",
-            "last": "http://localhost:8000/api/v1/organizations/?page=1",
+            "first": "http://localhost:8000/api/v1/studies/?page=1",
+            "last": "http://localhost:8000/api/v1/studies/?page=1",
             "next": null,
             "prev": null,
             "meta": {
@@ -632,23 +716,55 @@ Permissions: Must be authenticated.
         },
         "data": [
             {
-                "type": "organizations",
-                "id": "665c4457-a02e-4842-bd72-7043de3d66d0",
+                "type": "studies",
+                "id": "65680ade-510c-4437-a58a-e41d4b94d8ed",
                 "attributes": {
-                    "name": "MIT"
+                    "name": "Sample Study",
+                    "date_modified": "2017-09-06T19:33:24.826892Z",
+                    "short_description": "A short description of your study would go here.",
+                    "long_description": "A longer purpose of your study would be here.",
+                    "criteria": "Children should be around five.",
+                    "duration": "20 minutes",
+                    "contact_info": "Contact Sally",
+                    "image": "http://localhost:8000/media/study_images/download.jpeg",
+                    "structure": {
+                        "frames": {},
+                        "sequence": []
+                    },
+                    "display_full_screen": true,
+                    "exit_url": "http://www.cos.io",
+                    "state": "created",
+                    "public": true
+                },
+                "relationships": {
+                    "organization": {
+                        "links": {
+                            "related": "http://localhost:8000/api/v1/organizations/665c4457-a02e-4842-bd72-7043de3d66d0/"
+                        }
+                    },
+                    "creator": {
+                        "links": {
+                            "related": "http://localhost:8000/api/v1/users/834bbf33-b249-4737-a041-43574cd137a7/"
+                        }
+                    },
+                    "responses": {
+                        "links": {
+                            "related": "http://localhost:8000/api/v1/studies/65680ade-510c-4437-a58a-e41d4b94d8ed/responses/"
+                        }
+                    }
                 },
                 "links": {
-                    "self": "http://localhost:8000/api/v1/organizations/665c4457-a02e-4842-bd72-7043de3d66d0/"
+                    "self": "http://localhost:8000/api/v1/studies/65680ade-510c-4437-a58a-e41d4b94d8ed/"
                 }
             }
         ]
     }
 
-Retrieving a single organization
+Retrieving a single study
 ---------------------------------
-GET /api/v1/organizations/<organization_id>/
+GET /api/v1/studies/<study_id>/
 
-Permissions: Must be authenticated.
+Permissions: Must be authenticated.  You can fetch an active study or a study you have permission to edit.
 
 *Sample Response:*
 
@@ -656,34 +772,65 @@ Permissions: Must be authenticated.
 
     {
         "data": {
-            "type": "organizations",
-            "id": "665c4457-a02e-4842-bd72-7043de3d66d0",
+            "type": "studies",
+            "id": "65680ade-510c-4437-a58a-e41d4b94d8ed",
             "attributes": {
-                "name": "MIT"
+                "name": "Sample Study",
+                "date_modified": "2017-09-06T19:33:24.826892Z",
+                "short_description": "A short description of your study would go here.",
+                "long_description": "A longer purpose of your study would be here.",
+                "criteria": "Children should be around five.",
+                "duration": "20 minutes",
+                "contact_info": "Contact Sally",
+                "image": "http://localhost:8000/media/study_images/download.jpeg",
+                "structure": {
+                    "frames": {},
+                    "sequence": []
+                },
+                "display_full_screen": true,
+                "exit_url": "http://www.cos.io",
+                "state": "created",
+                "public": true
+            },
+            "relationships": {
+                "organization": {
+                    "links": {
+                        "related": "http://localhost:8000/api/v1/organizations/665c4457-a02e-4842-bd72-7043de3d66d0/"
+                    }
+                },
+                "creator": {
+                    "links": {
+                        "related": "http://localhost:8000/api/v1/users/834bbf33-b249-4737-a041-43574cd137a7/"
+                    }
+                },
+                "responses": {
+                    "links": {
+                        "related": "http://localhost:8000/api/v1/studies/65680ade-510c-4437-a58a-e41d4b94d8ed/responses/"
+                    }
+                }
             },
             "links": {
-                "self": "http://localhost:8000/api/v1/organizations/665c4457-a02e-4842-bd72-7043de3d66d0/"
+                "self": "http://localhost:8000/api/v1/studies/65680ade-510c-4437-a58a-e41d4b94d8ed/"
             }
         }
     }
 
-
-Creating an Organization
+Creating a Study
 ---------------------------------
-POST /api/v1/organizations/
+POST /api/v1/studies/
 
 METHOD NOT ALLOWED.  Not permitted via the API.
 
 
-Updating an Organization
+Updating a Study
 ---------------------------------
-PUT /api/v1/organizations/<organization_id>/
+PUT /api/v1/studies/<study_id>/
 
 METHOD NOT ALLOWED.  Not permitted via the API.
 
 
-Deleting an Organization
+Deleting a Study
 ---------------------------------
-DELETE /api/v1/organizations/<organization_id>/
+DELETE /api/v1/studies/<study_id>/
 
 METHOD NOT ALLOWED.  Not permitted via the API.
