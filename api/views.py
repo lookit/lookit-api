@@ -10,7 +10,7 @@ from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   OrganizationSerializer, UserSerializer)
 from django_filters import rest_framework as filters
 from rest_framework_json_api import views
-from api.permissions import FeedbackPermissions
+from api.permissions import FeedbackPermissions, ResponsePermissions
 from studies.models import Response, Study, Feedback
 from studies.serializers import (ResponseWriteableSerializer, ResponseSerializer,
                                  StudySerializer, FeedbackSerializer)
@@ -159,7 +159,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ResponseFilter
     http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ResponsePermissions]
 
     def get_serializer_class(self):
          """Return a different serializer for create views"""
