@@ -815,6 +815,13 @@ Permissions: Must be authenticated.  You can fetch an active study or a study yo
         }
     }
 
+Retrieving a Study's responses
+---------------------------------
+GET /api/v1/studies/<study_id>/responses/
+
+Permissions: Must be authenticated.  Must have permission to view the responses to the particular study.
+
+
 Creating a Study
 ---------------------------------
 POST /api/v1/studies/
