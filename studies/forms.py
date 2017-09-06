@@ -19,7 +19,7 @@ class ResponseForm(forms.ModelForm):
         model = Response
 
 
-class StudyCleanForm(forms.ModelForm):
+class BaseStudyForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         min_age_months = self.cleaned_data.get('min_age_months')
@@ -31,7 +31,7 @@ class StudyCleanForm(forms.ModelForm):
         return cleaned_data
 
 
-class StudyEditForm(StudyCleanForm):
+class StudyEditForm(BaseStudyForm):
 
     class Meta:
         model = Study
@@ -60,7 +60,7 @@ class StudyEditForm(StudyCleanForm):
             'long_description': 'Explain the purpose of your study here.',
         }
 
-class StudyForm(StudyCleanForm):
+class StudyForm(BaseStudyForm):
     structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False, help_text='Add the frames of your study as well as the sequence of those frames.  This can be added later.')
 
     def clean_structure(self):
