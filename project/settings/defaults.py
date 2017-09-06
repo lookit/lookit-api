@@ -196,7 +196,6 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
     }
 
-JSON_API_FORMAT_KEYS = 'dasherize'
 JSON_API_PLURALIZE_TYPES = True
 
 # Internationalization

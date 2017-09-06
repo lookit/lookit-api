@@ -63,19 +63,11 @@
 
         function ageCheck(age) {
             // Adapted from experiment model in exp-addons
-            var eligibilityMinAge = "{{ study.min_age }}"
-            var eligibilityMaxAge = "{{ study.max_age }}"
-
             var minDays;
             var maxDays;
-            if (eligibilityMinAge) {
-                var [minNumber, minUnit] = eligibilityMinAge.split(' ');
-                minDays = moment.duration(parseFloat(minNumber), minUnit).asDays();
-            }
-            if (eligibilityMaxAge) {
-                var [maxNumber, maxUnit] = eligibilityMaxAge.split(' ');
-                maxDays = moment.duration(parseFloat(maxNumber), maxUnit).asDays();
-            }
+            minDays = moment.duration({months: "{{ study.min_age_months }}", years: "{{ study.min_age_years }}"}).asDays();
+            maxDays = moment.duration({months: "{{ study.max_age_months }}", years: "{{ study.max_age_years }}"}).asDays();
+
             minDays = minDays || -1;
             maxDays = maxDays || Number.MAX_SAFE_INTEGER;
 
@@ -131,8 +123,6 @@
                     {% else %}
                     <div class="form-group">
                         <label>Select a child:</label>
-                        <p class='hidden' id='min-age'>{{ object.min_age }}</p>
-                        <p class='hidden' id='max-age'>{{ object.max_age }}</p>
                         <select class="childDropdown" onchange="childSelected(this)">
                             <option value=none >None Selected</option>
                             {% for child in children %}

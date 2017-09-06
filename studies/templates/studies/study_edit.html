@@ -14,11 +14,6 @@
             {% endif %}
         {% endfor %}
     {% endif %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
 {% endblock %}
 {% block content %}
 <script>
@@ -31,50 +26,56 @@
             source: [
                   {value: 'study_read', text: 'Read'},
                   {value: 'study_admin', text: 'Admin'}
-              ],
-              success: function(response, newValue) {
-                  // On success, populate the success message with the permissions the user was given
-                  // and reveal the permission edit alert message.
+            ],
+            error: function(response, newValue) {
+                // If removing own admin permissions, direct to study detail page.
+                if(response.status === 403) {
+                    window.location = window.location.href.replace('edit/', '');
+                }
+            },
+            success: function(response, newValue) {
+              // On success, populate the success message with the permissions the user was given
+              // and reveal the permission edit alert message.
 
-                  // This is necessary b/c we're using x-editable here. Page is not reloaded.
-                  $('#add-researcher-messages').hide()
-                  if (newValue === 'study_admin') {
-                      $('#permission-edit-text').append(' given Admin Permissions to this study.');
-                      // Another user given admin permissions so all users' permissions are editable.
-                      $('.disabledPermissionDisplay').hide()
-                      $('.permissionDisplay').show()
-                  } else {
-                      $('#permission-edit-text').append(' given Read Permissions to this study.');
-                      var numAdmins = 0;
-                      var adminStatus = [];
-                      $('a.researcher_permissions').each(function(index) {
-                          // Loops through current researchers to figure out current number of admins, and
-                          // each researcher's current status
-                          if (this.innerHTML.trim() === 'Admin') {
-                              numAdmins++;
-                              adminStatus.push(1);
-                          } else {
-                              adminStatus.push(0);
-                          }
-                          if (this.className.indexOf('editable-open') > -1) {
-                              // Changed researcher was given read permissions
-                              adminStatus[index] = 0;
-                          }
-                      });
-                      $('.disabledPermissionDisplay').each(function(index) {
-                          // Modifies display as to whether or not researcher's permissions can be edited
-                          if (numAdmins - 1 - adminStatus[index] === 0) {
-                              this.style.display = 'inline-block';
-                              $('.permissionDisplay')[index].style.display = 'none';
-                          } else {
-                              this.style.display = 'none';
-                              $('.permissionDisplay')[index].style.display = 'inline-block';
-                          }
-                      });
-                  }
-                  // Shows success message
-                   $('#permission-edit').show();
-               }
+              // This is necessary b/c we're using x-editable here. Page is not reloaded.
+              $('#add-researcher-messages').hide()
+              if (newValue === 'study_admin') {
+                  $('#permission-edit-text').append(' given Admin Permissions to this study.');
+                  // Another user given admin permissions so all users' permissions are editable.
+                  $('.disabledPermissionDisplay').hide()
+                  $('.permissionDisplay').show()
+              } else {
+                  $('#permission-edit-text').append(' given Read Permissions to this study.');
+                  var numAdmins = 0;
+                  var adminStatus = [];
+                  $('a.researcher_permissions').each(function(index) {
+                      // Loops through current researchers to figure out current number of admins, and
+                      // each researcher's current status
+                      if (this.innerHTML.trim() === 'Admin') {
+                          numAdmins++;
+                          adminStatus.push(1);
+                      } else {
+                          adminStatus.push(0);
+                      }
+                      if (this.className.indexOf('editable-open') > -1) {
+                          // Changed researcher was given read permissions
+                          adminStatus[index] = 0;
+                      }
+                  });
+                  $('.disabledPermissionDisplay').each(function(index) {
+                      // Modifies display as to whether or not researcher's permissions can be edited
+                      if (numAdmins - 1 - adminStatus[index] === 0) {
+                          this.style.display = 'inline-block';
+                          $('.permissionDisplay')[index].style.display = 'none';
+                      } else {
+                          this.style.display = 'none';
+                          $('.permissionDisplay')[index].style.display = 'inline-block';
+                      }
+                  });
+              }
+              // Shows success message
+               $('#permission-edit').show();
+           }
         }).on('click', function (e) {
             // When clicking on a researcher, prepopulate success message with researcher name.
              $('#permission-edit').hide();
@@ -105,7 +106,7 @@
               </div>
               <div class="panel-body">
                 <form action="./#details" method="post" enctype="multipart/form-data">{% csrf_token %}
-                    {% bootstrap_form form %}
+                    {% include "studies/_study_fields.html" with form=form study=study %}
                     <div class="pull-right">
                         {% buttons %}
                               <a class="btn btn-default"href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>

@@ -37,6 +37,9 @@ class FilterByUrlKwargsMixin(views.ModelViewSet):
 
 
 class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of all organziations or retrieving a single organization
+    """
     resource_name = 'organizations'
     lookup_field = 'uuid'
     queryset = Organization.objects.all()
@@ -47,6 +50,11 @@ class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 
 class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of all children you have permission to view or retrieving a single child.
+
+    You can view data from children that have responded to studies that you have permission to view, as well as view any of your own children that you have registered.
+    """
     resource_name = 'children'
     queryset = Child.objects.filter(user__is_active=True).distinct()
     serializer_class = ChildSerializer
@@ -68,6 +76,9 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 
 class DemographicDataViewSet(ChildViewSet):
+    """
+    Allows viewing a list of all demographic data you have permission to view as well as your own demographic data.
+    """
     resource_name = 'demographics'
     queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
@@ -75,6 +86,11 @@ class DemographicDataViewSet(ChildViewSet):
 
 
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of all users you have permission to view or retrieving a single user.
+
+    You can view participants that have responded to studies you have permission to view, as well as own user information
+    """
     lookup_field = 'uuid'
     resource_name = 'users'
     queryset = User.objects.all()
@@ -95,6 +111,11 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         return User.objects.filter((Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)), Q(id__in=qs_ids)).distinct()
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of studies or retrieivng a single study
+
+    You can view studies that are active as well as studies you have permission to edit.
+    """
     resource_name = 'studies'
     queryset = Study.objects.filter(state='active')
     serializer_class = StudySerializer
@@ -125,6 +146,11 @@ class ResponseFilter(filters.FilterSet):
 
 
 class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of responses, retrieving a response, creating a response, or updating a response.
+
+    You can view responses to studies that you have permission to view, or responses by your own children.
+    """
     resource_name = 'responses'
     queryset = Response.objects.all()
     serializer_class = ResponseSerializer
@@ -168,6 +194,12 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 
 class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of feedback, retrieving a single piece of feedback, or creating feedback.
+
+    You can view feedback on studies you have permission to edit, as well as feedback left on your responses.
+
+    """
     resource_name = 'feedback'
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
@@ -183,7 +215,8 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         """
         Overrides queryset.
 
-        Shows feedback for studies you can edit, or feedback left on your created response
+        Shows feedback for studies you can edit, or feedback left on your created responses.
+        A researcher can only add feedback to responses to studies they have permission to edit.
         """
         qs = super().get_queryset()
         study_ids = get_objects_for_user(self.request.user, 'studies.can_edit_study').values_list('id', flat=True)

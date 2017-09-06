@@ -16,6 +16,7 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from project import settings
 from transitions.extensions import GraphMachine as Machine
+from model_utils import Choices
 
 from studies import workflow
 from studies.helpers import send_mail
@@ -43,6 +44,8 @@ class StudyType(models.Model):
 
 
 class Study(models.Model):
+    MONTH_CHOICES = [(i,i) for i in range(0,12)]
+    YEAR_CHOICES = [(i,i) for i in range(0,19)]
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -51,8 +54,10 @@ class Study(models.Model):
     criteria = models.TextField()
     duration = models.TextField()
     contact_info = models.TextField()
-    max_age = models.TextField(default='')
-    min_age = models.TextField(default='')
+    min_age_months = models.IntegerField(null=True, default=0, choices=MONTH_CHOICES)
+    min_age_years = models.IntegerField(null=True, default=0, choices=YEAR_CHOICES)
+    max_age_months = models.IntegerField(null=True, default=0, choices=MONTH_CHOICES)
+    max_age_years = models.IntegerField(null=True, default=0, choices=YEAR_CHOICES)
     image = models.ImageField(null=True, upload_to='study_images/')
     comments = models.TextField(blank=True, null=True)
     study_type = models.ForeignKey('StudyType', on_delete=models.DO_NOTHING, null=False, blank=False, verbose_name='type')
@@ -91,7 +96,7 @@ class Study(models.Model):
             before_state_change='check_permission',
             after_state_change='_finalize_state_change'
         )
-        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age', 'min_age', 'image', 'exit_url', 'previewed', 'metadata', 'study_type']
+        self.__monitoring_fields = ['structure', 'name', 'short_description', 'long_description', 'criteria', 'duration', 'contact_info', 'max_age_years', 'min_age_years', 'max_age_months', 'min_age_months', 'image', 'exit_url', 'previewed', 'metadata', 'study_type']
         for field in self.__monitoring_fields:
             try:
                 setattr(self, f'__original_{field}', getattr(self, field))

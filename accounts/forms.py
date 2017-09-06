@@ -1,6 +1,8 @@
+import datetime
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, UserChangeForm
 from django.forms.widgets import DateInput
+from django.core.exceptions import ValidationError
 
 from accounts.models import DemographicData, User, Child
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
@@ -148,6 +150,13 @@ class DemographicDataForm(forms.ModelForm):
 
 class ChildForm(forms.ModelForm):
     birthday = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}), help_text="This lets us figure out exactly how old your child is when they participate in a study. We never publish children\'s birthdates or information that would allow a reader to calculate the birthdate.")
+
+    def clean_birthday(self):
+        date = self.cleaned_data['birthday']
+        if date > datetime.date.today():
+            raise  ValidationError("Birthdays cannot be in the future.")
+        return date
+
     class Meta:
         model = Child
         fields = ('given_name', 'birthday', 'gender', 'age_at_birth', 'additional_information')
