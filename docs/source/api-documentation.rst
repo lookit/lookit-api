@@ -5,8 +5,40 @@ API Documentation
 =========
 API Tips
 =========
-- Most endpoints in this API are just meant for retrieving data. Typically, you can retrieve data associated with studies you have permission to view, or view any data that belongs to you.  You can only create *responses* and *feedback* through the API.  You can only update *responses* through the API.  There is *nothing* that is permitted to be deleted through the API.
+-------
+General
+-------
+Most endpoints in this API are just meant for retrieving data. Typically, you can retrieve data associated with studies you have permission to view, or view any data that belongs to you.  You can only create *responses* and *feedback* through the API.  You can only update *responses* through the API.  There is *nothing* that is permitted to be deleted through the API.
 
+---------------
+Authentication
+---------------
+We are using a token-based HTTP Authentication scheme.
+
+- Go to Experimenter's admin app to create a token `/admin/authtoken/token/add/` (Only users marked as "Staff" can access the admin app.)
+
+.. image:: _static/img/add_token.png
+    :alt: Add token image
+
+- Select your user from the dropdown and hit 'Save'. Copy the token.
+
+.. image:: _static/img/specific_token.png
+    :alt: Copy token image
+
+-  Include this token in your Authorization HTTP header.  The word "Token" should come before it.
+
+.. code-block:: bash
+
+    curl -X GET <API_URL_HERE> -H 'Authorization: Token <paste_token_here>'
+
+- For example, here's how you would access users using curl:
+
+.. code-block:: bash
+
+    curl -X GET https://localhost:8000/api/v1/users/ -H 'Authorization: Token 123456789abcdefghijklmnopqrstuvwxyz'
+
+Pagination
+------------
 - This API is paginated, so results are returned in batches of 10. Follow the pagination links in the API response to fetch the subsequent pages of data.  In the example below, the "links" section of the API response has the first, last, next, and previous links.
 
 *Sample Response:*
