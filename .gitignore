@@ -145,3 +145,7 @@ docker-compose.override.yml
 project/static/
 ember_build/checkouts/
 ember_build/deployments/
+
+_build
+_static
+_templates
