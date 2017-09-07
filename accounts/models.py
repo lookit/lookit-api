@@ -103,6 +103,7 @@ def organization_post_save(sender, **kwargs):
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
+    former_lookit_id = models.CharField(max_length=255, blank=True)
     username = models.EmailField(unique=True, verbose_name='Email address', db_index=True)
     given_name = models.CharField(max_length=255)
     middle_name = models.CharField(max_length=255, blank=True)
@@ -276,6 +277,7 @@ class Child(models.Model):
     age_at_birth = models.CharField(max_length=25, choices=AGE_AT_BIRTH_CHOICES)
     additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)
+    former_lookit_profile_id = models.CharField(max_length=255, blank=True)
 
     user = models.ForeignKey(
         'accounts.User',
