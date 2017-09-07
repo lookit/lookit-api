@@ -37,6 +37,7 @@ We are using a token-based HTTP Authentication scheme.
 
     curl -X GET https://localhost:8000/api/v1/users/ -H 'Authorization: Token 123456789abcdefghijklmnopqrstuvwxyz'
 
+------------
 Pagination
 ------------
 - This API is paginated, so results are returned in batches of 10. Follow the pagination links in the API response to fetch the subsequent pages of data.  In the example below, the "links" section of the API response has the first, last, next, and previous links.
@@ -871,5 +872,133 @@ METHOD NOT ALLOWED.  Not permitted via the API.
 Deleting a Study
 ---------------------------------
 DELETE /api/v1/studies/<study_id>/
+
+METHOD NOT ALLOWED.  Not permitted via the API.
+
+
+-------------
+Users
+-------------
+
+Viewing the list of users
+---------------------------------
+GET /api/v1/users/
+
+Permissions: Must be authenticated.  You can view participants that have responded to studies you have permission to view, as well as own user information.
+Endpoint can return both participants and researchers, if you have permission to view them.
+
+*Sample Response:*
+
+.. code-block:: json
+
+    {
+        "links": {
+            "first": "http://localhost:8000/api/v1/users/?page=1",
+            "last": "http://localhost:8000/api/v1/users/?page=1",
+            "next": null,
+            "prev": null,
+            "meta": {
+                "page": 1,
+                "pages": 1,
+                "count": 1
+            }
+        },
+        "data": [
+            {
+                "type": "users",
+                "id": "834bbf33-b249-4737-a041-43574cd137a7",
+                "attributes": {
+                    "given_name": "Test",
+                    "middle_name": "",
+                    "family_name": "User",
+                    "identicon": "data:image/png;base64,aaaabbbbccccddddeeeefffffgggg",
+                    "is_active": true,
+                    "is_staff": true
+                },
+                "relationships": {
+                    "demographics": {
+                        "links": {
+                            "related": "http://localhost:8000/api/v1/users/834bbf33-b249-4737-a041-43574cd137a7/demographics/"
+                        }
+                    },
+                    "organization": {
+                        "links": {
+                            "related": "http://localhost:8000/api/v1/organizations/665c4457-a02e-4842-bd72-7043de3d66d0/"
+                        }
+                    },
+                    "children": {
+                        "links": {
+                            "related": "http://localhost:8000/api/v1/users/834bbf33-b249-4737-a041-43574cd137a7/children/"
+                        }
+                    }
+                },
+                "links": {
+                    "self": "http://localhost:8000/api/v1/users/834bbf33-b249-4737-a041-43574cd137a7/"
+                }
+            }
+        ]
+    }
+
+Retrieving a single user
+---------------------------------
+GET /api/v1/users/<user_id>/
+
+Permissions: Must be authenticated.  You can view participants that have responded to studies you have permission to view, as well as own user information.
+
+*Sample Response:*
+
+.. code-block:: json
+    {
+        "data": {
+            "type": "users",
+            "id": "834bbf33-b249-4737-a041-43574cd137a7",
+            "attributes": {
+                "given_name": "Test",
+                "middle_name": "",
+                "family_name": "User",
+                "identicon": "data:image/png;base64,aaaabbbbccccddddeeeefffffgggg",
+                "is_active": true,
+                "is_staff": true
+            },
+            "relationships": {
+                "demographics": {
+                    "links": {
+                        "related": "http://localhost:8000/api/v1/users/834bbf33-b249-4737-a041-43574cd137a7/demographics/"
+                    }
+                },
+                "organization": {
+                    "links": {
+                        "related": "http://localhost:8000/api/v1/organizations/665c4457-a02e-4842-bd72-7043de3d66d0/"
+                    }
+                },
+                "children": {
+                    "links": {
+                        "related": "http://localhost:8000/api/v1/users/834bbf33-b249-4737-a041-43574cd137a7/children/"
+                    }
+                }
+            },
+            "links": {
+                "self": "http://localhost:8000/api/v1/users/834bbf33-b249-4737-a041-43574cd137a7/"
+            }
+        }
+    }
+
+Creating a User
+---------------------------------
+POST /api/v1/users/
+
+METHOD NOT ALLOWED.  Not permitted via the API.
+
+
+Updating a User
+---------------------------------
+PUT /api/v1/users/<user_id>/
+
+METHOD NOT ALLOWED.  Not permitted via the API.
+
+
+Deleting a User
+---------------------------------
+DELETE /api/v1/users/<user_id>/
 
 METHOD NOT ALLOWED.  Not permitted via the API.
