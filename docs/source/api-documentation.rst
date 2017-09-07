@@ -948,6 +948,7 @@ Permissions: Must be authenticated.  You can view participants that have respond
 *Sample Response:*
 
 .. code-block:: json
+
     {
         "data": {
             "type": "users",
