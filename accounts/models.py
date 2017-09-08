@@ -272,7 +272,7 @@ class Child(models.Model):
 
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     given_name = models.CharField(max_length=255)
-    birthday = models.DateField()
+    birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
     age_at_birth = models.CharField(max_length=25, choices=AGE_AT_BIRTH_CHOICES)
     additional_information = models.TextField(blank=True)
