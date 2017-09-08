@@ -105,7 +105,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     former_lookit_id = models.CharField(max_length=255, blank=True)
     username = models.EmailField(unique=True, verbose_name='Email address', db_index=True)
-    given_name = models.CharField(max_length=255)
+    given_name = models.CharField(max_length=255, blank=True)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
     nickname = models.CharField(max_length=255, blank=True)
