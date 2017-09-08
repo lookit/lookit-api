@@ -120,6 +120,7 @@ logs/*
 .settings/
 src/
 website/mfrtemp/
+docs/build
 docs/_build
 website/static/img/badges
 
