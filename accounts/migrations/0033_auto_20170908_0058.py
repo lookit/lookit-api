@@ -30,6 +30,9 @@ def format_gender(gender):
     return gender_mapping.get(gender, '')
 
 def format_age_at_birth(age):
+    """
+    Old gestationalAgeAtBirth fields went above 40, but now we are capping at 40.
+    """
     if age:
         try:
             int_age = int(age)
@@ -52,7 +55,7 @@ def create_child(user, profile, apps):
         birthday=profile.get('birthday').split('T')[0],
         gender=format_gender(profile.get('gender')),
         age_at_birth=format_age_at_birth(profile.get('gestationalAgeAtBirth')) or pull_choice_value(profile.get('ageAtBirth'), 'age_at_birth', apps, "Child"),
-        additional_information=profile.get('additionalInformation', ''),
+        additional_information=pull_choice_value(profile.get('additionalInformation', ''), 'additional_information', apps, "Child"),
         deleted=profile.get('deleted'),
         former_lookit_profile_id=profile.get('profileId'),
         user=user
