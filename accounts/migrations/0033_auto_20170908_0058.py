@@ -117,7 +117,7 @@ def create_demographics(user, participant, apps):
     )
 
     income = get_simple_field(attributes.get('demographicsAnnualIncome'))
-    if income and '$' not in income:
+    if income and '$' not in income and ' ' not in income:
         demo_data.annual_income = income
 
     demo_data.save()
