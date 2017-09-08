@@ -98,9 +98,9 @@ def create_demographics(user, participant, apps):
 
     demo_data = DemographicData(
         number_of_children=get_simple_field(attributes.get('demographicsNumberOfChildren')),
-        child_birthdays=[birthday.split('T')[0] for birthday in attributes.get('demographicsChildBirthdays')],
+        child_birthdays=[birthday.split('T')[0] if birthday else birthday for birthday in attributes.get('demographicsChildBirthdays')],
         languages_spoken_at_home=get_simple_field(attributes.get('demographicsLanguagesSpokenAtHome')),
-        number_of_guardians=get_simple_field(attributes.get('demographicsNumberOfGuardians')),
+        number_of_guardians=pull_choice_value(attributes.get('demographicsNumberOfGuardians'), 'number_of_guardians', apps),
         number_of_guardians_explanation=get_simple_field(attributes.get('demographicsNumberOfGuardiansExplanation')),
         race_identification=pull_choice_value(attributes.get('demographicsRaceIdentification'), 'race_identification', apps),
         former_lookit_annual_income=get_simple_field(attributes.get('demographicsAnnualIncome')),
