@@ -441,6 +441,7 @@ class DemographicData(models.Model):
     education_level = models.CharField(max_length=5, choices=EDUCATION_CHOICES, blank=True)
     spouse_education_level = models.CharField(max_length=5, choices=SPOUSE_EDUCATION_CHOICES, blank=True)
     annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES, blank=True)
+    former_lookit_annual_income = models.CharField(max_length=30, blank=True)
     number_of_books = models.IntegerField(null=True, blank=True, default=None)
     additional_comments = models.TextField(blank=True)
     country = CountryField(blank=True)
