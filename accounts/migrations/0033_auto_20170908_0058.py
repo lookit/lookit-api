@@ -29,6 +29,18 @@ def format_gender(gender):
     gender_mapping = {'male': 'm', 'female': 'f', 'other or prefer not to answer': 'na'}
     return gender_mapping.get(gender, '')
 
+def format_age_at_birth(age):
+    if age:
+        try:
+            int_age = int(age)
+            if int_age >= 40:
+                return '40>'
+            return age
+        except ValueError:
+            return age
+    else:
+        return None
+
 def create_child(user, profile, apps):
     """
     Creates child and links to user
@@ -39,21 +51,21 @@ def create_child(user, profile, apps):
         given_name=profile.get('firstName', ''),
         birthday=profile.get('birthday').split('T')[0],
         gender=format_gender(profile.get('gender')),
-        age_at_birth=profile.get('gestationalAgeAtBirth') or profile.get('ageAtBirth'),
+        age_at_birth=format_age_at_birth(profile.get('gestationalAgeAtBirth')) or pull_choice_value(profile.get('ageAtBirth'), 'age_at_birth', apps, "Child"),
         additional_information=profile.get('additionalInformation', ''),
         deleted=profile.get('deleted'),
         former_lookit_profile_id=profile.get('profileId'),
         user=user
     ).save()
 
-def pull_choice_value(original_field_value, field_name, apps):
+def pull_choice_value(original_field_value, field_name, apps, model_name=None):
     """
     Map display name to value for storing in db
     """
     if original_field_value is None:
         return ''
-    demo_data = apps.get_model("accounts", "DemographicData")
-    choices = demo_data._meta.get_field(field_name).choices
+    fetched_model = apps.get_model("accounts", model_name if model_name else "DemographicData")
+    choices = fetched_model._meta.get_field(field_name).choices
     ret = []
     if isinstance(original_field_value, str):
         for choice in choices:
@@ -76,7 +88,8 @@ def create_demographics(user, participant, apps):
     """
     Creates demographic data and attaches to user
     """
-    # Annual income problematic because our choices are different
+    # Looks like annual income used to be stored as a range, before individual values.  Store this old value in former_lookit_annual_income.
+    # If salary matches current choices, then it's also stored in annual_income field.
     DemographicData = apps.get_model("accounts", "DemographicData")
     attributes = participant.get('attributes')
 
@@ -114,8 +127,8 @@ def create_participants(participant, apps):
     # - Old email field is going into new username field
     # - Old name field is being stored under given_name
     # - Older username field is being stored under nickname
-    # - Many old users don't have "usernames" (now nickname field).  Add email instead to nickname field if missing.
-    # - We seem to have a hash of their password, so I don't want to store a hash of a hash?
+    # - We have a hash of their password, so I don't want to store a hash of a hash?
+    # - Don't seem to be many email preferences in db?
     attributes = participant.get('attributes')
     User = apps.get_model("accounts", "User")
     user = User(
