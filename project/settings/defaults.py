@@ -327,5 +327,5 @@ CELERY_TASK_ROUTES = {
     'studies.helpers.send_mail': {'queue': 'email'}
 }
 
-CLIENT_ID=os.environ.get('OSF_OAUTH_CLIENT_ID', '3518b74e12584abf9e48565ff6aee6f3'),
-SECRET=os.environ.get('OSF_OAUTH_SECRET', 'vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU'),
+CLIENT_ID = os.environ.get('OSF_OAUTH_CLIENT_ID', '3518b74e12584abf9e48565ff6aee6f3')
+SECRET = os.environ.get('OSF_OAUTH_SECRET', 'vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU')
