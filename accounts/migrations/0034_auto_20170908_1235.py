@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 import json
 from django.db import migrations
 
+children_created = 0
+demographic_data_created = 0
 
 def get_participant_json():
     """
@@ -16,12 +18,12 @@ def get_participant_json():
 
 def get_duplicate_emails(participants):
     """
-    Some users have duplicate emails.  In new db, emails must be unique.
+    Some lookit v1 users have duplicate emails.  In new db, emails must be unique. Will need to manually migrate.
     """
     email_list = []
     for participant in participants:
         email_list.append(participant.get('attributes').get('email'))
-    return set([email for email in email_list if email_list.count(email) > 1])
+    return [email for email in email_list if email_list.count(email) > 1]
 
 def migrate_participants(apps, schema_editor):
     """
@@ -29,10 +31,25 @@ def migrate_participants(apps, schema_editor):
     """
     participants = get_participant_json()
     duplicates = get_duplicate_emails(participants)
-    for participant in participants[0:3000]:
+    print("Starting migration of old lookit participants...")
+    part_count = 0
+    copied = 0
+    for participant in participants:
+        part_count += 1
         # Skip participants that have duplicate emails in db
-        if participant.get('attributes').get('email') not in duplicates:
+        if participant.get('attributes').get('email') not in set(duplicates):
+            print(f'Copying participant {part_count}/{len(participants)}')
             create_participant(participant, apps)
+            copied += 1
+        else:
+            print(f'Skipping participant {part_count}/{len(participants)}')
+    print('========================================')
+    print(f'Total participants: {len(participants)}')
+    print(f'Skipped: {len(duplicates)} entries due to duplicate emails')
+    print(f'Total users needing manual migration: {len(set(duplicates))}')
+    print(f'Total users copied: {str(copied)}')
+    print(f'Total demographics copied: {str(demographic_data_created)}')
+    print(f'Total children copied: {str(children_created)}')
 
 def format_gender(gender):
     """
@@ -73,6 +90,8 @@ def create_child(user, profile, apps):
         former_lookit_profile_id=profile.get('profileId'),
         user=user
     ).save()
+    global children_created
+    children_created += 1
 
 def pull_choice_value(original_field_value, field_name, apps, model_name=None):
     """
@@ -134,6 +153,8 @@ def create_demographics(user, participant, apps):
         demo_data.annual_income = income
 
     demo_data.save()
+    global demographic_data_created
+    demographic_data_created += 1
 
 def create_participant(participant, apps):
     """
