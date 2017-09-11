@@ -91,6 +91,14 @@ Permissions: Must be authenticated.  You can only view children that have respon
 
 **SUPERUSER EXCEPTION:** Superusers can view all children of active users in the database via this endpoint.
 
+Ordering: Children can be sorted by birthday using the *ordering* query parameter.  For example, to sort oldest to youngest:
+
+GET http://localhost:8000/api/v1/children/?ordering=birthday
+
+Add a '-' before birthday to sort youngest to oldest:
+
+GET http://localhost:8000/api/v1/children/?ordering=-birthday
+
 *Sample Response:*
 
 .. code-block:: json

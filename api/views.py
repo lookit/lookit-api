@@ -9,6 +9,7 @@ from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   OrganizationSerializer, UserSerializer)
 from django_filters import rest_framework as filters
+from rest_framework.filters import OrderingFilter
 from rest_framework_json_api import views
 from api.permissions import FeedbackPermissions, ResponsePermissions
 from studies.models import Response, Study, Feedback
@@ -62,6 +63,8 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_fields = [('user', 'user'), ]
     http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
+    filter_backends = (OrderingFilter,)
+    ordering_fields = ('birthday',)
 
     def get_queryset(self):
         """
