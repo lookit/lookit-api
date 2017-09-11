@@ -283,7 +283,7 @@ class FeedbackTestCase(APITestCase):
         data = {
           "data": {
             "attributes": {
-                "content": "changed feedback"
+                "comment": "changed feedback"
             },
             "relationships": {
               "response": {
@@ -299,7 +299,8 @@ class FeedbackTestCase(APITestCase):
         }
 
         api_response = self.client.patch(self.url + str(feedback.uuid) + '/', json.dumps(data), content_type="application/vnd.api+json")
-        self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['comment'], 'changed feedback')
 
     def testDeleteFeedback(self):
         feedback = G(Feedback, response=self.response, researcher=self.researcher, comment="This was very helpful.")

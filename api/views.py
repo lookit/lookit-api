@@ -204,7 +204,7 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
     lookup_field = 'uuid'
-    http_method_names = ['get', 'post', 'head', 'options']
+    http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
     permission_classes = [IsAuthenticated, FeedbackPermissions]
 
     def perform_create(self, serializer):
