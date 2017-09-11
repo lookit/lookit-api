@@ -81,7 +81,7 @@ def create_child(user, profile, apps):
     Child = apps.get_model("accounts", "Child")
     gender = profile.get('gender')
     birthday = profile.get('birthday')
-    Child(
+    Child.objects.create(
         given_name=profile.get('firstName', ''),
         birthday=birthday.split('T')[0] if birthday else birthday,
         gender=format_gender(profile.get('gender')),
@@ -90,7 +90,7 @@ def create_child(user, profile, apps):
         deleted=profile.get('deleted'),
         former_lookit_profile_id=profile.get('profileId'),
         user=user
-    ).save()
+    )
     global children_created
     children_created += 1
 
@@ -128,15 +128,17 @@ def create_demographics(user, participant, apps):
     # If salary matches current choices, then it's also stored in annual_income field.
     DemographicData = apps.get_model("accounts", "DemographicData")
     attributes = participant.get('attributes')
+    income = get_simple_field(attributes.get('demographicsAnnualIncome'))
 
-    demo_data = DemographicData(
+    DemographicData.objects.create(
         number_of_children=get_simple_field(attributes.get('demographicsNumberOfChildren')),
         child_birthdays=[birthday.split('T')[0] if birthday else birthday for birthday in attributes.get('demographicsChildBirthdays')],
         languages_spoken_at_home=get_simple_field(attributes.get('demographicsLanguagesSpokenAtHome')),
         number_of_guardians=pull_choice_value(attributes.get('demographicsNumberOfGuardians'), 'number_of_guardians', apps),
         number_of_guardians_explanation=get_simple_field(attributes.get('demographicsNumberOfGuardiansExplanation')),
         race_identification=pull_choice_value(attributes.get('demographicsRaceIdentification'), 'race_identification', apps),
-        former_lookit_annual_income=get_simple_field(attributes.get('demographicsAnnualIncome')),
+        former_lookit_annual_income=income,
+        annual_income=income if income and '$' not in income and ' ' not in income else '',
         age=pull_choice_value(attributes.get('demographicsAge'), 'age', apps),
         gender=format_gender(attributes.get('demographicsGender')),
         education_level=pull_choice_value(attributes.get('demographicsEducationLevel'), 'education_level', apps),
@@ -149,11 +151,6 @@ def create_demographics(user, participant, apps):
         user=user
     )
 
-    income = get_simple_field(attributes.get('demographicsAnnualIncome'))
-    if income and '$' not in income and ' ' not in income:
-        demo_data.annual_income = income
-
-    demo_data.save()
     global demographic_data_created
     demographic_data_created += 1
 
@@ -168,8 +165,8 @@ def create_participant(participant, apps):
     # - We have a hash of their password, so I don't want to store a hash of a hash?
     # - Don't seem to be many email preferences in db?
     attributes = participant.get('attributes')
-    User = apps.get_model("accounts", "User")
-    user = User(
+    user_model = apps.get_model("accounts", "User")
+    user = user_model.objects.create(
         username=attributes.get('email'),
         password=attributes.get('password'),
         former_lookit_id=participant.get('id'),
@@ -183,7 +180,6 @@ def create_participant(participant, apps):
         email_study_updates=attributes.get('emailPreferenceResultsPublished', True),
         email_response_questions=attributes.get('emailPreferenceOptOut', True)
     )
-    user.save()
     create_demographics(user, participant, apps)
     for profile in attributes.get('profiles'):
         create_child(user, profile, apps)
