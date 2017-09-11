@@ -37,7 +37,8 @@ def migrate_participants(apps, schema_editor):
     for participant in participants:
         part_count += 1
         # Skip participants that have duplicate emails in db
-        if participant.get('attributes').get('email') not in set(duplicates):
+        unique_duplicates = set(duplicates)
+        if participant.get('attributes').get('email') not in unique_duplicates:
             print(f'Copying participant {part_count}/{len(participants)}')
             create_participant(participant, apps)
             copied += 1
