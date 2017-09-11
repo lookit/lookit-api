@@ -708,8 +708,6 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         study_permissions = get_perms(request.user, self.object)
 
         if study_permissions and 'can_edit_study' in study_permissions:
-            self.object.state = 'previewing'
-            self.object.save()
             build_experiment.delay(self.object.uuid, request.user.uuid, preview=True)
             messages.success(request, f"Scheduled Study {self.object.name} for preview. You will be emailed when it's completed.")
         return super().post(request, *args, **kwargs)
