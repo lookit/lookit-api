@@ -34,10 +34,10 @@ def migrate_participants(apps, schema_editor):
     print("Starting migration of old lookit participants...")
     part_count = 0
     copied = 0
+    unique_duplicates = set(duplicates)
     for participant in participants:
         part_count += 1
         # Skip participants that have duplicate emails in db
-        unique_duplicates = set(duplicates)
         if participant.get('attributes').get('email') not in unique_duplicates:
             print(f'Copying participant {part_count}/{len(participants)}')
             create_participant(participant, apps)
