@@ -39,7 +39,7 @@ class FilterByUrlKwargsMixin(views.ModelViewSet):
 
 class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
-    Allows viewing a list of all organziations or retrieving a single organization
+    Allows viewing a list of all organizations or retrieving a single organization
     """
     resource_name = 'organizations'
     lookup_field = 'uuid'
