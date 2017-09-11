@@ -69,7 +69,10 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Show children that have 1) responded to studies you can view and 2) are your own children
         """
-        qs_ids = super().get_queryset().values_list('id', flat=True)
+        original_queryset = super().get_queryset()
+        if self.request.user.is_superuser:
+            return original_queryset
+        qs_ids = original_queryset.values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
         return qs_ids.model.objects.filter((Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)), (Q(id__in=qs_ids))).distinct()
@@ -105,7 +108,10 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Shows 1) users that have responded to studies you can view and 2) your own user object
         """
-        qs_ids = super().get_queryset().values_list('id', flat=True)
+        all_users = super().get_queryset()
+        if self.request.user.is_superuser:
+            return all_users
+        qs_ids = all_users.values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
         return User.objects.filter((Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)), Q(id__in=qs_ids)).distinct()

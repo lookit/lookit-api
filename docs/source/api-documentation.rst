@@ -89,6 +89,8 @@ GET /api/v1/children/
 
 Permissions: Must be authenticated.  You can only view children that have responded to studies you have permission to view, or your own children.
 
+**SUPERUSER EXCEPTION:** Superusers can view all children of active users in the db via this endpoint.
+
 *Sample Response:*
 
 .. code-block:: json
@@ -195,6 +197,8 @@ Viewing the list of demographic data
 GET /api/v1/demographics/
 
 Permissions: Must be authenticated.  You can only view demographics of participants whose children have responded to studies you can view.  You can additionally view your own demographic data via the API.
+
+**SUPERUSER EXCEPTION:** Superusers can view all demographics of active users in the db via this endpoint.
 
 *Sample Response:*
 
@@ -917,6 +921,8 @@ GET /api/v1/users/
 
 Permissions: Must be authenticated.  You can view participants that have responded to studies you have permission to view, as well as own user information.
 Endpoint can return both participants and researchers, if you have permission to view them.
+
+**SUPERUSER EXCEPTION:** Superusers can view all users in the db via this endpoint.
 
 *Sample Response:*
 
