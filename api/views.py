@@ -110,7 +110,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         """
         all_users = super().get_queryset()
         if self.request.user.is_superuser:
-            return all_users
+            return all_users.filter(is_active=True)
         qs_ids = all_users.values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
