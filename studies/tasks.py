@@ -16,12 +16,15 @@ from project import storages
 from project.celery import app
 from studies.helpers import send_mail
 
-logger = logging.getLogger()
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # setup a stream handler for capturing logs for db logging
 log_buffer = StringIO()
 handler = logging.StreamHandler(log_buffer)
+
 handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -224,6 +227,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
     except Exception as e:
         ex = e
         logger.error(e)
+    finally:
         StudyLog.objects.create(
             study=study,
             action='preview' if preview else 'deploy',
@@ -236,20 +240,8 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             }
         )
         log_buffer.close()
-        raise self.retry(exc=e, countdown=30)
-
-    StudyLog.objects.create(
-        study=study,
-        action='preview' if preview else 'deploy',
-        user=researcher,
-        extra={
-            'ember_build': str(ember_build_comp_process.stdout),
-            'image_build': str(build_image_comp_process.stdout),
-            'ex': str(ex),
-            'log': log_buffer.getvalue(),
-        }
-    )
-    log_buffer.close()
+    if ex:
+        raise self.retry(exc=ex, countdown=30)
 
 
 def cleanup_old_directories(root_path, older_than):
