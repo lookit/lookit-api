@@ -20,6 +20,7 @@ class ResponseTestCase(APITestCase):
         self.participant.save()
 
         self.child = G(Child, user=self.participant, given_name='Sally')
+        self.child2 = G(Child, user=self.researcher, given_name='Grace')
         self.study = G(Study, creator=self.researcher)
         self.response = G(Response, child=self.child, study=self.study, completed=False)
         self.url = reverse('response-list',  kwargs={'version':'v1'})
@@ -130,6 +131,12 @@ class ResponseTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(api_response.data['completed'], False)
         self.assertEqual(Response.objects.count(), 2)
+
+    def testPostResponseWithNotYourChild(self):
+        self.client.force_authenticate(user=self.participant)
+        self.data['data']['relationships']['child']['data']['id'] = str(self.child2.uuid)
+        api_response = self.client.post(self.url, json.dumps(self.data), content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_403_FORBIDDEN)
 
     def testPostResponseNeedDataHeader(self):
         self.client.force_authenticate(user=self.participant)
