@@ -73,7 +73,8 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         Show children that have 1) responded to studies you can view and 2) are your own children
         """
         original_queryset = super().get_queryset()
-        if self.request.user.is_superuser:
+        # Users with can_read_all_user_data permissions can view all children/demographics of active users via the API
+        if self.request.user.has_perm('accounts.can_read_all_user_data'):
             return original_queryset
         qs_ids = original_queryset.values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
@@ -112,7 +113,8 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         Shows 1) users that have responded to studies you can view and 2) your own user object
         """
         all_users = super().get_queryset()
-        if self.request.user.is_superuser:
+        # Users with can_read_all_user_data permissions can view all active users via the API
+        if self.request.user.has_perm('accounts.can_read_all_user_data'):
             return all_users.filter(is_active=True)
         qs_ids = all_users.values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
