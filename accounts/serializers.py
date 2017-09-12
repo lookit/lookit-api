@@ -101,6 +101,7 @@ class UserSerializer(UUIDSerializerMixin, ModelSerializer):
             'organization',
             'children',
             'former_lookit_id',
+            'linked_former_lookit_ids',
             'email_next_session',
             'email_new_studies',
             'email_study_updates',
