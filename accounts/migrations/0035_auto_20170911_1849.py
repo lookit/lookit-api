@@ -35,15 +35,19 @@ def migrate_participants(apps, schema_editor):
     part_count = 0
     copied = 0
     unique_duplicates = set(duplicates)
+    duplicate_participants = []
     for participant in participants:
         part_count += 1
-        # Skip participants that have duplicate emails in db
         if participant.get('attributes').get('email') not in unique_duplicates:
             print(f'Copying participant {part_count}/{len(participants)}')
-            create_participant(participant, apps)
+            # create_participant(participant, apps)
             copied += 1
         else:
+            duplicate_participants.append(participant)
             print(f'Skipping participant {part_count}/{len(participants)}')
+    handle_duplicate_emails(duplicate_participants, apps)
+
+    import pdb; pdb.set_trace()
     print('========================================')
     print(f'Total participants: {len(participants)}')
     print(f'Skipped: {len(duplicates)} entries due to duplicate emails')
@@ -51,6 +55,32 @@ def migrate_participants(apps, schema_editor):
     print(f'Total users copied: {str(copied)}')
     print(f'Total demographics copied: {str(demographic_data_created)}')
     print(f'Total children copied: {str(children_created)}')
+
+def handle_duplicate_emails(duplicate_participants, apps):
+    """
+    Handle duplicate emails by merging all accounts into one.  All accounts' demographic data
+    is saved as versions.  All children across the different email accounts are connected w/ the one user
+    """
+    sorted_duplicates = sorted(duplicate_participants, key=lambda k: k['attributes']['email'])
+    sorted_dup_group = []
+    for index, part in enumerate(sorted_duplicates):
+        if index == 0:
+            sorted_dup_group.append([part])
+        if part['attributes']['email'] == sorted_dup_group[-1][-1]['attributes']['email']:
+            sorted_dup_group[-1].append(part)
+        else:
+            sorted_dup_group.append([part])
+    for group in sorted_dup_group:
+        sorted_group = sorted(group, key=lambda k: k['meta']['modified-on'])
+        for index, s in enumerate(sorted_group):
+            if not index:
+                user = create_participant(s, apps)
+            else:
+                create_demographics(user, s, apps)
+                for profile in s.get('attributes').get('profiles'):
+                    create_child(user, profile, apps)
+        print(group[0]['attributes']['email'])
+        print(len(group))
 
 def format_gender(gender):
     """
@@ -183,6 +213,7 @@ def create_participant(participant, apps):
     create_demographics(user, participant, apps)
     for profile in attributes.get('profiles'):
         create_child(user, profile, apps)
+    return user
 
 def reverse_func(apps, schema_editor):
     """
