@@ -104,6 +104,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     former_lookit_id = models.CharField(max_length=255, blank=True)
+    linked_former_lookit_ids = ArrayField(models.CharField(max_length=255), blank=True, default=list)
     username = models.EmailField(unique=True, verbose_name='Email address', db_index=True)
     given_name = models.CharField(max_length=255, blank=True)
     middle_name = models.CharField(max_length=255, blank=True)
