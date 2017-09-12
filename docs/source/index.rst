@@ -18,3 +18,5 @@ Contents:
 
    definitions
    api-documentation
+   django-project-installation
+   ember-app-installation
