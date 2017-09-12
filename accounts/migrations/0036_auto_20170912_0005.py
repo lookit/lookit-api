@@ -4,7 +4,15 @@
 from __future__ import unicode_literals
 import json
 from django.db import migrations
+"""
+This script is for migrating users from Lookit v1 to Lookit v2.  For each user in the old data, a user is created,
+demographic data is created, and all associated children are created.
 
+For users that have duplicate emails, these accounts are merged into one.  The original data is preserved by creating multiple
+versions of demographic data for the merged user, and assigning all related children to the one merged user. Original ids are preserved under
+the linked_former_lookit_ids field.
+"""
+users_created = 0
 children_created = 0
 demographic_data_created = 0
 
@@ -18,7 +26,7 @@ def get_participant_json():
 
 def get_duplicate_emails(participants):
     """
-    Some lookit v1 users have duplicate emails.  In new db, emails must be unique. Will need to manually migrate.
+    Creates a list of duplicate emails in the db.  Emails need to be unique, so these users will be handled separately.
     """
     email_list = []
     for participant in participants:
@@ -33,56 +41,72 @@ def migrate_participants(apps, schema_editor):
     duplicates = get_duplicate_emails(participants)
     print("Starting migration of old lookit participants...")
     part_count = 0
-    copied = 0
     unique_duplicates = set(duplicates)
     duplicate_participants = []
     for participant in participants:
         part_count += 1
         if participant.get('attributes').get('email') not in unique_duplicates:
-            print(f'Copying participant {part_count}/{len(participants)}')
-            # create_participant(participant, apps)
-            copied += 1
+            print(f'Examining participant {part_count}/{len(participants)}')
+            create_participant(participant, apps)
         else:
             duplicate_participants.append(participant)
             print(f'Skipping participant {part_count}/{len(participants)}')
-    handle_duplicate_emails(duplicate_participants, apps)
 
-    import pdb; pdb.set_trace()
+    duplicate_summary = handle_duplicate_emails(duplicate_participants, apps)
+
     print('========================================')
-    print(f'Total participants: {len(participants)}')
-    print(f'Skipped: {len(duplicates)} entries due to duplicate emails')
-    print(f'Total users needing manual migration: {len(set(duplicates))}')
-    print(f'Total users copied: {str(copied)}')
+    print(f'Total original participants: {len(participants)}')
+    print(f'{len(duplicates)} original participants with duplicate emails, for a total of {len(unique_duplicates)} duplicate emails ')
+    print(f'Total users copied: {len(participants)} - {len(duplicates)} + {len(unique_duplicates)} = {str(users_created)}')
     print(f'Total demographics copied: {str(demographic_data_created)}')
     print(f'Total children copied: {str(children_created)}')
+    print('========================================')
+    print('Merged accounts:')
+    print(duplicate_summary)
+
+def sort_duplicate_list(sorted_duplicates):
+    """
+    Splits list of users w/ duplicate emails into a list of lists, where each sublist is attached to one email
+    """
+    sorted_dup_group = []
+
+    for index, part in enumerate(sorted_duplicates):
+        if not index:
+            sorted_dup_group.append([part])
+        else:
+            if part['attributes']['email'] == sorted_dup_group[-1][-1]['attributes']['email']:
+                sorted_dup_group[-1].append(part)
+            else:
+                sorted_dup_group.append([part])
+    return sorted_dup_group
 
 def handle_duplicate_emails(duplicate_participants, apps):
     """
-    Handle duplicate emails by merging all accounts into one.  All accounts' demographic data
-    is saved as versions.  All children across the different email accounts are connected w/ the one user
+    Handle duplicate emails by merging all related accounts into one.  All accounts' demographic data
+    is saved as versions.  All children across the related email accounts are connected to the one merged account
     """
-    sorted_duplicates = sorted(duplicate_participants, key=lambda k: k['attributes']['email'])
-    sorted_dup_group = []
-    for index, part in enumerate(sorted_duplicates):
-        if index == 0:
-            sorted_dup_group.append([part])
-        if part['attributes']['email'] == sorted_dup_group[-1][-1]['attributes']['email']:
-            sorted_dup_group[-1].append(part)
-        else:
-            sorted_dup_group.append([part])
+    print("Handling duplicate emails...")
+    sorted_dup_group = sort_duplicate_list(sorted(duplicate_participants, key=lambda k: k['attributes']['email']))
+
+    duplicate_summary = {}
     for group in sorted_dup_group:
+        # Sort sublist on date modified, oldest first
         sorted_group = sorted(group, key=lambda k: k['meta']['modified-on'])
         for index, s in enumerate(sorted_group):
             if not index:
+                # For first user in email group, create it, along with demographics and children
                 user = create_participant(s, apps)
+                duplicate_summary[user.username] = [user.former_lookit_id]
             else:
+                # For subsequent emails in email group, attach demographic information and
+                # children to first user
                 user.linked_former_lookit_ids.append(s.get('id'))
+                duplicate_summary[user.username].append(s.get('id'))
                 user.save()
                 create_demographics(user, s, apps)
                 for profile in s.get('attributes').get('profiles'):
                     create_child(user, profile, apps)
-        print(group[0]['attributes']['email'])
-        print(len(group))
+    return duplicate_summary
 
 def format_gender(gender):
     """
@@ -191,10 +215,10 @@ def create_participant(participant, apps):
     Creates user and then adds related children and demographic data
     """
     # Assumptions:
+    # - TODO need to figure out how original passwords were being hashed.
     # - Old email field is going into new username field
     # - Old name field is being stored under given_name
     # - Older username field is being stored under nickname
-    # - We have a hash of their password, so I don't want to store a hash of a hash?
     # - Don't seem to be many email preferences in db?
     attributes = participant.get('attributes')
     user_model = apps.get_model("accounts", "User")
@@ -212,6 +236,9 @@ def create_participant(participant, apps):
         email_study_updates=attributes.get('emailPreferenceResultsPublished', True),
         email_response_questions=attributes.get('emailPreferenceOptOut', True)
     )
+    global users_created
+    users_created += 1
+
     create_demographics(user, participant, apps)
     for profile in attributes.get('profiles'):
         create_child(user, profile, apps)
