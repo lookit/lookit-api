@@ -57,7 +57,7 @@ def migrate_participants(apps, schema_editor):
     print('========================================')
     print(f'Total original participants: {len(participants)}')
     print(f'{len(duplicates)} original participants with duplicate emails, for a total of {len(unique_duplicates)} duplicate emails ')
-    print(f'Total users copied: {len(participants)} - {len(duplicates)} + {len(unique_duplicates)} = {str(users_created)}')
+    print(f'Total users copied: {len(participants)} - {len(duplicates)} + {len(unique_duplicates)} merged accounts = {str(users_created)}')
     print(f'Total demographics copied: {str(demographic_data_created)}')
     print(f'Total children copied: {str(children_created)}')
     print('========================================')
