@@ -21,27 +21,13 @@ cache:
 
 jobs:
   include:
-    - stage: Build
+    - stage: Build & Test
       script:
         - docker pull $DOCKER_IMAGE_URL:$TRAVIS_COMMIT || docker pull $DOCKER_IMAGE_URL:$DOCKER_BRANCH || true
         - docker build
             --cache-from $DOCKER_IMAGE_URL:$TRAVIS_COMMIT --cache-from $DOCKER_IMAGE_URL:$DOCKER_BRANCH
             --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_TAG=$TRAVIS_TAG
             --pull -t $DOCKER_IMAGE_URL:$TRAVIS_COMMIT .
-        - docker save $DOCKER_IMAGE_URL:$TRAVIS_COMMIT > $HOME/docker/image.tar
-    - stage: Test
-      script:
-        - docker load -i $HOME/docker/image.tar
         - docker run -d --name pg postgres:9.6
         - sleep 5
         - docker run --rm -it --link pg --env DB_HOST=pg $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
-    - stage: Push
-      script:
-        - if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ ! -z "$DOCKER_USERNAME" ] && [ ! -z "$DOCKER_PASSWORD" ]; then
-            docker load -i $HOME/docker/image.tar;
-            travis_retry docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" $DOCKER_REPO_URL;
-            docker tag $DOCKER_IMAGE_URL:$TRAVIS_COMMIT $DOCKER_IMAGE_URL:$DOCKER_BRANCH;
-            docker push $DOCKER_IMAGE_URL:$TRAVIS_COMMIT;
-            docker push $DOCKER_IMAGE_URL:$DOCKER_BRANCH;
-          fi
-        - rm -f $HOME/docker/image.tar;
