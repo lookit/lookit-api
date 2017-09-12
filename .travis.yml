@@ -33,6 +33,7 @@ jobs:
       script:
         - docker load -i $HOME/docker/image.tar
         - docker run -d --name pg postgres:9.6
+        - sleep 5
         - docker run --rm -it --link pg --env DB_HOST=pg $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
     - stage: Push
       script:
