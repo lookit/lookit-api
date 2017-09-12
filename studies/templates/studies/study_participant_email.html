@@ -87,22 +87,22 @@
                          <label>Recipients</label>
                          <select style="display:none" id="email_next_session" multiple class="email-list form-control">
                              {% for participant in email_next_session %}
-                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
+                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}, UUID: {{ participant.uuid }}</option>
                              {% endfor %}
                          </select>
                          <select style="display:none" id="email_new_studies" multiple class="email-list form-control">
                              {% for participant in email_new_studies %}
-                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
+                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}, UUID: {{ participant.uuid }}</option>
                              {% endfor %}
                          </select>
                          <select style="display:none" id="email_study_updates" multiple class="email-list form-control">
                              {% for participant in email_study_updates %}
-                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
+                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}, UUID: {{ participant.uuid }}</option>
                              {% endfor %}
                          </select>
                          <select style="display:none" id="email_response_questions" multiple class="email-list form-control">
                              {% for participant in email_response_questions %}
-                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}</option>
+                                <option value="{{participant.id}}">{% if participant.nickname %} {{ participant.nickname }}{% else %} No nickname{% endif %}, Id: {{ participant.id }}, UUID: {{ participant.uuid }}</option>
                              {% endfor %}
                          </select>
                          <p class="small">Hold down the Ctrl (windows) / Command (Mac) button to select multiple participants.</p>
