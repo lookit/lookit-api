@@ -142,7 +142,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         if preview:
             current_state = study.state
             study.state = 'previewing'
-            self.object.save()
+            study.save()
             if player_sha is None and addons_sha is None:
                 # if they're previewing and the sha's on their study aren't set
                 # save the latest master sha of both repos
