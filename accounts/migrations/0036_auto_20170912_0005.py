@@ -215,7 +215,7 @@ def create_participant(participant, apps):
     Creates user and then adds related children and demographic data
     """
     # Assumptions:
-    # - TODO need to figure out how original passwords were being hashed.
+    # - Preprending bcrypt$ before password.
     # - Old email field is going into new username field
     # - Old name field is being stored under given_name
     # - Older username field is being stored under nickname
@@ -224,7 +224,7 @@ def create_participant(participant, apps):
     user_model = apps.get_model("accounts", "User")
     user = user_model.objects.create(
         username=attributes.get('email'),
-        password=attributes.get('password'),
+        password='bcrypt$' + attributes.get('password'),
         former_lookit_id=participant.get('id'),
         given_name=get_simple_field(attributes.get('name')),
         nickname=get_simple_field(participant.get('id').split('.')[-1]),
