@@ -171,7 +171,7 @@ def create_participant(participant, apps):
         password=attributes.get('password'),
         former_lookit_id=participant.get('id'),
         given_name=get_simple_field(attributes.get('name')),
-        nickname=get_simple_field(attributes.get('username')),
+        nickname=get_simple_field(participant.get('id').split('.')[-1]),
         is_active=True,
         is_staff=False,
         is_researcher=False,
