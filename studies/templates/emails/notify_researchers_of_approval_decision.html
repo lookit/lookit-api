@@ -3,7 +3,6 @@
 </p>
 <p>
   Your study {{ study_name }} has been{% if approved %} approved {% else %} disapproved {% endif %}to run on {{ org_name }}.
-  Comments from the Organization Admin, if there are any, appear below.
 </p>
 <p>
   {% if approved %}
@@ -14,7 +13,7 @@
   <br>
   Your study can be found <a href="{{base_url}}{% url 'exp:study-detail' pk=study_id %}">here</a>.
 </p>
-{% if comments %}
+{% if comments and not approved %}
   <p>
   Comments from the Organization Admin:
   <br>
