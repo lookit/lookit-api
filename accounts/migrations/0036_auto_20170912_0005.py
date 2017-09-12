@@ -20,9 +20,12 @@ def get_participant_json():
     """
     Loads JSON file with participants from Lookit v1
     """
-    with open('participants.json') as data_file:
-        data = json.load(data_file)
-    return data
+    try:
+        with open('participants.json') as data_file:
+            data = json.load(data_file)
+        return data
+    except:
+        return
 
 def get_duplicate_emails(participants):
     """
@@ -38,6 +41,9 @@ def migrate_participants(apps, schema_editor):
     Maps Lookit V1 participants to new db
     """
     participants = get_participant_json()
+    if not participants:
+        print("No participants.json file.  This is for production only.")
+        return
     duplicates = get_duplicate_emails(participants)
     print("Starting migration of old lookit participants...")
     part_count = 0
