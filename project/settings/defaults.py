@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_json_api',
     'storages',
+    'django_celery_beat',
 
     # our stuff
     'osf_oauth2_adapter',
@@ -326,6 +327,7 @@ CELERY_TASK_ROUTES = {
     'studies.tasks.cleanup*': {'queue': 'cleanup'},
     'studies.helpers.send_mail': {'queue': 'email'}
 }
+CELERYBEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 OSF_OAUTH_CLIENT_ID = os.environ.get('OSF_OAUTH_CLIENT_ID', '3518b74e12584abf9e48565ff6aee6f3')
 OSF_OAUTH_SECRET = os.environ.get('OSF_OAUTH_SECRET', 'vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU')
