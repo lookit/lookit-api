@@ -329,3 +329,6 @@ CELERY_TASK_ROUTES = {
 
 CLIENT_ID = os.environ.get('OSF_OAUTH_CLIENT_ID', '3518b74e12584abf9e48565ff6aee6f3')
 SECRET = os.environ.get('OSF_OAUTH_SECRET', 'vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU')
+
+
+JAMDB_AUTH_TOKEN = os.environ.get('JAMDB_AUTH_TOKEN', '')

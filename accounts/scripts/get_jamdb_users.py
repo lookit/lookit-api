@@ -1,7 +1,8 @@
 import requests
 import json
+from django.conf import settings
 
-JAMDB_AUTHORIZATION_TOKEN = 'JWT_SECRET_TOKEN'
+JAMDB_AUTHORIZATION_TOKEN = settings.JAMDB_AUTH_TOKEN
 # To set this make this request
 # POST https://metadata.osf.io/v1/auth
 #
@@ -21,7 +22,7 @@ JAMDB_AUTHORIZATION_TOKEN = 'JWT_SECRET_TOKEN'
 
 
 def get_jamdb_users():
-    with open('../../participants.json', mode='w') as f:
+    with open('../participants.json', mode='w') as f:
         peeps = []
         for x in range(1, 35):
             try:

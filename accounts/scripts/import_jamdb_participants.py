@@ -1,4 +1,5 @@
 import json
+from django.apps import apps
 """
 This script is for migrating users from Lookit v1 to Lookit v2.  For each user in the old data, a user is created,
 demographic data is created, and all associated children are created.
@@ -17,11 +18,11 @@ def get_participant_json():
     Loads JSON file with participants from Lookit v1
     """
     try:
-        with open('../../participants.json') as data_file:
+        with open('../participants.json') as data_file:
             data = json.load(data_file)
         return data
     except Exception:
-        print('../../participants.json does not exist. Quitting...')
+        print('../participants.json does not exist. Quitting...')
         return
 
 
@@ -35,7 +36,7 @@ def get_duplicate_emails(participants):
     return [email for email in email_list if email_list.count(email) > 1]
 
 
-def migrate_participants(apps, schema_editor):
+def migrate_participants():
     """
     Maps Lookit V1 participants to new db
     """
@@ -259,17 +260,16 @@ def create_participant(participant, apps):
     return user
 
 
-def reverse_func(apps, schema_editor):
+def reverse_func():
     """
     For unapplying migrations - removes participants, children, and demographic data from Lookitv1
     """
     User = apps.get_model("accounts", "User")
     Child = apps.get_model("accounts", "Child")
     DemographicData = apps.get_model("accounts", "DemographicData")
-    db_alias = schema_editor.connection.alias
 
-    users = User.objects.using(db_alias).exclude(former_lookit_id__exact='')
+    users = User.objects.exclude(former_lookit_id__exact='')
     user_ids = users.values_list('id', flat=True)
-    DemographicData.objects.using(db_alias).filter(user_id__in=user_ids).delete()
-    Child.objects.using(db_alias).exclude(former_lookit_profile_id='').delete()
+    DemographicData.objects.filter(user_id__in=user_ids).delete()
+    Child.objects.exclude(former_lookit_profile_id='').delete()
     users.delete()
