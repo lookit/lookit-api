@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_json_api',
     'storages',
+    'django_celery_beat',
 
     # our stuff
     'osf_oauth2_adapter',
