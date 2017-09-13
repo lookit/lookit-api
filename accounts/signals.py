@@ -31,8 +31,8 @@ def post_migrate_create_social_app(sender, **kwargs):
             name='OSF',
             provider='osf',
             # Defaults are valid for staging
-            client_id=settings.CLIENT_ID,
-            secret=settings.SECRET,
+            client_id=settings.OSF_OAUTH_CLIENT_ID,
+            secret=settings.OSF_OAUTH_SECRET,
         )
         app.sites.clear()
         app.sites.add(site)
