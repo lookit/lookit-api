@@ -61,6 +61,14 @@ class UserTestCase(APITestCase):
         self.assertEqual(api_response.data['results'][0]['given_name'], "Researcher 1")
         self.assertEqual(api_response.data['results'][1]['given_name'], "Participant 1")
 
+    def testSuperusersCanViewAllUsers(self):
+        # Superusers can see all users
+        self.superuser = G(User, is_active=True, is_researcher=True, is_superuser=True)
+        self.client.force_authenticate(user=self.superuser)
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertGreater(api_response.data['links']['meta']['count'], 1)
+
     # Participant GET Detail Tests
     def testGetParticipantDetailUnauthenticated(self):
         # Must be authenticated to view participants
