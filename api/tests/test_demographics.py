@@ -61,6 +61,15 @@ class DemographicsTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data['results'][0]['languages_spoken_at_home'], "French")
 
+    def testSuperusersCanViewAllDemographics(self):
+        # Superusers can see all demographics of active participants
+        self.superuser = G(User, is_active=True, is_researcher=True, is_superuser=True)
+        self.demographics2 = G(DemographicData, user=self.researcher, languages_spoken_at_home="English")
+        self.client.force_authenticate(user=self.superuser)
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertGreater(api_response.data['links']['meta']['count'], 1)
+
     # Demo Data GET Detail Tests
     def testGetDemographicsDetailUnauthenticated(self):
         # Must be authenticated to view demographic data

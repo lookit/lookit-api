@@ -43,6 +43,8 @@ class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
             'education_level',
             'spouse_education_level',
             'annual_income',
+            'former_lookit_annual_income',
+            'lookit_referrer',
             'number_of_books',
             'additional_comments',
             'country',
@@ -90,12 +92,20 @@ class UserSerializer(UUIDSerializerMixin, ModelSerializer):
             'given_name',
             'middle_name',
             'family_name',
+            'nickname',
             'identicon',
             'is_active',
             'is_staff',
+            'is_researcher',
             'demographics',
             'organization',
-            'children'
+            'children',
+            'former_lookit_id',
+            'linked_former_lookit_ids',
+            'email_next_session',
+            'email_new_studies',
+            'email_study_updates',
+            'email_response_questions',
         )
 
     # class JSONAPIMeta:
@@ -130,6 +140,7 @@ class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
             'age_at_birth',
             'additional_information',
             'deleted',
+            'former_lookit_profile_id'
         )
 
     # class JSONAPIMeta:

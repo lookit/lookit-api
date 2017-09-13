@@ -9,8 +9,9 @@ from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
                                   OrganizationSerializer, UserSerializer)
 from django_filters import rest_framework as filters
+from rest_framework.filters import OrderingFilter
 from rest_framework_json_api import views
-from api.permissions import FeedbackPermissions
+from api.permissions import FeedbackPermissions, ResponsePermissions
 from studies.models import Response, Study, Feedback
 from studies.serializers import (ResponseWriteableSerializer, ResponseSerializer,
                                  StudySerializer, FeedbackSerializer)
@@ -37,6 +38,9 @@ class FilterByUrlKwargsMixin(views.ModelViewSet):
 
 
 class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of all organizations or retrieving a single organization
+    """
     resource_name = 'organizations'
     lookup_field = 'uuid'
     queryset = Organization.objects.all()
@@ -47,6 +51,11 @@ class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 
 class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of all children you have permission to view or retrieving a single child.
+
+    You can view data from children that have responded to studies that you have permission to view, as well as view any of your own children that you have registered.
+    """
     resource_name = 'children'
     queryset = Child.objects.filter(user__is_active=True).distinct()
     serializer_class = ChildSerializer
@@ -54,6 +63,8 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_fields = [('user', 'user'), ]
     http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
+    filter_backends = (OrderingFilter,)
+    ordering_fields = ('birthday',)
 
     def get_queryset(self):
         """
@@ -61,13 +72,20 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Show children that have 1) responded to studies you can view and 2) are your own children
         """
-        qs_ids = super().get_queryset().values_list('id', flat=True)
+        original_queryset = super().get_queryset()
+        # Users with can_read_all_user_data permissions can view all children/demographics of active users via the API
+        if self.request.user.has_perm('accounts.can_read_all_user_data'):
+            return original_queryset
+        qs_ids = original_queryset.values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
         return qs_ids.model.objects.filter((Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)), (Q(id__in=qs_ids))).distinct()
 
 
 class DemographicDataViewSet(ChildViewSet):
+    """
+    Allows viewing a list of all demographic data you have permission to view as well as your own demographic data.
+    """
     resource_name = 'demographics'
     queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
@@ -75,6 +93,11 @@ class DemographicDataViewSet(ChildViewSet):
 
 
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of all users you have permission to view or retrieving a single user.
+
+    You can view participants that have responded to studies you have permission to view, as well as own user information
+    """
     lookup_field = 'uuid'
     resource_name = 'users'
     queryset = User.objects.all()
@@ -89,12 +112,21 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Shows 1) users that have responded to studies you can view and 2) your own user object
         """
-        qs_ids = super().get_queryset().values_list('id', flat=True)
+        all_users = super().get_queryset()
+        # Users with can_read_all_user_data permissions can view all active users via the API
+        if self.request.user.has_perm('accounts.can_read_all_user_data'):
+            return all_users.filter(is_active=True)
+        qs_ids = all_users.values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
         return User.objects.filter((Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)), Q(id__in=qs_ids)).distinct()
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of studies or retrieivng a single study
+
+    You can view studies that are active as well as studies you have permission to edit.
+    """
     resource_name = 'studies'
     queryset = Study.objects.filter(state='active')
     serializer_class = StudySerializer
@@ -125,6 +157,11 @@ class ResponseFilter(filters.FilterSet):
 
 
 class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of responses, retrieving a response, creating a response, or updating a response.
+
+    You can view responses to studies that you have permission to view, or responses by your own children.
+    """
     resource_name = 'responses'
     queryset = Response.objects.all()
     serializer_class = ResponseSerializer
@@ -133,7 +170,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = ResponseFilter
     http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ResponsePermissions]
 
     def get_serializer_class(self):
          """Return a different serializer for create views"""
@@ -168,11 +205,17 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 
 class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+    """
+    Allows viewing a list of feedback, retrieving a single piece of feedback, or creating feedback.
+
+    You can view feedback on studies you have permission to edit, as well as feedback left on your responses.
+
+    """
     resource_name = 'feedback'
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
     lookup_field = 'uuid'
-    http_method_names = ['get', 'post', 'head', 'options']
+    http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
     permission_classes = [IsAuthenticated, FeedbackPermissions]
 
     def perform_create(self, serializer):
@@ -183,7 +226,8 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         """
         Overrides queryset.
 
-        Shows feedback for studies you can edit, or feedback left on your created response
+        Shows feedback for studies you can edit, or feedback left on your created responses.
+        A researcher can only add feedback to responses to studies they have permission to edit.
         """
         qs = super().get_queryset()
         study_ids = get_objects_for_user(self.request.user, 'studies.can_edit_study').values_list('id', flat=True)

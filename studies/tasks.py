@@ -16,12 +16,15 @@ from project import storages
 from project.celery import app
 from studies.helpers import send_mail
 
-logger = logging.getLogger()
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # setup a stream handler for capturing logs for db logging
 log_buffer = StringIO()
 handler = logging.StreamHandler(log_buffer)
+
 handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -44,7 +47,7 @@ def unzip_file(file, destination_folder):
     This strips off the top-level directory and uses the destination_folder
     in it's place.
     """
-    logger.info(f'Unzipping into {destination_folder}...')
+    logger.debug(f'Unzipping into {destination_folder}...')
     os.makedirs(destination_folder, mode=0o777, exist_ok=True)
     with zipfile.ZipFile(BytesIO(file)) as zip_file:
         for member in zip_file.infolist():
@@ -61,7 +64,7 @@ def deploy_to_remote(local_path, storage):
             full_path = os.path.join(root_directory, filename)
             with open(full_path, mode='rb') as f:
                 remote_path = full_path.split('../ember_build/deployments/')[1]
-                logger.info(f'Uploading {full_path} to {storage.location}/{remote_path}...')
+                logger.debug(f'Uploading {full_path} to {storage.location}/{remote_path}...')
                 storage.save(remote_path, File(f))
 
 
@@ -75,15 +78,15 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
     local_repo_destination_folder = os.path.join('./ember_build/checkouts/', repo_destination_folder)
 
     if os.path.isdir(local_repo_destination_folder):
-        logger.info(f'Found directory {local_repo_destination_folder}')
+        logger.debug(f'Found directory {local_repo_destination_folder}')
         return (repo_destination_folder, addons_sha, player_sha)
 
     addons_zip_path = f'{settings.EMBER_ADDONS_REPO}/archive/{addons_sha}.zip'
     player_zip_path = f'{settings.EMBER_EXP_PLAYER_REPO}/archive/{player_sha}.zip'
 
-    logger.info(f'Downloading {player_zip_path}...')
+    logger.debug(f'Downloading {player_zip_path}...')
     unzip_file(requests.get(player_zip_path).content, local_repo_destination_folder)
-    logger.info(f'Downloading {addons_zip_path}...')
+    logger.debug(f'Downloading {addons_zip_path}...')
     unzip_file(requests.get(addons_zip_path).content, os.path.join(local_repo_destination_folder, 'lib'))
 
     return (repo_destination_folder, addons_sha, player_sha)
@@ -91,12 +94,26 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
 
 def build_docker_image():
     # this is broken out so that it can be more complicated if it needs to be
-    logger.info(f'Running docker build...')
-    return subprocess.run(['docker', 'build', '--pull', '--cache-from', 'ember_build', '-t', 'ember_build', '.'], cwd=settings.EMBER_BUILD_ROOT_PATH, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    logger.debug(f'Running docker build...')
+    return subprocess.run(
+        [
+            'docker',
+            'build',
+            '--pull',
+            '--cache-from',
+            'ember_build',
+            '-t',
+            'ember_build',
+            '.'
+        ],
+        cwd=settings.EMBER_BUILD_ROOT_PATH,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT
+    )
 
 
-@app.task
-def build_experiment(study_uuid, researcher_uuid, preview=True):
+@app.task(bind=True, max_retries=10, retry_backoff=10)
+def build_experiment(self, study_uuid, researcher_uuid, preview=True):
     ex = None
     try:
         from studies.models import Study, StudyLog
@@ -124,6 +141,8 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
 
         if preview:
             current_state = study.state
+            study.state = 'previewing'
+            study.save()
             if player_sha is None and addons_sha is None:
                 # if they're previewing and the sha's on their study aren't set
                 # save the latest master sha of both repos
@@ -160,7 +179,7 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
             'ember_build'
         ]
 
-        logger.info(f'Running build.sh for {container_checkout_directory}...')
+        logger.debug(f'Running build.sh for {container_checkout_directory}...')
         ember_build_comp_process = subprocess.run(
             build_command,
             cwd=settings.EMBER_BUILD_ROOT_PATH,
@@ -183,19 +202,19 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
             'org_name': study.organization.name,
             'study_name': study.name,
             'study_id': study.pk,
-            'study_uuid': str(self.uuid),
+            'study_uuid': str(study.uuid),
             'action': 'previewed' if preview else 'deployed'
         }
         send_mail.delay(
             'notify_admins_of_study_action',
-            'Study Deployed',
+            'Study Previewed' if preview else 'Study Deployed',
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(study.study_organization_admin_group.user_set.values_list('username', flat=True)),
             **context
         )
         send_mail.delay(
             'notify_researchers_of_deployment',
-            'Study Deployed',
+            'Study Previewed' if preview else 'Study Deployed',
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(study.study_admin_group.user_set.values_list('username', flat=True)),
             **context
@@ -209,6 +228,7 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
         study.save()
     except Exception as e:
         ex = e
+        logger.error(e)
     finally:
         StudyLog.objects.create(
             study=study,
@@ -222,6 +242,8 @@ def build_experiment(study_uuid, researcher_uuid, preview=True):
             }
         )
         log_buffer.close()
+    if ex:
+        raise self.retry(exc=ex, countdown=30)
 
 
 def cleanup_old_directories(root_path, older_than):
@@ -233,19 +255,19 @@ def cleanup_old_directories(root_path, older_than):
     with os.scandir(root_path) as sd:
         for entry in sd:
             if entry.is_dir() and entry.stat().st_mtime < time.mktime(older_than.timetuple()):
-                logger.info(f'Deleting {entry.path}...')
+                logger.debug(f'Deleting {entry.path}...')
                 shutil.rmtree(entry.path)
 
 
 @app.task
 def cleanup_builds(older_than=None):
-    logger.info('Cleaning up builds...')
+    logger.debug('Cleaning up builds...')
     deployments = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
     cleanup_old_directories(deployments, older_than)
 
 
 @app.task
 def cleanup_checkouts(older_than=None):
-    logger.info('Cleaning up checkouts...')
+    logger.debug('Cleaning up checkouts...')
     checkouts = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
     cleanup_old_directories(checkouts, older_than)

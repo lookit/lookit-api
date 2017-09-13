@@ -40,14 +40,6 @@
     {{ form.media }}
 {% endblock %}
 
-{% block flash %}
-  {% bootstrap_messages %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
-{% endblock %}
 {% block content %}
   <div class="container">
     <div class="row">
@@ -66,8 +58,11 @@
               </div>
               <div class="panel-body">
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                    {% bootstrap_form form %}
+                    {% include "studies/_study_fields.html" with form=form %}
+                    {% bootstrap_field form.structure %}
+                    {% bootstrap_field form.study_type %}
                     {% include "studies/_study_type.html" with types=types create=1 %}
+
                     <div class="pull-right">
                         {% buttons %}
                             <a href="{% url 'exp:study-list' %}" class="btn btn-default">

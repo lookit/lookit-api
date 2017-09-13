@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_json_api',
     'storages',
+    'django_celery_beat',
 
     # our stuff
     'osf_oauth2_adapter',
@@ -196,7 +197,6 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
     }
 
-JSON_API_FORMAT_KEYS = 'dasherize'
 JSON_API_PLURALIZE_TYPES = True
 
 # Internationalization
@@ -225,7 +225,7 @@ EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'https://storage.goo
 PREVIEW_EXPERIMENT_BASE_URL = os.environ.get('PREVIEW_EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/preview_experiments/')  # default to ember base url
 
 BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')  # default to ember base url
-OSF_URL = os.environ.get('OSF_URL', 'http://staging.osf.io')  # default osf url used for oauth
+OSF_URL = os.environ.get('OSF_URL', 'https://staging.osf.io/')  # default osf url used for oauth
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'http://localhost:8000/exp/')
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get('ACCOUNT_LOGOUT_REDIRECT_URL', '/api/')
@@ -327,3 +327,10 @@ CELERY_TASK_ROUTES = {
     'studies.tasks.cleanup*': {'queue': 'cleanup'},
     'studies.helpers.send_mail': {'queue': 'email'}
 }
+CELERYBEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+OSF_OAUTH_CLIENT_ID = os.environ.get('OSF_OAUTH_CLIENT_ID', '3518b74e12584abf9e48565ff6aee6f3')
+OSF_OAUTH_SECRET = os.environ.get('OSF_OAUTH_SECRET', 'vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU')
+
+
+JAMDB_AUTH_TOKEN = os.environ.get('JAMDB_AUTH_TOKEN', '')

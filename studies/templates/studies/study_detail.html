@@ -89,9 +89,18 @@
               <div class="row">
                   <div class="col-xs-12">
                       <p>
-                        <span class="pr-md"><label class='pr-xs'> Minimum age: </label> {{ study.min_age }} </span>
-                        <span class="pr-md"><label class='pr-xs'> Maximum age: </label> {{ study.max_age }} </span>
+                        <span class="pr-md"><label class='pr-xs'> Minimum age cutoff: </label> {{ study.min_age_years }} year{{ study.min_age_years|pluralize}} {{ study.min_age_months}} month{{ study.min_age_months|pluralize}} </span>
+                        <span class="pr-md"><label class='pr-xs'> Maximum age cutoff: </label> {{ study.max_age_years }} year{{ study.max_age_years|pluralize}} {{ study.max_age_months}} month{{ study.max_age_months|pluralize}} </span>
                         <span class="pr-md"><label class='pr-xs'> Last edited: </label> {{ study.date_modified |date:"M d, Y" }} </span>
+                      </p>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-xs-12">
+                      <p>
+                         <span class="pr-md"><label class='pr-xs'> UUID: </label>
+                         {{ study.uuid }}
+                          <div class="small uuid-padding"><em>This is the study id that participants will see</em></div>
                       </p>
                   </div>
               </div>

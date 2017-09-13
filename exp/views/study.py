@@ -488,14 +488,28 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
     """
     template_name = 'studies/study_responses.html'
 
+    def get_responses_orderby(self):
+        """
+        Determine sort field and order. Sorting on id actually sorts on user id, not response id.
+        Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
+        "in progress" and "completed"
+        """
+        orderby = self.request.GET.get('sort', 'id')
+        reverse = '-' in orderby
+        if 'id' in orderby:
+            orderby = '-child__user__id' if reverse else 'child__user__id'
+        if 'status' in orderby:
+            orderby = 'completed' if reverse else '-completed'
+        return orderby
+
     def get_context_data(self, **kwargs):
         """
         In addition to the study, adds several items to the context dictionary.  Study results
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get('sort', 'id') or 'id'
         page = self.request.GET.get('page', None)
+        orderby = self.get_responses_orderby()
         responses = context['study'].responses.order_by(orderby)
         context['responses'] = self.paginated_queryset(responses, page, 10)
         context['response_data'] = self.build_responses(context['responses'])
@@ -632,25 +646,25 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
 
     # TODO move to celery task
     def download_multiple_files(self, files, zip_subdir):
-         """
-         Downloads all attachments associated with study and puts into zipfile
-         """
-         zip_filename = f'{zip_subdir}.zip'
-         s = io.BytesIO()
-         zip = zipfile.ZipFile(s, "w")
-         for attachment in files:
-             filename = attachment.key
-             file_response = requests.get(get_study_attachments.get_download_url(filename))
-             f1 = open(filename , 'wb')
-             f1.write(file_response.content)
-             f1.close()
-             fdir, fname = os.path.split(filename)
-             zip_path = os.path.join(zip_subdir, fname)
-             zip.write(filename, zip_path)
-         zip.close()
-         resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
-         resp['Content-Disposition'] = f'attachment; filename={zip_filename}'
-         return resp
+        """
+        Downloads all attachments associated with study and puts into zipfile
+        """
+        zip_filename = f'{zip_subdir}.zip'
+        s = io.BytesIO()
+        zip = zipfile.ZipFile(s, "w")
+        for attachment in files:
+            filename = attachment.key
+            file_response = requests.get(get_study_attachments.get_download_url(filename))
+            f1 = open(filename, 'wb')
+            f1.write(file_response.content)
+            f1.close()
+            fdir, fname = os.path.split(filename)
+            zip_path = os.path.join(zip_subdir, fname)
+            zip.write(filename, zip_path)
+        zip.close()
+        resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
+        resp['Content-Disposition'] = f'attachment; filename={zip_filename}'
+        return resp
 
     def post(self, request, *args, **kwargs):
         '''
@@ -694,8 +708,6 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         study_permissions = get_perms(request.user, self.object)
 
         if study_permissions and 'can_edit_study' in study_permissions:
-            self.object.state = 'previewing'
-            self.object.save()
             build_experiment.delay(self.object.uuid, request.user.uuid, preview=True)
             messages.success(request, f"Scheduled Study {self.object.name} for preview. You will be emailed when it's completed.")
         return super().post(request, *args, **kwargs)

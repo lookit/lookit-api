@@ -13,6 +13,7 @@ def get_all_study_attachments(study_uuid):
     bucket = s3.Bucket(settings.BUCKET_NAME)
     return bucket.objects.filter(Prefix=f'videoStream_{study_uuid}')
 
+
 def get_consent_videos(study_uuid):
         """
         Get all consent videos for a particular study
@@ -20,6 +21,7 @@ def get_consent_videos(study_uuid):
         s3 = boto3.resource('s3')
         bucket = s3.Bucket(settings.BUCKET_NAME)
         return bucket.objects.filter(Prefix=f'videoStream_{study_uuid}_1-video-consent');
+
 
 def get_download_url(video_key):
     """
