@@ -8,7 +8,17 @@ API Tips
 -------
 General
 -------
-Most endpoints in this API are just meant for retrieving data. Typically, you can retrieve data associated with studies you have permission to view, or view any data that belongs to you.  You can only create *responses* and *feedback* through the API.  You can only update *responses* through the API.  There is *nothing* that is permitted to be deleted through the API.
+Most endpoints in this API are just meant for retrieving data. Typically, you can retrieve data associated with studies you have permission to view, or view any data that belongs to you.  You can only create *responses* and *feedback* through the API.  You can only update *responses* and *feedback* through the API.  There is *nothing* that is permitted to be deleted through the API.
+
+---------------
+API Formatting
+---------------
+This API generally conforms to the `JSON-API 1.0 spec <http://jsonapi.org/format/1.0/>`_ .
+
+------------
+Content-Type
+------------
+The following Content-Type must be in the header of the request: *application/vnd.api+json*.
 
 ---------------
 Authentication
@@ -36,6 +46,12 @@ We are using a token-based HTTP Authentication scheme.
 .. code-block:: bash
 
     curl -X GET https://localhost:8000/api/v1/users/ -H 'Authorization: Token 123456789abcdefghijklmnopqrstuvwxyz'
+
+- Here is an example of a POST request using curl, note the presence of the content-type header as well as the authorization header:
+
+.. code-block:: bash
+
+    curl -X POST  http://localhost:8000/api/v1/feedback/ -H "Content-Type: application/vnd.api+json" -H 'Authorization: Token abcdefghijklmnopqrstuvwxyzyour-token-here' -d '{"data": {"attributes": {"comment": "Test comment"}, "relationships": {"response": {"data": {"type": "responses","id": "91c15b81-bb25-437a-8299-13cf4c83fed6"}}},"type": "feedback"}}'
 
 ------------
 Pagination
@@ -71,7 +87,15 @@ Viewing the list of children
 ---------------------------------
 GET /api/v1/children/
 
-Permissions: Must be authenticated.  You can only view children that have responded to studies you have permission to view, or your own children.
+Permissions: Must be authenticated.  You can only view children that have responded to studies you have permission to view, or your own children. Users with *can_read_all_user_data* permissions can view all children of active users in the database via this endpoint.
+
+Ordering: Children can be sorted by birthday using the *ordering* query parameter.  For example, to sort oldest to youngest:
+
+GET http://localhost:8000/api/v1/children/?ordering=birthday
+
+Add a '-' before birthday to sort youngest to oldest:
+
+GET http://localhost:8000/api/v1/children/?ordering=-birthday
 
 *Sample Response:*
 
@@ -178,7 +202,7 @@ Viewing the list of demographic data
 --------------------------------------
 GET /api/v1/demographics/
 
-Permissions: Must be authenticated.  You can only view demographics of participants whose children have responded to studies you can view.  You can additionally view your own demographic data via the API.
+Permissions: Must be authenticated.  You can only view demographics of participants whose children have responded to studies you can view.  You can additionally view your own demographic data via the API. Users with *can_read_all_user_data* permissions can view all demographics of active users in the database via this endpoint.
 
 *Sample Response:*
 
@@ -443,9 +467,24 @@ Permissions: Must be authenticated. Must have permission to edit the study respo
 
 Updating Feedback
 ---------------------------------
-PUT /api/v1/feedback/<feedback_id>/
+PATCH /api/v1/feedback/<feedback_id>/
 
-METHOD NOT ALLOWED.  Not permitted via the API.
+Permissions: Must be authenticated. Must have permission to edit the study response where you are changing feedback (which only admins have).
+
+
+*Sample Request body:*
+
+.. code-block:: json
+
+    {
+        "data": {
+            "attributes": {
+             "comment": "Changed comment"
+            },
+            "type": "feedback",
+            "id": "ebf41029-02d7-49f5-8adb-1e32d4ac22a5"
+        }
+    }
 
 
 Deleting Feedback
@@ -885,7 +924,7 @@ Viewing the list of users
 GET /api/v1/users/
 
 Permissions: Must be authenticated.  You can view participants that have responded to studies you have permission to view, as well as own user information.
-Endpoint can return both participants and researchers, if you have permission to view them.
+Endpoint can return both participants and researchers, if you have permission to view them. Users with *can_read_all_user_data* permissions can view all active users in the database via this endpoint.
 
 *Sample Response:*
 
