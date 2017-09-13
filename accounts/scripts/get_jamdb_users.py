@@ -21,7 +21,7 @@ JAMDB_AUTHORIZATION_TOKEN = 'JWT_SECRET_TOKEN'
 
 
 def get_jamdb_users():
-    with open('./participants.json', mode='w') as f:
+    with open('../../participants.json', mode='w') as f:
         peeps = []
         for x in range(1, 35):
             try:
