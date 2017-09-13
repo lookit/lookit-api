@@ -103,8 +103,10 @@ def organization_post_save(sender, **kwargs):
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = 'username'
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
+    former_lookit_id = models.CharField(max_length=255, blank=True)
+    linked_former_lookit_ids = ArrayField(models.CharField(max_length=255), blank=True, default=list)
     username = models.EmailField(unique=True, verbose_name='Email address', db_index=True)
-    given_name = models.CharField(max_length=255)
+    given_name = models.CharField(max_length=255, blank=True)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
     nickname = models.CharField(max_length=255, blank=True)
@@ -236,6 +238,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ('can_remove_users', _('Can Remove User')),
             ('can_view_user_permissions', _('Can View User Permissions')),
             ('can_edit_user_permissions', _('Can Edit User Permissions')),
+            ('can_read_all_user_data', _('Can Read All User Data')),
         )
         ordering = ['username']
 
@@ -271,11 +274,12 @@ class Child(models.Model):
 
     uuid = models.UUIDField(verbose_name='identifier', default=uuid.uuid4, unique=True, db_index=True)
     given_name = models.CharField(max_length=255)
-    birthday = models.DateField()
+    birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
     age_at_birth = models.CharField(max_length=25, choices=AGE_AT_BIRTH_CHOICES)
     additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)
+    former_lookit_profile_id = models.CharField(max_length=255, blank=True)
 
     user = models.ForeignKey(
         'accounts.User',
@@ -439,6 +443,7 @@ class DemographicData(models.Model):
     education_level = models.CharField(max_length=5, choices=EDUCATION_CHOICES, blank=True)
     spouse_education_level = models.CharField(max_length=5, choices=SPOUSE_EDUCATION_CHOICES, blank=True)
     annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES, blank=True)
+    former_lookit_annual_income = models.CharField(max_length=30, blank=True)
     number_of_books = models.IntegerField(null=True, blank=True, default=None)
     additional_comments = models.TextField(blank=True)
     country = CountryField(blank=True)

@@ -71,6 +71,15 @@ class ChildrenTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data['links']['meta']['count'], 1)
 
+    def testSuperusersViewAllChildren(self):
+        # Superusers can see all children of active participants
+        self.superuser = G(User, is_active=True, is_researcher=True, is_superuser=True)
+        self.child2 = G(Child, user=self.researcher, given_name='Jack')
+        self.client.force_authenticate(user=self.superuser)
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertGreater(api_response.data['links']['meta']['count'], 1)
+
     # Children GET Detail Tests
     def testGetChildDetailUnauthenticated(self):
         # Must be authenticated to view child
