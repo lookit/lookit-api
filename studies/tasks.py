@@ -36,9 +36,13 @@ def get_repo_path(full_repo_path):
 
 
 def get_master_sha(repo_url):
+    logger.debug(f'Getting master sha for {repo_url}...')
     api_url = f'https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs'
+    logger.debug(f'Making API request to {api_url}...')
     response = requests.get(api_url)
-    return response.json()[0]['object']['sha']
+    sha = response.json()[0]['object']['sha']
+    logger.debug(f'Got sha of {sha}')
+    return sha
 
 
 def unzip_file(file, destination_folder):
