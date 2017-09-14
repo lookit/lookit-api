@@ -81,7 +81,7 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
         logger.debug(f'Found directory {local_repo_destination_folder}')
         return (repo_destination_folder, addons_sha, player_sha)
 
-    addons_zip_path = f'{settings.EMBER_ADDONS_REPO}/archive/{addons_sha}.zip'
+    addons_zip_path = f'{addons_repo_url}/archive/{addons_sha}.zip'
     player_zip_path = f'{settings.EMBER_EXP_PLAYER_REPO}/archive/{player_sha}.zip'
 
     logger.debug(f'Downloading {player_zip_path}...')
