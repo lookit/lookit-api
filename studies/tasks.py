@@ -142,6 +142,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         player_sha = getattr(study.metadata, 'last_known_player_sha', None)
         addons_sha = getattr(study.metadata, 'last_known_addons_sha', None)
         addons_repo_url = getattr(study.metadata, 'addons_repo_url', settings.EMBER_ADDONS_REPO)
+        logger.debug(f"Got {addons_repo_url} from {getattr(study.metadata, 'addons_repo_url')}")
 
         if preview:
             current_state = study.state
