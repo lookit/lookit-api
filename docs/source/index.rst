@@ -20,3 +20,4 @@ Contents:
    api-documentation
    django-project-installation
    ember-app-installation
+   experimenter

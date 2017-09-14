@@ -35,14 +35,16 @@
        </div>
    </div>
    <div class="row mt-xl">
-       <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+       <div class="col-xs-5 col-xs-offset-0 col-sm-5 col-sm-offset-1">
            <strong>Researcher Name</strong>
            <a aria-label="Sort researchers by name" class="pl-sm" href="{% url 'exp:researcher-list' %}?{% query_transform request page='1' sort='family_name'%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
            <a aria-label="Reverse sort researchers by name" href="{% url 'exp:researcher-list' %}?{% query_transform request page='1' sort='-family_name'%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
        </div>
 
-       <div class="col-xs-3">
+       <div class="col-xs-4">
             <strong>Permissions</strong>
+            <a aria-label="Sort researchers by permissions" class="pl-sm" href="{% url 'exp:researcher-list' %}?{% query_transform request page='1' sort='permissions'%}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
+            <a aria-label="Reverse sort researchers by permissions" href="{% url 'exp:researcher-list' %}?{% query_transform request page='1' sort='-permissions'%}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
        </div>
 
        <div class="col-xs-2">
@@ -51,7 +53,7 @@
    <hr>
        {% for user in object_list %}
        <div class="row pt-xs">
-            <div class="col-xs-6 col-xs-offset-0 col-sm-6 col-sm-offset-1">
+            <div class="col-xs-5 col-xs-offset-0 col-sm-5 col-sm-offset-1">
                 {% if perms.accounts.can_edit_organization %}
                     <a href="{% url 'exp:researcher-detail' user.id %}"><strong>{{ user.get_short_name }}</strong></a>
                 {% else %}
@@ -59,7 +61,7 @@
                 {% endif %}
             </div>
 
-            <div class="col-xs-3 col-sm-3">
+            <div class="col-xs-4 col-sm-4">
                 {{ user.display_permission }}
             </div>
 
