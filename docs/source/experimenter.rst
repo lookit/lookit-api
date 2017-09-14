@@ -184,7 +184,7 @@ To remove a researcher from a study, click the red minus button beside the resea
 -------------------------
 Editing study structure
 -------------------------
-To edit a study's structure, navigate to localhost:8000/exp/studies/study_id/edit/build/. From here, you can edit the study's structure and the study type.
+To edit a study's structure, navigate to localhost:8000/exp/studies/study_id/edit/build/. You must be a study admin or org admin to view this page. From here, you can edit the study's structure and the study type.
 The study structure specifies the frames (or pages) of your experiment, and also specifies the sequence.
 
 .. image:: _static/img/build_study.png
@@ -199,3 +199,7 @@ If your study has already been approved, then clicking "Save" will automatically
 If you wish to preview your study, click "Try Experiment".  You will get an email 7-10 minutes later, possibly longer, with a link to preview your study.  We are building the study and putting on Google Cloud Storage for you to preview. These builds,
 though not instantaneous, keeps the studies separate from one another.  These studies are all pulling from common code, so it is possible that someone edits a frame, and that edit breaks someone else's study. By storing builds on Google Cloud Storage,
 pointing to specific commits, we can keep edits to frames from unintentionally breaking another study.
+
+-------------------------
+Editing study type
+-------------------------
