@@ -116,6 +116,23 @@ can only be "Submitted" for review, or "Archived", which removes the study from 
 .. image:: _static/img/study_detail.png
     :alt: Viewing studies
 
+--------------
+Study states
+--------------
+All study states and explanations:
+
+    - *created*: Study has been initially created, but has not been submitted for approval
+    - *submitted*: Study is submitted and awaiting approval by an organization admin
+    - *previewing*: Study is being built and deployed to Google Cloud Storage for previewing.  This can take awhile for the study to be built.
+    - *approved*: Study has been approved by an organization admin to run on Lookit, but is not yet active
+    - *deploying*: 'Study is currently being built and deployed to Google Cloud Storage. Once the study is deployed, the study will be marked active and will be available to study participants.
+    - *active*: Study is active and can be collecting data. If the study is also marked "Discoverable", the study will show up on Lookit's study list.
+    - *rejected*: The study has been rejected by an organization admin.  The study should be edited before resubmitting.
+    - *retracted*: The study has been withdrawn by a study admin.
+    - *paused*: Study is not actively collecting data or visible on Lookit
+    - *deactivated*: Study is done collecting data
+    - *archived*: Study has been archived and removed from search
+
 --------------------
 Study edit page
 --------------------
@@ -123,6 +140,12 @@ On the study edit page, localhost:8000/exp/studies/study_id/edit/ you can update
 
 To edit fields, change the information and click Save Changes in the middle of the page.  If your study has already been approved, then the save button will be red.  Otherwise it will be green. If your study has already been approved, then editing key details will automatically put the study in a rejected state.  You must resubmit your
 study and get it approved again by an organization admin to run the study on the Lookit platform.
+
+At the bottom of the edit study page, there is a Build Study link.  This will take you to localhost:8000/exp/studies/study_id/edit/build, where you can make edits to your study's structure (the frames, or pages, in your experiment), and the sequence of those frames.  You can also make advanced edits to the commits we are using to build your study.
+
+You can also change the study's status on this page. The current status is displayed, as well as a dropdown with the available states, and a comments block.  Only users that have permission to edit the study state can make these changes, meaning organization
+admins, or study admins.  The available states where you can move the study depend on what state is next in the sequence, as well as your current level of permissions.  For example, if a study's current state is "Created", that study
+can only be "Submitted" for review, or "Archived", which removes the study from display.  Comments can only be left on the study if it is being rejected.  Only organization admins can approve or reject a study.
 
 .. image:: _static/img/study_edit.png
     :alt: Editing studies
