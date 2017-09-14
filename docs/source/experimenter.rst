@@ -89,3 +89,36 @@ Here's an explanation of some the field names:
 
 .. image:: _static/img/create_study.png
     :alt: Creating a study
+
+--------------------
+Viewing study list
+--------------------
+To view all studies, navigate to http://localhost:8000/exp/studies/.  A researcher must have been added to an organization to view this page.  From there, the researcher can only see studies they have permission to view.  Org admins and org reads can see all studies
+that belong to their organization.  If the user is a basic researcher, they can only view studies to which they have been explicitly added.
+
+You can filter studies by name or by keywords in the description. Additionally, you can sort on various study states like "Created" or "Submitted", or filter on your own studies by selecting "My Studies". You can also sort on study name, study end date, and study begin date.
+
+.. image:: _static/img/study_list.png
+    :alt: Viewing studies
+
+--------------------
+Study detail page
+--------------------
+To view a single study, navigate to http://localhost:8000/exp/studies/study_id.  A researcher must have permission to view this study specifically.  Org admins and org reads can view all studies in their organization.  A basic researcher can only view this study if they have been
+explicitly added as a study admin or study read. At the top, you see many of the study details that you entered when you created the study.  The UUID is also displayed; this is the identifier that participants will see. You also have the option to navigate to View Responses, or to
+clone the study.  Cloning will create a copy of the study but add the logged in user as the creator.  The clone will be moved back into "Created" status. Study logs of when the study
+changed state are at the bottom of the page.
+
+The only study detail that can be edited from this page is the study status.  The current status is displayed, as well as a dropdown with the available states, and a comments block.  Only users that have permission to edit the study state can make these changes, meaning organization
+admins, or study admins.  The available states where you can move the study depend on what state is next in the sequence, as well as your current level of permissions.  For example, if a study's current state is "Created", that study
+can only be "Submitted" for review, or "Archived", which removes the study from display.  Comments can only be left on the study if it is being rejected.  Only organization admins can approve or reject a study.
+
+.. image:: _static/img/study_detail.png
+    :alt: Viewing studies
+
+--------------------
+Study edit page
+--------------------
+On the study edit page, you can update much of the metadata about the study. At the top of the page, you can edit fields like Name, and Description.  See Creating a Study for more details.
+.. image:: _static/img/study_detail.png
+    :alt: Viewing studies
