@@ -139,10 +139,10 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
 
         destination_directory = f'{study_uuid}'
 
-        player_sha = getattr(study.metadata, 'last_known_player_sha', None)
-        addons_sha = getattr(study.metadata, 'last_known_addons_sha', None)
-        addons_repo_url = getattr(study.metadata, 'addons_repo_url', settings.EMBER_ADDONS_REPO)
-        logger.debug(f"Got {addons_repo_url} from {getattr(study.metadata, 'addons_repo_url')}")
+        player_sha = study.metadata.get('last_known_player_sha', None)
+        addons_sha = study.metadata.get('last_known_addons_sha', None)
+        addons_repo_url = study.metadata.get('addons_repo_url', settings.EMBER_ADDONS_REPO)
+        logger.debug(f"Got {addons_repo_url} from {study.metadata.get('addons_repo_url')}")
 
         if preview:
             current_state = study.state
