@@ -125,7 +125,7 @@ All study states and explanations:
     - *submitted*: Study is submitted and awaiting approval by an organization admin
     - *previewing*: Study is being built and deployed to Google Cloud Storage for previewing.  This can take awhile for the study to be built.
     - *approved*: Study has been approved by an organization admin to run on Lookit, but is not yet active
-    - *deploying*: 'Study is currently being built and deployed to Google Cloud Storage. Once the study is deployed, the study will be marked active and will be available to study participants.
+    - *deploying*: Study is currently being built and deployed to Google Cloud Storage. Once the study is deployed, the study will be marked active and will be available to study participants.
     - *active*: Study is active and can be collecting data. If the study is also marked "Discoverable", the study will show up on Lookit's study list.
     - *rejected*: The study has been rejected by an organization admin.  The study should be edited before resubmitting.
     - *retracted*: The study has been withdrawn by a study admin.
@@ -180,3 +180,22 @@ To remove a researcher from a study, click the red minus button beside the resea
 
 .. image:: _static/img/deleting_researchers.png
     :alt: Deleting researcher permissions
+
+-------------------------
+Editing study structure
+-------------------------
+To edit a study's structure, navigate to localhost:8000/exp/studies/study_id/edit/build/. From here, you can edit the study's structure and the study type.
+The study structure specifies the frames (or pages) of your experiment, and also specifies the sequence.
+
+.. image:: _static/img/build_study.png
+    :alt: Built study
+
+To edit the structure, click on the JSON block.  A JSON editor will appear.  Click on "Beautify" in the top right corner for better readability. Once you are happy with your changes click 'Close'.  Then hit "Save" in the bottom right corner.
+If your study has already been approved, then clicking "Save" will automatically reject the study. You will have to resubmit it for an organization admin to reapprove.
+
+.. image:: _static/img/json_editor.png
+    :alt: Edit JSON
+
+If you wish to preview your study, click "Try Experiment".  You will get an email 7-10 minutes later, possibly longer, with a link to preview your study.  We are building the study and putting on Google Cloud Storage for you to preview. These builds,
+though not instantaneous, keeps the studies separate from one another.  These studies are all pulling from common code, so it is possible that someone edits a frame, and that edit breaks someone else's study. By storing builds on Google Cloud Storage,
+pointing to specific commits, we can keep edits to frames from unintentionally breaking another study.
