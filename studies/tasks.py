@@ -32,7 +32,7 @@ logger.addHandler(handler)
 
 
 def get_repo_path(full_repo_path):
-    return re.search('https://github.com/(.*)', full_repo_path).group(1)
+    return re.search('https://github.com/(.*)', full_repo_path).group(1).rstrip('/')
 
 
 def get_master_sha(repo_url):
