@@ -64,3 +64,28 @@ researcher you wish to delete, and then click "Remove" again in the confirmation
 
 .. image:: _static/img/deleting_a_researcher.png
     :alt: Deleting a researcher
+
+====================
+Managing Studies
+====================
+--------------------
+Creating a study
+--------------------
+To create a study, navigate to http://localhost:8000/exp/studies/create/. A researcher must have been added to an organization to add a study.
+Here's an explanation of some the field names:
+
+- *Name*: title of your study, must be <255 characters
+- *Image*: Image that will be displayed to participants on Lookit Studies page.  File must be an image-type, and please keep the file size reasonable (<1 MB)
+- *Exit URL*: Must enter a URL. After the participant has completed the study, we will direct them to the Exit URL.
+- *Participant Eligibility*: Participant-facing eligibility string.  Make this readable so participants understand if their child can take part in the study.
+- *Minimum/Maximum Age cutoffs*: Integer fields that give a warning to the participant if their child falls outside of the age range. It is a hard cutoff. If you say 3 to 5 years, child must be just greater than 3 years and just less than 5 years.  So if they're a day before their fifth birthday, they are eligibile.
+- *Discoverable* - Do you want to make this study public or not?  If marked discoverable, once the study is activated, it will appear on the Lookit site.
+- *Build Study* - This needs to be a valid JSON block describing the different frames (pages) of your study, and the sequence. You can add these later under localhost:8000/exp/studies/study_id/edit/build/.
+- *Study Type* - This indicates the type of frame player that you wish to cycle through the pages in your experiment. Right now, we just have one option, the Ember Frame Player.
+    - The *addons_repo_url* is the repo where the frames and the player are stored.  This is the default addons_repo_url: https://github.com/centerforopenscience/exp-addons.  If you want to add new frames, fork this repo, and use your fork.
+    - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.
+    - The *last_known_player_sha* is the commit of the ember app https://github.com/CenterForOpenScience/ember-lookit-frameplayer that talks to our API and passes that info onto the frame player
+    - ** If you don't want any customization and want to use the existing player and frames, just select the defaults and press "Create study"
+
+.. image:: _static/img/create_study.png
+    :alt: Creating a study
