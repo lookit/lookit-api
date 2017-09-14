@@ -119,6 +119,41 @@ can only be "Submitted" for review, or "Archived", which removes the study from 
 --------------------
 Study edit page
 --------------------
-On the study edit page, you can update much of the metadata about the study. At the top of the page, you can edit fields like Name, and Description.  See Creating a Study for more details.
-.. image:: _static/img/study_detail.png
-    :alt: Viewing studies
+On the study edit page, localhost:8000/exp/studies/study_id/edit/ you can update much of the metadata about the study. You can only view this page if you have permission to edit this particular study, meaning org admins or study admins. At the top of the page, you can edit fields like Name, and Description.  See Creating a Study for more details.
+
+To edit fields, change the information and click Save Changes in the middle of the page.  If your study has already been approved, then the save button will be red.  Otherwise it will be green. If your study has already been approved, then editing key details will automatically put the study in a rejected state.  You must resubmit your
+study and get it approved again by an organization admin to run the study on the Lookit platform.
+
+.. image:: _static/img/study_edit.png
+    :alt: Editing studies
+
+---------------------------------
+Adding researchers to your study
+---------------------------------
+Halfway down the study edit page, localhost:8000/exp/studies/study_id/edit/, you can see the researchers that have study admin or study read permissions to your study. You must have permissions to edit the study to view this page, meaning org admins or study admins. The study creator automatically has study admin permissions.
+In the search box, you can filter researchers in your organization.
+
+.. image:: _static/img/adding_researchers.png
+    :alt: Adding researcher to study
+
+Click the green plus to add them to your study.  They are given study read permissions by default.  If the researcher you are adding happens to also be an organization admin, they will have admin permissions on your study.
+These researchers that are also org admins are denoted by an asterisk, followed by the <name of your organization>-Admin.
+
+.. image:: _static/img/adding_researchers2.png
+    :alt: Adding researcher to study
+
+------------------------------------------
+Editing researcher permissions on a study
+------------------------------------------
+To edit a researcher, select read or admin permissions in the dropdown beside the researcher name and click the checkmark.  This will automatically give the researcher read or admin permissions.  There must be one study admin at all times, so it's possible that you won't be able to make edits to permissions.
+
+.. image:: _static/img/editing_researcher_permissions.png
+    :alt: Editing researcher permissions
+
+---------------------------------
+Deleting researcher permissions
+---------------------------------
+To remove a researcher from a study, click the red minus button beside the researcher's name.  This will automatically remove the user's study admin or study read permissions. There must be one study admin at all times, so it's possible that you won't be able to remove a researcher.
+
+.. image:: _static/img/deleting_researchers.png
+    :alt: Deleting researcher permissions
