@@ -133,6 +133,8 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
 
         match = self.request.GET.get('match')
         # Can filter on first, middle, and last names
+        queryset = queryset.select_related('organization')
+
         if match:
             queryset = queryset.filter(reduce(operator.or_,
               (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(middle_name__icontains=term) for term in match.split())))
@@ -140,7 +142,8 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
         if sort:
             if 'family_name' in sort:
                 queryset = queryset.order_by(Lower('family_name').desc()) if '-' in sort else queryset.order_by(Lower('family_name').asc())
-        queryset = queryset.select_related('organization')
+            if 'permissions' in sort:
+                queryset = sorted(queryset,  key=lambda m: m.display_permission, reverse=True if '-' in sort else False)
         return self.paginated_queryset(queryset, self.request.GET.get('page'), 10)
 
     def post(self, request, *args, **kwargs):

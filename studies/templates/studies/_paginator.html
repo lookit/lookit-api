@@ -3,7 +3,7 @@
 <div class="items-pagination">
     <span class="step-links">
         {% if items.has_previous %}
-            <a aria-label="Go to previous page" href="?{% query_transform request page=items.previous_page_number %}"><i aria-hidden="true" class="fa fa-chevron-left"> </i></a>
+            <a aria-label="Go to previous page" href="?{% query_transform request page=items.previous_page_number %}{% if anchor %}#{{ anchor }}{% endif %}"><i aria-hidden="true" class="fa fa-chevron-left"> </i></a>
         {% endif %}
 
         <span class="current">
@@ -11,7 +11,7 @@
         </span>
 
         {% if items.has_next %}
-            <a aria-label="Go to next page" href="?{% query_transform request page=items.next_page_number %}"><i aria-hidden="true" class="fa fa-chevron-right"></i></a>
+            <a aria-label="Go to next page" href="?{% query_transform request page=items.next_page_number %}{% if anchor %}#{{ anchor }}{% endif %}"><i aria-hidden="true" class="fa fa-chevron-right"></i></a>
         {% endif %}
     </span>
 </div>
