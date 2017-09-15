@@ -7,7 +7,7 @@ These are the instructions for previewing or participating in a study locally. W
 
 2. Navigate to <http://localhost:8000/admin/> to login to Experimenter's admin app. You should be redirected to login.  Use the superuser credentials created in the django installation steps.
 
-3. Once you are in the Admin App, navigate to users, and then select your superuser  If you just created your django app, there should be two users to pick from, your superuser, and an anonymous user. In that case, your superuser information is here <http://localhost:8000/admin/accounts/user/2/change/>.
+3. Once you are in the Admin App, navigate to users, and then select your superuser.  If you just created your django app, there should be two users to pick from, your superuser, and an anonymous user. In that case, your superuser information is here <http://localhost:8000/admin/accounts/user/2/change/>.
 
 4. Update your superuser information through the admin app. We primarily need to add an organization to the user, but have to fill out the bold fields additionally in order to save the user information.
     - Family Name: *Your last name*
@@ -22,7 +22,7 @@ These are the instructions for previewing or participating in a study locally. W
 5. Create a token to allow the Ember app to access the API by navigating to <http://localhost:8000/admin/authtoken/token/>. Click "Add Token", find your superuser in the dropdown, and then click "Save". You will need this token later.
 
 6. Create a study by navigating to <http://localhost:8000/exp/studies/create/>.  Fill out all the fields. The most
-important field is the `structure`, where you define the frames and the sequence of the frames.  Be sure the frame and the details for the frame are listed in the structure.
+important field is the `structure`, where you define the frames and the sequence of the frames.  Be sure the frame and the details for the frame you are testing are listed in the structure.
 
 7. Add demographic information to your superuser (just for testing purposes), so your superuser can participate in studies. Navigate to <http://localhost:8000/account/demographics>/.  Scroll down to the bottom and hit "Save". You're not required to answer any questions, but hitting save will save a blank demographic data version for your superuser.
 
