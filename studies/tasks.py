@@ -32,13 +32,17 @@ logger.addHandler(handler)
 
 
 def get_repo_path(full_repo_path):
-    return re.search('https://github.com/(.*)', full_repo_path).group(1)
+    return re.search('https://github.com/(.*)', full_repo_path).group(1).rstrip('/')
 
 
 def get_master_sha(repo_url):
+    logger.debug(f'Getting master sha for {repo_url}...')
     api_url = f'https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs'
+    logger.debug(f'Making API request to {api_url}...')
     response = requests.get(api_url)
-    return response.json()[0]['object']['sha']
+    sha = response.json()[0]['object']['sha']
+    logger.debug(f'Got sha of {sha}')
+    return sha
 
 
 def unzip_file(file, destination_folder):
@@ -81,7 +85,7 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
         logger.debug(f'Found directory {local_repo_destination_folder}')
         return (repo_destination_folder, addons_sha, player_sha)
 
-    addons_zip_path = f'{settings.EMBER_ADDONS_REPO}/archive/{addons_sha}.zip'
+    addons_zip_path = f'{addons_repo_url}/archive/{addons_sha}.zip'
     player_zip_path = f'{settings.EMBER_EXP_PLAYER_REPO}/archive/{player_sha}.zip'
 
     logger.debug(f'Downloading {player_zip_path}...')
@@ -135,9 +139,10 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
 
         destination_directory = f'{study_uuid}'
 
-        player_sha = getattr(study.metadata, 'last_known_player_sha', None)
-        addons_sha = getattr(study.metadata, 'last_known_addons_sha', None)
-        addons_repo_url = getattr(study.metadata, 'addons_repo_url', settings.EMBER_ADDONS_REPO)
+        player_sha = study.metadata.get('last_known_player_sha', None)
+        addons_sha = study.metadata.get('last_known_addons_sha', None)
+        addons_repo_url = study.metadata.get('addons_repo_url', settings.EMBER_ADDONS_REPO)
+        logger.debug(f"Got {addons_repo_url} from {study.metadata.get('addons_repo_url')}")
 
         if preview:
             current_state = study.state
