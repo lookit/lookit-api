@@ -56,13 +56,15 @@ as a token for accessing the API.  Leave the django server running and switch to
     ```
 
 ## Previewing a study
+
 When you are previewing a study, the responses to the study will not be saved.  Video attachments will be saved, however, with an id of "PREVIEW_DATA_DISREGARD". You do not need to create demographic data, or a child, since this is just a preview.  You just need a study to navigate to.  The URL for previewing is `/exp/studies/study_uuid/preview/`.
 
 To fetch the identifier of the study, you can use the API. To fetch studies, navigate to <http://localhost:8000/api/v1/studies>.  Copy the id of the study you created earlier.
 
-Now, you can navigate to <http://localhost:4200/exp/studies/study_id/preview>.
+Now, you can navigate to <http://localhost:4200/exp/studies/study_id/preview>, replacing study_id with the id you obtained from the API.
 
 ## Participating in a study
+
 To participate in a study locally, you need demographic data and a child attached to the logged in user, as well as a study. Video data is saved and responses are saved to your local server.  The URL for participating is `studies/study_uuid/child_uuid`. To fetch studies, navigate to <http://localhost:8000/api/v1/studies/>.  Copy the id of the study you created earlier.  To fetch children, navigate to <http://localhost:8000/api/v1/children/>. Copy the id of your child.
 
-Finally, to participate in a study, navigate to <localhost:4200/studies/study_id/child_id>.
+Finally, to participate in a study, navigate to <http://localhost:4200/studies/study_id/child_id>, replacing study_id and child_id with the ids you obtained from the API.
