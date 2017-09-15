@@ -38,9 +38,9 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    favicon_view = RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)
+    favicon_view = RedirectView.as_view(url='/static/images/favicon.png', permanent=True)
     import debug_toolbar
     urlpatterns = [
-        url(r'^favicon\.ico$', favicon_view),
+        url(r'^favicon\.png$', favicon_view),
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
