@@ -21,4 +21,6 @@ This is the codebase for Experimenter and Lookit.  Experimenter is a platform fo
 - `$ cd lookit-api`
 - `$ sh up.sh` *Installs dependencies and run migrations*
 - `$ python manage.py createsuperuser` *Creates superuser locally (has all user permissions)*
+- `$ touch project/settings/local.py` Create a local settings file.
+- Add DEBUG = True to `local.py` and save. This is for local development only.
 - `$ python manage.py runserver` *Starts up server*
