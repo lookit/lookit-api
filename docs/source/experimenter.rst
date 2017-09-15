@@ -83,8 +83,8 @@ Here's an explanation of some the field names:
 - *Build Study* - This needs to be a valid JSON block describing the different frames (pages) of your study, and the sequence. You can add these later under localhost:8000/exp/studies/study_id/edit/build/.
 - *Study Type* - The study type is the application you're using to enable participants to take a study. Right now, we just have one option, the `Ember Frame Player <https://github.com/CenterForOpenScience/ember-lookit-frameplayer>`_.  It's an ember app that can talk to our API. All the frames in the experiment are defined in Ember (found in exp-addons) and there is an exp-player component that can cycle through these frames.
     - The *addons_repo_url* is the repo where the frames and the player are stored.  This is the default addons_repo_url: https://github.com/centerforopenscience/exp-addons.  If you want to add new frames, fork this repo, and set the addons_repo_url to your fork.
-    - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.  If you don't add this, it will point to the latest master commit of the repo at addons_repo_url.
-    - The *last_known_player_sha* is the commit of the ember app https://github.com/CenterForOpenScience/ember-lookit-frameplayer that talks to our API and passes that info onto the frame player. If you don't add this, it will point to the latest master commit by default.
+    - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.  If you don't add this, it will point to the latest commit in the default branch of the repo at addons_repo_url. You can set the default in Github.
+    - The *last_known_player_sha* is the commit of the ember app https://github.com/CenterForOpenScience/ember-lookit-frameplayer that talks to our API and passes that info onto the frame player. If you don't add this, it will point to the latest commit in the default branch.
     - ** If you don't want any customization and want to use the existing player and frames, just select the defaults and press "Create study"
 
 .. image:: _static/img/create_study.png
@@ -207,9 +207,9 @@ To edit a study's type, navigate to localhost:8000/exp/studies/study_id/edit/bui
 
 The study type is the application you're using to enable participants to take a study. Right now, we just have one option, the `Ember Frame Player <https://github.com/CenterForOpenScience/ember-lookit-frameplayer>`_.  It's an ember app that can talk to our API. All the frames in the experiment are defined in Ember (found in exp-addons) and there is an exp-player component that can cycle through these frames.
     - The *addons_repo_url* is the repo where the frames and the player are stored.  This is the default addons_repo_url: https://github.com/centerforopenscience/exp-addons.  If you want to add new frames, fork this repo, and set the addons_repo_url to your fork.
-    - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.  If you don't add this, it will point to the latest master commit of the repo at addons_repo_url.
-    - The *last_known_player_sha* is the commit of the ember app https://github.com/CenterForOpenScience/ember-lookit-frameplayer that talks to our API and passes that info onto the frame player. If you don't add this, it will point to the latest master commit by default.
-    - ** These are advanced options! If you want to use existing frames, and the existing player, just leave the defaults as-is.
+    - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.  If you don't add this, it will point to the latest commit in the default branch of the repo at addons_repo_url. You can set the default in Github.
+    - The *last_known_player_sha* is the commit of the ember app https://github.com/CenterForOpenScience/ember-lookit-frameplayer that talks to our API and passes that info onto the frame player. If you don't add this, it will point to the latest commit in the default branch.
+    - ** If you don't want any customization and want to use the existing player and frames, just select the defaults and press "Create study"    - ** These are advanced options! If you want to use existing frames, and the existing player, just leave the defaults as-is.
 
 -----------------------------------
 Viewing Individual Study Responses
