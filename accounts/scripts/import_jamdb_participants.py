@@ -153,7 +153,7 @@ def create_child(user, profile, apps):
         birthday=birthday.split('T')[0] if birthday else birthday,
         gender=format_gender(profile.get('gender')),
         age_at_birth=format_age_at_birth(profile.get('gestationalAgeAtBirth')) or pull_choice_value(profile.get('ageAtBirth'), 'age_at_birth', apps, "Child"),
-        additional_information=pull_choice_value(profile.get('additionalInformation', ''), 'additional_information', apps, "Child"),
+        additional_information=get_simple_field(profile.get('additionalInformation')),
         deleted=profile.get('deleted'),
         former_lookit_profile_id=profile.get('profileId'),
         user=user
@@ -218,6 +218,7 @@ def create_demographics(user, participant, apps):
         country=get_simple_field(attributes.get('demographicsCountry', '')),
         state=get_simple_field(attributes.get('demographicsState', '')),
         density=get_simple_field(attributes.get('demographicsDensity', '')),
+        lookit_referrer=get_simple_field(attributes.get('demographicsHowDidYouHear', '')),
         user=user
     )
 
