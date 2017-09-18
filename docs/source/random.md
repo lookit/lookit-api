@@ -28,7 +28,7 @@ Where:
 
 ### Making your own
 
-There is some template code included to help you get started. From within the `experimenter/lib/exp-player` directory,
+There is some template code included to help you get started. From within the `ember-lookit-frameplayer/lib/exp-player` directory,
 run:
 
 ```bash
