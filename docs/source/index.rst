@@ -22,3 +22,6 @@ Contents:
    django-project-installation
    ember-app-installation
    local-frame-development
+   frames
+   mixins
+   random
