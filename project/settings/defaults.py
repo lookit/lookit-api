@@ -277,7 +277,7 @@ if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
     GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', '')
     GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', '')
 
-    GS_PRIVATE_BUCKET_NAME = os.environ.get('GS_PRIVATE_BUCKET_NAME', 'lookit-staging-private')
+    GS_PRIVATE_BUCKET_NAME = os.environ.get('GS_PRIVATE_BUCKET_NAME', '')
 else:
     # we know nothing about cloud storage
     print('-------------------Why yes, we are using local assets!-------------------------')
