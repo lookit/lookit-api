@@ -292,7 +292,10 @@ def build_zipfile_of_videos(self, filename, study_uuid, orderby, match, requesti
     # get the user
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
     # find the requested attachments
-    attachments = attachment_helpers.get_study_attachments(study, orderby, match)
+    if consent:
+        attachments = attachment_helpers.get_consent_videos(study.uuid)
+    else:
+        attachments = attachment_helpers.get_study_attachments(study, orderby, match)
     m = hashlib.sha256()
     for attachment in attachments:
         m.update(attachment.key.encode('utf-8'))

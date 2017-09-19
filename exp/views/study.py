@@ -628,29 +628,6 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         context['match'] = match
         return context
 
-
-    # TODO move to celery task
-    def download_multiple_files(self, files, zip_subdir):
-        """
-        Downloads all attachments associated with study and puts into zipfile
-        """
-        zip_filename = f'{zip_subdir}.zip'
-        s = io.BytesIO()
-        zip = zipfile.ZipFile(s, "w")
-        for attachment in files:
-            filename = attachment.key
-            file_response = requests.get(attachment_helpers.get_download_url(filename))
-            f1 = open(filename, 'wb')
-            f1.write(file_response.content)
-            f1.close()
-            fdir, fname = os.path.split(filename)
-            zip_path = os.path.join(zip_subdir, fname)
-            zip.write(filename, zip_path)
-        zip.close()
-        resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
-        resp['Content-Disposition'] = f'attachment; filename={zip_filename}'
-        return resp
-
     def post(self, request, *args, **kwargs):
         '''
         Downloads study video
@@ -668,6 +645,7 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
 
         if self.request.POST.get('all-consent-videos'):
             build_zipfile_of_videos.delay(f'{self.get_object().uuid}_all_consent', self.get_object().uuid, orderby, match, self.request.user.uuid, consent=True)
+            messages.success(request, f"An archive of consent videos for {self.get_object().name} is being generated. You will be emailed a link when it's completed.")
 
         return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
 
