@@ -656,18 +656,18 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         Downloads study video
         '''
         attachment = self.request.POST.get('attachment')
+        match = self.request.GET.get('match', '')
+        orderby = self.request.GET.get('sort', 'id') or 'id'
         if attachment:
             download_url = attachment_helpers.get_download_url(attachment)
             return redirect(download_url)
 
         if self.request.POST.get('all-attachments'):
-            build_zipfile_of_videos.delay(f'{self.get_object().uuid}_all_attachments', self.get_object().uuid, 'last_modified', '', self.request.user.uuid)
+            build_zipfile_of_videos.delay(f'{self.get_object().uuid}_all_attachments', self.get_object().uuid, orderby, match, self.request.user.uuid)
             messages.success(request, f"An archive of videos for {self.get_object().name} is being generated. You will be emailed a link when it's completed.")
 
         if self.request.POST.get('all-consent-videos'):
-            build_zipfile_of_videos.delay(f'{self.get_object().uuid}_all_consent', self.get_object().uuid, 'last_modified', '', self.request.user.uuid, consent=True)
-            # all = [att for att in attachment_helpers.get_consent_videos(str(self.get_object().uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
-            # return self.download_multiple_files(all, f'{self.get_object().uuid}_all_consent')
+            build_zipfile_of_videos.delay(f'{self.get_object().uuid}_all_consent', self.get_object().uuid, orderby, match, self.request.user.uuid, consent=True)
 
         return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
 
