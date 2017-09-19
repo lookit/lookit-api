@@ -220,7 +220,7 @@ SITE_NAME = os.environ.get('SITE_NAME', 'Lookit')
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-# base url for experiments, should be s3 bucket in prod
+# base url for experiments, should be GCS bucket in prod
 EXPERIMENT_BASE_URL = os.environ.get('EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/experiments/')  # default to ember base url
 PREVIEW_EXPERIMENT_BASE_URL = os.environ.get('PREVIEW_EXPERIMENT_BASE_URL', 'https://storage.googleapis.com/io-osf-lookit-staging2/preview_experiments/')  # default to ember base url
 
@@ -276,6 +276,8 @@ if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
 
     GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', '')
     GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', '')
+
+    GS_PRIVATE_BUCKET_NAME = os.environ.get('GS_PRIVATE_BUCKET_NAME', 'lookit-staging-private')
 else:
     # we know nothing about cloud storage
     print('-------------------Why yes, we are using local assets!-------------------------')
@@ -324,6 +326,7 @@ CELERY_TASK_ACKS_LATE = True
 CELERY_TASK_REJECT_ON_WORKER_LOST = True
 CELERY_TASK_ROUTES = {
     'studies.tasks.build_experiment': {'queue': 'builds'},
+    'studies.tasks.build_zipfile_of_videos': {'queue': 'builds'},
     'studies.tasks.cleanup*': {'queue': 'cleanup'},
     'studies.helpers.send_mail': {'queue': 'email'}
 }

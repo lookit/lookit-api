@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 
 from studies.models import Study
 from exp.views.mixins import ExperimenterLoginRequiredMixin
-import get_study_attachments
+import attachment_helpers
 
 class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixin):
     """
@@ -151,7 +151,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
         '''
         attachment = self.request.POST.get('attachment')
         if attachment:
-            download_url = get_study_attachments.get_download_url(attachment)
+            download_url = attachment_helpers.get_download_url(attachment)
             return redirect(download_url)
 
         return HttpResponseRedirect(reverse('exp:study-responses-list', kwargs=dict(pk=self.get_object().pk)))
