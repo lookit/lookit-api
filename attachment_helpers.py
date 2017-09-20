@@ -31,7 +31,7 @@ def get_download_url(video_key):
     return s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.BUCKET_NAME, 'Key': video_key}, ExpiresIn = 60)
 
 
-def get_study_attachments(study, orderby, match):
+def get_study_attachments(study, orderby='key', match=None):
     """
     Fetches study attachments from s3
     """
