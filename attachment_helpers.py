@@ -29,3 +29,14 @@ def get_download_url(video_key):
     """
     s3Client = boto3.client('s3')
     return s3Client.generate_presigned_url('get_object', Params = {'Bucket': settings.BUCKET_NAME, 'Key': video_key}, ExpiresIn = 60)
+
+
+def get_study_attachments(study, orderby='key', match=None):
+    """
+    Fetches study attachments from s3
+    """
+    sort = 'last_modified' if 'date_modified' in orderby else 'key'
+    attachments = [att for att in get_all_study_attachments(str(study.uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
+    if match:
+        attachments = [att for att in attachments if match in att.key]
+    return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)

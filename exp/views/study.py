@@ -21,7 +21,7 @@ from guardian.shortcuts import get_objects_for_user, get_perms
 from localflavor import pk
 from revproxy.views import ProxyView
 
-import get_study_attachments
+import attachment_helpers
 from accounts.models import User
 from accounts.utils import (get_permitted_triggers, status_tooltip_text,
                             update_trigger)
@@ -32,7 +32,7 @@ from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
-from studies.tasks import build_experiment
+from studies.tasks import build_experiment, build_zipfile_of_videos
 
 
 class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView, StudyTypeMixin):
@@ -529,18 +529,12 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
             csv_responses.append(output.getvalue())
         return csv_responses
 
-    def get_study_attachments(self, study):
-        """
-        Fetches study attachments from s3
-        """
-        return [att for att in get_study_attachments.get_all_study_attachments(str(study.uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
-
     def sort_attachments_by_response(self, responses):
         """
         Build a list of list of videos for each response
         """
         study = self.get_object()
-        attachments = self.get_study_attachments(study)
+        attachments = attachment_helpers.get_study_attachments(study)
         all_attachments = []
         for response in responses:
             uuid = str(response.uuid)
@@ -630,58 +624,28 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         context = super().get_context_data(**kwargs)
         orderby = self.request.GET.get('sort', 'id') or 'id'
         match = self.request.GET.get('match', '')
-        context['attachments'] = self.get_study_attachments(context['study'], orderby, match)
+        context['attachments'] = attachment_helpers.get_study_attachments(context['study'], orderby, match)
         context['match'] = match
         return context
-
-    def get_study_attachments(self, study, orderby, match):
-        """
-        Fetches study attachments from s3
-        """
-        sort = 'last_modified' if 'date_modified' in orderby else 'key'
-        attachments = [att for att in get_study_attachments.get_all_study_attachments(str(study.uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
-        if match:
-            attachments = [att for att in attachments if match in att.key]
-        return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)
-
-    # TODO move to celery task
-    def download_multiple_files(self, files, zip_subdir):
-        """
-        Downloads all attachments associated with study and puts into zipfile
-        """
-        zip_filename = f'{zip_subdir}.zip'
-        s = io.BytesIO()
-        zip = zipfile.ZipFile(s, "w")
-        for attachment in files:
-            filename = attachment.key
-            file_response = requests.get(get_study_attachments.get_download_url(filename))
-            f1 = open(filename, 'wb')
-            f1.write(file_response.content)
-            f1.close()
-            fdir, fname = os.path.split(filename)
-            zip_path = os.path.join(zip_subdir, fname)
-            zip.write(filename, zip_path)
-        zip.close()
-        resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
-        resp['Content-Disposition'] = f'attachment; filename={zip_filename}'
-        return resp
 
     def post(self, request, *args, **kwargs):
         '''
         Downloads study video
         '''
         attachment = self.request.POST.get('attachment')
+        match = self.request.GET.get('match', '')
+        orderby = self.request.GET.get('sort', 'id') or 'id'
         if attachment:
-            download_url = get_study_attachments.get_download_url(attachment)
+            download_url = attachment_helpers.get_download_url(attachment)
             return redirect(download_url)
 
         if self.request.POST.get('all-attachments'):
-            all = self.get_study_attachments(self.get_object(), 'last_modified', '')
-            return self.download_multiple_files(all, f'{self.get_object().uuid}_all_attachments')
+            build_zipfile_of_videos.delay(f'{self.get_object().uuid}_all_attachments', self.get_object().uuid, orderby, match, self.request.user.uuid)
+            messages.success(request, f"An archive of videos for {self.get_object().name} is being generated. You will be emailed a link when it's completed.")
 
         if self.request.POST.get('all-consent-videos'):
-            all = [att for att in get_study_attachments.get_consent_videos(str(self.get_object().uuid)) if "PREVIEW_DATA_DISREGARD" not in att.key]
-            return self.download_multiple_files(all, f'{self.get_object().uuid}_all_consent')
+            build_zipfile_of_videos.delay(f'{self.get_object().uuid}_all_consent', self.get_object().uuid, orderby, match, self.request.user.uuid, consent=True)
+            messages.success(request, f"An archive of consent videos for {self.get_object().name} is being generated. You will be emailed a link when it's completed.")
 
         return HttpResponseRedirect(reverse('exp:study-attachments', kwargs=dict(pk=self.get_object().pk)))
 
