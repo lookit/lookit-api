@@ -1,8 +1,8 @@
 # Workflow
 
-## Why [transitions](https://github.com/pytransitions/transitions)
+## Why Transitions
 
-Transitions is an object-oriented state machine implemented in Python.
+[Transitions](https://github.com/pytransitions/transitions) is an object-oriented state machine implemented in Python.
 
 It's both very powerful and very simple. It's definition is a python dictionary so it can be easily serialized into JSON and stored in a database or configured via YAML. It has callback functionality for state transitions. It can create diagrams of the workflow using pygraphiz. It also ties into django model classes very easily.
 
