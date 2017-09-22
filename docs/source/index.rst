@@ -25,3 +25,6 @@ Contents:
    frames
    mixins
    random
+   permissions
+   workflow
+   celery_tasks
