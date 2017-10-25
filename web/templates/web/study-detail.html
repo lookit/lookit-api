@@ -92,28 +92,45 @@
     <div class='lookit-row lookit-page-title'>
         <div class='container'>
             <div class='row'>
-                <h2 class='col-sm-10'>Participate in "{{ object.name }}"</h2>
+                <div class='col-sm-10'>
+                <h2 class="study-detail-title">"{{ object.name }}": Study overview</h2>
                 <a href="{% url 'web:studies-list' %}" class="active col-sm-2 btn btn-lg btn-primary pull-right back-to-list-button">Back to list</a>
+                </div>
             </div>
         </div>
     </div>
     {% bootstrap_messages %}
     <div class='container'>
-        <div class="lookit-row"><div class='col-md-10 col-md-offset-1'>
-            <div class='row'><div class='col-xs-12'>
-                {% include "studies/_image_display.html" with object=object %}
-            </div></div>
+        <div class="lookit-row"><div class='col-md-10'>
+            
             <div class='row'>
                 <div class='col-md-9'>
                     <div class="caption">
-                      <h4>Thank you for your interest in this study! We'll help you learn more and get started.</h4>
-                      <p><strong>Eligibility criteria:</strong> {{ object.criteria }}</p>
-                      <p><strong>Duration:</strong> {{ object.duration }}</p>
-                      <p><strong>What happens:</strong> {{ object.short_description }}</p>
-                      <p><strong>What are we studying? </strong> {{ object.long_description }}</p>
+                      {% include "studies/_image_display.html" with object=object %}
+                      <table class="study-detail-infotable">
+                      <tr>
+                        <td>Eligibility criteria</td>
+                        <td>{{ object.criteria }}</td>
+                      </tr>
+                      <tr>
+                        <td>Duration</td>
+                        <td>{{ object.duration }}</td>
+                      </tr>
+                      <tr>
+                        <td>What happens</td>
+                        <td>{{ object.short_description }}</td>
+                      </tr>
+                      <tr>
+                        <td>What we're studying</td>
+                        <td>{{ object.long_description }}</td>
+                      </tr>
+                    </table>
+                      
+                      <p class="study-detail-contactinfo"><em>This study is conducted by {{object.contact_info}} </em></p>
                     </div>
                 </div>
                 <div class='col-md-3'>
+                    <h4>Would you like to participate in this study?</h4>
                     {% if not request.user.is_authenticated %}
                         <a class="btn btn-lg btn-default" href="{% url 'login' %}">Log in to participate</a>
                     {% elif not children %}

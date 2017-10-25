@@ -35,6 +35,7 @@
 			</div>
 		</div>
         {% bootstrap_messages %}
+        <div class="container">
 		<ul class="pt-sm nav nav-tabs">
 			<li>
 				<a href="{% url 'web:studies-list'%}">Suggested Studies</a>
@@ -43,6 +44,7 @@
 				<a href="{% url 'web:studies-history'%}">Past Studies</a>
 			</li>
 		</ul>
+		</div>
 	</div>
     <div class="container">
         <div class="tab-content">
@@ -67,7 +69,7 @@
                                                         <div class="study-feedback-thumbnail-wrapper">
                                                             {% if study.image %}
                                                               <p class="image-block">
-                                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="200" width="auto" src="{{ study.image.url }}" width="300px">
+                                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="150" width="auto" src="{{ study.image.url }}" width="300px">
                                                                   <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
                                                                     	<i aria-hidden="true" class="fa fa-picture-o"></i>
                                                                   </div>
