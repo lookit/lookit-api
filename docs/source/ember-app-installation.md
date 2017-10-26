@@ -5,6 +5,8 @@ participate in an experiment. This is meant to be used in conjunction with the [
 The Django applications will proxy to these Ember routes for previewing/participating in an experiment.
 The Ember routes will fetch the appropriate models and then pass them to the exp-player component in [exp-addons](https://github.com/CenterForOpenScience/exp-addons).
 
+## Note: These instructions are for Mac OS.
+
 ## Prerequisites
 
 You will need the following things properly installed on your computer.
