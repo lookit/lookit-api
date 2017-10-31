@@ -185,7 +185,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':
         'api.pagination.PageNumberPagination',
     'DEFAULT_PARSER_CLASSES': (
-        'rest_framework_json_api.parsers.JSONParser',
+        'api.parsers.JSONAPIParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
     ),
