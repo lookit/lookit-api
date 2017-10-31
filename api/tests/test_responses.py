@@ -30,8 +30,8 @@ class ResponseTestCase(APITestCase):
         self.data = {
             "data": {
                 "attributes": {
-                  "global-event-timings": [],
-                  "exp-data": {},
+                  "global_event_timings": [],
+                  "exp_data": {},
                   "sequence": [],
                   "completed": False
                 },
@@ -55,8 +55,8 @@ class ResponseTestCase(APITestCase):
         self.patch_data = {
             "data": {
                 "attributes": {
-                  "global-event-timings": [],
-                  "exp-data": {"some":"data"},
+                  "global_event_timings": [],
+                  "exp_data": {"some":"data"},
                   "sequence": ['first_frame', 'second_frame'],
                   "completed": True
                 },
@@ -64,8 +64,6 @@ class ResponseTestCase(APITestCase):
                 "id": str(self.response.uuid)
             }
         }
-
-
 
     # Response List test
     def testGetResponseListUnauthenticated(self):
@@ -191,6 +189,115 @@ class ResponseTestCase(APITestCase):
         api_response = self.client.patch(self.response_detail_url, json.dumps(self.patch_data), content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data['sequence'], ['first_frame', 'second_frame'])
+
+    def testPatchResponseAttributesTopLevelKeysUnderscoredOnly(self):
+        self.client.force_authenticate(user=self.participant)
+
+        data = {
+        	"data": {
+        		"id": str(self.response.uuid),
+        		"attributes": {
+        			"conditions": {
+        				"8-pref-phys-videos": {
+        					"startType": 5,
+        					"showStay": 8,
+        					"whichObjects": [8, 5, 6, 8]
+        				}
+        			},
+        			"global_event_timings": [],
+        			"exp_data": {
+        				"0-0-video-config": {
+        					"eventTimings": [{
+        						"eventType": "nextFrame",
+        						"timestamp": "2017-10-31T20:09:47.479Z"
+        					}]
+        				},
+        				"1-1-video-consent": {
+        					"videoId": "e729321f-418f-4728-992c-9364623dbe9b_1-video-consent_bdebd15b-adc7-4377-b2f6-e9f3de70dd19",
+        					"eventTimings": [{
+        						"eventType": "hasCamAccess",
+        						"timestamp": "2017-10-31T20:09:48.096Z",
+        						"hasCamAccess": "True",
+        						"videoId": "e729321f-418f-4728-992c-9364623dbe9b_1-video-consent_bdebd15b-adc7-4377-b2f6-e9f3de70dd19",
+        						"streamTime": "None"
+        					}, {
+        						"eventType": "videoStreamConnection",
+        						"timestamp": "2017-10-31T20:09:50.534Z",
+        						"status": "NetConnection.Connect.Success",
+        						"videoId": "e729321f-418f-4728-992c-9364623dbe9b_1-video-consent_bdebd15b-adc7-4377-b2f6-e9f3de70dd19",
+        						"streamTime": "None"
+        					}, {
+        						"eventType": "stoppingCapture",
+        						"timestamp": "2017-10-31T20:09:53.051Z",
+        						"videoId": "e729321f-418f-4728-992c-9364623dbe9b_1-video-consent_bdebd15b-adc7-4377-b2f6-e9f3de70dd19",
+        						"streamTime": 2.459000000000003
+        					}, {
+        						"eventType": "nextFrame",
+        						"timestamp": "2017-10-31T20:09:53.651Z",
+        						"videoId": "e729321f-418f-4728-992c-9364623dbe9b_1-video-consent_bdebd15b-adc7-4377-b2f6-e9f3de70dd19",
+        						"streamTime": "None"
+        					}]
+        				},
+        				"2-2-instructions": {
+        					"confirmationCode": "6YdLL",
+        					"eventTimings": [{
+        						"eventType": "nextFrame",
+        						"timestamp": "2017-10-31T20:09:56.472Z"
+        					}]
+        				},
+        				"5-5-mood-survey": {
+        					"rested": "1",
+        					"healthy": "1",
+        					"childHappy": "1",
+        					"active": "1",
+        					"energetic": "1",
+        					"ontopofstuff": "1",
+        					"parentHappy": "1",
+        					"napWakeUp": "11:00",
+        					"usualNapSchedule": "no",
+        					"lastEat": "6:00",
+        					"doingBefore": "s",
+        					"eventTimings": [{
+        						"eventType": "nextFrame",
+        						"timestamp": "2017-10-31T20:10:17.269Z"
+        					}]
+        				}
+        			},
+        			"sequence": ["0-0-video-config", "1-1-video-consent", "2-2-instructions", "5-5-mood-survey"],
+        			"completed": "False"
+        		},
+        		"type": "responses"
+        	}
+        }
+
+        api_response = self.client.patch(self.response_detail_url, json.dumps(data), content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['sequence'],  ["0-0-video-config", "1-1-video-consent", "2-2-instructions", "5-5-mood-survey"])
+        self.assertEqual(api_response.data['exp_data']['0-0-video-config'],  {
+            "eventTimings": [{
+                "eventType": "nextFrame",
+                "timestamp": "2017-10-31T20:09:47.479Z"
+            }]
+        })
+        self.assertEqual(api_response.data['exp_data']['5-5-mood-survey'],
+            {
+                "rested": "1",
+                "healthy": "1",
+                "childHappy": "1",
+                "active": "1",
+                "energetic": "1",
+                "ontopofstuff": "1",
+                "parentHappy": "1",
+                "napWakeUp": "11:00",
+                "usualNapSchedule": "no",
+                "lastEat": "6:00",
+                "doingBefore": "s",
+                "eventTimings": [{
+                    "eventType": "nextFrame",
+                    "timestamp": "2017-10-31T20:10:17.269Z"
+                }]
+            }
+        )
 
     # Delete responses
     def testDeleteResponse(self):
