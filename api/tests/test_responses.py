@@ -71,6 +71,18 @@ class ResponseTestCase(APITestCase):
         api_response = self.client.get(self.url, content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def testGetResponseOrderingReverseDateModified(self):
+        assign_perm('studies.can_view_study_responses', self.researcher, self.study)
+        self.client.force_authenticate(user=self.researcher)
+        self.response2 = G(Response, child=self.child, study=self.study, completed=False)
+        self.response3 = G(Response, child=self.child, study=self.study, completed=False)
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data['links']['meta']['count'], 3)
+        self.assertIn(str(self.response3.uuid), api_response.data['results'][0]['url'])
+        self.assertIn(str(self.response2.uuid), api_response.data['results'][1]['url'])
+        self.assertIn(str(self.response.uuid), api_response.data['results'][2]['url'])
+
     def testGetResponsesListByOwnChildren(self):
         # Participant can view their own responses
         self.client.force_authenticate(user=self.participant)
