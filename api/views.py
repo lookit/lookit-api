@@ -146,7 +146,7 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if 'List' in self.get_view_name():
             qs = qs.filter(public=True)
 
-        return (qs | get_objects_for_user(self.request.user, 'studies.can_edit_study')).distinct()
+        return (qs | get_objects_for_user(self.request.user, 'studies.can_edit_study')).distinct().order_by('-date_modified')
 
 class ResponseFilter(filters.FilterSet):
     child = filters.UUIDFilter(name='child__uuid')
@@ -195,13 +195,13 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             study_uuid = self.kwargs['study_uuid']
             queryset = Response.objects.filter(study__uuid=study_uuid)
             if self.request.user.has_perm('studies.can_view_study_responses', get_object_or_404(Study, uuid=study_uuid)):
-                return queryset
+                return queryset.order_by('-date_modified')
             else:
-                return queryset.filter(child__id__in=children_ids)
+                return queryset.filter(child__id__in=children_ids).order_by('-date_modified')
 
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
-        return Response.objects.filter(Q(study__id__in=study_ids) | Q(child__id__in=children_ids)).distinct()
+        return Response.objects.filter(Q(study__id__in=study_ids) | Q(child__id__in=children_ids)).distinct().order_by('-date_modified')
 
 
 class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):

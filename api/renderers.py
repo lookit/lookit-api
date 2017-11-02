@@ -13,6 +13,7 @@ from rest_framework.serializers import (BaseSerializer, ListSerializer,
 from rest_framework.settings import api_settings
 
 from rest_framework_json_api import utils
+from api import utils as api_utils
 
 
 class JSONAPIRenderer(renderers.JSONRenderer):
@@ -65,7 +66,7 @@ class JSONAPIRenderer(renderers.JSONRenderer):
                 field_name: resource.get(field_name)
             })
 
-        return utils.format_keys(data)
+        return api_utils.format_keys(data)
 
     @classmethod
     def extract_relationships(cls, fields, resource, resource_instance):
@@ -203,7 +204,7 @@ class JSONAPIRenderer(renderers.JSONRenderer):
                 })
                 continue
 
-        return utils.format_keys(data)
+        return api_utils.format_keys(data)
 
     @classmethod
     def extract_included(cls, fields, resource, resource_instance, included_resources):
@@ -313,7 +314,7 @@ class JSONAPIRenderer(renderers.JSONRenderer):
                         )
                     )
 
-        return utils.format_keys(included_data)
+        return api_utils.format_keys(included_data)
 
     @classmethod
     def extract_meta(cls, serializer, resource):
@@ -432,7 +433,7 @@ class JSONAPIRenderer(renderers.JSONRenderer):
                     json_resource_obj = self.build_json_resource_obj(fields, resource, resource_instance, resource_name)
                     meta = self.extract_meta(serializer, resource)
                     if meta:
-                        json_resource_obj.update({'meta': utils.format_keys(meta)})
+                        json_resource_obj.update({'meta': api_utils.format_keys(meta)})
                     json_api_data.append(json_resource_obj)
 
                     included = self.extract_included(fields, resource, resource_instance, included_resources)
@@ -444,7 +445,7 @@ class JSONAPIRenderer(renderers.JSONRenderer):
 
                 meta = self.extract_meta(serializer, serializer_data)
                 if meta:
-                    json_api_data.update({'meta': utils.format_keys(meta)})
+                    json_api_data.update({'meta': api_utils.format_keys(meta)})
 
                 included = self.extract_included(fields, serializer_data, resource_instance, included_resources)
                 if included:
@@ -478,7 +479,7 @@ class JSONAPIRenderer(renderers.JSONRenderer):
             render_data['included'] = sorted(unique_compound_documents, key=lambda item: (item['type'], item['id']))
 
         if json_api_meta:
-            render_data['meta'] = utils.format_keys(json_api_meta)
+            render_data['meta'] = api_utils.format_keys(json_api_meta)
 
         return super().render(
             render_data, accepted_media_type, renderer_context
