@@ -392,6 +392,7 @@ class Response(models.Model):
     conditions = DateTimeAwareJSONField(default=dict)
     sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)
     date_modified = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
     global_event_timings = DateTimeAwareJSONField(default=dict)
     child = models.ForeignKey(Child, on_delete=models.DO_NOTHING)
     demographic_snapshot = models.ForeignKey(
