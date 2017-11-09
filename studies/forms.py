@@ -22,11 +22,13 @@ class ResponseForm(forms.ModelForm):
 class BaseStudyForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
+        min_age_days = self.cleaned_data.get('min_age_days')
         min_age_months = self.cleaned_data.get('min_age_months')
         min_age_years = self.cleaned_data.get('min_age_years')
+        max_age_days = self.cleaned_data.get('max_age_days')
         max_age_months = self.cleaned_data.get('max_age_months')
         max_age_years = self.cleaned_data.get('max_age_years')
-        if (min_age_years + min_age_months/12) > (max_age_years + max_age_months/12):
+        if (min_age_years + min_age_months/12 + min_age_days/365) > (max_age_years + max_age_months/12 + max_age_days/365):
             raise forms.ValidationError('The maximum age must be greater than the minimum age.')
         return cleaned_data
 
