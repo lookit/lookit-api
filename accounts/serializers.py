@@ -51,6 +51,7 @@ class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
             'state',
             'density',
             'extra',
+            'date_created',
         )
 
 
@@ -106,6 +107,7 @@ class UserSerializer(UUIDSerializerMixin, ModelSerializer):
             'email_new_studies',
             'email_study_updates',
             'email_response_questions',
+            'date_created',
         )
 
     # class JSONAPIMeta:
