@@ -43,7 +43,7 @@ class StudyEditForm(BaseStudyForm):
             'long_description': 'Purpose',
             'exit_url': 'Exit URL',
             'criteria': 'Participant Eligibility',
-            'contact_info': 'Researcher/Contact Information',
+            'contact_info': 'Researcher Contact Information',
             'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?'
         }
         widgets = {
@@ -60,6 +60,8 @@ class StudyEditForm(BaseStudyForm):
             'exit_url': "Specify the page where you want to send your participants after they've completed the study.",
             'short_description': 'Give your study a description here.',
             'long_description': 'Explain the purpose of your study here.',
+            'contact_info': 'This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)',
+            'criteria': 'Text shown to families - this is not used to actually verify eligibility.'
         }
 
 class StudyForm(BaseStudyForm):
