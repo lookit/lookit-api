@@ -303,10 +303,18 @@ a.no-link-formatting {
     vertical-align: top;
 }
 
+.study-detail-infotable td:first-child {
+    width: 12em;
+}
+
 .study-detail-contactinfo {
     padding-top: .5em;
     color: #555;
 
+}
+
+.study-detail-title {
+    float: left;
 }
 
 button:disabled#participate-button,
