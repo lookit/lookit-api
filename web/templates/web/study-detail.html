@@ -65,8 +65,8 @@
             // Adapted from experiment model in exp-addons
             var minDays;
             var maxDays;
-            minDays = moment.duration({months: "{{ study.min_age_months }}", years: "{{ study.min_age_years }}"}).asDays();
-            maxDays = moment.duration({months: "{{ study.max_age_months }}", years: "{{ study.max_age_years }}"}).asDays();
+            minDays = moment.duration({days: "{{ study.min_age_days }}", months: "{{ study.min_age_months }}", years: "{{ study.min_age_years }}"}).asDays();
+            maxDays = moment.duration({days: "{{ study.max_age_days }}", months: "{{ study.max_age_months }}", years: "{{ study.max_age_years }}"}).asDays();
 
             minDays = minDays || -1;
             maxDays = maxDays || Number.MAX_SAFE_INTEGER;

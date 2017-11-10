@@ -22,11 +22,13 @@ class ResponseForm(forms.ModelForm):
 class BaseStudyForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
+        min_age_days = self.cleaned_data.get('min_age_days')
         min_age_months = self.cleaned_data.get('min_age_months')
         min_age_years = self.cleaned_data.get('min_age_years')
+        max_age_days = self.cleaned_data.get('max_age_days')
         max_age_months = self.cleaned_data.get('max_age_months')
         max_age_years = self.cleaned_data.get('max_age_years')
-        if (min_age_years + min_age_months/12) > (max_age_years + max_age_months/12):
+        if (min_age_years + min_age_months/12 + min_age_days/365) > (max_age_years + max_age_months/12 + max_age_days/365):
             raise forms.ValidationError('The maximum age must be greater than the minimum age.')
         return cleaned_data
 
@@ -35,7 +37,7 @@ class StudyEditForm(BaseStudyForm):
 
     class Meta:
         model = Study
-        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age_months', 'min_age_years', 'max_age_months', 'max_age_years', 'duration', 'contact_info', 'public']
+        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age_days', 'min_age_months', 'min_age_years', 'max_age_days', 'max_age_months', 'max_age_years', 'duration', 'contact_info', 'public']
         labels = {
             'short_description': 'Short Description',
             'long_description': 'Purpose',
@@ -73,7 +75,7 @@ class StudyForm(BaseStudyForm):
 
     class Meta:
         model = Study
-        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age_years', 'min_age_months', 'max_age_years', 'max_age_months', 'duration', 'contact_info', 'public', 'structure', 'study_type']
+        fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 'criteria', 'min_age_years', 'min_age_months', 'min_age_days', 'max_age_years', 'max_age_months', 'max_age_days', 'duration', 'contact_info', 'public', 'structure', 'study_type']
         labels = {
             'short_description': 'Short Description',
             'long_description': 'Purpose',

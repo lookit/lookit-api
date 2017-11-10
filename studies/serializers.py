@@ -80,6 +80,7 @@ class FeedbackSerializer(UUIDSerializerMixin, ModelSerializer):
 
 
 class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
+    created_on = serializers.DateTimeField(read_only=True, source='date_created')
     url = serializers.HyperlinkedIdentityField(
         view_name='response-detail',
         lookup_field='uuid'
@@ -126,6 +127,7 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
             'user',
             'study',
             'demographic_snapshot',
+            'created_on'
         )
 
 
