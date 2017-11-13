@@ -7,7 +7,8 @@ from django.shortcuts import get_object_or_404
 from guardian.shortcuts import get_objects_for_user
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
-                                  OrganizationSerializer, UserSerializer)
+                                  OrganizationSerializer, FullUserSerializer,
+                                  BasicUserSerializer)
 from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter
 from rest_framework_json_api import views
@@ -101,10 +102,15 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'users'
     queryset = User.objects.all()
-    serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
     http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        # Use full user serializer (with username data, etc.) iff user has permissions to view all accounts
+        if self.request.user.has_perm('accounts.can_read_all_user_data'):
+            return FullUserSerializer
+        return BasicUserSerializer
 
     def get_queryset(self):
         """
@@ -115,11 +121,11 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         all_users = super().get_queryset()
         # Users with can_read_all_user_data permissions can view all active users via the API
         if self.request.user.has_perm('accounts.can_read_all_user_data'):
-            return all_users.filter(is_active=True)
+            return all_users.defer('middle_name').filter(is_active=True)
         qs_ids = all_users.values_list('id', flat=True)
         studies = get_objects_for_user(self.request.user, 'studies.can_view_study_responses')
         study_ids = studies.values_list('id', flat=True)
-        return User.objects.filter((Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)), Q(id__in=qs_ids)).distinct()
+        return User.objects.defer('middle_name').filter((Q(children__response__study__id__in=study_ids) | Q(id=self.request.user.id)), Q(id__in=qs_ids)).distinct()
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
