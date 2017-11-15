@@ -334,9 +334,13 @@ class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
             self.upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
         uuid = kwargs.pop('uuid', None)
         filename = kwargs.pop('filename', None)
+        # if it's one of the hdfv files
         if filename:
-            # if it's one of the hdfv files
-            study_uuid = referer.split('/')[-3]
+            if referer.endswith('/'):
+                study_uuid = referer.split('/')[-3]
+            else:
+                # For firefox
+                study_uuid = referer.split('/')[-2]
             path = f"{study_uuid}/{filename}"
             return super().dispatch(request, path, *args, **kwargs)
         # if it's just regular assets remove the child_id from the path
