@@ -195,14 +195,15 @@ button.account-row {
     -webkit-user-select: none;
 }
 .study-list-thumbnail {
-    max-height: 220px;
-    max-width: 300px;
-    margin-top: 30px;
-    margin: 30px;
+    max-height: 200px;
+    max-width: 90%;
+    margin: 5%;
+}
+.study-list-panel .caption h3 {
+    margin-top: 10px;
 }
 .study-list-thumbnail-wrapper {
-    max-height: 275px;
-    min-height: 275px;
+    min-height: 225px;
 }
 .study-list-placeholder {
     font-size: 200px;
@@ -271,7 +272,7 @@ a.no-link-formatting {
 /* STUDY DETAIL */
 
 .back-to-list-button {
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .study-detail-thumbnail {
