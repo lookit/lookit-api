@@ -82,7 +82,7 @@ class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
         related_link_lookup_field='uuid',
     )
 
-    class Meta():
+    class Meta:
         model = User
         fields = (
             'url',
@@ -108,9 +108,9 @@ class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
 
 class FullUserSerializer(BasicUserSerializer):
     
-    class Meta():
+    class Meta:
         model = User
-        fields = BasicUserSerializer.Meta().fields + ('username',)
+        fields = BasicUserSerializer.Meta.fields + ('username',)
 
 
 class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
