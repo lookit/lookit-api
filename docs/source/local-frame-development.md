@@ -44,13 +44,13 @@ as a token for accessing the API.  Leave the django server running and switch to
     If you make changes to the frames, you should see notifications that files have changed in the console where your ember server is running:
     `file changed components/exp-video-config/template.hbs`
 
-3. Add your token to the header. This will allow your Ember app to talk to your local API. In the ember-frame-player directory, open the application adapter directory at `ember-lookit-frameplayer/app/adapters/application.js.` Add an "Authorization" key beneath the X-CSRFTOKEN line. Save the file.
+3. Add your token to the header. This will allow your Ember app to talk to your local API. In the ember-frame-player directory, open the application adapter directory at `ember-lookit-frameplayer/app/adapters/application.js.` Add an "Authorization" key beneath the X-CSRFTOKEN line. The word 'Token' must be included. Save the file.
     ```js
     headers: Ember.computed(function() {
             // Add cookie to http header
             return {
                 'X-CSRFTOKEN': Ember.get(document.cookie.match(/csrftoken\=([^;]*)/), '1'),
-                'Authorization': 'Token add-your-token-here'
+                'Authorization': 'Token <add-your-token-here>.'
             };
         }).volatile(),
     ```
