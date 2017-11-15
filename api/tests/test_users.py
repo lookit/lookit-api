@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
+import json
 
 from guardian.shortcuts import assign_perm
 from studies.models import Response, Study, Feedback
@@ -16,6 +17,8 @@ class UserTestCase(APITestCase):
     def setUp(self):
         self.researcher = G(User, is_active=True, is_researcher=True, given_name="Researcher 1")
         self.participant = G(User, is_active=True, given_name="Participant 1")
+        self.participant2 = G(User, is_active=True, given_name="Participant 2")
+        self.participant3 = G(User, is_active=True, given_name="Participant 3")
         self.child = G(Child, user=self.participant, given_name='Sally')
         self.study = G(Study, creator=self.researcher)
         self.response = G(Response, child=self.child, study=self.study)
@@ -68,6 +71,30 @@ class UserTestCase(APITestCase):
         api_response = self.client.get(self.url, content_type="application/vnd.api+json")
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertGreater(api_response.data['links']['meta']['count'], 1)
+        
+    def testAdminsCannotAutomaticallyViewEmails(self):
+        # Regular org admin permissions and even ability to read all user data are insufficient to see usernames
+        self.admin = G(User, is_active=True, is_researcher=True, is_org_admin=True)
+        assign_perm('accounts.can_read_all_user_data', self.admin)
+        self.client.force_authenticate(user=self.admin)
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        userList = api_response.json()['data']
+        self.assertGreater(len(userList), 1) # View all participants
+        for u in userList:
+            self.assertNotIn('username', u['attributes'].keys())
+          
+    def testUsersCanViewEmailsWithPermission(self):
+        # User with specific 'can_view_usernames' permission can see usernames in user data
+        self.emailpermissionuser = G(User, is_active=True,  given_name="ResearcherEmail")
+        assign_perm('accounts.can_read_usernames', self.emailpermissionuser)
+        self.client.force_authenticate(user=self.emailpermissionuser)
+        api_response = self.client.get(self.url, content_type="application/vnd.api+json")
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        userList = api_response.json()['data']
+        self.assertGreater(len(userList), 0) # View self
+        for u in userList:
+            self.assertIn('username', u['attributes'].keys())
 
     # Participant GET Detail Tests
     def testGetParticipantDetailUnauthenticated(self):

@@ -127,6 +127,8 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     email_new_studies = models.BooleanField(default=True)
     email_study_updates = models.BooleanField(default=True)
     email_response_questions = models.BooleanField(default=True)
+    
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
@@ -239,6 +241,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ('can_view_user_permissions', _('Can View User Permissions')),
             ('can_edit_user_permissions', _('Can Edit User Permissions')),
             ('can_read_all_user_data', _('Can Read All User Data')),
+            ('can_read_usernames', _('Can Read User Usernames')),
         )
         ordering = ['username']
 
@@ -451,6 +454,8 @@ class DemographicData(models.Model):
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES, blank=True)
     lookit_referrer = models.TextField(blank=True)
     extra = DateTimeAwareJSONField(null=True)
+    
+    date_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']

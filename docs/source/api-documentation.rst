@@ -1002,7 +1002,7 @@ Viewing the list of users
 GET /api/v1/users/
 
 Permissions: Must be authenticated.  You can view participants that have responded to studies you have permission to view, as well as own user information.
-Endpoint can return both participants and researchers, if you have permission to view them. Users with *can_read_all_user_data* permissions can view all active users in the database via this endpoint.
+Endpoint can return both participants and researchers, if you have permission to view them. Users with *can_read_all_user_data* permissions can view all active users in the database via this endpoint. Usernames are only shown if user has *can_read_usernames* permissions.
 
 *Sample Response:*
 

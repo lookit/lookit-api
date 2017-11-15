@@ -51,19 +51,16 @@ class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
             'state',
             'density',
             'extra',
+            'date_created',
         )
-
-
-class UserSerializer(UUIDSerializerMixin, ModelSerializer):
+    
+class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
     resource_name = 'users'
     url = serializers.HyperlinkedIdentityField(
         view_name='user-detail',
         lookup_field='uuid'
     )
 
-    # included_serializers = {
-    #     'demographics': DemographicDataSerializer,
-    # }
     demographics = UUIDResourceRelatedField(
         queryset=DemographicData.objects,
         many=True,
@@ -106,10 +103,14 @@ class UserSerializer(UUIDSerializerMixin, ModelSerializer):
             'email_new_studies',
             'email_study_updates',
             'email_response_questions',
+            'date_created',
         )
 
-    # class JSONAPIMeta:
-    #     included_resources = ['demographics', ]
+class FullUserSerializer(BasicUserSerializer):
+    
+    class Meta:
+        model = User
+        fields = BasicUserSerializer.Meta.fields + ('username',)
 
 
 class ChildSerializer(UUIDSerializerMixin, ModelSerializer):

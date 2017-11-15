@@ -32,7 +32,7 @@
         <h2 class='container'>Suggested Studies</h2>
     </div>
     {% bootstrap_messages %}
-    <div>
+    <div class="container">
         <ul class="pt-sm nav nav-tabs">
             <li class="active">
                 <a href="{% url 'web:studies-list'%}">Suggested Studies</a>
@@ -52,17 +52,17 @@
                                 <p class="study-detail-caption">Here are some studies that we're currently running:</p>
                             </div>
                               {% for obj in object_list %}
-                              <div class="col-md-4">
+                              <div class="col-xs-4">
                                   <div class="study-list-panel thumbnail">
                                       <a class="no-link-formatting" href="{% url 'web:study-detail' uuid=obj.uuid %}">
                                           <div class="study-list-thumbnail-wrapper text-center">
                                             {% if obj.image %}
-                                              <p class="image-block">
-                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="200" width="auto" src="{{ obj.image.url }}" width="300px">
+                                              <div class="image-block">
+                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})"  src="{{ obj.image.url }}">
                                                   <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
                                                     	<i aria-hidden="true" class="fa fa-picture-o"></i>
                                                   </div>
-                                              </p>
+                                              </div>
                                             {% else %}
                                               <div class="study-list-placeholder">
                                                   <i aria-hidden="true" class="fa fa-picture-o"></i>

@@ -7,7 +7,8 @@ from django.shortcuts import get_object_or_404
 from guardian.shortcuts import get_objects_for_user
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (ChildSerializer, DemographicDataSerializer,
-                                  OrganizationSerializer, UserSerializer)
+                                  OrganizationSerializer, FullUserSerializer,
+                                  BasicUserSerializer)
 from django_filters import rest_framework as filters
 from rest_framework.filters import OrderingFilter
 from rest_framework_json_api import views
@@ -101,10 +102,15 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = 'uuid'
     resource_name = 'users'
     queryset = User.objects.all()
-    serializer_class = UserSerializer
     filter_fields = [('child', 'children'), ('response', 'responses'), ]
     http_method_names = ['get', 'head', 'options']
     permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        # Use full user serializer (with username data, etc.) iff user has permissions to view all accounts
+        if self.request.user.has_perm('accounts.can_read_usernames'):
+            return FullUserSerializer
+        return BasicUserSerializer
 
     def get_queryset(self):
         """
