@@ -83,7 +83,7 @@ class StudyForm(BaseStudyForm):
             'long_description': 'Purpose',
             'exit_url': 'Exit URL',
             'criteria': 'Participant Eligibility',
-            'contact_info': 'Researcher/Contact Information',
+            'contact_info': 'Researcher Contact Information',
             'public': 'Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?',
             'study_type': 'Study Type'
         }
@@ -101,6 +101,7 @@ class StudyForm(BaseStudyForm):
             'short_description': 'Give your study a description here.',
             'long_description': 'Explain the purpose of your study here.',
             'study_type': "Specify the build process as well as the parameters needed by the experiment builder. If you don't know what this is, just select the default.",
+            'contact_info': 'This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)',
         }
 
 
