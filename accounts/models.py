@@ -241,6 +241,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ('can_view_user_permissions', _('Can View User Permissions')),
             ('can_edit_user_permissions', _('Can Edit User Permissions')),
             ('can_read_all_user_data', _('Can Read All User Data')),
+            ('can_read_usernames', _('Can Read User Usernames')),
         )
         ordering = ['username']
 
