@@ -10,8 +10,10 @@ class ChildAdmin(GuardedModelAdmin):
 
 
 class UserAdmin(GuardedModelAdmin):
-    list_display = ('id', 'uuid', 'nickname', 'given_name', 'family_name', 'is_staff', 'is_researcher', 'date_created', 'last_login')
+    list_display = ('id', 'uuid', 'nickname', 'given_name', 'family_name', 'is_researcher', 'date_created', 'last_login')
     list_filter = ('id', 'uuid',)
+    exclude = ('is_superuser', 'is_staff')
+
 
 class OrganizationAdmin(GuardedModelAdmin):
     pass
