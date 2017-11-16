@@ -238,12 +238,12 @@ def create_participant(participant, apps):
     # - Don't seem to be many email preferences in db?
     attributes = participant.get('attributes')
     user_model = apps.get_model("accounts", "User")
+    old_name = get_simple_field(attributes.get('name'))
     user = user_model.objects.create(
         username=attributes.get('email'),
         password='bcrypt$' + attributes.get('password'),
         former_lookit_id=participant.get('id'),
-        given_name=get_simple_field(attributes.get('name')),
-        nickname=get_simple_field(participant.get('id').split('.')[-1]),
+        nickname=(old_name if old_name else get_simple_field(participant.get('id').split('.')[-1])),
         is_active=True,
         is_staff=False,
         is_researcher=False,
