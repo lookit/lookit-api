@@ -22,6 +22,7 @@ class OrganizationSerializer(UUIDSerializerMixin, ModelSerializer):
 class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
     resource_name = 'demographics'
     country = serializers.CharField(default='')
+    date_created = serializers.DateTimeField(read_only=True, source='created_at')
 
     url = serializers.HyperlinkedIdentityField(
         view_name='demographicdata-detail',
@@ -53,7 +54,7 @@ class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
             'extra',
             'date_created',
         )
-    
+
 class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
     resource_name = 'users'
     url = serializers.HyperlinkedIdentityField(
@@ -107,7 +108,7 @@ class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
         )
 
 class FullUserSerializer(BasicUserSerializer):
-    
+
     class Meta:
         model = User
         fields = BasicUserSerializer.Meta.fields + ('username',)
