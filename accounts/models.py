@@ -454,8 +454,6 @@ class DemographicData(models.Model):
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES, blank=True)
     lookit_referrer = models.TextField(blank=True)
     extra = DateTimeAwareJSONField(null=True)
-    
-    date_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
