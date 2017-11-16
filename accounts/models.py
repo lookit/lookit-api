@@ -224,7 +224,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f'{self.given_name} {self.middle_name} {self.family_name}'
 
     def __str__(self):
-        return f'<User: {self.get_short_name()}>'
+        return f'<User: {self.uuid}>'
 
     objects = UserManager()
 
@@ -291,7 +291,7 @@ class Child(models.Model):
     )
 
     def __str__(self):
-        return f'<Child: {self.given_name}, child of {self.user.get_short_name()}>'
+        return f'<Child: {self.given_name}, child of {self.user.nickname}>'
 
     class Meta:
         ordering = ['-birthday']
