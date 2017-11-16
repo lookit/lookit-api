@@ -16,6 +16,7 @@ class OrganizationSerializer(UUIDSerializerMixin, ModelSerializer):
         fields = (
             'name',
             'url',
+            'pk',
         )
 
 
@@ -53,6 +54,7 @@ class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
             'density',
             'extra',
             'date_created',
+            'pk',
         )
 
 class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
@@ -105,6 +107,7 @@ class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
             'email_study_updates',
             'email_response_questions',
             'date_created',
+            'pk',
         )
 
 class FullUserSerializer(BasicUserSerializer):
@@ -142,7 +145,8 @@ class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
             'age_at_birth',
             'additional_information',
             'deleted',
-            'former_lookit_profile_id'
+            'former_lookit_profile_id',
+            'pk',
         )
 
     # class JSONAPIMeta:
