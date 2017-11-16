@@ -201,6 +201,7 @@ def create_demographics(user, participant, apps):
     income = get_simple_field(attributes.get('demographicsAnnualIncome'))
 
     DemographicData.objects.create(
+        date_created=participant.get('meta').get('created-on'),
         number_of_children=get_simple_field(attributes.get('demographicsNumberOfChildren')),
         child_birthdays=[birthday.split('T')[0] if birthday else birthday for birthday in attributes.get('demographicsChildBirthdays')],
         languages_spoken_at_home=get_simple_field(attributes.get('demographicsLanguagesSpokenAtHome')),
@@ -239,6 +240,7 @@ def create_participant(participant, apps):
     attributes = participant.get('attributes')
     user_model = apps.get_model("accounts", "User")
     user = user_model.objects.create(
+        date_created=participant.get('meta').get('created-on'),
         username=attributes.get('email'),
         password='bcrypt$' + attributes.get('password'),
         former_lookit_id=participant.get('id'),
