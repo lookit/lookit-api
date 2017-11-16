@@ -5,11 +5,11 @@ from accounts.models import DemographicData, Organization, Child, User
 
 
 class ChildAdmin(GuardedModelAdmin):
-    pass
+    list_display = ('id', 'uuid', 'given_name', 'user')
 
 
 class UserAdmin(GuardedModelAdmin):
-    pass
+    list_display = ('id', 'uuid', 'nickname', 'given_name', 'family_name', 'is_staff', 'is_researcher')
 
 
 class OrganizationAdmin(GuardedModelAdmin):
