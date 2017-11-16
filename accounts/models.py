@@ -243,7 +243,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ('can_read_all_user_data', _('Can Read All User Data')),
             ('can_read_usernames', _('Can Read User Usernames')),
         )
-        ordering = ['username']
+        ordering = ['id']
 
 
 class Child(models.Model):
