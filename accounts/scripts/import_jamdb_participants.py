@@ -201,7 +201,7 @@ def create_demographics(user, participant, apps):
     income = get_simple_field(attributes.get('demographicsAnnualIncome'))
 
     DemographicData.objects.create(
-        date_created=participant.get('meta').get('created-on'),
+        created_at=participant.get('meta').get('created-on'),
         number_of_children=get_simple_field(attributes.get('demographicsNumberOfChildren')),
         child_birthdays=[birthday.split('T')[0] if birthday else birthday for birthday in attributes.get('demographicsChildBirthdays')],
         languages_spoken_at_home=get_simple_field(attributes.get('demographicsLanguagesSpokenAtHome')),
