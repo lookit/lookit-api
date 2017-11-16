@@ -17,7 +17,7 @@ class OrganizationAdmin(GuardedModelAdmin):
 
 
 class DemographicDataAdmin(GuardedModelAdmin):
-    list_display = ('id', 'uuid', 'date_created', 'user')
+    list_display = ('id', 'uuid', 'created_at', 'user')
 
 
 admin.site.register(User, UserAdmin)
