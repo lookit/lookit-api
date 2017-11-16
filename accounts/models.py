@@ -224,7 +224,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f'{self.given_name} {self.middle_name} {self.family_name}'
 
     def __str__(self):
-        return f'<User: {self.uuid}>'
+        return f'<User: ID {self.id}, {self.uuid}>'
 
     objects = UserManager()
 
@@ -465,7 +465,7 @@ class DemographicData(models.Model):
         lookup_field = 'uuid'
 
     def __str__(self):
-        return f'<DemographicData: {self.user.get_short_name()} @ {self.created_at:%c}>'
+        return f'<DemographicData: {self.user.nickname} @ {self.created_at:%c}>'
 
     def to_display(self):
         return dict(
