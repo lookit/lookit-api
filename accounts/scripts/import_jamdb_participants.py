@@ -153,7 +153,7 @@ def create_child(user, profile, apps):
         birthday=birthday.split('T')[0] if birthday else birthday,
         gender=format_gender(profile.get('gender')),
         age_at_birth=format_age_at_birth(profile.get('gestationalAgeAtBirth')) or pull_choice_value(profile.get('ageAtBirth'), 'age_at_birth', apps, "Child"),
-        additional_information=pull_choice_value(profile.get('additionalInformation', ''), 'additional_information', apps, "Child"),
+        additional_information=get_simple_field(profile.get('additionalInformation')),
         deleted=profile.get('deleted'),
         former_lookit_profile_id=profile.get('profileId'),
         user=user
@@ -201,6 +201,7 @@ def create_demographics(user, participant, apps):
     income = get_simple_field(attributes.get('demographicsAnnualIncome'))
 
     DemographicData.objects.create(
+        created_at=participant.get('meta').get('created-on'),
         number_of_children=get_simple_field(attributes.get('demographicsNumberOfChildren')),
         child_birthdays=[birthday.split('T')[0] if birthday else birthday for birthday in attributes.get('demographicsChildBirthdays')],
         languages_spoken_at_home=get_simple_field(attributes.get('demographicsLanguagesSpokenAtHome')),
@@ -218,6 +219,7 @@ def create_demographics(user, participant, apps):
         country=get_simple_field(attributes.get('demographicsCountry', '')),
         state=get_simple_field(attributes.get('demographicsState', '')),
         density=get_simple_field(attributes.get('demographicsDensity', '')),
+        lookit_referrer=get_simple_field(attributes.get('demographicsHowDidYouHear', '')),
         user=user
     )
 
@@ -237,12 +239,13 @@ def create_participant(participant, apps):
     # - Don't seem to be many email preferences in db?
     attributes = participant.get('attributes')
     user_model = apps.get_model("accounts", "User")
+    old_name = get_simple_field(attributes.get('name'))
     user = user_model.objects.create(
+        date_created=participant.get('meta').get('created-on'),
         username=attributes.get('email'),
         password='bcrypt$' + attributes.get('password'),
         former_lookit_id=participant.get('id'),
-        given_name=get_simple_field(attributes.get('name')),
-        nickname=get_simple_field(participant.get('id').split('.')[-1]),
+        nickname=(old_name if old_name else get_simple_field(participant.get('id').split('.')[-1])),
         is_active=True,
         is_staff=False,
         is_researcher=False,

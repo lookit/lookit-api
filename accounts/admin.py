@@ -5,11 +5,14 @@ from accounts.models import DemographicData, Organization, Child, User
 
 
 class ChildAdmin(GuardedModelAdmin):
-    pass
+    list_display = ('id', 'uuid', 'given_name', 'birthday', 'user')
+    list_filter = ('id', 'uuid',)
 
 
 class UserAdmin(GuardedModelAdmin):
-    pass
+    list_display = ('id', 'uuid', 'nickname', 'given_name', 'family_name', 'is_researcher', 'date_created', 'last_login')
+    list_filter = ('id', 'uuid',)
+    exclude = ('is_superuser', 'is_staff')
 
 
 class OrganizationAdmin(GuardedModelAdmin):
@@ -17,8 +20,8 @@ class OrganizationAdmin(GuardedModelAdmin):
 
 
 class DemographicDataAdmin(GuardedModelAdmin):
-    pass
-
+    list_display = ('id', 'uuid', 'created_at', 'user')
+    list_filter = ('id', 'uuid',)
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Organization, OrganizationAdmin)

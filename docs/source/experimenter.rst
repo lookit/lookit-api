@@ -81,10 +81,10 @@ Here's an explanation of some the field names:
 - *Minimum/Maximum Age cutoffs*: Integer fields that give a warning to the participant if their child falls outside of the age range. It is a hard cutoff. If you say 3 to 5 years, child must be just greater than 3 years and just less than 5 years.  So if they're a day before their fifth birthday, they are eligibile.
 - *Discoverable* - Do you want to make this study public or not?  If marked discoverable, once the study is activated, it will appear on the Lookit site.
 - *Build Study* - This needs to be a valid JSON block describing the different frames (pages) of your study, and the sequence. You can add these later under localhost:8000/exp/studies/study_id/edit/build/.
-- *Study Type* - This indicates the type of frame player that you wish to cycle through the pages in your experiment. Right now, we just have one option, the Ember Frame Player.
-    - The *addons_repo_url* is the repo where the frames and the player are stored.  This is the default addons_repo_url: https://github.com/centerforopenscience/exp-addons.  If you want to add new frames, fork this repo, and use your fork.
-    - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.  If you don't add this, it will point to the latest master commit.
-    - The *last_known_player_sha* is the commit of the ember app https://github.com/CenterForOpenScience/ember-lookit-frameplayer that talks to our API and passes that info onto the frame player. If you don't add this, it will point to the latest master commit by default.
+- *Study Type* - The study type is the application you're using to enable participants to take a study. Right now, we just have one option, the `Ember Frame Player <https://github.com/CenterForOpenScience/ember-lookit-frameplayer>`_.  It's an ember app that can talk to our API. All the frames in the experiment are defined in Ember (found in exp-addons) and there is an exp-player component that can cycle through these frames.
+    - The *addons_repo_url* is the repo where the frames and the player are stored.  This is the default addons_repo_url: https://github.com/centerforopenscience/exp-addons.  If you want to add new frames, fork this repo, and set the addons_repo_url to your fork.
+    - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.  If you don't add this, it will point to the latest commit in the default branch of the repo at addons_repo_url. You can set the default in Github.
+    - The *last_known_player_sha* is the commit of the ember app https://github.com/CenterForOpenScience/ember-lookit-frameplayer that talks to our API and passes that info onto the frame player. If you don't add this, it will point to the latest commit in the default branch.
     - ** If you don't want any customization and want to use the existing player and frames, just select the defaults and press "Create study"
 
 .. image:: _static/img/create_study.png
@@ -203,3 +203,57 @@ pointing to specific commits, we can keep edits to frames from unintentionally b
 -------------------------
 Editing study type
 -------------------------
+To edit a study's type, navigate to localhost:8000/exp/studies/study_id/edit/build/.
+
+The study type is the application you're using to enable participants to take a study. Right now, we just have one option, the `Ember Frame Player <https://github.com/CenterForOpenScience/ember-lookit-frameplayer>`_.  It's an ember app that can talk to our API. All the frames in the experiment are defined in Ember (found in exp-addons) and there is an exp-player component that can cycle through these frames.
+    - The *addons_repo_url* is the repo where the frames and the player are stored.  This is the default addons_repo_url: https://github.com/centerforopenscience/exp-addons.  If you want to add new frames, fork this repo, and set the addons_repo_url to your fork.
+    - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.  If you don't add this, it will point to the latest commit in the default branch of the repo at addons_repo_url. You can set the default in Github.
+    - The *last_known_player_sha* is the commit of the ember app https://github.com/CenterForOpenScience/ember-lookit-frameplayer that talks to our API and passes that info onto the frame player. If you don't add this, it will point to the latest commit in the default branch.
+    - ** If you don't want any customization and want to use the existing player and frames, just select the defaults and press "Create study"    - ** These are advanced options! If you want to use existing frames, and the existing player, just leave the defaults as-is.
+
+-----------------------------------
+Viewing Individual Study Responses
+-----------------------------------
+To view a study's response, navigate to http://localhost:8000/exp/studies/study_id/responses/.  You must have permission to view this study's responses, which means you must be an Organization Admin, Organization Read, or belong to the Study Admin or Study Read groups.
+
+On the left, you have a list of participants that have responded to your study, with the response id, the study's completion status, and the date it was modified. When you click on a participant, the JSON of that participant's response is shown on the right.  You can
+download the individual participant's JSON response by clicking "Download Individual Response JSON".  Alternatively, you can select CSV in the dropdown, and click "Download Individual Response CSV".
+
+Beneath the CSV/JSON response data, are the individual video attachments that are linked to that participant's response, if they exist.  If you expect to see video attachments, and there are none,
+there are often slight delays in copying the videos to be viewed through Experimenter.
+
+.. image:: _static/img/responses.png
+    :alt: View responses
+
+------------------------------
+Viewing all study responses
+------------------------------
+To view all of the responses to a study, navigate to http://localhost:8000/exp/studies/study_id/responses/all/. You must have permission to view this study's responses, which means you must be an Organization Admin, Organization Read, or belong to the Study Admin or Study Read groups.
+
+By default, all study responses are displayed in JSON format.  To download as CSV, select CSV in the dropdown and download.  The study response data is supplemented with the study id, participant ids and nickname, and the associated child info.
+
+.. image:: _static/img/all_responses.png
+    :alt: View all responses
+
+-------------------------------------------
+Viewing demographics of study participants
+-------------------------------------------
+To view the demographics of participants that have responded to your study, navigate to http://localhost:8000/exp/studies/study_id/responses/demographics. You must have permission to view this study's responses, which means you must be an Organization Admin, Organization Read, or belong to the Study Admin or Study Read groups.
+
+This list is generated by looping through all the responses to your study, and displaying the demographics of the associated participant.  If a participant has responded multiple times, the demographics will appear multiple times.  Demographic data was versioned, so the demographics associated with each
+response will be the demographics that were current at the time the participant responded to the study.  You can download the demographics in JSON or CSV format.
+
+.. image:: _static/img/demographics.png
+    :alt: View all study demographics
+
+----------------------------------------
+Viewing all study attachments
+----------------------------------------
+To view all video responses to your study, navigate to http://localhost:8000/exp/studies/study_id/responses/attachments/.
+You can filter on video attachment name. The format of the video names is `videoStream_{study_id}_{frame_name}_{response_id}.flv`
+
+Video attachments can be downloaded individually.  You also have the option of bulk downloading all consent videos for your study, or bulk downloading all responses.
+The bulk download will take place asynchronously, so once the videos have been downloaded and put in a zip file, you will get an email telling you this is done.
+
+.. image:: _static/img/attachments.png
+    :alt: View all study attachments

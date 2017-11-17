@@ -13,7 +13,81 @@ Most endpoints in this API are just meant for retrieving data. Typically, you ca
 ---------------
 API Formatting
 ---------------
-This API generally conforms to the `JSON-API 1.0 spec <http://jsonapi.org/format/1.0/>`_ .
+This API generally conforms to the `JSON-API 1.0 spec <http://jsonapi.org/format/1.0/>`_ .  Top-level keys are underscored, while nested key formatting will be the casing that is stored in the db. For example, in the study response below, top-level attributes like `exp_data` and `global_event_timings` are underscored.  However, nested keys like `5-5-mood-survey` and `napWakeUp` retain the casing given to them by the `exp-player`.
+
+.. code-block:: json
+
+    {
+        "type": "responses",
+        "id": "bdebd15b-adc7-4377-b2f6-e9f3de70dd19",
+        "attributes": {
+            "conditions": {
+                "8-pref-phys-videos": {
+                    "showStay": 8,
+                    "startType": 5,
+                    "whichObjects": [
+                        8,
+                        5,
+                        6,
+                        8
+                    ]
+                }
+            },
+            "global_event_timings": [
+                {
+                    "exitType": "browserNavigationAttempt",
+                    "eventType": "exitEarly",
+                    "timestamp": "2017-10-31T20:30:38.514Z",
+                    "lastPageSeen": 6
+                }
+            ],
+            "exp_data": {
+                "5-5-mood-survey": {
+                    "active": "1",
+                    "rested": "1",
+                    "healthy": "1",
+                    "lastEat": "6:00",
+                    "energetic": "1",
+                    "napWakeUp": "11:00",
+                    "childHappy": "1",
+                    "doingBefore": "s",
+                    "parentHappy": "1",
+                    "eventTimings": [
+                        {
+                            "eventType": "nextFrame",
+                            "timestamp": "2017-10-31T20:10:17.269Z"
+                        }
+                    ],
+                    "ontopofstuff": "1",
+                    "usualNapSchedule": "no"
+                }
+            },
+            "sequence": [
+                "5-5-mood-survey"
+            ],
+            "completed": false
+        },
+        "relationships": {
+            "child": {
+                "links": {
+                    "related": "http://localhost:8000/api/v1/children/da27faf2-c3d2-4701-b3bb-dd865f89c1a1/"
+                }
+            },
+            "study": {
+                "links": {
+                    "related": "http://localhost:8000/api/v1/studies/e729321f-418f-4728-992c-9364623dbe9b/"
+                }
+            },
+            "demographic_snapshot": {
+                "links": {
+                    "related": "http://localhost:8000/api/v1/demographics/341ea7c7-f657-4ab2-a530-21ac293e7d6f/"
+                }
+            }
+        },
+        "links": {
+            "self": "http://localhost:8000/api/v1/responses/bdebd15b-adc7-4377-b2f6-e9f3de70dd19/"
+        }
+    }
 
 ------------
 Content-Type
@@ -587,6 +661,8 @@ GET /api/v1/responses/
 
 Permissions: Must be authenticated.  You can only view responses to studies you have permission to view. Additionally, you can view your own responses through the API.
 
+Sort Order: By default, responses are sorted reverse date_modified, meaning the most recently modified responses appear first.
+
 *Sample Response:*
 
 .. code-block:: json
@@ -770,6 +846,8 @@ GET /api/v1/studies/
 
 Permissions: Must be authenticated. You can view studies that are active/public as well as studies you have permission to edit.
 
+Sort Order: By default, studies are sorted reverse date_modified, meaning the most recently modified studies appear first.
+
 *Sample Response:*
 
 .. code-block:: json
@@ -924,7 +1002,7 @@ Viewing the list of users
 GET /api/v1/users/
 
 Permissions: Must be authenticated.  You can view participants that have responded to studies you have permission to view, as well as own user information.
-Endpoint can return both participants and researchers, if you have permission to view them. Users with *can_read_all_user_data* permissions can view all active users in the database via this endpoint.
+Endpoint can return both participants and researchers, if you have permission to view them. Users with *can_read_all_user_data* permissions can view all active users in the database via this endpoint. Usernames are only shown if user has *can_read_usernames* permissions.
 
 *Sample Response:*
 

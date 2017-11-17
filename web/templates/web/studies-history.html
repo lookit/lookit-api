@@ -35,14 +35,16 @@
 			</div>
 		</div>
         {% bootstrap_messages %}
-		<ul class="pt-sm nav nav-tabs">
-			<li>
-				<a href="{% url 'web:studies-list'%}">Suggested Studies</a>
-			</li>
-			<li class="active">
-				<a href="{% url 'web:studies-history'%}">Past Studies</a>
-			</li>
-		</ul>
+        <div class="container">
+            <ul class="pt-sm nav nav-tabs">
+                <li>
+                    <a href="{% url 'web:studies-list'%}">Suggested Studies</a>
+                </li>
+                <li class="active">
+                    <a href="{% url 'web:studies-history'%}">Past Studies</a>
+                </li>
+            </ul>
+		</div>
 	</div>
     <div class="container">
         <div class="tab-content">
@@ -67,7 +69,7 @@
                                                         <div class="study-feedback-thumbnail-wrapper">
                                                             {% if study.image %}
                                                               <p class="image-block">
-                                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="200" width="auto" src="{{ study.image.url }}" width="300px">
+                                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="150" width="auto" src="{{ study.image.url }}" width="300px">
                                                                   <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
                                                                     	<i aria-hidden="true" class="fa fa-picture-o"></i>
                                                                   </div>
@@ -81,7 +83,7 @@
                                                         <div class="study-feedback-description-wrapper">
                                                             {{ study.short_description }}
                                                             <div class="pt-sm">
-                                                                <strong>Age Range:</strong> {{ study.min_age_years }} year{{ study.min_age_years|pluralize}} {{ study.min_age_months}} month{{ study.min_age_months|pluralize}} - {{ study.max_age_years }} year{{ study.max_age_years|pluralize}} {{ study.max_age_months}} month{{ study.max_age_months|pluralize}}<br>
+                                                                <strong>Age Range:</strong> {{ study.min_age_years }} year{{ study.min_age_years|pluralize}} {{ study.min_age_months}} month{{ study.min_age_months|pluralize}} {{ study.min_age_days}} day{{ study.min_age_days|pluralize}} - {{ study.max_age_years }} year{{ study.max_age_years|pluralize}} {{ study.max_age_months}} month{{ study.max_age_months|pluralize}} {{ study.max_age_days}} day{{ study.max_age_days|pluralize}}<br>
                                                                 <strong>Duration:</strong> {{ study.duration }}
                                                             </div>
                                                         </div>

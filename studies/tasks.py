@@ -4,6 +4,9 @@ import re
 import shutil
 import subprocess
 import time
+import tempfile
+import hashlib
+import datetime
 import zipfile
 from io import BytesIO, StringIO
 
@@ -11,10 +14,12 @@ import requests
 from django.conf import settings
 from django.core.files import File
 from django.utils import timezone
+from google.cloud import storage as gc_storage
 
 from project import storages
 from project.celery import app
 from studies.helpers import send_mail
+import attachment_helpers
 
 from celery.utils.log import get_task_logger
 
@@ -276,3 +281,71 @@ def cleanup_checkouts(older_than=None):
     logger.debug('Cleaning up checkouts...')
     checkouts = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
     cleanup_old_directories(checkouts, older_than)
+
+
+@app.task(bind=True, max_retries=10, retry_backoff=10)
+def build_zipfile_of_videos(self, filename, study_uuid, orderby, match, requesting_user_uuid, consent=False):
+    from studies.models import Study
+    from accounts.models import User
+    # get the study in question
+    study = Study.objects.get(uuid=study_uuid)
+    # get the user
+    requesting_user = User.objects.get(uuid=requesting_user_uuid)
+    # find the requested attachments
+    if consent:
+        attachments = attachment_helpers.get_consent_videos(study.uuid)
+    else:
+        attachments = attachment_helpers.get_study_attachments(study, orderby, match)
+    m = hashlib.sha256()
+    for attachment in attachments:
+        m.update(attachment.key.encode('utf-8'))
+    # create a sha256 of the included filenames
+    sha = m.hexdigest()
+    # use that sha in the filename
+    zip_filename = f'{filename}_{sha}.zip'
+    # get the gc client
+    gs_client = gc_storage.client.Client(project=settings.GS_PROJECT_ID)
+    # get the bucket
+    gs_private_bucket = gs_client.get_bucket(settings.GS_PRIVATE_BUCKET_NAME)
+    # instantiate a blob for the file
+    gs_blob = gc_storage.blob.Blob(zip_filename, gs_private_bucket)
+
+    # if the file exists short circuit and send the email with a 30m link
+    if not gs_blob.exists():
+        # if it doesn't exist build the zipfile
+        with tempfile.TemporaryDirectory() as temp_directory:
+            zip_file_path = os.path.join(temp_directory, zip_filename)
+            zip = zipfile.ZipFile(zip_file_path, 'w')
+            for attachment in attachments:
+                temporary_file_path = os.path.join(temp_directory, attachment.key)
+                file_response = requests.get(
+                    attachment_helpers.get_download_url(attachment.key),
+                    stream=True
+                )
+                local_file = open(temporary_file_path, mode='w+b')
+                for chunk in file_response.iter_content(8192):
+                    local_file.write(chunk)
+                local_file.close()
+                zip.write(temporary_file_path, attachment.key)
+            zip.close()
+
+            # upload the zip to GoogleCloudStorage
+            gs_blob.upload_from_filename(zip_file_path)
+
+    # then send the email with a 30m link
+    signed_url = gs_blob.generate_signed_url(int(time.time() + datetime.timedelta(minutes=30).seconds))
+    # send an email with the signed url and return
+    context = dict(
+        signed_url=signed_url,
+        user=requesting_user,
+        videos=attachments,
+        zip_filename=zip_filename
+    )
+    send_mail(
+        'download_zip',
+        'Your video archive has been created',
+        settings.EMAIL_FROM_ADDRESS,
+        bcc=[requesting_user.username, ],
+        from_email=settings.EMAIL_FROM_ADDRESS,
+        **context
+    )

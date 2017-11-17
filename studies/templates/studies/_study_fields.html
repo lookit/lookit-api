@@ -10,6 +10,7 @@
 <div class="row">
     <div class="col-xs-12">
         <label class="control-label">Minimum Age Cutoff</label>
+        <p class="help-block"> This and the maximum age cutoff are used to check eligibility for studies; families who select a child outside the age range see a warning indicating that their data may not be used. The child's age in days is compared to these (inclusive) min and max ages (computed as years * 365 + months * 30 + days) to check eligibility. </p>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
@@ -27,6 +28,16 @@
             <select class="form-control" id="id_min_age_months" name="min_age_months" title="">
                 {% for x, y in form.fields.min_age_months.choices %}
                     <option value="{{ x }}"{% if study.min_age_months == x %} selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-xs-2">
+        <div class="form-group">
+            <label class="control-label" for="id_min_age_days"><em>Day(s)</em></label>
+            <select class="form-control" id="id_min_age_days" name="min_age_days" title="">
+                {% for x, y in form.fields.min_age_days.choices %}
+                    <option value="{{ x }}"{% if study.min_age_days == x %} selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -52,6 +63,16 @@
             <select class="form-control" id="id_max_age_months" name="max_age_months" title="">
                 {% for x, y in form.fields.max_age_months.choices %}
                     <option value="{{ x }}"{% if study.max_age_months == x %} selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-xs-2">
+        <div class="form-group">
+            <label class="control-label" for="id_max_age_days"><em>Day(s)</em></label>
+            <select class="form-control" id="id_max_age_days" name="max_age_days" title="">
+                {% for x, y in form.fields.max_age_days.choices %}
+                    <option value="{{ x }}"{% if study.max_age_days == x %} selected{% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>

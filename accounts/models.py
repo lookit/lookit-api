@@ -127,6 +127,8 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     email_new_studies = models.BooleanField(default=True)
     email_study_updates = models.BooleanField(default=True)
     email_response_questions = models.BooleanField(default=True)
+    
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __init__(self, *args, **kwargs):
         super(User, self).__init__(*args, **kwargs)
@@ -222,7 +224,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f'{self.given_name} {self.middle_name} {self.family_name}'
 
     def __str__(self):
-        return f'<User: {self.get_short_name()}>'
+        return f'<User: ID {self.id}, {self.uuid}>'
 
     objects = UserManager()
 
@@ -239,8 +241,9 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ('can_view_user_permissions', _('Can View User Permissions')),
             ('can_edit_user_permissions', _('Can Edit User Permissions')),
             ('can_read_all_user_data', _('Can Read All User Data')),
+            ('can_read_usernames', _('Can Read User Usernames')),
         )
-        ordering = ['username']
+        ordering = ['id']
 
 
 class Child(models.Model):
@@ -288,7 +291,7 @@ class Child(models.Model):
     )
 
     def __str__(self):
-        return f'<Child: {self.given_name}, child of {self.user.get_short_name()}>'
+        return f'<Child: {self.given_name}, child of {self.user.nickname}>'
 
     class Meta:
         ordering = ['-birthday']
@@ -460,7 +463,7 @@ class DemographicData(models.Model):
         lookup_field = 'uuid'
 
     def __str__(self):
-        return f'<DemographicData: {self.user.get_short_name()} @ {self.created_at:%c}>'
+        return f'<DemographicData: {self.user.nickname} @ {self.created_at:%c}>'
 
     def to_display(self):
         return dict(

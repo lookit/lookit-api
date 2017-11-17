@@ -1,0 +1,7 @@
+Dear {{ user.given_name }},
+
+Your video archive has been created and is ready for download.
+
+{{signed_url}}
+
+For security reasons this link will only work for 30m. If you need to access this archive after 30m you will have to rebuild it in experimenter.

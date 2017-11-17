@@ -16,12 +16,14 @@ class OrganizationSerializer(UUIDSerializerMixin, ModelSerializer):
         fields = (
             'name',
             'url',
+            'pk',
         )
 
 
 class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
     resource_name = 'demographics'
     country = serializers.CharField(default='')
+    date_created = serializers.DateTimeField(read_only=True, source='created_at')
 
     url = serializers.HyperlinkedIdentityField(
         view_name='demographicdata-detail',
@@ -51,19 +53,17 @@ class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
             'state',
             'density',
             'extra',
+            'date_created',
+            'pk',
         )
 
-
-class UserSerializer(UUIDSerializerMixin, ModelSerializer):
+class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
     resource_name = 'users'
     url = serializers.HyperlinkedIdentityField(
         view_name='user-detail',
         lookup_field='uuid'
     )
 
-    # included_serializers = {
-    #     'demographics': DemographicDataSerializer,
-    # }
     demographics = UUIDResourceRelatedField(
         queryset=DemographicData.objects,
         many=True,
@@ -106,10 +106,15 @@ class UserSerializer(UUIDSerializerMixin, ModelSerializer):
             'email_new_studies',
             'email_study_updates',
             'email_response_questions',
+            'date_created',
+            'pk',
         )
 
-    # class JSONAPIMeta:
-    #     included_resources = ['demographics', ]
+class FullUserSerializer(BasicUserSerializer):
+
+    class Meta:
+        model = User
+        fields = BasicUserSerializer.Meta.fields + ('username',)
 
 
 class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
@@ -140,7 +145,8 @@ class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
             'age_at_birth',
             'additional_information',
             'deleted',
-            'former_lookit_profile_id'
+            'former_lookit_profile_id',
+            'pk',
         )
 
     # class JSONAPIMeta:
