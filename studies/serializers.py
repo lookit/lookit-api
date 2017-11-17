@@ -48,6 +48,7 @@ class StudySerializer(UUIDSerializerMixin, ModelSerializer):
             'organization',
             'creator',
             'responses',
+            'pk',
         )
 
 class FeedbackSerializer(UUIDSerializerMixin, ModelSerializer):
@@ -127,7 +128,8 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
             'user',
             'study',
             'demographic_snapshot',
-            'created_on'
+            'created_on',
+            'pk',
         )
 
 
