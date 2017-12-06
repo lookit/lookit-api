@@ -10,19 +10,17 @@ sed -i "s/VideoRecorder.swf/$RECORDER_REPLACEMENT/g" /checkout-dir/lib/exp-playe
 cp /environment /checkout-dir/.env
 cp /VideoRecorder.swf /checkout-dir/public/
 
-cd /checkout-dir
-# install requirements for ember-frame-player
-yarn install --pure-lockfile
-bower install --allow-root
-
 cd /checkout-dir/lib/exp-player
 # install requirements for exp-player
-yarn install --pure-lockfile
-bower install --allow-root
+yarn --frozen-lockfile
+./node_modules/.bin/bower install --allow-root
 
-cd /checkout-dir/
+cd /checkout-dir
+# install requirements for ember-frame-player
+yarn --frozen-lockfile
+./node_modules/.bin/bower install --allow-root
 # build ember app
-ember build -prod
+./node_modules/.bin/ember build --environment=production
 
 # clean up the old one
 rm -rf $STUDY_OUTPUT_DIR
