@@ -1,5 +1,5 @@
 ###############
-Experimenter
+Using the Experimenter interface
 ###############
 
 ===========

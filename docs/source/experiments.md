@@ -1,6 +1,6 @@
 # Building an Experiment
 
-### Prerequisites
+## Prerequisites
 
 If you are unfamiliar with the JSON format, you may want to spend a couple minutes reading the introduction here: 
 [http://www.json.org/](http://www.json.org/).
@@ -10,7 +10,7 @@ are a great place to learn more about this specification.
 
 A helpful resource to check your JSON Schema for simple errors like missing or extra commas, unmatched braces, etc. is [jsonlint](http://jsonlint.com/).
 
-### Creating a new study and setting study details
+## Creating a new study and setting study details
 
 You can click 'New Experiment' to get started working on your own study, or clone an existing study to copy its experiment definition. 
 
@@ -28,7 +28,7 @@ Here are the corresponding study views on Lookit:
 
 Your study's unique ID can be seen in the URL as you view it on Lookit.
 
-### Experiment structure
+## Experiment structure
 
 To define what actually happens in your study, go to "Build Experiment" at the bottom of the detail page. In this "experiment editor" view, Experimenter provides an interface to define the structure of an experiment using a JSON document. This is composed of two segments:
 
@@ -128,7 +128,7 @@ This JSON document describes a fairly simple experiment. It has three basic part
 ```
 
 
-### A Lookit study schema
+## A Lookit study schema
 
 A typical Lookit study might contain the following frame types:
 
@@ -145,7 +145,7 @@ A typical Lookit study might contain the following frame types:
 
 For now, before any fullscreen frames, a frame that extends exp-frame-base-unsafe (like exp-lookit-instructions) needs to be used so that the transition to fullscreen works smoothly. A more flexible way to achieve this behavior is in the works!
 
-### Randomizer frames
+## Randomizer frames
 
 Generally, you'll want to show slightly different versions of the study to different participants: perhaps you have a few different conditions, and/or need to counterbalance the order of trials or left/right position of stimuli. To do this, you'll use a special frame called a **randomizer** to select an appropriate sequence of frames for a particular trial. A randomizer frame can be automatically expanded to a list of frames, so that for instance you can specify your 12 looking-time trials all at once.
 
@@ -165,6 +165,7 @@ To select this randomizer, you need to define a frame that has the appropriate `
         ...
     }
 }
+
 ```
 
 There are three special properties you need to define to use `random-parameter-set`: `frameList`, `commonFrameProperties`, and `parameterSets`. 
@@ -223,12 +224,12 @@ Let's walk through an example of using this randomizer. Suppose we start with th
         "exit-survey"
     ]
 }
+
 ```
 
 But what we really want to do is have some kids think about how tasty broccoli is, and others think about how yucky it is! We can use a `random-parameter-set` frame to replace both text frames:
 
-```
-
+```json
 {
     "frames": {
         "instruct-and-manip": {
@@ -289,6 +290,7 @@ But what we really want to do is have some kids think about how tasty broccoli i
         "exit-survey"
     ]
 }
+
 ```
 
 Notice that since both of the frames in the `frameList` were of the same kind, we could define the kind in `commonFrameProperties`. We no longer define `id` values for the frames, as they will be automatically identified as `instruct-and-manip-1` and `instruct-and-manip-2`.
@@ -297,7 +299,7 @@ If we wanted to have 75% of participants think about how tasty broccoli is, we c
 
 > Note: One use of parameterSetWeights is to stop testing conditions that you already have enough children in as data collection proceeds.
 
-#### Nested randomizers
+### Nested randomizers
 
 The frame list you provide to the randomParameterSet randomizer can even include other randomizer frames! This allows you to, for instance, define a **trial** that includes several distinct **blocks** (say, an intro, video, and then 4 test questions), then show 10 of those trials with different parameters - without having to write out all 60 blocks. There's nothing "special" about doing this, but it can be a little more confusing. 
 
@@ -410,3 +412,13 @@ Here's an example. Notice that `"kind": "choice"`, `"sampler": "random-parameter
         ]
     }
 ```
+
+
+
+## Glossary of Experimental Components
+
+For the most current documentation of individual frames available to use, please see [http://centerforopenscience.github.io/exp-addons/modules/frames.html](http://centerforopenscience.github.io/exp-addons/modules/frames.html) and [http://centerforopenscience.github.io/exp-addons/modules/randomizers.html](http://centerforopenscience.github.io/exp-addons/modules/randomizers.html).
+
+For each frame, you will find an **example** of using it in a JSON schema; documentation of the **properties** which can be defined in the schema; and, under Methods / serializeContent, a description of the **data** this frame records. Any frame-specific **events** that are recorded and may be included in the eventTimings object sent with the data are also described.
+
+The below documentation is out-of-date; reference at your own risk!
