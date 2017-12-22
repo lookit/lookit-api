@@ -19,6 +19,9 @@ Contents:
    definitions
    api-documentation
    experimenter
+   experiments
+   experimentdata
+   experiments_ref
    django-project-installation
    ember-app-installation
    local-frame-development

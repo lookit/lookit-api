@@ -184,6 +184,8 @@ To remove a researcher from a study, click the red minus button beside the resea
 -------------------------
 Editing study structure
 -------------------------
+For information about how to specify what happens during your study, see `Building an Experiment`_.
+
 To edit a study's structure, navigate to localhost:8000/exp/studies/study_id/edit/build/. You must be a study admin or org admin to view this page. From here, you can edit the study's structure and the study type.
 The study structure specifies the frames (or pages) of your experiment, and also specifies the sequence.
 
@@ -214,6 +216,8 @@ The study type is the application you're using to enable participants to take a 
 -----------------------------------
 Viewing Individual Study Responses
 -----------------------------------
+For information about interpreting study responses, see `Experiment data`_.
+
 To view a study's response, navigate to http://localhost:8000/exp/studies/study_id/responses/.  You must have permission to view this study's responses, which means you must be an Organization Admin, Organization Read, or belong to the Study Admin or Study Read groups.
 
 On the left, you have a list of participants that have responded to your study, with the response id, the study's completion status, and the date it was modified. When you click on a participant, the JSON of that participant's response is shown on the right.  You can
@@ -257,3 +261,7 @@ The bulk download will take place asynchronously, so once the videos have been d
 
 .. image:: _static/img/attachments.png
     :alt: View all study attachments
+    
+.. _`Building an Experiment`: experiments.html
+
+.. _`Experiment data`: experimentdata.html
