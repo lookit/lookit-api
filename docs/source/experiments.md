@@ -420,5 +420,3 @@ Here's an example. Notice that `"kind": "choice"`, `"sampler": "random-parameter
 For the most current documentation of individual frames available to use, please see [http://centerforopenscience.github.io/exp-addons/modules/frames.html](http://centerforopenscience.github.io/exp-addons/modules/frames.html) and [http://centerforopenscience.github.io/exp-addons/modules/randomizers.html](http://centerforopenscience.github.io/exp-addons/modules/randomizers.html).
 
 For each frame, you will find an **example** of using it in a JSON schema; documentation of the **properties** which can be defined in the schema; and, under Methods / serializeContent, a description of the **data** this frame records. Any frame-specific **events** that are recorded and may be included in the eventTimings object sent with the data are also described.
-
-The below documentation is out-of-date; reference at your own risk!
