@@ -2,10 +2,9 @@
 
 For the most current documentation of individual frames available to use, please see [http://centerforopenscience.github.io/exp-addons/modules/frames.html](http://centerforopenscience.github.io/exp-addons/modules/frames.html) and [http://centerforopenscience.github.io/exp-addons/modules/randomizers.html](http://centerforopenscience.github.io/exp-addons/modules/randomizers.html).
 
-
 For each frame, you will find an **example** of using it in a JSON schema; documentation of the **properties** which can be defined in the schema; and, under Methods / serializeContent, a description of the **data** this frame records. Any frame-specific **events** that are recorded and may be included in the eventTimings object sent with the data are also described.
 
-The below documentation may be out-of-date.
+The below documentation is out-of-date; reference at your own risk!
 
 ### general patterns
 
@@ -235,99 +234,4 @@ None
   - type: object
 
 - - -
-
-### exp-video-config
-
-> Help guide the participant through setting up her webcam.
-
-[view source code](https://github.com/CenterForOpenScience/exp-addons/blob/develop/exp-player/addon/components/exp-video-config.js)
-
-##### example
-
-![example](_static/img/exp-video-config.png)
-
-```json
-{
-    "kind": "exp-video-config",
-    "instructions": "Please make sure your webcam and microphone are functioning correctly."
-}
-```
-
-##### parameters
-
-- **instructions**: some instructions to show the participant
-  - type: text
-  - default: 'Configure your video camera for the upcoming sections. Press next when you are finished.'
-
-##### data
-
-None
-
-- - -
-
-### exp-video-consent
-
-> present the participant with a written consent document then capture her spoken consent
-
-[view source code](https://github.com/CenterForOpenScience/exp-addons/blob/develop/exp-player/addon/components/exp-video-consent.js)
-
-##### example
-
-![example](_static/img/exp-video-consent-1.png)
-![example](_static/img/exp-video-consent-2.png)
-
-```json
-{
-    "kind": "exp-video-consent",
-    "prompt": "I give my consent to participate in this study",
-    "blocks": [{
-        "text": "The purpose of this study is to learn about ...",
-        "title": "Introduction"
-    }, {
-        "text": "We will not share your personal information with anyone.",
-        "title": "Privacy"
-    }],
-    "title": "Notice of consent"
-}
-```
-
-##### parameters
-
-- **title**:  title of written consent
-  - type: text
-  - default: 'Notice of Consent'
-- **blocks**: text-blocks of written consent
-  - type: list of text-blocks
-  - default: []
-- **prompt**: a prompt to show for spoken consent
-  - type: text
-  - default: 'I consent to participate in this study'
-
-##### data
-
-- **videoId**: this unique id of the captured video
-  - type: text
-
-- - -
-
-### exp-video-preview
-
-##### parameters
-- **index**: the zero-based index of the first video to show
-  - type: number
-  - default: 0
-- **videos**: a list of videos to preview
-  - type: list of objects with a src and type property
-  - default: []
-- prompt: Require a button press before showing the videos
-  - type: text
-  - default: empty
-- text: Text to display to the user
- - type: text-block
- - default: Empty
-
-##### data
-
-None
-
 

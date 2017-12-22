@@ -2,26 +2,13 @@
 
 ### Accessing experiment data
 
-You can see and download collected data from sessions marked as 'completed' (user filled out the exit survey) directly from the Experimenter application. 
-
-You can also download JSON study or accounts data from the command line using the python script [experimenter.py](https://github.com/CenterForOpenScience/lookit/blob/develop/scripts/experimenter.py) ([description](https://github.com/CenterForOpenScience/lookit/pull/85)); you'll need to set up a file config.json with the following content:
-
-```json
-{
-    "host": "https://staging-metadata.osf.io",
-    "namespace": "lookit",
-    "osf_token": "YOUR_OSF_TOKEN_HERE"
-}
-
-```
-
-You can create an OSF token for the staging server [here](https://staging.osf.io/settings/tokens/). 
-
-The collection name to use to get study session records is `session[STUDYIDHERE]s`, e.g. `session58d015243de08a00400316e0s`.
+You can see and download collected responses either via the Lookit experimenter interface 
+or using the API.
 
 ### Structure of session data
 
-The data saved when a subject participates in a study varies based on how that experiment is defined. The general structure for this **session** data is:
+The data saved when a subject participates in a study varies based on how that experiment 
+is defined. The general structure for this **session** data is:
 
 ```json
 {
@@ -81,7 +68,7 @@ The data saved when a subject participates in a study varies based on how that e
 }
 ```
 
-And descriptions of these properties are enumerated below:
+These properties are described below:
 
 - *profileId*: This unique identifier of the participant. This field follows the form: `<account.id>.<profile.id>`, where `<account.id>` is the unique identifier of the associated account, and `<profile.id>` is the unique identifier of the profile active during this particular session (e.g. the participating child). Account data is stored in a separate database, and includes demographic survey data and the list of profiles associated with the account.
 - *experimentId*: The unique identifier of the study the subject participated in. 
@@ -105,9 +92,9 @@ And descriptions of these properties are enumerated below:
     ]
 ```
 
-### Sessions and `expData` in detail
+### Example `expData`
 
-Lets walk through an example of data collected during a session (note: some fields are hidden):
+Here's an example of data collected during a session (note: not all fields are shown):
 
 ```json
 {

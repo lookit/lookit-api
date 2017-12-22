@@ -26,9 +26,7 @@ Here are the corresponding study views on Lookit:
 
 ![example](_static/img/lookit-view-2.png)
 
-> Try it yourself: Make your own study on staging-experimenter, choose a thumbnail, and enter a description. Look on Lookit: you don't see it, because you haven't started the study yet. Start the study from Experimenter and refresh Lookit: there it is! 
-
-Your study's unique ID can be seen in the URL as you view it from either Experimenter or Lookit.
+Your study's unique ID can be seen in the URL as you view it on Lookit.
 
 ### Experiment structure
 
@@ -412,9 +410,3 @@ Here's an example. Notice that `"kind": "choice"`, `"sampler": "random-parameter
         ]
     }
 ```
-
-
-
-### Testing your study
-
-Experimenter has a built-in tool that allows you to try out your study. However, some functionality may not be exactly the same as on Lookit. We recommend testing your study from Lookit, which will be how participants experience it.
