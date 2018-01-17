@@ -6,7 +6,7 @@ Using the Experimenter interface
 Logging in
 ===========
 
-Researchers should log into Experimenter via oauth through the Open Science Framework.  If running locally, visit `<http://localhost:8000/accounts/login/>`_.
+Researchers should log into Experimenter via oauth through the Open Science Framework.  If running locally, visit `<http://localhost:8000/accounts/login/>`_; otherwise, visit `<https://lookit.mit.edu/exp/>`_.
 
 .. image:: _static/img/login_to_exp.png
     :alt: Login to experimenter image
@@ -25,6 +25,8 @@ If you haven't yet been approved to join Experimenter, you'll receive a notifica
     :alt: Login to experimenter image
 
 Otherwise, you will be logged into Experimenter.
+
+Researcher accounts can also have children and demographic data, just like participants. If you would like to have a **separate** participant account on Lookit, use a different email address.
 
 ===========================
 Managing your Organization
@@ -78,9 +80,9 @@ Here's an explanation of some the field names:
 - *Image*: Image that will be displayed to participants on Lookit Studies page.  File must be an image-type, and please keep the file size reasonable (<1 MB)
 - *Exit URL*: Must enter a URL. After the participant has completed the study, we will direct them to the Exit URL.
 - *Participant Eligibility*: Participant-facing eligibility string.  Make this readable so participants understand if their child can take part in the study.
-- *Minimum/Maximum Age cutoffs*: Integer fields that give a warning to the participant if their child falls outside of the age range. It is a hard cutoff. If you say 3 to 5 years, child must be just greater than 3 years and just less than 5 years.  So if they're a day before their fifth birthday, they are eligibile.
+- *Minimum/Maximum Age cutoffs*: Integer fields specifying minimum/maximum ages of participants (inclusive). Eligibility is calculated based on the child's current age in days; this is compared to the minimum/maximum ages in days, calculated as 365*years + 30*months + days. Participants under the age range see a warning indicating that their data may not be used, and suggesting that they wait until they're in the age range. Participants over the age range just see a warning indicating that their data may not be used. Participants are never actually prevented from starting the study, to remove motivation for a curious parent to fudge the child's age.
 - *Discoverable* - Do you want to make this study public or not?  If marked discoverable, once the study is activated, it will appear on the Lookit site.
-- *Build Study* - This needs to be a valid JSON block describing the different frames (pages) of your study, and the sequence. You can add these later under localhost:8000/exp/studies/study_id/edit/build/.
+- *Build Study* - This needs to be a valid JSON block describing the different frames (pages) of your study, and the sequence. You can add these later under localhost:8000/exp/studies/study_id/edit/build/. For detailed information about specifying your study protocol, see [Building your experiment](/docs/experiments)
 - *Study Type* - The study type is the application you're using to enable participants to take a study. Right now, we just have one option, the `Ember Frame Player <https://github.com/CenterForOpenScience/ember-lookit-frameplayer>`_.  It's an ember app that can talk to our API. All the frames in the experiment are defined in Ember (found in exp-addons) and there is an exp-player component that can cycle through these frames.
     - The *addons_repo_url* is the repo where the frames and the player are stored.  This is the default addons_repo_url: https://github.com/centerforopenscience/exp-addons.  If you want to add new frames, fork this repo, and set the addons_repo_url to your fork.
     - The *last_known_addons_sha* is the commit of your addons_repo_url that you want to point to.  If you don't add this, it will point to the latest commit in the default branch of the repo at addons_repo_url. You can set the default in Github.
@@ -89,6 +91,8 @@ Here's an explanation of some the field names:
 
 .. image:: _static/img/create_study.png
     :alt: Creating a study
+    
+Your study's unique ID is displayed in this view.
 
 --------------------
 Viewing study list

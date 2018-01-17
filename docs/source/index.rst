@@ -6,13 +6,16 @@
 Welcome to Lookit's documentation!
 ==========================================
 
-**NOTE: This documentation is a work in progress**
+** This documentation is a work in progress. To contribute, submit a PR to 
+`kimberscott/lookit-api <https://github.com/kimberscott/lookit-api/tree/develop>`.**
+
 
 The `lookit-api codebase <https://github.com/CenterForOpenScience/lookit-api>`_ contains 
-the Experimenter and Lookit applications.  
-Experimenter is a platform for designing and administering research studies, meant for researchers. 
+what were previously separate Experimenter and Lookit applications. Experimenter is a 
+platform for designing and administering research studies, meant for researchers. 
 The Lookit platform is participant-facing, where users can signup and take part in studies.
-It is built using Django, PostgreSQL, and Ember.js (see Ember portion of codebase, `ember-lookit-frameplayer <https://github.com/CenterForOpenScience/ember-lookit-frameplayer>`_), 
+It is built using Django, PostgreSQL, and Ember.js (see Ember portion of codebase, 
+`ember-lookit-frameplayer <https://github.com/CenterForOpenScience/ember-lookit-frameplayer>`_), 
 and is developed by the `Center for Open Science <https://cos.io/>`_.
 
 Contents:
