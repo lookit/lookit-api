@@ -2,11 +2,11 @@
 
 ### Overview
 
-You may find you have a need for some experimental component is not included in Experimenter already. The goal of this
+You may find you have a need for some experimental component is not included in Lookit already. The goal of this
 section is to walk through extending the base functionality with your own code.
 
 We use the term 'frame' to describe the combination of JavaScript file and Handlebars HTML template that compose a
-**block** of an experiment.
+**block** of an experiment (see "Building your experiment").
 
 Experimenter is composed of three main modules:
 
@@ -17,7 +17,10 @@ Experimenter is composed of three main modules:
 Generally, all 'frame' development will happen in the exp-player module. By nature of the way the ember-lookit-frameplayer
 repository is structured, this will mean making changes in the `ember-lookit-frameplayer/lib/exp-player` directory. These changes
 can be committed as part of the [exp-addons](https://github.com/CenterForOpenScience/exp-addons) git submodule
-(installed under `ember-lookit-frameplayer/lib`)
+(installed under `ember-lookit-frameplayer/lib`). 
+
+To start developing your own frames, you will want to first follow the "Setup for local frame development"  steps. 
+To use the frame definitions you have created when posting a study on Lookit, you can specify your own exp-addons repo to use (see "Using the experimenter interface"). 
 
 ### Getting Started
 
@@ -30,7 +33,7 @@ cd ember-lookit-frameplayer/lib/exp-player
 ember generate exp-frame exp-<your_name>
 ```
 
-Where `<your_name>` corresponds with the name of your choice.
+Where `<your_name>` corresponds with the frame name of your choice.
 
 #### A Simple Example
 
@@ -120,7 +123,7 @@ Next is the 'meta' section:
 ...
 ```
 
-which is comprised of:
+which is composed of:
 - name (optional): A human readable name for this 'frame'
 - description (optional): A human readable description for this 'frame'.
 - parameters: JSON Schema defining what configuration parameters this 'frame' accepts. When you define an experiment
@@ -241,6 +244,28 @@ Notice the new property `consentNotGranted`; this will require a new computed fi
 
 ### Tips and tricks
 
+#### Ember debugging
+
+Values of variables used in your frame are tricky to access directly from the Javascript console in your browser during testing. 
+
+There's an [Ember Inspector browser plugin](https://guides.emberjs.com/v2.11.0/ember-inspector/) you can use to help debug the Lookit components. Once you've installed it, you'll find it along with other developer tools.
+
+Here's how to find relevant data for a particular frame. Screenshots below are for Google Chrome.
+
+![Ember debugger tree view](_static/img/ember_debugger_tree.png "Ember debugger tree view")
+
+This lets you right away change any of the data you sent to the frame in the JSON document. E.g., on the consent page, try changing the "prompt" to something else. If something is going wrong, hopefully this information will be helpful.
+
+You can send the entire component (or anything else) to the console using the little >$E button:
+
+![Ember debugger send to console](_static/img/ember_debugger_send.png "Ember debugger send to console")
+
+And then to keep using it, save it as a variable:
+
+![Ember debugger save variable](_static/img/ember_debugger_save.png "Ember debugger save variable")
+
+Then you can do things like try out actions, e.g. `this.send`.
+
 #### Tips for adding styles
 You will probably want to add custom styles to your frame, in order to control the size, placement, and color of
 elements. Experimenter uses a common web standard called [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) for
@@ -252,13 +277,12 @@ it to use that style. For example,
 
 `@import "components/exp-video-physics";`
 
-
 Remember that anything in exp-addons is shared code. Below are a few good tips to help your addon stay isolated and
 distinct, so that it does not affect other projects.
 
 Here are a few tips for writing good styles:
 - Do not override global styles, or things that are part of another component. For example, `exp-video-physics` should
-not contain styles for `exp-player`, nor should it
+not contain styles for `exp-player`.
    - If you need to style a button specifically inside that component, either add a second style to the element, or
      consider using nested [CSS selectors](https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Selectors).
 - Give all of the styles in your component a unique common name prefix, so that they don't inadvertently overlap with
