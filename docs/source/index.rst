@@ -7,8 +7,7 @@ Welcome to Lookit's documentation!
 ==========================================
 
 **This documentation is a work in progress.** To contribute, submit a PR to 
-`kimberscott/lookit-api <https://github.com/kimberscott/lookit-api/tree/develop>`.
-
+`kimberscott/lookit-api <https://github.com/kimberscott/lookit-api/tree/develop>`_.
 
 The `lookit-api codebase <https://github.com/CenterForOpenScience/lookit-api>`_ contains 
 what were previously separate Experimenter and Lookit applications. Experimenter is a 
