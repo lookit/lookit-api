@@ -42,7 +42,6 @@ To define what actually happens in your study, go to "Build Experiment" at the b
 
 Studies on Lookit are broken into a set of fundamental units called **frames**, which can also be thought of as “pages” of the study. A single experimental trial (e.g. looking time measurement) would generally be one frame, as are the video consent procedure (shown in Figure 5.3) and exit survey. The JSON Schema used to parse Lookit studies requires a JSON object with two keys: `frames` and `sequence`.  The `frames` value defines the frames used in this study: it must be a JSON object mapping frame nicknames (any unique strings chosen by the researcher) to frame objects (defined next). The `sequence` value must be an ordered list of the frames to use in this study; values in this list must be frame nicknames from the “frames” value. Here is the JSON for a very minimal Lookit study: 
 
-![
 ```json
 {
 	“frames”: {
@@ -70,9 +69,20 @@ Studies on Lookit are broken into a set of fundamental units called **frames**, 
 	]
 }
 ```
-](_static/images/sample_study_json.png "Example Lookit study JSON")
 
-This JSON specifies a Lookit study with two frames, consent and an exit survey. Note that the frame nicknames `my-consent-frame` and `my-exit-survey` that are defined in `frames` are also used in the `sequence`. Frames may be specified but not used in `sequence`. Within each frame object (highlighted in gray above), a `kind` must be specified. This determines the frame type that will be used. Additional data may be included in the frame object to customize the behavior of the frame, for instance to specify instruction text or the stimuli to use for a test trial. The keys that may (or must) be included in a frame object are determined by the frame type; each frame definition includes a JSON Schema describing the expected data to be passed. Multiple frames of the same kind may be included in a study – for instance, test trials using different stimuli. 
+This JSON specifies a Lookit study with two frames, consent and an exit survey. Note that the frame nicknames `my-consent-frame` and `my-exit-survey` that are defined in `frames` are also used in the `sequence`. Frames may be specified but not used in `sequence`. Here's the object associated with the `my-exit-survey` frame: 
+
+```json
+{
+		    “kind”: “exp-lookit-exit-survey”,
+		    “debriefing”: {
+		    	 “title”: “Thank you!”,
+		    	 “text”: “You participated.”
+		    }
+ }
+ ```
+
+Within each frame object, a `kind` must be specified. This determines the frame type that will be used. Additional data may be included in the frame object to customize the behavior of the frame, for instance to specify instruction text or the stimuli to use for a test trial. The keys that may (or must) be included in a frame object are determined by the frame type; each frame definition includes a JSON Schema describing the expected data to be passed. Multiple frames of the same kind may be included in a study – for instance, test trials using different stimuli. 
 
 The separation of frame definitions and sequence allows researchers to easily and flexibly edit and test study protocols – for instance, the order of frames may be altered or a particular frame removed for testing purposes without altering any frame definitions. 
 
@@ -273,9 +283,7 @@ When the “instruct-and-manip” randomizer is evaluated, the Lookit experiment
 ]
 ```
 
-Next, one of the two objects in `parameterSets` is selected randomly. 
-
-> By default, parameter sets are weighted equally, but `parameterSetWeights` can be provided as an optional key in the `random-parameter-set` frame. If provided, `parameterSetWeights` should be an array of relative weights for the parameter sets, corresponding to the order they are listed. For instance, if we wanted  75% of participants to think about how tasty broccoli is, we could set `parameterSetWeights` to [3, 1]. This allows uneven condition assignment where needed to optimize power, as well as allowing researchers to stop testing conditions that already have enough participants as data collection proceeds. 
+Next, one of the two objects in `parameterSets` is selected randomly. (By default, parameter sets are weighted equally, but `parameterSetWeights` can be provided as an optional key in the `random-parameter-set` frame. If provided, `parameterSetWeights` should be an array of relative weights for the parameter sets, corresponding to the order they are listed. For instance, if we wanted  75% of participants to think about how tasty broccoli is, we could set `parameterSetWeights` to [3, 1]. This allows uneven condition assignment where needed to optimize power, as well as allowing researchers to stop testing conditions that already have enough participants as data collection proceeds.)
 
 Suppose that in this case the second parameter set is selected: 
 
@@ -545,7 +553,7 @@ Finally, a parameter set is selected from `parameterSets`. Only one parameter se
 
 The `random-parameter-set` randomizer is expected to be general enough to capture most experimental designs that researchers put on Lookit, but additional more specific randomizers will also be designed to provide simpler syntax for common use cases.
 
-## Glossary of Experimental Components
+## Finding and using specific frames
 
 For the most current documentation of individual frames available to use, please see [http://centerforopenscience.github.io/exp-addons/modules/frames.html](http://centerforopenscience.github.io/exp-addons/modules/frames.html) and [http://centerforopenscience.github.io/exp-addons/modules/randomizers.html](http://centerforopenscience.github.io/exp-addons/modules/randomizers.html).
 
