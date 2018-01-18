@@ -244,6 +244,16 @@ Notice the new property `consentNotGranted`; this will require a new computed fi
 
 ### Tips and tricks
 
+#### YUIdoc documentation
+
+We use [YUIdoc](http://yui.github.io/yuidoc/) for generating "automatic" documentation of  exp-addons frames, available [here](http://centerforopenscience.github.io/exp-addons/modules/frames.html). If you want to contribute your frames to the main Lookit codebase, please include YUIdoc-formatted comments following the example of existing frames, e.g. `exp-exit-survey` or `exp-lookit-geometry-alternation`. Make sure to include:
+
+* A general description of your frame
+* An example of using it (the relevant JSON for a study)
+* All inputs
+* All outputs (data saved)
+* Any events recorded
+
 #### Ember debugging
 
 Values of variables used in your frame are tricky to access directly from the Javascript console in your browser during testing. 
