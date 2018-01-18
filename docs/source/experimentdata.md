@@ -1,9 +1,11 @@
-# Experiment data
+# Experiment data (non-video)
 
 ### Accessing experiment data
 
 You can see and download collected responses either via the Lookit experimenter interface 
 or using the API.
+
+A researcher with edit permissions for a particular study can download session data in JSON or CSV format via the Experimenter interface. A session record in a Postgres database is created each time a participant starts the study, and includes a timestamp, account information, condition assignment, the sequence of frames the participant actually saw, and frame-specific information for each frame (included in an ‘expData’ structure which is a JSON object with keys corresponding to frame nicknames as defined in the study definition JSON). Each frame type may save different data, e.g. form responses; frames that record webcam video include the video filename(s). The data captured by a particular frame are listed in the frame documentation at http://centerforopenscience.github.io/exp-addons, under ‘Methods’ > ‘serializeContent’. Additionally, event data is captured for each frame and included under an eventTimings key within the frame data JSON, minimally including a timestamped event when the user proceeds to the next frame. These events are listed under ‘Events’ in the documentation.
 
 ### Structure of session data
 
