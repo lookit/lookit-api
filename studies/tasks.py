@@ -40,12 +40,12 @@ def get_repo_path(full_repo_path):
     return re.search('https://github.com/(.*)', full_repo_path).group(1).rstrip('/')
 
 
-def get_master_sha(repo_url):
+def get_branch_sha(repo_url, branch):
     logger.debug(f'Getting master sha for {repo_url}...')
     api_url = f'https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs'
     logger.debug(f'Making API request to {api_url}...')
     response = requests.get(api_url)
-    sha = response.json()[0]['object']['sha']
+    sha = filter(lambda datum: datum['ref'] == f'refs/heads/{branch}', response.json())[0]['object']['sha']
     logger.debug(f'Got sha of {sha}')
     return sha
 
@@ -79,9 +79,9 @@ def deploy_to_remote(local_path, storage):
 
 def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
     if addons_sha is None or not re.match('([a-f0-9]{40})', addons_sha):
-        addons_sha = get_master_sha(addons_repo_url)
+        addons_sha = get_branch_sha(addons_repo_url, settings.EMBER_ADDONS_BRNACH)
     if player_sha is None or not re.match('([a-f0-9]{40})', player_sha):
-        player_sha = get_master_sha(settings.EMBER_EXP_PLAYER_REPO)
+        player_sha = get_branch_sha(settings.EMBER_EXP_PLAYER_REPO, settings.EMBER_EXP_PLAYER_BRANCH)
 
     repo_destination_folder = f'{player_sha}_{addons_sha}'
     local_repo_destination_folder = os.path.join('./ember_build/checkouts/', repo_destination_folder)
