@@ -79,7 +79,7 @@ def deploy_to_remote(local_path, storage):
 
 def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
     if addons_sha is None or not re.match('([a-f0-9]{40})', addons_sha):
-        addons_sha = get_branch_sha(addons_repo_url, settings.EMBER_ADDONS_BRNACH)
+        addons_sha = get_branch_sha(addons_repo_url, settings.EMBER_ADDONS_BRANCH)
     if player_sha is None or not re.match('([a-f0-9]{40})', player_sha):
         player_sha = get_branch_sha(settings.EMBER_EXP_PLAYER_REPO, settings.EMBER_EXP_PLAYER_BRANCH)
 
