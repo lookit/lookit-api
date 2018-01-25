@@ -41,7 +41,7 @@ def get_repo_path(full_repo_path):
 
 
 def get_branch_sha(repo_url, branch):
-    logger.debug(f'Getting master sha for {repo_url}...')
+    logger.debug(f'Getting {branch} sha for {repo_url}...')
     api_url = f'https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs'
     logger.debug(f'Making API request to {api_url}...')
     response = requests.get(api_url)
