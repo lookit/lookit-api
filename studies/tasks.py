@@ -45,7 +45,7 @@ def get_branch_sha(repo_url, branch):
     api_url = f'https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs'
     logger.debug(f'Making API request to {api_url}...')
     response = requests.get(api_url)
-    sha = filter(lambda datum: datum['ref'] == f'refs/heads/{branch}', response.json())[0]['object']['sha']
+    sha = list(filter(lambda datum: datum['ref'] == f'refs/heads/{branch}', response.json()))[0]['object']['sha']
     logger.debug(f'Got sha of {sha}')
     return sha
 
