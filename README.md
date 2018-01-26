@@ -1,10 +1,10 @@
 # Lookit-api
 
-This is the codebase for Experimenter and Lookit.  Experimenter is a platform for designing and administering research studies, meant for researchers. The Lookit platform is participant-facing, where users can signup and take part in studies. It is built using Django, PostgreSQL, and Ember.js (see Ember portion of codebase, [ ember-lookit-frameplayer](https://github.com/CenterForOpenScience/ember-lookit-frameplayer)), and is developed by the [Center for Open Science](https://cos.io/).
+This is the codebase for Experimenter and Lookit.  Experimenter is a platform for designing and administering research studies, meant for researchers. The Lookit platform is participant-facing, where users can signup and take part in studies. It is built using Django, PostgreSQL, and Ember.js (see Ember portion of codebase, [ ember-lookit-frameplayer](https://github.com/lookit/ember-lookit-frameplayer)), and is developed by [MIT](https://mit.edu) and [Center for Open Science](https://cos.io/).
 
-`master` Build Status: [![Build Status](https://travis-ci.org/CenterForOpenScience/lookit-api.svg?branch=master)](https://travis-ci.org/CenterForOpenScience/lookit-api)
+`master` Build Status: [![Build Status](https://travis-ci.org/lookit/lookit-api.svg?branch=master)](https://travis-ci.org/lookit/lookit-api)
 
-`develop` Build Status: [![Build Status](https://travis-ci.org/CenterForOpenScience/lookit-api.svg?branch=develop)](https://travis-ci.org/CenterForOpenScience/lookit-api)
+`develop` Build Status: [![Build Status](https://travis-ci.org/lookit/lookit-api.svg?branch=develop)](https://travis-ci.org/lookit/lookit-api)
 
 ## Getting Started
 ### Prerequisites
@@ -22,7 +22,7 @@ This is the codebase for Experimenter and Lookit.  Experimenter is a platform fo
   - `$ createdb lookit` *Creates lookit database*
 
 ### Installation
-- `$ git clone https://github.com/CenterForOpenScience/lookit-api.git`
+- `$ git clone https://github.com/lookit/lookit-api.git`
 - `$ cd lookit-api`
 - `$ sh up.sh` *Installs dependencies and run migrations*
 - `$ python manage.py createsuperuser` *Creates superuser locally (has all user permissions)*

@@ -23,7 +23,7 @@ EMBER_BUILD_ROOT_PATH = os.path.join(BASE_DIR, '../ember_build')
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'c*si4oji5r=#)5+6e$bi@an%v)(n2be2+1(s985uh4mu3jq!qt'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'c*si4oji5r=#)5+6e$bi@an%v)(n2be2+1(s985uh4mu3jq!qt')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get('DEBUG', False))
@@ -312,8 +312,10 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
-EMBER_EXP_PLAYER_REPO = 'https://github.com/CenterForOpenScience/ember-lookit-frameplayer'
-EMBER_ADDONS_REPO = 'https://github.com/centerforopenscience/exp-addons'
+EMBER_EXP_PLAYER_REPO = os.environ.get('EMBER_EXP_PLAYER_REPO', 'https://github.com/lookit/ember-lookit-frameplayer')
+EMBER_EXP_PLAYER_BRANCH = os.environ.get('EMBER_EXP_PLAYER_BRANCH', 'master')
+EMBER_ADDONS_REPO = os.environ.get('EMBER_ADDONS_REPO', 'https://github.com/lookit/exp-addons')
+EMBER_ADDONS_BRANCH = os.environ.get('EMBER_ADDONS_BRANCH', 'master')
 
 RABBITMQ_USERNAME = os.environ.get('RABBITMQ_USERNAME', 'guest')
 RABBITMQ_PASSWORD = os.environ.get('RABBITMQ_PASSWORD', 'guest')
