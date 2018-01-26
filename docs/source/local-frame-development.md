@@ -53,7 +53,27 @@ as a token for accessing the API.  Leave the django server running and switch to
                 'Authorization': 'Token <add-your-token-here>.'
             };
         }).volatile(),
+        
     ```
+
+## Starting up once initial setup is completed
+
+This is much quicker (you don't need to go through the above steps every time you want to work on something).
+
+1. Start the Django app:
+    ```
+    $ cd lookit-api
+    $ source VENVNAME/bin/activate
+    $ python manage.py runserver
+    ```
+
+2. Start the Ember app:
+	```
+    $ cd ember-lookit-frameplayer
+    $ ember serve
+    
+    ```
+3. Log in as your local superuser at <http://localhost:8000/admin/>
 
 ## Previewing a study
 
