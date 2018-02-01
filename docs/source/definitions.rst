@@ -32,7 +32,7 @@ admin or Study's read group will inherit the associated permissions to that Stud
 
 Organization
 ------------
-An institution or lab that has been registered with Experimenter.  Each Organization has its own interface (Organization Site) where Studies are posted.
+An institution (e.g., Lookit) or lab that has been registered with Experimenter.  Each Organization has its own interface (Organization Site) where Studies are posted.
 All Organizations' data are separate.  Each Organization has their own Researchers, admins, Studies, Participants, etc.  You can only
 view data that you have permission to see (depending on your admin/read/researcher permissions), and only data within your Organization.
 
@@ -42,7 +42,7 @@ One instance of a front-end where studies are posted. (Example: lookit.mit.edu)
 
 Participants
 ------------
-Individuals taking part in Studies.
+Account holders - registered Lookit users who can take part in studies. 'Participant' refers to the account (generally held by a parent) rather than the individual child. 
 
 Researchers
 -----------
