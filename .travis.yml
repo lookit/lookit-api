@@ -29,5 +29,5 @@ jobs:
             --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_TAG=$TRAVIS_TAG
             --pull -t $DOCKER_IMAGE_URL:$TRAVIS_COMMIT .
         - docker run -d --name pg postgres:9.6
-        - sleep 5
+        - docker exec -i pg /bin/bash -c 'until pg_isready; do sleep 1; done'
         - docker run --rm -it --link pg --env DB_HOST=pg $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
