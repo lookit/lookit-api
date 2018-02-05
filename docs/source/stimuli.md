@@ -2,9 +2,11 @@
 
 ### Audio and video files
 
-Most experiments will involve using audio and/or video files! You are responsible for hosting these somewhere (contact MIT if you need help finding a place to put them).
+Most experiments will involve using audio and/or video files! You are responsible for hosting these somewhere.
 
-For basic editing of audio files, if you don't already have a system in place, we highly recommend [Audacity](http://www.audacityteam.org/). You can create many "tracks" or select portions of a longer recording using labels, and export them all at once; you can easily adjust volume so it's similar across your stimuli; and the simple "noise reduction" filter works well.
+For basic editing of audio files, if you don't already have a system in place, we highly recommend [Audacity](http://www.audacityteam.org/). 
+You can create many "tracks" or select portions of a longer recording using labels, 
+and export them all at once; you can easily adjust volume so it's similar across your stimuli; and the simple "noise reduction" filter works well.
 
 ### File formats
 
@@ -43,7 +45,7 @@ for audio in audioFiles:
 
 ### Directory structure
 
-For convenience, several of the newer frames allow you to define a base directory (`baseDir`) as part of the frame definition, so that instead of providing full paths to your stimuli (including multiple file formats) you can give relative paths and specify the audio and/or video formats to expect (`audioTypes` and `videoTypes`). 
+For convenience, most frames allow you to define a base directory (`baseDir`) as part of the frame definition, so that instead of providing full paths to your stimuli (including multiple file formats) you can give relative paths and specify the audio and/or video formats to expect (`audioTypes` and `videoTypes`). 
 
 **Images**: Anything without `://` in the string is assumed to be a relative image source. 
 

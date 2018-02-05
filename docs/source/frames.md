@@ -16,10 +16,10 @@ Experimenter is composed of three main modules:
 
 Generally, all 'frame' development will happen in the exp-player module. By nature of the way the ember-lookit-frameplayer
 repository is structured, this will mean making changes in the `ember-lookit-frameplayer/lib/exp-player` directory. These changes
-can be committed as part of the [exp-addons](https://github.com/CenterForOpenScience/exp-addons) git submodule
+can be committed as part of the [exp-addons](https://github.com/lookit/exp-addons) git submodule
 (installed under `ember-lookit-frameplayer/lib`). 
 
-To start developing your own frames, you will want to first follow the "Setup for local frame development"  steps. 
+To start developing your own frames, you will want to first follow the "Setup for local frame development" steps. 
 To use the frame definitions you have created when posting a study on Lookit, you can specify your own exp-addons repo to use (see "Using the experimenter interface"). 
 
 ### Getting Started
@@ -287,16 +287,13 @@ it to use that style. For example,
 
 `@import "components/exp-video-physics";`
 
-Remember that anything in exp-addons is shared code. Below are a few good tips to help your addon stay isolated and
-distinct, so that it does not affect other projects.
-
-Here are a few tips for writing good styles:
+Remember that anything in exp-addons is shared code: the .scss files you write will be applied across all frames of any study that uses your version of exp-addons. Especially if you intend to maintain a lab exp-addons that contains frames useful to you to be used across multiple studies, or you envision others building on your work by using your frames, you should follow the tips below to write styles that will stay isolated and avoid unintended consequences: 
 - Do not override global styles, or things that are part of another component. For example, `exp-video-physics` should
 not contain styles for `exp-player`.
-   - If you need to style a button specifically inside that component, either add a second style to the element, or
-     consider using nested [CSS selectors](https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Selectors).
+	- If you do need to style an element specifically inside that component, either add a second style to the element, or consider using nested [CSS selectors](https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Selectors).
 - Give all of the styles in your component a unique common name prefix, so that they don't inadvertently overlap with
 styles for other things. For example, instead of `some-video-widget`, consider a style name like `exp-myframe-video-widget`.
+- Target each of your CSS rules at elements that match a unique class (e.g. `exp-myframe`) you give to a wrapper for your frame template, in addition to whatever substantive selectors you need.
 
 \* You may notice that style files have a special extension `.scss`. That is because styles in experimenter are
 actually written in [SASS](http://sass-lang.com/). You can still write normal CSS just fine, but SASS provides

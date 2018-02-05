@@ -6,9 +6,6 @@
 Welcome to Lookit's documentation!
 ==========================================
 
-**This documentation is a work in progress.** To contribute, submit a PR to 
-`lookit/lookit-api <https://github.com/lookit/lookit-api/tree/develop>`_.
-
 The `lookit-api codebase <https://github.com/lookit/lookit-api>`_ contains 
 what were previously separate Experimenter and Lookit applications. Experimenter is a 
 platform for designing and administering research studies, meant for researchers. 
@@ -23,16 +20,18 @@ Contents:
    :maxdepth: 3
 
    definitions
-   api-documentation
    experimenter
    experiments
+   stimuli
    experimentdata
+   local-frame-development
    django-project-installation
    ember-app-installation
-   local-frame-development
    frames
    mixins
    random
+   contributing
+   api-documentation
    permissions
    workflow
    celery_tasks
