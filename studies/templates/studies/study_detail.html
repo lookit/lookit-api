@@ -3,6 +3,7 @@
 {% load guardian_tags %}
 {% load static %}
 {% load tz %}
+{% load exp_extras %}
 
 {% block title %}{{ study.name }}{% endblock %}
 {% block flash %}
@@ -133,7 +134,7 @@
                   </div>
                   <div class="col-md-4">
                       {% if "can_view_study_responses" in study_perms %}
-                          <a class="view-responses-link" href="{% url 'exp:study-responses-list' pk=study.id %}">
+                          <a class="view-responses-link" href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
                               <div class="well view-response-block">
                                 <center class="mt-sm">
                                     <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
