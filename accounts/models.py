@@ -485,5 +485,6 @@ class DemographicData(models.Model):
             country=str(self.country),
             state=self.get_state_display(),
             density=self.get_density_display(),
-            extra=self.extra
+            extra=self.extra,
+            lookit_referrer=self.lookit_referrer
         )

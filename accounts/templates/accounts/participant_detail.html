@@ -106,7 +106,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Laguages Spoken at Home: </b>
+                    <b> Languages Spoken at Home: </b>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.languages_spoken_at_home|default:"No Response" }}
@@ -206,6 +206,14 @@
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.additional_comments|default:"No Response" }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-5">
+                    <b> Lookit Referrer: </b>
+                </div>
+                <div class="col-xs-7">
+                    {{ demographics.lookit_referrer|default:"No Response" }}
                 </div>
             </div>
         </div>
