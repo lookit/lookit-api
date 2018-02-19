@@ -2,7 +2,7 @@
 
 ### Overview
 
-You may find you have a need for some experimental component is not included in Lookit already. The goal of this
+You may find you have a need for some experimental component not already included in Lookit. The goal of this
 section is to walk through extending the base functionality with your own code.
 
 We use the term 'frame' to describe the combination of JavaScript file and Handlebars HTML template that compose a
@@ -17,10 +17,10 @@ Experimenter is composed of three main modules:
 Generally, all 'frame' development will happen in the exp-player module. By nature of the way the ember-lookit-frameplayer
 repository is structured, this will mean making changes in the `ember-lookit-frameplayer/lib/exp-player` directory. These changes
 can be committed as part of the [exp-addons](https://github.com/CenterForOpenScience/exp-addons) git submodule
-(installed under `ember-lookit-frameplayer/lib`). 
+(installed under `ember-lookit-frameplayer/lib`).
 
-To start developing your own frames, you will want to first follow the "Setup for local frame development"  steps. 
-To use the frame definitions you have created when posting a study on Lookit, you can specify your own exp-addons repo to use (see "Using the experimenter interface"). 
+To start developing your own frames, you will want to first follow the "Setup for local frame development"  steps.
+To use the frame definitions you have created when posting a study on Lookit, you can specify your own exp-addons repo to use (see "Using the experimenter interface").
 
 ### Getting Started
 
@@ -256,7 +256,7 @@ We use [YUIdoc](http://yui.github.io/yuidoc/) for generating "automatic" documen
 
 #### Ember debugging
 
-Values of variables used in your frame are tricky to access directly from the Javascript console in your browser during testing. 
+Values of variables used in your frame are tricky to access directly from the Javascript console in your browser during testing.
 
 There's an [Ember Inspector browser plugin](https://guides.emberjs.com/v2.11.0/ember-inspector/) you can use to help debug the Lookit components. Once you've installed it, you'll find it along with other developer tools.
 
