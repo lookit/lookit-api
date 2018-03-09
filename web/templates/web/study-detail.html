@@ -86,14 +86,6 @@
             }
         }
 
-        function isOldEnough(age) {
-            const check = this.ageCheck(age);
-            return check >= 0;
-        }
-
-        function isEligible(age) {
-            return this.ageCheck(age) === 0;
-        }
     </script>
     <div class='lookit-row lookit-page-title'>
         <div class='container'>
@@ -154,7 +146,7 @@
                                 <option onemptied="" value="{{child.uuid}}|{{child.birthday}}">{{child.given_name}}</option>
                                 {% endfor %}
                             </select>
-                            <p class="text-warning" style="display:none" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait until <span id='wait-until'></span> he or she is old enough, we'll be able to use the collected data in our research! </p>
+                            <p class="text-warning" style="display:none" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research! </p>
             	            <p class="text-warning" style="display:none" id='too-old'>Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research.</p>
                             <button type="button" onclick="portToParticipate(this)" disabled class="btn-lg btn-primary" id="participate-button"> Participate now! </button>
                         </div>
