@@ -10,7 +10,7 @@ services:
 env:
   global:
     - DOCKER_REPO_URL=quay.io
-    - DOCKER_REPO_OWNER=centerforopenscience
+    - DOCKER_REPO_OWNER=lookit
     - DOCKER_REPO_NAME=lookit-api
     - DOCKER_BRANCH=${TRAVIS_BRANCH/\//-}
     - DOCKER_IMAGE_URL=$DOCKER_REPO_URL/$DOCKER_REPO_OWNER/$DOCKER_REPO_NAME
