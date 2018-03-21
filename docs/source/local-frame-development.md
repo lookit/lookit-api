@@ -105,3 +105,7 @@ Now, you can navigate to <http://localhost:4200/exp/studies/study_id/preview>, r
 To participate in a study locally, you need demographic data and a child attached to the logged in user, as well as a study. Video data is saved and responses are saved to your local server.  The URL for participating is `studies/study_uuid/child_uuid`. To fetch studies, navigate to <http://localhost:8000/api/v1/studies/>.  Copy the id of the study you created earlier.  To fetch children, navigate to <http://localhost:8000/api/v1/children/>. Copy the id of your child.
 
 Finally, to participate in a study, navigate to <http://localhost:4200/studies/study_id/child_id>, replacing study_id and child_id with the ids you obtained from the API.
+
+## Using https
+
+If using https locally, replace the <http://localhost:4200> addresses with <https://localhost:4200>. You may need to adjust browser settings to allow using https with the self-signed certificate. For instance, in Chrome, set Camera and Microphone permissions at <chrome://settings/content/siteDetails?site=https://localhost:4200>.
