@@ -62,8 +62,8 @@ as a token for accessing the API.  Leave the django server running and switch to
   	"ssl": true
   	```
   	Create `server.key` and `server.crt` files in the root `ember-lookit-frameplayer` directory as follows:
-  	openssl genrsa -des3 -passout pass:x -out server.pass.key 2048
   	```
+  	openssl genrsa -des3 -passout pass:x -out server.pass.key 2048
   	openssl rsa -passin pass:x -in server.pass.key -out server.key
   	rm server.pass.key
   	openssl req -new -key server.key -out server.csr
