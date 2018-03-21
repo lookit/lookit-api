@@ -3,6 +3,7 @@
 These are the instructions for previewing or participating in a study locally. We need to install the the django app and the ember app, and run both of those servers locally.  In Experimenter, we need to add an organization to our superuser, and then add a child and demographic data.  We then create a study locally. The exp-player needs to be linked for local development, and a token added to the headers of the API requests the `ember-lookit-frameplayer` is sending.  We can then navigate directly to the study from the ember app to bypass the build process locally.  This will enable you to make changes to frames locally and rapidly see the results of those changes.
 
 ## Django App steps
+
 1. Install the [django app](django-project-installation.html) locally. Run the server.
 
 2. Navigate to <http://localhost:8000/admin/> to login to Experimenter's admin app. You should be redirected to login.  Use the superuser credentials created in the django installation steps.
