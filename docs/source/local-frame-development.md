@@ -33,7 +33,7 @@ as a token for accessing the API.  Leave the django server running and switch to
 
 ## Ember App steps
 
-1. Install the [ember app](ember-app-installation.html) locally. Run the server.
+1. Install the [ember app](ember-app-installation.html) locally. 
 
 2. If you are going to be making changes to frames, you should use `npm link` for local development. This allows you to make changes to the code without having to push to github.
     In the terminal:
@@ -50,11 +50,28 @@ as a token for accessing the API.  Leave the django server running and switch to
             // Add cookie to http header
             return {
                 'X-CSRFTOKEN': Ember.get(document.cookie.match(/csrftoken\=([^;]*)/), '1'),
-                'Authorization': 'Token <add-your-token-here>.'
+                'Authorization': 'Token <add-your-token-here>'
             };
         }).volatile(),
         
     ```
+    
+4. If you want to use the HTML5 video recorder, you'll need to set up to use https locally. Open `ember-lookit-frameplayer/.ember-cli` and add the line `ssl: true`:
+	```js
+	"disableAnalytics": false,
+  	"ssl": true
+  	```
+  	Create `server.key` and `server.crt` files in the root `ember-lookit-frameplayer` directory as follows:
+  	```
+  	openssl genrsa -des3 -passout pass:x -out server.pass.key 2048
+  	openssl rsa -passin pass:x -in server.pass.key -out server.key
+  	rm server.pass.key
+  	openssl req -new -key server.key -out server.csr
+  	openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
+  	```
+  	Leave the challenge password blank and enter `localhost` as the Common Name.
+
+5. Run the ember server. 
 
 ## Starting up once initial setup is completed
 
