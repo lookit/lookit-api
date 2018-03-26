@@ -27,3 +27,6 @@ rm -rf $STUDY_OUTPUT_DIR
 mkdir -p $STUDY_OUTPUT_DIR
 # copy the built ember app into the output dir
 cp -r /checkout-dir/dist/* $STUDY_OUTPUT_DIR
+# set ownership to www-data, allowing non-root
+# celery tasks to run cleanup operations
+chown -r www-data:www-data $STUDY_OUTPUT_DIR
