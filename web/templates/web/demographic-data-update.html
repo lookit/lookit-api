@@ -12,9 +12,47 @@
 {% block content %}
     <script>
         $(document).ready(function() {
-            if ($('#id_country')[0].value !== 'US') {
-                hideField('state');
-            }
+        
+			const gdpr_country_list = [	
+				"", // don't accept demographic data with NO country listed
+				"AT", 
+				"BE", 
+				"BG", 
+				"CY", 
+				"CZ", 
+				"DE", 
+				"DK", 
+				"EE", 
+				"ES", 
+				"FI", 
+				"FR", 
+				"GB", 
+				"GR", 
+				"HR", 
+				"HU", 
+				"IE", 
+				"IT", 
+				"LT", 
+				"LU", 
+				"LV", 
+				"MT", 
+				"NL", 
+				"PL", 
+				"PT", 
+				"RO", 
+				"SE", 
+				"SI", 
+				"SK",
+				"NO", // protections also apply to Norway, Iceland, & Liechtenstein
+				"IS",
+				"LI"];
+			
+			const gdprFieldsToHide = ['number_of_children', 'child_birthdays', 
+            		'languages_spoken_at_home', 'number_of_guardians', 
+            		'number_of_guardians_explanation', 'race_identification', 
+            		'age', 'gender', 'education_level', 'spouse_education_level',
+            		'annual_income', 'number_of_books', 'density'];
+        
             if ($('#id_number_of_children')[0].value === "0" || $('#id_number_of_children')[0].value === '') {
                 hideField('child_birthdays');
                 $('.help-block').first().hide();
@@ -22,15 +60,39 @@
             if ($('#id_number_of_guardians')[0].value !== 'varies') {
                 hideField('number_of_guardians_explanation');
             }
-
+            
+            if ($('#id_country')[0].value !== 'US') {
+                hideField('state');
+            }
+            
+            if (gdpr_country_list.includes($('#id_country')[0].value)) {
+            	$.each(gdprFieldsToHide, function(i, fieldName) {
+            		hideField(fieldName);
+            		$(`#id_${fieldName}`)[0].value = '';
+            		$(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
+            	});
+            }
+            
             $('#id_country').on('change', function() {
                 if ($(this)[0].value === 'US') {
                     showField('state');
                 } else {
                     hideField('state');
                     $(`#id_state`)[0].value = '';
+                    if (gdpr_country_list.includes($('#id_country')[0].value)) {
+						$.each(gdprFieldsToHide, function(i, fieldName) {
+							hideField(fieldName);
+							$(`#id_${fieldName}`)[0].value = '';
+							$(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
+						});
+					} else {
+						$.each(gdprFieldsToHide, function(i, fieldName) {
+							showField(fieldName);
+						});
+					}
                 }
             });
+
             $('#id_number_of_children').on('change', function() {
                 if (this.value === "0" || this.value === '') {
                     hideField('child_birthdays');
@@ -43,6 +105,7 @@
 
                 }
             });
+            
             $('#id_number_of_guardians').on('change', function() {
                 if (this.value === 'varies') {
                     showField('number_of_guardians_explanation');
@@ -54,10 +117,12 @@
         });
         function hideField(field) {
             $(`#id_${field}`).hide().prop('required',false);
+            $(`#id_${field}`).parent().hide(); //hide the parent form group
             $(`label[for=id_${field}]`).hide();
         }
         function showField(field) {
             $(`#id_${field}`).show();
+            $(`#id_${field}`).parent().show(); // show the parent form group
             $(`label[for=id_${field}]`).show();
         }
     </script>
@@ -78,6 +143,7 @@
                       multiple languages or having older siblings affect children's learning. </p>
                       <p> Even if you allow your study videos to be published
                       for scientific or publicity purposes, your demographic information is never published in conjunction with your video. </p>
+                      <p> As we figure out the details of General Data Protection Regulation (GDPR) compliance, we're restricting demographic information collection to families outside the EU. </p>
                   </h1>
 
                 </div>
