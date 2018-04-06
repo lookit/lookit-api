@@ -67,26 +67,22 @@
             
             if (gdpr_country_list.includes($('#id_country')[0].value)) {
             	$.each(gdprFieldsToHide, function(i, fieldName) {
-            		hideField(fieldName);
-            		$(`#id_${fieldName}`)[0].value = '';
-            		$(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
+            		clearField(fieldName);
             	});
             }
             
             $('#id_country').on('change', function() {
-            	// First show/hide state field based on USA or not
+            	// Show/hide state field based on USA or not
                 if ($(this)[0].value === 'US') {
                     showField('state');
                 } else {
                     hideField('state');
                     $(`#id_state`)[0].value = '';
                 }
-                // Then show/hide most demographic fields based on EU or not
+                // Separately show/hide most demographic fields based on EU or not
 				if (gdpr_country_list.includes($('#id_country')[0].value)) {
 					$.each(gdprFieldsToHide, function(i, fieldName) {
-						hideField(fieldName);
-						$(`#id_${fieldName}`)[0].value = '';
-						$(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
+						clearField(fieldName);
 					});
 				} else {
 					$.each(gdprFieldsToHide, function(i, fieldName) {
@@ -119,12 +115,17 @@
         });
         function hideField(field) {
             $(`#id_${field}`).hide().prop('required',false);
-            $(`#id_${field}`).parent().hide(); //hide the parent form group
+            $(`#id_${field}`).parent('.form-group').hide(); // hide the parent form-group div
             $(`label[for=id_${field}]`).hide();
+        }
+        function clearField(field) { // hide field and remove any stored data
+            hideField(fieldName);
+            $(`#id_${fieldName}`)[0].value = '';
+            $(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
         }
         function showField(field) {
             $(`#id_${field}`).show();
-            $(`#id_${field}`).parent().show(); // show the parent form group
+            $(`#id_${field}`).parent('.form-group').show(); // show the parent form-group div
             $(`label[for=id_${field}]`).show();
         }
     </script>
