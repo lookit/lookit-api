@@ -118,7 +118,7 @@
             $(`#id_${field}`).parent('.form-group').hide(); // hide the parent form-group div
             $(`label[for=id_${field}]`).hide();
         }
-        function clearField(field) { // hide field and remove any stored data
+        function clearField(fieldName) { // hide field and remove any stored data
             hideField(fieldName);
             $(`#id_${fieldName}`)[0].value = '';
             $(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
