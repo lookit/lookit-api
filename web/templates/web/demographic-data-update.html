@@ -74,23 +74,25 @@
             }
             
             $('#id_country').on('change', function() {
+            	// First show/hide state field based on USA or not
                 if ($(this)[0].value === 'US') {
                     showField('state');
                 } else {
                     hideField('state');
                     $(`#id_state`)[0].value = '';
-                    if (gdpr_country_list.includes($('#id_country')[0].value)) {
-						$.each(gdprFieldsToHide, function(i, fieldName) {
-							hideField(fieldName);
-							$(`#id_${fieldName}`)[0].value = '';
-							$(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
-						});
-					} else {
-						$.each(gdprFieldsToHide, function(i, fieldName) {
-							showField(fieldName);
-						});
-					}
                 }
+                // Then show/hide most demographic fields based on EU or not
+				if (gdpr_country_list.includes($('#id_country')[0].value)) {
+					$.each(gdprFieldsToHide, function(i, fieldName) {
+						hideField(fieldName);
+						$(`#id_${fieldName}`)[0].value = '';
+						$(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
+					});
+				} else {
+					$.each(gdprFieldsToHide, function(i, fieldName) {
+						showField(fieldName);
+					});
+				}
             });
 
             $('#id_number_of_children').on('change', function() {
@@ -143,7 +145,7 @@
                       multiple languages or having older siblings affect children's learning. </p>
                       <p> Even if you allow your study videos to be published
                       for scientific or publicity purposes, your demographic information is never published in conjunction with your video. </p>
-                      <p> As we figure out the details of General Data Protection Regulation (GDPR) compliance, we're restricting demographic information collection to families outside the EU. </p>
+                      <p> We're currently restricting demographic information collection to families outside the EU to ensure GDPR compliance. </p>
                   </h1>
 
                 </div>
