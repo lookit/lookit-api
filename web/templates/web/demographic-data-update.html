@@ -13,46 +13,6 @@
     <script>
         $(document).ready(function() {
         
-			const gdpr_country_list = [	
-				"", // don't accept demographic data with NO country listed
-				"AT", 
-				"BE", 
-				"BG", 
-				"CY", 
-				"CZ", 
-				"DE", 
-				"DK", 
-				"EE", 
-				"ES", 
-				"FI", 
-				"FR", 
-				"GB", 
-				"GR", 
-				"HR", 
-				"HU", 
-				"IE", 
-				"IT", 
-				"LT", 
-				"LU", 
-				"LV", 
-				"MT", 
-				"NL", 
-				"PL", 
-				"PT", 
-				"RO", 
-				"SE", 
-				"SI", 
-				"SK",
-				"NO", // protections also apply to Norway, Iceland, & Liechtenstein
-				"IS",
-				"LI"];
-			
-			const gdprFieldsToHide = ['number_of_children', 'child_birthdays', 
-            		'languages_spoken_at_home', 'number_of_guardians', 
-            		'number_of_guardians_explanation', 'race_identification', 
-            		'age', 'gender', 'education_level', 'spouse_education_level',
-            		'annual_income', 'number_of_books', 'density'];
-        
             if ($('#id_number_of_children')[0].value === "0" || $('#id_number_of_children')[0].value === '') {
                 hideField('child_birthdays');
                 $('.help-block').first().hide();
@@ -65,12 +25,6 @@
                 hideField('state');
             }
             
-            if (gdpr_country_list.includes($('#id_country')[0].value)) {
-            	$.each(gdprFieldsToHide, function(i, fieldName) {
-            		clearField(fieldName);
-            	});
-            }
-            
             $('#id_country').on('change', function() {
             	// Show/hide state field based on USA or not
                 if ($(this)[0].value === 'US') {
@@ -79,16 +33,6 @@
                     hideField('state');
                     $(`#id_state`)[0].value = '';
                 }
-                // Separately show/hide most demographic fields based on EU or not
-				if (gdpr_country_list.includes($('#id_country')[0].value)) {
-					$.each(gdprFieldsToHide, function(i, fieldName) {
-						clearField(fieldName);
-					});
-				} else {
-					$.each(gdprFieldsToHide, function(i, fieldName) {
-						showField(fieldName);
-					});
-				}
             });
 
             $('#id_number_of_children').on('change', function() {
@@ -146,7 +90,6 @@
                       multiple languages or having older siblings affect children's learning. </p>
                       <p> Even if you allow your study videos to be published
                       for scientific or publicity purposes, your demographic information is never published in conjunction with your video. </p>
-                      <p> We're currently restricting demographic information collection to families outside the EU to ensure GDPR compliance. </p>
                   </h1>
 
                 </div>
