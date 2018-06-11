@@ -7,33 +7,18 @@
     {{ block.super }}
     <script type="application/javascript">
         $(document).ready(function(){
-            prepareDataForDownload('.all-data', 'json');
-            $(".all-csv-data").hide();
-
+            $('#download-all-data-csv').addClass('hidden');
             $('#data-type-selector-all').on('change', function(){
-                // Toggles combined responses between CSV and JSON format
+                // Toggles responses between CSV and JSON format
                 var selected = $(this).find("option:selected").val();
-                $('.all-data').hide();
-                $('.all-csv-data').hide();
                 if (selected === 'CSV'){
-                    $('.all-csv-data').show();
-                    prepareDataForDownload('.all-csv-data', 'csv');
+                    $('#download-all-data-csv').removeClass('hidden');
+                    $('#download-all-data-json').addClass('hidden');
                 } else {
-                    $('.all-data').show();
-                    prepareDataForDownload('.all-data', 'json');
+                    $('#download-all-data-json').removeClass('hidden');
+                    $('#download-all-data-csv').addClass('hidden');
                 }
-                $('#download-data-label').text(selected);
             });
-
-            function prepareDataForDownload(dataClassOrId, ext) {
-                // Preps Download All button to download either all JSON or all CSV responses
-                var data = "data:text/json;charset=utf-8," + encodeURIComponent($(dataClassOrId).html());
-                var elem = $('#download-all-data')[0];
-                if (data && elem) {
-                    elem.href = data;
-                    elem.download = '{{study.name}}-' + '{{download_name}}' + '.' + ext;
-                }
-            }
         });
     </script>
     {{ form.media }}
@@ -84,13 +69,22 @@
                 </div>
             </div>
             <div class="col-sm-3">
-                <a id='download-all-data' class='btn btn-primary'>
-                    Download All {{ response_keyword }} <span id="download-data-label"> JSON</span>
-                </a>
-            </div>
-            <div class="col-xs-12 pt-sm">
-                <pre class='all-data'>{{ all_responses }}</pre>
-                <pre class='all-csv-data'>{{ csv_responses }}</pre>
+                {% if active == 'all' %}
+                    <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-responses-download-json' pk=study.id %}">
+                        Download All Responses as JSON</span>
+                    </a>
+                    <a id='download-all-data-csv' class='hidden btn btn-primary' href="{% url 'exp:study-responses-download-csv' pk=study.id %}">
+                        Download All Responses as CSV</span>
+                    </a>
+                {% endif %}
+                {% if active == 'demographics' %}
+                    <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
+                        Download All Demographic Snapshots as JSON</span>
+                    </a>
+                    <a id='download-all-data-csv' class='hidden btn btn-primary' href="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
+                        Download All Demographic Snapshots as CSV</span>
+                    </a>
+                {% endif %}
             </div>
         </div>
     {% endif %}
