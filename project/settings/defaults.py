@@ -35,6 +35,8 @@ GUARDIAN_MONKEY_PATCH = False
 
 # S3 Bucket name where video attachments are stored
 BUCKET_NAME = os.environ.get('BUCKET_NAME', 'fakeBucketName')
+# Pipe webhook key for authentication
+PIPE_WEBHOOK_KEY = os.environ.get('PIPE_WEBHOOK_KEY', 'abcdefghijkl1')
 
 # Application definition
 
