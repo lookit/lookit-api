@@ -591,7 +591,7 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
         cleaned_data = ', '.join(self.build_responses(responses))
         filename = '{}-{}.json'.format(study.name, 'all_responses')
         response = HttpResponse(cleaned_data, content_type='text/json')
-        response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         return response
 
 
@@ -605,7 +605,7 @@ class StudyResponsesAllDownloadCSV(StudyResponsesAll):
         cleaned_data = self.build_all_csv(responses)
         filename = '{}-{}.csv'.format(study.name, 'all_responses')
         response = HttpResponse(cleaned_data, content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         return response
 
 class StudyDemographics(StudyResponsesMixin, generic.DetailView):
@@ -646,7 +646,7 @@ class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
         cleaned_data = ', '.join(self.build_participant_data(responses))
         filename = '{}-{}.json'.format(study.name, 'all_demographic_snapshots')
         response = HttpResponse(cleaned_data, content_type='text/json')
-        response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         return response
 
 
@@ -660,7 +660,7 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
         cleaned_data = self.build_all_participant_csv(responses)
         filename = '{}-{}.csv'.format(study.name, 'all_demographic_snapshots')
         response = HttpResponse(cleaned_data, content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         return response
 
 
