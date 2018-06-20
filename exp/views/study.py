@@ -581,6 +581,33 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         return output.getvalue()
 
 
+class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
+    """
+    Hitting this URL downloads all study responses in JSON format.
+    """
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.responses.order_by('id')
+        cleaned_data = ', '.join(self.build_responses(responses))
+        filename = '{}-{}.json'.format(study.name, 'all_responses')
+        response = HttpResponse(cleaned_data, content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+        return response
+
+
+class StudyResponsesAllDownloadCSV(StudyResponsesAll):
+    """
+    Hitting this URL downloads all study responses in CSV format.
+    """
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.responses.order_by('id')
+        cleaned_data = self.build_all_csv(responses)
+        filename = '{}-{}.csv'.format(study.name, 'all_responses')
+        response = HttpResponse(cleaned_data, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+        return response
+
 class StudyDemographics(StudyResponsesMixin, generic.DetailView):
     """
     StudyParticiapnts view shows participant demographic snapshots associated
@@ -608,6 +635,33 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         for resp in responses:
             writer.writerow(self.build_csv_participant_row_data(resp))
         return output.getvalue()
+
+class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
+    """
+    Hitting this URL downloads all participant demographics in JSON format.
+    """
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.responses.order_by('id')
+        cleaned_data = ', '.join(self.build_participant_data(responses))
+        filename = '{}-{}.json'.format(study.name, 'all_demographic_snapshots')
+        response = HttpResponse(cleaned_data, content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+        return response
+
+
+class StudyDemographicsDownloadCSV(StudyDemographics):
+    """
+    Hitting this URL downloads all participant demographics in CSV format.
+    """
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.responses.order_by('id')
+        cleaned_data = self.build_all_participant_csv(responses)
+        filename = '{}-{}.csv'.format(study.name, 'all_demographic_snapshots')
+        response = HttpResponse(cleaned_data, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+        return response
 
 
 class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
