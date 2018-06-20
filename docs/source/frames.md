@@ -244,6 +244,28 @@ Notice the new property `consentNotGranted`; this will require a new computed fi
 
 ### Tips and tricks
 
+#### Using mixins
+
+To use a mixin for video recording, fullscreen, etc., simply have your frame "extend" the
+mixin. For instance, to use the VideoRecord mixin, your component.js file would define:
+
+
+```javascript
+import ExpFrameBaseComponent from 'exp-player/components/exp-frame-base/component';
+import layout from './template';
+
+export default ExpFrameBaseComponent.extend(VideoRecord, {
+    type: 'exp-consent-form',
+    layout: layout,
+    meta: {
+        ...
+    }
+});
+```
+
+Your frame can extend any number of mixins. For now, be careful to check, when you use a 
+mixin, that your frame does not defining any properties or functions that will conflict with the mixin's properties or functions. If the mixin has a function `doFoo`, you can use that from your frame simply by calling `this.doFoo()`. 
+
 #### YUIdoc documentation
 
 We use [YUIdoc](http://yui.github.io/yuidoc/) for generating "automatic" documentation of  exp-addons frames, available [here](http://centerforopenscience.github.io/exp-addons/modules/frames.html). If you want to contribute your frames to the main Lookit codebase, please include YUIdoc-formatted comments following the example of existing frames, e.g. `exp-exit-survey` or `exp-lookit-geometry-alternation`. Make sure to include:
