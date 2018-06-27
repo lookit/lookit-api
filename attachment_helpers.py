@@ -59,13 +59,13 @@ def rename_stored_video(old_name, new_name, ext):
 	# No way to directly rename in boto3, so copy and delete original (this is dumb, but let's get it working)
 	try: # Create a copy with the correct new name, if the original exists. Could also
 	# wait until old_name_full exists using orig_video.wait_until_exists()
-		s3.Object(settings.BUCKET_NAME, new_name_full).copy_from(CopySource= settings.BUCKET_NAME + '/' + old_name_full)
+		s3.Object(settings.BUCKET_NAME, new_name_full).copy_from(CopySource=(settings.BUCKET_NAME + '/' + old_name_full))
 	except ClientError: # old_name_full not found!
-		return 0
+		return False
 	else: # Go on to remove the originals
 		orig_video = s3.Object(settings.BUCKET_NAME, old_name_full)
 		orig_video.delete()
 		# remove the .jpg thumbnail.
 		s3.Object(settings.BUCKET_NAME, old_name_thum).delete()
 	
-	return 1
+	return True

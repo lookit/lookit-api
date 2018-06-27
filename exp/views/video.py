@@ -23,7 +23,6 @@ class RenameVideoView(View):
 	def dispatch(self, request, *args, **kwargs):
 		return super(RenameVideoView, self).dispatch(request, *args, **kwargs)
 
-
 	def post(self, request):
 		# Parse the POST body ourselves to allow flexibility for using for other types
 		# of events in the future; some of the Pipe event data includes semicolons which
