@@ -15,6 +15,7 @@ Including another URLconf
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 '''
 from django.conf.urls import url
+from django.views.decorators.csrf import csrf_exempt
 
 from exp.views import (ExperimenterDashboardView, ParticipantDetailView,
                        ParticipantListView, PreviewProxyView,
@@ -25,13 +26,14 @@ from exp.views import (ExperimenterDashboardView, ParticipantDetailView,
                        StudyResponsesAll, StudyResponsesAllDownloadJSON,
                        StudyResponsesAllDownloadCSV, StudyResponsesList,
                        StudyDemographicsDownloadJSON, StudyDemographicsDownloadCSV,
-                       StudyUpdateView)
+                       StudyUpdateView, RenameVideoView)
 
 urlpatterns = [
     url(r'researchers/$', ResearcherListView.as_view(), name='researcher-list'),
     url(r'researchers/(?P<pk>\d+)/$', ResearcherDetailView.as_view(), name='researcher-detail'),
     url(r'participants/$', ParticipantListView.as_view(), name='participant-list'),
     url(r'participants/(?P<pk>\d+)/$', ParticipantDetailView.as_view(), name='participant-detail'),
+    url(r'renamevideo/$', csrf_exempt(RenameVideoView.as_view()), name='rename-video'),
     url(r'studies/$', StudyListView.as_view(), name='study-list'),
     url(r'studies/create/$', StudyCreateView.as_view(), name='study-create'),
     url(r'studies/(?P<pk>\d+)/$', StudyDetailView.as_view(), name='study-detail'),
