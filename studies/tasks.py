@@ -184,6 +184,8 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             '-e', f'RECORDER_REPLACEMENT={re.escape(recorder_replacement_string)}',
             '-e', f'STUDY_OUTPUT_DIR={container_destination_directory}',
             '-e', f"SENTRY_DSN={os.environ.get('SENTRY_DSN_JS', None)}",
+            '-e', f"PIPE_ACCOUNT_HASH={os.environ.get('PIPE_ACCOUNT_HASH', None)}",
+            '-e', f"PIPE_ENVIRONMENT={os.environ.get('PIPE_ENVIRONMENT', None)}",
             '-v', f'{local_checkout_path}:/checkouts',
             '-v', f'{local_deployments_path}:/deployments',
             'ember_build'
