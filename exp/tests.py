@@ -11,7 +11,7 @@ from studies.models import Response, Study, Feedback
 from accounts.models import Child, User
 from django_dynamic_fixture import G
 
-
+from unittest import skip
 
 import urllib.parse
 
@@ -45,6 +45,7 @@ class RenameVideoTestCase(APITestCase):
 		}
 
     # Video rename tests.
+    @skip("Authentication relies on current URL, should find a way to test smaller piece")
     def testRenameVideo(self):
         api_response = self.client.post(self.url, urllib.parse.urlencode(self.payload), content_type="application/x-www-form-urlencoded")
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
