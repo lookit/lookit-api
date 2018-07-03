@@ -12,9 +12,7 @@
 {% block content %}
     <script>
         $(document).ready(function() {
-            if ($('#id_country')[0].value !== 'US') {
-                hideField('state');
-            }
+        
             if ($('#id_number_of_children')[0].value === "0" || $('#id_number_of_children')[0].value === '') {
                 hideField('child_birthdays');
                 $('.help-block').first().hide();
@@ -22,8 +20,13 @@
             if ($('#id_number_of_guardians')[0].value !== 'varies') {
                 hideField('number_of_guardians_explanation');
             }
-
+            
+            if ($('#id_country')[0].value !== 'US') {
+                hideField('state');
+            }
+            
             $('#id_country').on('change', function() {
+            	// Show/hide state field based on USA or not
                 if ($(this)[0].value === 'US') {
                     showField('state');
                 } else {
@@ -31,6 +34,7 @@
                     $(`#id_state`)[0].value = '';
                 }
             });
+
             $('#id_number_of_children').on('change', function() {
                 if (this.value === "0" || this.value === '') {
                     hideField('child_birthdays');
@@ -43,6 +47,7 @@
 
                 }
             });
+            
             $('#id_number_of_guardians').on('change', function() {
                 if (this.value === 'varies') {
                     showField('number_of_guardians_explanation');
@@ -54,10 +59,17 @@
         });
         function hideField(field) {
             $(`#id_${field}`).hide().prop('required',false);
+            $(`#id_${field}`).parent('.form-group').hide(); // hide the parent form-group div
             $(`label[for=id_${field}]`).hide();
+        }
+        function clearField(fieldName) { // hide field and remove any stored data
+            hideField(fieldName);
+            $(`#id_${fieldName}`)[0].value = '';
+            $(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
         }
         function showField(field) {
             $(`#id_${field}`).show();
+            $(`#id_${field}`).parent('.form-group').show(); // show the parent form-group div
             $(`label[for=id_${field}]`).show();
         }
     </script>

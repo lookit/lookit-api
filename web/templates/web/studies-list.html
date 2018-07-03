@@ -29,19 +29,20 @@
         }
     </script>
     <div class='lookit-row lookit-page-title'>
-        <h2 class='container'>Suggested Studies</h2>
+        <h2 class='container'>Current Studies</h2>
     </div>
     {% bootstrap_messages %}
     <div class="container">
         <ul class="pt-sm nav nav-tabs">
             <li class="active">
-                <a href="{% url 'web:studies-list'%}">Suggested Studies</a>
+                <a href="{% url 'web:studies-list'%}">Current studies</a>
             </li>
             <li>
-                <a href="{% url 'web:studies-history'%}">Past Studies</a>
+                <a href="{% url 'web:studies-history'%}">Your past studies</a>
             </li>
         </ul>
     </div>
+    
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active">
             <div class="lookit-row studies-row">
@@ -49,7 +50,8 @@
                     <div id="suggested-studies">
                         <div class="row">
                             <div class="col-xs-12">
-                                <p class="study-detail-caption">Here are some studies that we're currently running:</p>
+                                <p class="study-detail-caption">Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate.</p>
+                                <p class="study-detail-caption">Here are some studies that we're currently running!</p> 
                             </div>
                               {% for obj in object_list %}
                               <div class="col-xs-4">
@@ -71,6 +73,7 @@
                                           </div>
                                           <div class="caption">
                                               <h3>{{obj.name}}</h3>
+                                              <p><em>{{obj.criteria}}</em></p>
                                               <p>{{obj.short_description}}</p>
                                               <div class="fadeout"></div>
                                           </div>
