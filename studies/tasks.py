@@ -173,7 +173,6 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
 
         replacement_string = f"prepend: '/studies/{study_uuid}/'"
-        recorder_replacement_string = f'/studies/{study_uuid}/VideoRecorder.swf'
 
         build_command = [
             'docker',
@@ -181,7 +180,6 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             '--rm',
             '-e', f'CHECKOUT_DIR={container_checkout_directory}',
             '-e', f'REPLACEMENT={re.escape(replacement_string)}',
-            '-e', f'RECORDER_REPLACEMENT={re.escape(recorder_replacement_string)}',
             '-e', f'STUDY_OUTPUT_DIR={container_destination_directory}',
             '-e', f"SENTRY_DSN={os.environ.get('SENTRY_DSN_JS', None)}",
             '-e', f"PIPE_ACCOUNT_HASH={os.environ.get('PIPE_ACCOUNT_HASH', None)}",
