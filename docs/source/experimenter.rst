@@ -258,7 +258,7 @@ response will be the demographics that were current at the time the participant 
 Viewing all study attachments
 ----------------------------------------
 To view all video responses to your study, navigate to https://lookit.mit.edu/exp/studies/<study_id>/responses/attachments/.
-You can filter on video attachment name. The format of the video names is `videoStream_{study_id}_{frame_name}_{response_id}.flv`
+You can filter on video attachment name. The format of the video names is `videoStream_{study_id}_{frame_name}_{response_id}.mp4`
 
 Video attachments can be downloaded individually.  You also have the option of bulk downloading all consent videos for your study, or bulk downloading all responses.
 The bulk download will take place asynchronously, so once the videos have been downloaded and put in a zip file, you will get an email telling you this is done.
