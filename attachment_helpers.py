@@ -2,7 +2,7 @@ import sys
 import boto3
 import botocore
 from botocore.exceptions import ClientError
-from project import settings
+from django.conf import settings
 
 
 def get_all_study_attachments(study_uuid):
