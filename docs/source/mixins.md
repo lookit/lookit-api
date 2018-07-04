@@ -2,7 +2,7 @@
 
 Sometimes, you will wish to add a preset bundle of functionality to any arbitrary experiment frame. The Experimenter
 platform provides support for this via *mixins*. Below is a brief introduction to each of the common mixins;
-see sample usages throughout the exp-addons codebase and the mixin-specific docs [here](http://centerforopenscience.github.io/exp-addons/modules/mixins.html)
+see sample usages throughout the exp-addons codebase and the mixin-specific docs [here](https://lookit.github.io/exp-addons/modules/mixins.html)
 
 ## FullScreen
 This mixin is helpful when you want to show something (like a video) in fullscreen mode without distractions.

@@ -268,7 +268,7 @@ mixin, that your frame does not defining any properties or functions that will c
 
 #### YUIdoc documentation
 
-We use [YUIdoc](http://yui.github.io/yuidoc/) for generating "automatic" documentation of  exp-addons frames, available [here](http://centerforopenscience.github.io/exp-addons/modules/frames.html). If you want to contribute your frames to the main Lookit codebase, please include YUIdoc-formatted comments following the example of existing frames, e.g. `exp-exit-survey` or `exp-lookit-geometry-alternation`. Make sure to include:
+We use [YUIdoc](http://yui.github.io/yuidoc/) for generating "automatic" documentation of  exp-addons frames, available [here](https://lookit.github.io/exp-addons/modules/frames.html). If you want to contribute your frames to the main Lookit codebase, please include YUIdoc-formatted comments following the example of existing frames, e.g. `exp-exit-survey` or `exp-lookit-geometry-alternation`. Make sure to include:
 
 * A general description of your frame
 * An example of using it (the relevant JSON for a study)
