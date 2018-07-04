@@ -5,7 +5,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from project import settings
+from django.conf import settings
 import attachment_helpers
 
 import hashlib
