@@ -107,9 +107,9 @@ For now, before any fullscreen frames, a frame that extends exp-frame-base-unsaf
 
 Generally, you'll want to show slightly different versions of the study to different participants: perhaps you have a few different conditions, and/or need to counterbalance the order of trials or left/right position of stimuli. To do this, you'll use a special frame called a **randomizer** to select an appropriate sequence of frames for a particular trial. A randomizer frame is automatically expanded to a list of frames, so that for instance you can specify your 12 looking-time trials all at once.
 
-For complete documentation of available randomizers, see [http://centerforopenscience.github.io/exp-addons/modules/randomizers.html](http://centerforopenscience.github.io/exp-addons/modules/randomizers.html).
+For complete documentation of available randomizers, see [https://lookit.github.io/exp-addons/modules/randomizers.html](https://lookit.github.io/exp-addons/modules/randomizers.html).
 
-To use a randomizer frame, set the frame `"kind"` to `"choice"` and `"sampler"` to the appropriate type of randomizer. We will focus here on the most commonly-used and general randomizer type, called [random-parameter-set](http://centerforopenscience.github.io/exp-addons/classes/randomParameterSet.html).
+To use a randomizer frame, set the frame `"kind"` to `"choice"` and `"sampler"` to the appropriate type of randomizer. We will focus here on the most commonly-used and general randomizer type, called [random-parameter-set](https://lookit.github.io/exp-addons/classes/randomParameterSet.html).
 
 To select this randomizer, you need to define a frame that has the appropriate `"kind"` and `"sampler"`:
 
@@ -555,6 +555,6 @@ The `random-parameter-set` randomizer is expected to be general enough to captur
 
 ## Finding and using specific frames
 
-For the most current documentation of individual frames available to use, please see [http://centerforopenscience.github.io/exp-addons/modules/frames.html](http://centerforopenscience.github.io/exp-addons/modules/frames.html) and [http://centerforopenscience.github.io/exp-addons/modules/randomizers.html](http://centerforopenscience.github.io/exp-addons/modules/randomizers.html).
+For the most current documentation of individual frames available to use, please see [https://lookit.github.io/exp-addons/modules/frames.html](https://lookit.github.io/exp-addons/modules/frames.html) and [https://lookit.github.io/exp-addons/modules/randomizers.html](https://lookit.github.io/exp-addons/modules/randomizers.html).
 
 For each frame, you will find an **example** of using it in a JSON schema; documentation of the **properties** which can be defined in the schema; and, under Methods / serializeContent, a description of the **data** this frame records. Any frame-specific **events** that are recorded and may be included in the eventTimings object sent with the data are also described.
