@@ -34,17 +34,10 @@ Before beginning, you will need to install Yarn, a package manager (like npm).
  bower install
 ```
 
-Create or open a file named '.env' in the root of the ember-lookit-frameplayer directory, and add the following entries:
-
-```
-WOWZA_PHP='{"minRecordTime":1,"showMenu":"false","showTimer":"false","enableBlinkingRec":1,"skipInitialScreen":1,"recordAgain":"false","showSoundBar":"true","hideDeviceSettingsButtons":1,"microphoneGain": 60,"connectionstring":"CONNECTIONSTRING"}'
-WOWZA_ASP='{"showMenu":"false","loopbackMic":"true","skipInitialScreen":1,"showSoundBar":"true","snapshotEnable":"false"}'
-```
-A more complete configuration string is available upon request. In this application, we typically use WOWZA_PHP for settings in which a video is actually recorded, and WOWZA_ASP for video preview screens where no video is to be saved. The value of connectionstring is available internally but not committed to Github; it must be replaced with a reference to the streaming server. Other settings are as described in the sample avc_settings.php file provided in the HDFVR installation zip file.
-
-## Video Recording
-If you are using this ember app in conjunction with [lookit-api](https://github.com/CenterForOpenScience/lookit-api), the video recording functionality is taken care of in that repo. If you are not using lookit-api, and wish to use the video capture facilities of Lookit, you will need to place the file `VideoRecorder.swf`
-in your `ember-lookit-frameplayer/public/` folder.  This file can be found in the [ember-build](https://github.com/CenterForOpenScience/lookit-api/tree/develop/ember_build) directory of lookit-api.
+Create or open a file named '.env' in the root of the ember-lookit-frameplayer directory, 
+and add the following entries to use the Pipe WebRTC-based recorder: `PIPE_ACCOUNT_HASH` 
+(reference to account to send video to) and `PIPE_ENVIRONMENT` (which environment, e.g. 
+staging or production). These are available upon request.
 
 ## Running / Development
 

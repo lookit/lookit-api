@@ -1,7 +1,8 @@
 import sys
 import boto3
 import botocore
-from project import settings
+from botocore.exceptions import ClientError
+from django.conf import settings
 
 
 def get_all_study_attachments(study_uuid):
@@ -40,3 +41,31 @@ def get_study_attachments(study, orderby='key', match=None):
     if match:
         attachments = [att for att in attachments if match in att.key]
     return sorted(attachments, key=lambda x: getattr(x, sort), reverse=True if '-' in orderby else False)
+
+def rename_stored_video(old_name, new_name, ext):
+	'''
+	Renames a stored video on S3. old_name and new_name are both without extension ext.
+	Returns 1 if success, 0 if old_name video did not exist. May throw error if 
+	other problems encountered.
+	
+	"url":"https://bucketname.s3.amazonaws.com/vs1457013120534_862.mp4",
+	"snapshotUrl":"https://bucketname.s3.amazonaws.com/vs1457013120534_862.jpg",
+	'''
+	s3 = boto3.resource('s3')
+	old_name_full = old_name + '.' + ext
+	old_name_thum = old_name + '.jpg'
+	new_name_full = new_name + '.' + ext
+	
+	# No way to directly rename in boto3, so copy and delete original (this is dumb, but let's get it working)
+	try: # Create a copy with the correct new name, if the original exists. Could also
+	# wait until old_name_full exists using orig_video.wait_until_exists()
+		s3.Object(settings.BUCKET_NAME, new_name_full).copy_from(CopySource=(settings.BUCKET_NAME + '/' + old_name_full))
+	except ClientError: # old_name_full not found!
+		return False
+	else: # Go on to remove the originals
+		orig_video = s3.Object(settings.BUCKET_NAME, old_name_full)
+		orig_video.delete()
+		# remove the .jpg thumbnail.
+		s3.Object(settings.BUCKET_NAME, old_name_thum).delete()
+	
+	return True

@@ -28,6 +28,4 @@ RUN apt-get update \
 VOLUME /checkouts
 VOLUME /deployments
 
-COPY ./build.sh ./environment ./VideoRecorder.swf /
-
 CMD ["/bin/bash", "/build.sh"]
