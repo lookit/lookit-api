@@ -28,4 +28,6 @@ RUN apt-get update \
 VOLUME /checkouts
 VOLUME /deployments
 
+COPY ./build.sh ./environment /
+
 CMD ["/bin/bash", "/build.sh"]
