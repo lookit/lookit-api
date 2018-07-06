@@ -283,6 +283,14 @@ def cleanup_checkouts(older_than=None):
     cleanup_old_directories(checkouts, older_than)
 
 
+@app.task
+def cleanup_docker_images():
+    logger.debug('Cleaning up docker images...')
+    images = subprocess.run(['docker', 'images', '--quiet', '--filter', 'dangling=true'], stdout=subprocess.PIPE)
+    for image in images.stdout.splitlines():
+        subprocess.run(['docker', 'rmi', '--force', image])
+
+
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_zipfile_of_videos(self, filename, study_uuid, orderby, match, requesting_user_uuid, consent=False):
     from studies.models import Study
