@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, signals
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.http import Http404
@@ -11,12 +11,18 @@ from django.contrib import messages
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
 from revproxy.views import ProxyView
+from django.dispatch import receiver
 
 from accounts import forms
 from accounts.models import Child, DemographicData, User
 from project import settings
 from studies.models import Study, Response
 from localflavor.us.us_states import USPS_CHOICES
+
+
+@receiver(signals.user_logged_out)
+def on_user_logged_out(sender, request, **kwargs):
+    messages.success(request, "You've successfully logged out.")
 
 
 class ParticipantSignupView(generic.CreateView):
