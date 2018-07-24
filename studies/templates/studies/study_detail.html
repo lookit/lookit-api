@@ -139,7 +139,8 @@
                                 <center class="mt-sm">
                                     <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
                                     <h4> View <strong>{{study.completed_responses_count|default:"0" }}</strong> Response{{ study.completed_responses_count|pluralize}}</h4>
-                                    <p> Inspect responses from completed studies </p>
+                                    <p> (plus {{study.incomplete_responses_count|default:"0" }} incomplete)</p>
+                                    <p> Inspect responses from study sessions </p>
                                 </center>
                             </div>
                          </a>
