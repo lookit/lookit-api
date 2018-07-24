@@ -231,6 +231,7 @@ OSF_URL = os.environ.get('OSF_URL', 'https://staging.osf.io/')  # default osf ur
 
 LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL', 'https://localhost:8000/exp/')
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get('ACCOUNT_LOGOUT_REDIRECT_URL', '/api/')
+LOGOUT_REDIRECT_URL = "web:home"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 SOCIALACCOUNT_ADAPTER = 'osf_oauth2_adapter.views.OSFOAuth2Adapter'
 SOCIALACCOUNT_PROVIDERS = \
