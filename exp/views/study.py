@@ -565,7 +565,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        context['n_responses'] = len(context['study'].responses.order_by('id'))
+        context['n_responses'] = len(context['study'].responses.all())
         return context
 
     def build_all_csv(self, responses):
@@ -619,7 +619,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        context['n_responses'] = len(context['study'].responses.order_by('id'))
+        context['n_responses'] = len(context['study'].responses.all())
         return context
 
     def build_all_participant_csv(self, responses):

@@ -67,18 +67,18 @@
             <div class="col-sm-3">
                 {% if active == 'all' %}
                     <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-responses-download-json' pk=study.id %}">
-                        Download all {{ n_responses }} responses as JSON</span>
+                        Download all {{ n_responses }} response{{ n_responses|pluralize }} as JSON</span>
                     </a>
                     <a id='download-all-data-csv' class='hidden btn btn-primary' href="{% url 'exp:study-responses-download-csv' pk=study.id %}">
-                        Download all {{ n_responses }} responses as CSV</span>
+                        Download all {{ n_responses }} response{{ n_responses|pluralize }} as CSV</span>
                     </a>
                 {% endif %}
                 {% if active == 'demographics' %}
                     <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
-                        Download all {{ n_responses }} demographic snapshots as JSON</span>
+                        Download all {{ n_responses }} demographic snapshot{{ n_responses|pluralize }} as JSON</span>
                     </a>
                     <a id='download-all-data-csv' class='hidden btn btn-primary' href="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
-                        Download all {{ n_responses }} demographic snapshots as CSV</span>
+                        Download all {{ n_responses }} demographic snapshot{{ n_responses|pluralize }} as CSV</span>
                     </a>
                 {% endif %}
             </div>
