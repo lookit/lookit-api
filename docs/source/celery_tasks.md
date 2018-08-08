@@ -50,6 +50,10 @@ This task downloads videos from MIT's Amazon S3 bucket, zips them up, uploads th
 
 This finds build directories older than a day and deletes them. It's scheduled to run every morning at 2am.
 
+## `cleanup_docker_images`
+
+This finds unused docker images from previous builds and deletes them. It's scheduled to run every morning at 3am.
+
 ## `cleanup_checkouts`
 
 This finds checkout (extracted archives of github repos) directories older than a day and deletes them. It's scheduled to run every morning at 4am.

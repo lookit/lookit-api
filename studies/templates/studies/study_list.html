@@ -144,7 +144,7 @@
                       <strong><span class="hidden-sm">Last</span> Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
                   </div>
 
-                  <a href="{% url 'exp:study-responses-list' study.id %}">
+                  <a href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
                       <div class="col-sm-3">
                           <strong> Compl<span class="hidden-sm hidden-md">eted</span> Responses: </strong> {{ study.completed_responses_count }}
                       </div>
