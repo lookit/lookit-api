@@ -7,7 +7,7 @@ Welcome to Lookit's documentation!
 ==========================================
 
 **This documentation is a work in progress.** To contribute, submit a PR to
-`lookit/lookit-api <https://github.com/lookit/lookit-api/tree/develop>`_.
+`lookit/lookit-api <https://github.com/lookit/lookit-api/tree/develop>` in accordance with the Lookit Contributor Guidelines.
 
 The `lookit-api codebase <https://github.com/lookit/lookit-api>`_ contains
 what were previously separate Experimenter and Lookit applications. Experimenter is a
@@ -38,3 +38,4 @@ Contents:
    permissions
    workflow
    celery_tasks
+   contributor-guidelines
