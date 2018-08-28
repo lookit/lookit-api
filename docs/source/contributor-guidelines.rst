@@ -2,7 +2,9 @@
 Lookit Guidelines for Contributors
 ==================================
 
-Interested in helping write the code which powers the Lookit platform?  Thanks for supporting open source science!  This page describes the process any would-be contributor should plan to use.  We have included some beginner-friendly details in case you are new to open source projects.
+Interested in helping write the code behind the Lookit platform?  Thanks for supporting open source science!  The Lookit project has three different code repos.  The content of this page applies to all of the repos: `lookit-api` (Lookit site), `ember-lookit-frameplayer` (system for displaying experiments), and `exp-addons` (specific frames).
+
+This page describes the process any would-be contributor should plan to use.  We have included some beginner-friendly details in case you are new to open source projects.
 
 At a high level, you should plan to make feature-specific branches off of the `develop` branch of a local copy of the code running on your own machine.  This will keep the codebase as clean as possible.  Before submitting a PR, merge in the most recent changes from the `develop` branch.  
 
@@ -20,39 +22,34 @@ Fork the project on GitHub and git clone your fork, e.g.:
 
 SSH::
 
-    git clone <username>@github.com:<username>/lookit-api.git
+    git clone <username>@github.com:<username>/<reponame>.git
     
 HTTPS::
 
-    git clone https://github.com/<username>/lookit-api.git
+    git clone https://github.com/<username>/<reponame>.git
 
 Start a `virtualenv`
 ~~~~~~~~~~~~~~~~~~~~
 
-Replace `/path/to/python3` with the appropriate filepath::
+Make sure to start a virtual environment so that you have the expected project configuration.
 
-    $ cd lookit-api
-    $ virtualenv -p /path/to/python3 lenv
-    $ . lenv/bin/activate
-
-You may want to configure a global .gitignore on your machine and include your virtualenv along with any files specific to your system.  A sample global .gitignore is available here https://gist.github.com/octocat/9257657 -- you can tell git to globally ignore a .gitignore file via::
+You may want to configure a global .gitignore on your machine and include your virtualenv(s) along with any files specific to your system.  A sample global .gitignore is available here https://gist.github.com/octocat/9257657 -- you can tell git to globally ignore a .gitignore file via::
 
     git config --global core.excludesfile ~/path/to/your/.gitignore_global
 
 Install dependencies
 ~~~~~~~~~~~~~~~~~~~~
 
-The project dependencies listed in `requirements/defaults.txt` can be installed with pip::
+Depending on whether you are contributing to `lookit-api`, `ember-lookit-frameplayer` or `exp-addons`, you will have different dependencies.  Please refer to the repo-specific installation instructions.
 
-    (lenv) $ pip install --upgrade pip
-    (lenv) $ pip install -r requirements/defaults.txt
+Lookit API: Add your own feature and submit a Pull Request
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Add your own feature and submit a Pull Request
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The following instructions describe how to submit a pull request to the `lookit-api` codebase.  
 
-Keep your commit history clean and merge process simple by following these steps before starting on any new feature::
+Keep your commit history clean and merge process simple by following these steps before starting on any new feature.
 
-One time only, add this repo as a remote to your fork, e.g.::
+One time only, add the repo as a remote to your fork, e.g., if you are contributing to `lookit-api` you would run a command like this::
 
 SSH::
 
@@ -69,7 +66,9 @@ Anytime a PR is merged or changes are pushed (or you're starting this process fo
 
 in order to make sure you are working with an up-to-date copy of the `develop` branch.
 
-Once you have the most recent `develop` code, create a new branch (off of `develop`) for your new feature.  Note: our project convention is to prepend `feature/` or `hotfix/` to the feature or issue name for a richer annotation of the commit history.  If you want to create a new validation feature, for example, you might name it like this::
+Once you have the most recent `develop` code, pick an issue (or create a new one) which your new feature will address and create a new branch off of `develop`.  Note: our project convention is to prepend `feature/` or `hotfix/` to the feature or issue name for a richer annotation of the commit history.  
+
+If you want to create a new validation feature, for example, you might name it like this::
 
     git checkout -b feature/my-validation-feature
 
@@ -79,9 +78,6 @@ Now you can run `git branch` and should see an output like this::
       develop
       master
     * feature/my-validation-feature
-
-
-Pick an issue (or create a new one) which your new feature will address.
 
 Proceed with writing code.  Commit frequently!  Focus on writing very clear, concise commit statements and plentiful comments.  If you have poor comments or zero tests, your PR will not be merged.
 
@@ -106,10 +102,10 @@ then click `new pull request`.   Change the base to `develop` and the compare to
 
 IMPORTANT: WHEN YOUR PR IS ACCEPTED, stop using your branch right away (or delete it altogether).  New features (or enhanced versions of your existing feature) should be created on brand new branches (after pulling in all the fresh changes from `develop`).
 
-Editing the Documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Editing the Lookit API Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Lookit project documentation lives in the following directory::
+Lookit API project documentation lives in the following directory::
 
     /lookit-api/docs/source
 
@@ -124,18 +120,3 @@ From inside the `lookit-api` folder::
     (denv) /lookit-api/docs$ make clean singlehtml
 
 Navigate to the index.html file from your favorite browser to inspect the docs.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
