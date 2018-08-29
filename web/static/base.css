@@ -194,6 +194,10 @@ button.login-row {
     width: 180px;
 }
 
+.app-password-reset .btn {
+    margin-top: 1.5em;
+}
+
 /* Account */
 .account-item {
     padding: 25px;

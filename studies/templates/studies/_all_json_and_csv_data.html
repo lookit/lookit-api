@@ -51,14 +51,10 @@
     </div>
     <div class="row">
         <div class="col-xs-12">
-            {% if all_responses %}
-                {% include 'studies/_response_nav_tabs.html' with active=active %}
-            {% else %}
-                <p class="pt-md"><em>No responses recorded! </em></p>
-            {% endif %}
+        	{% include 'studies/_response_nav_tabs.html' with active=active %}
         </div>
     </div>
-    {% if all_responses %}
+	{% if n_responses %}
         <div class='row pt-xl'>
             <div class="col-sm-3">
                 <div class="form-group">
@@ -71,22 +67,28 @@
             <div class="col-sm-3">
                 {% if active == 'all' %}
                     <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-responses-download-json' pk=study.id %}">
-                        Download All Responses as JSON</span>
+                        Download all {{ n_responses }} response{{ n_responses|pluralize }} as JSON</span>
                     </a>
                     <a id='download-all-data-csv' class='hidden btn btn-primary' href="{% url 'exp:study-responses-download-csv' pk=study.id %}">
-                        Download All Responses as CSV</span>
+                        Download all {{ n_responses }} response{{ n_responses|pluralize }} as CSV</span>
                     </a>
                 {% endif %}
                 {% if active == 'demographics' %}
                     <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
-                        Download All Demographic Snapshots as JSON</span>
+                        Download all {{ n_responses }} demographic snapshot{{ n_responses|pluralize }} as JSON</span>
                     </a>
                     <a id='download-all-data-csv' class='hidden btn btn-primary' href="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
-                        Download All Demographic Snapshots as CSV</span>
+                        Download all {{ n_responses }} demographic snapshot{{ n_responses|pluralize }} as CSV</span>
                     </a>
                 {% endif %}
             </div>
         </div>
+    {% else %}
+    	<div class="row">
+    		<div class="col-xs-12">
+    			<p class="pt-md"><em>No responses recorded!</em></p>
+    		</div>
+    	</div>
     {% endif %}
 </div>
 {% endblock %}

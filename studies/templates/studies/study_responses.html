@@ -102,11 +102,7 @@
     </div>
     <div class="row">
         <div class="col-xs-12">
-            {% if responses %}
-                {% include 'studies/_response_nav_tabs.html' with active="individual" %}
-            {% else %}
-                <p class="pt-md"><em>No responses recorded! </em></p>
-            {% endif %}
+            {% include 'studies/_response_nav_tabs.html' with active="individual" %}
         </div>
     </div>
     {% if responses %}
@@ -187,13 +183,19 @@
 
                                 </form>
                             {% empty %}
-                                <p><em> Expect delays for any video attachments to be available for download. </em></p>
+                                <p><em> Expect a delay of a few minutes for video attachments to be available for download. </em></p>
                             {% endfor %}
                         </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
+    {% else %}
+        <div class="row">
+        	<div class="col-xs-12">
+                <p class="pt-md"><em>No responses recorded!</em></p>
+        	</div>
+    	</div>
     {% endif %}
 </div>
 {% endblock %}
