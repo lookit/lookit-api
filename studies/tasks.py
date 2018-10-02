@@ -316,26 +316,25 @@ def build_zipfile_of_videos(self, filename, study_uuid, orderby, match, requesti
     # get the bucket
     gs_private_bucket = gs_client.get_bucket(settings.GS_PRIVATE_BUCKET_NAME)
     # instantiate a blob for the file
-    gs_blob = gc_storage.blob.Blob(zip_filename, gs_private_bucket)
+    gs_blob = gc_storage.blob.Blob(zip_filename, gs_private_bucket, chunk_size=256*1024*1024)  # 256mb
 
     # if the file exists short circuit and send the email with a 30m link
     if not gs_blob.exists():
         # if it doesn't exist build the zipfile
         with tempfile.TemporaryDirectory() as temp_directory:
             zip_file_path = os.path.join(temp_directory, zip_filename)
-            zip = zipfile.ZipFile(zip_file_path, 'w')
-            for attachment in attachments:
-                temporary_file_path = os.path.join(temp_directory, attachment.key)
-                file_response = requests.get(
-                    attachment_helpers.get_download_url(attachment.key),
-                    stream=True
-                )
-                local_file = open(temporary_file_path, mode='w+b')
-                for chunk in file_response.iter_content(8192):
-                    local_file.write(chunk)
-                local_file.close()
-                zip.write(temporary_file_path, attachment.key)
-            zip.close()
+            with zipfile.ZipFile(zip_file_path, 'w') as zip:
+                for attachment in attachments:
+                    temporary_file_path = os.path.join(temp_directory, attachment.key)
+                    file_response = requests.get(
+                        attachment_helpers.get_download_url(attachment.key),
+                        stream=True
+                    )
+                    with open(temporary_file_path, mode='w+b') as local_file:
+                        for chunk in file_response.iter_content(8192):
+                            local_file.write(chunk)
+                    zip.write(temporary_file_path, attachment.key)
+                    os.remove(temporary_file_path)
 
             # upload the zip to GoogleCloudStorage
             gs_blob.upload_from_filename(zip_file_path)
