@@ -7,3 +7,5 @@ This is the codebase for the Lookit project, an online developmental laboratory.
 `master` Build Status: [![Build Status](https://travis-ci.org/lookit/lookit-api.svg?branch=master)](https://travis-ci.org/lookit/lookit-api)
 
 `develop` Build Status: [![Build Status](https://travis-ci.org/lookit/lookit-api.svg?branch=develop)](https://travis-ci.org/lookit/lookit-api)
+
+[![Codetree](https://codetree.com/images/managed-with-codetree.svg)](https://codetree.com/projects/h9M5)
