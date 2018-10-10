@@ -81,26 +81,31 @@ Next, push all your local changes to your own fork. You should push your code (m
 When your branch is ready (e.g., has comments and tests), submit a Pull Request! To do this, go to GitHub, navigate to your fork (in this case the github extension should be /your-username/lookit-api), 
 then click `new pull request`.   Change the base to `develop` and the compare to `feature/my-validation-feature`. Finally, click `Create pull request` and describe the changes you have made. Your pull request will be reviewed by Lookit staff; changes may be requested before changes are merged into the develop branch. To allow Lookit staff to add changes directly to your feature branch, follow the directions here: https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/
 
-IMPORTANT: WHEN YOUR PR IS ACCEPTED, stop using your branch right away (or delete it altogether).  New features (or enhanced versions of your existing feature) should be created on brand new branches (after pulling in all the fresh changes from `develop`).
+IMPORTANT: WHEN YOUR PR IS ACCEPTED, stop using your branch right away (or delete it altogether).  New features (or enhanced versions of your existing feature) should be created on brand new branches (after pulling in all the fresh changes from ``develop``).
 
 
 Editing the Lookit documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Documentation for use of the Lookit platform (what you're reading now!), including *both* the Django site lookit-api and the Ember application ember-lookit-frameplayer used for the actual studies, lives in the lookit-api repo:
+Documentation for use of the Lookit platform (what you're reading now!), including *both* the Django site lookit-api and the Ember application ember-lookit-frameplayer used for the actual studies, lives in the lookit-api repo under ``/lookit-api/docs/source``.
 
-    /lookit-api/docs/source
+The file ``index.rst`` contains the table of contents (look for ``toctree``).
+
+If you are making substantial changes, you will want to take a look at how those changes look locally by using Sphinx to build your own local copy of the documentation. To do this, first create another virtual environment and install the requirements for Sphinx there: 
+
+::
+
+    /lookit-api $ virtualenv -p python3 denv
+    /lookit-api $ source denv/bin/activate
+    (denv) /lookit-api $ pip install -r docs/requirements.txt
     
-The file `index.rst` contains the table of contents (look for `toctree`).  
+You can then build the docs from within the ``docs` directory:
 
-If you'd like to use Sphinx to build the documentation locally, activate another virtual environment and install the requirements for Sphinx.
+::
 
-From inside the `lookit-api` folder::
+    (denv) /lookit-api/docs $ make html
 
-    (denv) /lookit-api/$ pip install -r lookit-api/docs/requirements.txt
-    (denv) /lookit-api/$ cd docs
-    (denv) /lookit-api/docs$ make clean singlehtml
+Navigate to ``docs/index.html`` from your favorite web browser to inspect the docs.
 
-Navigate to the index.html file from your favorite browser to inspect the docs.
-
-If you are *only* editing the documentation, please submit a PR to lookit-api/current-docs rather than lookit-api/develop. This allows us to do more casual review. (Eventually, yes, the docs can be separate.) Then your changes can immediately be shown at https://lookit.readthedocs.io/, without triggering deployment of the staging server. 
+If you are *only* editing the documentation, please submit a PR to the ``lookit-api/current-docs`` branch rather than ``lookit-api/develop``. This allows us to do more casual and faster review of your changes, as merging them in will update the docs automatically served by
+ReadTheDocs at https://lookit.readthedocs.io without triggering deployment of the staging server. (TODO: Eventually, yes, the docs can be in a separate repo or subrepo.)
