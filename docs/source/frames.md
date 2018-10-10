@@ -139,6 +139,8 @@ If you want to save the value of a configuration variables, you can reference it
 For example, this can be useful if your experiment randomly chooses some frame behavior when it loads for the user, and
 you want to save and track what value was chosen.
 
+It is important that any fields you define in `data` be named in camelCase: they can be all lowercase or they can be writtenLikeThis, but they should not start with capital letters or include underscores. This is because the fields from the Ember app will be converted to snake\_case for storage in the Postgres database, and may be converted back if another frame in Ember uses values from past sessions. We are fine if we go `fieldName` -> `field_name` -> `fieldName`, but anything else gets dicey! (Note to future developers: some conversations about this decision are available if this becomes a point of concern.)
+
 #### Building out the Example
 
 Let's add some basic functionality to this 'frame'. First define some of the expected parameters:
