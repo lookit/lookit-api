@@ -113,13 +113,16 @@ To use a randomizer frame, set the frame `"kind"` to `"choice"` and `"sampler"` 
 
 To select this randomizer, you need to define a frame that has the appropriate `"kind"` and `"sampler"`:
 
-```json
-
-"frames": {
-    "test-trials": {
-        "sampler": "random-parameter-set",
-        "kind": "choice",
+```
+{
+    ...
+    "frames": {
         ...
+        "test-trials": {
+            "sampler": "random-parameter-set",
+            "kind": "choice",
+            ...
+        }
     }
 }
 
@@ -254,32 +257,32 @@ Notice that since both of the frames in the `frameList` were of the same kind, w
 
 When the "instruct-and-manip" randomizer is evaluated, the Lookit experiment player will start with the frameList and add the key-value pairs in commonFrameProperties to each frame (not overwriting existing pairs):
 
-```json
+```javascript
 [
 	{
 		"kind": "exp-lookit-text",
- 	"blocks": [
-		{
-			"text": "Some introductory text about this study."
-		},
-		{
- 		"text": "INTROTEXT"
- 	}
-],
- 	"showPreviousButton": false
+        "blocks": [
+            {
+                "text": "Some introductory text about this study."
+            },
+            {
+                "text": "INTROTEXT"
+            }
+        ],
+        "showPreviousButton": false
  	},
 	{
 		"kind": "exp-lookit-text",
- 	"blocks": [
-		{
- 			"text": "MANIP-TEXT-1"
- 		},
-		{
- 			"text": "MANIP-TEXT-2"
- 		}
-	],
- 	"showPreviousButton": true
- 	}
+        "blocks": [
+            {
+                "text": "MANIP-TEXT-1"
+            },
+            {
+                "text": "MANIP-TEXT-2"
+            }
+        ],
+        "showPreviousButton": true
+    }
 ]
 ```
 
@@ -297,31 +300,31 @@ Suppose that in this case the second parameter set is selected:
 
 Now we return to the list of frames, and wherever any value matches one of the keys in the `parameterSet` (even if that value is nested in another object), it is replaced by the corresponding value from the `parameterSet`, yielding the following final list of frames:
 
-```json
+```
 [
 	{
 		"kind": "exp-lookit-text",
- 	"blocks": [
-		{
-			"text": "Some introductory text about this study."
-		},
-		{
- 		"text": "Here's what's going to happen! You're going to think about how disgusting broccoli is."
- 	}
-],
- 	"showPreviousButton": false
+        "blocks": [
+            {
+                "text": "Some introductory text about this study."
+            },
+            {
+                "text": "Here's what's going to happen! You're going to think about how disgusting broccoli is."
+            }
+        ],
+ 	    "showPreviousButton": false
  	},
 	{
 		"kind": "exp-lookit-text",
- 	"blocks": [
-		{
- 			"text": "Think about how disgusting broccoli is."
- 		},
-		{
- 			"text": "It is so yucky!"
- 		}
-	],
- 	"showPreviousButton": true
+        "blocks": [
+            {
+                "text": "Think about how disgusting broccoli is."
+            },
+            {
+                "text": "It is so yucky!"
+            }
+        ],
+ 	    "showPreviousButton": true
  	}
 ]
 ```
@@ -402,7 +405,7 @@ Here's an example. Notice that `"kind": "choice"`, `"sampler": "random-parameter
 
 To evaluate this experiment frame, the Lookit experiment player starts with the list of frames in the outer `frameList`, adding the key:value pairs in the outer `commonFrameProperties` to each frame, which yields the following list of frames:
 
-```json
+```
 [
         {
 		"parameterSets": [
@@ -468,7 +471,7 @@ To evaluate this experiment frame, the Lookit experiment player starts with the 
 One of the two (outer) `parameterSets` is then selected randomly; suppose the second one (aquatic instead of land animals) is selected. Now any substitutions are made based on the keys in this parameterSet. The first frame in the sequence is now:
 
 ```json
-        {
+    {
 		"parameterSets": [
              	{
                		"NTRIAL": 1,
@@ -501,7 +504,7 @@ One of the two (outer) `parameterSets` is then selected randomly; suppose the se
 
 Next, each frame is expanded since it is in turn another randomizer (due to ``"sampler": "random-parameter-set"``). The frame above, representing Trial 1, will be turned into three frames. First, again, we start with the `frameList`, and merge the `commonFrameProperties` into each frame:
 
-```json
+```
  [
  	{
 		"nPhase": 1,
@@ -525,9 +528,9 @@ Next, each frame is expanded since it is in turn another randomizer (due to ``"s
 
 ```
 
-Finally, a parameter set is selected from `parameterSets`. Only one parameter set is defined for this trial, which is deliberate; it simply selects the correct stimuli for this trial.  Substituting in the values from the parameter set yields the following frames:
+Finally, a parameter set is selected from `parameterSets`. Only one parameter set is defined for this trial, which is deliberate; it simply selects the correct stimuli for this trial.  Substituting in the values from the parameter set yields the following list of frames:
 
-```json
+```
 [
  	{
 		"nPhase": 1,

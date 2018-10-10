@@ -22,20 +22,15 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
-   definitions
-   api-documentation
+   for-researchers
+   
+   developing-frames
+   
    django-project-installation
    ember-app-installation
-   local-frame-development
-   experimenter
-   experiments
-   experimentdata
-   video_capture
-   stimuli
-   frames
-   mixins
-   random
-   permissions
-   workflow
-   celery_tasks
+   
+   lookit-api
+   
    contributor-guidelines
+   
+   definitions

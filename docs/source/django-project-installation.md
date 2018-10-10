@@ -1,6 +1,8 @@
-# Django Project Local Installation
+# Installation: lookit-api (Django project)
 
-This is the codebase for Experimenter and Lookit.  Experimenter is a platform for designing and administering research studies, meant for researchers. The Lookit platform is participant-facing, where users can signup and take part in studies. It is built using Django, PostgreSQL, and Ember.js (see Ember portion of codebase, [ ember-lookit-frameplayer](https://github.com/CenterForOpenScience/ember-lookit-frameplayer)), and is developed by the [Center for Open Science](https://cos.io/).
+This is the codebase for Experimenter and Lookit, excluding the actual studies themselves. Any functionality you see as a researcher or a participant (e.g., signing up, adding a child, editing or deploying a study, downloading data) is part of the ``lookit-api`` repo.  The Experimenter platform is the part of this project for designing and administering research studies, meant for researchers. The Lookit platform is participant-facing, where users can signup and take part in studies. This project is built using Django and PostgreSQL. (The studies themselves use Ember.js; see Ember portion of codebase, [ ember-lookit-frameplayer](https://github.com/CenterForOpenScience/ember-lookit-frameplayer).), It was initially developed by the [Center for Open Science](https://cos.io/).
+
+If you install only the ``lookit-api`` project locally, you will be able to edit any functionality that does not require actual study participation. For instance, you could contribute an improvement to how studies are displayed to participants or create a new CSV format for downloading data as a researcher.
 
 > Note: These instructions are for Mac OS. Installing on another OS? Please consider
 documenting the exact steps you take and submitting a PR to the lookit-api repo to update the documentation!

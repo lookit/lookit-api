@@ -1,4 +1,4 @@
-# Workflow
+# Workflow: managing study states
 
 ## Why Transitions
 
@@ -8,12 +8,12 @@ It's both very powerful and very simple. It's definition is a python dictionary 
 
 ## How
 
-The workflow is defined in `studies/workflow.py` in a dictionary called `transitions`. Here is a [gist](https://gist.github.com/cwisecarver/7335d99f04fa412a1004c72e2b979e34) that explains how the pieces fit together.
+The workflow is defined in ``studies/workflow.py`` in a dictionary called ``transitions``. Here is a [gist](https://gist.github.com/cwisecarver/7335d99f04fa412a1004c72e2b979e34) that explains how the pieces fit together.
 
 
 ## Make a diagram
 
-To make a workflow diagram in png format start a shell plus instance with `python manage.py shell_plus` and execute the following:
+To make a workflow diagram in png format start a shell plus instance with ``python manage.py shell_plus`` and execute the following:
 
 ```python
 # get a study you'd like to diagram
@@ -27,4 +27,4 @@ s.machine.get_graph(show_roi=True).draw('roi_diagram.png', prog='dot')
 
 ## Logging
 
-There is a `_finalize_state_change` method on the `Study` model. It fires after every workflow transition. It saves the model with it's updated `state` field and also creates a `StudyLog` instance making record of the transition. This callback would be the optimal place to add functionality that needs to happen after every workflow transition.
+There is a ``_finalize_state_change`` method on the ``Study`` model. It fires after every workflow transition. It saves the model with its updated ``state`` field and also creates a ``StudyLog`` instance making record of the transition. This callback would be the optimal place to add functionality that needs to happen after every workflow transition.

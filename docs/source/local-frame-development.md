@@ -1,10 +1,14 @@
 # Setup for local frame development
 
-These are the instructions for previewing or participating in a study locally. We need to install *both* the the Django app (`lookit-api``) and the Ember app (`ember-lookit-frameplayer`), tell them how to talk to each other, and run both of those servers locally.  In Experimenter, we need to add an organization to our superuser, and then add a child and demographic data.  We then create a study locally. The exp-player needs to be linked for local development, and a token added to the headers of the API requests the `ember-lookit-frameplayer` is sending.  We can then navigate directly to the study from the ember app to bypass the build process locally.  This will enable you to make changes to frames locally and rapidly see the results of those changes.
+Suppose that for your study, you need a frame that's not part of the standard exp-addons library. Maybe you want to use a particular game you've already implemented in Javascript, or you want to slightly change how one of the existing frames works, or you want to hard-code a particular complicated counterbalancing scheme. That's okay! You can add a new frame to your own version of the exp-addons repository, and tell Experimenter to use your Github fork of exp-addons when building your study. But for efficiency, you will probably want to run Lookit on your own computer as you implement your new frame, so that you can test out changes immediately rather than repeatedly pushing your changes to Github and re-building your study on Experimenter. These instructions will walk you through setting up to run Lookit locally. 
+
+## Overview
+
+Even though we will probably just be changing the frame definitions in exp-addons, we will need to install *both* the the Django app (``lookit-api``) and the Ember app (``ember-lookit-frameplayer``), tell them how to talk to each other, and run both of those servers locally. In Experimenter, we need to add an organization to our superuser, and then add a child and demographic data.  We then create a study locally. The exp-player needs to be linked for local development, and a token added to the headers of the API requests the ``ember-lookit-frameplayer`` is sending.  We can then navigate directly to the study from the ember app to bypass the build process locally.  This will enable you to make changes to frames locally and rapidly see the results of those changes, participating in a study just as if you were a participant on the Lookit website.
 
 ## Django App steps
 
-1. Install the [django app](django-project-installation.html) locally. Run the server.
+1. Follow the instructions to install the [django app](django-project-installation.html) locally. Run the server.
 
 2. Navigate to <http://localhost:8000/admin/> to login to Experimenter's admin app. You should be redirected to login.  Use the superuser credentials created in the django installation steps.
 
@@ -34,7 +38,7 @@ as a token for accessing the API.  Leave the django server running and switch to
 
 ## Ember App steps
 
-1. Install the [ember app](ember-app-installation.html) locally. 
+1. Follow the instructions to install the [ember app](ember-app-installation.html) locally. 
 
 2. If you are going to be making changes to frames, you should use `npm link` for local development. This allows you to make changes to the code without having to push to github.
     In the terminal:
@@ -76,7 +80,7 @@ as a token for accessing the API.  Leave the django server running and switch to
 
 ## Starting up once initial setup is completed
 
-This is much quicker (you don't need to go through the above steps every time you want to work on something).
+This is much quicker! Once you have gotten through the initial setup steps, you don't need to go through them every time you want to work on something.
 
 1. Start the Django app:
     ```
@@ -99,13 +103,13 @@ When you are previewing a study, the responses to the study will not be saved.  
 
 To fetch the identifier of the study, you can use the API. To fetch studies, navigate to <http://localhost:8000/api/v1/studies>.  Copy the id of the study you created earlier.
 
-Now, you can navigate to <http://localhost:4200/exp/studies/study_id/preview>, replacing study_id with the id you obtained from the API.
+Now, you can navigate to <http://localhost:4200/exp/studies/study_id/preview>, replacing study_id with the id you obtained from the API. (For simplicity, bookmark this link while you're working!)
 
 ## Participating in a study
 
 To participate in a study locally, you need demographic data and a child attached to the logged in user, as well as a study. Video data is saved and responses are saved to your local server.  The URL for participating is `studies/study_uuid/child_uuid`. To fetch studies, navigate to <http://localhost:8000/api/v1/studies/>.  Copy the id of the study you created earlier.  To fetch children, navigate to <http://localhost:8000/api/v1/children/>. Copy the id of your child.
 
-Finally, to participate in a study, navigate to <http://localhost:4200/studies/study_id/child_id>, replacing study_id and child_id with the ids you obtained from the API.
+Finally, to participate in a study, navigate to <http://localhost:4200/studies/study_id/child_id>, replacing study_id and child_id with the ids you obtained from the API. (For simplicity, bookmark this link while you're working!)
 
 ## Using https
 

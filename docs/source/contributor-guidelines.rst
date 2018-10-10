@@ -1,12 +1,12 @@
 ==================================
-Lookit Guidelines for Contributors
+Guidelines for Contributors
 ==================================
 
-Interested in helping write the code behind the Lookit platform?  Thanks for supporting open source science!  The Lookit project has three different code repos.  The content of this page applies to all of the repos: `lookit-api` (Lookit site), `ember-lookit-frameplayer` (system for displaying experiments), and `exp-addons` (specific frames, subrepo of ember-lookit-frameplayer).
+Interested in helping write the code behind the Lookit platform?  Thanks for supporting open source science!  The Lookit project has three different code repos.  The content of this page applies to all of the repos: ``lookit-api`` (Lookit site), ``ember-lookit-frameplayer`` (system for displaying experiments), and ``exp-addons`` (specific frames, subrepo of ember-lookit-frameplayer).
 
 This page describes the process any would-be contributor should plan to use.  We have included some beginner-friendly details in case you are new to open source projects.
 
-At a high level, you should plan to make feature-specific branches off of the `develop` branch of a local copy of the code running on your own machine.  This will keep the codebase as clean as possible.  Before submitting a PR, merge in the most recent changes from the `develop` branch.  
+At a high level, you should plan to make feature-specific branches off of the ``develop`` branch of a local copy of the code running on your own machine.  This will keep the codebase as clean as possible.  Before submitting a PR, merge in the most recent changes from the ``develop`` branch.  
 
 Getting started
 ~~~~~~~~~~~~~~~~~~~
@@ -28,7 +28,7 @@ The following instructions describe how to submit a pull request to the `lookit-
 
 Keep your commit history clean and merge process simple by following these steps before starting on any new feature.
 
-One time only, add the repo as a remote to your fork, e.g., if you are contributing to `lookit-api` you would run a command like this::
+One time only, add the repo as a remote to your fork, e.g., if you are contributing to `lookit-api` you would run a command like this:
 
 SSH::
 
@@ -91,17 +91,13 @@ Documentation for use of the Lookit platform (what you're reading now!), includi
 
 The file ``index.rst`` contains the table of contents (look for ``toctree``).
 
-If you are making substantial changes, you will want to take a look at how those changes look locally by using Sphinx to build your own local copy of the documentation. To do this, first create another virtual environment and install the requirements for Sphinx there: 
-
-::
+If you are making substantial changes, you will want to take a look at how those changes look locally by using Sphinx to build your own local copy of the documentation. To do this, first create another virtual environment and install the requirements for Sphinx there::
 
     /lookit-api $ virtualenv -p python3 denv
     /lookit-api $ source denv/bin/activate
     (denv) /lookit-api $ pip install -r docs/requirements.txt
     
-You can then build the docs from within the ``docs` directory:
-
-::
+You can then build the docs from within the ``docs`` directory::
 
     (denv) /lookit-api/docs $ make html
 

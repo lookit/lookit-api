@@ -1,6 +1,13 @@
 #################
-API Documentation
+Using the API
 #################
+
+=======================
+What is the API for?
+=======================
+Using the Lookit API allows you to programatically retrieve or update data (other than video data), rather than manually downloading JSON or CSV files from the Experimenter site. It is also currently the only way to update feedback to participants, although a way to do that on the Experimenter site is coming soon!
+
+Researchers do not in general need to use the API in order to use Lookit to run their studies, but it is available if needed. 
 
 =========
 API Tips
@@ -8,7 +15,7 @@ API Tips
 -------
 General
 -------
-Most endpoints in this API are just meant for retrieving data. Typically, you can retrieve data associated with studies you have permission to view, or view any data that belongs to you.  You can only create *responses* and *feedback* through the API.  You can only update *responses* and *feedback* through the API.  There is *nothing* that is permitted to be deleted through the API.
+Most endpoints in this API are just meant for retrieving data. Typically, you can retrieve data associated with studies you have permission to view, or view any data that belongs to you.  You can only create *responses* and *feedback* through the API.  You can only update *responses* and *feedback* through the API.  There is *nothing* that is permitted to be deleted through the API. For a set of sample functions using the API from Python, please see https://github.com/kimberscott/lookit-data-processing/blob/coding-workflow-multilab/scripts/experimenter.py
 
 ---------------
 API Formatting
@@ -99,7 +106,7 @@ Authentication
 ---------------
 We are using a token-based HTTP Authentication scheme.
 
-- Go to Experimenter's admin app to create a token `/admin/authtoken/token/add/` (Only users marked as "Staff" can access the admin app.)
+- Go to Experimenter's admin app to create a token `/admin/authtoken/token/add/` (Only users marked as "Staff" can access the admin app; for now please ask Kim to provide you with a token.)
 
 .. image:: _static/img/add_token.png
     :alt: Add token image

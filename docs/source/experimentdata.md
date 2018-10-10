@@ -84,14 +84,12 @@ These properties are described below:
 - *globalEventTimings*: A list of events recorded during the study, not tied to a particular frame. Currently used for recording early exit from the study; an example value is
 
 ```json
-"globalEventTimings": [
-        {
-            "exitType": "browserNavigationAttempt",
-            "eventType": "exitEarly",
-            "lastPageSeen": 0,
-            "timestamp": "2016-11-28T20:00:13.677Z"
-        }
-    ]
+    {
+        "exitType": "browserNavigationAttempt",
+        "eventType": "exitEarly",
+        "lastPageSeen": 0,
+        "timestamp": "2016-11-28T20:00:13.677Z"
+    }
 ```
 
 ### Example `expData`
