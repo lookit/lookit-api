@@ -36,6 +36,8 @@ important field is the `structure`, where you define the frames and the sequence
 Now we have a superuser with an organization, that has attached demographic data, and a child.  We've created a study, as well
 as a token for accessing the API.  Leave the django server running and switch to a new tab in your console.
 
+> Remember: The OAuth authentication used for access to Experimenter does not work when running locally. You can access Experimenter by first logging in as your superuser, or by giving another local user researcher permissions using the Admin app.
+
 ## Ember App steps
 
 1. Follow the instructions to install the [ember app](ember-app-installation.html) locally. 
