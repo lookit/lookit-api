@@ -242,13 +242,35 @@ Notice the new property `consentNotGranted`; this will require a new computed fi
 });
 ```
 
-### Tips and tricks
+### Adding CSS styling
 
-#### Using mixins
+You will probably want to add custom styles to your frame, in order to control the size, placement, and color of elements. Experimenter uses a common web standard called [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) for
+styles.*
+
+To add custom styles for a pre-existing component, you will need to create a file `<component-name.scss>` in the
+`addon/styles/components` directory of `exp-addons`. Then add a line to the top of `addon/styles/addon.scss`, telling
+it to use that style. For example,
+
+`@import "components/exp-video-physics";`
+
+Remember that anything in exp-addons is shared code. Below are a few good tips to help your addon stay isolated and distinct, so that it does not affect other projects.
+
+- To protect other frames from being affected by your new styles, add a class of the same name as your frame (e.g., `exp-myframe`) to the div enclosing your component. Then prefix *every* rule in your .scss file with `.exp-myframe` to ensure that only your own frame is affected. Until we have a better solution, this practice will be enforced if you submit a pull request to add your frames to the common Lookit exp-addons repo.
+
+- To help protect your *own* frame's styling from possible future style changes (improperly) added by other people, you can give new classes and IDs in your component a unique prefix, so that they don't inadvertently overlap with styles for other things. For example, instead of `video-widget` and `should-be-centered`, use names like `exp-myframe-video-widget` and `exp-myframe-should-be-centered`.
+
+\* You may notice that style files have a special extension `.scss`. That is because styles in experimenter are
+actually written in [SASS](http://sass-lang.com/). You can still write normal CSS just fine, but SASS provides
+additional syntax on top of that and can be helpful for power users who want complex things (like variables).
+
+
+### Using mixins
+
+Sometimes, you will wish to add a preset bundle of functionality to any arbitrary experiment frame. The Experimenter
+platform provides support for this via *mixins*. 
 
 To use a mixin for video recording, fullscreen, etc., simply have your frame "extend" the
 mixin. For instance, to use the VideoRecord mixin, your component.js file would define:
-
 
 ```javascript
 import ExpFrameBaseComponent from 'exp-player/components/exp-frame-base/component';
@@ -266,9 +288,27 @@ export default ExpFrameBaseComponent.extend(VideoRecord, {
 Your frame can extend any number of mixins. For now, be careful to check, when you use a 
 mixin, that your frame does not defining any properties or functions that will conflict with the mixin's properties or functions. If the mixin has a function `doFoo`, you can use that from your frame simply by calling `this.doFoo()`. 
 
-#### YUIdoc documentation
+Below is a brief introduction to each of the common mixins; for more detail, 
+see sample usages throughout the exp-addons codebase and the mixin-specific docs [here](https://lookit.github.io/exp-addons/modules/mixins.html)
 
-We use [YUIdoc](http://yui.github.io/yuidoc/) for generating "automatic" documentation of  exp-addons frames, available [here](https://lookit.github.io/exp-addons/modules/frames.html). If you want to contribute your frames to the main Lookit codebase, please include YUIdoc-formatted comments following the example of existing frames, e.g. `exp-exit-survey` or `exp-lookit-geometry-alternation`. Make sure to include:
+#### FullScreen
+This mixin is helpful when you want to show something (like a video) in fullscreen mode without distractions.
+You will need to specify the part of the page that will become full screen. By design, most browsers require that you
+interact with the page at least once before full screen mode can become active.
+
+#### MediaReload
+If your component uses video or audio, you will probably want to use this mixin. It is very helpful if you ever expect
+to show two consecutive frames of the same type (eg two physics videos, or two things that play an audio clip). It
+automatically addresses a quirk of how ember renders the page; see [stackoverflow post](http://stackoverflow.com/a/18454389/1422268)
+for more information.
+
+#### VideoRecord
+Functionality related to video capture, in conjunction with the [Pipe](https://addpipe.com) system, for which MIT has a license.
+
+
+### Documenting your frame
+
+We use [YUIdoc](http://yui.github.io/yuidoc/) for generating "automatic" documentation of  exp-addons frames, available [here](https://lookit.github.io/exp-addons/modules/frames.html). If you want to contribute your frames to the main Lookit codebase, please include YUIdoc-formatted comments following the example of existing frames, e.g. `exp-lookit-exit-survey`. Make sure to include:
 
 * A general description of your frame
 * An example of using it (the relevant JSON for a study)
@@ -276,7 +316,7 @@ We use [YUIdoc](http://yui.github.io/yuidoc/) for generating "automatic" documen
 * All outputs (data saved)
 * Any events recorded
 
-#### Ember debugging
+### Ember debugging
 
 Values of variables used in your frame are tricky to access directly from the Javascript console in your browser during testing.
 
@@ -298,33 +338,7 @@ And then to keep using it, save it as a variable:
 
 Then you can do things like try out actions, e.g. `this.send`.
 
-#### Tips for adding styles
-You will probably want to add custom styles to your frame, in order to control the size, placement, and color of
-elements. Experimenter uses a common web standard called [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) for
-styles.*
-
-To add custom styles for a pre-existing component, you will need to create a file `<component-name.scss>` in the
-`addon/styles/components` directory of `exp-addons`. Then add a line to the top of `addon/styles/addon.scss`, telling
-it to use that style. For example,
-
-`@import "components/exp-video-physics";`
-
-Remember that anything in exp-addons is shared code. Below are a few good tips to help your addon stay isolated and
-distinct, so that it does not affect other projects.
-
-Here are a few tips for writing good styles:
-- Do not override global styles, or things that are part of another component. For example, `exp-video-physics` should
-not contain styles for `exp-player`.
-   - If you need to style a button specifically inside that component, either add a second style to the element, or
-     consider using nested [CSS selectors](https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Selectors).
-- Give all of the styles in your component a unique common name prefix, so that they don't inadvertently overlap with
-styles for other things. For example, instead of `some-video-widget`, consider a style name like `exp-myframe-video-widget`.
-
-\* You may notice that style files have a special extension `.scss`. That is because styles in experimenter are
-actually written in [SASS](http://sass-lang.com/). You can still write normal CSS just fine, but SASS provides
-additional syntax on top of that and can be helpful for power users who want complex things (like variables).
-
-#### When should I use actions vs functions?
+### When should I use actions vs functions?
 Actions should be used when you need to trigger a specific piece of functionality via user interaction: eg click a
 button to make something happen.
 

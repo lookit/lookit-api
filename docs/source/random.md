@@ -1,4 +1,4 @@
-# Development: Randomization
+# Custom randomizer frames
 
 Experimenter supports a special kind of frame called 'choice' that defers determining what sequence of frames a
 participant will see until the page loads. This allows for dynamic ordering of frame sequence in particular to

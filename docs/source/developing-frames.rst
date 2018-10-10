@@ -8,5 +8,4 @@ Developing new frames
    local-frame-development
    frames
    video_capture
-   mixins
    random

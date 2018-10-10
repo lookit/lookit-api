@@ -1,4 +1,4 @@
-## How to capture video in an experiment
+## How to capture video in your frame
 
 Webcam video recording during Lookit frames is currently accomplished using WebRTC as the interface to the webcam and [Pipe](https://addpipe.com/) for video streaming and processing.
 
