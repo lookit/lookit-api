@@ -50,8 +50,7 @@ Before beginning, you will need to install Yarn, a package manager (like npm).
 
 Create or open a file named '.env' in the root of the ember-lookit-frameplayer directory, 
 and add the following entries to use the Pipe WebRTC-based recorder: `PIPE_ACCOUNT_HASH` 
-(reference to account to send video to) and `PIPE_ENVIRONMENT` (which environment, e.g. 
-staging or production). These are available upon request.
+(reference to account to send video to) and `PIPE_ENVIRONMENT` (which environment, e.g. development, staging, or production). These are available upon request if you need to use the actual Lookit environments. (If you are doing a very large amount of local testing, we may ask that you set up your own Pipe account.)
 
 ## Running / Development
 
