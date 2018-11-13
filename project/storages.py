@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from django.core.files.storage import FileSystemStorage
 from storages.backends.gcloud import GoogleCloudStorage
 from storages.utils import safe_join, clean_name
 
@@ -36,9 +37,23 @@ class LookitMediaStorage(LowercaseNameMixin, LocationPrefixedPublicGoogleCloudSt
     location = settings.MEDIAFILES_LOCATION
 
 
-class LookitExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
-    location = settings.EXPERIMENT_LOCATION
+if settings.MODE == 'prod':
+
+    class LookitExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
+        location = settings.EXPERIMENT_LOCATION
 
 
-class LookitPreviewExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
-    location = settings.PREVIEW_EXPERIMENT_LOCATION
+    class LookitPreviewExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
+        location = settings.PREVIEW_EXPERIMENT_LOCATION
+
+elif settings.MODE == 'dev':
+
+    class LookitExperimentStorage(FileSystemStorage):
+        location = settings.EXPERIMENT_LOCATION
+
+
+    class LookitPreviewExperimentStorage(FileSystemStorage):
+        location = settings.PREVIEW_EXPERIMENT_LOCATION
+
+else:
+    raise RuntimeError(f'Unknown mode {settings.MODE}, cannot determine storage device.')

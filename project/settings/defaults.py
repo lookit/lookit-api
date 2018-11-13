@@ -14,6 +14,11 @@ import os
 from django.contrib.messages import constants as messages
 import raven
 
+# TODO: deliberate then choose on a methodology for dynamic class selection,
+# i.e. for Storages. Should we choose the storages here, or defer that
+# to initialization of the Storages module?
+MODE = 'prod'  # Overridden by local settings.
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # root path for ember builds
