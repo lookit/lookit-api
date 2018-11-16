@@ -1,5 +1,11 @@
 FROM node:8-slim
 
+# The checkout dir must be in the format f'{player_sha}_{addons_sha}'
+ARG player_addons_concat_sha
+ARG ember_prepend_replacement_string
+ARG study_uuid
+
+# Dependencies.
 RUN apt-get update \
     && apt-get install -y \
         ca-certificates \
@@ -25,9 +31,27 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates
 
-VOLUME /checkouts
-VOLUME /deployments
+# Create root for checkout.
+WORKDIR checkouts
+COPY checkouts/$player_addons_concat_sha frameplayer_exp_bundle
+COPY environment frameplayer_exp_bundle/.env
 
-COPY ./build.sh ./environment /
+# Build exp-player
+WORKDIR /checkouts/frameplayer_exp_bundle/lib/exp-player
+RUN yarn install
+RUN node_modules/.bin/bower install --allow-root
 
-CMD ["/bin/bash", "/build.sh"]
+# Build frameplayer
+WORKDIR /checkouts/frameplayer_exp_bundle
+RUN yarn install
+RUN node_modules/.bin/bower install --allow-root
+RUN sed -i "s/prepend: ''/$ember_prepend_replacement_string/g" ember-cli-build.js
+RUN node_modules/.bin/ember build --environment=production
+
+# Put things here
+WORKDIR /deployments
+RUN ln -s /checkouts/frameplayer_exp_bundle/dist $study_uuid
+
+# Copy shell script
+COPY ./build.sh /
+CMD ["echo", "done"]
