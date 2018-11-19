@@ -1,6 +1,8 @@
 FROM node:8-slim
 
 # The checkout dir must be in the format f'{player_sha}_{addons_sha}'
+# Before adding any new args, please read the docs to understand the caching impact!
+# https://docs.docker.com/engine/reference/builder/#impact-on-build-caching
 ARG player_addons_concat_sha
 ARG ember_prepend_replacement_string
 ARG study_uuid
@@ -51,7 +53,7 @@ RUN node_modules/.bin/ember build --environment=production
 # Put things here
 WORKDIR /deployments
 RUN ln -s /checkouts/frameplayer_exp_bundle/dist $study_uuid
+RUN chown -R www-data:www-data $study_uuid
 
-# Copy shell script
-COPY ./build.sh /
-CMD ["echo", "done"]
+# We're done.
+CMD ["echo", "Successful Build."]

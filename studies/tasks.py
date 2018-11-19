@@ -101,7 +101,7 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
     return (repo_destination_folder, addons_sha, player_sha)
 
 
-def build_docker_image():
+def build_docker_image(player_addons_concat_sha, ember_prepend_replacement_string, study_uuid):
     # this is broken out so that it can be more complicated if it needs to be
     logger.debug(f'Running docker build...')
     return subprocess.run(
@@ -110,9 +110,15 @@ def build_docker_image():
             'build',
             '--pull',
             '--cache-from',
-            'ember_build',
+            f'ember_build:{player_addons_concat_sha}',
+            '--build-arg',
+            f'player_addons_concat_sha={player_addons_concat_sha}',
+            '--build-arg',
+            f'ember_prepend_replacement_string={ember_prepend_replacement_string}',
+            '--build-arg',
+            f'study_uuid={study_uuid}',
             '-t',
-            'ember_build',
+            f'ember_build:{player_addons_concat_sha}',
             '.'
         ],
         cwd=settings.EMBER_BUILD_ROOT_PATH,
@@ -129,7 +135,6 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         from accounts.models import User
 
         save_versions = preview
-        now = timezone.now()
         try:
             study = Study.objects.get(uuid=study_uuid)
         except Study.DoesNotExist as ex:
@@ -165,37 +170,13 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             study.metadata['last_known_player_sha'] = player_sha
             study.save()
 
-        container_checkout_directory = os.path.join('/checkouts/', checkout_directory)
-        container_destination_directory = os.path.join('/deployments/', destination_directory)
-
-        build_image_comp_process = build_docker_image()
-        local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
-        local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
-
-        replacement_string = f"prepend: '/studies/{study_uuid}/'"
-
-        build_command = [
-            'docker',
-            'run',
-            '--rm',
-            '-e', f'CHECKOUT_DIR={container_checkout_directory}',
-            '-e', f'REPLACEMENT={re.escape(replacement_string)}',
-            '-e', f'STUDY_OUTPUT_DIR={container_destination_directory}',
-            '-e', f"SENTRY_DSN={os.environ.get('SENTRY_DSN_JS', None)}",
-            '-e', f"PIPE_ACCOUNT_HASH={os.environ.get('PIPE_ACCOUNT_HASH', None)}",
-            '-e', f"PIPE_ENVIRONMENT={os.environ.get('PIPE_ENVIRONMENT', None)}",
-            '-v', f'{local_checkout_path}:/checkouts',
-            '-v', f'{local_deployments_path}:/deployments',
-            'ember_build'
-        ]
-
-        logger.debug(f'Running build.sh for {container_checkout_directory}...')
-        ember_build_comp_process = subprocess.run(
-            build_command,
-            cwd=settings.EMBER_BUILD_ROOT_PATH,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT
+        build_image_comp_process = build_docker_image(
+            f'{player_sha}_{addons_sha}',
+            re.escape(f"prepend: '/studies/{study_uuid}/'"),
+            study_uuid
         )
+        # local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
+        local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
 
         if preview:
             # if they're previewing put things in the preview directory
@@ -245,7 +226,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             action='preview' if preview else 'deploy',
             user=researcher,
             extra={
-                'ember_build': str(ember_build_comp_process.stdout),
+                'ember_build': None,  # TODO: get rid of this field.
                 'image_build': str(build_image_comp_process.stdout),
                 'ex': str(ex),
                 'log': log_buffer.getvalue(),
