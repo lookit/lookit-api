@@ -102,7 +102,6 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
 
 
 def build_docker_image(player_addons_concat_sha, ember_prepend_replacement_string, study_uuid):
-    # this is broken out so that it can be more complicated if it needs to be
     logger.debug(f'Running docker build...')
     return subprocess.run(
         [
@@ -110,7 +109,7 @@ def build_docker_image(player_addons_concat_sha, ember_prepend_replacement_strin
             'build',
             '--pull',
             '--cache-from',
-            f'ember_build:{player_addons_concat_sha}',
+            f'ember_build:{player_addons_concat_sha}-{study_uuid}',
             '--build-arg',
             f'player_addons_concat_sha={player_addons_concat_sha}',
             '--build-arg',
@@ -118,17 +117,28 @@ def build_docker_image(player_addons_concat_sha, ember_prepend_replacement_strin
             '--build-arg',
             f'study_uuid={study_uuid}',
             '-t',
-            f'ember_build:{player_addons_concat_sha}',
+            f'ember_build:{player_addons_concat_sha}-{study_uuid}',
             '.'
         ],
         cwd=settings.EMBER_BUILD_ROOT_PATH,
         stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT
+        stderr=subprocess.STDOUT,
+        check=True
     )
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_experiment(self, study_uuid, researcher_uuid, preview=True):
+    """[12/20/18] Celery task to build experiments.
+
+    Build an experiment with docker, and persist the built results in the
+    deployments volume.
+
+    :param self: Task. This is a celery/kombu convention.
+    :param study_uuid: String.
+    :param researcher_uuid: String.
+    :param preview: Boolean. Is this study build a preview?
+    """
     ex = None
     try:
         from studies.models import Study, StudyLog
@@ -163,20 +173,39 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
                 # save the latest master sha of both repos
                 save_versions = True
 
-        checkout_directory, addons_sha, player_sha = download_repos(addons_repo_url, addons_sha=addons_sha, player_sha=player_sha)
+        checkout_directory, addons_sha, player_sha = download_repos(
+            addons_repo_url, addons_sha=addons_sha, player_sha=player_sha)
 
         if save_versions:
             study.metadata['last_known_addons_sha'] = addons_sha
             study.metadata['last_known_player_sha'] = player_sha
             study.save()
 
+        player_addons_concat_sha = f'{player_sha}_{addons_sha}'
+
         build_image_comp_process = build_docker_image(
-            f'{player_sha}_{addons_sha}',
+            player_addons_concat_sha,
             re.escape(f"prepend: '/studies/{study_uuid}/'"),
             study_uuid
         )
-        # local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
         local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
+
+        init_container_comp_process = subprocess.run(
+            [
+                'docker',
+                'run',
+                '--rm',  # Destroy container afterward, only keep volume output.
+                '-e',
+                f'STUDY_UUID={study_uuid}',
+                '-v',
+                f'{local_deployments_path}:/deployments',
+                f'ember_build:{player_addons_concat_sha}-{study_uuid}'
+            ],
+            cwd=settings.EMBER_BUILD_ROOT_PATH,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=True
+        )
 
         if preview:
             # if they're previewing put things in the preview directory
@@ -226,7 +255,8 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             action='preview' if preview else 'deploy',
             user=researcher,
             extra={
-                'ember_build': None,  # TODO: get rid of this field.
+                # TODO: Shouldn't be "ember build" but instead "container build"
+                'ember_build': str(init_container_comp_process.stdout),
                 'image_build': str(build_image_comp_process.stdout),
                 'ex': str(ex),
                 'log': log_buffer.getvalue(),

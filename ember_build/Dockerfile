@@ -50,10 +50,13 @@ RUN node_modules/.bin/bower install --allow-root
 RUN sed -i "s/prepend: ''/$ember_prepend_replacement_string/g" ember-cli-build.js
 RUN node_modules/.bin/ember build --environment=production
 
-# Put things here
-WORKDIR /deployments
-RUN ln -s /checkouts/frameplayer_exp_bundle/dist $study_uuid
-RUN chown -R www-data:www-data $study_uuid
+# Mount deployable volume, which will be written to with `docker run ...`
+RUN mkdir /deployments
+VOLUME /deployments
 
-# We're done.
-CMD ["echo", "Successful Build."]
+# Copy over script that will be invoked with `docker run ...`
+WORKDIR /
+COPY build.sh .
+
+# This is the entry point for `docker run`.
+CMD ["bash", "build.sh"]
