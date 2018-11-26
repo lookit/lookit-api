@@ -12,7 +12,7 @@ fi
 # Ensure that GraphViz is installed correctly.
 sudo pip install pygraphviz --install-option="--include-path=/usr/include/graphviz" --install-option="--library-path=/usr/lib/graphviz/"
 
-pip install --user -r requirements/dev.txt
+pip install -r requirements/dev.txt
 
 psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'lookit'" | grep -q 1 || psql -U postgres -c "CREATE DATABASE lookit"
 
