@@ -123,7 +123,7 @@ def build_docker_image(player_addons_concat_sha, ember_prepend_replacement_strin
         cwd=settings.EMBER_BUILD_ROOT_PATH,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        check=True
+        # check=True  # add back when we refactor this into multiple try blocks
     )
 
 
@@ -204,7 +204,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             cwd=settings.EMBER_BUILD_ROOT_PATH,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            check=True
+            # check=True  # Add back when we refactor this into multiple try blocks
         )
 
         if preview:
