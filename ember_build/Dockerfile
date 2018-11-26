@@ -47,6 +47,11 @@ RUN node_modules/.bin/bower install --allow-root
 WORKDIR /checkouts/frameplayer_exp_bundle
 RUN yarn install
 RUN node_modules/.bin/bower install --allow-root
+# TODO: get rid of ember prepend replacement string.
+# The ember prepend clause value is actually mostly static - it looks like so:
+# /studies/${STUDY_UUID} so it *could* be constructed at runtime instead of being
+# passed in whole like this. The problem is that string interpolation in docker
+# is finicky. Whoever figures out how to do this gets a gold star.
 RUN sed -i "s/prepend: ''/$ember_prepend_replacement_string/g" ember-cli-build.js
 RUN node_modules/.bin/ember build --environment=production
 
