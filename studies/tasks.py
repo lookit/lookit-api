@@ -107,7 +107,7 @@ def build_docker_image(player_addons_concat_sha, ember_prepend_replacement_strin
         [
             'docker',
             'build',
-            # '--pull',  # Perhaps we can get around the permissions bug this way?
+            '--pull',
             '--cache-from',
             f'ember_build:{player_addons_concat_sha}-{study_uuid}',
             '--build-arg',
