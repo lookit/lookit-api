@@ -9,14 +9,20 @@ ARG ember_prepend_replacement_string
 # Copy over script that will be invoked with `docker run ...`
 RUN mkdir -p checkouts deployments
 COPY build.sh .
-COPY checkouts/$player_addons_concat_sha checkouts/frameplayer_exp_bundle
 COPY environment checkouts/frameplayer_exp_bundle/.env
 
 # Mount deployable volume, which will be written to with `docker run ...`
 # RUN mkdir /deployments
 VOLUME /deployments
 
-# "Cheat" the layering system - kill all node_modules dirs after build finishes
+# Why is this step here and not  with the rest of the copies? Again, DLIC -
+# to quote from the documentation referenced above, "If a Dockerfile defines an ARG
+# variable whose value is different from a previous build, then a “cache miss” occurs
+# upon its first USAGE, not its DEFINITION" (emphasis/capitalization mine). So by
+# saving arg consumption until the very last two steps, we ensure that we will only
+# create new image layers when *absolutely* necessary.
+COPY checkouts/$player_addons_concat_sha checkouts/frameplayer_exp_bundle
+
 # For GOSU details see https://github.com/tianon/gosu/blob/master/INSTALL.md
 RUN set -eux; \
     apt-get update; \
@@ -42,10 +48,16 @@ RUN set -eux; \
     node_modules/.bin/bower install --allow-root; \
     sed -i "s/prepend: ''/$ember_prepend_replacement_string/g" ember-cli-build.js; \
     node_modules/.bin/ember build --environment=production; \
+# "Cheat" the layering system - kill all node_modules dirs after build finishes
     rm -rf /checkouts/frameplayer_exp_bundle/node_modules; \
     rm -rf /checkouts/frameplayer_exp_bundle/lib/exp-player/node_modules; \
     rm -rf /checkouts/frameplayer_exp_bundle/bower_components; \
-    rm -rf /usr/local/share/.cache /usr/lib /root/.cache
+# Below looks extreme, but we know what we are doing - since our container process
+# will only ever use programs from /bin, we are nuking the entire /usr/ directory
+# (!!!) as well as some cache stuff to mitigate disk consumption.
+    rm -rf /usr /root/.cache
 
-# This is the entry point for `docker run`.
+# Below would be the entry point for `docker run`, however we are trying to be as
+# sparse as possible with the image caching layers in order to keep our disk
+# consumption in check.
 # CMD ["bash", "build.sh"]

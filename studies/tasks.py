@@ -198,7 +198,8 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
                 '-v',
                 f'{local_deployments_path}:/deployments',
                 f'ember_build:{player_addons_concat_sha}-{study_uuid}',
-                'bash build.sh'
+                'bash',
+                'build.sh'
             ],
             cwd=settings.EMBER_BUILD_ROOT_PATH,
             stdout=subprocess.PIPE,
