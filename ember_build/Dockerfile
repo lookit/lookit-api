@@ -3,8 +3,8 @@ FROM node:8-slim
 # The checkout dir must be in the format f'{player_sha}_{addons_sha}'
 # Before adding any new args, please read the docs to understand the caching impact!
 # https://docs.docker.com/engine/reference/builder/#impact-on-build-caching
-ARG player_addons_concat_sha
 ARG ember_prepend_replacement_string
+ARG player_addons_concat_sha
 
 # Copy over script that will be invoked with `docker run ...`
 RUN mkdir -p checkouts deployments
