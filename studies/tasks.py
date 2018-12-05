@@ -68,6 +68,20 @@ def unzip_file(file, destination_folder):
 
 
 def deploy_to_remote(local_path, storage):
+    """Wrapper for remote file deployments.
+
+    If we have a Google Cloud Storage client, we should leverage batching capability.
+    """
+    gcs_client = getattr(storage, 'client', None)
+    if gcs_client and type(gcs_client) is gc_storage.client.Client:
+        with gcs_client.batch():
+            _deploy_to_remote(local_path, storage)
+    else:
+        _deploy_to_remote(local_path, storage)
+
+
+def _deploy_to_remote(local_path, storage):
+    """Inner worker function for remote deployments."""
     for root_directory, dirs, files in os.walk(local_path, topdown=True):
         for filename in files:
             full_path = os.path.join(root_directory, filename)
