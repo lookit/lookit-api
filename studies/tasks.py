@@ -101,8 +101,7 @@ def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
     return (repo_destination_folder, addons_sha, player_sha)
 
 
-def build_docker_image():
-    # this is broken out so that it can be more complicated if it needs to be
+def build_docker_image(player_addons_concat_sha, ember_prepend_replacement_string, study_uuid):
     logger.debug(f'Running docker build...')
     return subprocess.run(
         [
@@ -110,26 +109,40 @@ def build_docker_image():
             'build',
             '--pull',
             '--cache-from',
-            'ember_build',
+            f'ember_build:{player_addons_concat_sha}-{study_uuid}',
+            '--build-arg',
+            f'player_addons_concat_sha={player_addons_concat_sha}',
+            '--build-arg',
+            f'ember_prepend_replacement_string={ember_prepend_replacement_string}',
             '-t',
-            'ember_build',
+            f'ember_build:{player_addons_concat_sha}-{study_uuid}',
             '.'
         ],
         cwd=settings.EMBER_BUILD_ROOT_PATH,
         stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT
+        stderr=subprocess.STDOUT,
+        # check=True  # add back when we refactor this into multiple try blocks
     )
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_experiment(self, study_uuid, researcher_uuid, preview=True):
+    """[12/20/18] Celery task to build experiments.
+
+    Build an experiment with docker, and persist the built results in the
+    deployments volume.
+
+    :param self: Task. This is a celery/kombu convention.
+    :param study_uuid: String.
+    :param researcher_uuid: String.
+    :param preview: Boolean. Is this study build a preview?
+    """
     ex = None
     try:
         from studies.models import Study, StudyLog
         from accounts.models import User
 
         save_versions = preview
-        now = timezone.now()
         try:
             study = Study.objects.get(uuid=study_uuid)
         except Study.DoesNotExist as ex:
@@ -158,43 +171,40 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
                 # save the latest master sha of both repos
                 save_versions = True
 
-        checkout_directory, addons_sha, player_sha = download_repos(addons_repo_url, addons_sha=addons_sha, player_sha=player_sha)
+        checkout_directory, addons_sha, player_sha = download_repos(
+            addons_repo_url, addons_sha=addons_sha, player_sha=player_sha)
 
         if save_versions:
             study.metadata['last_known_addons_sha'] = addons_sha
             study.metadata['last_known_player_sha'] = player_sha
             study.save()
 
-        container_checkout_directory = os.path.join('/checkouts/', checkout_directory)
-        container_destination_directory = os.path.join('/deployments/', destination_directory)
+        player_addons_concat_sha = f'{player_sha}_{addons_sha}'
 
-        build_image_comp_process = build_docker_image()
-        local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'checkouts')
+        build_image_comp_process = build_docker_image(
+            player_addons_concat_sha,
+            re.escape(f"prepend: '/studies/{study_uuid}/'"),
+            study_uuid
+        )
         local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, 'deployments')
 
-        replacement_string = f"prepend: '/studies/{study_uuid}/'"
-
-        build_command = [
-            'docker',
-            'run',
-            '--rm',
-            '-e', f'CHECKOUT_DIR={container_checkout_directory}',
-            '-e', f'REPLACEMENT={re.escape(replacement_string)}',
-            '-e', f'STUDY_OUTPUT_DIR={container_destination_directory}',
-            '-e', f"SENTRY_DSN={os.environ.get('SENTRY_DSN_JS', None)}",
-            '-e', f"PIPE_ACCOUNT_HASH={os.environ.get('PIPE_ACCOUNT_HASH', None)}",
-            '-e', f"PIPE_ENVIRONMENT={os.environ.get('PIPE_ENVIRONMENT', None)}",
-            '-v', f'{local_checkout_path}:/checkouts',
-            '-v', f'{local_deployments_path}:/deployments',
-            'ember_build'
-        ]
-
-        logger.debug(f'Running build.sh for {container_checkout_directory}...')
-        ember_build_comp_process = subprocess.run(
-            build_command,
+        init_container_comp_process = subprocess.run(
+            [
+                'docker',
+                'run',
+                '--rm',  # Destroy container afterward, only keep volume output.
+                '-e',
+                f'STUDY_UUID={study_uuid}',
+                '-v',
+                f'{local_deployments_path}:/deployments',
+                f'ember_build:{player_addons_concat_sha}-{study_uuid}',
+                'bash',
+                'build.sh'
+            ],
             cwd=settings.EMBER_BUILD_ROOT_PATH,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT
+            stderr=subprocess.STDOUT,
+            # check=True  # Add back when we refactor this into multiple try blocks
         )
 
         if preview:
@@ -245,7 +255,8 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             action='preview' if preview else 'deploy',
             user=researcher,
             extra={
-                'ember_build': str(ember_build_comp_process.stdout),
+                # TODO: Shouldn't be "ember build" but instead "container build"
+                'ember_build': str(init_container_comp_process.stdout),
                 'image_build': str(build_image_comp_process.stdout),
                 'ex': str(ex),
                 'log': log_buffer.getvalue(),

@@ -14,6 +14,11 @@ import os
 from django.contrib.messages import constants as messages
 import raven
 
+# TODO: deliberate then choose on a methodology for dynamic class selection,
+# i.e. for Storages. Should we choose the storages here, or defer that
+# to initialization of the Storages module?
+MODE = 'prod'  # Overridden by local settings.
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # root path for ember builds
@@ -266,16 +271,16 @@ CORS_ORIGIN_WHITELIST = [h for h in os.environ.get('CORS_ORIGIN_WHITELIST', '').
 
 if os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
     # if we're trying to use cloud storage
-    STATICFILES_LOCATION = '/static'
+    STATICFILES_LOCATION = 'static'
     STATICFILES_STORAGE = 'project.storages.LookitStaticStorage'
     STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
-    MEDIAFILES_LOCATION = '/media'
+    MEDIAFILES_LOCATION = 'media'
     DEFAULT_FILE_STORAGE = 'project.storages.LookitMediaStorage'
     MEDIA_URL = os.environ.get('MEDIA_URL', '/media/')
 
-    EXPERIMENT_LOCATION = '/experiments'
-    PREVIEW_EXPERIMENT_LOCATION = '/preview_experiments'
+    EXPERIMENT_LOCATION = 'experiments'
+    PREVIEW_EXPERIMENT_LOCATION = 'preview_experiments'
 
     GS_BUCKET_NAME = os.environ.get('GS_BUCKET_NAME', '')
     GS_PROJECT_ID = os.environ.get('GS_PROJECT_ID', '')
