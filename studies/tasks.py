@@ -82,19 +82,16 @@ def deploy_to_remote(local_path, storage):
 
 def _upload_in_batch(local_path, storage, gcs_client):
     """Inner worker function for remote GCS deployments."""
-    # get the bucket
-    gcs_bucket = gcs_client.get_bucket(settings.GS_BUCKET_NAME)
-
     with gcs_client.batch():
+        gcs_bucket = gcs_client.get_bucket(settings.GS_BUCKET_NAME)
         for root_directory, dirs, files in os.walk(local_path, topdown=True):
             for filename in files:
                 full_path = os.path.join(root_directory, filename)
                 with open(full_path, mode='rb') as f:
                     remote_path = full_path.split('../ember_build/deployments/')[1]
                     logger.debug(f'Uploading {full_path} to {storage.location}/{remote_path}...')
-                    gcs_blob = gc_storage.blob.Blob(
-                        f'{storage.location}/{remote_path}', gcs_bucket,
-                        chunk_size=256 * 1024 * 1024)  # 256mb
+                    gcs_blob = gcs_bucket.blob(
+                        f'{storage.location}/{remote_path}', chunk_size=256 * 1024 * 1024)  # 256mb
                     gcs_blob.upload_from_file(f, client=gcs_client)
 
 
