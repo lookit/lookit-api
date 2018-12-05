@@ -73,15 +73,33 @@ def deploy_to_remote(local_path, storage):
     If we have a Google Cloud Storage client, we should leverage batching capability.
     """
     gcs_client = getattr(storage, 'client', None)
+
     if gcs_client and type(gcs_client) is gc_storage.client.Client:
-        with gcs_client.batch():
-            _deploy_to_remote(local_path, storage)
+        _upload_in_batch(local_path, storage, gcs_client)
     else:
-        _deploy_to_remote(local_path, storage)
+        _upload_in_serial(local_path, storage)
 
 
-def _deploy_to_remote(local_path, storage):
-    """Inner worker function for remote deployments."""
+def _upload_in_batch(local_path, storage, gcs_client):
+    """Inner worker function for remote GCS deployments."""
+    # get the bucket
+    gcs_bucket = gcs_client.get_bucket(settings.GS_BUCKET_NAME)
+
+    with gcs_client.batch():
+        for root_directory, dirs, files in os.walk(local_path, topdown=True):
+            for filename in files:
+                full_path = os.path.join(root_directory, filename)
+                with open(full_path, mode='rb') as f:
+                    remote_path = full_path.split('../ember_build/deployments/')[1]
+                    logger.debug(f'Uploading {full_path} to {storage.location}/{remote_path}...')
+                    gcs_blob = gc_storage.blob.Blob(
+                        f'{storage.location}/{remote_path}', gcs_bucket,
+                        chunk_size=256 * 1024 * 1024)  # 256mb
+                    gcs_blob.upload_from_file(f, client=gcs_client)
+
+
+def _upload_in_serial(local_path, storage):
+    """Inner worker function for storage uploads in serial."""
     for root_directory, dirs, files in os.walk(local_path, topdown=True):
         for filename in files:
             full_path = os.path.join(root_directory, filename)
