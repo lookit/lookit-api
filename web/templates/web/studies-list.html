@@ -62,12 +62,12 @@
                                               <div class="image-block">
                                                   <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})"  src="{{ obj.image.url }}">
                                                   <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
-                                                    	<i aria-hidden="true" class="fa fa-picture-o"></i>
+                                                    	<i aria-hidden="true" class="fas fa-image"></i>
                                                   </div>
                                               </div>
                                             {% else %}
                                               <div class="study-list-placeholder">
-                                                  <i aria-hidden="true" class="fa fa-picture-o"></i>
+                                                  <i aria-hidden="true" class="fas fa-image"></i>
                                               </div>
                                             {% endif %}
                                           </div>
