@@ -174,9 +174,9 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         logger.debug(f"Got {addons_repo_url} from {study.metadata.get('addons_repo_url')}")
 
         if preview:
-            current_state = study.state
-            study.state = 'previewing'
-            study.save()
+            # current_state = study.state
+            # study.state = 'previewing'
+            # study.save()
             if player_sha is None and addons_sha is None:
                 # if they're previewing and the sha's on their study aren't set
                 # save the latest master sha of both repos
@@ -250,11 +250,10 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             bcc=list(study.study_admin_group.user_set.values_list('username', flat=True)),
             **context
         )
-        if not preview:
-            study.state = 'active'
-        else:
+        if preview:
             study.previewed = True
-            study.state = current_state
+        else:
+            study.built = True
 
         study.save()
     except Exception as e:

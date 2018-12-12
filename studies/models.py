@@ -87,6 +87,7 @@ class Study(models.Model):
 
     metadata = DateTimeAwareJSONField(default={})
     previewed = models.BooleanField(default=False)
+    built = models.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
@@ -262,6 +263,16 @@ class Study(models.Model):
         }
         send_mail.delay('notify_admins_of_study_action', 'Study Retraction Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
+    def check_if_built(self, ev):
+        """Check if study is built.
+
+        :param ev: The event object
+        :type ev: transitions.core.EventData
+        :raise: RuntimeError
+        """
+        if not self.built:
+            raise RuntimeError(f'Cannot activate study - "{self.name}" ({self.id}) has not been built!')
+
     def notify_administrators_of_activation(self, ev):
         context = {
             'org_name': self.organization.name,
@@ -274,8 +285,8 @@ class Study(models.Model):
         send_mail.delay('notify_admins_of_study_action', 'Study Activation Notification', settings.EMAIL_FROM_ADDRESS, bcc=list(self.study_organization_admin_group.user_set.values_list('username', flat=True)), **context)
 
     def deploy_study(self, ev):
-        self.state = 'deploying'
-        self.save()
+        # self.state = 'deploying'
+        # self.save()
         build_experiment.delay(self.uuid, ev.kwargs.get('user').uuid, preview=False)
 
     def notify_administrators_of_pause(self, ev):
