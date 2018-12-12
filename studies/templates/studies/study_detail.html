@@ -40,10 +40,10 @@
                 {% get_obj_perms user for study as "study_perms" %}
                 {% if "can_edit_study" in study_perms %}
                     <a class="btn btn-default" href="{% url 'exp:study-participant-email' pk=study.id %}">
-                        <i class="fa fa-envelope-o" aria-hidden="true"></i> Email Participants
+                        <i class="fas fa-envelope-open" aria-hidden="true"></i> Email Participants
                     </a>
                     <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">
-                        <i aria-hidden="true" class="fa fa-pencil-square-o"></i> Edit Study
+                        <i aria-hidden="true" class="fas fa-edit"></i> Edit Study
                     </a>
                 {% endif %}
             </div>
@@ -137,7 +137,7 @@
                           <a class="view-responses-link" href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
                               <div class="well view-response-block">
                                 <center class="mt-sm">
-                                    <p><i aria-hidden="true" class="fa-2x fa fa-file-text-o"></i></p>
+                                    <p><i aria-hidden="true" class="fa-2x fas fa-envelope"></i></p>
                                     <h4> View <strong>{{study.completed_responses_count|default:"0" }}</strong> Response{{ study.completed_responses_count|pluralize}}</h4>
                                     <p> (plus {{study.incomplete_responses_count|default:"0" }} incomplete)</p>
                                     <p> Inspect responses from study sessions </p>
@@ -151,7 +151,7 @@
                              <div onclick="cloneStudy()" class="view-responses-link" role="button" type="submit">
                                 <div class="well view-response-block">
                                     <center class="mt-sm">
-                                        <p><i aria-hidden="true" class="fa-2x fa fa-files-o"></i></p>
+                                        <p><i aria-hidden="true" class="fa-2x fas fa-copy"></i></p>
                                         <h4> Clone Study </h4>
                                         <p> Copy study structure and details </p>
                                     </center>
@@ -163,7 +163,7 @@
                              <div onclick="buildStudy()" class="view-responses-link" role="button" type="submit">
                                 <div class="well view-response-block">
                                     <center class="mt-sm">
-                                        <p><i aria-hidden="true" class="fa-2x fa fa-hammer-o"></i></p>
+                                        <p><i aria-hidden="true" class="fa-2x fas fa-hammer"></i></p>
                                         <h4> Build Study </h4>
                                         <p> Build dependencies for your experiment </p>
                                     </center>
