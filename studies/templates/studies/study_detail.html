@@ -146,14 +146,26 @@
                          </a>
                      {% endif %}
                      {% if perms.studies.can_create_study %}
-                         <form id="cloneForm"method="POST" style="display:inline">{% csrf_token %}
+                         <form id="cloneForm" method="POST" style="display:inline">{% csrf_token %}
                              <input type="hidden" name="clone_study" value="{{study.id}}"/>
-                             <div onclick="cloneStudy()"class="view-responses-link" role="button" type="submit">
+                             <div onclick="cloneStudy()" class="view-responses-link" role="button" type="submit">
                                 <div class="well view-response-block">
                                     <center class="mt-sm">
                                         <p><i aria-hidden="true" class="fa-2x fa fa-files-o"></i></p>
                                         <h4> Clone Study </h4>
                                         <p> Copy study structure and details </p>
+                                    </center>
+                                </div>
+                            </div>
+                        </form>
+                      <form id="buildForm" method="POST" style="display:inline">{% csrf_token %}
+                             <input type="hidden" name="build_study" value="{{study.id}}"/>
+                             <div onclick="buildStudy()" class="view-responses-link" role="button" type="submit">
+                                <div class="well view-response-block">
+                                    <center class="mt-sm">
+                                        <p><i aria-hidden="true" class="fa-2x fa fa-hammer-o"></i></p>
+                                        <h4> Build Study </h4>
+                                        <p> Build dependencies for your experiment </p>
                                     </center>
                                 </div>
                             </div>

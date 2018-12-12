@@ -71,12 +71,12 @@ class StudyForm(StudyEditForm):
     structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False, help_text='Add the frames of your study as well as the sequence of those frames.  This can be added later.')
 
     def clean_structure(self):
-         structure = self.cleaned_data['structure']
-         try:
-             json_data = json.loads(structure) #loads string as json
-         except:
-             raise forms.ValidationError("Invalid JSON")
-         return json_data
+        structure = self.cleaned_data['structure']
+        try:
+            json_data = json.loads(structure)  # loads string as json
+        except:
+            raise forms.ValidationError("Invalid JSON")
+        return json_data
 
     class Meta(StudyEditForm.Meta):
         fields = StudyEditForm.Meta.fields + ['structure', 'study_type']
@@ -87,16 +87,17 @@ class StudyForm(StudyEditForm):
         help_texts = StudyEditForm.Meta.help_texts.copy()
         help_texts['study_type'] = "Specify the build process as well as the parameters needed by the experiment builder. If you don't know what this is, just select the default."
 
+
 class StudyBuildForm(forms.ModelForm):
     structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False, help_text='Add the frames of your study as well as the sequence of those frames.')
 
     def clean_structure(self):
-         structure = self.cleaned_data['structure']
-         try:
-             json_data = json.loads(structure) #loads string as json
-         except:
-             raise forms.ValidationError("Invalid JSON")
-         return json_data
+        structure = self.cleaned_data['structure']
+        try:
+            json_data = json.loads(structure)  # loads string as json
+        except:
+            raise forms.ValidationError("Invalid JSON")
+        return json_data
 
     class Meta:
         model = Study
