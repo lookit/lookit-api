@@ -26,6 +26,9 @@
         function cloneStudy() {
             document.getElementById('cloneForm').submit()
         }
+        function buildStudy() {
+            document.getElementById('buildForm').submit()
+        }
     </script>
   <div class="container">
       <div class="row">
@@ -158,17 +161,20 @@
                                 </div>
                             </div>
                         </form>
-                      <form id="buildForm" method="POST" style="display:inline">{% csrf_token %}
-                             <input type="hidden" name="build_study" value="{{study.id}}"/>
-                             <div onclick="buildStudy()" class="view-responses-link" role="button" type="submit">
+                        <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
+                            <a class="view-responses-link">
                                 <div class="well view-response-block">
                                     <center class="mt-sm">
-                                        <p><i aria-hidden="true" class="fa-2x fas fa-hammer"></i></p>
-                                        <h4> Build Study </h4>
-                                        <p> Build dependencies for your experiment </p>
+                                      <p>
+                                          <i aria-hidden="true" class="fa-2x fas fa-hammer"></i>
+                                      </p>
+                                      <h4>
+                                          Build Study
+                                      </h4>
+                                        <p> Build framework dependencies for your study </p>
                                     </center>
                                 </div>
-                            </div>
+                            </a>
                         </form>
                     {% endif %}
                 </div>
