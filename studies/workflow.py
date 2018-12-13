@@ -65,7 +65,7 @@ transitions = [
         'source': ['approved', 'paused'],
         'dest': 'active',
         'before': ['check_if_built'],
-        'after': ['notify_administrators_of_activation', 'deploy_study']
+        'after': ['notify_administrators_of_activation']
     },
     {
         'trigger': 'pause',

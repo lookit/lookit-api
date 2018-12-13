@@ -792,7 +792,8 @@ def get_permitted_triggers(view_instance, triggers):
         if trigger.startswith('to_'):
             continue
 
-        # Trigger valid if 1) superuser 2) trigger is admin trigger and user is org admin 3) trigger is found in user's study permissions
+        # Trigger valid if 1) superuser 2) trigger is admin trigger and user is org admin
+        # 3) trigger is found in user's study permissions
         if not user.is_superuser:
             if trigger in admin_triggers:
                  if not (user.organization == study.organization and user.is_org_admin):

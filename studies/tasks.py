@@ -153,7 +153,6 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         from studies.models import Study, StudyLog
         from accounts.models import User
 
-        save_versions = preview
         try:
             study = Study.objects.get(uuid=study_uuid)
         except Study.DoesNotExist as ex:
@@ -173,19 +172,10 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         addons_repo_url = study.metadata.get('addons_repo_url', settings.EMBER_ADDONS_REPO)
         logger.debug(f"Got {addons_repo_url} from {study.metadata.get('addons_repo_url')}")
 
-        if preview:
-            # current_state = study.state
-            # study.state = 'previewing'
-            # study.save()
-            if player_sha is None and addons_sha is None:
-                # if they're previewing and the sha's on their study aren't set
-                # save the latest master sha of both repos
-                save_versions = True
-
         checkout_directory, addons_sha, player_sha = download_repos(
             addons_repo_url, addons_sha=addons_sha, player_sha=player_sha)
 
-        if save_versions:
+        if preview and player_sha is None and addons_sha is None:
             study.metadata['last_known_addons_sha'] = addons_sha
             study.metadata['last_known_player_sha'] = player_sha
             study.save()
