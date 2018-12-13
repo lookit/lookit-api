@@ -169,6 +169,13 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             except Exception as e:
                 messages.error(self.request, f"TRANSITION ERROR: {e}")
                 return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
+
+        if 'build' in self.request.POST:
+            build_experiment.delay(self.get_object().uuid, self.request.user.uuid, preview=False)
+            messages.success(
+                self.request,
+                f"Scheduled Study {self.get_object().name} for build. You will be emailed when it's completed.")
+
         if self.request.POST.get('clone_study'):
             clone = self.get_object().clone()
             clone.creator = self.request.user

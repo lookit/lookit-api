@@ -161,8 +161,9 @@
                                 </div>
                             </div>
                         </form>
-                        <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
-                            <a class="view-responses-link">
+                        <form id="buildForm" method="POST" style="display:inline">{% csrf_token %}
+                             <input type="hidden" name="build" value="{{study.id}}"/>
+                             <div onclick="buildStudy()" class="view-responses-link" role="button" type="submit">
                                 <div class="well view-response-block">
                                     <center class="mt-sm">
                                       <p>
@@ -174,7 +175,7 @@
                                         <p> Build framework dependencies for your study </p>
                                     </center>
                                 </div>
-                            </a>
+                            </div>
                         </form>
                     {% endif %}
                 </div>
