@@ -40,12 +40,13 @@ RUN set -eux; \
     gosu nobody true; \
     apt-get clean; \
     update-ca-certificates; \
+    npm install -g bower; \
     cd /checkouts/frameplayer_exp_bundle/lib/exp-player; \
     yarn install --pure-lockfile; \
-    node_modules/.bin/bower install --allow-root; \
+    bower install --allow-root; \
     cd /checkouts/frameplayer_exp_bundle; \
     yarn install --pure-lockfile; \
-    node_modules/.bin/bower install --allow-root; \
+    bower install --allow-root; \
     sed -i "s/prepend: ''/$ember_prepend_replacement_string/g" ember-cli-build.js; \
     node_modules/.bin/ember build --environment=production; \
 # "Cheat" the layering system - kill all node_modules dirs after build finishes
