@@ -222,7 +222,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['triggers'] = get_permitted_triggers(self,
             self.object.machine.get_triggers(self.object.state))
         context['logs'] = self.study_logs
-        state = self.object.state
+        state = context['state'] =self.object.state
         context['status_tooltip'] = status_tooltip_text.get(state, state)
         return context
 
@@ -438,7 +438,7 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
     """
     model = Study
     form_class = StudyBuildForm
-    template_name = 'studies/study_json.html'
+    template_name = 'studies/_study_json.html'
     permission_required = 'studies.can_edit_study'
     raise_exception = True
 

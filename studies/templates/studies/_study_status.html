@@ -61,8 +61,22 @@
             <div >
                 <h2 class="study-status"> <span class="pr-sm"> Status:</span> </h2>
                 <span style="white-space: nowrap;">
-                    <h2 class="study-status"><em>{{study.get_state_display|capfirst}}</em></h2>
-                    <i aria-label="Status information: {{ status_tooltip }}"title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon fas fa-question-circle"></i>
+                    <h2 class="study-status"><em>{{ state|capfirst}}</em></h2>
+                    <i aria-label="Status information: {{ status_tooltip }}" title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon">
+                        <div class="fa fa-question-circle"></div>
+                        {% comment %}
+                           So sad that we have to wrap our stupid icon, but svg rerendering from fontawesome means we
+                           lose the damn class hook for the tooltip listener.
+                        {% endcomment %}
+                    </i>
+                    <h4 class="dependency-status">
+                        Dependencies:
+                        <em>{% if study.built %} Built {% else %} Not Built {% endif %}</em>
+                    </h4>
+                    <h4 class="preview-status">
+                        Previewed:
+                        <em>{% if study.previewed %} Yes {% else %} No {% endif %}</em>
+                    </h4>
                  </span>
             </div>
             <div>
