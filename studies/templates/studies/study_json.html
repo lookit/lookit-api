@@ -35,14 +35,25 @@
 {% endblock %}
 {% block content %}
   <div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+              <li><a href="{% url 'exp:study-list' %}"> Manage Studies </a></li>
+              <li><a href="{% url 'exp:study-detail' study.id %}"> {{ study.name}} </a></li>
+              <li><a href="{% url 'exp:study-edit' study.id %}"> Edit </a></li>
+              <li class="active">Build Study</li>
+            </ol>
+        </div>
+    </div>
     <div class="row pb-lg">
         <div class="col-sm-10 col-sm-offset-1">
             <div class="panel panel-default mt-xl">
               <div class="panel-heading">
-                  <h1 class="panel-title">Study Editor </h1>
+                <h1 class="panel-title">Study Editor </h1>
               </div>
               <div class="panel-body">
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                    {% bootstrap_form form %}
                     <div>
                         {% buttons %}
                           <span class="pull-right">
@@ -82,6 +93,9 @@
                         </div>
                     </div>
                 </form>
+                <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
+                  <input class="btn btn-primary" type="submit" value="Try Experiment" />
+                </form>
             </div>
           </div>
         </div>
@@ -90,23 +104,20 @@
         <div class="col-sm-10 col-sm-offset-1">
             <div class="panel panel-default mt-md">
               <div class="panel-heading">
-                <h1 class="panel-title">Change Study Type and Dependencies</h1>
+                <h1 class="panel-title">Change Study Type </h1>
               </div>
               <div class="panel-body">
                 <form method="POST">{% csrf_token %}
-
                     <div class="form-group">
                         <label class="control-label" for="id_study_type">Study Type</label>
                         <select name="study_type" class="form-control" title="" required="" id="id_study_type">
-                            <option value="">---------</option>
+                             <option value="">---------</option>
                             {% for option in study_types %}
-                            <option {% if option.name == study.study_type.name %} selected {% endif %}
-                                    value="{{ option.id }}"> {{ option.name }}
-                            </option>
+                                <option {% if option.name == study.study_type.name %} selected {% endif %} value="{{ option.id }}"> {{ option.name }}</option>
                             {% endfor %}
                         </select>
                         <div class="help-block">
-                           Specify the build process as well as the parameters needed by the experiment builder.
+                            Specify the build process as well as the parameters needed by the experiment builder.
                         </div>
                     </div>
                     {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
@@ -144,9 +155,6 @@
                             </div>
                         </form>
                     </div>
-                </form>
-                <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
-                  <input class="btn btn-primary" type="submit" value="Build Dependencies (Preview)" />
                 </form>
             </div>
           </div>

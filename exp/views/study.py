@@ -450,7 +450,7 @@ class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ge
     """
     model = Study
     form_class = StudyBuildForm
-    template_name = 'studies/_study_json.html'
+    template_name = 'studies/study_json.html'
     permission_required = 'studies.can_edit_study'
     raise_exception = True
 
