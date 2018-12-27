@@ -28,7 +28,7 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
+from studies.forms import StudyBuildForm, StudyForm, StudyUpdateForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
@@ -290,22 +290,34 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
 
 
-class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, PaginatorMixin):
+class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, PaginatorMixin, StudyTypeMixin):
     '''
     StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
     Also allows you to update the study status.
     '''
     template_name = 'studies/study_edit.html'
-    form_class = StudyEditForm
+    form_class = StudyUpdateForm
     model = Study
     permission_required = 'studies.can_edit_study'
     raise_exception = True
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()
+        structure = self.object.structure
+        if structure:
+            # Ensures that json displayed in edit form is valid json w/ double quotes,
+            # so incorrect json is not saved back into the db
+            initial['structure'] = json.dumps(structure)
+        return initial
 
     def get_study_researchers(self):
         '''  Pulls researchers that belong to Study Admin and Study Read groups - Not showing Org Admin and Org Read in this list (even though they technically
         can view the project.) '''
         study = self.get_object()
-        return User.objects.filter(Q(groups__name=self.get_object().study_admin_group.name) | Q(groups__name=self.get_object().study_read_group.name)).distinct().order_by(Lower('family_name').asc())
+        return User.objects.filter(Q(groups__name=study.study_admin_group.name) | Q(groups__name=study.study_read_group.name)).distinct().order_by(Lower('family_name').asc())
 
     def search_researchers(self):
         ''' Searches user first, last, and middle names for search query. Does not display researchers that are already on project '''
@@ -434,14 +446,6 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
 
     def get_success_url(self):
         return reverse('exp:study-edit', kwargs={'pk': self.object.id})
-
-    def form_valid(self, form):
-        """
-        Add success message that study JSON has been successfully saved.
-        """
-        ret = super().form_valid(form)
-        messages.success(self.request, f"{self.get_object().name} study JSON saved.")
-        return ret
 
 
 class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, StudyTypeMixin):

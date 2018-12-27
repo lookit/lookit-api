@@ -65,6 +65,7 @@ class StudyEditForm(BaseStudyForm):
             'criteria': 'Text shown to families - this is not used to actually verify eligibility.'
         }
 
+
 # Form for creating a new study. Set study_type and structure in same form
 # in this case, rather than separately in the build form.
 class StudyForm(StudyEditForm):
@@ -86,6 +87,28 @@ class StudyForm(StudyEditForm):
         
         help_texts = StudyEditForm.Meta.help_texts.copy()
         help_texts['study_type'] = "Specify the build process as well as the parameters needed by the experiment builder. If you don't know what this is, just select the default."
+
+
+class StudyUpdateForm(StudyEditForm):
+    structure = forms.CharField(label='Build Study - Add JSON',
+                                widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%',
+                                                        height='100%', showprintmargin=False), required=False,
+                                help_text='Add the frames of your study as well as the sequence of those frames.  This can be added later.')
+
+    def clean_structure(self):
+        structure = self.cleaned_data['structure']
+        try:
+            json_data = json.loads(structure)  # loads string as json
+        except:
+            raise forms.ValidationError("Invalid JSON")
+        return json_data
+
+    class Meta(StudyEditForm.Meta):
+        fields = StudyEditForm.Meta.fields + ['structure']
+
+        labels = StudyEditForm.Meta.labels.copy()
+
+        help_texts = StudyEditForm.Meta.help_texts.copy()
 
 
 class StudyBuildForm(forms.ModelForm):

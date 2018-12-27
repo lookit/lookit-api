@@ -124,49 +124,104 @@
     {% get_obj_perms user for study as "study_perms" %}
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
-            <div class="mt-sm panel panel-default">
+            <!--<div class="mt-sm panel panel-default">-->
+                <!--<div class="panel-heading">-->
+                    <!--<h1 class="panel-title">Description and Discoverability</h1>-->
+                <!--</div>-->
+                <!--<div class="panel-body">-->
+                    <!--<form action="./#details" method="post" enctype="multipart/form-data">{% csrf_token %}-->
+                        <!--{% include "studies/_study_fields.html" with form=form study=study %}-->
+                        <!--<div class="pull-right">-->
+                            <!--{% buttons %}-->
+                            <!--<a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>-->
+                            <!--{% if save_confirmation %}-->
+                            <!--<a data-toggle="modal" class="btn btn-danger" href="#saveStudyConfirmation">Save Changes</a>-->
+                            <!--{% else %}-->
+                            <!--<button type="submit" id="save_study_details" class="btn btn-success">-->
+                                <!--Save Changes-->
+                            <!--</button>-->
+                            <!--{% endif %}-->
+                            <!--{% endbuttons %}-->
+                            <!--<div class="modal fade" id="saveStudyConfirmation">-->
+                                <!--<form class="well" method="post">-->
+                                    <!--<div class="modal-content">-->
+                                        <!--<div class="modal-header">-->
+                                            <!--<button type="button" class="close" data-dismiss="modal">×</button>-->
+                                            <!--<h3> Are you sure you want to make changes to {{ study.name }}? </h3>-->
+                                        <!--</div>-->
+                                        <!--<div class="modal-body">-->
+                                            <!--{% csrf_token %}-->
+                                            <!--<p>-->
+                                                <!--This study has already been <strong><em>approved</em></strong>. If you-->
+                                                <!--edit this study, the system will-->
+                                                <!--automatically give it a rejected status. You will have to resubmit the-->
+                                                <!--study so your changes can-->
+                                                <!--be reviewed.-->
+                                            <!--</p>-->
+                                            <!--<p>(If your only change is toggling the study between private/public, your-->
+                                                <!--study will stay in its {{study.state}} state.) </p>-->
+                                        <!--</div>-->
+                                        <!--<div class="modal-footer"> {% csrf_token %}-->
+                                            <!--<a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">-->
+                                                <!--Cancel </a>-->
+                                            <!--<button id="save_study_details_confirm" type="submit"-->
+                                                    <!--class="btn btn-danger">-->
+                                                <!--Save Changes-->
+                                            <!--</button>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</form>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <div class="panel panel-default mt-xl">
                 <div class="panel-heading">
-                    <h1 class="panel-title">Description and Discoverability</h1>
+                    <h1 class="panel-title">Study Editor </h1>
                 </div>
                 <div class="panel-body">
-                    <form action="./#details" method="post" enctype="multipart/form-data">{% csrf_token %}
-                        {% include "studies/_study_fields.html" with form=form study=study %}
-                        <div class="pull-right">
+                    <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                        {% bootstrap_form form %}
+                        <div>
                             {% buttons %}
-                            <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>
-                            {% if save_confirmation %}
-                            <a data-toggle="modal" class="btn btn-danger" href="#saveStudyConfirmation">Save Changes</a>
-                            {% else %}
-                            <button type="submit" id="save_study_details" class="btn btn-success">
-                                Save Changes
-                            </button>
-                            {% endif %}
+                            <span class="pull-right">
+                              <a class="btn btn-default"
+                                 href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
+                              {% if save_confirmation %}
+                                <a data-toggle="modal" class="btn btn-danger" href="#saveStructureConfirmation">Save</a>
+                              {% else %}
+                                  <button id="save-study-json" type="submit" class="btn btn-success">
+                                     Save
+                                  </button>
+                              {% endif %}
+                          </span>
                             {% endbuttons %}
-                            <div class="modal fade" id="saveStudyConfirmation">
+                            <div class="modal fade" id="saveStructureConfirmation">
                                 <form class="well" method="post">
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
-                                            <h3> Are you sure you want to make changes to {{ study.name }}? </h3>
+                                            <h3> Are you sure you want to modify the JSON in {{ study.name
+                                                }}? </h3>
                                         </div>
                                         <div class="modal-body">
                                             {% csrf_token %}
                                             <p>
-                                                This study has already been <strong><em>approved</em></strong>. If you
-                                                edit this study, the system will
-                                                automatically give it a rejected status. You will have to resubmit the
-                                                study so your changes can
+                                                This study has already been <strong><em>approved</em></strong>.
+                                                If you edit this study's structure, the system will
+                                                automatically give it a rejected status. You will have to
+                                                resubmit the study so your changes can
                                                 be reviewed.
                                             </p>
-                                            <p>(If your only change is toggling the study between private/public, your
-                                                study will stay in its {{study.state}} state.) </p>
                                         </div>
                                         <div class="modal-footer"> {% csrf_token %}
-                                            <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
-                                                Cancel </a>
-                                            <button id="save_study_details_confirm" type="submit"
-                                                    class="btn btn-danger">
-                                                Save Changes
+                                            <a class="btn btn-default"
+                                               href="{% url 'exp:study-build' study.id %}"> Discard Changes </a>
+                                            <button type="submit"
+                                                    class="save-study-json-confirmation btn btn-danger">
+                                                Save
                                             </button>
                                         </div>
                                     </div>
@@ -243,8 +298,8 @@
                             <div class="row">
                                 <div class="col-xs-12 small pb-sm">
                                     <em>
-                                        Researchers belonging to this study's admin and read groups. {{
-                                        study.organization.name }} Admins will automatically be
+                                        Researchers belonging to this study's admin and read groups.
+                                        {{ study.organization.name }} Admins will automatically be
                                         able to edit this study, regardless of study group.
                                     </em>
                                 </div>
@@ -263,10 +318,10 @@
                             {% get_obj_perms researcher for study as "study_perms" %}
                             <div class="row pt-xs">
                                 <div class="col-sm-6 researcher-name">
-                                    <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{
-                                        researcher.identicon_small_html }} {{ researcher.get_short_name }} </a>
+                                    <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}">
+                                        {{ researcher.identicon_small_html }} {{ researcher.get_short_name }} </a>
                                     {% if researcher.is_org_admin %}
-                                    <span class="small"><em> *{{ study.organization.name }} Admin </em></span>
+                                    <span class="small"><em> * {{ study.organization.name }} Admin </em></span>
                                     {% endif %}
                                 </div>
                                 <div class="col-sm-4">
@@ -304,59 +359,6 @@
                             {% endfor %}
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="panel panel-default mt-xl">
-                <div class="panel-heading">
-                    <h1 class="panel-title">Study Editor </h1>
-                </div>
-                <div class="panel-body">
-                    <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                        <div>
-                            {% buttons %}
-                            <span class="pull-right">
-                              <a class="btn btn-default"
-                                 href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
-                              {% if save_confirmation %}
-                                <a data-toggle="modal" class="btn btn-danger" href="#saveStructureConfirmation">Save</a>
-                              {% else %}
-                                  <button id="save-study-json" type="submit" class="btn btn-success">
-                                     Save
-                                  </button>
-                              {% endif %}
-                          </span>
-                            {% endbuttons %}
-                            <div class="modal fade" id="saveStructureConfirmation">
-                                <form class="well" method="post">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">×</button>
-                                            <h3> Are you sure you want to modify the JSON in {{ study.name
-                                                }}? </h3>
-                                        </div>
-                                        <div class="modal-body">
-                                            {% csrf_token %}
-                                            <p>
-                                                This study has already been <strong><em>approved</em></strong>.
-                                                If you edit this study's structure, the system will
-                                                automatically give it a rejected status. You will have to
-                                                resubmit the study so your changes can
-                                                be reviewed.
-                                            </p>
-                                        </div>
-                                        <div class="modal-footer"> {% csrf_token %}
-                                            <a class="btn btn-default"
-                                               href="{% url 'exp:study-build' study.id %}"> Discard Changes </a>
-                                            <button type="submit"
-                                                    class="save-study-json-confirmation btn btn-danger">
-                                                Save
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
             <div class="panel panel-default mt-md">
