@@ -413,9 +413,14 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
-        state = self.object.state
-        admin_group = self.get_object().study_admin_group
+        study = context['study']
+        state = study.state
+        admin_group = study.study_admin_group
 
+        # context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
+        context['study_types'] = StudyType.objects.all()
+        context['study_metadata'] = self.object.metadata
+        context['types'] = [exp_type.configuration['metadata']['fields'] for exp_type in context['study_types']]
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
         context['search_query'] = self.request.GET.get('match')
@@ -427,9 +432,16 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['study_admins'] = User.objects.filter(groups__name=admin_group.name).values_list('id', flat=True)
         return context
 
-
     def get_success_url(self):
         return reverse('exp:study-edit', kwargs={'pk': self.object.id})
+
+    def form_valid(self, form):
+        """
+        Add success message that study JSON has been successfully saved.
+        """
+        ret = super().form_valid(form)
+        messages.success(self.request, f"{self.get_object().name} study JSON saved.")
+        return ret
 
 
 class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, StudyTypeMixin):

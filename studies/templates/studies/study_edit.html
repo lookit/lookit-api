@@ -17,8 +17,8 @@
 <script>
     $(document).ready(function () {
         $('form').submit(function () {
-            $('#save-study-json').prop("disabled", "disabled");
-            $('#save-study-json-confirmation').prop("disabled", "disabled");
+            $('.save-study-json').prop("disabled", "disabled");
+            $('.save-study-json-confirmation').prop("disabled", "disabled");
         });
     });
 </script>
@@ -347,8 +347,8 @@
                                         <div class="modal-footer"> {% csrf_token %}
                                             <a class="btn btn-default"
                                                href="{% url 'exp:study-build' study.id %}"> Discard Changes </a>
-                                            <button id="save-study-json-confirmation" type="submit"
-                                                    class="btn btn-danger">
+                                            <button type="submit"
+                                                    class="save-study-json-confirmation btn btn-danger">
                                                 Save
                                             </button>
                                         </div>
@@ -412,7 +412,7 @@
                                     <div class="modal-footer"> {% csrf_token %}
                                         <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard
                                             Changes </a>
-                                        <button id="save-study-json-confirmation" type="submit" class="btn btn-danger">
+                                        <button type="submit" class="save-study-json-confirmation btn btn-danger">
                                             Save
                                         </button>
                                     </div>
