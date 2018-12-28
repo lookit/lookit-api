@@ -135,7 +135,7 @@
                                 {% buttons %}
                                     <span class="pull-right">
                               <a class="btn btn-default"
-                                 href="{% url 'exp:study-build' study.id %}"> Discard changes </a>
+                                 href="{% url 'exp:study-edit' study.id %}"> Discard changes </a>
                                         {% if save_confirmation %}
                                             <a data-toggle="modal" class="btn btn-danger"
                                                href="#saveStructureConfirmation">Save</a>
@@ -165,7 +165,7 @@
                                             </div>
                                             <div class="modal-footer"> {% csrf_token %}
                                                 <a class="btn btn-default"
-                                                   href="{% url 'exp:study-build' study.id %}"> Discard Changes </a>
+                                                   href="{% url 'exp:study-edit' study.id %}"> Discard Changes </a>
                                                 <button type="submit"
                                                         class="save-study-json-confirmation btn btn-danger">
                                                     Save
@@ -335,7 +335,7 @@
                             </div>
                             {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
                             <div class="pull-right">
-                                <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}"> Discard
+                                <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}"> Discard
                                     changes </a>
                                 {% if save_confirmation %}
                                     <a data-toggle="modal" class="btn btn-danger" href="#saveTypeConfirmation">Save</a>
@@ -366,7 +366,7 @@
                                             </p>
                                         </div>
                                         <div class="modal-footer"> {% csrf_token %}
-                                            <a class="btn btn-default" href="{% url 'exp:study-build' study.id %}">
+                                            <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}">
                                                 Discard
                                                 Changes </a>
                                             <button type="submit" class="save-study-json-confirmation btn btn-danger">

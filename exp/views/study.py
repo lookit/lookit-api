@@ -450,6 +450,8 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
 
 class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, StudyTypeMixin):
     """
+    ---> DEPRECATED: all functionality is currently being transferred to Study Edit view.
+
     StudyBuildView allows user to modify study structure - JSON field.
     """
     model = Study
@@ -742,7 +744,7 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         return self._object
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse('exp:study-build', kwargs={'pk': str(self.object.pk)})
+        return reverse('exp:study-edit', kwargs={'pk': str(self.object.pk)})
 
     def post(self, request, *args, **kwargs):
         study_permissions = get_perms(request.user, self.object)
