@@ -6,6 +6,7 @@ from studies.models import StudyType
 class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
     login_url = settings.EXPERIMENTER_LOGIN_URL
 
+
 class StudyTypeMixin():
 
     def extract_type_metadata(self):

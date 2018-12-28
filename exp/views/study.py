@@ -403,14 +403,26 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
         4) researcher delete 5) Changing study status / adding rejection comments
         '''
+        study = self.get_object()
+
         if 'trigger' in self.request.POST:
             update_trigger(self)
+
         self.manage_researcher_permissions()
-        if 'short_description' in self.request.POST:
-            # Study metadata is being edited
+
+        if 'short_description' in self.request.POST:  # Study metadata is being edited.
             return super().post(request, *args, **kwargs)
 
-        return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
+        if 'study_type' in self.request.POST:  # Study type and metadata are being edited...
+            # ... which means we must invalidate the build.
+            study.built = False
+            study.previewed = False
+            study.metadata = self.extract_type_metadata()
+            study.study_type_id = StudyType.objects.filter(id=self.request.POST.get('study_type')).values_list('id', flat=True)[0]
+            study.save()
+            messages.success(self.request, f"{study.name} type and metadata saved.")
+
+        return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=study.pk)))
 
     def form_valid(self, form):
         """
