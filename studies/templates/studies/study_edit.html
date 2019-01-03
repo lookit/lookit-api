@@ -2,286 +2,387 @@
 {% load bootstrap3 %}
 {% load guardian_tags %}
 
+{% block head %}
+    {{ block.super }}
+    <script type="application/javascript">
+        /* Fix for ace-editor. It thinks it's in the admin only */
+        (function () {
+            if (window.jQuery !== undefined) {
+                window.django = {
+                    'jQuery': window.jQuery
+                };
+            }
+        })();
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('form').submit(function () {
+                $('.save-study-json').prop("disabled", "disabled");
+                $('.save-study-json-confirmation').prop("disabled", "disabled");
+            });
+        });
+    </script>
+    {{ form.media }}
+{% endblock %}
+
 {% block title %}Edit | {{ study.name }}{% endblock %}
+
 {% block flash %}
     {% if messages %}
         {% for message in messages %}
             {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
                 <div id="details" class="alert alert-success alert-dismissable">
-                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                     {{ message }}
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    {{ message }}
                 </div>
             {% endif %}
         {% endfor %}
     {% endif %}
 {% endblock %}
 {% block content %}
-<script>
-    $.fn.editable.defaults.mode = 'inline';
-    $(document).ready(function() {
-        if ("{{ match }}" !== '') {
-            document.getElementById("search-organization").value = "{{ match }}";
-        }
-        $('.researcher_permissions').editable({
-            source: [
-                  {value: 'study_read', text: 'Read'},
-                  {value: 'study_admin', text: 'Admin'}
-            ],
-            error: function(response, newValue) {
-                // If removing own admin permissions, direct to study detail page.
-                if(response.status === 403) {
-                    window.location = window.location.href.replace('edit/', '');
-                }
-            },
-            success: function(response, newValue) {
-              // On success, populate the success message with the permissions the user was given
-              // and reveal the permission edit alert message.
+    <script>
+        $.fn.editable.defaults.mode = 'inline';
+        $(document).ready(function () {
+            if ("{{ match }}" !== '') {
+                document.getElementById("search-organization").value = "{{ match }}";
+            }
+            $('.researcher_permissions').editable({
+                source: [
+                    {value: 'study_read', text: 'Read'},
+                    {value: 'study_admin', text: 'Admin'}
+                ],
+                error: function (response, newValue) {
+                    // If removing own admin permissions, direct to study detail page.
+                    if (response.status === 403) {
+                        window.location = window.location.href.replace('edit/', '');
+                    }
+                },
+                success: function (response, newValue) {
+                    // On success, populate the success message with the permissions the user was given
+                    // and reveal the permission edit alert message.
 
-              // This is necessary b/c we're using x-editable here. Page is not reloaded.
-              $('#add-researcher-messages').hide()
-              if (newValue === 'study_admin') {
-                  $('#permission-edit-text').append(' given Admin Permissions to this study.');
-                  // Another user given admin permissions so all users' permissions are editable.
-                  $('.disabledPermissionDisplay').hide()
-                  $('.permissionDisplay').show()
-              } else {
-                  $('#permission-edit-text').append(' given Read Permissions to this study.');
-                  var numAdmins = 0;
-                  var adminStatus = [];
-                  $('a.researcher_permissions').each(function(index) {
-                      // Loops through current researchers to figure out current number of admins, and
-                      // each researcher's current status
-                      if (this.innerHTML.trim() === 'Admin') {
-                          numAdmins++;
-                          adminStatus.push(1);
-                      } else {
-                          adminStatus.push(0);
-                      }
-                      if (this.className.indexOf('editable-open') > -1) {
-                          // Changed researcher was given read permissions
-                          adminStatus[index] = 0;
-                      }
-                  });
-                  $('.disabledPermissionDisplay').each(function(index) {
-                      // Modifies display as to whether or not researcher's permissions can be edited
-                      if (numAdmins - 1 - adminStatus[index] === 0) {
-                          this.style.display = 'inline-block';
-                          $('.permissionDisplay')[index].style.display = 'none';
-                      } else {
-                          this.style.display = 'none';
-                          $('.permissionDisplay')[index].style.display = 'inline-block';
-                      }
-                  });
-              }
-              // Shows success message
-               $('#permission-edit').show();
-           }
-        }).on('click', function (e) {
-            // When clicking on a researcher, prepopulate success message with researcher name.
-             $('#permission-edit').hide();
-             $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
+                    // This is necessary b/c we're using x-editable here. Page is not reloaded.
+                    $('#add-researcher-messages').hide()
+                    if (newValue === 'study_admin') {
+                        $('#permission-edit-text').append(' given Admin Permissions to this study.');
+                        // Another user given admin permissions so all users' permissions are editable.
+                        $('.disabledPermissionDisplay').hide()
+                        $('.permissionDisplay').show()
+                    } else {
+                        $('#permission-edit-text').append(' given Read Permissions to this study.');
+                        var numAdmins = 0;
+                        var adminStatus = [];
+                        $('a.researcher_permissions').each(function (index) {
+                            // Loops through current researchers to figure out current number of admins, and
+                            // each researcher's current status
+                            if (this.innerHTML.trim() === 'Admin') {
+                                numAdmins++;
+                                adminStatus.push(1);
+                            } else {
+                                adminStatus.push(0);
+                            }
+                            if (this.className.indexOf('editable-open') > -1) {
+                                // Changed researcher was given read permissions
+                                adminStatus[index] = 0;
+                            }
+                        });
+                        $('.disabledPermissionDisplay').each(function (index) {
+                            // Modifies display as to whether or not researcher's permissions can be edited
+                            if (numAdmins - 1 - adminStatus[index] === 0) {
+                                this.style.display = 'inline-block';
+                                $('.permissionDisplay')[index].style.display = 'none';
+                            } else {
+                                this.style.display = 'none';
+                                $('.permissionDisplay')[index].style.display = 'inline-block';
+                            }
+                        });
+                    }
+                    // Shows success message
+                    $('#permission-edit').show();
+                }
+            }).on('click', function (e) {
+                // When clicking on a researcher, prepopulate success message with researcher name.
+                $('#permission-edit').hide();
+                $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
+            });
+            $('form').submit(function () {
+                $('#save_study_details').prop("disabled", "disabled");
+                $('#save_study_details_confirm').prop("disabled", "disabled");
+            });
         });
-        $('form').submit(function() {
-            $('#save_study_details').prop("disabled", "disabled");
-            $('#save_study_details_confirm').prop("disabled", "disabled");
-        });
-    });
-</script>
-  <div class="container">
-    <div class="row">
-        <div class="col-xs-12">
-            <ol class="breadcrumb">
-              <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-              <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
-              <li class="active"> Edit </li>
-            </ol>
+    </script>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+                    <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
+                    <li class="active"> Edit</li>
+                </ol>
+            </div>
         </div>
-    </div>
-    {% get_obj_perms user for study as "study_perms" %}
-    <div class="row">
-        <div class="col-lg-10 col-lg-offset-1">
-            <div class="mt-sm panel panel-default">
-              <div class="panel-heading">
-                <h1 class="panel-title">Description and Discoverability</h1>
-              </div>
-              <div class="panel-body">
-                <form action="./#details" method="post" enctype="multipart/form-data">{% csrf_token %}
-                    {% include "studies/_study_fields.html" with form=form study=study %}
-                    <div class="pull-right">
-                        {% buttons %}
-                              <a class="btn btn-default"href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>
-                              {% if save_confirmation %}
-                                <a data-toggle="modal" class="btn btn-danger" href="#saveStudyConfirmation">Save Changes</a>
-                              {% else %}
-                                  <button type="submit" id="save_study_details" class="btn btn-success">
-                                     Save Changes
-                                  </button>
-                              {% endif %}
-                        {% endbuttons %}
-                        <div class="modal fade" id="saveStudyConfirmation">
-                            <form class="well" method="post">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                      <button type="button" class="close" data-dismiss="modal">×</button>
-                                      <h3> Are you sure you want to make changes to {{ study.name }}? </h3>
-                                    </div>
-                                    <div class="modal-body">
-                                         {% csrf_token %}
-                                         <p>
-                                             This study has already been <strong><em>approved</em></strong>. If you edit this study, the system will
-                                             automatically give it a rejected status. You will have to resubmit the study so your changes can
-                                             be reviewed.
-                                         </p>
-                                         <p>(If your only change is toggling the study between private/public, your study will stay in its {{study.state}} state.) </p>
-                                    </div>
-                                    <div class="modal-footer"> {% csrf_token %}
-                                         <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}"> Cancel </a>
-                                         <button id="save_study_details_confirm" type="submit" class="btn btn-danger">
-                                            Save Changes
-                                         </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+        {% get_obj_perms user for study as "study_perms" %}
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1">
+                <div class="panel panel-default mt-xl">
+                    <div class="panel-heading">
+                        <h1 class="panel-title">Study Editor </h1>
                     </div>
-                </form>
-            </div>
-          </div>
-          <div class="mt-xl panel panel-default">
-            <div class="panel-heading">
-              <h1 id="manage-researchers" class="panel-title">Manage Researchers</h1>
-            </div>
-            <div class="panel-body">
-                {% if messages %}
-                    {% for message in messages %}
-                        {% if message.extra_tags == 'user_added' or message.extra_tags == 'user_removed' %}
-                            <div id="add-researcher-messages" class="alert {{ message.tags }} alert-dismissable">
-                                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                 {{ message }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                <div id="permission-edit" class="alert alert-success alert-dismissable" style="display:none;">
-                     <a href="#manage-researchers" class="close" onclick="$('.alert').hide()">&times;</a>
-                     <div id="permission-edit-text"> </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-5">
-                        <form method="GET" action="./#manage-researchers">
-                            <div class="input-group">
-                               <input id="search-organization" class="form-control" name="match" placeholder="Search organization" type="text">
-                               <span class="input-group-btn">
-                                    <input type="hidden" name="page" value="1">
-                                    <button class="btn btn-default" type="submit" aria-label="Search researchers"><i aria-hidden="true" class="fa fa-search"></i></button>
-                               </span>
+                    <div class="panel-body">
+                        <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
+                            {% bootstrap_form form %}
+                            <div>
+                                {% buttons %}
+                                    <span class="pull-right">
+                              <a class="btn btn-default"
+                                 href="{% url 'exp:study-edit' study.id %}"> Discard changes </a>
+                                        {% if save_confirmation %}
+                                            <a data-toggle="modal" class="btn btn-danger"
+                                               href="#saveStructureConfirmation">Save</a>
+                                        {% else %}
+                                            <button id="save-study-json" type="submit" class="btn btn-success">
+                                     Save
+                                  </button>
+                                        {% endif %}
+                          </span>
+                                {% endbuttons %}
+                                <div class="modal fade" id="saveStructureConfirmation">
+                                    <form class="well" method="post">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                <h3> Are you sure you want to modify the JSON in {{ study.name }}? </h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                <p>
+                                                    This study has already been <strong><em>approved</em></strong>.
+                                                    If you edit this study's structure, the system will
+                                                    automatically give it a rejected status. You will have to
+                                                    resubmit the study so your changes can
+                                                    be reviewed.
+                                                </p>
+                                            </div>
+                                            <div class="modal-footer"> {% csrf_token %}
+                                                <a class="btn btn-default"
+                                                   href="{% url 'exp:study-edit' study.id %}"> Discard Changes </a>
+                                                <button type="submit"
+                                                        class="save-study-json-confirmation btn btn-danger">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </form>
-                        <div class="researcher-search-results">
-                            {% if users_result %}
-                                <h2 class="researchers-label"> Results </h2>
-                                {% for user in users_result %}
-                                    <div class="row pt-xs">
-                                        <div class="col-xs-8 col-xs-offset-1">
-                                            <a target="_blank" href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.identicon_small_html }} {{ user.get_short_name }} </a>
+                    </div>
+                </div>
+                <div class="mt-xl panel panel-default">
+                    <div class="panel-heading">
+                        <h1 id="manage-researchers" class="panel-title">Manage Researchers</h1>
+                    </div>
+                    <div class="panel-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if message.extra_tags == 'user_added' or message.extra_tags == 'user_removed' %}
+                                    <div id="add-researcher-messages"
+                                         class="alert {{ message.tags }} alert-dismissable">
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        <div id="permission-edit" class="alert alert-success alert-dismissable" style="display:none;">
+                            <a href="#manage-researchers" class="close" onclick="$('.alert').hide()">&times;</a>
+                            <div id="permission-edit-text"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <form method="GET" action="./#manage-researchers">
+                                    <div class="input-group">
+                                        <input id="search-organization" class="form-control" name="match"
+                                               placeholder="Search organization" type="text">
+                                        <span class="input-group-btn">
+                                    <input type="hidden" name="page" value="1">
+                                    <button class="btn btn-default" type="submit" aria-label="Search researchers"><i
+                                            aria-hidden="true" class="fa fa-search"></i></button>
+                               </span>
+                                    </div>
+                                </form>
+                                <div class="researcher-search-results">
+                                    {% if users_result %}
+                                        <h2 class="researchers-label"> Results </h2>
+                                        {% for user in users_result %}
+                                            <div class="row pt-xs">
+                                                <div class="col-xs-8 col-xs-offset-1">
+                                                    <a target="_blank"
+                                                       href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.identicon_small_html }} {{ user.get_short_name }} </a>
+                                                </div>
+                                                <div class="col-xs-3">
+                                                    <form method="POST" action="./#manage-researchers">{% csrf_token %}
+                                                        <input type="hidden" name="add_user" value="{{ user.id }}"/>
+                                                        <button aria-label="Add researcher to study" type="submit"
+                                                                value="{{ user.id }}" class="btn btn-success btn-sm"><i
+                                                                aria-hidden="true" class="fa fa-plus"></i></button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                        <div class="pt-md">
+                                            {% include 'studies/_paginator.html' with items=users_result request=request %}
                                         </div>
-                                        <div class="col-xs-3">
+
+                                    {% else %}
+                                        {% if search_query %}
+                                            <p class="pt-md"><em> No results found! </em></p>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-sm-7">
+                                <h2 class="researchers-label"> Researchers </h2>
+                                <div class="row">
+                                    <div class="col-xs-12 small pb-sm">
+                                        <em>
+                                            Researchers belonging to this study's admin and read groups.
+                                            {{ study.organization.name }} Admins will automatically be
+                                            able to edit this study, regardless of study group.
+                                        </em>
+                                    </div>
+                                </div>
+                                <div class="row hidden-xs">
+                                    <div class="col-xs-6">
+                                        <label> Name </label>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <label> Permissions </label>
+                                    </div>
+                                    <div class="col-xs-2">
+                                    </div>
+                                </div>
+                                {% for researcher in current_researchers %}
+                                    {% get_obj_perms researcher for study as "study_perms" %}
+                                    <div class="row pt-xs">
+                                        <div class="col-sm-6 researcher-name">
+                                            <a target="_blank"
+                                               href="{% url 'exp:researcher-detail' pk=researcher.id %}">
+                                                {{ researcher.identicon_small_html }} {{ researcher.get_short_name }} </a>
+                                            {% if researcher.is_org_admin %}
+                                                <span class="small"><em> * {{ study.organization.name }} Admin </em></span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="disabledPermissionDisplay"
+                                                 style="display:{% if researcher.id in study_admins and not multiple_admins %} inline-block; {% else %} none; {% endif %}">
+                                                Admin
+                                            </div>
+                                            <div class="permissionDisplay"
+                                                 style="display:{% if researcher.id not in study_admins or multiple_admins %} inline-block; {% else %} none; {% endif %}">
+                                                <a href="#" data-name="update_user" class="researcher_permissions"
+                                                   data-type="select" data-url="{% url 'exp:study-edit' study.id %}"
+                                                   data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
+                                                   data-id="{{ researcher.get_short_name }}"
+                                                   data-pk="{{ researcher.id }}"
+                                                   data-title="Select researcher permissions">
+                                                    {% if researcher.id in study_admins %}
+                                                        Admin
+                                                    {% else %}
+                                                        Read
+                                                    {% endif %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2 researcher-delete">
                                             <form method="POST" action="./#manage-researchers">{% csrf_token %}
-                                                <input type="hidden" name="add_user" value="{{user.id}}"/>
-                                                <button aria-label="Add researcher to study" type="submit" value="{{user.id}}" class="btn btn-success btn-sm"><i aria-hidden="true" class="fa fa-plus"></i></button>
+                                                <input type="hidden" name="remove_user" value="{{ researcher.id }}"/>
+                                                <button aria-label="Remove researcher from study" type="submit"
+                                                        class="btn btn-danger btn-sm">
+                                            <span class="hidden-xs"><i aria-hidden="true"
+                                                                       class="fa fa-minus"></i></span>
+                                                    <span class="visible-xs">Remove</span>
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
                                 {% endfor %}
-                                <div class="pt-md">
-                                    {% include 'studies/_paginator.html' with items=users_result request=request %}
-                                </div>
-
-                            {% else %}
-                                {% if search_query %}
-                                    <p class="pt-md"><em> No results found! </em></p>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-sm-7">
-                        <h2 class="researchers-label"> Researchers </h2>
-                        <div class="row">
-                            <div class="col-xs-12 small pb-sm">
-                                <em>
-                                    Researchers belonging to this study's admin and read groups. {{ study.organization.name }} Admins will automatically be
-                                    able to edit this study, regardless of study group.
-                                </em>
                             </div>
                         </div>
-                        <div class="row hidden-xs">
-                            <div class="col-xs-6">
-                                <label> Name </label>
-                            </div>
-                            <div class="col-xs-4">
-                                <label> Permissions </label>
-                            </div>
-                            <div class="col-xs-2">
-                            </div>
-                        </div>
-                        {% for researcher in current_researchers %}
-                            {% get_obj_perms researcher for study as "study_perms" %}
-                            <div class="row pt-xs">
-                                <div class="col-sm-6 researcher-name">
-                                    <a target="_blank" href="{% url 'exp:researcher-detail' pk=researcher.id %}"> {{ researcher.identicon_small_html }} {{ researcher.get_short_name }} </a>
-                                    {% if researcher.is_org_admin %}
-                                        <span class="small"><em> *{{ study.organization.name }} Admin </em></span>
-                                    {% endif %}
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="disabledPermissionDisplay" style="display:{% if researcher.id in study_admins and not multiple_admins%}inline-block; {% else %}none; {% endif %}">
-                                        Admin
-                                    </div>
-                                    <div class="permissionDisplay" style="display:{% if researcher.id not in study_admins or multiple_admins %}inline-block; {% else %}none; {% endif %}">
-                                        <a href="#" data-name="update_user" class="researcher_permissions" data-type="select" data-url="{% url 'exp:study-edit' study.id %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}" data-id="{{ researcher.get_short_name }}"data-pk="{{ researcher.id }}" data-title="Select researcher permissions">
-                                            {% if researcher.id in study_admins %}
-                                                Admin
-                                            {% else %}
-                                                Read
-                                            {% endif %}
-                                        </a>
-                                    </div>
-                                </div>
-                                <div class="col-sm-2 researcher-delete">
-                                    <form method="POST" action="./#manage-researchers">{% csrf_token %}
-                                        <input type="hidden" name="remove_user" value="{{researcher.id}}"/>
-                                        <button aria-label="Remove researcher from study" type="submit" class="btn btn-danger btn-sm">
-                                            <span class="hidden-xs"><i aria-hidden="true" class="fa fa-minus"></i></span>
-                                            <span class="visible-xs">Remove</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        {% endfor %}
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="mt-xs panel panel-default">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <a class="build-study-link" href="{% url 'exp:study-build' pk=study.id %}">
-                            <div class="well modify-study-block">
-                                <center class="mt-sm">
-                                    <p><i aria-hidden="true" class="fa-2x fa fa-list"></i></p>
-                                    <h4> Build Study </h4>
-                                    <p> Add/Modify study components </p>
-                                </center>
-                            </div>
-                        </a>
+                <div class="panel panel-default mt-md">
+                    <div class="panel-heading">
+                        <h1 class="panel-title">Change Study Type and Dependencies</h1>
                     </div>
-                    <div class="col-md-8">
-                          {% include 'studies/_study_status.html' with study=study %}
+                    <div class="panel-body">
+                        <form method="POST">{% csrf_token %}
+
+                            <div class="form-group">
+                                <label class="control-label" for="id_study_type">Study Type</label>
+                                <select name="study_type" class="form-control" title="" required="" id="id_study_type">
+                                    <option value="">---------</option>
+                                    {% for option in study_types %}
+                                        <option {% if option.name == study.study_type.name %} selected {% endif %}
+                                                                                              value="{{ option.id }}"> {{ option.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="help-block">
+                                    Specify the build process as well as the parameters needed by the experiment
+                                    builder.
+                                </div>
+                            </div>
+                            {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
+                            <div class="pull-right">
+                                <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}"> Discard
+                                    changes </a>
+                                {% if save_confirmation %}
+                                    <a data-toggle="modal" class="btn btn-danger" href="#saveTypeConfirmation">Save</a>
+                                {% else %}
+                                    <button id="save-study-type" type="submit" class="btn btn-success">
+                                        Save
+                                    </button>
+                                {% endif %}
+                            </div>
+                            <div class="modal fade" id="saveTypeConfirmation">
+                                <form class="well" method="post">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <h3> Are you sure you want to modify the study type and/or study metadata in
+                                                {{ study.name }}? </h3>
+                                        </div>
+                                        <div class="modal-body">
+                                            {% csrf_token %}
+                                            <p>
+                                                This study has already been <strong><em>approved</em></strong>. If you
+                                                edit
+                                                this study's type and/or metadata, the system will
+                                                automatically give it a rejected status. You will have to resubmit the
+                                                study
+                                                so your changes can
+                                                be reviewed.
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer"> {% csrf_token %}
+                                            <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}">
+                                                Discard
+                                                Changes </a>
+                                            <button type="submit" class="save-study-json-confirmation btn btn-danger">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </form>
+                        <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
+                            <input class="btn btn-primary" type="submit" value="Build Dependencies (Preview)"/>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

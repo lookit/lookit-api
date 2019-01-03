@@ -23,13 +23,12 @@ from revproxy.views import ProxyView
 
 import attachment_helpers
 from accounts.models import User
-from accounts.utils import (get_permitted_triggers, status_tooltip_text,
-                            update_trigger)
+from accounts.utils import status_tooltip_text
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
+from studies.forms import StudyBuildForm, StudyForm, StudyUpdateForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
@@ -165,7 +164,18 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         button is pressed, clones study and redirects to the clone.
         """
         if 'trigger' in self.request.POST:
-            update_trigger(self)
+            try:
+                update_trigger(self)
+            except Exception as e:
+                messages.error(self.request, f"TRANSITION ERROR: {e}")
+                return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
+
+        if 'build' in self.request.POST:
+            build_experiment.delay(self.get_object().uuid, self.request.user.uuid, preview=False)
+            messages.success(
+                self.request,
+                f"Scheduled Study {self.get_object().name} for build. You will be emailed when it's completed.")
+
         if self.request.POST.get('clone_study'):
             clone = self.get_object().clone()
             clone.creator = self.request.user
@@ -212,7 +222,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['triggers'] = get_permitted_triggers(self,
             self.object.machine.get_triggers(self.object.state))
         context['logs'] = self.study_logs
-        state = self.object.state
+        state = context['state'] =self.object.state
         context['status_tooltip'] = status_tooltip_text.get(state, state)
         return context
 
@@ -280,22 +290,34 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
 
 
-class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, PaginatorMixin):
+class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, PaginatorMixin, StudyTypeMixin):
     '''
     StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
     Also allows you to update the study status.
     '''
     template_name = 'studies/study_edit.html'
-    form_class = StudyEditForm
+    form_class = StudyUpdateForm
     model = Study
     permission_required = 'studies.can_edit_study'
     raise_exception = True
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()
+        structure = self.object.structure
+        if structure:
+            # Ensures that json displayed in edit form is valid json w/ double quotes,
+            # so incorrect json is not saved back into the db
+            initial['structure'] = json.dumps(structure)
+        return initial
 
     def get_study_researchers(self):
         '''  Pulls researchers that belong to Study Admin and Study Read groups - Not showing Org Admin and Org Read in this list (even though they technically
         can view the project.) '''
         study = self.get_object()
-        return User.objects.filter(Q(groups__name=self.get_object().study_admin_group.name) | Q(groups__name=self.get_object().study_read_group.name)).distinct().order_by(Lower('family_name').asc())
+        return User.objects.filter(Q(groups__name=study.study_admin_group.name) | Q(groups__name=study.study_read_group.name)).distinct().order_by(Lower('family_name').asc())
 
     def search_researchers(self):
         ''' Searches user first, last, and middle names for search query. Does not display researchers that are already on project '''
@@ -381,14 +403,26 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
         4) researcher delete 5) Changing study status / adding rejection comments
         '''
+        study = self.get_object()
+
         if 'trigger' in self.request.POST:
             update_trigger(self)
+
         self.manage_researcher_permissions()
-        if 'short_description' in self.request.POST:
-            # Study metadata is being edited
+
+        if 'short_description' in self.request.POST:  # Study metadata is being edited.
             return super().post(request, *args, **kwargs)
 
-        return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=self.get_object().pk)))
+        if 'study_type' in self.request.POST:  # Study type and metadata are being edited...
+            # ... which means we must invalidate the build.
+            study.built = False
+            study.previewed = False
+            study.metadata = self.extract_type_metadata()
+            study.study_type_id = StudyType.objects.filter(id=self.request.POST.get('study_type')).values_list('id', flat=True)[0]
+            study.save()
+            messages.success(self.request, f"{study.name} type and metadata saved.")
+
+        return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=study.pk)))
 
     def form_valid(self, form):
         """
@@ -403,9 +437,14 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
-        state = self.object.state
-        admin_group = self.get_object().study_admin_group
+        study = context['study']
+        state = study.state
+        admin_group = study.study_admin_group
 
+        # context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
+        context['study_types'] = StudyType.objects.all()
+        context['study_metadata'] = self.object.metadata
+        context['types'] = [exp_type.configuration['metadata']['fields'] for exp_type in context['study_types']]
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
         context['search_query'] = self.request.GET.get('match')
@@ -417,13 +456,14 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['study_admins'] = User.objects.filter(groups__name=admin_group.name).values_list('id', flat=True)
         return context
 
-
     def get_success_url(self):
         return reverse('exp:study-edit', kwargs={'pk': self.object.id})
 
 
 class StudyBuildView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.UpdateView, StudyTypeMixin):
     """
+    ---> DEPRECATED: all functionality is currently being transferred to Study Edit view.
+
     StudyBuildView allows user to modify study structure - JSON field.
     """
     model = Study
@@ -716,7 +756,7 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         return self._object
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse('exp:study-build', kwargs={'pk': str(self.object.pk)})
+        return reverse('exp:study-edit', kwargs={'pk': str(self.object.pk)})
 
     def post(self, request, *args, **kwargs):
         study_permissions = get_perms(request.user, self.object)
@@ -763,3 +803,56 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
         if request.path[-1] == '/':
             path = f"{path.split('/')[0]}/index.html"
         return super().dispatch(request, path)
+
+
+# UTILITY FUNCTIONS
+def get_permitted_triggers(view_instance, triggers):
+    '''Takes in the available triggers (next possible states) for a study and restricts that list
+    based on the current user's permissions.
+    The view_instance is the StudyDetailView or the StudyUpdateView.
+    '''
+    permitted_triggers = []
+    user = view_instance.request.user
+    study = view_instance.object
+    study_permissions = get_perms(user, view_instance.object)
+
+    admin_triggers = ['approve', 'reject']
+    for trigger in triggers:
+        # remove autogenerated triggers
+        if trigger.startswith('to_'):
+            continue
+
+        # Trigger valid if 1) superuser 2) trigger is admin trigger and user is org admin
+        # 3) trigger is found in user's study permissions
+        if not user.is_superuser:
+            if trigger in admin_triggers:
+                 if not (user.organization == study.organization and user.is_org_admin):
+                     continue
+            elif ('can_' + trigger + '_study') not in study_permissions:
+                continue
+
+        permitted_triggers.append(trigger)
+
+    return permitted_triggers
+
+
+def update_trigger(view_instance):
+    """Transition to next state in study workflow.
+
+    TODO: Find out what the hell this comments-text logic is doing in here.
+
+    :param view_instance: An instance of the django view.
+    :type view_instance: StudyDetailView or StudyUpdateView
+    """
+    trigger = view_instance.request.POST.get('trigger')
+    object = view_instance.get_object()
+    if trigger:
+        if hasattr(object, trigger):
+            # transition through workflow state
+            getattr(object, trigger)(user=view_instance.request.user)
+    if 'comments-text' in view_instance.request.POST.keys():
+        object.comments = view_instance.request.POST['comments-text']
+        object.save()
+    displayed_state = object.state if object.state != 'active' else 'activated'
+    messages.success(view_instance.request, f"Study {object.name} {displayed_state}.")
+    return object
