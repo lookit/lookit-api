@@ -6,7 +6,7 @@ from django.shortcuts import reverse, get_object_or_404, redirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 from django.contrib.auth import update_session_auth_hash
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
@@ -328,6 +328,16 @@ class StudyDetailView(generic.DetailView):
             context['children'] = self.request.user.children.filter(deleted=False)
 
         return context
+
+    def dispatch(self, request, *args, **kwargs):
+        study = self.get_object()
+        if study.state == 'active':
+            return super().dispatch(request)
+        else:
+            return HttpResponseForbidden(
+                f'The study "{study.name}" is not currently collecting data - the study is either completed or paused. '
+                f'If you think this is an error, please contact {study.contact_info}'
+            )
 
 
 class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
