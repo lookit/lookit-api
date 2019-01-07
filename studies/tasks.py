@@ -175,10 +175,11 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         checkout_directory, addons_sha, player_sha = download_repos(
             addons_repo_url, addons_sha=addons_sha, player_sha=player_sha)
 
-        if preview and player_sha is None and addons_sha is None:
-            study.metadata['last_known_addons_sha'] = addons_sha
-            study.metadata['last_known_player_sha'] = player_sha
-            study.save()
+        study.metadata['last_known_addons_sha'] = addons_sha
+        study.metadata['last_known_player_sha'] = player_sha
+
+        # study.save() at end of handler - incrementally saving might be something we want to do, but we're going to
+        # save that for later during the larger refactor of the study building experience.
 
         player_addons_concat_sha = f'{player_sha}_{addons_sha}'
 
