@@ -441,7 +441,6 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         state = study.state
         admin_group = study.study_admin_group
 
-        # context['save_confirmation'] = self.object.state in ['approved', 'active', 'paused', 'deactivated']
         context['study_types'] = StudyType.objects.all()
         context['study_metadata'] = self.object.metadata
         context['types'] = [exp_type.configuration['metadata']['fields'] for exp_type in context['study_types']]

@@ -105,10 +105,12 @@
                 $('#permission-edit').hide();
                 $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
             });
-            $('form').submit(function () {
+
+            $('form#study-details-form').submit(function () {
                 $('#save_study_details').prop("disabled", "disabled");
                 $('#save_study_details_confirm').prop("disabled", "disabled");
             });
+
         });
     </script>
     <div class="container">
@@ -129,22 +131,68 @@
                         <h1 class="panel-title">Study Editor </h1>
                     </div>
                     <div class="panel-body">
-                        <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                            {% include "studies/_study_fields.html" with form=form %}
+                        <form id="study-details-form" action="" enctype="multipart/form-data"
+                              method="post">{% csrf_token %}
+                            {% include "studies/_study_fields.html" with form=form study=study %}
                             {% bootstrap_field form.structure %}
                             <div class="pull-right">
                                 {% buttons %}
-                                    <a href="{% url 'exp:study-list' %}" class="btn btn-default">
-                                        Cancel
-                                    </a>
-                                    <button type="submit" id="save-study-details" class="btn btn-success">
-                                        {% bootstrap_icon "save" %} Save Study
-                                    </button>
+                                    <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
+                                        Cancel </a>
+                                    {% if save_confirmation %}
+                                        <a data-toggle="modal" class="btn btn-danger" href="#saveStudyConfirmation">Save
+                                            Changes</a>
+                                    {% else %}
+                                        <button type="submit" id="save_study_details" class="btn btn-success">
+                                            Save Changes
+                                        </button>
+                                    {% endif %}
                                 {% endbuttons %}
+                                <div class="modal fade" id="saveStudyConfirmation">
+                                    <form class="well" method="post">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                <h3> Are you sure you want to modify {{ study.name }}? </h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                <p>
+                                                    This study has already been <strong><em>approved</em></strong>. If
+                                                    you edit this study, the system will
+                                                    automatically give it a rejected status. You will have to resubmit
+                                                    the study so your changes can
+                                                    be reviewed.
+                                                </p>
+                                                <p>(If your only change is toggling the study between private/public,
+                                                    your study will stay in its {{ study.state }} state.) </p>
+                                            </div>
+                                            <div class="modal-footer"> {% csrf_token %}
+                                                <a class="btn btn-default"
+                                                   href="{% url 'exp:study-edit' pk=study.id %}"> Discard Changes </a>
+                                                <button id="save_study_details_confirm" type="submit"
+                                                        class="btn btn-danger">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
+                        </form>
+                        <form action="{% url 'exp:preview-proxy' path=study.uuid %}" method="GET"
+                              target="_blank">{% csrf_token %}
+                            <button class="btn btn-primary" type="submit"
+                                    {% if study.previewed is False %}disabled{% endif %}>{% bootstrap_icon "eye-open" %}
+                                See Preview
+                            </button>
+                            {% if study.previewed is False %}
+                                <p class="help-block">You need to build your dependencies first. Please see "Change
+                                    Study type and Dependencies" section below.</p>{% endif %}
                         </form>
                     </div>
                 </div>
+                {#  ------ BEGIN MANAGE RESEARCHERS ----- #}
                 <div class="mt-xl panel panel-default">
                     <div class="panel-heading">
                         <h1 id="manage-researchers" class="panel-title">Manage Researchers</h1>
@@ -278,6 +326,7 @@
                         </div>
                     </div>
                 </div>
+                {#  ------ END MANAGE RESEARCHERS ------- #}
                 <div class="panel panel-default mt-md">
                     <div class="panel-heading">
                         <h1 class="panel-title">Change Study Type and Dependencies</h1>
@@ -295,10 +344,21 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                                <div class="help-block">
-                                    Specify the build process as well as the parameters needed by the experiment
-                                    builder.
-                                </div>
+                                <p class="help-block">
+                                    After selecting a study type above, you'll be asked to fill out some study type
+                                    metadata
+                                    as well. This metadata is unique to the study type, and provides important
+                                    configurations
+                                    for building your study.
+                                </p>
+                                <p class="help-block">
+                                    Once you've filled in the required metadata, you'll have to build the dependencies
+                                    for your experiment in order to deploy it, which you can do from the detail page.
+                                    However, you'll probably want to see what your experiment looks like <em>before</em>
+                                    you actually deploy it and start collecting data! You can do that by clicking the
+                                    "Build Preview Dependencies" button and then clicking on "See Preview" above after
+                                    the build finishes.
+                                </p>
                             </div>
                             {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
                             <div class="pull-right">
@@ -344,8 +404,17 @@
                                 </form>
                             </div>
                         </form>
+                        <p>
+                            {% if study.previewed is True %}
+                                {% bootstrap_icon "ok" %} <em>Your preview is ready!</em>
+                            {% else %}
+                                <em>Your preview has no been built yet. Click below build your dependencies!</em>
+                            {% endif %}
+                        </p>
                         <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
-                            <input class="btn btn-primary" type="submit" value="Build Dependencies (Preview)"/>
+                            <button class="btn btn-primary" type="submit">{% bootstrap_icon "wrench" %} Build Preview
+                                Dependencies
+                            </button>
                         </form>
                     </div>
                 </div>
