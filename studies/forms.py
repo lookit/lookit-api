@@ -76,7 +76,7 @@ class StudyForm(StudyEditForm):
         try:
             json_data = json.loads(structure)  # loads string as json
         except:
-            raise forms.ValidationError("Invalid JSON")
+            raise forms.ValidationError("Save failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost.")
         return json_data
 
     class Meta(StudyEditForm.Meta):
@@ -100,7 +100,7 @@ class StudyUpdateForm(StudyEditForm):
         try:
             json_data = json.loads(structure)  # loads string as json
         except:
-            raise forms.ValidationError("Invalid JSON")
+            raise forms.ValidationError("Save failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost.")
         return json_data
 
     class Meta(StudyEditForm.Meta):

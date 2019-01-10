@@ -345,5 +345,4 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 OSF_OAUTH_CLIENT_ID = os.environ.get('OSF_OAUTH_CLIENT_ID', '3518b74e12584abf9e48565ff6aee6f3')
 OSF_OAUTH_SECRET = os.environ.get('OSF_OAUTH_SECRET', 'vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU')
 
-
 JAMDB_AUTH_TOKEN = os.environ.get('JAMDB_AUTH_TOKEN', '')

@@ -163,6 +163,8 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         Post method can update the trigger if the state of the study has changed.  If "clone" study
         button is pressed, clones study and redirects to the clone.
         """
+        self.manage_researcher_permissions()
+
         if 'trigger' in self.request.POST:
             try:
                 update_trigger(self)
@@ -186,15 +188,77 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             messages.success(self.request, f"{self.get_object().name} copied.")
             self.add_creator_to_study_admin_group(clone)
             return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=clone.pk)))
+
         return HttpResponseRedirect(reverse('exp:study-detail', kwargs=dict(pk=self.get_object().pk)))
 
+    def manage_researcher_permissions(self):
+        '''
+        Handles adding, updating, and deleting researcher from study. Users are
+        added to study read group by default.
+        '''
+        study = self.get_object()
+        study_read_group = study.study_read_group
+        study_admin_group = study.study_admin_group
+        add_user = self.request.POST.get('add_user')
+        remove_user = self.request.POST.get('remove_user')
+        update_user = None
+
+        # Early exit if the user doesn't have proper permissions.
+        if not self.request.user.groups.filter(name=study_admin_group.name).exists():
+            messages.error(self.request, f"You don't have proper permissions to add researchers to {study.name}.")
+            return
+
+        if self.request.POST.get('name') == 'update_user':
+            update_user = self.request.POST.get('pk')
+            permissions = self.request.POST.get('value')
+        if add_user:
+            # Adds user to study read by default
+            add_user_object = User.objects.get(pk=add_user)
+            study_read_group.user_set.add(add_user_object)
+            messages.success(self.request, f"{add_user_object.get_short_name()} given {study.name} Read Permissions.", extra_tags='user_added')
+            self.send_study_email(add_user_object, 'read')
+        if remove_user:
+            # Removes user from both study read and study admin groups
+            remove = User.objects.get(pk=remove_user)
+            if self.adequate_study_admins(study_admin_group, remove):
+                study_read_group.user_set.remove(remove)
+                study_admin_group.user_set.remove(remove)
+                messages.success(self.request, f"{remove.get_short_name()} removed from {study.name}.", extra_tags='user_removed')
+            else:
+                messages.error(self.request, "Could not delete this researcher. There must be at least one study admin.", extra_tags='user_removed')
+        if update_user:
+            update = User.objects.get(pk=update_user)
+            if permissions == 'study_admin':
+                # if admin, removes user from study read and adds to study admin
+                study_read_group.user_set.remove(update)
+                study_admin_group.user_set.add(update)
+                self.send_study_email(update, 'admin')
+            if permissions == 'study_read':
+                # if read, removes user from study admin and adds to study read
+                if self.adequate_study_admins(study_admin_group, update):
+                    study_read_group.user_set.add(update)
+                    study_admin_group.user_set.remove(update)
+                    self.send_study_email(update, 'read')
+        return
+
+    def send_study_email(self, user, permission):
+        study = self.get_object()
+        context = {
+            'permission': permission,
+            'study_name': study.name,
+            'study_id': study.id,
+            'org_name': user.organization.name,
+            'researcher_name': user.get_short_name()
+        }
+        send_mail.delay('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=settings.EMAIL_FROM_ADDRESS, **context)
+
     def add_creator_to_study_admin_group(self, clone):
-            """
-            Add the study's creator to the clone's study admin group.
-            """
-            study_admin_group = clone.study_admin_group
-            study_admin_group.user_set.add(self.request.user)
-            return study_admin_group
+        """
+        Add the study's creator to the clone's study admin group.
+        """
+        study_admin_group = clone.study_admin_group
+        study_admin_group.user_set.add(self.request.user)
+        return study_admin_group
 
     def get_queryset(self):
         """
@@ -224,7 +288,40 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['logs'] = self.study_logs
         state = context['state'] =self.object.state
         context['status_tooltip'] = status_tooltip_text.get(state, state)
+        context['current_researchers'] = self.get_study_researchers()
+        context['users_result'] = self.search_researchers()
         return context
+
+    def get_study_researchers(self):
+        '''  Pulls researchers that belong to Study Admin and Study Read groups - Not showing Org Admin and Org Read in this list (even though they technically
+        can view the project.) '''
+        study = self.get_object()
+        return User.objects.filter(Q(groups__name=study.study_admin_group.name) | Q(groups__name=study.study_read_group.name)).distinct().order_by(Lower('family_name').asc())
+
+    def search_researchers(self):
+        ''' Searches user first, last, and middle names for search query. Does not display researchers that are already on project '''
+        search_query = self.request.GET.get('match', None)
+        researchers_result = None
+        if search_query:
+            current_researcher_ids = self.get_study_researchers().values_list('id', flat=True)
+            user_queryset = User.objects.filter(organization=self.get_object().organization,is_active=True)
+            researchers_result = user_queryset.filter(reduce(operator.or_,
+              (Q(family_name__icontains=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in search_query.split()))).exclude(id__in=current_researcher_ids).distinct().order_by(Lower('family_name').asc())
+            researchers_result = self.build_researchers_paginator(researchers_result)
+        return researchers_result
+
+    def adequate_study_admins(self, admin_group, researcher):
+        # Returns true if researchers's permissions can be edited, or researcher deleted,
+        # with the constraint of there being at least one study admin at all times
+        admins = User.objects.filter(groups__name=admin_group.name)
+        return len(admins) - (researcher in admins) > 0
+
+    def build_researchers_paginator(self, researchers_result):
+        '''
+        Builds paginated search results for researchers
+        '''
+        page = self.request.GET.get('page')
+        return self.paginated_queryset(researchers_result, page, 5)
 
 
 class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView):
@@ -280,11 +377,11 @@ class StudyParticipantEmailView(ExperimenterLoginRequiredMixin, PermissionRequir
 
     def create_email_log(self, recipients, body, subject ):
         return StudyLog.objects.create(
-                extra={"researcher_id": self.request.user.id, "participant_ids": recipients, "body": body, "subject": subject},
-                action="email sent",
-                study=self.get_object(),
-                user=self.request.user
-            )
+            extra={"researcher_id": self.request.user.id, "participant_ids": recipients, "body": body, "subject": subject},
+            action="email sent",
+            study=self.get_object(),
+            user=self.request.user
+        )
 
     def get_success_url(self):
         return reverse('exp:study-detail', kwargs={'pk': self.object.id})
@@ -313,91 +410,6 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             initial['structure'] = json.dumps(structure)
         return initial
 
-    def get_study_researchers(self):
-        '''  Pulls researchers that belong to Study Admin and Study Read groups - Not showing Org Admin and Org Read in this list (even though they technically
-        can view the project.) '''
-        study = self.get_object()
-        return User.objects.filter(Q(groups__name=study.study_admin_group.name) | Q(groups__name=study.study_read_group.name)).distinct().order_by(Lower('family_name').asc())
-
-    def search_researchers(self):
-        ''' Searches user first, last, and middle names for search query. Does not display researchers that are already on project '''
-        search_query = self.request.GET.get('match', None)
-        researchers_result = None
-        if search_query:
-            current_researcher_ids = self.get_study_researchers().values_list('id', flat=True)
-            user_queryset = User.objects.filter(organization=self.get_object().organization,is_active=True)
-            researchers_result = user_queryset.filter(reduce(operator.or_,
-              (Q(family_name__icontains=term) | Q(given_name__icontains=term)  | Q(middle_name__icontains=term) for term in search_query.split()))).exclude(id__in=current_researcher_ids).distinct().order_by(Lower('family_name').asc())
-            researchers_result = self.build_researchers_paginator(researchers_result)
-        return researchers_result
-
-    def build_researchers_paginator(self, researchers_result):
-        '''
-        Builds paginated search results for researchers
-        '''
-        page = self.request.GET.get('page')
-        return self.paginated_queryset(researchers_result, page, 5)
-
-    def adequate_study_admins(self, admin_group, researcher):
-        # Returns true if researchers's permissions can be edited, or researcher deleted,
-        # with the constraint of there being at least one study admin at all times
-        admins = User.objects.filter(groups__name=admin_group.name)
-        return len(admins) - (researcher in admins) > 0
-
-    def manage_researcher_permissions(self):
-        '''
-        Handles adding, updating, and deleting researcher from study. Users are
-        added to study read group by default.
-        '''
-        study_read_group = self.get_object().study_read_group
-        study_admin_group = self.get_object().study_admin_group
-        add_user = self.request.POST.get('add_user')
-        remove_user = self.request.POST.get('remove_user')
-        update_user = None
-        if self.request.POST.get('name') == 'update_user':
-             update_user = self.request.POST.get('pk')
-             permissions = self.request.POST.get('value')
-        if add_user:
-            # Adds user to study read by default
-            add_user_object = User.objects.get(pk=add_user)
-            study_read_group.user_set.add(add_user_object)
-            messages.success(self.request, f"{add_user_object.get_short_name()} given {self.get_object().name} Read Permissions.", extra_tags='user_added')
-            self.send_study_email(add_user_object, 'read')
-        if remove_user:
-            # Removes user from both study read and study admin groups
-            remove = User.objects.get(pk=remove_user)
-            if self.adequate_study_admins(study_admin_group, remove):
-                study_read_group.user_set.remove(remove)
-                study_admin_group.user_set.remove(remove)
-                messages.success(self.request, f"{remove.get_short_name()} removed from {self.get_object().name}.", extra_tags='user_removed')
-            else:
-                messages.error(self.request, "Could not delete this researcher. There must be at least one study admin.", extra_tags='user_removed')
-        if update_user:
-            update = User.objects.get(pk=update_user)
-            if permissions == 'study_admin':
-                # if admin, removes user from study read and adds to study admin
-                study_read_group.user_set.remove(update)
-                study_admin_group.user_set.add(update)
-                self.send_study_email(update, 'admin')
-            if permissions == 'study_read':
-                # if read, removes user from study admin and adds to study read
-                if self.adequate_study_admins(study_admin_group, update):
-                    study_read_group.user_set.add(update)
-                    study_admin_group.user_set.remove(update)
-                    self.send_study_email(update, 'read')
-        return
-
-    def send_study_email(self, user, permission):
-        study = self.get_object()
-        context = {
-            'permission': permission,
-            'study_name': study.name,
-            'study_id': study.id,
-            'org_name': user.organization.name,
-            'researcher_name': user.get_short_name()
-        }
-        send_mail.delay('notify_researcher_of_study_permissions', f' Invitation to collaborate on {self.get_object().name}', user.username, from_address=settings.EMAIL_FROM_ADDRESS, **context)
-
     def post(self, request, *args, **kwargs):
         '''
         Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
@@ -408,8 +420,6 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         if 'trigger' in self.request.POST:
             update_trigger(self)
 
-        self.manage_researcher_permissions()
-
         if 'short_description' in self.request.POST:  # Study metadata is being edited.
             return super().post(request, *args, **kwargs)
 
@@ -417,10 +427,13 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             # ... which means we must invalidate the build.
             study.built = False
             study.previewed = False
-            study.metadata = self.extract_type_metadata()
-            study.study_type_id = StudyType.objects.filter(id=self.request.POST.get('study_type')).values_list('id', flat=True)[0]
-            study.save()
-            messages.success(self.request, f"{study.name} type and metadata saved.")
+            meta_valid = self.validate_and_store_metadata()
+            if meta_valid:
+                study.study_type_id = StudyType.objects.filter(id=self.request.POST.get('study_type')).values_list('id', flat=True)[0]
+                study.save()
+                messages.success(self.request, f"{study.name} type and metadata saved.")
+            else:
+                messages.error(self.request, f"Incorrect metadata for {study.name} - your study was not saved.")
 
         return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=study.pk)))
 
@@ -444,8 +457,6 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['study_types'] = StudyType.objects.all()
         context['study_metadata'] = self.object.metadata
         context['types'] = [exp_type.configuration['metadata']['fields'] for exp_type in context['study_types']]
-        context['current_researchers'] = self.get_study_researchers()
-        context['users_result'] = self.search_researchers()
         context['search_query'] = self.request.GET.get('match')
         context['status_tooltip'] = status_tooltip_text.get(state, state)
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
@@ -645,6 +656,7 @@ class StudyResponsesAllDownloadCSV(StudyResponsesAll):
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         return response
 
+
 class StudyDemographics(StudyResponsesMixin, generic.DetailView):
     """
     StudyParticiapnts view shows participant demographic snapshots associated
@@ -670,6 +682,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         for resp in responses:
             writer.writerow(self.build_csv_participant_row_data(resp))
         return output.getvalue()
+
 
 class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
     """
