@@ -427,13 +427,16 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             # ... which means we must invalidate the build.
             study.built = False
             study.previewed = False
-            meta_valid = self.validate_and_store_metadata()
-            if meta_valid:
-                study.study_type_id = StudyType.objects.filter(id=self.request.POST.get('study_type')).values_list('id', flat=True)[0]
+            metadata, meta_errors = self.validate_and_fetch_metadata()
+            if meta_errors:
+                messages.error(
+                    self.request, f"METADATA NOT SAVED: {meta_errors}")
+            else:
+                study.metadata = metadata
+                study.study_type_id = StudyType.objects.filter(
+                    id=self.request.POST.get('study_type')).values_list('id', flat=True)[0]
                 study.save()
                 messages.success(self.request, f"{study.name} type and metadata saved.")
-            else:
-                messages.error(self.request, f"Incorrect metadata for {study.name} - your study was not saved.")
 
         return HttpResponseRedirect(reverse('exp:study-edit', kwargs=dict(pk=study.pk)))
 
