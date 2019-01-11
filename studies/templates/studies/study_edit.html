@@ -16,9 +16,11 @@
     </script>
     <script>
         $(document).ready(function () {
-            $('form#study-details-form').submit(function () {
+            $('form').submit(function () {
                 $('#save_study_details').prop("disabled", "disabled");
                 $('#save_study_details_confirm').prop("disabled", "disabled");
+                $('#save-study-type').prop("disabled", "disabled");
+                $('#save-study-type-confirm').prop("disabled", "disabled");
             });
         });
     </script>
@@ -125,7 +127,7 @@
                         <h1 class="panel-title">Change Study Type and Dependencies</h1>
                     </div>
                     <div class="panel-body">
-                        <form method="POST">{% csrf_token %}
+                        <form id="study-type-form" method="POST">{% csrf_token %}
 
                             <div class="form-group">
                                 <label class="control-label" for="id_study_type">Study Type</label>
@@ -189,7 +191,7 @@
                                             <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}">
                                                 Discard
                                                 Changes </a>
-                                            <button type="submit" class="save-study-json-confirmation btn btn-danger">
+                                            <button type="submit" class="save-study-type-confirm btn btn-danger">
                                                 Save
                                             </button>
                                         </div>
