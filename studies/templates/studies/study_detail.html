@@ -416,7 +416,11 @@
                                         {% endtimezone %}
                                     </div>
                                     <div class="col-sm-8">
-                                        {{ log.study.name }} study {% if log.action == "active" %} activated {% else %}
+                                        {{ log.study.name }} study
+                                        {% if log.action == "active" %} activated 
+                                        {% elif log.action == "deploy" %} dependencies built
+                                        {% elif log.action == "preview" %} preview dependencies built
+                                        {% else %}
                                         {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
                                     </div>
                                 </div>
