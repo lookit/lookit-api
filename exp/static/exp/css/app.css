@@ -163,6 +163,10 @@ a:hover.view-responses-link {
     height: 520px;
 }
 
+.study-detail-block li {
+    cursor: pointer;
+}
+
 div.uuid-padding {
     margin-top: -10px;
     padding-top: 0px;

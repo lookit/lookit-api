@@ -23,7 +23,6 @@ from revproxy.views import ProxyView
 
 import attachment_helpers
 from accounts.models import User
-from accounts.utils import status_tooltip_text
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
@@ -32,6 +31,23 @@ from studies.forms import StudyBuildForm, StudyForm, StudyUpdateForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
+
+
+# Dictionary with the states for the study and tooltip text for providing additional information
+STATUS_TOOLTIPS = {
+    'created': 'Study has not been submitted for approval',
+    'active': 'Study is collecting data',
+    'submitted': 'Study is awaiting approval',
+    'draft': 'Study has not been submitted for approval',
+    'approved': 'Study is approved but not started',
+    'rejected': 'Study has been rejected. Please edit before resubmitting.',
+    'retracted': 'Study has been withdrawn',
+    'paused': 'Study is not collecting data',
+    'deactivated': 'Study is not collecting data',
+    'archived': 'Study has been archived and removed from search.',
+    'previewing': 'Study is being built and deployed to Google Cloud Storage for previewing.',
+    'deploying': 'Study is being built and deployed to Google Cloud Storage'
+}
 
 
 class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView, StudyTypeMixin):
@@ -287,7 +303,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             self.object.machine.get_triggers(self.object.state))
         context['logs'] = self.study_logs
         state = context['state'] =self.object.state
-        context['status_tooltip'] = status_tooltip_text.get(state, state)
+        context['status_tooltip'] = STATUS_TOOLTIPS.get(state, state)
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
         return context
@@ -461,7 +477,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['study_metadata'] = self.object.metadata
         context['types'] = [exp_type.configuration['metadata']['fields'] for exp_type in context['study_types']]
         context['search_query'] = self.request.GET.get('match')
-        context['status_tooltip'] = status_tooltip_text.get(state, state)
+        context['status_tooltip'] = STATUS_TOOLTIPS.get(state, state)
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
         context['name'] = self.request.GET.get('match', None)
         context['save_confirmation'] = state in ['approved', 'active', 'paused', 'deactivated']
