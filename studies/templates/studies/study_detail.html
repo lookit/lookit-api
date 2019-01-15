@@ -30,7 +30,7 @@
         function onStateSelect(stateListItem) {
             let trigger = $(stateListItem).data()['trigger'],
                 stateChangeForm = $('#study-state-modal'),
-                rejectionCommentsInput = stateChangeForm.find('textarea[name=comments]'),
+                rejectionCommentsInput = stateChangeForm.find('textarea[name=comments-text]'),
                 infoText;
 
             rejectionCommentsInput.hide();
@@ -300,7 +300,10 @@
                                 </div>
                             </li>
                             <li class="list-group-item">
-                                {{ study.comments | default:status_tooltip }}
+                                <p>{{ status_tooltip }}</p>
+                                {% if study.state == "rejected" %}
+                                    <p><em>Rejection Reason: {{ study.comments }}</em></p>
+                                {% endif %}
                             </li>
                             <li class="list-group-item list-group-item-{{ build_ui_tag }}">
                                 <div class="row">
@@ -576,7 +579,7 @@
                     This will <span id="study-current-state"> change the status of </span> the study.
                     <span id="study-status-additional-information"> </span>
                 </p>
-                <textarea class="form-control" rows="5" name="comments"
+                <textarea class="form-control" rows="5" name="comments-text"
                           placeholder="Please leave a reason for rejection here." ></textarea>
             </div>
             <div class="modal-footer"> {% csrf_token %}
