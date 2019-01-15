@@ -31,6 +31,7 @@ from studies.forms import StudyBuildForm, StudyForm, StudyUpdateForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
+from studies.workflow import STATE_UI_SIGNALS
 
 
 # Dictionary with the states for the study and tooltip text for providing additional information
@@ -298,6 +299,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         Adds several items to the context dictionary - the study, applicable triggers for the study,
         paginated study logs, and a tooltip that is dependent on the study's current state
         """
+        study = self.get_object()
         context = super(StudyDetailView, self).get_context_data(**kwargs)
         context['triggers'] = get_permitted_triggers(self,
             self.object.machine.get_triggers(self.object.state))
@@ -306,6 +308,9 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['status_tooltip'] = STATUS_TOOLTIPS.get(state, state)
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
+        context['build_ui_tag'] = 'success' if study.built else 'warning'
+        context['preview_ui_tag'] = 'success' if study.previewed else 'warning'
+        context['state_ui_tag'] = STATE_UI_SIGNALS.get(study.state, 'info')
         return context
 
     def get_study_researchers(self):

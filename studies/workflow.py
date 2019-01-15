@@ -14,7 +14,20 @@ states = [
     'deactivated',
     'archived',
 ]
+
 state_tuples = tuple((x, _(x.title())) for x in states)
+
+STATE_UI_SIGNALS = {
+    'created': 'info',
+    'submitted': 'success',
+    'rejected': 'danger',
+    'retracted': 'danger',
+    'approved': 'success',
+    'active': 'success',
+    'paused': 'warning',
+    'deactivated': 'info',
+    'archived': 'info'
+}
 
 STATE_CHOICES = Choices(*state_tuples)
 

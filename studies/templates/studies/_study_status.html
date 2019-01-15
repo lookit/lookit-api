@@ -59,55 +59,50 @@
 </script>
 <div class="well study-detail-block">
     <div class="row">
-        <div class="col-xs-12">
-            <div>
-                <h2 class="study-status"><span class="pr-sm"> Status:</span></h2>
-                <span style="white-space: nowrap;">
-                    <h2 class="study-status"><em>{{ state|capfirst }}</em></h2>
-                    <i aria-label="Status information: {{ status_tooltip }}" title="{{ status_tooltip }}"
-                       data-toggle="tooltip" class="question-icon">
-                        <div class="fa fa-question-circle"></div>
-                        {% comment %}
-                           So sad that we have to wrap our stupid icon, but svg rerendering from fontawesome means we
-                           lose the damn class hook for the tooltip listener.
-                        {% endcomment %}
-                    </i>
-                    <div class="pull-right btn-group">
-                        <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Take Action <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            {% get_obj_perms user for study as "study_perms" %}
-                            {% if "can_edit_study" in study_perms %}
-                                <li>
-                                    <a><i aria-hidden="true" class="fas fa-edit"></i> Edit Study</a>
-                                </li>
-                                <li role="separator" class="divider"></li>
-                                <li>
-                                    <a><i class="fas fa-envelope-open" aria-hidden="true"></i> Email Participants</a>
-                                </li>
-                            {% endif %}
-                            <li>
-                                <a><i aria-hidden="true" class="fa fas fa-envelope"></i> View Responses</a>
-                            </li>
-                            <li>
-                                <a><i aria-hidden="true" class="fa fas fa-copy"></i> Clone Study</a>
-                            </li>
-                            <li>
-                                <a><i aria-hidden="true" class="fa fas fa-hammer"></i> Build Study</a>
-                            </li>
-                        </ul>
+        <div class="col-xs-10">
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-{{ state_ui_tag }}">
+                    <div class="row">
+                        <div class="col-xs-2 btn-group">
+                            <a class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Change State <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for trigger in triggers %}
+                                    <li><a>{{ trigger }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-xs-6 col-xs-offset-4 text-right">
+                            {{ study.name }} is currently <em>{{ study.state }}</em>.
+                        </div>
                     </div>
-                    <h4 class="dependency-status">
-                        Dependencies:
-                        <em>{% if study.built %} Built {% else %} Not Built {% endif %}</em>
-                    </h4>
-                    <h4 class="preview-status">
-                        Preview Dependencies:
-                        <em>{% if study.previewed %} Built {% else %} Not Built {% endif %}</em>
-                    </h4>
-                 </span>
-            </div>
+                </li>
+                <li class="list-group-item list-group-item-{{ build_ui_tag }}">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <a class="btn btn-default btn-sm">
+                                Build Dependencies <i aria-hidden="true"><div class="fas fa-hammer"></div></i>
+                            </a>
+                        </div>
+                        <div class="col-xs-5 col-xs-offset-3 text-right">
+                            Study dependencies {% if not study.built %} not {% endif %}built.
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item list-group-item-{{ preview_ui_tag }}">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <a class="btn btn-default btn-sm">
+                                Build Preview Dependencies <div class="fas fa-eye"><i aria-hidden="true"></i></div>
+                            </a>
+                        </div>
+                        <div class="col-xs-5 col-xs-offset-3 text-right">
+                            Preview dependencies {% if not study.previewed %} not {% endif %}built.
+                        </div>
+                    </div>
+                </li>
+            </ul>
             <div>
                 <form class="change-status pt-sm" method="POST" action=""> {% csrf_token %}
                     {% if triggers %}
