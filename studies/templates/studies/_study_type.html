@@ -32,10 +32,10 @@
         <div class="col-xs-10 col-xs-offset-1">
             {% for type in types %}
                 <div class='type-fields' id='type-metadata-{{ forloop.counter }}'>
-                    {% for key, values in type.items %}
+                    {% for key, value in type.items %}
                         <div class="form-group">
                             <label>{{ key }} </label>
-                            <input name="{{key}}" type="text" value="{% if forloop.parentloop.counter == currentType and not create %}{{study.metadata|get_key:key}}{% else %}{{values}}{% endif %}" class="form-control">
+                            <input name="{{key}}" type="text" value="{% if forloop.parentloop.counter == currentType and not create %}{{study.metadata|get_key:key}}{% else %}{{value | default:""}}{% endif %}" class="form-control">
                         </div>
                     {% endfor %}
                 </div>

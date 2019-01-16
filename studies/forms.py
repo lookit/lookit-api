@@ -7,7 +7,7 @@ from ace_overlay.widgets import AceOverlayWidget
 from studies.models import Response, Study
 
 
-class ResponseForm(forms.ModelForm):
+class ResponseForm(ModelForm):
     results = forms.CharField(widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False)
     class Meta:
         fields = (
@@ -19,7 +19,7 @@ class ResponseForm(forms.ModelForm):
         model = Response
 
 
-class BaseStudyForm(forms.ModelForm):
+class BaseStudyForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         min_age_days = self.cleaned_data.get('min_age_days')
@@ -76,7 +76,7 @@ class StudyForm(StudyEditForm):
         try:
             json_data = json.loads(structure)  # loads string as json
         except:
-            raise forms.ValidationError("Invalid JSON")
+            raise forms.ValidationError("Save failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost.")
         return json_data
 
     class Meta(StudyEditForm.Meta):
@@ -100,7 +100,7 @@ class StudyUpdateForm(StudyEditForm):
         try:
             json_data = json.loads(structure)  # loads string as json
         except:
-            raise forms.ValidationError("Invalid JSON")
+            raise forms.ValidationError("Save failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost.")
         return json_data
 
     class Meta(StudyEditForm.Meta):

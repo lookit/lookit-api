@@ -1,7 +1,7 @@
 {% load guardian_tags %}
 <script>
     $.fn.editable.defaults.mode = 'inline';
-    $(document).ready(function(){
+    $(document).ready(function () {
         new Clipboard('#copy-link-button');
         $('#private-study-link').attr('readonly', 'readonly');
         $('#copy-link-button').tooltip({
@@ -16,13 +16,14 @@
             $(e.target).data("bs.tooltip").inState.click = false;
         });
 
-        removeTooltip = function() {
+        removeTooltip = function () {
             $('[data-toggle="tooltip"]').tooltip('hide');
         }
-        $('form').submit(function() {
+        $('form').submit(function () {
             $('#changeStatusButton').prop("disabled", "disabled");
         });
     });
+
     function statusSelected(status) {
         document.getElementsByClassName('current-state')[0].innerHTML = status.value;
         statusMoreInformation = document.getElementsByClassName('status-additional-information')[0];
@@ -36,6 +37,7 @@
         }
         toggleCommentsAvailability(status);
     };
+
     function toggleCommentsAvailability(status) {
         document.getElementsByClassName('submit-status-panel')[0].style.display = 'inline';
         var commentsBlock = document.getElementById("rejectionComments");
@@ -57,46 +59,72 @@
 </script>
 <div class="well study-detail-block">
     <div class="row">
-        <div class="col-xs-12">
-            <div >
-                <h2 class="study-status"> <span class="pr-sm"> Status:</span> </h2>
-                <span style="white-space: nowrap;">
-                    <h2 class="study-status"><em>{{ state|capfirst}}</em></h2>
-                    <i aria-label="Status information: {{ status_tooltip }}" title="{{ status_tooltip }}" data-toggle="tooltip"  class="question-icon">
-                        <div class="fa fa-question-circle"></div>
-                        {% comment %}
-                           So sad that we have to wrap our stupid icon, but svg rerendering from fontawesome means we
-                           lose the damn class hook for the tooltip listener.
-                        {% endcomment %}
-                    </i>
-                    <h4 class="dependency-status">
-                        Dependencies:
-                        <em>{% if study.built %} Built {% else %} Not Built {% endif %}</em>
-                    </h4>
-                    <h4 class="preview-status">
-                        Previewed:
-                        <em>{% if study.previewed %} Yes {% else %} No {% endif %}</em>
-                    </h4>
-                 </span>
-            </div>
+        <div class="col-xs-10">
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-{{ state_ui_tag }}">
+                    <div class="row">
+                        <div class="col-xs-2 btn-group">
+                            <a class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Change State <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% for trigger in triggers %}
+                                    <li><a>{{ trigger }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-xs-6 col-xs-offset-4 text-right">
+                            {{ study.name }} is currently <em>{{ study.state }}</em>.
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item list-group-item-{{ build_ui_tag }}">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <a class="btn btn-default btn-sm">
+                                Build Dependencies <i aria-hidden="true"><div class="fas fa-hammer"></div></i>
+                            </a>
+                        </div>
+                        <div class="col-xs-5 col-xs-offset-3 text-right">
+                            Study dependencies {% if not study.built %} not {% endif %}built.
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item list-group-item-{{ preview_ui_tag }}">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <a class="btn btn-default btn-sm">
+                                Build Preview Dependencies <div class="fas fa-eye"><i aria-hidden="true"></i></div>
+                            </a>
+                        </div>
+                        <div class="col-xs-5 col-xs-offset-3 text-right">
+                            Preview dependencies {% if not study.previewed %} not {% endif %}built.
+                        </div>
+                    </div>
+                </li>
+            </ul>
             <div>
-              <form class="change-status pt-sm" method="POST" action=""> {% csrf_token %}
-                   {% if triggers %}
+                <form class="change-status pt-sm" method="POST" action=""> {% csrf_token %}
+                    {% if triggers %}
                         <div class="form-group mt-sm">
-                          <select onchange="statusSelected(this)" name=trigger class="form-control" id="statusSelector">
-                              <option value="" selected disabled>Change status ... </option>
-                              {% for trigger in triggers %}
-                                <option name="trigger" value="{{ trigger }}">{{ trigger|title }}</option>
-                              {% endfor %}
-                          </select>
+                            <select onchange="statusSelected(this)" name=trigger class="form-control"
+                                    id="statusSelector">
+                                <option value="" selected disabled>Change status ...</option>
+                                {% for trigger in triggers %}
+                                    <option name="trigger" value="{{ trigger }}">{{ trigger|title }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="pt-sm">
                             <label class="comments-block comments-label">
                                 Comments:
                             </label>
                             {% get_obj_perms request.user for study as "study_perms" %}
-                            <em><textarea id="rejectionComments" class="comments-text rejection-comments" name="comments-text" disabled rows="4" cols="34">{{study.comments}}</textarea></em>
-                            <div id="comments-explanation" class="small comments-text"><em> You can only leave comments when you are rejecting this study. </em></div>
+                            <em><textarea id="rejectionComments" class="comments-text rejection-comments"
+                                          name="comments-text" disabled rows="4"
+                                          cols="34">{{ study.comments }}</textarea></em>
+                            <div id="comments-explanation" class="small comments-text"><em> You can only leave comments
+                                when you are rejecting this study. </em></div>
                         </div>
                         <div class="submit-status-panel pull-right" style="display:none;">
                             <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
@@ -108,20 +136,24 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">×</button>
-                                    <h3>Are you sure you want to change the status of {{study.name}}? </h3>
+                                    <h3>Are you sure you want to change the status of {{ study.name }}? </h3>
                                 </div>
                                 <div class="modal-body">
-                                   {% csrf_token %}
-                                   <p>
-                                       This will <span class="current-state"> change the status of </span> the study.
-                                       <span class="status-additional-information"> </span>
-                                   </p>
+                                    {% csrf_token %}
+                                    <p>
+                                        This will <span class="current-state"> change the status of </span> the study.
+                                        <span class="status-additional-information"> </span>
+                                    </p>
                                 </div>
                                 <div class="modal-footer"> {% csrf_token %}
-                                    <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}"> Cancel </a>
-                                   <button id="changeStatusButton" {% if 'can_edit_study' not in study_perms %}disabled{% endif %} name="submit" value="submit" class="btn btn-success" type="submit">Save</button>
+                                    <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}">
+                                        Cancel </a>
+                                    <button id="changeStatusButton"
+                                            {% if 'can_edit_study' not in study_perms %}disabled{% endif %}
+                                            name="submit" value="submit" class="btn btn-success" type="submit">Save
+                                    </button>
                                 </div>
-                          </div>
+                            </div>
                         </form>
                     </div>
                 </form>
