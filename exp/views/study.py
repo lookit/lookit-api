@@ -32,24 +32,7 @@ from studies.forms import StudyBuildForm, StudyForm, StudyUpdateForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
-from studies.workflow import STATE_UI_SIGNALS
-
-
-# Dictionary with the states for the study and tooltip text for providing additional information
-STATUS_HELP_TEXT = {
-    'created': 'Study has not been submitted for approval',
-    'active': 'Study is collecting data',
-    'submitted': 'Study is awaiting approval',
-    'draft': 'Study has not been submitted for approval',
-    'approved': 'Study is approved but not started',
-    'rejected': 'Study has been rejected. Please edit before resubmitting.',
-    'retracted': 'Study has been withdrawn',
-    'paused': 'Study is not collecting data',
-    'deactivated': 'Study is not collecting data',
-    'archived': 'Study has been archived and removed from search.',
-    'previewing': 'Study is being built and deployed to Google Cloud Storage for previewing.',
-    'deploying': 'Study is being built and deployed to Google Cloud Storage'
-}
+from studies.workflow import STATE_UI_SIGNALS, STATUS_HELP_TEXT, TRANSITION_HELP_TEXT
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -347,6 +330,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['multiple_admins'] = len(User.objects.filter(groups__name=admin_group.name)) > 1
         context['study_admins'] = User.objects.filter(groups__name=admin_group.name).values_list('id', flat=True)
         context['discoverability_text'] = get_discoverability_text(study)
+        context['transition_help'] = json.dumps(TRANSITION_HELP_TEXT)
         return context
 
     def get_study_researchers(self):

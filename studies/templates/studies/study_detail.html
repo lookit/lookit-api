@@ -15,9 +15,10 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-
     <script>
         $.fn.editable.defaults.mode = 'inline';
+
+        window.transitionHelpData = JSON.parse('{{ transition_help | escapejs }}');
 
         function cloneStudy() {
             document.getElementById('cloneForm').submit()
@@ -31,34 +32,18 @@
             let trigger = $(stateListItem).data()['trigger'],
                 stateChangeForm = $('#study-state-modal'),
                 rejectionCommentsInput = stateChangeForm.find('textarea[name=comments-text]'),
-                infoText;
+                infoText = transitionHelpData[trigger];
 
             rejectionCommentsInput.hide();
             let $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
 
-            // Do things for specific triggers.
-            console.log(trigger);
-            switch (trigger) {
-                case 'deactivate':
-                    infoText = 'You will not be able to activate your study again without contacting an administrator.';
-                    break;
-                case 'archive':
-                    infoText = 'This means you do not intend to collect more data.  We will remove this study from search results.';
-                    break;
-                case 'reject':
-                    rejectionCommentsInput.show();
-                    break;
-                default:
-                    infoText = '';
+            if (trigger === 'reject') {
+                rejectionCommentsInput.show();
             }
 
             $additionalInfoSpan.text(infoText);
 
             stateChangeForm.find('input[name=trigger]').val(trigger);
-
-            let studyStatusSpan = stateChangeForm.find('#study-current-state');
-
-            studyStatusSpan.text(trigger);
         }
 
         $(document).ready(function () {
@@ -586,7 +571,6 @@
     </div>
     {#  MODALS #}
     <form class="modal fade" id="study-state-modal" method="POST">{% csrf_token %}
-        <input type="hidden" name="study_id" value="{{ study.id }}"/>
         <input type="hidden" name="trigger"/>
         <div class="modal-content">
             <div class="modal-header">
@@ -595,7 +579,6 @@
             </div>
             <div class="modal-body">
                 <p>
-                    This will <span id="study-current-state"> change the status of </span> the study.
                     <span id="study-status-additional-information"> </span>
                 </p>
                 <textarea class="form-control" rows="5" name="comments-text"

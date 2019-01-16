@@ -29,6 +29,22 @@ STATE_UI_SIGNALS = {
     'archived': 'info'
 }
 
+# Dictionary with the states for the study and tooltip text for providing additional information
+STATUS_HELP_TEXT = {
+    'created': 'Study has not been submitted for approval',
+    'active': 'Study is collecting data',
+    'submitted': 'Study is awaiting approval',
+    'draft': 'Study has not been submitted for approval',
+    'approved': 'Study is approved but not started',
+    'rejected': 'Study has been rejected. Please edit before resubmitting.',
+    'retracted': 'Study has been withdrawn',
+    'paused': 'Study is not collecting data',
+    'deactivated': 'Study is not collecting data',
+    'archived': 'Study has been archived and removed from search.',
+    'previewing': 'Study is being built and deployed to Google Cloud Storage for previewing.',
+    'deploying': 'Study is being built and deployed to Google Cloud Storage'
+}
+
 STATE_CHOICES = Choices(*state_tuples)
 
 transitions = [
@@ -93,3 +109,15 @@ transitions = [
         'after': 'notify_administrators_of_deactivation'
     },
 ]
+
+TRANSITION_HELP_TEXT = {
+    "submit": "This will notify Lookit admins that your study is ready for review. If you make additional changes, you will need to resubmit.",
+    "resubmit": "This will notify Lookit admins that your study is ready for review. If you make additional changes, you will need to resubmit.",
+    "reject": "Your comments will be sent to study researchers and they will need to resubmit before they can begin data collection.",
+    "retract": "This will retract your previous request for Lookit admin review of your study. You will need to resubmit to request review after making any additional changes.",
+    "approve": "This will approve the study and allow researchers to begin data collection.",
+    "activate": "This will allow participants to view and take part in your study. You should be ready to field their questions and provide compensation if offered.",
+    "pause": "This will stop participants from accessing your study for now. You can re-activate your study whenever you are ready to collect data again, without requiring Lookit admin review.",
+    "deactivate": "This will archive the study and prevent participants from accessing it. You will still be able to access your study data, but would need to resubmit it to collect more data. If you expect to collect more data for this study, use the Pause action instead.",
+    "archive": "This will effectively delete your study! You will not be able to access your study or any response data. If you have already collected participant data or might want your study protocol for reference, deactivate instead."
+}
