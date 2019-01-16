@@ -860,8 +860,8 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
             # Get the single item from the filtered queryset
             obj = queryset.get()
         except queryset.model.DoesNotExist:
-            raise Http404(_("No %(verbose_name)s found matching the query") %
-                          {'verbose_name': queryset.model._meta.verbose_name})
+            raise Http404(f'No {queryset.model._meta.verbose_name}s found matching the query')
+
         return obj
 
 
