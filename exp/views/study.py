@@ -4,6 +4,7 @@ import operator
 import os
 import zipfile
 from functools import reduce
+from typing import NamedTuple
 
 import requests
 from django.contrib import messages
@@ -35,7 +36,7 @@ from studies.workflow import STATE_UI_SIGNALS
 
 
 # Dictionary with the states for the study and tooltip text for providing additional information
-STATUS_TOOLTIPS = {
+STATUS_HELP_TEXT = {
     'created': 'Study has not been submitted for approval',
     'active': 'Study is collecting data',
     'submitted': 'Study is awaiting approval',
@@ -49,6 +50,33 @@ STATUS_TOOLTIPS = {
     'previewing': 'Study is being built and deployed to Google Cloud Storage for previewing.',
     'deploying': 'Study is being built and deployed to Google Cloud Storage'
 }
+
+
+class DiscoverabilityKey(NamedTuple):
+    """Key to a small truth table for help text."""
+    active: bool
+    public: bool
+
+
+STUDY_LISTING_A_TAG = f'<a href="{settings.BASE_URL}/studies.">the study listing page</a>'
+
+
+DISCOVERABILITY_HELP_TEXT = {
+    (True, True): 'Your study is active and public. Participants can access it at your study link, '
+                  f'and it can be found listed in {STUDY_LISTING_A_TAG}.',
+    (True, False): 'Your study is active, but not public. Participants may access it at your study link, '
+                   f'however will not be listed in {STUDY_LISTING_A_TAG}.',
+    (False, True): 'Your study is not currently active, but it is public. When it is active, participants will be able to access it at your study link, '
+                  f'and it will be found listed in {STUDY_LISTING_A_TAG}. ',
+    (False, False): 'Your study is not currently active, and is not public. When it is active, participants will be able to access it at your study link, '
+                  f'but it will not be listed in {STUDY_LISTING_A_TAG}. ',
+}
+
+
+def get_discoverability_text(study):
+    """Helper function for getting discoverability text."""
+    discoverability_key = DiscoverabilityKey(active=study.state == 'active', public=study.public)
+    return DISCOVERABILITY_HELP_TEXT.get(discoverability_key)
 
 
 class StudyCreateView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.CreateView, StudyTypeMixin):
@@ -308,7 +336,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
             self.object.machine.get_triggers(self.object.state))
         context['logs'] = self.study_logs
         state = context['state'] = self.object.state
-        context['status_tooltip'] = STATUS_TOOLTIPS.get(state, state)
+        context['status_tooltip'] = STATUS_HELP_TEXT.get(state, state)
         context['current_researchers'] = self.get_study_researchers()
         context['users_result'] = self.search_researchers()
         context['build_ui_tag'] = 'success' if study.built else 'warning'
@@ -318,6 +346,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['name'] = self.request.GET.get('match', None)
         context['multiple_admins'] = len(User.objects.filter(groups__name=admin_group.name)) > 1
         context['study_admins'] = User.objects.filter(groups__name=admin_group.name).values_list('id', flat=True)
+        context['discoverability_text'] = get_discoverability_text(study)
         return context
 
     def get_study_researchers(self):
@@ -489,7 +518,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['study_metadata'] = self.object.metadata
         context['types'] = [exp_type.configuration['metadata']['fields'] for exp_type in context['study_types']]
         context['search_query'] = self.request.GET.get('match')
-        context['status_tooltip'] = STATUS_TOOLTIPS.get(state, state)
+        context['status_tooltip'] = STATUS_HELP_TEXT.get(state, state)
         context['triggers'] = get_permitted_triggers(self, self.object.machine.get_triggers(state))
         context['name'] = self.request.GET.get('match', None)
         context['save_confirmation'] = state in ['approved', 'active', 'paused', 'deactivated']

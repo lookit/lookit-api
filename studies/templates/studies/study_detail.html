@@ -131,6 +131,27 @@
                 $('#permission-edit').hide();
                 $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
             });
+
+            new Clipboard('#copy-link-button');
+            $('#private-study-link').attr('readonly', 'readonly');
+            $('#copy-link-button').tooltip({
+                title: "Copied!",
+                trigger: "click",
+                placement: "bottom",
+            });
+            $('.question-icon').tooltip({
+                placement: "top",
+            });
+            $('body').on('hidden.bs.tooltip', function (e) {
+                $(e.target).data("bs.tooltip").inState.click = false;
+            });
+
+            removeTooltip = function () {
+                $('[data-toggle="tooltip"]').tooltip('hide');
+            }
+            $('form').submit(function () {
+                $('#changeStatusButton').prop("disabled", "disabled");
+            });
         });
     </script>
     <div class="container">
@@ -248,19 +269,15 @@
                             </div>
                         </div>
                         <div class="row pb-lg">
-                            <div class="col-xs-12 col-sm-3">
+                            <div class="col-xs-12">
                                 <p>
                                  <span class="pr-md"><label class='pr-xs'> Discoverability: </label>
-                                     {% if study.public %}
-                                         <span> Public </span>
-                                     {% else %}
-                                         <span> Private </span>
-                                     {% endif %}
+                                     <span>{{ discoverability_text | safe }}</span>
                                  </span>
                                 </p>
                             </div>
-                            <div class="col-xs-12 col-sm-4">
-                                {% if not study.public and study.state == 'active' %}
+                            <div class="col-xs-12">
+                                {% if study.built %}
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="private-study-link"
                                                value="{% url 'web:study-detail' study.uuid %}"
@@ -271,6 +288,8 @@
                                         <img src="{% static 'exp/img/clippy.svg' %}" width="13"/>
                                     </span>
                                     </div>
+                                {%  else %}
+                                    <span>Your study link will show up here when you have built it.</span>
                                 {% endif %}
                             </div>
                         </div>
