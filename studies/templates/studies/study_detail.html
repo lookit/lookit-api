@@ -149,17 +149,17 @@
             </div>
             <h1 class="col-xs-6"> {{ study.name }} </h1>
             <div class="col-xs-6">
-{#                <div class="edit-study-button">#}
-{#                    {% get_obj_perms user for study as "study_perms" %}#}
-{#                    {% if "can_edit_study" in study_perms %}#}
-{#                        <a class="btn btn-default" href="{% url 'exp:study-participant-email' pk=study.id %}">#}
-{#                            <i class="fas fa-envelope-open" aria-hidden="true"></i> Email Participants#}
-{#                        </a>#}
-{#                        <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">#}
-{#                            <i aria-hidden="true" class="fas fa-edit"></i> Edit Study#}
-{#                        </a>#}
-{#                    {% endif %}#}
-{#                </div>#}
+                {#                <div class="edit-study-button">#}
+                {#                    {% get_obj_perms user for study as "study_perms" %}#}
+                {#                    {% if "can_edit_study" in study_perms %}#}
+                {#                        <a class="btn btn-default" href="{% url 'exp:study-participant-email' pk=study.id %}">#}
+                {#                            <i class="fas fa-envelope-open" aria-hidden="true"></i> Email Participants#}
+                {#                        </a>#}
+                {#                        <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">#}
+                {#                            <i aria-hidden="true" class="fas fa-edit"></i> Edit Study#}
+                {#                        </a>#}
+                {#                    {% endif %}#}
+                {#                </div>#}
                 <div class="pull-right btn-group">
                     {% get_obj_perms user for study as "study_perms" %}
                     {% if "can_edit_study" in study_perms %}
@@ -167,11 +167,13 @@
                             <i aria-hidden="true" class="fas fa-edit"></i> Edit Study
                         </a>
                     {% endif %}
-                    <a type="button" class="btn btn-default" href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
+                    <a type="button" class="btn btn-default"
+                       href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
                         <i aria-hidden="true" class="fa fas fa-envelope"></i> View Responses
                         ({{ study.responses.count }})
                     </a>
-                    <a type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                       aria-expanded="false">
                         Take Action <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
@@ -217,7 +219,8 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <p>
-                                    <span class="pr-md"><label class='pr-xs'> Duration: </label> {{ study.duration }} </span>
+                                    <span class="pr-md"><label
+                                            class='pr-xs'> Duration: </label> {{ study.duration }} </span>
                                     <span><label
                                             class='pr-xs'> Exit URL: </label> {{ study.exit_url | default:"None specified" }} </span>
                                 </p>
@@ -247,9 +250,10 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <p>
-                                 <span class="pr-md"><label class='pr-xs'> UUID: </label>
-                                 {{ study.uuid }}
-                                  <div class="small uuid-padding"><em>This is the study id that participants will see</em></div>
+                                    <span class="pr-md"><label class='pr-xs'> UUID: </label></span>
+                                    {{ study.uuid }}
+                                <div class="small uuid-padding"><em>This is the study id that participants will see</em>
+                                </div>
                                 </p>
                             </div>
                         </div>
@@ -273,7 +277,7 @@
                                         <img src="{% static 'exp/img/clippy.svg' %}" width="13"/>
                                     </span>
                                     </div>
-                                {%  else %}
+                                {% else %}
                                     <span>Your study link will show up here when you have built it.</span>
                                 {% endif %}
                             </div>
@@ -287,12 +291,14 @@
                             <li class="list-group-item list-group-item-{{ state_ui_tag }}">
                                 <div class="row">
                                     <div class="col-xs-2 btn-group">
-                                        <a class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Change State <span class="caret"></span>
+                                        <a class="btn btn-default btn-sm dropdown-toggle" type="button"
+                                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Change State <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
                                             {% for trigger in triggers %}
-                                                <li role="button" onclick="onStateSelect(this)" data-toggle="modal" href="#study-state-modal" data-trigger="{{ trigger }}">
+                                                <li role="button" onclick="onStateSelect(this)" data-toggle="modal"
+                                                    href="#study-state-modal" data-trigger="{{ trigger }}">
                                                     <a>{{ trigger }}</a>
                                                 </li>
                                             {% endfor %}
@@ -318,7 +324,9 @@
                                         </form>
                                         <a class="btn btn-default btn-sm" onclick="buildStudy()">
                                             Build Dependencies
-                                            <i aria-hidden="true"><div class="fas fa-hammer"></div></i>
+                                            <i aria-hidden="true">
+                                                <div class="fas fa-hammer"></div>
+                                            </i>
                                         </a>
                                     </div>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
@@ -328,10 +336,12 @@
                             </li>
                             <li class="list-group-item list-group-item-{{ preview_ui_tag }}">
                                 <div class="row">
-                                    <form class="col-xs-4" action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">
+                                    <form class="col-xs-4" action="{% url 'exp:study-preview-build' study.uuid %}"
+                                          method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-default btn-sm">
-                                            Build Preview Dependencies <div class="fas fa-eye"><i aria-hidden="true"></i></div>
+                                            Build Preview Dependencies
+                                            <div class="fas fa-eye"><i aria-hidden="true"></i></div>
                                         </button>
                                     </form>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
@@ -374,10 +384,11 @@
                                                 <input id="search-organization" class="form-control" name="match"
                                                        placeholder="Search organization" type="text">
                                                 <span class="input-group-btn">
-                                        <input type="hidden" name="page" value="1">
-                                        <button class="btn btn-default" type="submit" aria-label="Search researchers"><i
-                                                aria-hidden="true" class="fa fa-search"></i></button>
-                                   </span>
+                                                    <input type="hidden" name="page" value="1">
+                                                        <button class="btn btn-default" type="submit"
+                                                                aria-label="Search researchers">
+                                                        <i aria-hidden="true" class="fa fa-search"></i></button>
+                                                </span>
                                             </div>
                                         </form>
                                         <div class="researcher-search-results">
@@ -392,11 +403,14 @@
                                                         <div class="col-xs-3">
                                                             <form method="POST"
                                                                   action="./#manage-researchers">{% csrf_token %}
-                                                                <input type="hidden" name="add_user" value="{{ user.id }}"/>
-                                                                <button aria-label="Add researcher to study" type="submit"
+                                                                <input type="hidden" name="add_user"
+                                                                       value="{{ user.id }}"/>
+                                                                <button aria-label="Add researcher to study"
+                                                                        type="submit"
                                                                         value="{{ user.id }}"
                                                                         class="btn btn-success btn-sm"><i
-                                                                        aria-hidden="true" class="fa fa-plus"></i></button>
+                                                                        aria-hidden="true" class="fa fa-plus"></i>
+                                                                </button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -451,8 +465,10 @@
                                                     </div>
                                                     <div class="permissionDisplay"
                                                          style="display:{% if researcher.id not in study_admins or multiple_admins %} inline-block; {% else %} none; {% endif %}">
-                                                        <a href="#" data-name="update_user" class="researcher_permissions"
-                                                           data-type="select" data-url="{% url 'exp:study-edit' study.id %}"
+                                                        <a href="#" data-name="update_user"
+                                                           class="researcher_permissions"
+                                                           data-type="select"
+                                                           data-url="{% url 'exp:study-detail' pk=study.id %}"
                                                            data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
                                                            data-id="{{ researcher.get_short_name }}"
                                                            data-pk="{{ researcher.id }}"
@@ -486,57 +502,57 @@
                     </div>
                     {#  ------ END MANAGE RESEARCHERS ------- #}
                 </div>
-{#                <div class="row">#}
-{#                    <div class="col-md-12">#}
-{#                        {% include 'studies/_study_status.html' with study=study %}#}
-{#                    </div>#}
-{#                    <div class="col-md-4">#}
-{#                        {% if "can_view_study_responses" in study_perms %}#}
-{#                            <a class="view-responses-link"#}
-{#                               href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">#}
-{#                                <div class="well view-response-block">#}
-{#                                    <center class="mt-sm">#}
-{#                                        <p><i aria-hidden="true" class="fa-2x fas fa-envelope"></i></p>#}
-{#                                        <h4> View <strong>{{ study.completed_responses_count|default:"0" }}</strong>#}
-{#                                            Response{{ study.completed_responses_count|pluralize }}</h4>#}
-{#                                        <p> (plus {{ study.incomplete_responses_count|default:"0" }} incomplete)</p>#}
-{#                                        <p> Inspect responses from study sessions </p>#}
-{#                                    </center>#}
-{#                                </div>#}
-{#                            </a>#}
-{#                        {% endif %}#}
-{#                        {% if perms.studies.can_create_study %}#}
-{#                            <form id="cloneForm" method="POST" style="display:inline">{% csrf_token %}#}
-{#                                <input type="hidden" name="clone_study" value="{{ study.id }}"/>#}
-{#                                <div onclick="cloneStudy()" class="view-responses-link" role="button" type="submit">#}
-{#                                    <div class="well view-response-block">#}
-{#                                        <center class="mt-sm">#}
-{#                                            <p><i aria-hidden="true" class="fa-2x fas fa-copy"></i></p>#}
-{#                                            <h4> Clone Study </h4>#}
-{#                                            <p> Copy study structure and details </p>#}
-{#                                        </center>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </form>#}
-{#                            <form id="buildForm" method="POST" style="display:inline">{% csrf_token %}#}
-{#                                <input type="hidden" name="build" value="{{ study.id }}"/>#}
-{#                                <div onclick="buildStudy()" class="view-responses-link" role="button" type="submit">#}
-{#                                    <div class="well view-response-block">#}
-{#                                        <center class="mt-sm">#}
-{#                                            <p>#}
-{#                                                <i aria-hidden="true" class="fa-2x fas fa-hammer"></i>#}
-{#                                            </p>#}
-{#                                            <h4>#}
-{#                                                Build Study#}
-{#                                            </h4>#}
-{#                                            <p> Build framework dependencies for your study </p>#}
-{#                                        </center>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </form>#}
-{#                        {% endif %}#}
-{#                    </div>#}
-{#                </div>#}
+                {#                <div class="row">#}
+                {#                    <div class="col-md-12">#}
+                {#                        {% include 'studies/_study_status.html' with study=study %}#}
+                {#                    </div>#}
+                {#                    <div class="col-md-4">#}
+                {#                        {% if "can_view_study_responses" in study_perms %}#}
+                {#                            <a class="view-responses-link"#}
+                {#                               href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">#}
+                {#                                <div class="well view-response-block">#}
+                {#                                    <center class="mt-sm">#}
+                {#                                        <p><i aria-hidden="true" class="fa-2x fas fa-envelope"></i></p>#}
+                {#                                        <h4> View <strong>{{ study.completed_responses_count|default:"0" }}</strong>#}
+                {#                                            Response{{ study.completed_responses_count|pluralize }}</h4>#}
+                {#                                        <p> (plus {{ study.incomplete_responses_count|default:"0" }} incomplete)</p>#}
+                {#                                        <p> Inspect responses from study sessions </p>#}
+                {#                                    </center>#}
+                {#                                </div>#}
+                {#                            </a>#}
+                {#                        {% endif %}#}
+                {#                        {% if perms.studies.can_create_study %}#}
+                {#                            <form id="cloneForm" method="POST" style="display:inline">{% csrf_token %}#}
+                {#                                <input type="hidden" name="clone_study" value="{{ study.id }}"/>#}
+                {#                                <div onclick="cloneStudy()" class="view-responses-link" role="button" type="submit">#}
+                {#                                    <div class="well view-response-block">#}
+                {#                                        <center class="mt-sm">#}
+                {#                                            <p><i aria-hidden="true" class="fa-2x fas fa-copy"></i></p>#}
+                {#                                            <h4> Clone Study </h4>#}
+                {#                                            <p> Copy study structure and details </p>#}
+                {#                                        </center>#}
+                {#                                    </div>#}
+                {#                                </div>#}
+                {#                            </form>#}
+                {#                            <form id="buildForm" method="POST" style="display:inline">{% csrf_token %}#}
+                {#                                <input type="hidden" name="build" value="{{ study.id }}"/>#}
+                {#                                <div onclick="buildStudy()" class="view-responses-link" role="button" type="submit">#}
+                {#                                    <div class="well view-response-block">#}
+                {#                                        <center class="mt-sm">#}
+                {#                                            <p>#}
+                {#                                                <i aria-hidden="true" class="fa-2x fas fa-hammer"></i>#}
+                {#                                            </p>#}
+                {#                                            <h4>#}
+                {#                                                Build Study#}
+                {#                                            </h4>#}
+                {#                                            <p> Build framework dependencies for your study </p>#}
+                {#                                        </center>#}
+                {#                                    </div>#}
+                {#                                </div>#}
+                {#                            </form>#}
+                {#                        {% endif %}#}
+                {#                    </div>#}
+                {#                </div>#}
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="well">
@@ -554,7 +570,7 @@
                                         {% elif log.action == "deploy" %} dependencies built
                                         {% elif log.action == "preview" %} preview dependencies built
                                         {% else %}
-                                        {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
+                                            {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
                                     </div>
                                 </div>
                             {% endfor %}
@@ -582,7 +598,7 @@
                     <span id="study-status-additional-information"> </span>
                 </p>
                 <textarea class="form-control" rows="5" name="comments-text"
-                          placeholder="Please leave a reason for rejection here." ></textarea>
+                          placeholder="Please leave a reason for rejection here."></textarea>
             </div>
             <div class="modal-footer"> {% csrf_token %}
                 <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}">
