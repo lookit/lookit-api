@@ -331,7 +331,7 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['study_admins'] = User.objects.filter(groups__name=admin_group.name).values_list('id', flat=True)
         context['discoverability_text'] = get_discoverability_text(study)
         context['transition_help'] = json.dumps(TRANSITION_HELP_TEXT)
-        context['trigger_objs'] = [{'name': trigger, 'label': TRANSITION_LABELS[trigger]} 
+        context['triggers_with_labels'] = [{'name': trigger, 'label': TRANSITION_LABELS[trigger]} 
             for trigger in context['triggers']]
         return context
 
