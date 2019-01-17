@@ -32,7 +32,7 @@ from studies.forms import StudyBuildForm, StudyForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
-from studies.workflow import STATE_UI_SIGNALS, STATUS_HELP_TEXT, TRANSITION_HELP_TEXT
+from studies.workflow import STATE_UI_SIGNALS, STATUS_HELP_TEXT, TRANSITION_HELP_TEXT, TRANSITION_LABELS
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -331,6 +331,8 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['study_admins'] = User.objects.filter(groups__name=admin_group.name).values_list('id', flat=True)
         context['discoverability_text'] = get_discoverability_text(study)
         context['transition_help'] = json.dumps(TRANSITION_HELP_TEXT)
+        context['trigger_objs'] = [{'name': trigger, 'label': TRANSITION_LABELS[trigger]} 
+            for trigger in context['triggers']]
         return context
 
     def get_study_researchers(self):

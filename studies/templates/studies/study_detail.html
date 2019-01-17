@@ -301,10 +301,10 @@
                                             Change State <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            {% for trigger in triggers %}
+                                            {% for trigger in trigger_objs %}
                                                 <li role="button" onclick="onStateSelect(this)" data-toggle="modal"
-                                                    href="#study-state-modal" data-trigger="{{ trigger }}">
-                                                    <a>{{ trigger }}</a>
+                                                    href="#study-state-modal" data-trigger="{{ trigger.name }}">
+                                                    <a>{{ trigger.label }}</a>
                                                 </li>
                                             {% endfor %}
                                         </ul>

@@ -121,3 +121,15 @@ TRANSITION_HELP_TEXT = {
     "deactivate": "This will archive the study and prevent participants from accessing it. You will still be able to access your study data, but would need to resubmit it to collect more data. If you expect to collect more data for this study, use the Pause action instead.",
     "archive": "This will effectively delete your study! You will not be able to access your study or any response data. If you have already collected participant data or might want your study protocol for reference, deactivate instead."
 }
+
+TRANSITION_LABELS = {   
+    "submit": "Submit (submit study for Lookit admin review)",
+    "resubmit": "Submit (submit study for Lookit admin review)",
+    "reject": "Reject (request changes before researchers can collect data)",
+    "retract": "Retract (retract request for Lookit admin study review)",
+    "approve": "Approve (allow researchers to start data collection)",
+    "activate": "Start (start data collection - make study accessible to participants)",
+    "pause": "Pause (pause data collection - make study inaccessible to participants)",
+    "deactivate": "Deactivate (archive study - data collection is complete)",
+    "archive": "Delete (delete study and any data)"
+}
