@@ -45,13 +45,13 @@ STUDY_LISTING_A_TAG = f'<a href="{settings.BASE_URL}/studies/">the study listing
 
 
 DISCOVERABILITY_HELP_TEXT = {
-    (True, True): 'Your study is active and public. Participants can access it at your study link, '
+    (True, True): 'Public. Your study is active and public. Participants can access it at your study link, '
                   f'and it can be found listed in {STUDY_LISTING_A_TAG}.',
-    (True, False): 'Your study is active, but not public. Participants may access it at your study link, '
+    (True, False): 'Private. Your study is active, but not public. Participants may access it at your study link, '
                    f'however will not be listed in {STUDY_LISTING_A_TAG}.',
-    (False, True): 'Your study is not currently active, but it is public. When it is active, participants will be able to access it at your study link, '
+    (False, True): 'Public. Your study is not currently active, but it is public. When it is active, participants will be able to access it at your study link, '
                   f'and it will be found listed in {STUDY_LISTING_A_TAG}. ',
-    (False, False): 'Your study is not currently active, and is not public. When it is active, participants will be able to access it at your study link, '
+    (False, False): 'Private. Your study is not currently active, and is not public. When it is active, participants will be able to access it at your study link, '
                   f'but it will not be listed in {STUDY_LISTING_A_TAG}. ',
 }
 
