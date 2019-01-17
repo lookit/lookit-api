@@ -202,6 +202,14 @@
                 <div class="row">
                     <div class="col-xs-4">
                         {% include "studies/_image_display.html" with object=study large=1 %}
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    <span class="pr-md"><label
+                                            class='pr-xs'> Last edited: </label> {{ study.date_modified |date:"M d, Y" }} </span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xs-8">
                         {#  PUT THE DESCRIPTION STUFF HERE #}
@@ -242,8 +250,6 @@
                                             class='pr-xs'> Minimum age cutoff: </label> {{ study.min_age_years }} year{{ study.min_age_years|pluralize }} {{ study.min_age_months }} month{{ study.min_age_months|pluralize }} {{ study.min_age_days }} day{{ study.min_age_days|pluralize }} </span>
                                     <span class="pr-md"><label
                                             class='pr-xs'> Maximum age cutoff: </label> {{ study.max_age_years }} year{{ study.max_age_years|pluralize }} {{ study.max_age_months }} month{{ study.max_age_months|pluralize }} {{ study.max_age_days }} day{{ study.max_age_days|pluralize }}</span>
-                                    <span class="pr-md"><label
-                                            class='pr-xs'> Last edited: </label> {{ study.date_modified |date:"M d, Y" }} </span>
                                 </p>
                             </div>
                         </div>
@@ -252,8 +258,6 @@
                                 <p>
                                     <span class="pr-md"><label class='pr-xs'> UUID: </label></span>
                                     {{ study.uuid }}
-                                <div class="small uuid-padding"><em>This is the study id that participants will see</em>
-                                </div>
                                 </p>
                             </div>
                         </div>
@@ -267,6 +271,7 @@
                             </div>
                             <div class="col-xs-12">
                                 {% if study.built %}
+                                    <span><label>Study link: </label></span>
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="private-study-link"
                                                value="{% url 'web:study-detail' study.uuid %}"
