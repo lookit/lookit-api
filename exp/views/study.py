@@ -41,7 +41,7 @@ class DiscoverabilityKey(NamedTuple):
     public: bool
 
 
-STUDY_LISTING_A_TAG = f'<a href="{settings.BASE_URL}/studies.">the study listing page</a>'
+STUDY_LISTING_A_TAG = f'<a href="{settings.BASE_URL}/studies/">the study listing page</a>'
 
 
 DISCOVERABILITY_HELP_TEXT = {
