@@ -1,19 +1,17 @@
 import json
+import urllib.parse
 import uuid
-from django.test import TestCase
-from rest_framework.test import APITestCase
-from rest_framework.test import APIClient
-from rest_framework import status
-from django.urls import reverse
-
-from guardian.shortcuts import assign_perm
-from studies.models import Response, Study, Feedback
-from accounts.models import Child, User
-from django_dynamic_fixture import G
-
 from unittest import skip
 
-import urllib.parse
+from django.test import TestCase
+from django.urls import reverse
+from django_dynamic_fixture import G
+from guardian.shortcuts import assign_perm
+from rest_framework import status
+from rest_framework.test import APIClient, APITestCase
+
+from accounts.models import Child, User
+from studies.models import Feedback, Response, Study
 
 
 class RenameVideoTestCase(APITestCase):

@@ -12,9 +12,9 @@ from django.contrib.postgres.fields.jsonb import JSONField
 from django.contrib.postgres.forms.jsonb import JSONField as JSONFormField
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
+from psycopg2.extras import Json
 
 import ciso8601
-from psycopg2.extras import Json
 
 
 class NaiveDatetimeException(Exception):

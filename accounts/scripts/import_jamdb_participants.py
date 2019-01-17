@@ -1,4 +1,5 @@
 import json
+
 from django.apps import apps
 
 """

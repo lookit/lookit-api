@@ -17,30 +17,17 @@ Including another URLconf
 from django.conf.urls import url
 from django.views.decorators.csrf import csrf_exempt
 
-from exp.views import (
-    ExperimenterDashboardView,
-    ParticipantDetailView,
-    ParticipantListView,
-    PreviewProxyView,
-    ResearcherDetailView,
-    ResearcherListView,
-    StudyAttachments,
-    StudyBuildView,
-    StudyCreateView,
-    StudyDemographics,
-    StudyDetailView,
-    StudyListView,
-    StudyParticipantEmailView,
-    StudyPreviewBuildView,
-    StudyResponsesAll,
-    StudyResponsesAllDownloadJSON,
-    StudyResponsesAllDownloadCSV,
-    StudyResponsesList,
-    StudyDemographicsDownloadJSON,
-    StudyDemographicsDownloadCSV,
-    StudyUpdateView,
-    RenameVideoView,
-)
+from exp.views import (ExperimenterDashboardView, ParticipantDetailView,
+                       ParticipantListView, PreviewProxyView, RenameVideoView,
+                       ResearcherDetailView, ResearcherListView,
+                       StudyAttachments, StudyBuildView, StudyCreateView,
+                       StudyDemographics, StudyDemographicsDownloadCSV,
+                       StudyDemographicsDownloadJSON, StudyDetailView,
+                       StudyListView, StudyParticipantEmailView,
+                       StudyPreviewBuildView, StudyResponsesAll,
+                       StudyResponsesAllDownloadCSV,
+                       StudyResponsesAllDownloadJSON, StudyResponsesList,
+                       StudyUpdateView)
 
 urlpatterns = [
     url(r"researchers/$", ResearcherListView.as_view(), name="researcher-list"),

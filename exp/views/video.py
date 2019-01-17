@@ -1,17 +1,17 @@
 import ast
-
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-
-from django.conf import settings
-import attachment_helpers
-
+import base64
 import hashlib
 import hmac
-import base64
 import urllib.parse
+
+from django.conf import settings
+from django.http import (HttpResponse, HttpResponseForbidden,
+                         HttpResponseNotFound)
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+
+import attachment_helpers
 
 
 class RenameVideoView(View):

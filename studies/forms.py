@@ -1,9 +1,9 @@
 import json
 
+from ace_overlay.widgets import AceOverlayWidget
 from django import forms
 from django.forms import ModelForm, Textarea
 
-from ace_overlay.widgets import AceOverlayWidget
 from studies.models import Response, Study
 
 

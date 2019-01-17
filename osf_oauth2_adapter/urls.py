@@ -1,7 +1,8 @@
 from allauth.socialaccount.providers.oauth2.urls import default_urlpatterns
+from django.conf.urls import url
+
 from osf_oauth2_adapter.provider import OSFProvider
 from osf_oauth2_adapter.views import LocalUserAlreadyExistsView
-from django.conf.urls import url
 
 urlpatterns = default_urlpatterns(OSFProvider)
 

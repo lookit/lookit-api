@@ -1,8 +1,8 @@
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-from django.urls import reverse_lazy
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 
 from accounts.models import User
 

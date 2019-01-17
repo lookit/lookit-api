@@ -1,8 +1,7 @@
 from django.conf import settings
-
 from django.core.files.storage import FileSystemStorage
 from storages.backends.gcloud import GoogleCloudStorage
-from storages.utils import safe_join, clean_name
+from storages.utils import clean_name, safe_join
 
 
 class LocationPrefixedPublicGoogleCloudStorage(GoogleCloudStorage):

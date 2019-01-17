@@ -1,27 +1,26 @@
+import datetime
+import hashlib
 import logging
 import os
 import re
 import shutil
 import subprocess
-import time
 import tempfile
-import hashlib
-import datetime
+import time
 import zipfile
 from io import BytesIO, StringIO
 
 import requests
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.files import File
 from django.utils import timezone
 from google.cloud import storage as gc_storage
 
+import attachment_helpers
 from project import storages
 from project.celery import app
 from studies.helpers import send_mail
-import attachment_helpers
-
-from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)

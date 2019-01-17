@@ -22,9 +22,9 @@ from django.views.generic.base import RedirectView
 
 from api import urls as api_urls
 from exp import urls as exp_urls
+from osf_oauth2_adapter import views as osf_oauth2_adapter_views
 from project import settings
 from web import urls as web_urls
-from osf_oauth2_adapter import views as osf_oauth2_adapter_views
 
 urlpatterns = [
     url(r"^admin/", admin.site.urls),

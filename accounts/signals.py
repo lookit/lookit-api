@@ -1,10 +1,9 @@
 import os
 
+from django.apps import apps
 from django.contrib.auth.management import create_permissions
 
 from project import settings
-
-from django.apps import apps
 
 
 def post_migrate_create_organization(sender, **kwargs):

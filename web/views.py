@@ -1,23 +1,22 @@
-from django.contrib.auth import authenticate, login, signals
+from django.contrib import messages
+from django.contrib.auth import (authenticate, login, signals,
+                                 update_session_auth_hash)
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.http import Http404
-from django.shortcuts import reverse, get_object_or_404, redirect
+from django.dispatch import receiver
+from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import ugettext as _
 from django.views import generic
-from django.contrib.auth import update_session_auth_hash
-from django.http import HttpResponseRedirect, HttpResponseForbidden
-from django.contrib import messages
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
+from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
-from django.dispatch import receiver
 
 from accounts import forms
 from accounts.models import Child, DemographicData, User
 from project import settings
-from studies.models import Study, Response
-from localflavor.us.us_states import USPS_CHOICES
+from studies.models import Response, Study
 
 
 @receiver(signals.user_logged_out)

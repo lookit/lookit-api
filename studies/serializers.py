@@ -1,11 +1,9 @@
-from accounts.models import Child, DemographicData, Organization, User
-from api.serializers import (
-    ModelSerializer,
-    UUIDResourceRelatedField,
-    UUIDSerializerMixin,
-)
 from rest_framework_json_api import serializers
-from studies.models import Response, Study, Feedback
+
+from accounts.models import Child, DemographicData, Organization, User
+from api.serializers import (ModelSerializer, UUIDResourceRelatedField,
+                             UUIDSerializerMixin)
+from studies.models import Feedback, Response, Study
 
 
 class StudySerializer(UUIDSerializerMixin, ModelSerializer):

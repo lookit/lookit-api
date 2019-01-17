@@ -1,7 +1,7 @@
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 
-from accounts.models import DemographicData, Organization, Child, User
+from accounts.models import Child, DemographicData, Organization, User
 
 
 class ChildAdmin(GuardedModelAdmin):

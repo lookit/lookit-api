@@ -1,7 +1,8 @@
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import get_template
+
 from project.celery import app
-from project.settings import EMAIL_FROM_ADDRESS, BASE_URL, OSF_URL
+from project.settings import BASE_URL, EMAIL_FROM_ADDRESS, OSF_URL
 
 
 @app.task

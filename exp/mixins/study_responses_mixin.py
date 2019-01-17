@@ -1,14 +1,15 @@
-import io
 import csv
-import json
 import datetime
-from guardian.shortcuts import get_objects_for_user
-from guardian.mixins import PermissionRequiredMixin
-from django.shortcuts import redirect
+import io
+import json
 
-from studies.models import Study
-from exp.views.mixins import ExperimenterLoginRequiredMixin
+from django.shortcuts import redirect
+from guardian.mixins import PermissionRequiredMixin
+from guardian.shortcuts import get_objects_for_user
+
 import attachment_helpers
+from exp.views.mixins import ExperimenterLoginRequiredMixin
+from studies.models import Study
 
 
 class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixin):

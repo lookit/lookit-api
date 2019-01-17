@@ -1,29 +1,22 @@
 from collections import OrderedDict
-from django.db.models import Q
 
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from guardian.shortcuts import get_objects_for_user
-from accounts.models import Child, DemographicData, Organization, User
-from accounts.serializers import (
-    ChildSerializer,
-    DemographicDataSerializer,
-    OrganizationSerializer,
-    FullUserSerializer,
-    BasicUserSerializer,
-)
 from django_filters import rest_framework as filters
+from guardian.shortcuts import get_objects_for_user
+from rest_framework import status
 from rest_framework.filters import OrderingFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_json_api import views
+
+from accounts.models import Child, DemographicData, Organization, User
+from accounts.serializers import (BasicUserSerializer, ChildSerializer,
+                                  DemographicDataSerializer,
+                                  FullUserSerializer, OrganizationSerializer)
 from api.permissions import FeedbackPermissions, ResponsePermissions
-from studies.models import Response, Study, Feedback
-from studies.serializers import (
-    ResponseWriteableSerializer,
-    ResponseSerializer,
-    StudySerializer,
-    FeedbackSerializer,
-)
+from studies.models import Feedback, Response, Study
+from studies.serializers import (FeedbackSerializer, ResponseSerializer,
+                                 ResponseWriteableSerializer, StudySerializer)
 
 
 class FilterByUrlKwargsMixin(views.ModelViewSet):

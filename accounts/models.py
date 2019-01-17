@@ -3,8 +3,9 @@ import hashlib
 import uuid
 from datetime import date
 
+import pydenticon
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin, Permission
+from django.contrib.auth.models import Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
@@ -12,20 +13,19 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
-from kombu.utils import cached_property
-
-import pydenticon
-from accounts.utils import build_org_group_name
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import get_objects_for_user, assign_perm
+from guardian.shortcuts import assign_perm, get_objects_for_user
+from kombu.utils import cached_property
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
-from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from multiselectfield import MultiSelectField
-from studies.helpers import send_mail
+
+from accounts.utils import build_org_group_name
+from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
+from studies.helpers import send_mail
 
 
 class UserManager(BaseUserManager):

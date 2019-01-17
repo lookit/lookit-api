@@ -1,11 +1,9 @@
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-from accounts.signals import (
-    post_migrate_create_organization,
-    post_migrate_create_social_app,
-    post_migrate_create_flatpages,
-)
+from accounts.signals import (post_migrate_create_flatpages,
+                              post_migrate_create_organization,
+                              post_migrate_create_social_app)
 
 
 class AccountsConfig(AppConfig):

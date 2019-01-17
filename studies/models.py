@@ -8,16 +8,14 @@ from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_groups_with_perms
 from kombu.utils import cached_property
+from model_utils import Choices
 from transitions.extensions import GraphMachine as Machine
 
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.utils import build_study_group_name
+from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
-from project import settings
-from transitions.extensions import GraphMachine as Machine
-from model_utils import Choices
-
 from studies import workflow
 from studies.helpers import send_mail
 from studies.tasks import build_experiment

@@ -4,17 +4,13 @@ from collections import OrderedDict
 import six
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.relations import reverse
-
 from rest_framework_json_api.relations import ResourceRelatedField
-from rest_framework_json_api.serializers import (
-    ModelSerializer as JSONAPIModelSerializer,
-)
-from rest_framework_json_api.utils import (
-    get_included_serializers,
-    get_resource_type_from_instance,
-    get_resource_type_from_queryset,
-    get_resource_type_from_serializer,
-)
+from rest_framework_json_api.serializers import \
+    ModelSerializer as JSONAPIModelSerializer
+from rest_framework_json_api.utils import (get_included_serializers,
+                                           get_resource_type_from_instance,
+                                           get_resource_type_from_queryset,
+                                           get_resource_type_from_serializer)
 
 
 class UUIDResourceRelatedField(ResourceRelatedField):

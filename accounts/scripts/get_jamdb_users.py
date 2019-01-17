@@ -1,5 +1,6 @@
-import requests
 import json
+
+import requests
 from django.conf import settings
 
 JAMDB_AUTHORIZATION_TOKEN = settings.JAMDB_AUTH_TOKEN

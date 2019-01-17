@@ -1,9 +1,8 @@
-from guardian.mixins import LoginRequiredMixin
-from django.conf import settings
-from studies.models import StudyType
-
 import requests
+from django.conf import settings
+from guardian.mixins import LoginRequiredMixin
 
+from studies.models import StudyType
 
 # TODO: Using a mixin for this stuff is overkill. All of this functionality should be migrated
 # to helper functions.

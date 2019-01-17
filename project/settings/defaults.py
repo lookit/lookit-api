@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-from django.contrib.messages import constants as messages
+
 import raven
+from django.contrib.messages import constants as messages
 
 # TODO: deliberate then choose on a methodology for dynamic class selection,
 # i.e. for Storages. Should we choose the storages here, or defer that
