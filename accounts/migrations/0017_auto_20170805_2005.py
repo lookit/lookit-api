@@ -8,14 +8,24 @@ import multiselectfield.db.fields
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0016_auto_20170805_1855'),
-    ]
+    dependencies = [("accounts", "0016_auto_20170805_1855")]
 
     operations = [
         migrations.AlterField(
-            model_name='demographicdata',
-            name='race_identification',
-            field=multiselectfield.db.fields.MultiSelectField(choices=[('white', 'White'), ('hisp', 'Hispanic, Latino, or Spanish origin'), ('black', 'Black or African American'), ('asian', 'Asian'), ('native', 'American Indian or Alaska Native'), ('mideast-naf', 'Middle Eastern or North African'), ('hawaiian-pac-isl', 'Native Hawaiian or Other Pacific Islander'), ('other', 'Another race, ethnicity, or origin')], max_length=64),
-        ),
+            model_name="demographicdata",
+            name="race_identification",
+            field=multiselectfield.db.fields.MultiSelectField(
+                choices=[
+                    ("white", "White"),
+                    ("hisp", "Hispanic, Latino, or Spanish origin"),
+                    ("black", "Black or African American"),
+                    ("asian", "Asian"),
+                    ("native", "American Indian or Alaska Native"),
+                    ("mideast-naf", "Middle Eastern or North African"),
+                    ("hawaiian-pac-isl", "Native Hawaiian or Other Pacific Islander"),
+                    ("other", "Another race, ethnicity, or origin"),
+                ],
+                max_length=64,
+            ),
+        )
     ]

@@ -7,18 +7,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0028_study_preview_url'),
-    ]
+    dependencies = [("studies", "0028_study_preview_url")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='study',
-            name='preview_url',
-        ),
+        migrations.RemoveField(model_name="study", name="preview_url"),
         migrations.AddField(
-            model_name='study',
-            name='previewed',
+            model_name="study",
+            name="previewed",
             field=models.BooleanField(default=False),
         ),
     ]

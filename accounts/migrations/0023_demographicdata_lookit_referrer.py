@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0022_user_contact_name'),
-    ]
+    dependencies = [("accounts", "0022_user_contact_name")]
 
     operations = [
         migrations.AddField(
-            model_name='demographicdata',
-            name='lookit_referrer',
+            model_name="demographicdata",
+            name="lookit_referrer",
             field=models.TextField(blank=True),
-        ),
+        )
     ]

@@ -1,127 +1,123 @@
 from accounts.models import Child, DemographicData, Organization, User
-from api.serializers import (ModelSerializer, UUIDResourceRelatedField,
-                             UUIDSerializerMixin)
+from api.serializers import (
+    ModelSerializer,
+    UUIDResourceRelatedField,
+    UUIDSerializerMixin,
+)
 from rest_framework_json_api import serializers
 
 
 class OrganizationSerializer(UUIDSerializerMixin, ModelSerializer):
-    resource_name = 'organizations'
+    resource_name = "organizations"
     url = serializers.HyperlinkedIdentityField(
-        view_name='organization-detail',
-        lookup_field='uuid'
+        view_name="organization-detail", lookup_field="uuid"
     )
 
     class Meta:
         model = Organization
-        fields = (
-            'name',
-            'url',
-            'pk',
-        )
+        fields = ("name", "url", "pk")
 
 
 class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
-    resource_name = 'demographics'
-    country = serializers.CharField(default='')
-    date_created = serializers.DateTimeField(read_only=True, source='created_at')
+    resource_name = "demographics"
+    country = serializers.CharField(default="")
+    date_created = serializers.DateTimeField(read_only=True, source="created_at")
 
     url = serializers.HyperlinkedIdentityField(
-        view_name='demographicdata-detail',
-        lookup_field='uuid'
+        view_name="demographicdata-detail", lookup_field="uuid"
     )
 
     class Meta:
         model = DemographicData
         fields = (
-            'url',
-            'number_of_children',
-            'child_birthdays',
-            'languages_spoken_at_home',
-            'number_of_guardians',
-            'number_of_guardians_explanation',
-            'race_identification',
-            'age',
-            'gender',
-            'education_level',
-            'spouse_education_level',
-            'annual_income',
-            'former_lookit_annual_income',
-            'lookit_referrer',
-            'number_of_books',
-            'additional_comments',
-            'country',
-            'state',
-            'density',
-            'extra',
-            'date_created',
-            'pk',
+            "url",
+            "number_of_children",
+            "child_birthdays",
+            "languages_spoken_at_home",
+            "number_of_guardians",
+            "number_of_guardians_explanation",
+            "race_identification",
+            "age",
+            "gender",
+            "education_level",
+            "spouse_education_level",
+            "annual_income",
+            "former_lookit_annual_income",
+            "lookit_referrer",
+            "number_of_books",
+            "additional_comments",
+            "country",
+            "state",
+            "density",
+            "extra",
+            "date_created",
+            "pk",
         )
 
+
 class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
-    resource_name = 'users'
+    resource_name = "users"
     url = serializers.HyperlinkedIdentityField(
-        view_name='user-detail',
-        lookup_field='uuid'
+        view_name="user-detail", lookup_field="uuid"
     )
 
     demographics = UUIDResourceRelatedField(
         queryset=DemographicData.objects,
         many=True,
-        related_link_view_name='user-demographics-list',
-        related_link_url_kwarg='user_uuid',
-        related_link_lookup_field='uuid',
+        related_link_view_name="user-demographics-list",
+        related_link_url_kwarg="user_uuid",
+        related_link_lookup_field="uuid",
     )
     organization = UUIDResourceRelatedField(
         queryset=Organization.objects,
         many=False,
-        related_link_view_name='organization-detail',
-        related_link_lookup_field='uuid',
+        related_link_view_name="organization-detail",
+        related_link_lookup_field="uuid",
     )
     children = UUIDResourceRelatedField(
         queryset=Child.objects,
         many=True,
-        related_link_view_name='user-children-list',
-        related_link_url_kwarg='user_uuid',
-        related_link_lookup_field='uuid',
+        related_link_view_name="user-children-list",
+        related_link_url_kwarg="user_uuid",
+        related_link_lookup_field="uuid",
     )
 
     class Meta:
         model = User
         fields = (
-            'url',
-            'given_name',
-            'middle_name',
-            'family_name',
-            'nickname',
-            'identicon',
-            'is_active',
-            'is_staff',
-            'is_researcher',
-            'demographics',
-            'organization',
-            'children',
-            'former_lookit_id',
-            'linked_former_lookit_ids',
-            'email_next_session',
-            'email_new_studies',
-            'email_study_updates',
-            'email_response_questions',
-            'date_created',
-            'pk',
+            "url",
+            "given_name",
+            "middle_name",
+            "family_name",
+            "nickname",
+            "identicon",
+            "is_active",
+            "is_staff",
+            "is_researcher",
+            "demographics",
+            "organization",
+            "children",
+            "former_lookit_id",
+            "linked_former_lookit_ids",
+            "email_next_session",
+            "email_new_studies",
+            "email_study_updates",
+            "email_response_questions",
+            "date_created",
+            "pk",
         )
 
-class FullUserSerializer(BasicUserSerializer):
 
+class FullUserSerializer(BasicUserSerializer):
     class Meta:
         model = User
-        fields = BasicUserSerializer.Meta.fields + ('username',)
+        fields = BasicUserSerializer.Meta.fields + ("username",)
 
 
 class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
-    lookup_field = 'uuid'
+    lookup_field = "uuid"
     url = serializers.HyperlinkedIdentityField(
-        view_name='child-detail',
-        lookup_field='uuid'
+        view_name="child-detail", lookup_field="uuid"
     )
     # included_serializers = {
     #     'user': UserSerializer,
@@ -130,24 +126,24 @@ class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
     user = UUIDResourceRelatedField(
         queryset=User.objects,
         many=False,
-        related_link_view_name='user-detail',
-        related_link_lookup_field='uuid'
+        related_link_view_name="user-detail",
+        related_link_lookup_field="uuid",
     )
 
     class Meta:
         model = Child
         fields = (
-            'url',
-            'user',
-            'given_name',
-            'birthday',
-            'gender',
-            'age_at_birth',
-            'additional_information',
-            'deleted',
-            'former_lookit_profile_id',
-            'pk',
+            "url",
+            "user",
+            "given_name",
+            "birthday",
+            "gender",
+            "age_at_birth",
+            "additional_information",
+            "deleted",
+            "former_lookit_profile_id",
+            "pk",
         )
 
     # class JSONAPIMeta:
-        # included_resources = ['user', ]
+    # included_resources = ['user', ]

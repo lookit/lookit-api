@@ -6,5 +6,9 @@ from django.conf.urls import url
 urlpatterns = default_urlpatterns(OSFProvider)
 
 urlpatterns = urlpatterns + [
-    url(r'accounts/already_exists/?$', LocalUserAlreadyExistsView.as_view(), name='local-user-already-exists')
+    url(
+        r"accounts/already_exists/?$",
+        LocalUserAlreadyExistsView.as_view(),
+        name="local-user-already-exists",
+    )
 ]

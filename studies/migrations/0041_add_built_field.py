@@ -7,14 +7,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0040_add_scheduled_jobs'),
-    ]
+    dependencies = [("studies", "0040_add_scheduled_jobs")]
 
     operations = [
         migrations.AddField(
-            model_name='study',
-            name='built',
-            field=models.BooleanField(default=False),
-        ),
+            model_name="study", name="built", field=models.BooleanField(default=False)
+        )
     ]

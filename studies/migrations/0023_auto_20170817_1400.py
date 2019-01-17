@@ -8,14 +8,16 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0022_feedback'),
-    ]
+    dependencies = [("studies", "0022_feedback")]
 
     operations = [
         migrations.AlterField(
-            model_name='feedback',
-            name='response',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='feedback', to='studies.Response'),
-        ),
+            model_name="feedback",
+            name="response",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="feedback",
+                to="studies.Response",
+            ),
+        )
     ]

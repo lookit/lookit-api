@@ -4,7 +4,9 @@ from functools import reduce
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from guardian.mixins import PermissionRequiredMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin as DjangoPermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    PermissionRequiredMixin as DjangoPermissionRequiredMixin,
+)
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
@@ -27,54 +29,68 @@ from studies.helpers import send_mail
 from project.settings import EXPERIMENTER_LOGIN_URL as login_url
 
 
-class ParticipantListView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.ListView, PaginatorMixin):
-    '''
+class ParticipantListView(
+    ExperimenterLoginRequiredMixin, ParticipantMixin, generic.ListView, PaginatorMixin
+):
+    """
     ParticipantListView shows a list of participants that have responded to the studies the
     user has permission to view.
-    '''
-    template_name = 'accounts/participant_list.html'
+    """
+
+    template_name = "accounts/participant_list.html"
 
     def get_queryset(self):
-        '''
+        """
         Returns users that researcher has permission to view. Handles sorting and pagination.
-        '''
-        qs =  super().get_queryset()
-        match = self.request.GET.get('match', False)
-        order = self.request.GET.get('sort', 'nickname')
-        if 'nickname' not in order and 'last_login' not in order:
-            order = 'nickname'
+        """
+        qs = super().get_queryset()
+        match = self.request.GET.get("match", False)
+        order = self.request.GET.get("sort", "nickname")
+        if "nickname" not in order and "last_login" not in order:
+            order = "nickname"
 
         if match:
-            qs = qs.filter(reduce(operator.or_,
-              (Q(nickname__icontains=term) for term in match.split())))
-        return self.paginated_queryset(qs.order_by(order), self.request.GET.get('page'), 10)
+            qs = qs.filter(
+                reduce(
+                    operator.or_,
+                    (Q(nickname__icontains=term) for term in match.split()),
+                )
+            )
+        return self.paginated_queryset(
+            qs.order_by(order), self.request.GET.get("page"), 10
+        )
 
     def get_context_data(self, **kwargs):
         """
         Adds match and sort query params to context_data dict
         """
         context = super().get_context_data(**kwargs)
-        context['match'] = self.request.GET.get('match', '')
-        context['sort'] = self.request.GET.get('sort', '')
+        context["match"] = self.request.GET.get("match", "")
+        context["sort"] = self.request.GET.get("sort", "")
         return context
 
 
-class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, generic.DetailView, PaginatorMixin):
-    '''
+class ParticipantDetailView(
+    ExperimenterLoginRequiredMixin, ParticipantMixin, generic.DetailView, PaginatorMixin
+):
+    """
     ParticipantDetailView shows demographic information, children information, and
     studies that a participant has responded to.
-    '''
-    fields = ('is_active', )
-    template_name = 'accounts/participant_detail.html'
+    """
+
+    fields = ("is_active",)
+    template_name = "accounts/participant_detail.html"
 
     def get_context_data(self, **kwargs):
         """
         Adds user's latest demographics and studies to the context_data dictionary
         """
         context = super().get_context_data(**kwargs)
-        user = context['user']
-        context['demographics'] = user.latest_demographics.to_display() if user.latest_demographics else None
-        context['studies'] = self.get_study_info()
+        user = context["user"]
+        context["demographics"] = (
+            user.latest_demographics.to_display() if user.latest_demographics else None
+        )
+        context["studies"] = self.get_study_info()
         return context
 
     def get_study_info(self):
@@ -83,29 +99,50 @@ class ParticipantDetailView(ExperimenterLoginRequiredMixin, ParticipantMixin, ge
         id, completion status, and date modified.
         """
         resps = Response.objects.filter(child__user=self.get_object())
-        orderby = self.request.GET.get('sort', None)
+        orderby = self.request.GET.get("sort", None)
         if orderby:
-            if 'date_modified' in orderby:
+            if "date_modified" in orderby:
                 resps = resps.order_by(orderby)
-            elif 'completed' in orderby:
-                resps = resps.order_by(orderby.replace('-', '') if '-' in orderby else '-' + orderby)
-        studies = [{'modified': resp.date_modified, 'study': resp.study, 'name': resp.study.name, 'completed': resp.completed, 'response': resp} for resp in resps]
-        if orderby and 'name' in orderby:
-            studies = sorted(studies, key=operator.itemgetter('name'), reverse=True if '-' in orderby else False)
-        return self.paginated_queryset(studies, self.request.GET.get('page'), 10)
+            elif "completed" in orderby:
+                resps = resps.order_by(
+                    orderby.replace("-", "") if "-" in orderby else "-" + orderby
+                )
+        studies = [
+            {
+                "modified": resp.date_modified,
+                "study": resp.study,
+                "name": resp.study.name,
+                "completed": resp.completed,
+                "response": resp,
+            }
+            for resp in resps
+        ]
+        if orderby and "name" in orderby:
+            studies = sorted(
+                studies,
+                key=operator.itemgetter("name"),
+                reverse=True if "-" in orderby else False,
+            )
+        return self.paginated_queryset(studies, self.request.GET.get("page"), 10)
 
     def get_success_url(self):
-        return reverse('exp:participant-detail', kwargs={'pk': self.object.id})
+        return reverse("exp:participant-detail", kwargs={"pk": self.object.id})
 
 
-class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.ListView, PaginatorMixin):
-    '''
+class ResearcherListView(
+    ExperimenterLoginRequiredMixin,
+    DjangoPermissionRequiredMixin,
+    generic.ListView,
+    PaginatorMixin,
+):
+    """
     Displays a list of researchers that belong to the org admin, org read, or org researcher groups.
-    '''
-    template_name = 'accounts/researcher_list.html'
+    """
+
+    template_name = "accounts/researcher_list.html"
     queryset = User.objects.filter(is_researcher=True, is_active=True)
     model = User
-    permission_required = 'accounts.can_view_organization'
+    permission_required = "accounts.can_view_organization"
     raise_exception = True
 
     def get_org_groups(self):
@@ -116,9 +153,15 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
         user_org = self.request.user.organization
         if user_org:
             user_org_name = user_org.name
-            admin_group = Group.objects.get(name=build_org_group_name(user_org_name, 'admin'))
-            read_group = Group.objects.get(name=build_org_group_name(user_org_name, 'read'))
-            researcher_group = Group.objects.get(name=build_org_group_name(user_org_name, 'researcher'))
+            admin_group = Group.objects.get(
+                name=build_org_group_name(user_org_name, "admin")
+            )
+            read_group = Group.objects.get(
+                name=build_org_group_name(user_org_name, "read")
+            )
+            researcher_group = Group.objects.get(
+                name=build_org_group_name(user_org_name, "researcher")
+            )
             return admin_group, read_group, researcher_group
         else:
             raise PermissionDenied
@@ -129,22 +172,56 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
         """
         qs = super().get_queryset()
         admin_group, read_group, researcher_group = self.get_org_groups()
-        queryset = qs.filter(Q(Q(Q(groups=admin_group) | Q(groups=read_group) | Q(groups=researcher_group)) | Q(is_researcher=True, groups__isnull=True, organization__isnull=True))).distinct().order_by(Lower('family_name').asc())
+        queryset = (
+            qs.filter(
+                Q(
+                    Q(
+                        Q(groups=admin_group)
+                        | Q(groups=read_group)
+                        | Q(groups=researcher_group)
+                    )
+                    | Q(
+                        is_researcher=True,
+                        groups__isnull=True,
+                        organization__isnull=True,
+                    )
+                )
+            )
+            .distinct()
+            .order_by(Lower("family_name").asc())
+        )
 
-        match = self.request.GET.get('match')
+        match = self.request.GET.get("match")
         # Can filter on first, middle, and last names
-        queryset = queryset.select_related('organization')
+        queryset = queryset.select_related("organization")
 
         if match:
-            queryset = queryset.filter(reduce(operator.or_,
-              (Q(family_name__icontains=term) | Q(given_name__icontains=term) | Q(middle_name__icontains=term) for term in match.split())))
-        sort = self.request.GET.get('sort')
+            queryset = queryset.filter(
+                reduce(
+                    operator.or_,
+                    (
+                        Q(family_name__icontains=term)
+                        | Q(given_name__icontains=term)
+                        | Q(middle_name__icontains=term)
+                        for term in match.split()
+                    ),
+                )
+            )
+        sort = self.request.GET.get("sort")
         if sort:
-            if 'family_name' in sort:
-                queryset = queryset.order_by(Lower('family_name').desc()) if '-' in sort else queryset.order_by(Lower('family_name').asc())
-            if 'permissions' in sort:
-                queryset = sorted(queryset,  key=lambda m: m.display_permission, reverse=True if '-' in sort else False)
-        return self.paginated_queryset(queryset, self.request.GET.get('page'), 10)
+            if "family_name" in sort:
+                queryset = (
+                    queryset.order_by(Lower("family_name").desc())
+                    if "-" in sort
+                    else queryset.order_by(Lower("family_name").asc())
+                )
+            if "permissions" in sort:
+                queryset = sorted(
+                    queryset,
+                    key=lambda m: m.display_permission,
+                    reverse=True if "-" in sort else False,
+                )
+        return self.paginated_queryset(queryset, self.request.GET.get("page"), 10)
 
     def post(self, request, *args, **kwargs):
         """
@@ -152,12 +229,15 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
         from org admin, org read, and org researcher groups.
         """
         retval = super().get(request, *args, **kwargs)
-        if 'disable' in self.request.POST and self.request.method == 'POST':
-            researcher = User.objects.get(pk=self.request.POST['disable'])
+        if "disable" in self.request.POST and self.request.method == "POST":
+            researcher = User.objects.get(pk=self.request.POST["disable"])
             researcher.is_active = False
             researcher.organization = None
             researcher.save()
-            messages.success(self.request, f"{researcher.get_short_name()} removed from the {self.request.user.organization.name} organization.")
+            messages.success(
+                self.request,
+                f"{researcher.get_short_name()} removed from the {self.request.user.organization.name} organization.",
+            )
             self.remove_researcher_from_org_groups(researcher)
         return retval
 
@@ -177,21 +257,24 @@ class ResearcherListView(ExperimenterLoginRequiredMixin, DjangoPermissionRequire
         Adds match and sort query params to the context data
         """
         context = super().get_context_data(**kwargs)
-        context['match'] = self.request.GET.get('match', '')
-        context['sort'] = self.request.GET.get('sort', '')
+        context["match"] = self.request.GET.get("match", "")
+        context["sort"] = self.request.GET.get("sort", "")
         return context
 
 
-class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.UpdateView):
-    '''
+class ResearcherDetailView(
+    ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.UpdateView
+):
+    """
     ResearcherDetailView shows information about a researcher and allows toggling the permissions
     on a user or modifying.
-    '''
+    """
+
     queryset = User.objects.filter(is_researcher=True, is_active=True)
-    fields = ('is_active', )
-    template_name = 'accounts/researcher_detail.html'
+    fields = ("is_active",)
+    template_name = "accounts/researcher_detail.html"
     model = User
-    permission_required = 'accounts.can_edit_organization'
+    permission_required = "accounts.can_edit_organization"
     raise_exception = True
 
     def get_queryset(self):
@@ -200,23 +283,30 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         or unaffiliated researchers.
         """
         qs = super().get_queryset()
-        return qs.filter(Q(Q(organization=self.request.user.organization) | Q(is_researcher=True, groups__isnull=True, organization__isnull=True))).distinct()
+        return qs.filter(
+            Q(
+                Q(organization=self.request.user.organization)
+                | Q(is_researcher=True, groups__isnull=True, organization__isnull=True)
+            )
+        ).distinct()
 
     def get_success_url(self):
-        return reverse('exp:researcher-detail', kwargs={'pk': self.object.id})
+        return reverse("exp:researcher-detail", kwargs={"pk": self.object.id})
 
     def send_reset_password_email(self):
         """
         Send reset_password email to researcher
         """
         context = {
-            'researcher_name': self.object.get_short_name(),
-            'org_name': self.request.user.organization.name,
-            'login_url': login_url
+            "researcher_name": self.object.get_short_name(),
+            "org_name": self.request.user.organization.name,
+            "login_url": login_url,
         }
-        subject = 'Reset OSF password to login to Experimenter'
-        send_mail.delay('reset_password', subject, self.object.username, **context)
-        messages.success(self.request, f'Reset password email sent to {self.object.username}.')
+        subject = "Reset OSF password to login to Experimenter"
+        send_mail.delay("reset_password", subject, self.object.username, **context)
+        messages.success(
+            self.request, f"Reset password email sent to {self.object.username}."
+        )
         return
 
     def send_resend_confirmation_email(self):
@@ -224,13 +314,15 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         Send resend_confirmation_email to researcher
         """
         context = {
-            'researcher_name': self.object.get_short_name(),
-            'org_name': self.request.user.organization.name,
-            'login_url': login_url
+            "researcher_name": self.object.get_short_name(),
+            "org_name": self.request.user.organization.name,
+            "login_url": login_url,
         }
-        subject = 'Confirm OSF account to login to Experimenter'
-        send_mail.delay('resend_confirmation', subject, self.object.username, **context)
-        messages.success(self.request, f'Confirmation email resent to {self.object.username}.')
+        subject = "Confirm OSF account to login to Experimenter"
+        send_mail.delay("resend_confirmation", subject, self.object.username, **context)
+        messages.success(
+            self.request, f"Confirmation email resent to {self.object.username}."
+        )
         return
 
     def post(self, request, *args, **kwargs):
@@ -240,21 +332,21 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         """
         retval = super().post(request, *args, **kwargs)
 
-        if 'reset_password' in self.request.POST:
+        if "reset_password" in self.request.POST:
             self.send_reset_password_email()
-        elif 'resend_confirmation' in self.request.POST:
+        elif "resend_confirmation" in self.request.POST:
             self.send_resend_confirmation_email()
         else:
-            changed_field = self.request.POST.get('name')
-            if changed_field == 'given_name':
-                self.object.given_name = self.request.POST['value']
-            elif changed_field == 'middle_name':
-                self.object.middle_name = self.request.POST['value']
-            elif changed_field == 'family_name':
-                self.object.family_name = self.request.POST['value']
+            changed_field = self.request.POST.get("name")
+            if changed_field == "given_name":
+                self.object.given_name = self.request.POST["value"]
+            elif changed_field == "middle_name":
+                self.object.middle_name = self.request.POST["value"]
+            elif changed_field == "family_name":
+                self.object.family_name = self.request.POST["value"]
             if not self.object.organization:
                 self.object.organization = request.user.organization
-            if self.request.POST.get('name') == 'user_permissions':
+            if self.request.POST.get("name") == "user_permissions":
                 self.modify_researcher_permissions()
         self.object.is_active = True
         self.object.save()
@@ -265,20 +357,22 @@ class ResearcherDetailView(ExperimenterLoginRequiredMixin, DjangoPermissionRequi
         Modifies researcher permissions by adding the user to the respective admin,
         read, or researcher group. They inherit the permissions of that org group.
         """
-        new_perm = self.request.POST['value']
+        new_perm = self.request.POST["value"]
         org_name = self.request.user.organization.name
 
-        admin_group = Group.objects.get(name=build_org_group_name(org_name, 'admin'))
-        read_group = Group.objects.get(name=build_org_group_name(org_name, 'read'))
-        researcher_group = Group.objects.get(name=build_org_group_name(org_name, 'researcher'))
+        admin_group = Group.objects.get(name=build_org_group_name(org_name, "admin"))
+        read_group = Group.objects.get(name=build_org_group_name(org_name, "read"))
+        researcher_group = Group.objects.get(
+            name=build_org_group_name(org_name, "researcher")
+        )
 
         researcher = self.object
 
-        if new_perm == 'org_admin':
+        if new_perm == "org_admin":
             admin_group.user_set.add(researcher)
             read_group.user_set.remove(researcher)
             researcher_group.user_set.remove(researcher)
-        elif new_perm == 'org_read':
+        elif new_perm == "org_read":
             read_group.user_set.add(researcher)
             admin_group.user_set.remove(researcher)
             researcher_group.user_set.remove(researcher)

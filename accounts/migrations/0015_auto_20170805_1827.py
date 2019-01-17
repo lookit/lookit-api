@@ -8,14 +8,12 @@ import localflavor.us.models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0014_auto_20170726_1403'),
-    ]
+    dependencies = [("accounts", "0014_auto_20170726_1403")]
 
     operations = [
         migrations.AlterField(
-            model_name='demographicdata',
-            name='state',
+            model_name="demographicdata",
+            name="state",
             field=localflavor.us.models.USStateField(blank=True, max_length=2),
-        ),
+        )
     ]

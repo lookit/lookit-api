@@ -8,15 +8,15 @@ import django.utils.timezone
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0036_add_scheduled_jobs'),
-    ]
+    dependencies = [("studies", "0036_add_scheduled_jobs")]
 
     operations = [
         migrations.AddField(
-            model_name='response',
-            name='date_created',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="response",
+            name="date_created",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
-        ),
+        )
     ]

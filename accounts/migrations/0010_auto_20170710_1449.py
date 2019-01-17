@@ -8,39 +8,54 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0009_auto_20170710_1438'),
-    ]
+    dependencies = [("accounts", "0009_auto_20170710_1438")]
 
     operations = [
         migrations.AlterField(
-            model_name='child',
-            name='uuid',
-            field=models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, verbose_name='identifier'),
+            model_name="child",
+            name="uuid",
+            field=models.UUIDField(
+                db_index=True,
+                default=uuid.uuid4,
+                unique=True,
+                verbose_name="identifier",
+            ),
         ),
         migrations.AlterField(
-            model_name='demographicdata',
-            name='uuid',
-            field=models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, verbose_name='identifier'),
+            model_name="demographicdata",
+            name="uuid",
+            field=models.UUIDField(
+                db_index=True,
+                default=uuid.uuid4,
+                unique=True,
+                verbose_name="identifier",
+            ),
         ),
         migrations.AlterField(
-            model_name='organization',
-            name='name',
+            model_name="organization",
+            name="name",
             field=models.CharField(db_index=True, max_length=255),
         ),
         migrations.AlterField(
-            model_name='organization',
-            name='uuid',
+            model_name="organization",
+            name="uuid",
             field=models.UUIDField(db_index=True, default=uuid.uuid4, unique=True),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='username',
-            field=models.EmailField(db_index=True, max_length=254, unique=True, verbose_name='Email address'),
+            model_name="user",
+            name="username",
+            field=models.EmailField(
+                db_index=True, max_length=254, unique=True, verbose_name="Email address"
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='uuid',
-            field=models.UUIDField(db_index=True, default=uuid.uuid4, unique=True, verbose_name='identifier'),
+            model_name="user",
+            name="uuid",
+            field=models.UUIDField(
+                db_index=True,
+                default=uuid.uuid4,
+                unique=True,
+                verbose_name="identifier",
+            ),
         ),
     ]

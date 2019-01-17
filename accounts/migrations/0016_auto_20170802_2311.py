@@ -7,21 +7,19 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0015_user_is_researcher'),
-    ]
+    dependencies = [("accounts", "0015_user_is_researcher")]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='locale',
-            field=models.CharField(default='', max_length=255),
+            model_name="user",
+            name="locale",
+            field=models.CharField(default="", max_length=255),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='user',
-            name='time_zone',
-            field=models.CharField(default='', max_length=255),
+            model_name="user",
+            name="time_zone",
+            field=models.CharField(default="", max_length=255),
             preserve_default=False,
         ),
     ]

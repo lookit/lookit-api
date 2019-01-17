@@ -8,14 +8,16 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0026_set_study_types'),
-    ]
+    dependencies = [("studies", "0026_set_study_types")]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='study_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='studies.StudyType', verbose_name='type'),
-        ),
+            model_name="study",
+            name="study_type",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to="studies.StudyType",
+                verbose_name="type",
+            ),
+        )
     ]

@@ -9,21 +9,23 @@ import django.utils.timezone
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0035_user_linked_former_lookit_ids'),
-    ]
+    dependencies = [("accounts", "0035_user_linked_former_lookit_ids")]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='date_created',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="user",
+            name="date_created",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='demographicdata',
-            name='date_created',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="demographicdata",
+            name="date_created",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
     ]

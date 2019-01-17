@@ -9,14 +9,15 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0014_merge_20170707_1801'),
-    ]
+    dependencies = [("studies", "0014_merge_20170707_1801")]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='creator',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL),
-        ),
+            model_name="study",
+            name="creator",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to=settings.AUTH_USER_MODEL,
+            ),
+        )
     ]

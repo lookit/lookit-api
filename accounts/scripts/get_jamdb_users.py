@@ -22,26 +22,24 @@ JAMDB_AUTHORIZATION_TOKEN = settings.JAMDB_AUTH_TOKEN
 
 
 def get_jamdb_users():
-    with open('../participants.json', mode='w') as f:
+    with open("../participants.json", mode="w") as f:
         peeps = []
         for x in range(1, 35):
             try:
                 response = requests.get(
                     url="https://metadata.osf.io/v1/id/collections/lookit.accounts/_search",
-                    params={
-                        "page[size]": "100",
-                        "page": str(x),
-                    },
-                    headers={
-                        "Authorization": JAMDB_AUTHORIZATION_TOKEN,
-                    },
+                    params={"page[size]": "100", "page": str(x)},
+                    headers={"Authorization": JAMDB_AUTHORIZATION_TOKEN},
                 )
-                print('Response HTTP Status Code: {status_code}'.format(
-                    status_code=response.status_code))
+                print(
+                    "Response HTTP Status Code: {status_code}".format(
+                        status_code=response.status_code
+                    )
+                )
             except requests.exceptions.RequestException:
-                print('HTTP Request failed')
+                print("HTTP Request failed")
             try:
-                peeps.extend(response.json()['data'])
+                peeps.extend(response.json()["data"])
             except KeyError:
                 continue
         print(len(peeps))

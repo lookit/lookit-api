@@ -8,8 +8,9 @@ https://docs.djangoproject.com/en/1.9/howto/deployment/wsgi/
 """
 import os
 
-if os.environ.get('GEVENT') == '1':
+if os.environ.get("GEVENT") == "1":
     from psycogreen.gevent import patch_psycopg  # noqa
+
     patch_psycopg()
 
 import os

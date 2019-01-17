@@ -2,7 +2,7 @@ import os
 
 import django
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'project.settings'
+os.environ["DJANGO_SETTINGS_MODULE"] = "project.settings"
 
 django.setup()  # noqa
 
@@ -15,4 +15,4 @@ for x in range(0, 100):
 
 org = G(Organization)
 User.objects.all().update(organization=org)
-Study.objects.all().update(state='active')
+Study.objects.all().update(state="active")

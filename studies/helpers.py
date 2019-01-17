@@ -5,7 +5,9 @@ from project.settings import EMAIL_FROM_ADDRESS, BASE_URL, OSF_URL
 
 
 @app.task
-def send_mail(template_name, subject, to_addresses, cc=None, bcc=None, from_email=None, **context):
+def send_mail(
+    template_name, subject, to_addresses, cc=None, bcc=None, from_email=None, **context
+):
     """
     Helper for sending templated email
 
@@ -18,16 +20,18 @@ def send_mail(template_name, subject, to_addresses, cc=None, bcc=None, from_emai
     :param str custom_message Custom email message - for use instead of a template
     :kwargs: Context vars for the email template
     """
-    context['base_url'] = BASE_URL
-    context['osf_url'] = OSF_URL
+    context["base_url"] = BASE_URL
+    context["osf_url"] = OSF_URL
 
-    text_content = get_template('emails/{}.txt'.format(template_name)).render(context)
-    html_content = get_template('emails/{}.html'.format(template_name)).render(context)
+    text_content = get_template("emails/{}.txt".format(template_name)).render(context)
+    html_content = get_template("emails/{}.html".format(template_name)).render(context)
 
     if not isinstance(to_addresses, list):
         to_addresses = [to_addresses]
 
     from_address = from_email or EMAIL_FROM_ADDRESS
-    email = EmailMultiAlternatives(subject, text_content, from_address, to_addresses, cc=cc, bcc=bcc)
-    email.attach_alternative(html_content, 'text/html')
+    email = EmailMultiAlternatives(
+        subject, text_content, from_address, to_addresses, cc=cc, bcc=bcc
+    )
+    email.attach_alternative(html_content, "text/html")
     email.send()

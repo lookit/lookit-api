@@ -7,29 +7,27 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0011_merge_20170710_1820'),
-    ]
+    dependencies = [("accounts", "0011_merge_20170710_1820")]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='email_new_studies',
+            model_name="user",
+            name="email_new_studies",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='user',
-            name='email_next_session',
+            model_name="user",
+            name="email_next_session",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='user',
-            name='email_opt_out',
+            model_name="user",
+            name="email_opt_out",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='user',
-            name='email_results_published',
+            model_name="user",
+            name="email_results_published",
             field=models.BooleanField(default=True),
         ),
     ]

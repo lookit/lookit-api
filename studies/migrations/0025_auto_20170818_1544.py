@@ -9,39 +9,58 @@ import project.fields.datetime_aware_jsonfield
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0024_merge_20170817_1517'),
-    ]
+    dependencies = [("studies", "0024_merge_20170817_1517")]
 
     operations = [
         migrations.CreateModel(
-            name='StudyType',
+            name="StudyType",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('configuration', project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(default={'metadata': {'fields': {'addons_repo_url': 'https://github.com/centerforopenscience/exp-addons', 'last_known_addons_sha': None, 'last_known_player_sha': None}}, 'task_module': 'studies.tasks'})),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "configuration",
+                    project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(
+                        default={
+                            "metadata": {
+                                "fields": {
+                                    "addons_repo_url": "https://github.com/centerforopenscience/exp-addons",
+                                    "last_known_addons_sha": None,
+                                    "last_known_player_sha": None,
+                                }
+                            },
+                            "task_module": "studies.tasks",
+                        }
+                    ),
+                ),
             ],
         ),
-        migrations.RemoveField(
-            model_name='study',
-            name='last_known_addons_sha',
-        ),
-        migrations.RemoveField(
-            model_name='study',
-            name='last_known_player_sha',
-        ),
-        migrations.RemoveField(
-            model_name='study',
-            name='remote_folder_url',
+        migrations.RemoveField(model_name="study", name="last_known_addons_sha"),
+        migrations.RemoveField(model_name="study", name="last_known_player_sha"),
+        migrations.RemoveField(model_name="study", name="remote_folder_url"),
+        migrations.AddField(
+            model_name="study",
+            name="metadata",
+            field=project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(
+                default={}
+            ),
         ),
         migrations.AddField(
-            model_name='study',
-            name='metadata',
-            field=project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(default={}),
-        ),
-        migrations.AddField(
-            model_name='study',
-            name='study_type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='studies.StudyType', verbose_name='type'),
+            model_name="study",
+            name="study_type",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                to="studies.StudyType",
+                verbose_name="type",
+            ),
         ),
     ]

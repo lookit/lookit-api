@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0017_auto_20170805_2005'),
-    ]
+    dependencies = [("accounts", "0017_auto_20170805_2005")]
 
     operations = [
         migrations.AlterField(
-            model_name='demographicdata',
-            name='additional_comments',
+            model_name="demographicdata",
+            name="additional_comments",
             field=models.TextField(blank=True),
-        ),
+        )
     ]

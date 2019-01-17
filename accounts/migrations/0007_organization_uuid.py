@@ -8,14 +8,12 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0006_auto_20170622_1504'),
-    ]
+    dependencies = [("accounts", "0006_auto_20170622_1504")]
 
     operations = [
         migrations.AddField(
-            model_name='organization',
-            name='uuid',
+            model_name="organization",
+            name="uuid",
             field=models.UUIDField(default=uuid.uuid4),
-        ),
+        )
     ]

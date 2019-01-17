@@ -8,55 +8,52 @@ from django.db.models import Q
 from web.views import Q
 
 two_am_crontab_schedule_dict = dict(
-    minute='0',
-    hour='2',
-    day_of_week='*',
-    day_of_month='*',
-    month_of_year='*'
+    minute="0", hour="2", day_of_week="*", day_of_month="*", month_of_year="*"
 )
 four_am_crontab_schedule_dict = dict(
-    minute='0',
-    hour='4',
-    day_of_week='*',
-    day_of_month='*',
-    month_of_year='*'
+    minute="0", hour="4", day_of_week="*", day_of_month="*", month_of_year="*"
 )
 cleanup_builds_periodic_task_dict = dict(
-    name='Nightly build cleanup',
-    task='studies.tasks.cleanup_builds'
+    name="Nightly build cleanup", task="studies.tasks.cleanup_builds"
 )
 cleanup_checkouts_periodic_task_dict = dict(
-    name='Nightly checkout cleanup',
-    task='studies.tasks.cleanup_checkouts'
+    name="Nightly checkout cleanup", task="studies.tasks.cleanup_checkouts"
 )
 
 
 def create_scheduled_jobs(apps, schema_editor):
-    CrontabSchedule = apps.get_model('django_celery_beat', 'CrontabSchedule')
-    PeriodicTask = apps.get_model('django_celery_beat', 'PeriodicTask')
+    CrontabSchedule = apps.get_model("django_celery_beat", "CrontabSchedule")
+    PeriodicTask = apps.get_model("django_celery_beat", "PeriodicTask")
 
-    two_am_crontab_schedule, created = CrontabSchedule.objects.get_or_create(**two_am_crontab_schedule_dict)
-    four_am_crontab_schedule, created = CrontabSchedule.objects.get_or_create(**four_am_crontab_schedule_dict)
+    two_am_crontab_schedule, created = CrontabSchedule.objects.get_or_create(
+        **two_am_crontab_schedule_dict
+    )
+    four_am_crontab_schedule, created = CrontabSchedule.objects.get_or_create(
+        **four_am_crontab_schedule_dict
+    )
     cleanup_builds_periodic_task_dict.update(dict(crontab=two_am_crontab_schedule))
-    cleanup_builds_periodic_task, created = PeriodicTask.objects.get_or_create(**cleanup_builds_periodic_task_dict)
+    cleanup_builds_periodic_task, created = PeriodicTask.objects.get_or_create(
+        **cleanup_builds_periodic_task_dict
+    )
     cleanup_checkouts_periodic_task_dict.update(dict(crontab=four_am_crontab_schedule))
-    cleanup_checkouts_periodic_task, created = PeriodicTask.objects.get_or_create(**cleanup_checkouts_periodic_task_dict)
+    cleanup_checkouts_periodic_task, created = PeriodicTask.objects.get_or_create(
+        **cleanup_checkouts_periodic_task_dict
+    )
 
 
 def remove_scheduled_jobs(apps, schema_editor):
-    CrontabSchedule = apps.get_model('django_celery_beat', 'CrontabSchedule')
-    PeriodicTask = apps.get_model('django_celery_beat', 'PeriodicTask')
+    CrontabSchedule = apps.get_model("django_celery_beat", "CrontabSchedule")
+    PeriodicTask = apps.get_model("django_celery_beat", "PeriodicTask")
 
     CrontabSchedule.objects.filter(**two_am_crontab_schedule_dict).delete()
-    PeriodicTask.objects.filter(Q(**cleanup_builds_periodic_task_dict) | Q(**cleanup_checkouts_periodic_task_dict)).delete()
+    PeriodicTask.objects.filter(
+        Q(**cleanup_builds_periodic_task_dict)
+        | Q(**cleanup_checkouts_periodic_task_dict)
+    ).delete()
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0035_auto_20170911_1832'),
-    ]
+    dependencies = [("studies", "0035_auto_20170911_1832")]
 
-    operations = [
-        migrations.RunPython(create_scheduled_jobs, remove_scheduled_jobs)
-    ]
+    operations = [migrations.RunPython(create_scheduled_jobs, remove_scheduled_jobs)]

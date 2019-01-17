@@ -8,14 +8,17 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0034_auto_20170911_1832'),
-    ]
+    dependencies = [("accounts", "0034_auto_20170911_1832")]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='linked_former_lookit_ids',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=255), blank=True, default=list, size=None),
-        ),
+            model_name="user",
+            name="linked_former_lookit_ids",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.CharField(max_length=255),
+                blank=True,
+                default=list,
+                size=None,
+            ),
+        )
     ]

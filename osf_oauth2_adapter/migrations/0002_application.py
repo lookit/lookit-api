@@ -11,9 +11,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('osf_oauth2_adapter', '0001_make_human_group'),
-        ('socialaccount', '0003_extra_data_default_dict'),
+        ("osf_oauth2_adapter", "0001_make_human_group"),
+        ("socialaccount", "0003_extra_data_default_dict"),
     ]
 
-    operations = [
-    ]
+    operations = []

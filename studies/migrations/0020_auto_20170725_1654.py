@@ -7,13 +7,36 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0019_auto_20170723_1738'),
-    ]
+    dependencies = [("studies", "0019_auto_20170723_1738")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='study',
-            options={'ordering': ['name'], 'permissions': (('can_view_study', 'Can View Study'), ('can_create_study', 'Can Create Study'), ('can_edit_study', 'Can Edit Study'), ('can_remove_study', 'Can Remove Study'), ('can_activate_study', 'Can Activate Study'), ('can_deactivate_study', 'Can Deactivate Study'), ('can_pause_study', 'Can Pause Study'), ('can_resume_study', 'Can Resume Study'), ('can_approve_study', 'Can Approve Study'), ('can_submit_study', 'Can Submit Study'), ('can_retract_study', 'Can Retract Study'), ('can_resubmit_study', 'Can Resubmit Study'), ('can_edit_study_permissions', 'Can Edit Study Permissions'), ('can_view_study_permissions', 'Can View Study Permissions'), ('can_view_study_responses', 'Can View Study Responses'), ('can_view_study_video_responses', 'Can View Study Video Responses'), ('can_view_study_demographics', 'Can View Study Demographics'), ('can_archive_study', 'Can Archive Study'))},
-        ),
+            name="study",
+            options={
+                "ordering": ["name"],
+                "permissions": (
+                    ("can_view_study", "Can View Study"),
+                    ("can_create_study", "Can Create Study"),
+                    ("can_edit_study", "Can Edit Study"),
+                    ("can_remove_study", "Can Remove Study"),
+                    ("can_activate_study", "Can Activate Study"),
+                    ("can_deactivate_study", "Can Deactivate Study"),
+                    ("can_pause_study", "Can Pause Study"),
+                    ("can_resume_study", "Can Resume Study"),
+                    ("can_approve_study", "Can Approve Study"),
+                    ("can_submit_study", "Can Submit Study"),
+                    ("can_retract_study", "Can Retract Study"),
+                    ("can_resubmit_study", "Can Resubmit Study"),
+                    ("can_edit_study_permissions", "Can Edit Study Permissions"),
+                    ("can_view_study_permissions", "Can View Study Permissions"),
+                    ("can_view_study_responses", "Can View Study Responses"),
+                    (
+                        "can_view_study_video_responses",
+                        "Can View Study Video Responses",
+                    ),
+                    ("can_view_study_demographics", "Can View Study Demographics"),
+                    ("can_archive_study", "Can Archive Study"),
+                ),
+            },
+        )
     ]

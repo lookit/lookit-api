@@ -37,23 +37,25 @@ class LookitMediaStorage(LowercaseNameMixin, LocationPrefixedPublicGoogleCloudSt
     location = settings.MEDIAFILES_LOCATION
 
 
-if settings.MODE == 'prod':
+if settings.MODE == "prod":
 
     class LookitExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
         location = settings.EXPERIMENT_LOCATION
 
-
     class LookitPreviewExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
         location = settings.PREVIEW_EXPERIMENT_LOCATION
 
-elif settings.MODE == 'dev':
+
+elif settings.MODE == "dev":
 
     class LookitExperimentStorage(FileSystemStorage):
         location = settings.EXPERIMENT_LOCATION
 
-
     class LookitPreviewExperimentStorage(FileSystemStorage):
         location = settings.PREVIEW_EXPERIMENT_LOCATION
 
+
 else:
-    raise RuntimeError(f'Unknown mode {settings.MODE}, cannot determine storage device.')
+    raise RuntimeError(
+        f"Unknown mode {settings.MODE}, cannot determine storage device."
+    )

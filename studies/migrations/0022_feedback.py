@@ -12,21 +12,42 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('studies', '0021_auto_20170809_1719'),
+        ("studies", "0021_auto_20170809_1719"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Feedback',
+            name="Feedback",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, unique=True)),
-                ('comment', models.TextField()),
-                ('researcher', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL)),
-                ('response', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='studies.Response')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "uuid",
+                    models.UUIDField(db_index=True, default=uuid.uuid4, unique=True),
+                ),
+                ("comment", models.TextField()),
+                (
+                    "researcher",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "response",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        to="studies.Response",
+                    ),
+                ),
             ],
-            options={
-                'permissions': (('can_view_feedback', 'Can View Feedback'),),
-            },
-        ),
+            options={"permissions": (("can_view_feedback", "Can View Feedback"),)},
+        )
     ]

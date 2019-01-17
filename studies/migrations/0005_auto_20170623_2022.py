@@ -8,24 +8,22 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0004_auto_20170616_0244'),
-    ]
+    dependencies = [("studies", "0004_auto_20170616_0244")]
 
     operations = [
         migrations.AddField(
-            model_name='response',
-            name='uuid',
+            model_name="response",
+            name="uuid",
             field=models.UUIDField(default=uuid.uuid4),
         ),
         migrations.AddField(
-            model_name='responselog',
-            name='uuid',
+            model_name="responselog",
+            name="uuid",
             field=models.UUIDField(default=uuid.uuid4),
         ),
         migrations.AddField(
-            model_name='studylog',
-            name='uuid',
+            model_name="studylog",
+            name="uuid",
             field=models.UUIDField(default=uuid.uuid4),
         ),
     ]

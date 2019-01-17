@@ -8,20 +8,26 @@ from studies.models import Response, ResponseLog, Study, StudyLog, Feedback, Stu
 class StudyAdmin(GuardedModelAdmin):
     pass
 
+
 class ResponseAdmin(GuardedModelAdmin):
     pass
+
 
 class FeedbackAdmin(GuardedModelAdmin):
     pass
 
+
 class StudyLogAdmin(GuardedModelAdmin):
     pass
+
 
 class ResponseLogAdmin(GuardedModelAdmin):
     pass
 
+
 class StudyTypeAdmin(GuardedModelAdmin):
     pass
+
 
 admin.site.register(Study, StudyAdmin)
 admin.site.register(Response, ResponseAdmin)

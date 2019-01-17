@@ -20,32 +20,38 @@ class RenameVideoTestCase(APITestCase):
     def setUp(self):
         self.researcher = G(User, is_active=True, is_researcher=True)
         self.participant = G(User, is_active=True)
-        self.child = G(Child, user=self.participant, given_name='Sally')
+        self.child = G(Child, user=self.participant, given_name="Sally")
         self.study = G(Study, creator=self.researcher)
-        self.url = reverse('exp:rename-video')
+        self.url = reverse("exp:rename-video")
         self.client = APIClient()
         self.payload = {
-        	"payload": {
-				"version":"1.0",
-				"event":"video_copied_s3",
-				"data":{
-					"s3UploadStatus":"upload success",
-					"videoName":"oldfilename",
-					"type":"MP4",
-					"size":493534,
-					"id":"123",
-					"url":"https://bucketname.s3.amazonaws.com/oldfilename.mp4",
-					"snapshotUrl":"https://bucketname.s3.amazonaws.com/oldfilename.jpg",
-					"bucket":"bucketname",
-					"region":"us-east-1",
-					"acl":"public-read",
-					"payload":"newfilename"
-				}
-			}
-		}
+            "payload": {
+                "version": "1.0",
+                "event": "video_copied_s3",
+                "data": {
+                    "s3UploadStatus": "upload success",
+                    "videoName": "oldfilename",
+                    "type": "MP4",
+                    "size": 493534,
+                    "id": "123",
+                    "url": "https://bucketname.s3.amazonaws.com/oldfilename.mp4",
+                    "snapshotUrl": "https://bucketname.s3.amazonaws.com/oldfilename.jpg",
+                    "bucket": "bucketname",
+                    "region": "us-east-1",
+                    "acl": "public-read",
+                    "payload": "newfilename",
+                },
+            }
+        }
 
     # Video rename tests.
-    @skip("Authentication relies on current URL, should find a way to test smaller piece")
+    @skip(
+        "Authentication relies on current URL, should find a way to test smaller piece"
+    )
     def testRenameVideo(self):
-        api_response = self.client.post(self.url, urllib.parse.urlencode(self.payload), content_type="application/x-www-form-urlencoded")
+        api_response = self.client.post(
+            self.url,
+            urllib.parse.urlencode(self.payload),
+            content_type="application/x-www-form-urlencoded",
+        )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
