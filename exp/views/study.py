@@ -28,7 +28,7 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.forms import StudyBuildForm, StudyForm
+from studies.forms import StudyBuildForm, StudyForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
@@ -434,7 +434,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
     Also allows you to update the study status.
     '''
     template_name = 'studies/study_edit.html'
-    form_class = StudyForm
+    form_class = StudyEditForm
     model = Study
     permission_required = 'studies.can_edit_study'
     raise_exception = True
