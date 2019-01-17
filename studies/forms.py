@@ -33,7 +33,7 @@ class BaseStudyForm(ModelForm):
         return cleaned_data
 
 
-# Form for editing an existing study
+# Base form for creating a new study or editing an existing study
 class StudyEditForm(BaseStudyForm):
 
     class Meta:
@@ -66,30 +66,8 @@ class StudyEditForm(BaseStudyForm):
         }
 
 
-# Form for creating a new study. Set study_type and structure in same form
-# in this case, rather than separately in the build form.
+# Form for updating an existing study or creating a new study
 class StudyForm(StudyEditForm):
-    structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False, help_text='Add the frames of your study as well as the sequence of those frames.  This can be added later.')
-
-    def clean_structure(self):
-        structure = self.cleaned_data['structure']
-        try:
-            json_data = json.loads(structure)  # loads string as json
-        except:
-            raise forms.ValidationError("Save failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost.")
-        return json_data
-
-    class Meta(StudyEditForm.Meta):
-        fields = StudyEditForm.Meta.fields + ['structure', 'study_type']
-        
-        labels = StudyEditForm.Meta.labels.copy()
-        labels['study_type'] = 'Study Type'
-        
-        help_texts = StudyEditForm.Meta.help_texts.copy()
-        help_texts['study_type'] = "Specify the build process as well as the parameters needed by the experiment builder. If you don't know what this is, just select the default."
-
-
-class StudyUpdateForm(StudyEditForm):
     structure = forms.CharField(label='Build Study - Add JSON',
                                 widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%',
                                                         height='100%', showprintmargin=False), required=False,
@@ -104,12 +82,25 @@ class StudyUpdateForm(StudyEditForm):
         return json_data
 
     class Meta(StudyEditForm.Meta):
-        fields = StudyEditForm.Meta.fields + ['structure']
+        fields = StudyEditForm.Meta.fields + ['structure', 'study_type']
 
         labels = StudyEditForm.Meta.labels.copy()
+        labels['study_type'] = 'Study Type'
 
         help_texts = StudyEditForm.Meta.help_texts.copy()
-
+        help_texts['study_type'] = '''<p>After selecting a study type above, you'll be asked 
+            to fill out some study type metadata as well. This metadata is unique to the 
+            study type, and provides important configurations for building your study.</p>
+            <p>If you're not sure what to enter here, just leave the defaults.</p>
+            <p>For more information on study types and their metadata, please
+            <a href="https://lookit.readthedocs.io/en/develop/experimenter.html#editing-study-type">see the documentation.</a></p>
+            <p>Once you've filled in the required metadata, you'll have to build the dependencies 
+            for your experiment in order to deploy it, which you can do from the detail page. 
+            However, you'll probably want to see what your experiment looks like before you 
+            actually deploy it and start collecting data! You can do that by clicking the 
+            "Build Preview Dependencies" button and then clicking on "See Preview" above 
+            after the build finishes.</p>'''
+            
 
 class StudyBuildForm(forms.ModelForm):
     structure = forms.CharField(label='Build Study - Add JSON', widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%', height='100%', showprintmargin=False), required=False, help_text='Add the frames of your study as well as the sequence of those frames.')
