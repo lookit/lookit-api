@@ -28,11 +28,11 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.forms import StudyBuildForm, StudyForm, StudyUpdateForm
+from studies.forms import StudyBuildForm, StudyForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
-from studies.workflow import STATE_UI_SIGNALS, STATUS_HELP_TEXT, TRANSITION_HELP_TEXT
+from studies.workflow import STATE_UI_SIGNALS, STATUS_HELP_TEXT, TRANSITION_HELP_TEXT, TRANSITION_LABELS
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -41,17 +41,17 @@ class DiscoverabilityKey(NamedTuple):
     public: bool
 
 
-STUDY_LISTING_A_TAG = f'<a href="{settings.BASE_URL}/studies.">the study listing page</a>'
+STUDY_LISTING_A_TAG = f'<a href="{settings.BASE_URL}/studies/">the study listing page</a>'
 
 
 DISCOVERABILITY_HELP_TEXT = {
-    (True, True): 'Your study is active and public. Participants can access it at your study link, '
+    (True, True): 'Public. Your study is active and public. Participants can access it at your study link, '
                   f'and it can be found listed in {STUDY_LISTING_A_TAG}.',
-    (True, False): 'Your study is active, but not public. Participants may access it at your study link, '
+    (True, False): 'Private. Your study is active, but not public. Participants may access it at your study link, '
                    f'however will not be listed in {STUDY_LISTING_A_TAG}.',
-    (False, True): 'Your study is not currently active, but it is public. When it is active, participants will be able to access it at your study link, '
+    (False, True): 'Public. Your study is not currently active, but it is public. When it is active, participants will be able to access it at your study link, '
                   f'and it will be found listed in {STUDY_LISTING_A_TAG}. ',
-    (False, False): 'Your study is not currently active, and is not public. When it is active, participants will be able to access it at your study link, '
+    (False, False): 'Private. Your study is not currently active, and is not public. When it is active, participants will be able to access it at your study link, '
                   f'but it will not be listed in {STUDY_LISTING_A_TAG}. ',
 }
 
@@ -331,6 +331,8 @@ class StudyDetailView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
         context['study_admins'] = User.objects.filter(groups__name=admin_group.name).values_list('id', flat=True)
         context['discoverability_text'] = get_discoverability_text(study)
         context['transition_help'] = json.dumps(TRANSITION_HELP_TEXT)
+        context['triggers_with_labels'] = [{'name': trigger, 'label': TRANSITION_LABELS[trigger]} 
+            for trigger in context['triggers']]
         return context
 
     def get_study_researchers(self):
@@ -434,7 +436,7 @@ class StudyUpdateView(ExperimenterLoginRequiredMixin, PermissionRequiredMixin, g
     Also allows you to update the study status.
     '''
     template_name = 'studies/study_edit.html'
-    form_class = StudyUpdateForm
+    form_class = StudyEditForm
     model = Study
     permission_required = 'studies.can_edit_study'
     raise_exception = True

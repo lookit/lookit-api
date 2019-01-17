@@ -129,35 +129,7 @@
                     <div class="panel-body">
                         <form id="study-type-form" method="POST">{% csrf_token %}
 
-                            <div class="form-group">
-                                <label class="control-label" for="id_study_type">Study Type</label>
-                                <select name="study_type" class="form-control" title="" required="" id="id_study_type">
-                                    <option value="">---------</option>
-                                    {% for option in study_types %}
-                                        <option {% if option.name == study.study_type.name %} selected {% endif %}
-                                                                                              value="{{ option.id }}"> {{ option.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                                <p class="help-block">
-                                    After selecting a study type above, you'll be asked to fill out some study type
-                                    metadata
-                                    as well. This metadata is unique to the study type, and provides important
-                                    configurations
-                                    for building your study.
-                                <p class="help-block">For more information on study types and their metadata,
-                                    please
-                                    <a href="https://lookit.readthedocs.io/en/develop/experimenter.html#editing-study-type">see the documentation.</a></p>
-                                </p>
-                                <p class="help-block">
-                                    Once you've filled in the required metadata, you'll have to build the dependencies
-                                    for your experiment in order to deploy it, which you can do from the detail page.
-                                    However, you'll probably want to see what your experiment looks like <em>before</em>
-                                    you actually deploy it and start collecting data! You can do that by clicking the
-                                    "Build Preview Dependencies" button and then clicking on "See Preview" above after
-                                    the build finishes.
-                                </p>
-                            </div>
+                            {% bootstrap_field form.study_type %}
                             {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
                             <div class="pull-right">
                                 <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}"> Discard
