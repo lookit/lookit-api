@@ -5,8 +5,7 @@ import hmac
 import urllib.parse
 
 from django.conf import settings
-from django.http import (HttpResponse, HttpResponseForbidden,
-                         HttpResponseNotFound)
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt

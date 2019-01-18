@@ -1,6 +1,9 @@
 # Import this because auth models get registered on import.
-from allauth.socialaccount.admin import (SocialAccountAdmin, SocialAppAdmin,
-                                         SocialTokenAdmin)
+from allauth.socialaccount.admin import (
+    SocialAccountAdmin,
+    SocialAppAdmin,
+    SocialTokenAdmin,
+)
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from django.contrib import admin
 

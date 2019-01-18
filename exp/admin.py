@@ -1,8 +1,7 @@
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 
-from studies.models import (Feedback, Response, ResponseLog, Study, StudyLog,
-                            StudyType)
+from studies.models import Feedback, Response, ResponseLog, Study, StudyLog, StudyType
 
 
 class StudyAdmin(GuardedModelAdmin):

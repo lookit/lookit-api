@@ -1,6 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import (authenticate, login, signals,
-                                 update_session_auth_hash)
+from django.contrib.auth import authenticate, login, signals, update_session_auth_hash
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.dispatch import receiver

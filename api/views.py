@@ -10,13 +10,21 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_json_api import views
 
 from accounts.models import Child, DemographicData, Organization, User
-from accounts.serializers import (BasicUserSerializer, ChildSerializer,
-                                  DemographicDataSerializer,
-                                  FullUserSerializer, OrganizationSerializer)
+from accounts.serializers import (
+    BasicUserSerializer,
+    ChildSerializer,
+    DemographicDataSerializer,
+    FullUserSerializer,
+    OrganizationSerializer,
+)
 from api.permissions import FeedbackPermissions, ResponsePermissions
 from studies.models import Feedback, Response, Study
-from studies.serializers import (FeedbackSerializer, ResponseSerializer,
-                                 ResponseWriteableSerializer, StudySerializer)
+from studies.serializers import (
+    FeedbackSerializer,
+    ResponseSerializer,
+    ResponseWriteableSerializer,
+    StudySerializer,
+)
 
 
 class FilterByUrlKwargsMixin(views.ModelViewSet):

@@ -1,8 +1,11 @@
 import datetime
 
 from django import forms
-from django.contrib.auth.forms import (PasswordChangeForm, UserChangeForm,
-                                       UserCreationForm)
+from django.contrib.auth.forms import (
+    PasswordChangeForm,
+    UserChangeForm,
+    UserCreationForm,
+)
 from django.core.exceptions import ValidationError
 from django.forms.widgets import DateInput
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm

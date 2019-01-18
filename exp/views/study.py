@@ -8,8 +8,9 @@ from typing import NamedTuple
 
 import requests
 from django.contrib import messages
-from django.contrib.auth.mixins import \
-    PermissionRequiredMixin as DjangoPermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    PermissionRequiredMixin as DjangoPermissionRequiredMixin,
+)
 from django.core.mail import BadHeaderError
 from django.db.models import Case, Count, Q, When
 from django.db.models.functions import Lower
@@ -32,8 +33,12 @@ from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyLog, StudyType
 from studies.tasks import build_experiment, build_zipfile_of_videos
-from studies.workflow import (STATE_UI_SIGNALS, STATUS_HELP_TEXT,
-                              TRANSITION_HELP_TEXT, TRANSITION_LABELS)
+from studies.workflow import (
+    STATE_UI_SIGNALS,
+    STATUS_HELP_TEXT,
+    TRANSITION_HELP_TEXT,
+    TRANSITION_LABELS,
+)
 
 
 class DiscoverabilityKey(NamedTuple):
