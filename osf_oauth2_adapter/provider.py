@@ -1,8 +1,8 @@
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-from django.urls import reverse_lazy
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 
 from accounts.models import User
 
@@ -17,33 +17,33 @@ class OSFAccount(ProviderAccount):
             value
             for value in (
                 # try the name first, then the id, then the super value
-                '{} {}'.format(
-                    self.account.extra_data.get('first_name', None),
-                    self.account.extra_data.get('last_name', None)
+                "{} {}".format(
+                    self.account.extra_data.get("first_name", None),
+                    self.account.extra_data.get("last_name", None),
                 ),
-                self.account.extra_data.get('id', None),
-                dflt
+                self.account.extra_data.get("id", None),
+                dflt,
             )
             if value is not None
         )
 
 
 class OSFProvider(OAuth2Provider):
-    id = 'osf'
-    name = 'Open Science Framework'
+    id = "osf"
+    name = "Open Science Framework"
     account_class = OSFAccount
 
     def extract_common_fields(self, data):
-        attributes = data.get('data').get('attributes')
+        attributes = data.get("data").get("attributes")
         return dict(
             # we could put more fields here later
             # the api has much more available, just not sure how much we need right now
-            username=attributes.get('email', f"{data.get('data').get('id')}@osf.io"),
-            first_name=attributes.get('given_name', None),
-            last_name=attributes.get('family_name', None),
-            time_zone=attributes.get('timezone', None),
-            locale=attributes.get('locale', None),
-            profile_image_url=data.get('data').get('links').get('profile_image')
+            username=attributes.get("email", f"{data.get('data').get('id')}@osf.io"),
+            first_name=attributes.get("given_name", None),
+            last_name=attributes.get("family_name", None),
+            time_zone=attributes.get("timezone", None),
+            locale=attributes.get("locale", None),
+            profile_image_url=data.get("data").get("links").get("profile_image"),
         )
 
     def sociallogin_from_response(self, request, response):
@@ -69,25 +69,26 @@ class OSFProvider(OAuth2Provider):
         uid = self.extract_uid(response)
         extra_data = self.extract_extra_data(response)
         common_fields = self.extract_common_fields(response)
-        socialaccount = SocialAccount(extra_data=extra_data,
-                                      uid=uid,
-                                      provider=self.id)
+        socialaccount = SocialAccount(extra_data=extra_data, uid=uid, provider=self.id)
         email_addresses = self.extract_email_addresses(response)
-        self.cleanup_email_addresses(common_fields.get('email'),
-                                     email_addresses)
-        if User.objects.filter(username=common_fields.get('email'), is_researcher=False).exists():
-            return redirect(reverse_lazy('local-user-already-exists'))
-        sociallogin = SocialLogin(account=socialaccount,
-                                  email_addresses=email_addresses)
+        self.cleanup_email_addresses(common_fields.get("email"), email_addresses)
+        if User.objects.filter(
+            username=common_fields.get("email"), is_researcher=False
+        ).exists():
+            return redirect(reverse_lazy("local-user-already-exists"))
+        sociallogin = SocialLogin(
+            account=socialaccount, email_addresses=email_addresses
+        )
         user = sociallogin.user = adapter.new_user(request, sociallogin)
         user.set_unusable_password()
         adapter.populate_user(request, sociallogin, common_fields)
         return sociallogin
 
     def extract_uid(self, data):
-        return str(data.get('data').get('id'))
+        return str(data.get("data").get("id"))
 
     def get_default_scope(self):
         return OsfOauth2AdapterConfig.default_scopes
+
 
 provider_classes = [OSFProvider]

@@ -3,19 +3,20 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
+
 import project.fields.datetime_aware_jsonfield
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0020_auto_20170725_1654'),
-    ]
+    dependencies = [("studies", "0020_auto_20170725_1654")]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='structure',
-            field=project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(default={'frames': {}, 'sequence': []}),
-        ),
+            model_name="study",
+            name="structure",
+            field=project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(
+                default={"frames": {}, "sequence": []}
+            ),
+        )
     ]

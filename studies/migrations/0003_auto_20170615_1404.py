@@ -7,29 +7,25 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0002_auto_20170607_1800'),
-    ]
+    dependencies = [("studies", "0002_auto_20170607_1800")]
 
     operations = [
         migrations.RenameField(
-            model_name='study',
-            old_name='blocks',
-            new_name='structure',
+            model_name="study", old_name="blocks", new_name="structure"
         ),
         migrations.AddField(
-            model_name='study',
-            name='date_modified',
+            model_name="study",
+            name="date_modified",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='study',
-            name='display_full_screen',
+            model_name="study",
+            name="display_full_screen",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='study',
-            name='exit_url',
-            field=models.URLField(default='https://lookit.mit.edu/'),
+            model_name="study",
+            name="exit_url",
+            field=models.URLField(default="https://lookit.mit.edu/"),
         ),
     ]

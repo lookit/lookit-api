@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0025_auto_20170817_1935'),
-    ]
+    dependencies = [("accounts", "0025_auto_20170817_1935")]
 
     operations = [
         migrations.AlterField(
-            model_name='demographicdata',
-            name='number_of_books',
+            model_name="demographicdata",
+            name="number_of_books",
             field=models.IntegerField(blank=True, default=0),
-        ),
+        )
     ]

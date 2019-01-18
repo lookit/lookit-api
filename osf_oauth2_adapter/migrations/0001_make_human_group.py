@@ -8,15 +8,12 @@ from osf_oauth2_adapter.apps import OsfOauth2AdapterConfig
 
 
 def create_human_group(apps, schema_editor):
-    Group = apps.get_model('auth', 'Group')
+    Group = apps.get_model("auth", "Group")
     Group.objects.create(name=OsfOauth2AdapterConfig.humans_group_name)
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-    ]
+    dependencies = []
 
-    operations = [
-        migrations.RunPython(create_human_group),
-    ]
+    operations = [migrations.RunPython(create_human_group)]

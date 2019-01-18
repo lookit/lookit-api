@@ -7,19 +7,31 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0008_auto_20170626_1811'),
-    ]
+    dependencies = [("studies", "0008_auto_20170626_1811")]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='image',
-            field=models.ImageField(null=True, upload_to='study_images/'),
+            model_name="study",
+            name="image",
+            field=models.ImageField(null=True, upload_to="study_images/"),
         ),
         migrations.AlterField(
-            model_name='study',
-            name='state',
-            field=models.CharField(choices=[('created', 'Created'), ('submitted', 'Submitted'), ('rejected', 'Rejected'), ('retracted', 'Retracted'), ('approved', 'Approved'), ('active', 'Active'), ('paused', 'Paused'), ('deactivated', 'Deactivated'), ('archived', 'Archived')], default='created', max_length=25),
+            model_name="study",
+            name="state",
+            field=models.CharField(
+                choices=[
+                    ("created", "Created"),
+                    ("submitted", "Submitted"),
+                    ("rejected", "Rejected"),
+                    ("retracted", "Retracted"),
+                    ("approved", "Approved"),
+                    ("active", "Active"),
+                    ("paused", "Paused"),
+                    ("deactivated", "Deactivated"),
+                    ("archived", "Archived"),
+                ],
+                default="created",
+                max_length=25,
+            ),
         ),
     ]

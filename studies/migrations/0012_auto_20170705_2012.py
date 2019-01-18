@@ -7,17 +7,13 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0011_auto_20170705_2009'),
-    ]
+    dependencies = [("studies", "0011_auto_20170705_2009")]
 
     operations = [
         migrations.AlterIndexTogether(
-            name='responselog',
-            index_together=set([('response', 'action')]),
+            name="responselog", index_together=set([("response", "action")])
         ),
         migrations.AlterIndexTogether(
-            name='studylog',
-            index_together=set([('study', 'action')]),
+            name="studylog", index_together=set([("study", "action")])
         ),
     ]

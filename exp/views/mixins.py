@@ -1,9 +1,8 @@
-from guardian.mixins import LoginRequiredMixin
-from django.conf import settings
-from studies.models import StudyType
-
 import requests
+from django.conf import settings
+from guardian.mixins import LoginRequiredMixin
 
+from studies.models import StudyType
 
 # TODO: Using a mixin for this stuff is overkill. All of this functionality should be migrated
 # to helper functions.
@@ -14,7 +13,6 @@ class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
 
 
 class StudyTypeMixin:
-
     def validate_and_fetch_metadata(self):
         """Gets the study type and runs hardcoded validations.
 
@@ -23,7 +21,7 @@ class StudyTypeMixin:
 
         :return: A tuple of boolean and tuple, the inner tuple containing error data.
         """
-        study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
+        study_type = StudyType.objects.get(id=self.request.POST.get("study_type"))
         metadata = self.extract_type_metadata(study_type=study_type)
 
         errors = VALIDATIONS.get(study_type.name, is_valid_ember_frame_player)(metadata)
@@ -35,9 +33,9 @@ class StudyTypeMixin:
         Pull the metadata related to the selected StudyType from the POST request
         """
         if not study_type:
-            study_type = StudyType.objects.get(id=self.request.POST.get('study_type'))
+            study_type = StudyType.objects.get(id=self.request.POST.get("study_type"))
 
-        type_fields = study_type.configuration['metadata']['fields']
+        type_fields = study_type.configuration["metadata"]["fields"]
 
         metadata = {}
 
@@ -58,22 +56,22 @@ def is_valid_ember_frame_player(metadata):
     :return: a list of errors.
     :rtype: list.
     """
-    addons_repo_url = metadata.get('addons_repo_url', settings.EMBER_ADDONS_REPO)
-    frameplayer_commit_sha = metadata.get('last_known_player_sha', '')
-    addons_commit_sha = metadata.get('last_known_addons_sha', '')
+    addons_repo_url = metadata.get("addons_repo_url", settings.EMBER_ADDONS_REPO)
+    frameplayer_commit_sha = metadata.get("last_known_player_sha", "")
+    addons_commit_sha = metadata.get("last_known_addons_sha", "")
 
     errors = []
 
     if not requests.get(addons_repo_url).ok:
-        errors.append(f'Addons repo url {addons_repo_url} does not work.')
-    if not requests.get(f'{settings.EMBER_EXP_PLAYER_REPO}/commit/{frameplayer_commit_sha}').ok:
-        errors.append(f'Frameplayer commit {frameplayer_commit_sha} does not exist.')
-    if not requests.get(f'{settings.EMBER_ADDONS_REPO}/commit/{addons_commit_sha}').ok:
-        errors.append(f'Addons commit {addons_commit_sha} does not exist.')
+        errors.append(f"Addons repo url {addons_repo_url} does not work.")
+    if not requests.get(
+        f"{settings.EMBER_EXP_PLAYER_REPO}/commit/{frameplayer_commit_sha}"
+    ).ok:
+        errors.append(f"Frameplayer commit {frameplayer_commit_sha} does not exist.")
+    if not requests.get(f"{settings.EMBER_ADDONS_REPO}/commit/{addons_commit_sha}").ok:
+        errors.append(f"Addons commit {addons_commit_sha} does not exist.")
 
     return errors
 
 
-VALIDATIONS = {
-    'Ember Frame Player (default)': is_valid_ember_frame_player
-}
+VALIDATIONS = {"Ember Frame Player (default)": is_valid_ember_frame_player}

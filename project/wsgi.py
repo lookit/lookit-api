@@ -8,13 +8,13 @@ https://docs.djangoproject.com/en/1.9/howto/deployment/wsgi/
 """
 import os
 
-if os.environ.get('GEVENT') == '1':
+from django.core.wsgi import get_wsgi_application
+
+if os.environ.get("GEVENT") == "1":
     from psycogreen.gevent import patch_psycopg  # noqa
+
     patch_psycopg()
 
-import os
-
-from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
 

@@ -19,14 +19,15 @@ permission_models = [
     ResponseLog,
 ]
 
-GROUP_NAME = 'COS_ADMIN'
+GROUP_NAME = "COS_ADMIN"
 
 
 def create_cos_admin_group_and_populate_permissions(*args, **kwargs):
     cos_admin_group = Group.objects.create(name=GROUP_NAME)
     for model in permission_models:
         permissions = Permission.objects.filter(
-            content_type=ContentType.objects.get_for_model(model))
+            content_type=ContentType.objects.get_for_model(model)
+        )
         cos_admin_group.permissions.add(*permissions)
 
 
@@ -36,11 +37,10 @@ def goodbye_cos_admin_group(*args, **kwargs):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0001_initial'),
-    ]
+    dependencies = [("accounts", "0001_initial")]
 
     operations = [
-        migrations.RunPython(create_cos_admin_group_and_populate_permissions,
-                             goodbye_cos_admin_group)
+        migrations.RunPython(
+            create_cos_admin_group_and_populate_permissions, goodbye_cos_admin_group
+        )
     ]

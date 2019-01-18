@@ -8,14 +8,17 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0015_auto_20170805_1827'),
-    ]
+    dependencies = [("accounts", "0015_auto_20170805_1827")]
 
     operations = [
         migrations.AlterField(
-            model_name='demographicdata',
-            name='child_birthdays',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.DateField(), blank=True, size=None, verbose_name="children's birthdays"),
-        ),
+            model_name="demographicdata",
+            name="child_birthdays",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.DateField(),
+                blank=True,
+                size=None,
+                verbose_name="children's birthdays",
+            ),
+        )
     ]

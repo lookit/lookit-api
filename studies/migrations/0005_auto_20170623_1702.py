@@ -7,19 +7,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0004_auto_20170616_0244'),
-    ]
+    dependencies = [("studies", "0004_auto_20170616_0244")]
 
     operations = [
         migrations.AddField(
-            model_name='study',
-            name='max_age',
-            field=models.TextField(default=''),
+            model_name="study", name="max_age", field=models.TextField(default="")
         ),
         migrations.AddField(
-            model_name='study',
-            name='min_age',
-            field=models.TextField(default=''),
+            model_name="study", name="min_age", field=models.TextField(default="")
         ),
     ]

@@ -9,26 +9,43 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0002_add_cos_admin_group_and_assign_perms'),
-    ]
+    dependencies = [("accounts", "0002_add_cos_admin_group_and_assign_perms")]
 
     operations = [
         migrations.CreateModel(
-            name='Child',
+            name="Child",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uuid', models.UUIDField(default=uuid.uuid4, verbose_name='identifier')),
-                ('given_name', models.CharField(max_length=255)),
-                ('birthday', models.DateField()),
-                ('gender', models.CharField(choices=[('m', 'male'), ('f', 'female'), ('o', 'other'), ('na', 'prefer not to answer')], max_length=2)),
-                ('age_at_birth', models.CharField(max_length=25)),
-                ('additional_information', models.TextField()),
-                ('deleted', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "uuid",
+                    models.UUIDField(default=uuid.uuid4, verbose_name="identifier"),
+                ),
+                ("given_name", models.CharField(max_length=255)),
+                ("birthday", models.DateField()),
+                (
+                    "gender",
+                    models.CharField(
+                        choices=[
+                            ("m", "male"),
+                            ("f", "female"),
+                            ("o", "other"),
+                            ("na", "prefer not to answer"),
+                        ],
+                        max_length=2,
+                    ),
+                ),
+                ("age_at_birth", models.CharField(max_length=25)),
+                ("additional_information", models.TextField()),
+                ("deleted", models.BooleanField(default=False)),
             ],
         ),
-        migrations.RemoveField(
-            model_name='profile',
-            name='user',
-        ),
+        migrations.RemoveField(model_name="profile", name="user"),
     ]

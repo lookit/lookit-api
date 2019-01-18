@@ -7,14 +7,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0027_auto_20170818_1551'),
-    ]
+    dependencies = [("studies", "0027_auto_20170818_1551")]
 
     operations = [
         migrations.AddField(
-            model_name='study',
-            name='preview_url',
-            field=models.URLField(blank=True),
-        ),
+            model_name="study", name="preview_url", field=models.URLField(blank=True)
+        )
     ]

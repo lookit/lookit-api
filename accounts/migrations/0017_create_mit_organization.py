@@ -18,12 +18,13 @@ def create_mit_organization(apps, schema_editor, *args, **kwargs):
 def remove_mit_organization(*args, **kwargs):
     pass
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contenttypes', '__latest__'),
-        ('sites', '__latest__'),
-        ('accounts', '0016_auto_20170802_2311'),
+        ("contenttypes", "__latest__"),
+        ("sites", "__latest__"),
+        ("accounts", "0016_auto_20170802_2311"),
     ]
 
     operations = [

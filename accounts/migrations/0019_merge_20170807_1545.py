@@ -8,9 +8,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0017_create_mit_organization'),
-        ('accounts', '0018_auto_20170805_2012'),
+        ("accounts", "0017_create_mit_organization"),
+        ("accounts", "0018_auto_20170805_2012"),
     ]
 
-    operations = [
-    ]
+    operations = []
