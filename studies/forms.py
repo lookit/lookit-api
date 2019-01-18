@@ -33,8 +33,26 @@ class BaseStudyForm(ModelForm):
         return cleaned_data
 
 
-# Form for creating a new study or editing an existing study
-class StudyForm(BaseStudyForm):
+
+
+STUDY_HELP_TEXT_INITIAL = '''<p>After selecting a study type above, you'll be asked 
+    to fill out some study type metadata as well. This metadata is unique to the 
+    study type, and provides important configurations for building your study.</p>
+    <p>If you're not sure what to enter here, just leave the defaults (you can change this later).</p>
+    <p>For more information on study types and their metadata, please
+    <a href="https://lookit.readthedocs.io/en/develop/experimenter.html#editing-study-type">see the documentation.</a></p>'''
+
+STUDY_HELP_TEXT_EDIT = STUDY_HELP_TEXT_INITIAL + '''<p> Once you've filled in the 
+    required metadata, you'll have to build the dependencies for your experiment in order 
+    to deploy it, which you can do from the detail page. However, you'll probably want 
+    to see what your experiment looks like before you actually deploy it and start 
+    collecting data! You can do that by clicking the "Build Preview Dependencies" button and 
+    then clicking on "See Preview" above after the build finishes.</p>'''
+
+# Form for editing an existing a new study. Study type is NOT included in this form as that
+# submission is handled separately during edit, although metadata about the field is stored
+# here for consistency.
+class StudyEditForm(BaseStudyForm):
 
     structure = forms.CharField(label='Build Study - Add JSON',
                                 widget=AceOverlayWidget(mode='json', wordwrap=True, theme='textmate', width='100%',
@@ -54,7 +72,7 @@ class StudyForm(BaseStudyForm):
         fields = ['name', 'image', 'short_description', 'long_description', 'exit_url', 
             'criteria', 'min_age_days', 'min_age_months', 'min_age_years', 'max_age_days', 
             'max_age_months', 'max_age_years', 'duration', 'contact_info', 'public',
-            'structure', 'study_type']
+            'structure']
         labels = {
             'short_description': 'Short Description',
             'long_description': 'Purpose',
@@ -80,23 +98,18 @@ class StudyForm(BaseStudyForm):
             'long_description': 'Explain the purpose of your study here.',
             'contact_info': 'This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)',
             'criteria': 'Text shown to families - this is not used to actually verify eligibility.',
-            'study_type': '''<p>After selecting a study type above, you'll be asked 
-            to fill out some study type metadata as well. This metadata is unique to the 
-            study type, and provides important configurations for building your study.</p>
-            <p>If you're not sure what to enter here, just leave the defaults (you can change this later).</p>
-            <p>For more information on study types and their metadata, please
-            <a href="https://lookit.readthedocs.io/en/develop/experimenter.html#editing-study-type">see the documentation.</a></p>'''
+            'study_type': STUDY_HELP_TEXT_EDIT
         }
         
-class StudyEditForm(StudyForm):
+# Form for creating a new study. Study type is included as part of this form.
+class StudyForm(StudyEditForm):
     
-    class Meta(StudyForm.Meta):
-        help_texts = StudyForm.Meta.help_texts.copy()
-        help_texts['study_type'] += '''<p class="help-block"> Once you've filled in the required metadata, you'll have to build the dependencies for your 
-                            experiment in order to deploy it, which you can do from the detail page. However, you'll 
-                            probably want to see what your experiment looks like before you actually deploy it and start 
-                            collecting data! You can do that by clicking the "Build Preview Dependencies" button and 
-                            then clicking on "See Preview" above after the build finishes.</p>'''
+    class Meta(StudyEditForm.Meta):
+        help_texts = StudyEditForm.Meta.help_texts.copy()
+        help_texts['study_type'] = STUDY_HELP_TEXT_INITIAL
+                            
+        fields = StudyEditForm.Meta.fields + ['study_type']
+
 
 
 class StudyBuildForm(forms.ModelForm):
