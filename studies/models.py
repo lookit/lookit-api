@@ -498,6 +498,7 @@ class Response(models.Model):
         Study, on_delete=models.DO_NOTHING, related_name="responses"
     )
     completed = models.BooleanField(default=False)
+    participant_has_consented = models.BooleanField(default=False)
     exp_data = DateTimeAwareJSONField(default=dict)
     conditions = DateTimeAwareJSONField(default=dict)
     sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)

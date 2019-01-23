@@ -1160,7 +1160,8 @@ def get_permitted_triggers(view_instance, triggers):
 def update_trigger(view_instance):
     """Transition to next state in study workflow.
 
-    TODO: Find out what the hell this comments-text logic is doing in here.
+    TODO: Comments text is a bit silly to have here - let's move it to the proper Edit
+    View to be in the appropriate functional location once we do a refactor.
 
     :param view_instance: An instance of the django view.
     :type view_instance: StudyDetailView or StudyUpdateView
