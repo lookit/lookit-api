@@ -17,4 +17,5 @@ class Migration(migrations.Migration):
             name='participant_has_consented',
             field=models.BooleanField(default=False),
         ),
+        migrations.RunSQL("UPDATE studies_response SET participant_has_consented=TRUE;")
     ]
