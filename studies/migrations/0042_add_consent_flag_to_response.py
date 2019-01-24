@@ -14,8 +14,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='response',
-            name='participant_has_consented',
+            name='completed_consent_frame',
             field=models.BooleanField(default=False),
         ),
-        migrations.RunSQL("UPDATE studies_response SET participant_has_consented=TRUE;")
+        migrations.RunSQL("UPDATE studies_response SET completed_consent_frame=TRUE;")
     ]

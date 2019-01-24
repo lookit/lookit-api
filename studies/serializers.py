@@ -126,7 +126,7 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
             "child",
             "user",
             "study",
-            "participant_has_consented",
+            "completed_consent_frame",
             "demographic_snapshot",
             "created_on",
             "pk",
