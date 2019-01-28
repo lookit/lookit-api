@@ -7,15 +7,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0041_add_built_field'),
-    ]
+    dependencies = [("studies", "0041_add_built_field")]
 
     operations = [
         migrations.AddField(
-            model_name='response',
-            name='completed_consent_frame',
+            model_name="response",
+            name="completed_consent_frame",
             field=models.BooleanField(default=False),
         ),
-        migrations.RunSQL("UPDATE studies_response SET completed_consent_frame=TRUE;")
+        migrations.RunSQL("UPDATE studies_response SET completed_consent_frame=TRUE;"),
     ]

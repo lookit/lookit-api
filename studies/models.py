@@ -177,6 +177,10 @@ class Study(models.Model):
             return None
 
     @property
+    def consented_responses(self):
+        return self.responses.filter(completed_consent_frame=True)
+
+    @property
     def end_date(self):
         try:
             return self.logs.filter(action="deactivated").first().created_at

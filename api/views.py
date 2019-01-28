@@ -235,7 +235,9 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         # unnested '/responses' route, the queryset should include all responses you can view
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
-            queryset = Response.objects.filter(study__uuid=study_uuid)
+            queryset = Response.objects.filter(
+                study__uuid=study_uuid, completed_consent_frame=True
+            )
             if self.request.user.has_perm(
                 "studies.can_view_study_responses",
                 get_object_or_404(Study, uuid=study_uuid),
@@ -254,6 +256,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             Response.objects.filter(
                 Q(study__id__in=study_ids) | Q(child__id__in=children_ids)
             )
+            .filter(completed_consent_frame=True)
             .distinct()
             .order_by("-date_modified")
         )

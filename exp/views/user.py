@@ -95,7 +95,9 @@ class ParticipantDetailView(
         Returns paginated responses from a user with the study title, response
         id, completion status, and date modified.
         """
-        resps = Response.objects.filter(child__user=self.get_object())
+        resps = Response.objects.filter(
+            child__user=self.get_object(), completed_consent_frame=True
+        )
         orderby = self.request.GET.get("sort", None)
         if orderby:
             if "date_modified" in orderby:
