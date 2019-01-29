@@ -229,14 +229,18 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             "id", flat=True
         )
 
+        updating_session = self.request.method == "PATCH"
+
         # if this viewset is accessed via the 'study-responses' route,
-        # it wll have been passed the `study_uuid` kwarg and the queryset
+        # it will have been passed the `study_uuid` kwarg and the queryset
         # needs to be filtered accordingly; if it was accessed via the
         # unnested '/responses' route, the queryset should include all responses you can view
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
             queryset = Response.objects.filter(
-                study__uuid=study_uuid, completed_consent_frame=True
+                # If we ARE updating responses, we do NOT want to filter by
+                # Completed consent frame == true otherwise we'd never be able to update!!!
+                study__uuid=study_uuid,  completed_consent_frame=not updating_session
             )
             if self.request.user.has_perm(
                 "studies.can_view_study_responses",
@@ -256,7 +260,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             Response.objects.filter(
                 Q(study__id__in=study_ids) | Q(child__id__in=children_ids)
             )
-            .filter(completed_consent_frame=True)
+            .filter(completed_consent_frame=not updating_session)
             .distinct()
             .order_by("-date_modified")
         )

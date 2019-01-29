@@ -27,6 +27,10 @@ class ResponseTestCase(APITestCase):
         self.child2 = G(Child, user=self.researcher, given_name="Grace")
         self.study = G(Study, creator=self.researcher)
         self.response = G(Response, child=self.child, study=self.study, completed=False)
+        self.completed_consent_response = G(
+            Response, child=self.child, study=self.study, completed=False,
+            completed_consent_frame=True
+        )
         self.url = reverse("response-list", kwargs={"version": "v1"})
         self.response_detail_url = self.url + str(self.response.uuid) + "/"
         self.client = APIClient()
@@ -38,6 +42,7 @@ class ResponseTestCase(APITestCase):
                     "exp_data": {},
                     "sequence": [],
                     "completed": False,
+                    "completed_consent_frame": False
                 },
                 "relationships": {
                     "child": {"data": {"type": "children", "id": str(self.child.uuid)}},
@@ -53,6 +58,7 @@ class ResponseTestCase(APITestCase):
                     "exp_data": {"some": "data"},
                     "sequence": ["first_frame", "second_frame"],
                     "completed": True,
+                    "completed_consent_frame": True
                 },
                 "type": "responses",
                 "id": str(self.response.uuid),
@@ -71,10 +77,12 @@ class ResponseTestCase(APITestCase):
         assign_perm("studies.can_view_study_responses", self.researcher, self.study)
         self.client.force_authenticate(user=self.researcher)
         self.response2 = G(
-            Response, child=self.child, study=self.study, completed=False
+            Response, child=self.child, study=self.study, completed=False,
+            completed_consent_frame=True
         )
         self.response3 = G(
-            Response, child=self.child, study=self.study, completed=False
+            Response, child=self.child, study=self.study, completed=False,
+            completed_consent_frame=True
         )
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
@@ -83,7 +91,10 @@ class ResponseTestCase(APITestCase):
         self.assertEqual(api_response.data["links"]["meta"]["count"], 3)
         self.assertIn(str(self.response3.uuid), api_response.data["results"][0]["url"])
         self.assertIn(str(self.response2.uuid), api_response.data["results"][1]["url"])
-        self.assertIn(str(self.response.uuid), api_response.data["results"][2]["url"])
+        self.assertIn(
+            str(self.completed_consent_response.uuid),
+            api_response.data["results"][2]["url"]
+        )
 
     def testGetResponsesListByOwnChildren(self):
         # Participant can view their own responses
@@ -128,8 +139,23 @@ class ResponseTestCase(APITestCase):
         api_response = self.client.get(
             self.response_detail_url, content_type="application/vnd.api+json"
         )
+        self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testGetResponseDetailByOwnChildrenAfterConsent(self):
+        # Participant can view their own response detail
+        self.client.force_authenticate(user=self.participant)
+        # fake consent...
+        self.client.patch(
+            self.response_detail_url,
+            json.dumps(self.patch_data),
+            content_type="application/vnd.api+json",
+        )
+        api_response = self.client.get(
+            self.response_detail_url, content_type="application/vnd.api+json"
+        )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["completed"], False)
+        self.assertEqual(api_response.data["completed"], True)
+
 
     def testGetResponseDetailViewStudyPermissions(self):
         # Can view study permissions insufficient to view responses
@@ -147,8 +173,25 @@ class ResponseTestCase(APITestCase):
         api_response = self.client.get(
             self.response_detail_url, content_type="application/vnd.api+json"
         )
+        self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testGetResponseDetailViewStudyResponsesPermissionsAfterConsent(self):
+        # With can_view_study_responses permissions, can view study response detail
+        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        self.client.force_authenticate(user=self.researcher)
+
+        # Fake consenting...
+        self.client.patch(
+            self.response_detail_url,
+            json.dumps(self.patch_data),
+            content_type="application/vnd.api+json",
+        )
+        api_response = self.client.get(
+            self.response_detail_url, content_type="application/vnd.api+json"
+        )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["completed"], False)
+        self.assertEqual(api_response.data["completed"], True)
+        self.assertEqual(api_response.data["completed_consent_frame"], True)
 
     # POST Responses tests
     def testPostResponse(self):
@@ -158,7 +201,7 @@ class ResponseTestCase(APITestCase):
         )
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(api_response.data["completed"], False)
-        self.assertEqual(Response.objects.count(), 2)
+        self.assertEqual(Response.objects.count(), 3)
 
     def testPostResponseWithNotYourChild(self):
         self.client.force_authenticate(user=self.participant)
@@ -322,6 +365,7 @@ class ResponseTestCase(APITestCase):
                         "5-5-mood-survey",
                     ],
                     "completed": "False",
+                    "completed_consent_Frame": "true"
                 },
                 "type": "responses",
             }
