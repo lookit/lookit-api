@@ -34,8 +34,11 @@ class StudiesTestCase(APITestCase):
         self.study.save()
 
         self.response = G(
-            Response, child=self.child, study=self.study, exp_data={"first": "response"},
-            completed_consent_frame=True
+            Response,
+            child=self.child,
+            study=self.study,
+            exp_data={"first": "response"},
+            completed_consent_frame=True,
         )
         self.url = reverse("study-list", kwargs={"version": "v1"})
         self.study_detail_url = self.url + str(self.study.uuid) + "/"
@@ -135,7 +138,7 @@ class StudiesTestCase(APITestCase):
             child=self.child,
             study=self.study2,
             exp_data={"second": "response"},
-            completed_consent_frame=True
+            completed_consent_frame=True,
         )
 
         self.client.force_authenticate(user=self.researcher)
@@ -158,7 +161,7 @@ class StudiesTestCase(APITestCase):
             child=self.child,
             study=self.study2,
             exp_data={"second": "response"},
-            completed_consent_frame=True
+            completed_consent_frame=True,
         )
 
         self.client.force_authenticate(user=self.participant)

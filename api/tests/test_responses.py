@@ -28,8 +28,11 @@ class ResponseTestCase(APITestCase):
         self.study = G(Study, creator=self.researcher)
         self.response = G(Response, child=self.child, study=self.study, completed=False)
         self.completed_consent_response = G(
-            Response, child=self.child, study=self.study, completed=False,
-            completed_consent_frame=True
+            Response,
+            child=self.child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
         )
         self.url = reverse("response-list", kwargs={"version": "v1"})
         self.response_detail_url = self.url + str(self.response.uuid) + "/"
@@ -42,7 +45,7 @@ class ResponseTestCase(APITestCase):
                     "exp_data": {},
                     "sequence": [],
                     "completed": False,
-                    "completed_consent_frame": False
+                    "completed_consent_frame": False,
                 },
                 "relationships": {
                     "child": {"data": {"type": "children", "id": str(self.child.uuid)}},
@@ -58,7 +61,7 @@ class ResponseTestCase(APITestCase):
                     "exp_data": {"some": "data"},
                     "sequence": ["first_frame", "second_frame"],
                     "completed": True,
-                    "completed_consent_frame": True
+                    "completed_consent_frame": True,
                 },
                 "type": "responses",
                 "id": str(self.response.uuid),
@@ -77,12 +80,18 @@ class ResponseTestCase(APITestCase):
         assign_perm("studies.can_view_study_responses", self.researcher, self.study)
         self.client.force_authenticate(user=self.researcher)
         self.response2 = G(
-            Response, child=self.child, study=self.study, completed=False,
-            completed_consent_frame=True
+            Response,
+            child=self.child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
         )
         self.response3 = G(
-            Response, child=self.child, study=self.study, completed=False,
-            completed_consent_frame=True
+            Response,
+            child=self.child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
         )
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
@@ -93,7 +102,7 @@ class ResponseTestCase(APITestCase):
         self.assertIn(str(self.response2.uuid), api_response.data["results"][1]["url"])
         self.assertIn(
             str(self.completed_consent_response.uuid),
-            api_response.data["results"][2]["url"]
+            api_response.data["results"][2]["url"],
         )
 
     def testGetResponsesListByOwnChildren(self):
@@ -155,7 +164,6 @@ class ResponseTestCase(APITestCase):
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data["completed"], True)
-
 
     def testGetResponseDetailViewStudyPermissions(self):
         # Can view study permissions insufficient to view responses
@@ -365,7 +373,7 @@ class ResponseTestCase(APITestCase):
                         "5-5-mood-survey",
                     ],
                     "completed": "False",
-                    "completed_consent_Frame": "true"
+                    "completed_consent_Frame": "true",
                 },
                 "type": "responses",
             }

@@ -240,7 +240,8 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             queryset = Response.objects.filter(
                 # If we ARE updating responses, we do NOT want to filter by
                 # Completed consent frame == true otherwise we'd never be able to update!!!
-                study__uuid=study_uuid,  completed_consent_frame=not updating_session
+                study__uuid=study_uuid,
+                completed_consent_frame=not updating_session,
             )
             if self.request.user.has_perm(
                 "studies.can_view_study_responses",
