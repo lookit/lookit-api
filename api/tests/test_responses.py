@@ -24,10 +24,10 @@ class ResponseTestCase(APITestCase):
         self.participant.save()
 
         self.child = G(Child, user=self.participant, given_name="Sally")
-        self.child2 = G(Child, user=self.researcher, given_name="Grace")
+        self.child_of_researcher = G(Child, user=self.researcher, given_name="Grace")
         self.study = G(Study, creator=self.researcher)
         self.response = G(Response, child=self.child, study=self.study, completed=False)
-        self.completed_consent_response = G(
+        self.consented_response = G(
             Response,
             child=self.child,
             study=self.study,
@@ -37,7 +37,7 @@ class ResponseTestCase(APITestCase):
         self.url = reverse("response-list", kwargs={"version": "v1"})
         self.response_detail_url = self.url + str(self.response.uuid) + "/"
         self.consented_response_detail_url = (
-            self.url + str(self.completed_consent_response.uuid) + "/"
+            self.url + str(self.consented_response.uuid) + "/"
         )
         self.client = APIClient()
 
@@ -104,8 +104,7 @@ class ResponseTestCase(APITestCase):
         self.assertIn(str(self.response3.uuid), api_response.data["results"][0]["url"])
         self.assertIn(str(self.response2.uuid), api_response.data["results"][1]["url"])
         self.assertIn(
-            str(self.completed_consent_response.uuid),
-            api_response.data["results"][2]["url"],
+            str(self.consented_response.uuid), api_response.data["results"][2]["url"]
         )
 
     def testGetResponsesListByOwnChildren(self):
@@ -115,7 +114,9 @@ class ResponseTestCase(APITestCase):
             self.url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
+
+        # Should get both the consented and unconsented.
+        self.assertEqual(api_response.data["links"]["meta"]["count"], 2)
 
     def testGetResponsesListViewStudyPermissions(self):
         # Can view study permissions insufficient to view responses
@@ -151,18 +152,7 @@ class ResponseTestCase(APITestCase):
         api_response = self.client.get(
             self.response_detail_url, content_type="application/vnd.api+json"
         )
-        self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def testGetResponseDetailByOwnChildrenAfterConsent(self):
-        # Participant can view their own response detail
-        self.client.force_authenticate(user=self.participant)
-
-        api_response = self.client.get(
-            self.consented_response_detail_url, content_type="application/vnd.api+json"
-        )
-
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["completed_consent_frame"], True)
 
     def testGetResponseDetailViewStudyPermissions(self):
         # Can view study permissions insufficient to view responses
@@ -207,7 +197,7 @@ class ResponseTestCase(APITestCase):
     def testPostResponseWithNotYourChild(self):
         self.client.force_authenticate(user=self.participant)
         self.data["data"]["relationships"]["child"]["data"]["id"] = str(
-            self.child2.uuid
+            self.child_of_researcher.uuid
         )
         api_response = self.client.post(
             self.url, json.dumps(self.data), content_type="application/vnd.api+json"

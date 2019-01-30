@@ -220,50 +220,66 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         return super().get_serializer_class()
 
     def get_queryset(self):
-        """
-        Overrides queryset.
+        """Overrides queryset.
 
-        Shows responses that you either have permission to view, or responses by your own children.
-
-        XXX: this method is invoked with PATCH requests as well!
+        XXX: HERE BE DRAGONS: this method is invoked with PATCH as well as GET requests!
+        TODO: Break this out into multiple handlers. The logic-gymnastics is getting annoying.
         """
 
-        children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
-            "id", flat=True
-        )
+        children_belonging_to_user = Child.objects.filter(
+            user__id=self.request.user.id
+        ).values_list("id", flat=True)
 
+        # NESTED ROUTE:
         # GET /api/v1/studies/{STUDY_ID}/responses/?{Query string with pagination and child id}
-        if (
-            "study_uuid" in self.kwargs
-        ):  # Viewset was accessed by 'study-responses` route.
+        # This route gets accessed by:
+        #     1) Participant sessions GETting history of responses for a study and a given child.
+        #     2) Experimenters/parents programmatically GETting the responses facet of the *Study*
+        #        API to retrieve responses for a given study.
+        if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
             queryset = Response.objects.filter(study__uuid=study_uuid)
             if self.request.user.has_perm(
                 "studies.can_view_study_responses",
                 get_object_or_404(Study, uuid=study_uuid),
             ):
-                return queryset.order_by("-date_modified")
+                return queryset.filter(
+                    Q(completed_consent_frame=True)
+                    | Q(child__id__in=children_belonging_to_user)
+                ).order_by("-date_modified")
             else:
-                return queryset.filter(child__id__in=children_ids).order_by(
-                    "-date_modified"
-                )
-        else:  # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{STUDY_UUID}'.
-            studies = get_objects_for_user(
+                return queryset.filter(
+                    child__id__in=children_belonging_to_user
+                ).order_by("-date_modified")
+        else:  # NON-NESTED ROUTE
+            # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{STUDY_UUID}'.
+            # This route gets accessed by:
+            #     1) Participant sessions PATCHing (partial updating) ongoing response-sessions.
+            #     2) Experimenters/parents programmatically GETting the Responses API
+            ids_of_viewable_studies = get_objects_for_user(
                 self.request.user, "studies.can_view_study_responses"
-            )
-            study_ids = studies.values_list("id", flat=True)
+            ).values_list("id", flat=True)
 
-            if self.request.method == "GET":
-                response_queryset = Response.objects.filter(
-                    (Q(study__id__in=study_ids) | Q(child__id__in=children_ids)),
-                    completed_consent_frame=True,
+            # if self.request.method == "GET":
+            #     # Users (experimenters or participants) can only see consented responses from studies
+            #     # for which they are explicitly permitted to do so by way of can_view_study_responses perms.
+            #     response_queryset = Response.objects.filter(
+            #         study__id__in=ids_of_viewable_studies, completed_consent_frame=True
+            #     )
+            # elif self.request.method == "PATCH":
+            #     # Two parties may patch studies:
+            #     #   1) Participant sessions may patch their child's response (required for session progress).
+            #     #   2) Researchers that are explicitly granted can_view_study_responses perms for that study
+            #     #      can patch studies that have *already* been through the consent frame.
+            response_queryset = Response.objects.filter(
+                Q(child__id__in=children_belonging_to_user)  # Case #1
+                | (
+                    Q(study__id__in=ids_of_viewable_studies)  # Case #2
+                    & Q(completed_consent_frame=True)
                 )
-            elif self.request.method == "PATCH":
-                response_queryset = Response.objects.filter(
-                    Q(completed_consent_frame=True) | Q(child__id__in=children_ids)
-                )
-            else:
-                raise MethodNotAllowed(self.request.method)
+            )
+            # else:  # POST handled through a different code path provided by DRF, and we don't support PUT.
+            #     raise MethodNotAllowed(self.request.method)
 
             return response_queryset.distinct().order_by("-date_modified")
 
