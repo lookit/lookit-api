@@ -36,6 +36,9 @@ class ResponseTestCase(APITestCase):
         )
         self.url = reverse("response-list", kwargs={"version": "v1"})
         self.response_detail_url = self.url + str(self.response.uuid) + "/"
+        self.consented_response_detail_url = (
+            self.url + str(self.completed_consent_response.uuid) + "/"
+        )
         self.client = APIClient()
 
         self.data = {
@@ -153,17 +156,13 @@ class ResponseTestCase(APITestCase):
     def testGetResponseDetailByOwnChildrenAfterConsent(self):
         # Participant can view their own response detail
         self.client.force_authenticate(user=self.participant)
-        # fake consent...
-        self.client.patch(
-            self.response_detail_url,
-            json.dumps(self.patch_data),
-            content_type="application/vnd.api+json",
-        )
+
         api_response = self.client.get(
-            self.response_detail_url, content_type="application/vnd.api+json"
+            self.consented_response_detail_url, content_type="application/vnd.api+json"
         )
+
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["completed"], True)
+        self.assertEqual(api_response.data["completed_consent_frame"], True)
 
     def testGetResponseDetailViewStudyPermissions(self):
         # Can view study permissions insufficient to view responses
@@ -188,17 +187,11 @@ class ResponseTestCase(APITestCase):
         assign_perm("studies.can_view_study_responses", self.researcher, self.study)
         self.client.force_authenticate(user=self.researcher)
 
-        # Fake consenting...
-        self.client.patch(
-            self.response_detail_url,
-            json.dumps(self.patch_data),
-            content_type="application/vnd.api+json",
-        )
         api_response = self.client.get(
-            self.response_detail_url, content_type="application/vnd.api+json"
+            self.consented_response_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["completed"], True)
+        self.assertEqual(api_response.data["completed"], False)
         self.assertEqual(api_response.data["completed_consent_frame"], True)
 
     # POST Responses tests

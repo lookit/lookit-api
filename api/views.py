@@ -7,6 +7,7 @@ from guardian.shortcuts import get_objects_for_user
 from rest_framework import status
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework_json_api import views
 
 from accounts.models import Child, DemographicData, Organization, User
@@ -252,14 +253,17 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             )
             study_ids = studies.values_list("id", flat=True)
 
-            response_queryset = Response.objects.filter(
-                Q(study__id__in=study_ids) | Q(child__id__in=children_ids)
-            )
-
-            if not self.request.method == "PATCH":
-                response_queryset = response_queryset.filter(
-                    completed_consent_frame=True
+            if self.request.method == "GET":
+                response_queryset = Response.objects.filter(
+                    (Q(study__id__in=study_ids) | Q(child__id__in=children_ids)),
+                    completed_consent_frame=True,
                 )
+            elif self.request.method == "PATCH":
+                response_queryset = Response.objects.filter(
+                    Q(completed_consent_frame=True) | Q(child__id__in=children_ids)
+                )
+            else:
+                raise MethodNotAllowed(self.request.method)
 
             return response_queryset.distinct().order_by("-date_modified")
 
