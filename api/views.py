@@ -222,27 +222,21 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         """
         Overrides queryset.
 
-        Shows responses that you either have permission to view, or responses by your own children
+        Shows responses that you either have permission to view, or responses by your own children.
+
+        XXX: this method is invoked with PATCH requests as well!
         """
 
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
             "id", flat=True
         )
 
-        updating_session = self.request.method == "PATCH"
-
-        # if this viewset is accessed via the 'study-responses' route,
-        # it will have been passed the `study_uuid` kwarg and the queryset
-        # needs to be filtered accordingly; if it was accessed via the
-        # unnested '/responses' route, the queryset should include all responses you can view
-        if "study_uuid" in self.kwargs:
+        # GET /api/v1/studies/{STUDY_ID}/responses/?{Query string with pagination and child id}
+        if (
+            "study_uuid" in self.kwargs
+        ):  # Viewset was accessed by 'study-responses` route.
             study_uuid = self.kwargs["study_uuid"]
-            queryset = Response.objects.filter(
-                # If we ARE updating responses, we do NOT want to filter by
-                # Completed consent frame == true otherwise we'd never be able to update!!!
-                study__uuid=study_uuid,
-                completed_consent_frame=not updating_session,
-            )
+            queryset = Response.objects.filter(study__uuid=study_uuid)
             if self.request.user.has_perm(
                 "studies.can_view_study_responses",
                 get_object_or_404(Study, uuid=study_uuid),
@@ -252,19 +246,22 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
                 return queryset.filter(child__id__in=children_ids).order_by(
                     "-date_modified"
                 )
+        else:  # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{STUDY_UUID}'.
+            studies = get_objects_for_user(
+                self.request.user, "studies.can_view_study_responses"
+            )
+            study_ids = studies.values_list("id", flat=True)
 
-        studies = get_objects_for_user(
-            self.request.user, "studies.can_view_study_responses"
-        )
-        study_ids = studies.values_list("id", flat=True)
-        return (
-            Response.objects.filter(
+            response_queryset = Response.objects.filter(
                 Q(study__id__in=study_ids) | Q(child__id__in=children_ids)
             )
-            .filter(completed_consent_frame=not updating_session)
-            .distinct()
-            .order_by("-date_modified")
-        )
+
+            if not self.request.method == "PATCH":
+                response_queryset = response_queryset.filter(
+                    completed_consent_frame=True
+                )
+
+            return response_queryset.distinct().order_by("-date_modified")
 
 
 class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):

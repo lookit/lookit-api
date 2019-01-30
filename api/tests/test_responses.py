@@ -373,7 +373,7 @@ class ResponseTestCase(APITestCase):
                         "5-5-mood-survey",
                     ],
                     "completed": "False",
-                    "completed_consent_Frame": "true",
+                    "completed_consent_frame": "true",
                 },
                 "type": "responses",
             }
