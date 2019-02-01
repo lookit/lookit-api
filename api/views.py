@@ -260,17 +260,6 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
                 self.request.user, "studies.can_view_study_responses"
             ).values_list("id", flat=True)
 
-            # if self.request.method == "GET":
-            #     # Users (experimenters or participants) can only see consented responses from studies
-            #     # for which they are explicitly permitted to do so by way of can_view_study_responses perms.
-            #     response_queryset = Response.objects.filter(
-            #         study__id__in=ids_of_viewable_studies, completed_consent_frame=True
-            #     )
-            # elif self.request.method == "PATCH":
-            #     # Two parties may patch studies:
-            #     #   1) Participant sessions may patch their child's response (required for session progress).
-            #     #   2) Researchers that are explicitly granted can_view_study_responses perms for that study
-            #     #      can patch studies that have *already* been through the consent frame.
             response_queryset = Response.objects.filter(
                 Q(child__id__in=children_belonging_to_user)  # Case #1
                 | (
@@ -278,8 +267,6 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
                     & Q(completed_consent_frame=True)
                 )
             )
-            # else:  # POST handled through a different code path provided by DRF, and we don't support PUT.
-            #     raise MethodNotAllowed(self.request.method)
 
             return response_queryset.distinct().order_by("-date_modified")
 
