@@ -170,7 +170,7 @@
                     <a type="button" class="btn btn-default"
                        href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
                         <i aria-hidden="true" class="fa fas fa-envelope"></i> View Responses
-                        ({{ study.responses.count }})
+                        ({{ study.consented_responses.count }})
                     </a>
                     <a type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                        aria-expanded="false">

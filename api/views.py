@@ -7,6 +7,7 @@ from guardian.shortcuts import get_objects_for_user
 from rest_framework import status
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework_json_api import views
 
 from accounts.models import Child, DemographicData, Organization, User
@@ -219,20 +220,22 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        """Overrides queryset.
+
+        XXX: HERE BE DRAGONS: this method is invoked with PATCH as well as GET requests!
+        TODO: Break this out into multiple handlers. The logic-gymnastics is getting annoying.
         """
-        Overrides queryset.
 
-        Shows responses that you either have permission to view, or responses by your own children
-        """
+        children_belonging_to_user = Child.objects.filter(
+            user__id=self.request.user.id
+        ).values_list("id", flat=True)
 
-        children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
-            "id", flat=True
-        )
-
-        # if this viewset is accessed via the 'study-responses' route,
-        # it wll have been passed the `study_uuid` kwarg and the queryset
-        # needs to be filtered accordingly; if it was accessed via the
-        # unnested '/responses' route, the queryset should include all responses you can view
+        # NESTED ROUTE:
+        # GET /api/v1/studies/{STUDY_ID}/responses/?{Query string with pagination and child id}
+        # This route gets accessed by:
+        #     1) Participant sessions GETting history of responses for a study and a given child.
+        #     2) Experimenters/parents programmatically GETting the responses facet of the *Study*
+        #        API to retrieve responses for a given study.
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
             queryset = Response.objects.filter(study__uuid=study_uuid)
@@ -240,23 +243,32 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
                 "studies.can_view_study_responses",
                 get_object_or_404(Study, uuid=study_uuid),
             ):
-                return queryset.order_by("-date_modified")
+                return queryset.filter(
+                    Q(completed_consent_frame=True)
+                    | Q(child__id__in=children_belonging_to_user)
+                ).order_by("-date_modified")
             else:
-                return queryset.filter(child__id__in=children_ids).order_by(
-                    "-date_modified"
-                )
+                return queryset.filter(
+                    child__id__in=children_belonging_to_user
+                ).order_by("-date_modified")
+        else:  # NON-NESTED ROUTE
+            # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{STUDY_UUID}'.
+            # This route gets accessed by:
+            #     1) Participant sessions PATCHing (partial updating) ongoing response-sessions.
+            #     2) Experimenters/parents programmatically GETting the Responses API
+            ids_of_viewable_studies = get_objects_for_user(
+                self.request.user, "studies.can_view_study_responses"
+            ).values_list("id", flat=True)
 
-        studies = get_objects_for_user(
-            self.request.user, "studies.can_view_study_responses"
-        )
-        study_ids = studies.values_list("id", flat=True)
-        return (
-            Response.objects.filter(
-                Q(study__id__in=study_ids) | Q(child__id__in=children_ids)
+            response_queryset = Response.objects.filter(
+                Q(child__id__in=children_belonging_to_user)  # Case #1
+                | (
+                    Q(study__id__in=ids_of_viewable_studies)  # Case #2
+                    & Q(completed_consent_frame=True)
+                )
             )
-            .distinct()
-            .order_by("-date_modified")
-        )
+
+            return response_queryset.distinct().order_by("-date_modified")
 
 
 class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):

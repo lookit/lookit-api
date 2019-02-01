@@ -821,7 +821,7 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         context = super().get_context_data(**kwargs)
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
-        responses = context["study"].responses.order_by(orderby)
+        responses = context["study"].consented_responses.order_by(orderby)
         context["responses"] = self.paginated_queryset(responses, page, 10)
         context["response_data"] = self.build_responses(context["responses"])
         context["csv_data"] = self.build_individual_csv(context["responses"])
@@ -888,7 +888,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        context["n_responses"] = len(context["study"].responses.all())
+        context["n_responses"] = len(context["study"].consented_responses.all())
         return context
 
     def build_all_csv(self, responses):
@@ -909,7 +909,7 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
-        responses = study.responses.order_by("id")
+        responses = study.consented_responses.order_by("id")
         cleaned_data = ", ".join(self.build_responses(responses))
         filename = "{}-{}.json".format(study.name, "all_responses")
         response = HttpResponse(cleaned_data, content_type="text/json")
@@ -924,7 +924,7 @@ class StudyResponsesAllDownloadCSV(StudyResponsesAll):
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
-        responses = study.responses.order_by("id")
+        responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_all_csv(responses)
         filename = "{}-{}.csv".format(study.name, "all_responses")
         response = HttpResponse(cleaned_data, content_type="text/csv")
@@ -946,7 +946,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        context["n_responses"] = len(context["study"].responses.all())
+        context["n_responses"] = len(context["study"].consented_responses.all())
         return context
 
     def build_all_participant_csv(self, responses):
@@ -967,7 +967,7 @@ class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
-        responses = study.responses.order_by("id")
+        responses = study.consented_responses.order_by("id")
         cleaned_data = ", ".join(self.build_participant_data(responses))
         filename = "{}-{}.json".format(study.name, "all_demographic_snapshots")
         response = HttpResponse(cleaned_data, content_type="text/json")
@@ -982,7 +982,7 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
-        responses = study.responses.order_by("id")
+        responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_all_participant_csv(responses)
         filename = "{}-{}.csv".format(study.name, "all_demographic_snapshots")
         response = HttpResponse(cleaned_data, content_type="text/csv")
@@ -1160,7 +1160,8 @@ def get_permitted_triggers(view_instance, triggers):
 def update_trigger(view_instance):
     """Transition to next state in study workflow.
 
-    TODO: Find out what the hell this comments-text logic is doing in here.
+    TODO: Comments text is a bit silly to have here - let's move it to the proper Edit
+    View to be in the appropriate functional location once we do a refactor.
 
     :param view_instance: An instance of the django view.
     :type view_instance: StudyDetailView or StudyUpdateView

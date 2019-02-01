@@ -177,6 +177,10 @@ class Study(models.Model):
             return None
 
     @property
+    def consented_responses(self):
+        return self.responses.filter(completed_consent_frame=True)
+
+    @property
     def end_date(self):
         try:
             return self.logs.filter(action="deactivated").first().created_at
@@ -498,6 +502,7 @@ class Response(models.Model):
         Study, on_delete=models.DO_NOTHING, related_name="responses"
     )
     completed = models.BooleanField(default=False)
+    completed_consent_frame = models.BooleanField(default=False)
     exp_data = DateTimeAwareJSONField(default=dict)
     conditions = DateTimeAwareJSONField(default=dict)
     sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)
