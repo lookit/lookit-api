@@ -18,8 +18,8 @@ def get_all_study_attachments(study_uuid):
 
 def get_consent_videos(study_uuid):
     """
-        Get all consent videos for a particular study
-        """
+    Get all consent videos for a particular study
+    """
     s3 = boto3.resource("s3")
     bucket = s3.Bucket(settings.BUCKET_NAME)
     return [
@@ -64,13 +64,13 @@ def get_study_attachments(study, orderby="key", match=None):
 
 def rename_stored_video(old_name, new_name, ext):
     """
-	Renames a stored video on S3. old_name and new_name are both without extension ext.
-	Returns 1 if success, 0 if old_name video did not exist. May throw error if 
-	other problems encountered.
-	
-	"url":"https://bucketname.s3.amazonaws.com/vs1457013120534_862.mp4",
-	"snapshotUrl":"https://bucketname.s3.amazonaws.com/vs1457013120534_862.jpg",
-	"""
+    Renames a stored video on S3. old_name and new_name are both without extension ext.
+    Returns 1 if success, 0 if old_name video did not exist. May throw error if
+    other problems encountered.
+    
+    "url":"https://bucketname.s3.amazonaws.com/vs1457013120534_862.mp4",
+    "snapshotUrl":"https://bucketname.s3.amazonaws.com/vs1457013120534_862.jpg",
+    """
     s3 = boto3.resource("s3")
     old_name_full = old_name + "." + ext
     old_name_thum = old_name + ".jpg"
