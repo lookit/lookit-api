@@ -67,7 +67,7 @@ def rename_stored_video(old_name, new_name, ext):
     Renames a stored video on S3. old_name and new_name are both without extension ext.
     Returns 1 if success, 0 if old_name video did not exist. May throw error if
     other problems encountered.
-    
+
     "url":"https://bucketname.s3.amazonaws.com/vs1457013120534_862.mp4",
     "snapshotUrl":"https://bucketname.s3.amazonaws.com/vs1457013120534_862.jpg",
     """
