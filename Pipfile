@@ -12,6 +12,7 @@ django-shells = "==0.1.0"
 Werkzeug = "==0.12.1"
 ptpython = "==2.0.4"
 ipython = "*"
+watchdog = "*"
 
 [packages]
 djangorestframework-jsonapi = "==2.1.1"
