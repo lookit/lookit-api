@@ -11,6 +11,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 import attachment_helpers
+from studies.models import Video
 
 
 class RenameVideoView(View):
@@ -65,9 +66,12 @@ class RenameVideoView(View):
                 return HttpResponseForbidden()
 
             success = attachment_helpers.rename_stored_video(oldname, newname, ext)
+
             if success:
                 return HttpResponse(
-                    d["data"]["videoName"] + " --> " + d["data"]["payload"]
+                    d["data"]["videoName"]
+                    + " --> "
+                    + Video.from_pipe_payload(d).filename
                 )
             else:
                 return HttpResponseNotFound()

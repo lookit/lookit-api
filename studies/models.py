@@ -1,5 +1,7 @@
+import logging
 import uuid
 
+import boto3
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -13,12 +15,32 @@ from transitions.extensions import GraphMachine as Machine
 
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.utils import build_study_group_name
+from attachment_helpers import get_download_url
 from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies import workflow
 from studies.helpers import send_mail
 from studies.tasks import build_experiment
+
+logger = logging.getLogger(__name__)
+
+
+VALID_CONSENT_FRAMES = "1-video-consent"
+STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
+
+SUPPORTED_VIDEO_FILETYPES = (
+    ("mp4",) * 2,
+    ("ogv",) * 2,
+    ("ogg",) * 2,
+    ("flv",) * 2,
+    ("avi)",) * 2,
+    ("webm",) * 2,
+    ("mpg",) * 2,
+    ("m4p",) * 2,
+    ("mpeg",) * 2,
+    ("amv",) * 2,
+)
 
 
 class StudyType(models.Model):
@@ -525,6 +547,49 @@ class Response(models.Model):
         resource_name = "responses"
         lookup_field = "uuid"
 
+    @property
+    def valid_consent(self):
+        """Predicated on Log abstract class ordering (ordering = ["-created_at"])"""
+        latest_ruling = self.consent_rulings.first()
+        return latest_ruling.action == ConsentRuling.RULINGS.accepted
+
+    def generate_videos_from_events(self):
+        """Creates the video containers/representations for this given response.
+
+        We should only really invoke this as part of a migration as of right now (2/8/2019),
+        but it's quite possible we'll have the need for dynamic upsertion later.
+        """
+
+        seen_ids = set()
+        video_objects = []
+
+        # Using a constructive approach here, but with an ancillary seen_ids list b/c Django models without
+        # primary keys are unhashable for some dumb reason (even though they have unique fields...)
+        for frame_id, event_data in self.exp_data.items():
+            if event_data.get("videoList", None) and event_data.get("videoId"):
+                # We've officially captured video here!
+                events = event_data.get("eventTimings", [])
+                for e in events:
+                    video_id = e["videoId"]
+                    if (
+                        video_id not in seen_ids and e["pipeId"] and e["streamTime"] > 0
+                    ):  # Then we have some video.
+                        video_objects.append(
+                            Video(
+                                pipe_name=e["pipeId"],
+                                #  Unfortunately we can't get pipe_id....
+                                frame_id=frame_id,
+                                full_name=video_id,
+                                #  extension=data["type"].lower(),
+                                study=self.study,
+                                response=self,
+                                is_consent_footage=frame_id in VALID_CONSENT_FRAMES,
+                            )
+                        )
+                        seen_ids.add(video_id)
+
+        return Video.objects.bulk_create(video_objects)
+
 
 class Feedback(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
@@ -589,3 +654,97 @@ class ResponseLog(Log):
     class JSONAPIMeta:
         resource_name = "response-logs"
         lookup_field = "uuid"
+
+
+class Video(models.Model):
+    """Metadata abstraction to capture information on videos."""
+
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    date_modified = models.DateTimeField(auto_now=True)
+    pipe_name = models.CharField(max_length=255, unique=True, blank=False)
+    pipe_numeric_id = models.IntegerField(
+        null=True
+    )  # Sad that we don't keep this metadata elsewhere...
+    frame_id = models.CharField(max_length=255, blank=False)
+    size = models.PositiveIntegerField(null=True)
+    extension = models.CharField(
+        max_length=5, choices=SUPPORTED_VIDEO_FILETYPES, default="mp4"
+    )
+    full_name = models.CharField(
+        max_length=255, blank=False, unique=True, db_index=True
+    )
+    study = models.ForeignKey(Study, on_delete=models.DO_NOTHING, related_name="videos")
+    response = models.ForeignKey(
+        Response, on_delete=models.DO_NOTHING, related_name="videos"
+    )
+    is_consent_footage = models.BooleanField(default=False, db_index=True)
+
+    @classmethod
+    def from_pipe_payload(cls, pipe_response_dict: dict):
+        """Factory method for use in the Pipe webhook."""
+
+        data = pipe_response_dict["data"]
+        full_name = data["payload"]
+
+        _, study_uuid, frame_id, response_uuid, timestamp, _ = full_name.split("_")
+
+        try:
+            study = Study.objects.get(uuid=study_uuid)
+        except Study.DoesNotExist as ex:
+            logger.error(f"Study with uuid {study_uuid} does not exist. {ex}")
+            raise
+
+        try:
+            response = Response.objects.get(uuid=response_uuid)
+        except Response.DoesNotExist as ex:
+            logger.error(f"Response with uuid {response_uuid} does not exist. {ex}")
+            raise
+
+        return cls.objects.create(
+            pipe_name=data["videoName"],
+            pipe_numeric_id=data["id"],
+            frame_id=frame_id,
+            size=data["size"],
+            full_name=full_name,
+            extension=data["type"].lower(),
+            study=study,
+            response=response,
+            is_consent_footage=frame_id in VALID_CONSENT_FRAMES,
+        )
+
+    @cached_property
+    def filename(self):
+        """This is computed because we want to easily change extension."""
+        return f"{self.full_name}.{self.extension}"
+
+    @cached_property
+    def s3_object(self):
+        s3 = boto3.resource("s3")
+        return s3.Object(settings.BUCKET_NAME, self.filename)
+
+    @property
+    def download_url(self):
+        return get_download_url(self.filename)
+
+    def mark_response_with_valid_consent(self):
+        """Marks a parent response with consent."""
+        response = self.response
+        response.consent_approved = True
+        response.save()
+
+
+class ConsentRuling(Log):
+    """A consent ruling for a given response."""
+
+    RULINGS = Choices("accepted", "rejected")
+    action = models.CharField(max_length=100, choices=RULINGS, db_index=True)
+    response = models.ForeignKey(
+        Response, on_delete=models.DO_NOTHING, related_name="consent_rulings"
+    )
+    arbiter = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, related_name="consent_rulings"
+    )
+
+    class Meta:
+        index_together = (("response", "action"), ("response", "arbiter"))
