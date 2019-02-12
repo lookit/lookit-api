@@ -1,5 +1,6 @@
 import logging
 import uuid
+import dateutil
 
 import boto3
 from botocore.exceptions import ClientError
@@ -26,10 +27,12 @@ from studies.helpers import send_mail
 from studies.tasks import build_experiment
 
 logger = logging.getLogger(__name__)
+date_parser = dateutil.parser
 
 
 VALID_CONSENT_FRAMES = "1-video-consent"
 STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
+CONSENT_RULINGS = ("accepted", "rejected")
 
 S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
@@ -572,13 +575,17 @@ class Response(models.Model):
                         try:
                             response = file_obj.get()
                         except ClientError:
-                            logger.warning(f"Video with {pipe_name} not found!")
+                            logger.warning(f"Video with ID {pipe_name} not found!")
                             continue
                         # Read first 32 bytes from streaming body (file header) to get actual filetype.
-                        file_info = fleep.get(response["Body"].read(32))
+                        file_header_buffer: bytes = response["Body"].read(32)
+                        file_info = fleep.get(file_header_buffer)
+
                         video_objects.append(
                             Video(
                                 pipe_name=pipe_name,
+                                created_at=date_parser.parse(event["timestamp"]),
+                                date_modified=response["LastModified"],
                                 #  Can't get the *actual* pipe id property, it's in the webhook payload...
                                 frame_id=frame_id,
                                 full_name=f"{video_id}.{file_info.extension[0]}",
@@ -747,17 +754,27 @@ class Video(models.Model):
     def download_url(self):
         return get_download_url(self.filename)
 
-    def mark_response_with_valid_consent(self):
-        """Marks a parent response with consent."""
+    def mark_response_with_consent_ruling(self, arbiter, ruling: str):
+        """Marks a parent response with consent.
+
+            :param ruling: The ruling for a given response.
+        """
         response = self.response
-        response.consent_approved = True
-        response.save()
+        if ruling in CONSENT_RULINGS:
+            response.consent_rulings_set.create(
+                action=ruling,
+                response=response,
+                arbiter=arbiter,
+            )
 
 
-class ConsentRuling(Log):
+class ConsentRuling(models.Model):
     """A consent ruling for a given response."""
 
-    RULINGS = Choices("accepted", "rejected")
+    RULINGS = Choices(CONSENT_RULINGS)
+
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     action = models.CharField(max_length=100, choices=RULINGS, db_index=True)
     response = models.ForeignKey(
         Response, on_delete=models.DO_NOTHING, related_name="consent_rulings"
@@ -767,4 +784,8 @@ class ConsentRuling(Log):
     )
 
     class Meta:
+        ordering = ["-created_at"]
         index_together = (("response", "action"), ("response", "arbiter"))
+
+    def __str__(self):
+        return f"<{self.arbiter.get_short_name()}: {self.action} @ {self.created_at:%c}>"
