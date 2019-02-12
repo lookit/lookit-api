@@ -198,6 +198,10 @@ class Study(models.Model):
         return self.responses.filter(completed_consent_frame=True)
 
     @property
+    def consent_videos(self):
+        return self.videos.filter(is_consent_footage=True)
+
+    @property
     def end_date(self):
         try:
             return self.logs.filter(action="deactivated").first().created_at
@@ -544,7 +548,7 @@ class Response(models.Model):
 
     @property
     def valid_consent(self):
-        """Predicated on Log abstract class ordering (ordering = ["-created_at"])"""
+        """Predicated on class ordering (ordering = ["-created_at"])"""
         latest_ruling = self.consent_rulings.first()
         return latest_ruling.action == ConsentRuling.RULINGS.accepted
 
@@ -570,16 +574,22 @@ class Response(models.Model):
                     if (
                         video_id not in seen_ids and pipe_name and event["streamTime"] > 0
                     ):
-                        # XXX: ASSUMPTION that we are populating non-webhooked videos.
-                        file_obj = S3_RESOURCE.Object(settings.BUCKET_NAME, f"{pipe_name}.mp4")
+                        # Try looking for the regular ID first.
+                        file_obj = S3_RESOURCE.Object(settings.BUCKET_NAME, f"{video_id}.mp4")
                         try:
                             response = file_obj.get()
                         except ClientError:
-                            logger.warning(f"Video with ID {pipe_name} not found!")
-                            continue
+                            try:  # If that doesn't work, use the pipe name.
+                                file_obj = S3_RESOURCE.Object(settings.BUCKET_NAME, f"{pipe_name}.mp4")
+                                response = file_obj.get()
+                            except ClientError:
+                                logger.warning(f"could not find {video_id} or {pipe_name} in S3!")
+                                continue
                         # Read first 32 bytes from streaming body (file header) to get actual filetype.
-                        file_header_buffer: bytes = response["Body"].read(32)
+                        streaming_body = response["Body"]
+                        file_header_buffer: bytes = streaming_body.read(32)
                         file_info = fleep.get(file_header_buffer)
+                        streaming_body.close()
 
                         video_objects.append(
                             Video(
@@ -671,9 +681,7 @@ class Video(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
     pipe_name = models.CharField(max_length=255, unique=True, blank=False)
-    pipe_numeric_id = models.IntegerField(
-        null=True
-    )  # Sad that we don't keep this metadata elsewhere...
+    pipe_numeric_id = models.IntegerField(null=True)  # Sad that we don't keep this metadata elsewhere...
     frame_id = models.CharField(max_length=255, blank=False)
     size = models.PositiveIntegerField(null=True)
     full_name = models.CharField(
@@ -754,9 +762,10 @@ class Video(models.Model):
     def download_url(self):
         return get_download_url(self.filename)
 
-    def mark_response_with_consent_ruling(self, arbiter, ruling: str):
+    def mark_response_with_consent_ruling(self, arbiter: User, ruling: str):
         """Marks a parent response with consent.
 
+            :param arbiter: Who is making the judgement.
             :param ruling: The ruling for a given response.
         """
         response = self.response
@@ -766,6 +775,8 @@ class Video(models.Model):
                 response=response,
                 arbiter=arbiter,
             )
+        else:
+            raise ValueError(f"Invalid ruling: {ruling}. Must be one of {CONSENT_RULINGS}")
 
 
 class ConsentRuling(models.Model):
@@ -788,4 +799,4 @@ class ConsentRuling(models.Model):
         index_together = (("response", "action"), ("response", "arbiter"))
 
     def __str__(self):
-        return f"<{self.arbiter.get_short_name()}: {self.action} @ {self.created_at:%c}>"
+        return f"<{self.arbiter.get_short_name()}: {self.action} {self.response} @ {self.created_at:%c}>"

@@ -154,7 +154,7 @@
                   </select>
                 </div>
                 <a id='download-individual-data' class='mb-sm btn btn-primary'>
-                    Download Individual Response <span id="download-data-label">JSON <span>
+                    Download Individual Response <span id="download-data-label">JSON </span>
                 </a>
                 {% for response in response_data %}
                     <div class='response-data' id='response-data-{{ forloop.counter }}' style="display:none">
@@ -179,9 +179,8 @@
                                         <div class="col-xs-3">
                                             <button name="attachment" type="submit" value="{{attachment.key}}" class="btn btn-primary btn-sm"> Download </button>
                                         </div>
+                                    </form>
                                 </div>
-
-                                </form>
                             {% empty %}
                                 <p><em> Expect a delay of a few minutes for video attachments to be available for download. </em></p>
                             {% endfor %}

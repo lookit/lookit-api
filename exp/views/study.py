@@ -874,6 +874,13 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         )
 
 
+class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
+    """Manage videos from here."""
+
+    template_name = "studies/study_responses_consent_ruling.html"
+
+
+
 class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
     """
     StudyResponsesAll shows all study responses in JSON and CSV format.

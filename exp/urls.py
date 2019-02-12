@@ -36,6 +36,7 @@ from exp.views import (
     StudyParticipantEmailView,
     StudyPreviewBuildView,
     StudyResponsesAll,
+    StudyResponsesConsentManager,
     StudyResponsesAllDownloadCSV,
     StudyResponsesAllDownloadJSON,
     StudyResponsesList,
@@ -79,6 +80,11 @@ urlpatterns = [
         r"studies/(?P<pk>\d+)/responses/all/$",
         StudyResponsesAll.as_view(),
         name="study-responses-all",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/responses/consent_videos/$",
+        StudyResponsesConsentManager.as_view(),
+        name="study-responses-consent-manager",
     ),
     url(
         r"studies/(?P<pk>\d+)/responses/all/download_json/$",

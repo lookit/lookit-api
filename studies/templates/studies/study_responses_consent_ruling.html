@@ -1,0 +1,52 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+{% load exp_extras %}
+
+{% block title %}Responses | {{ study.name }}{% endblock %}
+
+{% block head %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% block flash %}
+    {% bootstrap_messages %}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class='container mb-lg'>
+        <div class='row'>
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+                    <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
+                    <li class="active">Consent Manager</li>
+                </ol>
+            </div>
+        </div>
+        <div class='row'>
+            <div class="col-xs-12">
+                <h1>Consent Manager</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                {% include 'studies/_response_nav_tabs.html' with active="manage-consent" %}
+            </div>
+        </div>
+    <div class="row" id="consent-manager-content-body">
+        <section class="col-xs-12">
+            {{ study.consent_videos }}
+            <video controls width="250">
+                <source src="{{ study.consent_videos.1.download_url }}" type="video/mp4">
+
+            </video>
+        </section>
+    </div>
+    </div>
+{% endblock %}
