@@ -34,3 +34,4 @@ bcrypt==3.0.0
 django-celery-beat==1.0.1
 requests==2.21.0
 urllib3==1.24.1
+fleep==1.0.1

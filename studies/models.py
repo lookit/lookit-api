@@ -2,6 +2,8 @@ import logging
 import uuid
 
 import boto3
+from botocore.exceptions import ClientError
+import fleep
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -29,18 +31,8 @@ logger = logging.getLogger(__name__)
 VALID_CONSENT_FRAMES = "1-video-consent"
 STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
 
-SUPPORTED_VIDEO_FILETYPES = (
-    ("mp4",) * 2,
-    ("ogv",) * 2,
-    ("ogg",) * 2,
-    ("flv",) * 2,
-    ("avi)",) * 2,
-    ("webm",) * 2,
-    ("mpg",) * 2,
-    ("m4p",) * 2,
-    ("mpeg",) * 2,
-    ("amv",) * 2,
-)
+S3_RESOURCE = boto3.resource("s3")
+S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 
 
 class StudyType(models.Model):
@@ -566,21 +558,30 @@ class Response(models.Model):
         # Using a constructive approach here, but with an ancillary seen_ids list b/c Django models without
         # primary keys are unhashable for some dumb reason (even though they have unique fields...)
         for frame_id, event_data in self.exp_data.items():
-            if event_data.get("videoList", None) and event_data.get("videoId"):
+            if event_data.get("videoList", None) and event_data.get("videoId", None):
                 # We've officially captured video here!
                 events = event_data.get("eventTimings", [])
-                for e in events:
-                    video_id = e["videoId"]
+                for event in events:
+                    video_id = event["videoId"]
+                    pipe_name = event["pipeId"]  # what we call "ID" they call "name"
                     if (
-                        video_id not in seen_ids and e["pipeId"] and e["streamTime"] > 0
-                    ):  # Then we have some video.
+                        video_id not in seen_ids and pipe_name and event["streamTime"] > 0
+                    ):
+                        # XXX: ASSUMPTION that we are populating non-webhooked videos.
+                        file_obj = S3_RESOURCE.Object(settings.BUCKET_NAME, f"{pipe_name}.mp4")
+                        try:
+                            response = file_obj.get()
+                        except ClientError:
+                            logger.warning(f"Video with {pipe_name} not found!")
+                            continue
+                        # Read first 32 bytes from streaming body (file header) to get actual filetype.
+                        file_info = fleep.get(response["Body"].read(32))
                         video_objects.append(
                             Video(
-                                pipe_name=e["pipeId"],
-                                #  Unfortunately we can't get pipe_id....
+                                pipe_name=pipe_name,
+                                #  Can't get the *actual* pipe id property, it's in the webhook payload...
                                 frame_id=frame_id,
-                                full_name=video_id,
-                                #  extension=data["type"].lower(),
+                                full_name=f"{video_id}.{file_info.extension[0]}",
                                 study=self.study,
                                 response=self,
                                 is_consent_footage=frame_id in VALID_CONSENT_FRAMES,
@@ -668,9 +669,6 @@ class Video(models.Model):
     )  # Sad that we don't keep this metadata elsewhere...
     frame_id = models.CharField(max_length=255, blank=False)
     size = models.PositiveIntegerField(null=True)
-    extension = models.CharField(
-        max_length=5, choices=SUPPORTED_VIDEO_FILETYPES, default="mp4"
-    )
     full_name = models.CharField(
         max_length=255, blank=False, unique=True, db_index=True
     )
@@ -682,46 +680,68 @@ class Video(models.Model):
 
     @classmethod
     def from_pipe_payload(cls, pipe_response_dict: dict):
-        """Factory method for use in the Pipe webhook."""
+        """Factory method for use in the Pipe webhook.
 
+        Note that this is taking over previous attachment_helpers functionality, which means that it's doing the
+        file renaming as well. Keeping this logic inline makes more sense because it's the only place where we do it.
+        """
         data = pipe_response_dict["data"]
-        full_name = data["payload"]
+        old_pipe_name = data["videoName"]
+        new_full_name = f"{data['payload']}.{data['type'].lower()}"
+        throwaway_jpg_name = f"{data['payload']}.jpg"
 
-        _, study_uuid, frame_id, response_uuid, timestamp, _ = full_name.split("_")
-
-        try:
-            study = Study.objects.get(uuid=study_uuid)
-        except Study.DoesNotExist as ex:
-            logger.error(f"Study with uuid {study_uuid} does not exist. {ex}")
+        # No way to directly rename in boto3, so copy and delete original (this is dumb, but let's get it working)
+        try:  # Create a copy with the correct new name, if the original exists. Could also
+            # wait until old_name_full exists using orig_video.wait_until_exists()
+            S3_RESOURCE.Object(settings.BUCKET_NAME, new_full_name).copy_from(
+                CopySource=(settings.BUCKET_NAME + "/" + old_pipe_name)
+            )
+        except ClientError:  # old_name_full not found!
+            logger.error("Amazon S3 couldn't find the video for this Pipe ID.")
             raise
+        else:  # Go on to remove the originals
+            orig_video = S3_RESOURCE.Object(settings.BUCKET_NAME, old_pipe_name)
+            orig_video.delete()
+            # remove the .jpg thumbnail.
+            S3_RESOURCE.Object(settings.BUCKET_NAME, throwaway_jpg_name).delete()
 
-        try:
-            response = Response.objects.get(uuid=response_uuid)
-        except Response.DoesNotExist as ex:
-            logger.error(f"Response with uuid {response_uuid} does not exist. {ex}")
-            raise
+        if "PREVIEW_DATA_DISREGARD" in new_full_name:
+            return None  # early exit, since we are not saving an object in the database.
+        else:
+            _, study_uuid, frame_id, response_uuid, timestamp, _ = new_full_name.split("_")
 
-        return cls.objects.create(
-            pipe_name=data["videoName"],
-            pipe_numeric_id=data["id"],
-            frame_id=frame_id,
-            size=data["size"],
-            full_name=full_name,
-            extension=data["type"].lower(),
-            study=study,
-            response=response,
-            is_consent_footage=frame_id in VALID_CONSENT_FRAMES,
-        )
+            # Once we've completed the renaming, we can create our nice db object.
+            try:
+                study = Study.objects.get(uuid=study_uuid)
+            except Study.DoesNotExist as ex:
+                logger.error(f"Study with uuid {study_uuid} does not exist. {ex}")
+                raise
+
+            try:
+                response = Response.objects.get(uuid=response_uuid)
+            except Response.DoesNotExist as ex:
+                logger.error(f"Response with uuid {response_uuid} does not exist. {ex}")
+                raise
+
+            return cls.objects.create(
+                pipe_name=old_pipe_name,
+                pipe_numeric_id=data["id"],
+                frame_id=frame_id,
+                size=data["size"],
+                full_name=new_full_name,
+                study=study,
+                response=response,
+                is_consent_footage=frame_id in VALID_CONSENT_FRAMES,
+            )
 
     @cached_property
     def filename(self):
-        """This is computed because we want to easily change extension."""
-        return f"{self.full_name}.{self.extension}"
+        """Alias."""
+        return self.full_name
 
     @cached_property
     def s3_object(self):
-        s3 = boto3.resource("s3")
-        return s3.Object(settings.BUCKET_NAME, self.filename)
+        return S3_RESOURCE.Object(settings.BUCKET_NAME, self.full_name)
 
     @property
     def download_url(self):

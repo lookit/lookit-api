@@ -52,6 +52,7 @@ urllib3 = "==1.24.1"
 Django = "==1.11.5"
 Werkzeug = "==0.12.1"
 django_celery_beat = "==1.0.1"
+fleep = "*"
 
 [requires]
 python_version = "3.6"

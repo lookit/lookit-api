@@ -10,7 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-import attachment_helpers
+from botocore.exceptions import ClientError
 from studies.models import Video
 
 
@@ -58,22 +58,16 @@ class RenameVideoView(View):
             d["data"]["s3UploadStatus"] == "upload success"
         ):  # Go ahead and move the file
 
-            oldname = d["data"]["videoName"]
-            newname = d["data"]["payload"]
-            ext = d["data"]["type"].lower()
+            new_name = d["data"]["payload"]
 
-            if not (newname):  # Make sure we don't have an empty payload string
+            if not new_name:  # Make sure we don't have an empty payload string
                 return HttpResponseForbidden()
 
-            success = attachment_helpers.rename_stored_video(oldname, newname, ext)
-
-            if success:
+            try:
+                video_obj = Video.from_pipe_payload(d)
                 return HttpResponse(
-                    d["data"]["videoName"]
-                    + " --> "
-                    + Video.from_pipe_payload(d).filename
-                )
-            else:
+                    (d["data"]["videoName"] + " --> " + video_obj.filename) if video_obj else "Preview not saved")
+            except ClientError:
                 return HttpResponseNotFound()
 
         else:  # Not authenticated
