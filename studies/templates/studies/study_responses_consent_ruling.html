@@ -7,8 +7,8 @@
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
-        const CONSENT_APPROVAL = "approve";
-        const CONSENT_REJECTION = "reject";
+        const CONSENT_APPROVAL = "accepted";
+        const CONSENT_REJECTION = "rejected";
 
         $(document).ready(function () {
             /*
@@ -103,8 +103,8 @@
 
                         <span>{{ video.display_name }}</span>
                         <div class="btn-group-xs pull-right" role="group">
-                            <button type="button" value="approve" class="btn btn-xs btn-success">Approve</button>
-                            <button type="button" value="reject" class="btn btn-xs btn-danger">Reject</button>
+                            <button type="button" value="accepted" class="btn btn-xs btn-success">Approve</button>
+                            <button type="button" value="rejected" class="btn btn-xs btn-danger">Reject</button>
                         </div>
                     </a>
                 {% endfor %}
