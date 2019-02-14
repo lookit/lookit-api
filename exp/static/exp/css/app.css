@@ -138,7 +138,6 @@ a.state-link {
     margin: 0 auto;
 }
 
-
 /* Study Detail */
 a.view-responses-link {
     text-decoration: none;
@@ -258,6 +257,13 @@ h3.study-logs-label {
 
 .comments-text {
     color: gray;
+}
+
+
+/* Consent Manager */
+#consent-videos-pending-judgement {
+    max-height: 300px;  /* same height as video */
+    overflow-y: scroll;
 }
 
 /* Study Edit */

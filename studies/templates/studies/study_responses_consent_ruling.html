@@ -6,6 +6,58 @@
 
 {% block head %}
     {{ block.super }}
+    <script type="application/javascript">
+        const CONSENT_APPROVAL = "approve";
+        const CONSENT_REJECTION = "reject";
+
+        $(document).ready(function () {
+            /*
+             Initialize important elements/
+             */
+            const $videoElement = $("#video-under-consideration");
+            const $pendingJudgementList = $("#consent-videos-pending-judgement");
+
+            var $currentlySelected;
+
+            $pendingJudgementList.on("click", "a.consent-video-option", function(event) {
+
+                let $target = $(event.target);
+
+                // If it's consent or approval, deal with that first.
+                if ($target.is("button")) {
+                    let $consentVideoSelection = $target.closest("a.consent-video-option");
+                    switch ($target.val()) {
+                        case CONSENT_APPROVAL:
+                            console.log("accepted!");
+                            $consentVideoSelection.removeClass("list-group-item-danger");
+                            $consentVideoSelection.addClass("list-group-item-success");
+                            break;
+                        case CONSENT_REJECTION:
+                            console.log("Rejected, oh no!");
+                            $consentVideoSelection.removeClass("list-group-item-success");
+                            $consentVideoSelection.addClass("list-group-item-danger");
+                            break;
+                    }
+                    return;
+                }
+
+                if ($currentlySelected) { // If we've got something, deselect it.
+                    $currentlySelected.removeClass("active")
+                }
+                $currentlySelected = $(this);
+                $currentlySelected.addClass("active");
+
+                // Populate video data in other place.
+                let videoData = $currentlySelected.data();
+
+                console.log($(event.target), videoData);
+                let awsUrl = videoData["sourceUrl"];
+                $videoElement.attr("src", awsUrl).load();
+                $videoElement.trigger("play");
+            });
+
+        });
+    </script>
 
 {% endblock %}
 
@@ -29,7 +81,7 @@
                 </ol>
             </div>
         </div>
-        <div class='row'>
+        <div class="row">
             <div class="col-xs-12">
                 <h1>Consent Manager</h1>
             </div>
@@ -39,14 +91,32 @@
                 {% include 'studies/_response_nav_tabs.html' with active="manage-consent" %}
             </div>
         </div>
-    <div class="row" id="consent-manager-content-body">
-        <section class="col-xs-12">
-            {{ study.consent_videos }}
-            <video controls width="250">
-                <source src="{{ study.consent_videos.1.download_url }}" type="video/mp4">
+        <div class="row pt-md">
+            <section id="consent-videos-pending-judgement" class="col-md-4 col-xs-12 list-group">
+                {% for video in study.consent_videos %}
+                    <a id="{{ video.uuid }}"
+                            class="consent-video-option list-group-item"
+                            data-id="{{ video.uuid }}"
+                            data-full-name="{{ video.full_name }}"
+                            data-created="{{ video.created_at }}"
+                            data-source-url="{{ video.download_url }}">
 
-            </video>
-        </section>
-    </div>
+                        <span>{{ video.display_name }}</span>
+                        <div class="btn-group-xs pull-right" role="group">
+                            <button type="button" value="approve" class="btn btn-xs btn-success">Approve</button>
+                            <button type="button" value="reject" class="btn btn-xs btn-danger">Reject</button>
+                        </div>
+                    </a>
+                {% endfor %}
+            </section>
+            <section class="col-md-4 col-xs-12">
+                <video controls id="video-under-consideration" height="270" width="360">
+                    Please select a video from the left hand column.
+                </video>
+            </section>
+            <form id="consent-arbitration-form" class="col-md-4 col-xs-12 well">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        </div>
     </div>
 {% endblock %}

@@ -758,9 +758,13 @@ class Video(models.Model):
     def s3_object(self):
         return S3_RESOURCE.Object(settings.BUCKET_NAME, self.full_name)
 
+    @cached_property
+    def display_name(self):
+        return f"Response({self.full_name.split('_')[3][:8]})"
+
     @property
     def download_url(self):
-        return get_download_url(self.filename)
+        return get_download_url(self.pipe_name + ".mp4")
 
     def mark_response_with_consent_ruling(self, arbiter: User, ruling: str):
         """Marks a parent response with consent.
