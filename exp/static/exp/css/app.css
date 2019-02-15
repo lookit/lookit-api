@@ -261,7 +261,7 @@ h3.study-logs-label {
 
 
 /* Consent Manager */
-#consent-videos-pending-judgement {
+#consent-videos-pending-ruling {
     max-height: 300px;  /* same height as video */
     overflow-y: scroll;
 }

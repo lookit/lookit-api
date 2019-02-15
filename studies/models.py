@@ -30,9 +30,13 @@ logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
 
 
-VALID_CONSENT_FRAMES = "1-video-consent"
+VALID_CONSENT_FRAMES = ("1-video-consent",)
 STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
-CONSENT_RULINGS = ("accepted", "rejected")
+
+# Consent ruling stuff
+ACCEPTED = "accepted"
+REJECTED = "rejected"
+CONSENT_RULINGS = (ACCEPTED, REJECTED)
 
 S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
@@ -524,6 +528,7 @@ class Response(models.Model):
     )
     completed = models.BooleanField(default=False)
     completed_consent_frame = models.BooleanField(default=False)
+    has_valid_consent = models.BooleanField(default=False)
     exp_data = DateTimeAwareJSONField(default=dict)
     conditions = DateTimeAwareJSONField(default=dict)
     sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)
@@ -545,12 +550,6 @@ class Response(models.Model):
     class JSONAPIMeta:
         resource_name = "responses"
         lookup_field = "uuid"
-
-    @property
-    def valid_consent(self):
-        """Predicated on class ordering (ordering = ["-created_at"])"""
-        latest_ruling = self.consent_rulings.first()
-        return latest_ruling.action == ConsentRuling.RULINGS.accepted
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
@@ -773,14 +772,27 @@ class Video(models.Model):
             :param ruling: The ruling for a given response.
         """
         response = self.response
+
+        rulings_for_response = response.consent_rulings
+
         if ruling in CONSENT_RULINGS:
-            response.consent_rulings_set.create(
+            rulings_for_response.create(
                 action=ruling,
                 response=response,
+                video=self,
                 arbiter=arbiter,
             )
         else:
             raise ValueError(f"Invalid ruling: {ruling}. Must be one of {CONSENT_RULINGS}")
+
+        if ruling == ACCEPTED:  # Shortcut since this is the latest ruling
+            response.has_valid_consent = True
+            response.save()
+        else:  # if we are rejecting, rejecting only reverses response validity when it's for the same video.
+            prior_approval = rulings_for_response.filter(video__id=self.id).first()
+            if prior_approval:
+                response.has_valid_consent = False
+                response.save()
 
 
 class ConsentRuling(models.Model):
@@ -793,6 +805,9 @@ class ConsentRuling(models.Model):
     action = models.CharField(max_length=100, choices=RULINGS, db_index=True)
     response = models.ForeignKey(
         Response, on_delete=models.DO_NOTHING, related_name="consent_rulings"
+    )
+    video = models.ForeignKey(
+        Video, on_delete=models.DO_NOTHING, related_name="consent_rulings"
     )
     arbiter = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name="consent_rulings"

@@ -31,7 +31,7 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import Study, StudyLog, StudyType
+from studies.models import Study, StudyLog, StudyType, Video, ConsentRuling
 from studies.tasks import build_experiment, build_zipfile_of_videos
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -879,6 +879,23 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
     template_name = "studies/study_responses_consent_ruling.html"
 
+    def post(self, request, *args, **kwargs):
+        """This is where consent is submitted."""
+        form_data = self.request.POST
+        user = self.request.user
+
+        accepted_videos = Video.objects.filter(uuid__in=form_data.getlist("accepted"))
+        rejected_videos = Video.objects.filter(uuid__in=form_data.getlist("rejected"))
+
+        # Iterating because each video may have a different response associated with it, which means we need to
+        # construct each ConsentRuling object accordingly.
+        for approved in accepted_videos:
+            approved.mark_response_with_consent_ruling(user, "accepted")
+
+        for rejected in rejected_videos:
+            rejected.mark_response_with_consent_ruling(user, "rejected")
+
+        return super().post(request, *args, **kwargs)
 
 
 class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):

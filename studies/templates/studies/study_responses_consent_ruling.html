@@ -7,53 +7,82 @@
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
+        const RESET = "reset";
         const CONSENT_APPROVAL = "accepted";
         const CONSENT_REJECTION = "rejected";
 
         $(document).ready(function () {
             /*
-             Initialize important elements/
+             Initialize important elements.
              */
             const $videoElement = $("#video-under-consideration");
-            const $pendingJudgementList = $("#consent-videos-pending-judgement");
+            const $pendingJudgementList = $("#consent-videos-pending-ruling");
+            const $consentRulingForm = $("#consent-ruling-form");
+            const $approvalsCountBadge =  $consentRulingForm.find("#approvals-count");
+            const $rejectionsCountBadge =  $consentRulingForm.find("#rejections-count");
 
-            var $currentlySelected;
+            /*
+             Helpers.
+             */
+            function handleRulingActions($button, $consentVideoListItem, videoData) {
+                let videoId = videoData["id"],
+                    videoRulingHiddenInputId = "video-ruling-" + videoId,
+                    hiddenInputAttrs = {id: videoRulingHiddenInputId, type: "hidden"},
+                    $hiddenInput = $consentRulingForm.find("#" + videoRulingHiddenInputId);
 
+                // First Manage UI signaling
+                switch ($button.val()) {
+                    case RESET:
+                        $consentVideoListItem.removeClass("list-group-item-danger list-group-item-success");
+                        $hiddenInput.remove();
+                        return;  // early exit after killing the element.
+                    case CONSENT_APPROVAL:
+                        $consentVideoListItem.removeClass("list-group-item-danger");
+                        $consentVideoListItem.addClass("list-group-item-success");
+                        hiddenInputAttrs["name"] = CONSENT_APPROVAL;
+                        break;
+                    case CONSENT_REJECTION:
+                        $consentVideoListItem.removeClass("list-group-item-success");
+                        $consentVideoListItem.addClass("list-group-item-danger");
+                        hiddenInputAttrs["name"] = CONSENT_REJECTION;
+                        break;
+                }
+
+                if ($hiddenInput.length) {
+                    $hiddenInput.attr("name", hiddenInputAttrs["name"]);
+                } else {  // If it's not there, create a new one.
+                    hiddenInputAttrs["value"] = videoId;
+                    $consentRulingForm.append($("<input/>", hiddenInputAttrs));
+                }
+            }
+
+            /*
+             Set up event listeners.
+             */
+            var $currentlySelected;  // Lazily initialized closure to maintain previous selected.
+
+            // XXX: Manual event delegation inside
             $pendingJudgementList.on("click", "a.consent-video-option", function(event) {
 
-                let $target = $(event.target);
-
-                // If it's consent or approval, deal with that first.
-                if ($target.is("button")) {
-                    let $consentVideoSelection = $target.closest("a.consent-video-option");
-                    switch ($target.val()) {
-                        case CONSENT_APPROVAL:
-                            console.log("accepted!");
-                            $consentVideoSelection.removeClass("list-group-item-danger");
-                            $consentVideoSelection.addClass("list-group-item-success");
-                            break;
-                        case CONSENT_REJECTION:
-                            console.log("Rejected, oh no!");
-                            $consentVideoSelection.removeClass("list-group-item-success");
-                            $consentVideoSelection.addClass("list-group-item-danger");
-                            break;
-                    }
-                    return;
-                }
-
+                // UI Signal - we're paying attention to this video.
                 if ($currentlySelected) { // If we've got something, deselect it.
-                    $currentlySelected.removeClass("active")
+                    $currentlySelected.removeClass("active");
                 }
+
                 $currentlySelected = $(this);
                 $currentlySelected.addClass("active");
 
-                // Populate video data in other place.
+                let $target = $(event.target);
                 let videoData = $currentlySelected.data();
 
-                console.log($(event.target), videoData);
-                let awsUrl = videoData["sourceUrl"];
-                $videoElement.attr("src", awsUrl).load();
-                $videoElement.trigger("play");
+                // If it's consent or approval, deal with that first.
+                if ($target.is("button")) {
+                    return handleRulingActions($target, $currentlySelected, videoData);
+                } else { // Populate video data in other place.
+                    let awsUrl = videoData["sourceUrl"];
+                    $videoElement.attr("src", awsUrl).load();
+                    $videoElement.trigger("play");
+                }
             });
 
         });
@@ -92,19 +121,20 @@
             </div>
         </div>
         <div class="row pt-md">
-            <section id="consent-videos-pending-judgement" class="col-md-4 col-xs-12 list-group">
+            <section id="consent-videos-pending-ruling" class="col-md-4 col-xs-12 list-group">
                 {% for video in study.consent_videos %}
-                    <a id="{{ video.uuid }}"
-                            class="consent-video-option list-group-item"
-                            data-id="{{ video.uuid }}"
-                            data-full-name="{{ video.full_name }}"
-                            data-created="{{ video.created_at }}"
-                            data-source-url="{{ video.download_url }}">
+                    <a id="list-item-{{ video.uuid }}"
+                       class="consent-video-option list-group-item"
+                       data-id="{{ video.uuid }}"
+                       data-full-name="{{ video.full_name }}"
+                       data-created="{{ video.created_at }}"
+                       data-source-url="{{ video.download_url }}">
 
                         <span>{{ video.display_name }}</span>
                         <div class="btn-group-xs pull-right" role="group">
-                            <button type="button" value="accepted" class="btn btn-xs btn-success">Approve</button>
-                            <button type="button" value="rejected" class="btn btn-xs btn-danger">Reject</button>
+                            <button type="button" value="reset" class="btn btn-xs btn-default glyphicon glyphicon-remove"></button>
+                            <button type="button" value="accepted" class="btn btn-xs btn-success glyphicon glyphicon-thumbs-up"></button>
+                            <button type="button" value="rejected" class="btn btn-xs btn-danger glyphicon glyphicon-thumbs-down"></button>
                         </div>
                     </a>
                 {% endfor %}
@@ -113,9 +143,18 @@
                 <video controls id="video-under-consideration" height="270" width="360">
                     Please select a video from the left hand column.
                 </video>
-            </section>
-            <form id="consent-arbitration-form" class="col-md-4 col-xs-12 well">
-                <button class="btn btn-primary" type="submit">Submit</button>
+            </section> {# action="{% url 'exp:study-responses-consent-manager' pk=study.id %}" #}
+            <form id="consent-ruling-form" class="col-md-4 col-xs-12 well" method="POST">{% csrf_token %}
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-success">
+                        Approvals <span id="approvals-count" class="badge">0</span>
+                    </li>
+                    <li class="list-group-item list-group-item-danger">
+                        Rejections <span id="rejections-count" class="badge">0</span>
+                    </li>
+                </ul>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Rulings</button>
+                <button type="button" class="btn btn-default btn-lg btn-block">Reset Choices</button>
             </form>
         </div>
     </div>
