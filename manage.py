@@ -2,7 +2,7 @@
 import os
 import sys
 
-if os.environ.get('GEVENT') == '1':
+if os.environ.get("GEVENT") == "1":
     from gevent import monkey
 
     monkey.patch_all()

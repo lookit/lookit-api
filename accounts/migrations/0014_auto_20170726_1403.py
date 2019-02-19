@@ -7,13 +7,20 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0013_auto_20170718_2137'),
-    ]
+    dependencies = [("accounts", "0013_auto_20170718_2137")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='organization',
-            options={'ordering': ['name'], 'permissions': (('can_view_organization', 'Can View Organization'), ('can_edit_organization', 'Can Edit Organization'), ('can_create_organization', 'Can Create Organization'), ('can_remove_organization', 'Can Remove Organization'), ('can_view_experimenter', 'Can View Experimenter'))},
-        ),
+            name="organization",
+            options={
+                "ordering": ["name"],
+                "permissions": (
+                    ("can_view_organization", "Can View Organization"),
+                    ("can_edit_organization", "Can Edit Organization"),
+                    ("can_create_organization", "Can Create Organization"),
+                    ("can_remove_organization", "Can Remove Organization"),
+                    ("can_view_experimenter", "Can View Experimenter"),
+                ),
+            },
+        )
     ]

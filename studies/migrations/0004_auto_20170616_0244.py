@@ -4,39 +4,45 @@ from __future__ import unicode_literals
 
 import django.contrib.postgres.fields
 from django.db import migrations, models
+
 import project.fields.datetime_aware_jsonfield
 
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0003_auto_20170615_1404'),
-    ]
+    dependencies = [("studies", "0003_auto_20170615_1404")]
 
     operations = [
         migrations.RenameField(
-            model_name='response',
-            old_name='results',
-            new_name='exp_data',
+            model_name="response", old_name="results", new_name="exp_data"
         ),
         migrations.AddField(
-            model_name='response',
-            name='completed',
+            model_name="response",
+            name="completed",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='response',
-            name='conditions',
-            field=project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(default=dict),
+            model_name="response",
+            name="conditions",
+            field=project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(
+                default=dict
+            ),
         ),
         migrations.AddField(
-            model_name='response',
-            name='global_event_timings',
-            field=project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(default=dict),
+            model_name="response",
+            name="global_event_timings",
+            field=project.fields.datetime_aware_jsonfield.DateTimeAwareJSONField(
+                default=dict
+            ),
         ),
         migrations.AddField(
-            model_name='response',
-            name='sequence',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=128), blank=True, default=list, size=None),
+            model_name="response",
+            name="sequence",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.CharField(max_length=128),
+                blank=True,
+                default=list,
+                size=None,
+            ),
         ),
     ]

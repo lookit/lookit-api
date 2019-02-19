@@ -153,10 +153,18 @@ a:hover.view-responses-link {
     color:gray;
 }
 
+#buildForm:hover {
+    color:gray;
+}
+
 .study-detail-block {
     display: block;
     width:100%;
-    height: 340px;
+    height: 520px;
+}
+
+.study-detail-block li {
+    cursor: pointer;
 }
 
 div.uuid-padding {

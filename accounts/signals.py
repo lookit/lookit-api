@@ -1,23 +1,24 @@
 import os
 
+from django.apps import apps
 from django.contrib.auth.management import create_permissions
 
 from project import settings
-
-from django.apps import apps
 
 
 def post_migrate_create_organization(sender, **kwargs):
     for app_config in apps.get_app_configs():
         create_permissions(app_config, apps=apps, verbosity=0)
 
-    Organization = sender.get_model('Organization')
-    org, created = Organization.objects.get_or_create(name='MIT', url='https://lookit.mit.edu')
+    Organization = sender.get_model("Organization")
+    org, created = Organization.objects.get_or_create(
+        name="MIT", url="https://lookit.mit.edu"
+    )
 
 
 def post_migrate_create_social_app(sender, **kwargs):
-    Site = apps.get_model('sites.Site')
-    SocialApp = apps.get_model('socialaccount.SocialApp')
+    Site = apps.get_model("sites.Site")
+    SocialApp = apps.get_model("socialaccount.SocialApp")
     site = Site.objects.first()
 
     site.domain = settings.SITE_DOMAIN
@@ -27,9 +28,9 @@ def post_migrate_create_social_app(sender, **kwargs):
 
     if not SocialApp.objects.exists():
         app = SocialApp.objects.create(
-            key='',
-            name='OSF',
-            provider='osf',
+            key="",
+            name="OSF",
+            provider="osf",
             # Defaults are valid for staging
             client_id=settings.OSF_OAUTH_CLIENT_ID,
             secret=settings.OSF_OAUTH_SECRET,
@@ -39,11 +40,13 @@ def post_migrate_create_social_app(sender, **kwargs):
 
 
 def post_migrate_create_flatpages(sender, **kwargs):
-    Site = apps.get_model('sites.Site')
-    FlatPage = apps.get_model('flatpages.FlatPage')
+    Site = apps.get_model("sites.Site")
+    FlatPage = apps.get_model("flatpages.FlatPage")
     flatpages = [
-        dict(url='/', title='Home', content=
-        f"""
+        dict(
+            url="/",
+            title="Home",
+            content=f"""
         <div class="main">
         	<div class="home-jumbotron">
         		<div class="content">
@@ -149,9 +152,12 @@ def post_migrate_create_flatpages(sender, **kwargs):
         		</div>
         	</footer>
         </div>
-        """),
-        dict(url='/faq/', title='FAQ', content=
-        f"""
+        """,
+        ),
+        dict(
+            url="/faq/",
+            title="FAQ",
+            content=f"""
         <div class="main">
         	<div class="lookit-row lookit-page-title">
         		<div class="container">
@@ -471,9 +477,12 @@ def post_migrate_create_flatpages(sender, **kwargs):
         		</div>
         	</div>
         </div>
-        """),
-        dict(url='/scientists/', title='The Scientists', content=
-        f"""
+        """,
+        ),
+        dict(
+            url="/scientists/",
+            title="The Scientists",
+            content=f"""
         <div class="main">
         	<div class="lookit-row lookit-page-title">
         		<div class="container">
@@ -584,9 +593,12 @@ def post_migrate_create_flatpages(sender, **kwargs):
         		</div>
         	</div>
         </div>
-        """),
-        dict(url='/resources/', title='Resources', content=
-        f"""
+        """,
+        ),
+        dict(
+            url="/resources/",
+            title="Resources",
+            content=f"""
         <div class="main">
         	<div class="lookit-row lookit-page-title">
         		<div class="container">
@@ -690,7 +702,8 @@ def post_migrate_create_flatpages(sender, **kwargs):
         			</div>
         		</div>
         	</div>
-        </div>""" + """
+        </div>"""
+            + """
         <script type="text/javascript">
             var allLabs = {
                 "Alabama": [
@@ -1261,9 +1274,12 @@ def post_migrate_create_flatpages(sender, **kwargs):
                 }
             }
         </script>
-        """),
-        dict(url='/contact_us/', title='Contact Us', content=
-        """
+        """,
+        ),
+        dict(
+            url="/contact_us/",
+            title="Contact Us",
+            content="""
         <div class="main">
         	<div class="lookit-row lookit-page-title">
         		<div class="container">
@@ -1283,7 +1299,8 @@ def post_migrate_create_flatpages(sender, **kwargs):
         		</div>
         	</div>
         </div>
-        """),
+        """,
+        ),
     ]
     site = Site.objects.first()
 
@@ -1293,6 +1310,8 @@ def post_migrate_create_flatpages(sender, **kwargs):
     site.save()
 
     for page in flatpages:
-        defaults = dict(content=page.pop('content'))
-        flatpage_obj, created = FlatPage.objects.get_or_create(defaults=defaults, **page)
+        defaults = dict(content=page.pop("content"))
+        flatpage_obj, created = FlatPage.objects.get_or_create(
+            defaults=defaults, **page
+        )
         flatpage_obj.sites.add(site)

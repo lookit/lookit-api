@@ -7,19 +7,17 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0026_auto_20170823_1352'),
-    ]
+    dependencies = [("accounts", "0026_auto_20170823_1352")]
 
     operations = [
         migrations.RenameField(
-            model_name='user',
-            old_name='email_personally',
-            new_name='email_response_questions',
+            model_name="user",
+            old_name="email_personally",
+            new_name="email_response_questions",
         ),
         migrations.RenameField(
-            model_name='user',
-            old_name='email_results_published',
-            new_name='email_study_updates',
+            model_name="user",
+            old_name="email_results_published",
+            new_name="email_study_updates",
         ),
     ]

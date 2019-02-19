@@ -7,14 +7,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0018_merge_20170711_1459'),
-    ]
+    dependencies = [("studies", "0018_merge_20170711_1459")]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='exit_url',
-            field=models.URLField(default=''),
-        ),
+            model_name="study", name="exit_url", field=models.URLField(default="")
+        )
     ]

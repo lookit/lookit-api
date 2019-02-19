@@ -71,12 +71,12 @@
                                                               <p class="image-block">
                                                                   <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="150" width="auto" src="{{ study.image.url }}" width="300px">
                                                                   <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
-                                                                    	<i aria-hidden="true" class="fa fa-picture-o"></i>
+                                                                    	<i aria-hidden="true" class="fas fa-flask"></i>
                                                                   </div>
                                                               </p>
                                                             {% else %}
                                                               <div class="study-list-placeholder">
-                                                                  <i aria-hidden="true" class="fa fa-picture-o"></i>
+                                                                  <i aria-hidden="true" class="fas fa-flask"></i>
                                                               </div>
                                                             {% endif %}
                                                         </div>
@@ -100,14 +100,14 @@
                                                                 <strong>Feedback</strong>
                                                             </div>
                                                         </div>
-                                                    {% for response in study.responses.all %}
+                                                    {% for response in study.consented_responses.all %}
                                                         {% if response.child.user == request.user %}
                                                             <div class="row">
                                                                 <div class="col-md-3">
                                                                     {{ response.child.given_name}}
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    {{ response.date_modified |date:"M d Y"}}</strong>
+                                                                    <strong>{{ response.date_modified | date:"M d Y" }}</strong>
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <ul>

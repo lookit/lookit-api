@@ -1,27 +1,32 @@
 from django.contrib import admin
-
 from guardian.admin import GuardedModelAdmin
 
-from studies.models import Response, ResponseLog, Study, StudyLog, Feedback, StudyType
+from studies.models import Feedback, Response, ResponseLog, Study, StudyLog, StudyType
 
 
 class StudyAdmin(GuardedModelAdmin):
     pass
 
+
 class ResponseAdmin(GuardedModelAdmin):
     pass
+
 
 class FeedbackAdmin(GuardedModelAdmin):
     pass
 
+
 class StudyLogAdmin(GuardedModelAdmin):
     pass
+
 
 class ResponseLogAdmin(GuardedModelAdmin):
     pass
 
+
 class StudyTypeAdmin(GuardedModelAdmin):
     pass
+
 
 admin.site.register(Study, StudyAdmin)
 admin.site.register(Response, ResponseAdmin)

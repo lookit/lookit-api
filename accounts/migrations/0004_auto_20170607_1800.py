@@ -10,17 +10,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0003_auto_20170607_1800'),
-        ('studies', '0002_auto_20170607_1800'),
+        ("accounts", "0003_auto_20170607_1800"),
+        ("studies", "0002_auto_20170607_1800"),
     ]
 
     operations = [
-        migrations.DeleteModel(
-            name='Profile',
-        ),
+        migrations.DeleteModel(name="Profile"),
         migrations.AddField(
-            model_name='child',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='children', related_query_name='children', to=settings.AUTH_USER_MODEL),
+            model_name="child",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="children",
+                related_query_name="children",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

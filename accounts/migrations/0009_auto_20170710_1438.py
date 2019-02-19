@@ -7,25 +7,37 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0008_merge_20170707_1801'),
-    ]
+    dependencies = [("accounts", "0008_merge_20170707_1801")]
 
     operations = [
+        migrations.AlterModelOptions(name="child", options={"ordering": ["-birthday"]}),
         migrations.AlterModelOptions(
-            name='child',
-            options={'ordering': ['-birthday']},
+            name="demographicdata", options={"ordering": ["-created_at"]}
         ),
         migrations.AlterModelOptions(
-            name='demographicdata',
-            options={'ordering': ['-created_at']},
+            name="organization",
+            options={
+                "ordering": ["name"],
+                "permissions": (
+                    ("can_view_organization", "Can View Organization"),
+                    ("can_edit_organization", "Can Edit Organization"),
+                    ("can_create_organization", "Can Create Organization"),
+                    ("can_remove_organization", "Can Remove Organization"),
+                ),
+            },
         ),
         migrations.AlterModelOptions(
-            name='organization',
-            options={'ordering': ['name'], 'permissions': (('can_view_organization', 'Can View Organization'), ('can_edit_organization', 'Can Edit Organization'), ('can_create_organization', 'Can Create Organization'), ('can_remove_organization', 'Can Remove Organization'))},
-        ),
-        migrations.AlterModelOptions(
-            name='user',
-            options={'ordering': ['username'], 'permissions': (('can_create_users', 'Can Create User'), ('can_view_users', 'Can View User'), ('can_edit_users', 'Can Edit User'), ('can_remove_users', 'Can Remove User'), ('can_view_user_permissions', 'Can View User Permissions'), ('can_edit_user_permissions', 'Can Edit User Permissions'))},
+            name="user",
+            options={
+                "ordering": ["username"],
+                "permissions": (
+                    ("can_create_users", "Can Create User"),
+                    ("can_view_users", "Can View User"),
+                    ("can_edit_users", "Can Edit User"),
+                    ("can_remove_users", "Can Remove User"),
+                    ("can_view_user_permissions", "Can View User Permissions"),
+                    ("can_edit_user_permissions", "Can Edit User Permissions"),
+                ),
+            },
         ),
     ]

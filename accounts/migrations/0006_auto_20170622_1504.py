@@ -7,13 +7,20 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0005_auto_20170621_1843'),
-    ]
+    dependencies = [("accounts", "0005_auto_20170621_1843")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
-            options={'permissions': (('can_create_users', 'Can Create User'), ('can_view_users', 'Can View User'), ('can_edit_users', 'Can Edit User'), ('can_remove_users', 'Can Remove User'), ('can_view_user_permissions', 'Can View User Permissions'), ('can_edit_user_permissions', 'Can Edit User Permissions'))},
-        ),
+            name="user",
+            options={
+                "permissions": (
+                    ("can_create_users", "Can Create User"),
+                    ("can_view_users", "Can View User"),
+                    ("can_edit_users", "Can Edit User"),
+                    ("can_remove_users", "Can Remove User"),
+                    ("can_view_user_permissions", "Can View User Permissions"),
+                    ("can_edit_user_permissions", "Can Edit User Permissions"),
+                )
+            },
+        )
     ]
