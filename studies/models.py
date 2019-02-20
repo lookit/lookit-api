@@ -1,12 +1,14 @@
 import logging
 import uuid
 import dateutil
+import json
 
 import boto3
 from botocore.exceptions import ClientError
 import fleep
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -200,6 +202,11 @@ class Study(models.Model):
     @property
     def consented_responses(self):
         return self.responses.filter(completed_consent_frame=True)
+
+    @property
+    def responses_with_prefetched_relationships(self):
+        """Custom Queryset for the Consent Manager view."""
+        return self.consented_responses.prefetch_related("videos").select_related("child", "child__user").all()
 
     @property
     def consent_videos(self):
@@ -541,7 +548,7 @@ class Response(models.Model):
     )
 
     def __str__(self):
-        return f"<Response: {self.study} {self.child.user.get_short_name}>"
+        return f"<Response: {self.study} {self.child.user.get_short_name()}>"
 
     class Meta:
         permissions = (("view_response", "View Response"),)
@@ -550,6 +557,10 @@ class Response(models.Model):
     class JSONAPIMeta:
         resource_name = "responses"
         lookup_field = "uuid"
+
+    @cached_property
+    def display_name(self):
+        return f"Child({self.child.given_name}); Parent({self.child.user.nickname})"
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.

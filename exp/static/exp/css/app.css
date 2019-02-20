@@ -261,9 +261,14 @@ h3.study-logs-label {
 
 
 /* Consent Manager */
-#consent-videos-pending-ruling {
+#responses-pending-ruling {
     max-height: 300px;  /* same height as video */
     overflow-y: scroll;
+}
+
+#video-manager nav {
+    /* centering the inline-block ul*/
+    text-align: center;
 }
 
 /* Study Edit */

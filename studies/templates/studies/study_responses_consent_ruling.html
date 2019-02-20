@@ -6,44 +6,52 @@
 
 {% block head %}
     {{ block.super }}
+    <script type="application/json" id="response-video-map">
+        {{ response_video_map | safe }}
+    </script>
     <script type="application/javascript">
         const RESET = "reset";
         const CONSENT_APPROVAL = "accepted";
         const CONSENT_REJECTION = "rejected";
+        const RESPONSE_VIDEO_MAP = JSON.parse(document.querySelector("#response-video-map").innerText);
 
         $(document).ready(function () {
             /*
              Initialize important elements.
              */
-            const $videoElement = $("#video-under-consideration");
-            const $pendingJudgementList = $("#consent-videos-pending-ruling");
-            const $consentRulingForm = $("#consent-ruling-form");
-            const $approvalsCountBadge =  $consentRulingForm.find("#approvals-count");
-            const $rejectionsCountBadge =  $consentRulingForm.find("#rejections-count");
+            const $videoElement = $("#video-under-consideration"),
+                  $videoSource = $videoElement.find("source"),
+                  $videoManager = $("#video-manager"),
+                  $videoPreviousButton = $videoManager.find("#nav-video-previous"),
+                  $videoNextButton = $videoManager.find("#nav-video-next"),
+                  $pendingJudgementList = $("#responses-pending-ruling"),
+                  $consentRulingForm = $("#consent-ruling-form"),
+                  $approvalsCountBadge = $consentRulingForm.find("#approvals-count"),
+                  $rejectionsCountBadge = $consentRulingForm.find("#rejections-count");
 
             /*
              Helpers.
              */
-            function handleRulingActions($button, $consentVideoListItem, videoData) {
-                let videoId = videoData["id"],
-                    videoRulingHiddenInputId = "video-ruling-" + videoId,
-                    hiddenInputAttrs = {id: videoRulingHiddenInputId, type: "hidden"},
-                    $hiddenInput = $consentRulingForm.find("#" + videoRulingHiddenInputId);
+            function handleRulingActions($button, $responseListItem, responseData) {
+                let responseId = responseData["id"],
+                    responseRulingHiddenInputId = "consent-ruling-" + responseId,
+                    hiddenInputAttrs = {id: responseRulingHiddenInputId, type: "hidden"},
+                    $hiddenInput = $consentRulingForm.find("#" + responseRulingHiddenInputId);
 
                 // First Manage UI signaling
                 switch ($button.val()) {
                     case RESET:
-                        $consentVideoListItem.removeClass("list-group-item-danger list-group-item-success");
+                        $responseListItem.removeClass("list-group-item-danger list-group-item-success");
                         $hiddenInput.remove();
                         return;  // early exit after killing the element.
                     case CONSENT_APPROVAL:
-                        $consentVideoListItem.removeClass("list-group-item-danger");
-                        $consentVideoListItem.addClass("list-group-item-success");
+                        $responseListItem.removeClass("list-group-item-danger");
+                        $responseListItem.addClass("list-group-item-success");
                         hiddenInputAttrs["name"] = CONSENT_APPROVAL;
                         break;
                     case CONSENT_REJECTION:
-                        $consentVideoListItem.removeClass("list-group-item-success");
-                        $consentVideoListItem.addClass("list-group-item-danger");
+                        $responseListItem.removeClass("list-group-item-success");
+                        $responseListItem.addClass("list-group-item-danger");
                         hiddenInputAttrs["name"] = CONSENT_REJECTION;
                         break;
                 }
@@ -51,40 +59,98 @@
                 if ($hiddenInput.length) {
                     $hiddenInput.attr("name", hiddenInputAttrs["name"]);
                 } else {  // If it's not there, create a new one.
-                    hiddenInputAttrs["value"] = videoId;
+                    hiddenInputAttrs["value"] = responseId;
                     $consentRulingForm.append($("<input/>", hiddenInputAttrs));
                 }
             }
 
+            var currentlyConsideredVideos, // Lazily initialized closure to maintain video list.
+                currentVideoListIndex, // index should correspond to both lists here!
+                numberedVideoButtons;
+
+            function updateVideoContainer($selectedResponseItem, responseId) {
+                // 1) Clear the current container
+                $videoPreviousButton.nextUntil($videoNextButton).remove();
+
+                currentlyConsideredVideos = RESPONSE_VIDEO_MAP[responseId];
+                currentVideoListIndex = 0;
+
+                numberedVideoButtons = []; // Empty out current set of buttons.
+
+                currentlyConsideredVideos.forEach((videoObject, index) => {
+                    videoObject["pointer"] = index;
+                    let $numberedVideoButton = $("<li></li>").data(videoObject);
+                    $numberedVideoButton.append(
+                        $("<a></a>").text(index + 1)
+                    );
+                    numberedVideoButtons.push($numberedVideoButton);
+                });
+                $videoPreviousButton.after(numberedVideoButtons);
+
+                if (currentlyConsideredVideos.length) { // Auto-set first video.
+                    $videoSource.attr("src", currentlyConsideredVideos[0]["aws_url"]);
+                    numberedVideoButtons[0].addClass("active");
+                    $videoElement.load().trigger("play");
+                }
+            }
+
             /*
-             Set up event listeners.
+             EVENT LISTENERS
              */
-            var $currentlySelected;  // Lazily initialized closure to maintain previous selected.
+            var $currentlySelectedResponse;  // Lazily initialized closure to maintain previous selected.
 
             // XXX: Manual event delegation inside
-            $pendingJudgementList.on("click", "a.consent-video-option", function(event) {
+            $pendingJudgementList.on("click", "a.response-option", function (event) {
 
                 // UI Signal - we're paying attention to this video.
-                if ($currentlySelected) { // If we've got something, deselect it.
-                    $currentlySelected.removeClass("active");
+                if ($currentlySelectedResponse) { // If we've got something, deselect it.
+                    $currentlySelectedResponse.removeClass("active");
                 }
 
-                $currentlySelected = $(this);
-                $currentlySelected.addClass("active");
+                $currentlySelectedResponse = $(this);
+                $currentlySelectedResponse.addClass("active");
 
                 let $target = $(event.target);
-                let videoData = $currentlySelected.data();
+                let responseData = $currentlySelectedResponse.data();
 
-                // If it's consent or approval, deal with that first.
+                // If it's consent or approval, deal with it.
                 if ($target.is("button")) {
-                    return handleRulingActions($target, $currentlySelected, videoData);
-                } else { // Populate video data in other place.
-                    let awsUrl = videoData["sourceUrl"];
-                    $videoElement.attr("src", awsUrl).load();
-                    $videoElement.trigger("play");
+                    return handleRulingActions($target, $currentlySelectedResponse, responseData);
+                } else { // Update the video container with nav buttons.
+                    $videoSource.attr("src", "");
+                    $videoElement.load();
+                    updateVideoContainer($currentlySelectedResponse, responseData["id"]);
                 }
             });
 
+            $videoManager.on("click", "li", function(event) {
+                let $videoNavButton = $(this),
+                    navId = $videoNavButton.attr("id"),
+                    length = currentlyConsideredVideos.length,
+                    videoData, awsUrl;
+
+                numberedVideoButtons.forEach($button => $button.removeClass("active"));
+
+                if (navId === "nav-video-previous") {
+                    currentVideoListIndex -= 1;
+                    currentVideoListIndex %= length; // rotate backward
+                    videoData = currentlyConsideredVideos[currentVideoListIndex];
+                } else if (navId === "nav-video-next") {
+                    currentVideoListIndex += 1;
+                    currentVideoListIndex %= length; // rotate forward
+                    videoData = currentlyConsideredVideos[currentVideoListIndex];
+                } else {
+                    videoData = $videoNavButton.data(); // Get the actual index from the element.
+                    currentVideoListIndex = videoData["pointer"];
+                }
+
+                // Mark currently active video
+                numberedVideoButtons[currentVideoListIndex].addClass("active");
+
+                awsUrl = videoData["aws_url"];
+                $videoSource.attr("src", awsUrl);
+                $videoElement.load().trigger("play");
+            });
         });
     </script>
 
@@ -121,28 +187,47 @@
             </div>
         </div>
         <div class="row pt-md">
-            <section id="consent-videos-pending-ruling" class="col-md-4 col-xs-12 list-group">
-                {% for video in study.consent_videos %}
-                    <a id="list-item-{{ video.uuid }}"
-                       class="consent-video-option list-group-item"
-                       data-id="{{ video.uuid }}"
-                       data-full-name="{{ video.full_name }}"
-                       data-created="{{ video.created_at }}"
-                       data-source-url="{{ video.download_url }}">
-
-                        <span>{{ video.display_name }}</span>
+            <section id="responses-pending-ruling" class="col-md-4 col-xs-12 list-group">
+                {% for response in loaded_responses %}
+                    <a id="response-option-{{ response.uuid }}"
+                       class="response-option list-group-item"
+                       data-id="{{ response.uuid }}">
+                        <span>{{ response.display_name }}</span>
                         <div class="btn-group-xs pull-right" role="group">
-                            <button type="button" value="reset" class="btn btn-xs btn-default glyphicon glyphicon-remove"></button>
-                            <button type="button" value="accepted" class="btn btn-xs btn-success glyphicon glyphicon-thumbs-up"></button>
-                            <button type="button" value="rejected" class="btn btn-xs btn-danger glyphicon glyphicon-thumbs-down"></button>
+                            <button type="button" value="reset"
+                                    class="btn btn-xs btn-default glyphicon glyphicon-remove"></button>
+                            <button type="button" value="accepted"
+                                    class="btn btn-xs btn-success glyphicon glyphicon-thumbs-up"></button>
+                            <button type="button" value="rejected"
+                                    class="btn btn-xs btn-danger glyphicon glyphicon-thumbs-down"></button>
                         </div>
                     </a>
                 {% endfor %}
             </section>
             <section class="col-md-4 col-xs-12">
-                <video controls id="video-under-consideration" height="270" width="360">
-                    Please select a video from the left hand column.
-                </video>
+                <div class="video-container">
+                    <video controls id="video-under-consideration" height="270" width="360">
+                        <source src="" type="video/mp4">
+                        No playable videos available for this response!
+                    </video>
+                    <div class="btn-toolbar" id="video-manager">
+                        <nav aria-label="Video navigation">
+                            <ul class="pagination">
+                                <li id="nav-video-previous">
+                                    <a aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                {# list items go here#}
+                                <li id="nav-video-next">
+                                    <a aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             </section>
             <form id="consent-ruling-form" class="col-md-4 col-xs-12 well" method="POST">{% csrf_token %}
                 <ul class="list-group">

@@ -879,6 +879,26 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
     template_name = "studies/study_responses_consent_ruling.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        responses = context["study"].responses_with_prefetched_relationships
+        context["loaded_responses"] = responses
+
+        # Construct small map
+        response_video_map = {}
+        for response in responses:
+            response_video_map[str(response.uuid)] = [
+                {
+                    "aws_url": video.download_url,
+                    "filename": video.filename,
+                }
+                for video in response.videos.all()
+            ]
+
+        context["response_video_map"] = json.dumps(response_video_map)
+
+        return context
+
     def post(self, request, *args, **kwargs):
         """This is where consent is submitted."""
         form_data = self.request.POST
