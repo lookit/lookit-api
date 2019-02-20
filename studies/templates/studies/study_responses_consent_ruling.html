@@ -10,15 +10,16 @@
         {{ response_video_map | safe }}
     </script>
     <script type="application/javascript">
-        const RESET = "reset";
-        const CONSENT_APPROVAL = "accepted";
-        const CONSENT_REJECTION = "rejected";
-        const RESPONSE_VIDEO_MAP = JSON.parse(document.querySelector("#response-video-map").innerText);
+        const RESET = "reset",
+              CONSENT_APPROVAL = "accepted",
+              CONSENT_REJECTION = "rejected",
+              RESPONSE_VIDEO_MAP = JSON.parse(document.querySelector("#response-video-map").innerText);
 
         $(document).ready(function () {
             /*
-             Initialize important elements.
+             Initialize important elements. $-prepended elements indicate jQuery element.
              */
+            // Element Members.
             const $videoElement = $("#video-under-consideration"),
                   $videoSource = $videoElement.find("source"),
                   $videoManager = $("#video-manager"),
@@ -29,21 +30,33 @@
                   $approvalsCountBadge = $consentRulingForm.find("#approvals-count"),
                   $rejectionsCountBadge = $consentRulingForm.find("#rejections-count");
 
+            // Lazily initialized closures (mutable members).
+            var currentlyConsideredVideos,
+                currentVideoListIndex,
+                numberedVideoButtons,
+                $currentlySelectedResponse; // jQuery container.
+
             /*
-             Helpers.
+             "Controller methods" - using closures to mimic class-like behavior.
              */
+            function updateBadges() {
+                $approvalsCountBadge.text($(`.consent-ruling[name=${CONSENT_APPROVAL}]`).length);
+                $rejectionsCountBadge.text($(`.consent-ruling[name=${CONSENT_REJECTION}]`).length);
+            }
+
             function handleRulingActions($button, $responseListItem, responseData) {
                 let responseId = responseData["id"],
                     responseRulingHiddenInputId = "consent-ruling-" + responseId,
                     hiddenInputAttrs = {id: responseRulingHiddenInputId, type: "hidden"},
                     $hiddenInput = $consentRulingForm.find("#" + responseRulingHiddenInputId);
 
-                // First Manage UI signaling
+                // First, change the UI signaling in the pending list.
                 switch ($button.val()) {
                     case RESET:
                         $responseListItem.removeClass("list-group-item-danger list-group-item-success");
                         $hiddenInput.remove();
-                        return;  // early exit after killing the element.
+                        updateBadges();
+                        return;  // early exit after killing the element, which is why we need to update badges here.
                     case CONSENT_APPROVAL:
                         $responseListItem.removeClass("list-group-item-danger");
                         $responseListItem.addClass("list-group-item-success");
@@ -56,17 +69,18 @@
                         break;
                 }
 
+                // Now, either change or add the hidden form input.
                 if ($hiddenInput.length) {
                     $hiddenInput.attr("name", hiddenInputAttrs["name"]);
-                } else {  // If it's not there, create a new one.
+                } else {  // If it's not there, create a new one...
                     hiddenInputAttrs["value"] = responseId;
-                    $consentRulingForm.append($("<input/>", hiddenInputAttrs));
+                    $consentRulingForm.append($("<input/>", hiddenInputAttrs).addClass("consent-ruling"));
                 }
+
+                // ... Finally, update the UI with whatever approval state was changed.
+                updateBadges();
             }
 
-            var currentlyConsideredVideos, // Lazily initialized closure to maintain video list.
-                currentVideoListIndex, // index should correspond to both lists here!
-                numberedVideoButtons;
 
             function updateVideoContainer($selectedResponseItem, responseId) {
                 // 1) Clear the current container
@@ -95,11 +109,9 @@
             }
 
             /*
-             EVENT LISTENERS
+             EVENT LISTENERS.
+             XXX: Lots of manual event delegation inside, to account for constantly-updating elements.
              */
-            var $currentlySelectedResponse;  // Lazily initialized closure to maintain previous selected.
-
-            // XXX: Manual event delegation inside
             $pendingJudgementList.on("click", "a.response-option", function (event) {
 
                 // UI Signal - we're paying attention to this video.
@@ -115,7 +127,7 @@
 
                 // If it's consent or approval, deal with it.
                 if ($target.is("button")) {
-                    return handleRulingActions($target, $currentlySelectedResponse, responseData);
+                    handleRulingActions($target, $currentlySelectedResponse, responseData);
                 } else { // Update the video container with nav buttons.
                     $videoSource.attr("src", "");
                     $videoElement.load();
@@ -133,18 +145,18 @@
 
                 if (navId === "nav-video-previous") {
                     currentVideoListIndex -= 1;
-                    currentVideoListIndex %= length; // rotate backward
+                    currentVideoListIndex %= length; // rotate backward,
                     videoData = currentlyConsideredVideos[currentVideoListIndex];
                 } else if (navId === "nav-video-next") {
                     currentVideoListIndex += 1;
-                    currentVideoListIndex %= length; // rotate forward
+                    currentVideoListIndex %= length; // rotate forward,
                     videoData = currentlyConsideredVideos[currentVideoListIndex];
                 } else {
-                    videoData = $videoNavButton.data(); // Get the actual index from the element.
+                    videoData = $videoNavButton.data(); // or the actual index from the element data.
                     currentVideoListIndex = videoData["pointer"];
                 }
 
-                // Mark currently active video
+                // Mark currently active video.
                 numberedVideoButtons[currentVideoListIndex].addClass("active");
 
                 awsUrl = videoData["aws_url"];
@@ -208,7 +220,6 @@
                 <div class="video-container">
                     <video controls id="video-under-consideration" height="270" width="360">
                         <source src="" type="video/mp4">
-                        No playable videos available for this response!
                     </video>
                     <div class="btn-toolbar" id="video-manager">
                         <nav aria-label="Video navigation">

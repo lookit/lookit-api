@@ -817,12 +817,10 @@ class ConsentRuling(models.Model):
     response = models.ForeignKey(
         Response, on_delete=models.DO_NOTHING, related_name="consent_rulings"
     )
-    video = models.ForeignKey(
-        Video, on_delete=models.DO_NOTHING, related_name="consent_rulings"
-    )
     arbiter = models.ForeignKey(
         User, on_delete=models.DO_NOTHING, related_name="consent_rulings"
     )
+    comments = models.TextField(null=True)
 
     class Meta:
         ordering = ["-created_at"]

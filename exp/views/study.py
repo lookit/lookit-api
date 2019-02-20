@@ -884,7 +884,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         responses = context["study"].responses_with_prefetched_relationships
         context["loaded_responses"] = responses
 
-        # Construct small map
+        # By putting this in a map, we can efficiently organize video lists by response.
         response_video_map = {}
         for response in responses:
             response_video_map[str(response.uuid)] = [
