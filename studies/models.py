@@ -790,7 +790,6 @@ class Video(models.Model):
             rulings_for_response.create(
                 action=ruling,
                 response=response,
-                video=self,
                 arbiter=arbiter,
             )
         else:

@@ -7,13 +7,15 @@
 {% block head %}
     {{ block.super }}
     <script type="application/json" id="response-video-map">
+        {#    #}
         {{ response_video_map | safe }}
     </script>
     <script type="application/javascript">
         const RESET = "reset",
               CONSENT_APPROVAL = "accepted",
               CONSENT_REJECTION = "rejected",
-              RESPONSE_VIDEO_MAP = JSON.parse(document.querySelector("#response-video-map").innerText);
+              RESPONSE_VIDEO_MAP = JSON.parse(document.querySelector("#response-video-map").innerText),
+              COMMENTS_CACHE = {};
 
         $(document).ready(function () {
             /*
@@ -25,16 +27,18 @@
                   $videoManager = $("#video-manager"),
                   $videoPreviousButton = $videoManager.find("#nav-video-previous"),
                   $videoNextButton = $videoManager.find("#nav-video-next"),
+                  $responseComments = $("#response-commentary"),
                   $pendingJudgementList = $("#responses-pending-ruling"),
                   $consentRulingForm = $("#consent-ruling-form"),
                   $approvalsCountBadge = $consentRulingForm.find("#approvals-count"),
-                  $rejectionsCountBadge = $consentRulingForm.find("#rejections-count");
+                  $rejectionsCountBadge = $consentRulingForm.find("#rejections-count"),
+                  $commentsHiddenInput = $consentRulingForm.find("input[name='comments']");
 
             // Lazily initialized closures (mutable members).
             var currentlyConsideredVideos,
                 currentVideoListIndex,
                 numberedVideoButtons,
-                $currentlySelectedResponse; // jQuery container.
+                $currentlySelectedResponse; // jQuery container for response li.
 
             /*
              "Controller methods" - using closures to mimic class-like behavior.
@@ -42,6 +46,17 @@
             function updateBadges() {
                 $approvalsCountBadge.text($(`.consent-ruling[name=${CONSENT_APPROVAL}]`).length);
                 $rejectionsCountBadge.text($(`.consent-ruling[name=${CONSENT_REJECTION}]`).length);
+            }
+
+            function saveComments() {
+                let currentText = $responseComments.val();
+                if (currentText) {
+                    COMMENTS_CACHE[$currentlySelectedResponse.data("id")] = $responseComments.val();
+                }
+            }
+
+            function retrieveComments() {
+                $responseComments.val(COMMENTS_CACHE[$currentlySelectedResponse.data("id")] || "");
             }
 
             function handleRulingActions($button, $responseListItem, responseData) {
@@ -84,6 +99,8 @@
 
             function updateVideoContainer($selectedResponseItem, responseId) {
                 // 1) Clear the current container
+                $videoSource.attr("src", "");
+                $videoElement.load();
                 $videoPreviousButton.nextUntil($videoNextButton).remove();
 
                 currentlyConsideredVideos = RESPONSE_VIDEO_MAP[responseId];
@@ -117,9 +134,11 @@
                 // UI Signal - we're paying attention to this video.
                 if ($currentlySelectedResponse) { // If we've got something, deselect it.
                     $currentlySelectedResponse.removeClass("active");
+                    saveComments();
                 }
 
                 $currentlySelectedResponse = $(this);
+                retrieveComments();
                 $currentlySelectedResponse.addClass("active");
 
                 let $target = $(event.target);
@@ -129,8 +148,6 @@
                 if ($target.is("button")) {
                     handleRulingActions($target, $currentlySelectedResponse, responseData);
                 } else { // Update the video container with nav buttons.
-                    $videoSource.attr("src", "");
-                    $videoElement.load();
                     updateVideoContainer($currentlySelectedResponse, responseData["id"]);
                 }
             });
@@ -162,6 +179,12 @@
                 awsUrl = videoData["aws_url"];
                 $videoSource.attr("src", awsUrl);
                 $videoElement.load().trigger("play");
+            });
+
+            $consentRulingForm.submit(function(event) {
+                // Create comments JSON and append to form.
+                saveComments();
+                $commentsHiddenInput.val(JSON.stringify(COMMENTS_CACHE));
             });
         });
     </script>
@@ -221,6 +244,9 @@
                     <video controls id="video-under-consideration" height="270" width="360">
                         <source src="" type="video/mp4">
                     </video>
+                    <textarea id="response-commentary"
+                              class="form-control"
+                              placeholder="Comment on session. These will be saved upon submit."></textarea>
                     <div class="btn-toolbar" id="video-manager">
                         <nav aria-label="Video navigation">
                             <ul class="pagination">
@@ -249,6 +275,7 @@
                         Rejections <span id="rejections-count" class="badge">0</span>
                     </li>
                 </ul>
+                <input name="comments" type="hidden" value="{}"/>
                 <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Rulings</button>
                 <button type="button" class="btn btn-default btn-lg btn-block">Reset Choices</button>
             </form>

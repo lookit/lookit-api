@@ -903,17 +903,31 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         """This is where consent is submitted."""
         form_data = self.request.POST
         user = self.request.user
+        responses = self.get_object().responses
 
-        accepted_videos = Video.objects.filter(uuid__in=form_data.getlist("accepted"))
-        rejected_videos = Video.objects.filter(uuid__in=form_data.getlist("rejected"))
+        accepted_responses = responses.filter(uuid__in=form_data.getlist("accepted"))
+        rejected_responses = responses.filter(uuid__in=form_data.getlist("rejected"))
+        comments = json.loads(form_data.get("comments"))
 
-        # Iterating because each video may have a different response associated with it, which means we need to
-        # construct each ConsentRuling object accordingly.
-        for approved in accepted_videos:
-            approved.mark_response_with_consent_ruling(user, "accepted")
+        for response in accepted_responses:
+            response.has_valid_consent = True
+            response.consent_rulings.create(
+                action="accepted",
+                response=response,
+                arbiter=user,
+                comments=comments.get(str(response.uuid), None),
+            )
+            response.save()
 
-        for rejected in rejected_videos:
-            rejected.mark_response_with_consent_ruling(user, "rejected")
+        for response in rejected_responses:
+            response.has_valid_consent = False
+            response.consent_rulings.create(
+                action="rejected",
+                response=response,
+                arbiter=user,
+                comments=comments.get(str(response.uuid), None),
+            )
+            response.save()
 
         return super().post(request, *args, **kwargs)
 
