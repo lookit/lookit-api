@@ -7,11 +7,15 @@
 {% block head %}
     {{ block.super }}
     <script type="application/json" id="response-video-map">
-        {#    #}
+        {% comment %}
+            When we upgrade to django 2.x, please convert to json_script. Please see:
+            https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
+        {% endcomment %}
         {{ response_video_map | safe }}
     </script>
     <script type="application/javascript">
         const RESET = "reset",
+              CONSENT_PENDING = "pending",
               CONSENT_APPROVAL = "accepted",
               CONSENT_REJECTION = "rejected",
               RESPONSE_VIDEO_MAP = JSON.parse(document.querySelector("#response-video-map").innerText),
@@ -28,7 +32,8 @@
                   $videoPreviousButton = $videoManager.find("#nav-video-previous"),
                   $videoNextButton = $videoManager.find("#nav-video-next"),
                   $responseComments = $("#response-commentary"),
-                  $pendingJudgementList = $("#responses-pending-ruling"),
+                  $responseFilterButtons = $("#response-filter-buttons"),
+                  $listOfResponses = $("#list-of-responses"),
                   $consentRulingForm = $("#consent-ruling-form"),
                   $approvalsCountBadge = $consentRulingForm.find("#approvals-count"),
                   $rejectionsCountBadge = $consentRulingForm.find("#rejections-count"),
@@ -39,6 +44,11 @@
                 currentVideoListIndex,
                 numberedVideoButtons,
                 $currentlySelectedResponse; // jQuery container for response li.
+
+            /*
+             Call functions to set components to initial state.
+            */
+            applyFilterParametersToResponseList(CONSENT_PENDING, $("#filter-pending"));
 
             /*
              "Controller methods" - using closures to mimic class-like behavior.
@@ -57,6 +67,21 @@
 
             function retrieveComments() {
                 $responseComments.val(COMMENTS_CACHE[$currentlySelectedResponse.data("id")] || "");
+            }
+
+            function applyFilterParametersToResponseList(stateToToggle, $filterButton) {
+
+                let $responseOptions = $listOfResponses.find("a.response-option"),
+                    $toShow = $responseOptions.filter(`.${stateToToggle}`),
+                    $toHide = $responseOptions.not(`.${stateToToggle}`);
+
+                console.log($toShow);
+                console.log($toHide);
+                $toShow.show();
+                $toHide.hide();
+
+                $filterButton.addClass("active");
+                $filterButton.siblings().removeClass("active");
             }
 
             function handleRulingActions($button, $responseListItem, responseData) {
@@ -127,18 +152,26 @@
 
             /*
              EVENT LISTENERS.
-             XXX: Lots of manual event delegation inside, to account for constantly-updating elements.
+             XXX: Lots of manual event delegation, to account for constantly-updating elements.
              */
-            $pendingJudgementList.on("click", "a.response-option", function (event) {
+            $responseFilterButtons.on("click", "a[type=button]", function(event) {
+                let $filterButton = $(this);
+
+                applyFilterParametersToResponseList($filterButton.attr("id").split("-")[1], $filterButton);
+            });
+
+            $listOfResponses.on("click", "a.response-option", function (event) {
 
                 // UI Signal - we're paying attention to this video.
                 if ($currentlySelectedResponse) { // If we've got something, deselect it.
                     $currentlySelectedResponse.removeClass("active");
-                    saveComments();
                 }
 
+                // Keep these in order for now, figure out a clean way to factor this out later.
+                saveComments();
                 $currentlySelectedResponse = $(this);
                 retrieveComments();
+
                 $currentlySelectedResponse.addClass("active");
 
                 let $target = $(event.target);
@@ -222,10 +255,19 @@
             </div>
         </div>
         <div class="row pt-md">
-            <section id="responses-pending-ruling" class="col-md-4 col-xs-12 list-group">
-                {% for response in loaded_responses %}
+            <section id="response-controls" class="col-md-4 col-xs-12">
+                <span id="response-filter-buttons"
+                     class="btn-group btn-group-justified"
+                     role="group"
+                     aria-label="Consent Type Filter">
+                    <a id="filter-pending" type="button" class="btn btn-default">Pending</a>
+                    <a id="filter-accepted" type="button" class="btn btn-success">Approved</a>
+                    <a id="filter-rejected" type="button" class="btn btn-danger">Rejected</a>
+                </span>
+                <div id="list-of-responses" class="list-group">
+                    {% for response in loaded_responses %}
                     <a id="response-option-{{ response.uuid }}"
-                       class="response-option list-group-item"
+                       class="response-option list-group-item {{ response.most_recent_ruling }}"
                        data-id="{{ response.uuid }}">
                         <span>{{ response.display_name }}</span>
                         <div class="btn-group-xs pull-right" role="group">
@@ -237,7 +279,8 @@
                                     class="btn btn-xs btn-danger glyphicon glyphicon-thumbs-down"></button>
                         </div>
                     </a>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </section>
             <section class="col-md-4 col-xs-12">
                 <div class="video-container">

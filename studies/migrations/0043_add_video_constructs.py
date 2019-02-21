@@ -123,11 +123,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
-            model_name='response',
-            name='has_valid_consent',
-            field=models.BooleanField(default=False),
-        ),
-        migrations.AddField(
             model_name='video',
             name='response',
             field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, related_name='videos', to='studies.Response'),
@@ -148,5 +143,5 @@ class Migration(migrations.Migration):
         ),
 
         # Finally, run custom migration code
-        migrations.RunPython(generate_videos_from_responses),
+        migrations.RunPython(generate_videos_from_responses, reverse_code=migrations.RunPython.noop),
     ]

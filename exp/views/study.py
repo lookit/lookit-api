@@ -895,6 +895,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                 for video in response.videos.all()
             ]
 
+        # TODO: Upgrade to Django 2.x and use json_script.
         context["response_video_map"] = json.dumps(response_video_map)
 
         return context
@@ -910,7 +911,6 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         comments = json.loads(form_data.get("comments"))
 
         for response in accepted_responses:
-            response.has_valid_consent = True
             response.consent_rulings.create(
                 action="accepted",
                 response=response,
@@ -920,7 +920,6 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
             response.save()
 
         for response in rejected_responses:
-            response.has_valid_consent = False
             response.consent_rulings.create(
                 action="rejected",
                 response=response,

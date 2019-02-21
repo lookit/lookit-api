@@ -261,14 +261,30 @@ h3.study-logs-label {
 
 
 /* Consent Manager */
-#responses-pending-ruling {
+#list-of-responses {
     max-height: 300px;  /* same height as video */
     overflow-y: scroll;
+}
+
+#response-filter-buttons {
+    margin-bottom: 10px;
 }
 
 #video-manager nav {
     /* centering the inline-block ul*/
     text-align: center;
+}
+
+#list-of-responses .response-option span {
+    display: inline-block;
+    max-width: 75%;
+    overflow-x: hidden;
+}
+
+#list-of-responses .response-option.approved span {
+    display: inline-block;
+    max-width: 75%;
+    overflow-x: hidden;
 }
 
 /* Study Edit */

@@ -36,6 +36,7 @@ VALID_CONSENT_FRAMES = ("1-video-consent",)
 STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
 
 # Consent ruling stuff
+PENDING = "pending"
 ACCEPTED = "accepted"
 REJECTED = "rejected"
 CONSENT_RULINGS = (ACCEPTED, REJECTED)
@@ -206,7 +207,9 @@ class Study(models.Model):
     @property
     def responses_with_prefetched_relationships(self):
         """Custom Queryset for the Consent Manager view."""
-        return self.consented_responses.prefetch_related("videos").select_related("child", "child__user").all()
+        return self.consented_responses\
+            .prefetch_related("videos", "consent_rulings")\
+            .select_related("child", "child__user").all()
 
     @property
     def consent_videos(self):
@@ -535,7 +538,6 @@ class Response(models.Model):
     )
     completed = models.BooleanField(default=False)
     completed_consent_frame = models.BooleanField(default=False)
-    has_valid_consent = models.BooleanField(default=False)
     exp_data = DateTimeAwareJSONField(default=dict)
     conditions = DateTimeAwareJSONField(default=dict)
     sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)
@@ -560,7 +562,16 @@ class Response(models.Model):
 
     @cached_property
     def display_name(self):
-        return f"Child({self.child.given_name}); Parent({self.child.user.nickname})"
+        return f"UUID({str(self.uuid)[:8]}...); Child({self.child.given_name}); Parent({self.child.user.nickname})"
+
+    @property
+    def most_recent_ruling(self):
+        """Gets the most recent ruling for a Response/Session.
+
+        XXX: This is EXPENSIVE if not called within the context of a prefetched query set!
+        """
+        ruling = self.consent_rulings.first()
+        return ruling.action if ruling else PENDING
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
@@ -775,34 +786,6 @@ class Video(models.Model):
     @property
     def download_url(self):
         return get_download_url(self.pipe_name + ".mp4")
-
-    def mark_response_with_consent_ruling(self, arbiter: User, ruling: str):
-        """Marks a parent response with consent.
-
-            :param arbiter: Who is making the judgement.
-            :param ruling: The ruling for a given response.
-        """
-        response = self.response
-
-        rulings_for_response = response.consent_rulings
-
-        if ruling in CONSENT_RULINGS:
-            rulings_for_response.create(
-                action=ruling,
-                response=response,
-                arbiter=arbiter,
-            )
-        else:
-            raise ValueError(f"Invalid ruling: {ruling}. Must be one of {CONSENT_RULINGS}")
-
-        if ruling == ACCEPTED:  # Shortcut since this is the latest ruling
-            response.has_valid_consent = True
-            response.save()
-        else:  # if we are rejecting, rejecting only reverses response validity when it's for the same video.
-            prior_approval = rulings_for_response.filter(video__id=self.id).first()
-            if prior_approval:
-                response.has_valid_consent = False
-                response.save()
 
 
 class ConsentRuling(models.Model):
