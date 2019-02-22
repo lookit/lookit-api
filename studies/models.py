@@ -212,6 +212,12 @@ class Study(models.Model):
             .select_related("child", "child__user").all()
 
     @property
+    def validated_consent_responses(self):
+        """Custom Queryset for the Consent Manager view."""
+        return self.consented_responses \
+            .prefetch_related("consent_rulings").filter(most_recent_ruling="accepted")
+
+    @property
     def consent_videos(self):
         return self.videos.filter(is_consent_footage=True)
 

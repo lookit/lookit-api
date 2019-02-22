@@ -3,6 +3,7 @@ import json
 import operator
 import os
 import zipfile
+import datetime
 from functools import reduce
 from typing import NamedTuple
 
@@ -884,10 +885,14 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         responses = context["study"].responses_with_prefetched_relationships
         context["loaded_responses"] = responses
 
-        # By putting this in a map, we can efficiently organize video lists by response.
-        response_video_map = {}
+        # Using a map for arbitrarily structured data - lists and objects that we can't just trivially shove onto
+        # data-* properties in HTML
+        response_key_value_store = {}
+
         for response in responses:
-            response_video_map[str(response.uuid)] = [
+            response_data = response_key_value_store[str(response.uuid)] = {}
+
+            response_data["videos"] = [
                 {
                     "aws_url": video.download_url,
                     "filename": video.filename,
@@ -895,8 +900,35 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                 for video in response.videos.all()
             ]
 
+            response_data["details"] = {
+                "general": {
+                    "id": response.id,
+                    "uuid": str(response.uuid),
+                    "sequence": response.sequence,
+                    "conditions": json.dumps(response.conditions),
+                    "global_event_timings": json.dumps(response.global_event_timings),
+                    "completed": response.completed,
+                },
+                "exp_data": response.exp_data,
+                "participant": {
+                    "id": response.child.user_id,
+                    "uuid": str(response.child.user.uuid),
+                    "nickname": response.child.user.nickname,
+                },
+                "child": {
+                    "id": response.child.id,
+                    "uuid": str(response.child.uuid),
+                    "name": response.child.given_name,
+                    "birthday": response.child.birthday,
+                    "gender": response.child.gender,
+                    "age_at_birth": response.child.age_at_birth,
+                    "additional_information": response.child.additional_information,
+                },
+            }
+
         # TODO: Upgrade to Django 2.x and use json_script.
-        context["response_video_map"] = json.dumps(response_video_map)
+        context["response_key_value_store"] = json.dumps(
+            response_key_value_store, default=lambda x: str(x) if isinstance(x, datetime.date) else x)
 
         return context
 

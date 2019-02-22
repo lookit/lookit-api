@@ -6,19 +6,19 @@
 
 {% block head %}
     {{ block.super }}
-    <script type="application/json" id="response-video-map">
+    <script type="application/json" id="response-key-value-store">
         {% comment %}
             When we upgrade to django 2.x, please convert to json_script. Please see:
             https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
         {% endcomment %}
-        {{ response_video_map | safe }}
+        {{ response_key_value_store | safe }}
     </script>
     <script type="application/javascript">
         const RESET = "reset",
               CONSENT_PENDING = "pending",
               CONSENT_APPROVAL = "accepted",
               CONSENT_REJECTION = "rejected",
-              RESPONSE_VIDEO_MAP = JSON.parse(document.querySelector("#response-video-map").innerText),
+              RESPONSE_KEY_VALUE_STORE = JSON.parse(document.querySelector("#response-key-value-store").innerText),
               COMMENTS_CACHE = {};
 
         $(document).ready(function () {
@@ -37,7 +37,11 @@
                   $consentRulingForm = $("#consent-ruling-form"),
                   $approvalsCountBadge = $consentRulingForm.find("#approvals-count"),
                   $rejectionsCountBadge = $consentRulingForm.find("#rejections-count"),
-                  $commentsHiddenInput = $consentRulingForm.find("input[name='comments']");
+                  $commentsHiddenInput = $consentRulingForm.find("input[name='comments']"),
+                  $responseDataSection = $("#response-info-container"),
+                  $generalRow = $responseDataSection.find("table#general tbody tr"),
+                  $participantRow = $responseDataSection.find("table#participant tbody tr"),
+                  $childRow = $responseDataSection.find("table#child tbody tr");
 
             // Lazily initialized closures (mutable members).
             var currentlyConsideredVideos,
@@ -75,8 +79,6 @@
                     $toShow = $responseOptions.filter(`.${stateToToggle}`),
                     $toHide = $responseOptions.not(`.${stateToToggle}`);
 
-                console.log($toShow);
-                console.log($toHide);
                 $toShow.show();
                 $toHide.hide();
 
@@ -122,13 +124,13 @@
             }
 
 
-            function updateVideoContainer($selectedResponseItem, responseId) {
+            function updateVideoContainer(responseData) {
                 // 1) Clear the current container
                 $videoSource.attr("src", "");
                 $videoElement.load();
                 $videoPreviousButton.nextUntil($videoNextButton).remove();
 
-                currentlyConsideredVideos = RESPONSE_VIDEO_MAP[responseId];
+                currentlyConsideredVideos = responseData["videos"];
                 currentVideoListIndex = 0;
 
                 numberedVideoButtons = []; // Empty out current set of buttons.
@@ -148,6 +150,21 @@
                     numberedVideoButtons[0].addClass("active");
                     $videoElement.load().trigger("play");
                 }
+            }
+
+            function updateResponseDataSection(responseData) {
+                let details = responseData["details"];
+                let expData = details["exp_data"];
+                $responseDataSection.find("#exp-data").html(JSON.stringify(expData, undefined, 2));
+
+                $generalRow.empty();
+                $generalRow.append(Array.from(Object.values(details["general"]), val => $(`<td>${val}</td>`)));
+
+                $participantRow.empty();
+                $participantRow.append(Array.from(Object.values(details["participant"]), val => $(`<td>${val}</td>`)));
+
+                $childRow.empty();
+                $childRow.append(Array.from(Object.values(details["child"]), val => $(`<td>${val}</td>`)));
             }
 
             /*
@@ -181,7 +198,9 @@
                 if ($target.is("button")) {
                     handleRulingActions($target, $currentlySelectedResponse, responseData);
                 } else { // Update the video container with nav buttons.
-                    updateVideoContainer($currentlySelectedResponse, responseData["id"]);
+                    let responseObjects = RESPONSE_KEY_VALUE_STORE[responseData["id"]];
+                    updateVideoContainer(responseObjects);
+                    updateResponseDataSection(responseObjects);
                 }
             });
 
@@ -202,7 +221,7 @@
                     currentVideoListIndex %= length; // rotate forward,
                     videoData = currentlyConsideredVideos[currentVideoListIndex];
                 } else {
-                    videoData = $videoNavButton.data(); // or the actual index from the element data.
+                    videoData = $videoNavButton.data(); // or get the actual index from the element data.
                     currentVideoListIndex = videoData["pointer"];
                 }
 
@@ -322,6 +341,65 @@
                 <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Rulings</button>
                 <button type="button" class="btn btn-default btn-lg btn-block">Reset Choices</button>
             </form>
+        </div>
+        <div id="response-info-container" class="row pt-md well">
+            <h2>Session Data</h2>
+            <h3>General Information</h3>
+            <table id="general" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>UUID</th>
+                        <th>Sequence</th>
+                        <th>Conditions</th>
+                        <th>Global Event Timing</th>
+                        <th>Completed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {# General data inserted here #}
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Participant Information</h3>
+            <table id="participant" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>UUID</th>
+                        <th>Nickname</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {# Participant data inserted here #}
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Child Information</h3>
+            <table id="child" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>UUID</th>
+                        <th>Name</th>
+                        <th>Birthday</th>
+                        <th>Gender</th>
+                        <th>Age at Birth</th>
+                        <th>Additional Info</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {# Child data inserted here #}
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Full Session Data</h3>
+            <pre class="center-block" id="exp-data">
+                {# Experiment data appended here #}
+            </pre>
         </div>
     </div>
 {% endblock %}
