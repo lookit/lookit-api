@@ -201,21 +201,23 @@ class Study(models.Model):
             return None
 
     @property
-    def consented_responses(self):
+    def judgeable_responses(self):
         return self.responses.filter(completed_consent_frame=True)
 
     @property
     def responses_with_prefetched_relationships(self):
         """Custom Queryset for the Consent Manager view."""
-        return self.consented_responses\
+        return self.judgeable_responses\
             .prefetch_related("videos", "consent_rulings")\
             .select_related("child", "child__user").all()
 
     @property
-    def validated_consent_responses(self):
-        """Custom Queryset for the Consent Manager view."""
-        return self.consented_responses \
-            .prefetch_related("consent_rulings").filter(most_recent_ruling="accepted")
+    def consented_responses(self):
+        """Get responses for which we have a valid "accepted" consent ruling."""
+        newest = ConsentRuling.objects.filter(response=models.OuterRef("pk")).order_by("-created_at")
+        annotated = self.judgeable_responses.annotate(current_ruling=models.Subquery(newest.values("action")[:1]))
+        full_query = annotated.filter(current_ruling="accepted")
+        return full_query.all()
 
     @property
     def consent_videos(self):
