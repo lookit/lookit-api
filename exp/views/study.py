@@ -1092,11 +1092,14 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get("sort", "id") or "id"
+        orderby = self.request.GET.get("sort", "full_name")
         match = self.request.GET.get("match", "")
-        context["attachments"] = attachment_helpers.get_study_attachments(
-            context["study"], orderby, match
-        )
+        videos = context["study"].videos_for_consented_responses
+        if match:
+            videos = videos.filter(full_name__icontains=match)
+        if orderby:
+            videos = videos.order_by(orderby)
+        context["videos"] = videos
         context["match"] = match
         return context
 
@@ -1104,12 +1107,12 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         """
         Downloads study video
         """
-        attachment = self.request.POST.get("attachment")
+        attachment_url = self.request.POST.get("attachment")
         match = self.request.GET.get("match", "")
         orderby = self.request.GET.get("sort", "id") or "id"
-        if attachment:
-            download_url = attachment_helpers.get_download_url(attachment)
-            return redirect(download_url)
+
+        if attachment_url:
+            return redirect(attachment_url)
 
         if self.request.POST.get("all-attachments"):
             build_zipfile_of_videos.delay(

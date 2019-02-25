@@ -217,7 +217,12 @@ class Study(models.Model):
         newest = ConsentRuling.objects.filter(response=models.OuterRef("pk")).order_by("-created_at")
         annotated = self.judgeable_responses.annotate(current_ruling=models.Subquery(newest.values("action")[:1]))
         full_query = annotated.filter(current_ruling="accepted")
-        return full_query.all()
+        return full_query
+
+    @property
+    def videos_for_consented_responses(self):
+        """Gets videos but only for consented responses."""
+        return Video.objects.filter(response_id__in=self.consented_responses)
 
     @property
     def consent_videos(self):
