@@ -1,11 +1,11 @@
+import json
 import logging
 import uuid
-import dateutil
-import json
 
 import boto3
-from botocore.exceptions import ClientError
+import dateutil
 import fleep
+from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.serializers.json import DjangoJSONEncoder
@@ -207,15 +207,21 @@ class Study(models.Model):
     @property
     def responses_with_prefetched_relationships(self):
         """Custom Queryset for the Consent Manager view."""
-        return self.judgeable_responses\
-            .prefetch_related("videos", "consent_rulings")\
-            .select_related("child", "child__user").all()
+        return (
+            self.judgeable_responses.prefetch_related("videos", "consent_rulings")
+            .select_related("child", "child__user")
+            .all()
+        )
 
     @property
     def consented_responses(self):
         """Get responses for which we have a valid "accepted" consent ruling."""
-        newest = ConsentRuling.objects.filter(response=models.OuterRef("pk")).order_by("-created_at")
-        annotated = self.responses_with_prefetched_relationships.annotate(current_ruling=models.Subquery(newest.values("action")[:1]))
+        newest = ConsentRuling.objects.filter(response=models.OuterRef("pk")).order_by(
+            "-created_at"
+        )
+        annotated = self.responses_with_prefetched_relationships.annotate(
+            current_ruling=models.Subquery(newest.values("action")[:1])
+        )
         full_query = annotated.filter(current_ruling="accepted")
         return full_query
 
@@ -606,18 +612,26 @@ class Response(models.Model):
                     video_id = event["videoId"]
                     pipe_name = event["pipeId"]  # what we call "ID" they call "name"
                     if (
-                        video_id not in seen_ids and pipe_name and event["streamTime"] > 0
+                        video_id not in seen_ids
+                        and pipe_name
+                        and event["streamTime"] > 0
                     ):
                         # Try looking for the regular ID first.
-                        file_obj = S3_RESOURCE.Object(settings.BUCKET_NAME, f"{video_id}.mp4")
+                        file_obj = S3_RESOURCE.Object(
+                            settings.BUCKET_NAME, f"{video_id}.mp4"
+                        )
                         try:
                             response = file_obj.get()
                         except ClientError:
                             try:  # If that doesn't work, use the pipe name.
-                                file_obj = S3_RESOURCE.Object(settings.BUCKET_NAME, f"{pipe_name}.mp4")
+                                file_obj = S3_RESOURCE.Object(
+                                    settings.BUCKET_NAME, f"{pipe_name}.mp4"
+                                )
                                 response = file_obj.get()
                             except ClientError:
-                                logger.warning(f"could not find {video_id} or {pipe_name} in S3!")
+                                logger.warning(
+                                    f"could not find {video_id} or {pipe_name} in S3!"
+                                )
                                 continue
                         # Read first 32 bytes from streaming body (file header) to get actual filetype.
                         streaming_body = response["Body"]
@@ -715,7 +729,9 @@ class Video(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
     pipe_name = models.CharField(max_length=255, unique=True, blank=False)
-    pipe_numeric_id = models.IntegerField(null=True)  # Sad that we don't keep this metadata elsewhere...
+    pipe_numeric_id = models.IntegerField(
+        null=True
+    )  # Sad that we don't keep this metadata elsewhere...
     frame_id = models.CharField(max_length=255, blank=False)
     size = models.PositiveIntegerField(null=True)
     full_name = models.CharField(
@@ -755,9 +771,13 @@ class Video(models.Model):
             S3_RESOURCE.Object(settings.BUCKET_NAME, throwaway_jpg_name).delete()
 
         if "PREVIEW_DATA_DISREGARD" in new_full_name:
-            return None  # early exit, since we are not saving an object in the database.
+            return (
+                None
+            )  # early exit, since we are not saving an object in the database.
         else:
-            _, study_uuid, frame_id, response_uuid, timestamp, _ = new_full_name.split("_")
+            _, study_uuid, frame_id, response_uuid, timestamp, _ = new_full_name.split(
+                "_"
+            )
 
             # Once we've completed the renaming, we can create our nice db object.
             try:
@@ -798,7 +818,7 @@ class Video(models.Model):
 
     @property
     def download_url(self):
-        return get_download_url(self.pipe_name + ".mp4")
+        return get_download_url(self.full_name)
 
 
 class ConsentRuling(models.Model):

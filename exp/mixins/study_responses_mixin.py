@@ -3,25 +3,26 @@ import datetime
 import io
 import json
 
+from django.db.models import Prefetch, QuerySet
 from django.http import HttpResponseRedirect
-from django.db.models import QuerySet, Prefetch
 from django.shortcuts import redirect, reverse
 from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 
 import attachment_helpers
-from exp.views.mixins import ExperimenterLoginRequiredMixin
-from studies.models import Study, Response
 from accounts.models import Child, User
-
+from exp.views.mixins import ExperimenterLoginRequiredMixin
+from studies.models import Response, Study
 
 # PREFETCH = Response.objects.filter(completed_consent_frame=True)
 # CHILDREN_WITH_USERS = Child.objects.select_related("user")
 WITH_PREFETCHED_RESPONSES = Study.objects.prefetch_related("responses", "videos")
 
 
-class StudyResponsesMixin(SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin):
+class StudyResponsesMixin(
+    SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin
+):
     """
     Mixin with shared items for StudyResponsesList, StudyResponsesAll, and StudyAttachments Views.
 

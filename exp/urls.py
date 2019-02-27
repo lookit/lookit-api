@@ -36,9 +36,9 @@ from exp.views import (
     StudyParticipantEmailView,
     StudyPreviewBuildView,
     StudyResponsesAll,
-    StudyResponsesConsentManager,
     StudyResponsesAllDownloadCSV,
     StudyResponsesAllDownloadJSON,
+    StudyResponsesConsentManager,
     StudyResponsesList,
     StudyUpdateView,
 )

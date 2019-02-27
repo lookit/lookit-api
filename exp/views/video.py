@@ -4,13 +4,13 @@ import hashlib
 import hmac
 import urllib.parse
 
+from botocore.exceptions import ClientError
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
-from botocore.exceptions import ClientError
 from studies.models import Video
 
 
@@ -66,7 +66,10 @@ class RenameVideoView(View):
             try:
                 video_obj = Video.from_pipe_payload(d)
                 return HttpResponse(
-                    (d["data"]["videoName"] + " --> " + video_obj.filename) if video_obj else "Preview not saved")
+                    (d["data"]["videoName"] + " --> " + video_obj.filename)
+                    if video_obj
+                    else "Preview not saved"
+                )
             except ClientError:
                 return HttpResponseNotFound()
 

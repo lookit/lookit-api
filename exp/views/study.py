@@ -1,9 +1,9 @@
+import datetime
 import io
 import json
 import operator
 import os
 import zipfile
-import datetime
 from functools import reduce
 from typing import NamedTuple
 
@@ -32,7 +32,7 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import Study, StudyLog, StudyType, Video, ConsentRuling
+from studies.models import ConsentRuling, Study, StudyLog, StudyType, Video
 from studies.tasks import build_experiment, build_zipfile_of_videos
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -823,13 +823,11 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
         responses = context["study"].consented_responses.order_by(orderby)
-        print(responses.query)
-        paginated_responses = context["responses"] = self.paginated_queryset(responses, page, 10)
+        paginated_responses = context["responses"] = self.paginated_queryset(
+            responses, page, 10
+        )
         context["response_data"] = self.build_responses(paginated_responses)
         context["csv_data"] = self.build_individual_csv(paginated_responses)
-        # context["attachment_list"] = self.sort_attachments_by_response(
-        #     context["responses"]
-        # )
         return context
 
     def build_individual_csv(self, responses):
@@ -894,10 +892,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
             response_data = response_key_value_store[str(response.uuid)] = {}
 
             response_data["videos"] = [
-                {
-                    "aws_url": video.download_url,
-                    "filename": video.filename,
-                }
+                {"aws_url": video.download_url, "filename": video.filename}
                 for video in response.videos.all()
             ]
 
@@ -929,7 +924,9 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
         # TODO: Upgrade to Django 2.x and use json_script.
         context["response_key_value_store"] = json.dumps(
-            response_key_value_store, default=lambda x: str(x) if isinstance(x, datetime.date) else x)
+            response_key_value_store,
+            default=lambda x: str(x) if isinstance(x, datetime.date) else x,
+        )
 
         return context
 
