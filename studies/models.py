@@ -215,7 +215,7 @@ class Study(models.Model):
     def consented_responses(self):
         """Get responses for which we have a valid "accepted" consent ruling."""
         newest = ConsentRuling.objects.filter(response=models.OuterRef("pk")).order_by("-created_at")
-        annotated = self.judgeable_responses.annotate(current_ruling=models.Subquery(newest.values("action")[:1]))
+        annotated = self.responses_with_prefetched_relationships.annotate(current_ruling=models.Subquery(newest.values("action")[:1]))
         full_query = annotated.filter(current_ruling="accepted")
         return full_query
 
@@ -597,7 +597,7 @@ class Response(models.Model):
         video_objects = []
 
         # Using a constructive approach here, but with an ancillary seen_ids list b/c Django models without
-        # primary keys are unhashable for some dumb reason (even though they have unique fields...)
+        # primary keys are unhashable.
         for frame_id, event_data in self.exp_data.items():
             if event_data.get("videoList", None) and event_data.get("videoId", None):
                 # We've officially captured video here!

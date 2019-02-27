@@ -168,16 +168,16 @@
                 {% endfor %}
                 <div class="pb-md">
                     <h2> Attachments </h2>
-                    {% for attachments in attachment_list %}
+                    {% for response in responses %}
                         <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
-                            {% for attachment in attachments %}
+                            {% for video in response.videos.all %}
                                 <div class="row pt-xs">
                                     <form method="POST"> {% csrf_token %}
                                         <div class="col-xs-9">
-                                            {{ attachment.display }}
+                                            {{ video.full_name }}
                                         </div>
                                         <div class="col-xs-3">
-                                            <button name="attachment" type="submit" value="{{attachment.key}}" class="btn btn-primary btn-sm"> Download </button>
+                                            <button name="attachment" type="submit" value="{{video.id}}" class="btn btn-primary btn-sm"> Download </button>
                                         </div>
                                     </form>
                                 </div>

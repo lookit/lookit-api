@@ -4,22 +4,31 @@ import io
 import json
 
 from django.http import HttpResponseRedirect
+from django.db.models import QuerySet, Prefetch
 from django.shortcuts import redirect, reverse
+from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 
 import attachment_helpers
 from exp.views.mixins import ExperimenterLoginRequiredMixin
-from studies.models import Study
+from studies.models import Study, Response
+from accounts.models import Child, User
 
 
-class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixin):
+# PREFETCH = Response.objects.filter(completed_consent_frame=True)
+# CHILDREN_WITH_USERS = Child.objects.select_related("user")
+WITH_PREFETCHED_RESPONSES = Study.objects.prefetch_related("responses", "videos")
+
+
+class StudyResponsesMixin(SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin):
     """
-    Mixin with shared items for StudyResponsesList, StudyResponsesAll, and
-    StudyAttachments Views
+    Mixin with shared items for StudyResponsesList, StudyResponsesAll, and StudyAttachments Views.
+
+    TODO: deprecate this beast
     """
 
-    model = Study
+    queryset = WITH_PREFETCHED_RESPONSES
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
@@ -237,11 +246,11 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
 
     def post(self, request, *args, **kwargs):
         """
-        Downloads study video
+        Downloads a single study video.
         """
-        attachment = self.request.POST.get("attachment")
-        if attachment:
-            download_url = attachment_helpers.get_download_url(attachment)
+        attachment_id = self.request.POST.get("attachment")
+        if attachment_id:
+            download_url = self.get_object().videos.get(pk=attachment_id).download_url
             return redirect(download_url)
 
         return HttpResponseRedirect(

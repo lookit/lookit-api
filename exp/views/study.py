@@ -823,12 +823,13 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
         responses = context["study"].consented_responses.order_by(orderby)
-        context["responses"] = self.paginated_queryset(responses, page, 10)
-        context["response_data"] = self.build_responses(context["responses"])
-        context["csv_data"] = self.build_individual_csv(context["responses"])
-        context["attachment_list"] = self.sort_attachments_by_response(
-            context["responses"]
-        )
+        print(responses.query)
+        paginated_responses = context["responses"] = self.paginated_queryset(responses, page, 10)
+        context["response_data"] = self.build_responses(paginated_responses)
+        context["csv_data"] = self.build_individual_csv(paginated_responses)
+        # context["attachment_list"] = self.sort_attachments_by_response(
+        #     context["responses"]
+        # )
         return context
 
     def build_individual_csv(self, responses):
