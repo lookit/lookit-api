@@ -125,6 +125,10 @@
 
 
             function updateVideoContainer(responseData) {
+                // 0) Load most recent comment.
+                let comments = responseData["details"]["general"]["last_comment"];
+                $responseComments.val(comments);
+
                 // 1) Clear the current container
                 $videoSource.attr("src", "");
                 $videoElement.load();
@@ -133,8 +137,8 @@
                 currentlyConsideredVideos = responseData["videos"];
                 currentVideoListIndex = 0;
 
+                // 2) Reset video buttons.
                 numberedVideoButtons = []; // Empty out current set of buttons.
-
                 currentlyConsideredVideos.forEach((videoObject, index) => {
                     videoObject["pointer"] = index;
                     let $numberedVideoButton = $("<li></li>").data(videoObject);

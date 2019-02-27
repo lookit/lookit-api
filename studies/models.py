@@ -592,6 +592,11 @@ class Response(models.Model):
         ruling = self.consent_rulings.first()
         return ruling.action if ruling else PENDING
 
+    @property
+    def most_recent_comment(self):
+        ruling = self.consent_rulings.first()
+        return ruling.comments if ruling else ""
+
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
 

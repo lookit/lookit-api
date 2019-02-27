@@ -904,6 +904,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "conditions": json.dumps(response.conditions),
                     "global_event_timings": json.dumps(response.global_event_timings),
                     "completed": response.completed,
+                    "last_comment": response.most_recent_comment,
                 },
                 "exp_data": response.exp_data,
                 "participant": {
