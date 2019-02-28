@@ -906,7 +906,6 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "completed": response.completed,
                     "last_comment": response.most_recent_comment,
                 },
-                "exp_data": response.exp_data,
                 "participant": {
                     "id": response.child.user_id,
                     "uuid": str(response.child.user.uuid),
@@ -922,6 +921,9 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "additional_information": response.child.additional_information,
                 },
             }
+
+            if response.has_valid_consent:
+                response_data["details"]["exp_data"] = response.exp_data
 
         # TODO: Upgrade to Django 2.x and use json_script.
         context["response_key_value_store"] = json.dumps(

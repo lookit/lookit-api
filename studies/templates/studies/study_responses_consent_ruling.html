@@ -210,6 +210,10 @@
             });
 
             $videoManager.on("click", "li", function(event) {
+                // Early exit if there's less than two videos.
+                if (!currentlyConsideredVideos || currentlyConsideredVideos.length < 2) { return; }
+
+                // Otherwise, get started.
                 let $videoNavButton = $(this),
                     navId = $videoNavButton.attr("id"),
                     length = currentlyConsideredVideos.length,

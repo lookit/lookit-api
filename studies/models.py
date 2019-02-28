@@ -593,6 +593,10 @@ class Response(models.Model):
         return ruling.action if ruling else PENDING
 
     @property
+    def has_valid_consent(self):
+        return self.most_recent_ruling == ACCEPTED
+
+    @property
     def most_recent_comment(self):
         ruling = self.consent_rulings.first()
         return ruling.comments if ruling else ""
