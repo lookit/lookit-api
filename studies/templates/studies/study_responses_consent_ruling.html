@@ -38,6 +38,7 @@
                   $approvalsCountBadge = $consentRulingForm.find("#approvals-count"),
                   $rejectionsCountBadge = $consentRulingForm.find("#rejections-count"),
                   $commentsHiddenInput = $consentRulingForm.find("input[name='comments']"),
+                  $resetChoicesButton = $consentRulingForm.find("#reset-choices"),
                   $responseDataSection = $("#response-info-container"),
                   $generalRow = $responseDataSection.find("table#general tbody tr"),
                   $participantRow = $responseDataSection.find("table#participant tbody tr"),
@@ -242,6 +243,12 @@
                 saveComments();
                 $commentsHiddenInput.val(JSON.stringify(COMMENTS_CACHE));
             });
+
+            $resetChoicesButton.on("click", function() {
+                $listOfResponses.find(".response-option").removeClass("list-group-item-danger list-group-item-success");
+                $consentRulingForm.find("input.consent-ruling").remove();
+                updateBadges();
+            });
         });
     </script>
 
@@ -343,7 +350,7 @@
                 </ul>
                 <input name="comments" type="hidden" value="{}"/>
                 <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Rulings</button>
-                <button type="button" class="btn btn-default btn-lg btn-block">Reset Choices</button>
+                <button id="reset-choices" type="button" class="btn btn-default btn-lg btn-block">Reset Choices</button>
             </form>
         </div>
         <div id="response-info-container" class="row pt-md well">
