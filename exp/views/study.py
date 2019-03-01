@@ -939,27 +939,19 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         user = self.request.user
         responses = self.get_object().responses
 
-        accepted_responses = responses.filter(uuid__in=form_data.getlist("accepted"))
-        rejected_responses = responses.filter(uuid__in=form_data.getlist("rejected"))
         comments = json.loads(form_data.get("comments"))
 
-        for response in accepted_responses:
-            response.consent_rulings.create(
-                action="accepted",
-                response=response,
-                arbiter=user,
-                comments=comments.get(str(response.uuid), None),
-            )
-            response.save()
-
-        for response in rejected_responses:
-            response.consent_rulings.create(
-                action="rejected",
-                response=response,
-                arbiter=user,
-                comments=comments.get(str(response.uuid), None),
-            )
-            response.save()
+        # We now accept pending rulings to reverse old reject/approve decisions.
+        for ruling in ("accepted", "rejected", "pending"):
+            judged_responses = responses.filter(uuid__in=form_data.getlist(ruling))
+            for response in judged_responses:
+                response.consent_rulings.create(
+                    action=ruling,
+                    response=response,
+                    arbiter=user,
+                    comments=comments.pop(str(response.uuid), None),
+                )
+                response.save()
 
         return super().post(request, *args, **kwargs)
 

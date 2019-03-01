@@ -37,6 +37,7 @@
                   $consentRulingForm = $("#consent-ruling-form"),
                   $approvalsCountBadge = $consentRulingForm.find("#approvals-count"),
                   $rejectionsCountBadge = $consentRulingForm.find("#rejections-count"),
+                  $pendingCountBadge = $consentRulingForm.find("#pending-count"),
                   $commentsHiddenInput = $consentRulingForm.find("input[name='comments']"),
                   $resetChoicesButton = $consentRulingForm.find("#reset-choices"),
                   $responseDataSection = $("#response-info-container"),
@@ -61,6 +62,7 @@
             function updateBadges() {
                 $approvalsCountBadge.text($(`.consent-ruling[name=${CONSENT_APPROVAL}]`).length);
                 $rejectionsCountBadge.text($(`.consent-ruling[name=${CONSENT_REJECTION}]`).length);
+                $pendingCountBadge.text($(`.consent-ruling[name=${CONSENT_PENDING}]`).length);
             }
 
             function saveComments() {
@@ -96,19 +98,26 @@
                 // First, change the UI signaling in the pending list.
                 switch ($button.val()) {
                     case RESET:
-                        $responseListItem.removeClass("list-group-item-danger list-group-item-success");
+                        $responseListItem.removeClass(
+                            "list-group-item-danger list-group-item-success list-group-item-warning");
+                        // if already pending, just break out early after updating badges.
                         $hiddenInput.remove();
                         updateBadges();
-                        return;  // early exit after killing the element, which is why we need to update badges here.
+                        return;
                     case CONSENT_APPROVAL:
-                        $responseListItem.removeClass("list-group-item-danger");
+                        $responseListItem.removeClass("list-group-item-danger list-group-item-warning");
                         $responseListItem.addClass("list-group-item-success");
                         hiddenInputAttrs["name"] = CONSENT_APPROVAL;
                         break;
                     case CONSENT_REJECTION:
-                        $responseListItem.removeClass("list-group-item-success");
+                        $responseListItem.removeClass("list-group-item-success list-group-item-warning");
                         $responseListItem.addClass("list-group-item-danger");
                         hiddenInputAttrs["name"] = CONSENT_REJECTION;
+                        break;
+                    case CONSENT_PENDING:
+                        $responseListItem.removeClass("list-group-item-danger list-group-item-success");
+                        $responseListItem.addClass("list-group-item-warning");
+                        hiddenInputAttrs["name"] = CONSENT_PENDING;
                         break;
                 }
 
@@ -249,7 +258,8 @@
             });
 
             $resetChoicesButton.on("click", function() {
-                $listOfResponses.find(".response-option").removeClass("list-group-item-danger list-group-item-success");
+                $listOfResponses.find(".response-option").removeClass(
+                    "list-group-item-danger list-group-item-success list-group-item-warning");
                 $consentRulingForm.find("input.consent-ruling").remove();
                 updateBadges();
             });
@@ -294,7 +304,7 @@
                      class="btn-group btn-group-justified"
                      role="group"
                      aria-label="Consent Type Filter">
-                    <a id="filter-pending" type="button" class="btn btn-default">Pending</a>
+                    <a id="filter-pending" type="button" class="btn btn-warning">Pending</a>
                     <a id="filter-accepted" type="button" class="btn btn-success">Approved</a>
                     <a id="filter-rejected" type="button" class="btn btn-danger">Rejected</a>
                 </span>
@@ -306,11 +316,19 @@
                         <span>{{ response.display_name }}</span>
                         <div class="btn-group-xs pull-right" role="group">
                             <button type="button" value="reset"
-                                    class="btn btn-xs btn-default glyphicon glyphicon-remove"></button>
-                            <button type="button" value="accepted"
+                                    class="btn btn-xs btn-default glyphicon glyphicon-repeat"></button>
+                            {%  if not response.pending_consent_judgement %}
+                                <button type="button" value="pending"
+                                        class="btn btn-xs btn-warning glyphicon glyphicon-question-sign"></button>
+                            {% endif %}
+                            {% if not response.has_valid_consent %}
+                                <button type="button" value="accepted"
                                     class="btn btn-xs btn-success glyphicon glyphicon-thumbs-up"></button>
-                            <button type="button" value="rejected"
-                                    class="btn btn-xs btn-danger glyphicon glyphicon-thumbs-down"></button>
+                            {% endif %}
+                            {% if not response.currently_rejected %}
+                                <button type="button" value="rejected"
+                                        class="btn btn-xs btn-danger glyphicon glyphicon-thumbs-down"></button>
+                            {% endif %}
                         </div>
                     </a>
                     {% endfor %}
@@ -345,6 +363,9 @@
             </section>
             <form id="consent-ruling-form" class="col-md-4 col-xs-12 well" method="POST">{% csrf_token %}
                 <ul class="list-group">
+                    <li class="list-group-item list-group-item-warning">
+                        Revert to Pending <span id="pending-count" class="badge">0</span>
+                    </li>
                     <li class="list-group-item list-group-item-success">
                         Approvals <span id="approvals-count" class="badge">0</span>
                     </li>

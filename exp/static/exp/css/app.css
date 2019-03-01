@@ -288,6 +288,10 @@ h3.study-logs-label {
     overflow-x: hidden;
 }
 
+#list-of-responses .response-option button[value=reset] {
+    transform: rotateY(180deg);
+}
+
 /* Study Edit */
 h2.researchers-label {
     font-size: 26px;

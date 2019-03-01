@@ -39,7 +39,7 @@ STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
 PENDING = "pending"
 ACCEPTED = "accepted"
 REJECTED = "rejected"
-CONSENT_RULINGS = (ACCEPTED, REJECTED)
+CONSENT_RULINGS = (ACCEPTED, REJECTED, PENDING)
 
 S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
@@ -595,6 +595,14 @@ class Response(models.Model):
     @property
     def has_valid_consent(self):
         return self.most_recent_ruling == ACCEPTED
+
+    @property
+    def pending_consent_judgement(self):
+        return self.most_recent_ruling == PENDING
+
+    @property
+    def currently_rejected(self):
+        return self.most_recent_ruling == REJECTED
 
     @property
     def most_recent_comment(self):

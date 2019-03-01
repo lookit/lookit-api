@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
                 (
                     "action",
                     models.CharField(
-                        choices=[("accepted", "rejected")],
+                        choices=[("accepted", "rejected", "pending")],
                         db_index=True,
                         max_length=100,
                     ),
