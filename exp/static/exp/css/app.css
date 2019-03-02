@@ -288,7 +288,11 @@ h3.study-logs-label {
     overflow-x: hidden;
 }
 
-#list-of-responses .response-option button[value=reset] {
+button[value=reset].glyphicon-repeat {
+    transform: rotateY(180deg);
+}
+
+span.glyphicon-repeat {
     transform: rotateY(180deg);
 }
 

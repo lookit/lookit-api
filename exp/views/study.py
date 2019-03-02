@@ -947,11 +947,21 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
             for response in judged_responses:
                 response.consent_rulings.create(
                     action=ruling,
-                    response=response,
                     arbiter=user,
                     comments=comments.pop(str(response.uuid), None),
                 )
                 response.save()
+
+        # if there are any comments left over, these will count as new rulings that are the same as the last.
+        if comments:
+            print(comments)
+            for resp_uuid, comment in comments.items():
+                response = responses.get(uuid=resp_uuid)
+                response.consent_rulings.create(
+                    action=response.most_recent_ruling,
+                    arbiter=user,
+                    comments=comment,
+                )
 
         return super().post(request, *args, **kwargs)
 

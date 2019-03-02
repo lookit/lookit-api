@@ -31,6 +31,7 @@
                   $videoManager = $("#video-manager"),
                   $videoPreviousButton = $videoManager.find("#nav-video-previous"),
                   $videoNextButton = $videoManager.find("#nav-video-next"),
+                  $currentVideoInfo = $("#current-video-information"),
                   $responseComments = $("#response-commentary"),
                   $responseFilterButtons = $("#response-filter-buttons"),
                   $listOfResponses = $("#list-of-responses"),
@@ -55,6 +56,7 @@
              Call functions to set components to initial state.
             */
             applyFilterParametersToResponseList(CONSENT_PENDING, $("#filter-pending"));
+            $('[data-toggle="tooltip"]').tooltip();
 
             /*
              "Controller methods" - using closures to mimic class-like behavior.
@@ -135,13 +137,7 @@
 
 
             function updateVideoContainer(responseData) {
-                // 0) Load most recent comment.
-                let comments = responseData["details"]["general"]["last_comment"];
-                $responseComments.val(comments);
-
                 // 1) Clear the current container
-                $videoSource.attr("src", "");
-                $videoElement.load();
                 $videoPreviousButton.nextUntil($videoNextButton).remove();
 
                 currentlyConsideredVideos = responseData["videos"];
@@ -160,7 +156,8 @@
                 $videoPreviousButton.after(numberedVideoButtons);
 
                 if (currentlyConsideredVideos.length) { // Auto-set first video.
-                    $videoSource.attr("src", currentlyConsideredVideos[0]["aws_url"]);
+                    let awsUrl = currentlyConsideredVideos[0]["aws_url"];
+                    $videoSource.attr("src", awsUrl);
                     numberedVideoButtons[0].addClass("active");
                     $videoElement.load().trigger("play");
                 }
@@ -263,6 +260,16 @@
                 $consentRulingForm.find("input.consent-ruling").remove();
                 updateBadges();
             });
+
+            $videoSource.on("error", function() {
+               $currentVideoInfo.addClass("bg-danger").text("Uh oh, we can't load the video.");
+            });
+
+            $videoElement.on("canplay", function() {
+                let currentVideo = currentlyConsideredVideos[currentVideoListIndex],
+                    timeString = new Date(parseInt(currentVideo["filename"].split("_")[4])).toLocaleString();
+                $currentVideoInfo.removeClass("bg-danger").text("Processed: " + timeString);
+            });
         });
     </script>
 
@@ -304,19 +311,29 @@
                      class="btn-group btn-group-justified"
                      role="group"
                      aria-label="Consent Type Filter">
-                    <a id="filter-pending" type="button" class="btn btn-warning">Pending</a>
-                    <a id="filter-accepted" type="button" class="btn btn-success">Approved</a>
-                    <a id="filter-rejected" type="button" class="btn btn-danger">Rejected</a>
+                    <a id="filter-pending" type="button" class="btn btn-warning">
+                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Pending
+                    </a>
+                    <a id="filter-accepted" type="button" class="btn btn-success">
+                        <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Approved
+                    </a>
+                    <a id="filter-rejected" type="button" class="btn btn-danger">
+                        <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> Rejected
+                    </a>
                 </span>
                 <div id="list-of-responses" class="list-group">
                     {% for response in loaded_responses %}
                     <a id="response-option-{{ response.uuid }}"
                        class="response-option list-group-item {{ response.most_recent_ruling }}"
                        data-id="{{ response.uuid }}">
-                        <span>{{ response.display_name }}</span>
+                        <span>
+                            <strong>{{ response.date_created | date:"D F n, P e" }}</strong>
+                            <p><em class="small">{{ response.most_recent_comment }}</em></p>
+                        </span>
                         <div class="btn-group-xs pull-right" role="group">
                             <button type="button" value="reset"
-                                    class="btn btn-xs btn-default glyphicon glyphicon-repeat"></button>
+                                    class="btn btn-xs btn-default glyphicon glyphicon-repeat"
+                                    data-toggle="tooltip" data-placement="left" title="Reset your ruling."></button>
                             {%  if not response.pending_consent_judgement %}
                                 <button type="button" value="pending"
                                         class="btn btn-xs btn-warning glyphicon glyphicon-question-sign"></button>
@@ -336,6 +353,11 @@
             </section>
             <section class="col-md-4 col-xs-12">
                 <div class="video-container">
+                    <section class="panel panel-default">
+                        <div id="current-video-information" class="panel-body">
+                          {# Basic video information/warnings go here. #}
+                        </div>
+                    </section>
                     <video controls id="video-under-consideration" height="270" width="360">
                         <source src="" type="video/mp4">
                     </video>
@@ -374,8 +396,12 @@
                     </li>
                 </ul>
                 <input name="comments" type="hidden" value="{}"/>
-                <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Rulings</button>
-                <button id="reset-choices" type="button" class="btn btn-default btn-lg btn-block">Reset Choices</button>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    Submit Rulings & Comments <span class="glyphicon glyphicon-send"></span>
+                </button>
+                <button id="reset-choices" type="button" class="btn btn-default btn-lg btn-block">
+                    Reset Current Choices <span class="glyphicon glyphicon-repeat"></span>
+                </button>
             </form>
         </div>
         <div id="response-info-container" class="row pt-md well">

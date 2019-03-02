@@ -210,6 +210,7 @@ class Study(models.Model):
         return (
             self.judgeable_responses.prefetch_related("videos", "consent_rulings")
             .select_related("child", "child__user")
+            .order_by("-date_created")
             .all()
         )
 
@@ -581,7 +582,7 @@ class Response(models.Model):
 
     @cached_property
     def display_name(self):
-        return f"UUID({str(self.uuid)[:8]}...); Child({self.child.given_name}); Parent({self.child.user.nickname})"
+        return f"{self.date_created.strftime('%c')}; Child({self.child.given_name}); Parent({self.child.user.nickname})"
 
     @property
     def most_recent_ruling(self):
@@ -607,7 +608,13 @@ class Response(models.Model):
     @property
     def most_recent_comment(self):
         ruling = self.consent_rulings.first()
-        return ruling.comments if ruling else ""
+        if ruling:
+            if ruling.comments:
+                return ruling.comments
+            else:
+                return "No comment on previous ruling."
+        else:
+            return "No previous ruling."
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
