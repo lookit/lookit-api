@@ -8,11 +8,6 @@ sed -i "s/prepend: ''/$REPLACEMENT/g" /checkout-dir/ember-cli-build.js
 # Copy in required files
 cp /environment /checkout-dir/.env
 
-cd /checkout-dir/lib/exp-player
-# install requirements for exp-player
-yarn --frozen-lockfile
-bower install --allow-root
-
 cd /checkout-dir
 # install requirements for ember-frame-player
 yarn --frozen-lockfile
