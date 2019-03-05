@@ -333,7 +333,7 @@ EMBER_EXP_PLAYER_REPO = os.environ.get(
 EMBER_EXP_PLAYER_BRANCH = os.environ.get("EMBER_EXP_PLAYER_BRANCH", "master")
 EMBER_ADDONS_REPO = os.environ.get(
     "EMBER_ADDONS_REPO", "https://github.com/lookit/exp-addons"
-)
+)  # leave for compatibility with previous migrations
 EMBER_ADDONS_BRANCH = os.environ.get("EMBER_ADDONS_BRANCH", "master")
 
 RABBITMQ_USERNAME = os.environ.get("RABBITMQ_USERNAME", "guest")

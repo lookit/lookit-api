@@ -100,35 +100,25 @@ def _upload_in_serial(local_path, storage):
                 storage.save(remote_path, File(f))
 
 
-def download_repos(addons_repo_url, addons_sha=None, player_sha=None):
-    if addons_sha is None or not re.match("([a-f0-9]{40})", addons_sha):
-        addons_sha = get_branch_sha(addons_repo_url, settings.EMBER_ADDONS_BRANCH)
+def download_repos(player_repo_url, player_sha=None):
     if player_sha is None or not re.match("([a-f0-9]{40})", player_sha):
-        player_sha = get_branch_sha(
-            settings.EMBER_EXP_PLAYER_REPO, settings.EMBER_EXP_PLAYER_BRANCH
-        )
+        player_sha = get_branch_sha(player_repo_url, settings.EMBER_EXP_PLAYER_BRANCH)
 
-    repo_destination_folder = f"{player_sha}_{addons_sha}"
+    repo_destination_folder = f"{player_sha}"
     local_repo_destination_folder = os.path.join(
         "./ember_build/checkouts/", repo_destination_folder
     )
 
     if os.path.isdir(local_repo_destination_folder):
         logger.debug(f"Found directory {local_repo_destination_folder}")
-        return (repo_destination_folder, addons_sha, player_sha)
+        return (repo_destination_folder, player_sha)
 
-    addons_zip_path = f"{addons_repo_url}/archive/{addons_sha}.zip"
-    player_zip_path = f"{settings.EMBER_EXP_PLAYER_REPO}/archive/{player_sha}.zip"
+    player_zip_path = f"{player_repo_url}/archive/{player_sha}.zip"
 
     logger.debug(f"Downloading {player_zip_path}...")
     unzip_file(requests.get(player_zip_path).content, local_repo_destination_folder)
-    logger.debug(f"Downloading {addons_zip_path}...")
-    unzip_file(
-        requests.get(addons_zip_path).content,
-        os.path.join(local_repo_destination_folder, "lib"),
-    )
 
-    return (repo_destination_folder, addons_sha, player_sha)
+    return (repo_destination_folder, player_sha)
 
 
 def build_docker_image():
@@ -181,20 +171,18 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             raise
 
         player_sha = study.metadata.get("last_known_player_sha", None)
-        addons_sha = study.metadata.get("last_known_addons_sha", None)
-        addons_repo_url = study.metadata.get(
-            "addons_repo_url", settings.EMBER_ADDONS_REPO
+        player_repo_url = study.metadata.get(
+            "player_repo_url", settings.EMBER_EXP_PLAYER_REPO
         )
         logger.debug(
-            f"Got {addons_repo_url} from {study.metadata.get('addons_repo_url')}"
+            f"Got {player_repo_url} from {study.metadata.get('player_repo_url')}"
         )
 
-        checkout_directory, addons_sha, player_sha = download_repos(
-            addons_repo_url, addons_sha=addons_sha, player_sha=player_sha
+        checkout_directory, player_sha = download_repos(
+            player_repo_url, player_sha=player_sha
         )
         destination_directory = f"{study_uuid}"
 
-        study.metadata["last_known_addons_sha"] = addons_sha
         study.metadata["last_known_player_sha"] = player_sha
 
         container_checkout_directory = os.path.join("/checkouts/", checkout_directory)
