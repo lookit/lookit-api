@@ -91,9 +91,8 @@ class StudyType(models.Model):
             "metadata": {
                 # defines the default metadata fields for that type of study
                 "fields": {
-                    "addons_repo_url": settings.EMBER_ADDONS_REPO,
+                    "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
                     "last_known_player_sha": None,
-                    "last_known_addons_sha": None,
                 }
             },
         }
