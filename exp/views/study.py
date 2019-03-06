@@ -881,6 +881,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Need to prefetch our responses with consent-footage videos.
         responses = context["study"].responses_with_prefetched_relationships
         context["loaded_responses"] = responses
 
@@ -904,7 +905,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "conditions": json.dumps(response.conditions),
                     "global_event_timings": json.dumps(response.global_event_timings),
                     "completed": response.completed,
-                    "last_comment": response.most_recent_comment,
+                    "last_comment": response.most_recent_ruling_comment,
                 },
                 "participant": {
                     "id": response.child.user_id,
@@ -954,7 +955,6 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
         # if there are any comments left over, these will count as new rulings that are the same as the last.
         if comments:
-            print(comments)
             for resp_uuid, comment in comments.items():
                 response = responses.get(uuid=resp_uuid)
                 response.consent_rulings.create(

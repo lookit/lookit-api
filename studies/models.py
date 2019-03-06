@@ -208,7 +208,10 @@ class Study(models.Model):
     def responses_with_prefetched_relationships(self):
         """Custom Queryset for the Consent Manager view."""
         return (
-            self.judgeable_responses.prefetch_related("videos", "consent_rulings")
+            self.judgeable_responses.prefetch_related(
+                models.Prefetch("videos", queryset=Video.objects.filter(is_consent_footage=True)),
+                "consent_rulings"
+            )
             .select_related("child", "child__user")
             .order_by("-date_created")
             .all()
@@ -217,14 +220,18 @@ class Study(models.Model):
     @property
     def consented_responses(self):
         """Get responses for which we have a valid "accepted" consent ruling."""
-        newest = ConsentRuling.objects.filter(response=models.OuterRef("pk")).order_by(
-            "-created_at"
+        # Create the subquery where we get the action from the most recent ruling.
+        newest_ruling_subquery = models.Subquery(
+            ConsentRuling.objects.filter(response=models.OuterRef("pk")).order_by("-created_at").values("action")[:1]
         )
+
+        # Annotate that value as "current ruling" on our response queryset.
         annotated = self.responses_with_prefetched_relationships.annotate(
-            current_ruling=models.Subquery(newest.values("action")[:1])
+            current_ruling=models.Subquery(newest_ruling_subquery)
         )
-        full_query = annotated.filter(current_ruling="accepted")
-        return full_query
+
+        # Only return the things for which our annotated property == accepted.
+        return annotated.filter(current_ruling="accepted")
 
     @property
     def videos_for_consented_responses(self):
@@ -580,6 +587,9 @@ class Response(models.Model):
         resource_name = "responses"
         lookup_field = "uuid"
 
+    def _get_recent_consent_ruling(self):
+        return self.consent_rulings.first()
+
     @cached_property
     def display_name(self):
         return f"{self.date_created.strftime('%c')}; Child({self.child.given_name}); Parent({self.child.user.nickname})"
@@ -590,7 +600,7 @@ class Response(models.Model):
 
         XXX: This is EXPENSIVE if not called within the context of a prefetched query set!
         """
-        ruling = self.consent_rulings.first()
+        ruling = self._get_recent_consent_ruling()
         return ruling.action if ruling else PENDING
 
     @property
@@ -606,7 +616,12 @@ class Response(models.Model):
         return self.most_recent_ruling == REJECTED
 
     @property
-    def most_recent_comment(self):
+    def most_recent_ruling_comment(self):
+        ruling = self._get_recent_consent_ruling()
+        return ruling.comments if ruling else None
+
+    @property
+    def comment_or_reason_for_absence(self):
         ruling = self.consent_rulings.first()
         if ruling:
             if ruling.comments:
@@ -615,6 +630,25 @@ class Response(models.Model):
                 return "No comment on previous ruling."
         else:
             return "No previous ruling."
+
+    @property
+    def most_recent_ruling_date(self):
+        ruling = self._get_recent_consent_ruling()
+        return ruling.created_at.strftime("%Y-%m-%d %H:%M") if ruling else None
+
+    @property
+    def most_recent_ruling_arbiter(self):
+        ruling = self._get_recent_consent_ruling()
+        return ruling.arbiter.get_full_name() if ruling else None
+
+    @property
+    def current_consent_details(self):
+        return {
+            "ruling": self.most_recent_ruling,
+            "arbiter": self.most_recent_ruling_arbiter,
+            "comment": self.most_recent_ruling_comment,
+            "date": self.most_recent_ruling_date,
+        }
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
@@ -775,7 +809,7 @@ class Video(models.Model):
         file renaming as well. Keeping this logic inline makes more sense because it's the only place where we do it.
         """
         data = pipe_response_dict["data"]
-        old_pipe_name = data["videoName"]
+        old_pipe_name = f"{data['videoName']}.{data['type'].lower()}"
         new_full_name = f"{data['payload']}.{data['type'].lower()}"
         throwaway_jpg_name = f"{data['payload']}.jpg"
 

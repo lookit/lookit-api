@@ -15,9 +15,6 @@ import os
 import raven
 from django.contrib.messages import constants as messages
 
-# TODO: deliberate then choose on a methodology for dynamic class selection,
-# i.e. for Storages. Should we choose the storages here, or defer that
-# to initialization of the Storages module?
 MODE = "prod"  # Overridden by local settings.
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)

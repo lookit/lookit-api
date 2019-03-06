@@ -238,7 +238,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         #        API to retrieve responses for a given study.
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
-            queryset = Response.objects.filter(study__uuid=study_uuid)
+            queryset = Study.objects.filter(uuid=study_uuid).consented_responses
             if self.request.user.has_perm(
                 "studies.can_view_study_responses",
                 get_object_or_404(Study, uuid=study_uuid),
@@ -266,7 +266,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
                     Q(study__id__in=ids_of_viewable_studies)  # Case #2
                     & Q(completed_consent_frame=True)
                 )
-            )
+            ).prefetch_related("consent_rulings").select_related("child", "child__user", "study", "study__study_type")
 
             return response_queryset.distinct().order_by("-date_modified")
 

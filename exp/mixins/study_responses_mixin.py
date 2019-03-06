@@ -182,6 +182,7 @@ class StudyResponsesMixin(
                             "age_at_birth": resp.child.age_at_birth,
                             "additional_information": resp.child.additional_information,
                         },
+                        "consent_information": resp.current_consent_details
                     },
                     indent=4,
                     default=self.convert_to_string,
@@ -205,6 +206,10 @@ class StudyResponsesMixin(
             resp.exp_data,
             resp.global_event_timings,
             resp.completed,
+            resp.most_recent_ruling,
+            resp.most_recent_ruling_arbiter,
+            resp.most_recent_ruling_date,
+            resp.most_recent_ruling_comment,
             resp.study.id,
             str(resp.study.uuid),
             resp.child.user_id,
@@ -231,6 +236,10 @@ class StudyResponsesMixin(
             "response_exp_data",
             "response_global_event_timings",
             "response_completed",
+            "response_consent_ruling",
+            "response_consent_arbiter",
+            "response_consent_time",
+            "response_consent_comment",
             "study_id",
             "study_uuid",
             "participant_id",
@@ -242,7 +251,7 @@ class StudyResponsesMixin(
             "child_birthday",
             "child_gender",
             "child_age_at_birth",
-            "child_additional_information",
+            "child_additional_information"
         ]
 
     def post(self, request, *args, **kwargs):
