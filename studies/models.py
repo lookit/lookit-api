@@ -264,10 +264,6 @@ class Study(models.Model):
                 return group
         return None
 
-    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-    #     """Override for save method."""
-    #     super().save()
-
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
         user = ev.kwargs.get("user")
@@ -572,7 +568,7 @@ class Response(models.Model):
     )
 
     def __str__(self):
-        return f"<Response: {self.study} {self.child.user.get_short_name()}>"
+        return self.display_name
 
     class Meta:
         permissions = (("view_response", "View Response"),)

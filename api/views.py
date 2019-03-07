@@ -270,7 +270,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
                     Q(study__in=viewable_studies)  # Case #2
                     & Q(completed_consent_frame=True)
                 )
-            ).select_related("child", "child__user", "study", "study__study_type")
+            ).select_related("child", "child__user", "study", "study__study_type", "demographic_snapshot")
 
             return response_queryset.order_by("-date_modified")
 
