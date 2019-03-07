@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_groups_with_perms
@@ -69,6 +69,28 @@ class StudyType(models.Model):
 
 
 class Study(models.Model):
+
+    MONITORING_FIELDS = [
+        "structure",
+        "name",
+        "short_description",
+        "long_description",
+        "criteria",
+        "duration",
+        "contact_info",
+        "max_age_years",
+        "min_age_years",
+        "max_age_months",
+        "min_age_months",
+        "max_age_days",
+        "min_age_days",
+        "image",
+        "exit_url",
+        "previewed",
+        "metadata",
+        "study_type",
+    ]
+
     DAY_CHOICES = [(i, i) for i in range(0, 32)]
     MONTH_CHOICES = [(i, i) for i in range(0, 12)]
     YEAR_CHOICES = [(i, i) for i in range(0, 19)]
@@ -128,43 +150,9 @@ class Study(models.Model):
             before_state_change="check_permission",
             after_state_change="_finalize_state_change",
         )
-        self.__monitoring_fields = [
-            "structure",
-            "name",
-            "short_description",
-            "long_description",
-            "criteria",
-            "duration",
-            "contact_info",
-            "max_age_years",
-            "min_age_years",
-            "max_age_months",
-            "min_age_months",
-            "max_age_days",
-            "min_age_days",
-            "image",
-            "exit_url",
-            "previewed",
-            "metadata",
-            "study_type",
-        ]
-        for field in self.__monitoring_fields:
-            try:
-                setattr(self, f"__original_{field}", getattr(self, field))
-            except StudyType.DoesNotExist:
-                setattr(self, f"__original_{field}", None)
 
     def __str__(self):
         return f"<Study: {self.name}>"
-
-    def important_fields_changed(self):
-        """
-        Check if fields in self.__monitoring fields have changed.
-        """
-        for field in self.__monitoring_fields:
-            if getattr(self, f"__original_{field}") != getattr(self, field):
-                return True
-        return False
 
     class Meta:
         permissions = (
@@ -227,7 +215,7 @@ class Study(models.Model):
 
         # Annotate that value as "current ruling" on our response queryset.
         annotated = self.responses_with_prefetched_relationships.annotate(
-            current_ruling=models.Subquery(newest_ruling_subquery)
+            current_ruling=newest_ruling_subquery
         )
 
         # Only return the things for which our annotated property == accepted.
@@ -275,6 +263,10 @@ class Study(models.Model):
             if "STUDY" in group.name and "READ" in group.name:
                 return group
         return None
+
+    # def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    #     """Override for save method."""
+    #     super().save()
 
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
@@ -494,17 +486,20 @@ def add_study_created_log(sender, instance, created, **kwargs):
         StudyLog.objects.create(action="created", study=instance, user=instance.creator)
 
 
-@receiver(post_save, sender=Study)
-def check_modification_of_approved_study(sender, instance, created, **kwargs):
+@receiver(pre_save, sender=Study)
+def check_modification_of_approved_study(sender, instance, raw, using, update_fields, **kwargs):
     """
     Puts study back in "rejected" state if study is modified after it's already been approved.
     Leaves comment for user with explanation.
     """
     approved_states = ["approved", "active", "paused", "deactivated"]
-    if instance.state in approved_states and instance.important_fields_changed():
+    study_in_db = Study.objects.get(pk=instance.id)
+    important_fields_changed = any(
+        getattr(instance, field) != getattr(study_in_db, field) for field in Study.MONITORING_FIELDS
+    )
+    if instance.state in approved_states and important_fields_changed:
         instance.state = "rejected"
         instance.comments = "Your study has been modified following approval.  You must resubmit this study to get it approved again."
-        instance.save()
         StudyLog.objects.create(
             action="rejected", study=instance, user=instance.creator
         )

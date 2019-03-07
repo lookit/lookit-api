@@ -634,10 +634,16 @@ class StudyUpdateView(
 
     def post(self, request, *args, **kwargs):
         """
-        Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
-        4) researcher delete 5) Changing study status / adding rejection comments
+        Handles all post forms on page:
+            1) study metadata like name, short_description, etc.
+            2) researcher add
+            3) researcher update
+            4) researcher delete
+            5) Changing study status / adding rejection comments
         """
         study = self.get_object()
+
+        print(self.request.POST)
 
         if "trigger" in self.request.POST:
             update_trigger(self)
