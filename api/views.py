@@ -44,11 +44,6 @@ def get_consented_responses_qs():
     return responses_with_current_ruling.filter(current_ruling="accepted")
 
 
-def children_for_consented_responses_only_qs():
-    """Get children for consented responses only."""
-    return get_consented_responses_qs().only("child")
-
-
 class FilterByUrlKwargsMixin(views.ModelViewSet):
     filter_fields = []
 
@@ -106,20 +101,22 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Show children that have 1) responded to studies you can view and 2) are your own children
         """
-        original_queryset = super().get_queryset()
+        children_for_active_users = super().get_queryset()
         # Users with can_read_all_user_data permissions can view all children/demographics of active users via the API
-        # if self.request.user.has_perm("accounts.can_read_all_user_data"):
-        #     return original_queryset
+        if self.request.user.has_perm("accounts.can_read_all_user_data"):
+            return children_for_active_users
 
         studies = get_objects_for_user(
             self.request.user, "studies.can_view_study_responses"
         )
 
-        consented_responses = get_consented_responses_qs()
+        consented_responses = get_consented_responses_qs().filter(study__in=studies)
 
-        return original_queryset.filter(
-            (Q(response__study__in=studies) & Q(pk__in=consented_responses) | Q(user__id=self.request.user.id))
-        ).distinct()
+        child_ids = consented_responses.values_list("child", flat=True)
+
+        return children_for_active_users.filter(
+            (Q(id__in=child_ids) | Q(user__id=self.request.user.id))
+        )
 
 
 class DemographicDataViewSet(ChildViewSet):
@@ -128,7 +125,10 @@ class DemographicDataViewSet(ChildViewSet):
     """
 
     resource_name = "demographics"
-    queryset = DemographicData.objects.filter(user__is_active=True)
+    queryset = DemographicData.objects.filter(
+        id__in=get_consented_responses_qs().values_list("demographic_snapshot", flat=True),
+        user__is_active=True
+    )
     serializer_class = DemographicDataSerializer
     filter_fields = [("user", "user")]
 
