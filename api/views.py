@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch, Q, Subquery, OuterRef
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
@@ -19,13 +19,34 @@ from accounts.serializers import (
     OrganizationSerializer,
 )
 from api.permissions import FeedbackPermissions, ResponsePermissions
-from studies.models import Feedback, Response, Study
+from studies.models import Feedback, Response, Study, ConsentRuling
 from studies.serializers import (
     FeedbackSerializer,
     ResponseSerializer,
     ResponseWriteableSerializer,
     StudySerializer,
 )
+
+
+def get_consented_responses_qs():
+    """Retrieve a queryset for the set of consented responses belonging to a set of studies."""
+    # Create the subquery where we get the action from the most recent ruling.
+    newest_ruling_subquery = Subquery(
+        ConsentRuling.objects.filter(response=OuterRef("pk")).order_by("-created_at").values("action")[:1]
+    )
+
+    # Annotate that value as "current ruling" on our response queryset.
+    responses_with_current_ruling = Response.objects.prefetch_related("consent_rulings").annotate(
+        current_ruling=newest_ruling_subquery
+    )
+
+    # Only return the things for which our annotated property == accepted
+    return responses_with_current_ruling.filter(current_ruling="accepted")
+
+
+def children_for_consented_responses_only_qs():
+    """Get children for consented responses only."""
+    return get_consented_responses_qs().only("child")
 
 
 class FilterByUrlKwargsMixin(views.ModelViewSet):
@@ -70,7 +91,7 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
 
     resource_name = "children"
-    queryset = Child.objects.filter(user__is_active=True).distinct()
+    queryset = Child.objects.filter(user__is_active=True)
     serializer_class = ChildSerializer
     lookup_field = "uuid"
     filter_fields = [("user", "user")]
@@ -87,16 +108,17 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         """
         original_queryset = super().get_queryset()
         # Users with can_read_all_user_data permissions can view all children/demographics of active users via the API
-        if self.request.user.has_perm("accounts.can_read_all_user_data"):
-            return original_queryset
-        qs_ids = original_queryset.values_list("id", flat=True)
+        # if self.request.user.has_perm("accounts.can_read_all_user_data"):
+        #     return original_queryset
+
         studies = get_objects_for_user(
             self.request.user, "studies.can_view_study_responses"
         )
-        study_ids = studies.values_list("id", flat=True)
-        return qs_ids.model.objects.filter(
-            (Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)),
-            (Q(id__in=qs_ids)),
+
+        consented_responses = get_consented_responses_qs()
+
+        return original_queryset.filter(
+            (Q(response__study__in=studies) & Q(pk__in=consented_responses) | Q(user__id=self.request.user.id))
         ).distinct()
 
 
@@ -279,7 +301,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
                 Q(child__in=children_belonging_to_user)  # Case #1
                 | (
                     Q(study__in=viewable_studies)  # Case #2
-                    & Q(completed_consent_frame=True)
+                    & Q(pk__in=get_consented_responses_qs())
                 )
             ).select_related(
                 "child",
