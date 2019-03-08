@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.db.models import Q, Prefetch
+from django.db.models import Prefetch, Q
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
@@ -230,9 +230,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         TODO: Break this out into multiple handlers. The logic-gymnastics is getting annoying.
         """
 
-        children_belonging_to_user = Child.objects.filter(
-            user__id=self.request.user.id
-        )
+        children_belonging_to_user = Child.objects.filter(user__id=self.request.user.id)
 
         # NESTED ROUTE:
         # GET /api/v1/studies/{STUDY_ID}/responses/?{Query string with pagination and child id}
@@ -242,21 +240,34 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         #        API to retrieve responses for a given study.
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
-            queryset = Study.objects.filter(uuid=study_uuid).get().consented_responses
+            study = get_object_or_404(Study, uuid=study_uuid)
+            consented_responses = study.consented_responses
             if self.request.user.has_perm(
                 "studies.can_view_study_responses",
                 get_object_or_404(Study, uuid=study_uuid),
             ):
-                return queryset.filter(
-                    Q(completed_consent_frame=True)
-                    | Q(child__in=children_belonging_to_user)
-                ).order_by("-date_modified")
+                return (
+                    Response.objects.filter(
+                        Q(pk__in=consented_responses)
+                        | Q(child__in=children_belonging_to_user)
+                    )
+                    .select_related(
+                        "child",
+                        "child__user",
+                        "study",
+                        "study__study_type",
+                        "demographic_snapshot",
+                    )
+                    .order_by("-date_modified")
+                )
             else:
-                return queryset.filter(
+                return Response.objects.filter(
                     child__in=children_belonging_to_user
-                ).order_by("-date_modified")
+                ).order_by(
+                    "-date_modified"
+                )  # Don't need extra stuff here.
         else:  # NON-NESTED ROUTE
-            # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{STUDY_UUID}'.
+            # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{RESPONSE_UUID}'.
             # This route gets accessed by:
             #     1) Participant sessions PATCHing (partial updating) ongoing response-sessions.
             #     2) Experimenters/parents programmatically GETting the Responses API
@@ -270,7 +281,13 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
                     Q(study__in=viewable_studies)  # Case #2
                     & Q(completed_consent_frame=True)
                 )
-            ).select_related("child", "child__user", "study", "study__study_type", "demographic_snapshot")
+            ).select_related(
+                "child",
+                "child__user",
+                "study",
+                "study__study_type",
+                "demographic_snapshot",
+            )
 
             return response_queryset.order_by("-date_modified")
 

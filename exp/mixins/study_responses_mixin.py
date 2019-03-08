@@ -182,7 +182,7 @@ class StudyResponsesMixin(
                             "age_at_birth": resp.child.age_at_birth,
                             "additional_information": resp.child.additional_information,
                         },
-                        "consent_information": resp.current_consent_details
+                        "consent_information": resp.current_consent_details,
                     },
                     indent=4,
                     default=self.convert_to_string,
@@ -251,7 +251,7 @@ class StudyResponsesMixin(
             "child_birthday",
             "child_gender",
             "child_age_at_birth",
-            "child_additional_information"
+            "child_additional_information",
         ]
 
     def post(self, request, *args, **kwargs):

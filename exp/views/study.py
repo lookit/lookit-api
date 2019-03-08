@@ -964,9 +964,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
             for resp_uuid, comment in comments.items():
                 response = responses.get(uuid=resp_uuid)
                 response.consent_rulings.create(
-                    action=response.most_recent_ruling,
-                    arbiter=user,
-                    comments=comment,
+                    action=response.most_recent_ruling, arbiter=user, comments=comment
                 )
 
         return super().post(request, *args, **kwargs)

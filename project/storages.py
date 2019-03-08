@@ -41,4 +41,3 @@ class LookitExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
 
 class LookitPreviewExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
     location = settings.PREVIEW_EXPERIMENT_LOCATION
-

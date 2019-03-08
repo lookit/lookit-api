@@ -197,8 +197,10 @@ class Study(models.Model):
         """Custom Queryset for the Consent Manager view."""
         return (
             self.judgeable_responses.prefetch_related(
-                models.Prefetch("videos", queryset=Video.objects.filter(is_consent_footage=True)),
-                "consent_rulings"
+                models.Prefetch(
+                    "videos", queryset=Video.objects.filter(is_consent_footage=True)
+                ),
+                "consent_rulings",
             )
             .select_related("child", "child__user")
             .order_by("-date_created")
@@ -210,7 +212,9 @@ class Study(models.Model):
         """Get responses for which we have a valid "accepted" consent ruling."""
         # Create the subquery where we get the action from the most recent ruling.
         newest_ruling_subquery = models.Subquery(
-            ConsentRuling.objects.filter(response=models.OuterRef("pk")).order_by("-created_at").values("action")[:1]
+            ConsentRuling.objects.filter(response=models.OuterRef("pk"))
+            .order_by("-created_at")
+            .values("action")[:1]
         )
 
         # Annotate that value as "current ruling" on our response queryset.
@@ -483,7 +487,9 @@ def add_study_created_log(sender, instance, created, **kwargs):
 
 
 @receiver(pre_save, sender=Study)
-def check_modification_of_approved_study(sender, instance, raw, using, update_fields, **kwargs):
+def check_modification_of_approved_study(
+    sender, instance, raw, using, update_fields, **kwargs
+):
     """
     Puts study back in "rejected" state if study is modified after it's already been approved.
     Leaves comment for user with explanation.
@@ -491,7 +497,8 @@ def check_modification_of_approved_study(sender, instance, raw, using, update_fi
     approved_states = ["approved", "active", "paused", "deactivated"]
     study_in_db = Study.objects.get(pk=instance.id)
     important_fields_changed = any(
-        getattr(instance, field) != getattr(study_in_db, field) for field in Study.MONITORING_FIELDS
+        getattr(instance, field) != getattr(study_in_db, field)
+        for field in Study.MONITORING_FIELDS
     )
     if instance.state in approved_states and important_fields_changed:
         instance.state = "rejected"

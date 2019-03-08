@@ -70,8 +70,8 @@ class RenameVideoView(View):
                     if video_obj
                     else "Preview not saved"
                 )
-            except ClientError:
-                return HttpResponseNotFound()
+            except ClientError as e:
+                return HttpResponseNotFound(e)
 
         else:  # Not authenticated
             return HttpResponseForbidden()
