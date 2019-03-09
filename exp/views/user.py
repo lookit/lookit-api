@@ -23,7 +23,7 @@ from exp.mixins.participant_mixin import ParticipantMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 from project.settings import EXPERIMENTER_LOGIN_URL as login_url
 from studies.helpers import send_mail
-from studies.models import Response, Study
+from studies.models import Response, get_consented_responses_qs
 
 
 class ParticipantListView(
@@ -95,8 +95,10 @@ class ParticipantDetailView(
         Returns paginated responses from a user with the study title, response
         id, completion status, and date modified.
         """
-        resps = Response.objects.filter(
-            child__user=self.get_object(), completed_consent_frame=True
+        resps = (
+            get_consented_responses_qs()
+            .filter(child__user=self.get_object())
+            .select_related("child__user")
         )
         orderby = self.request.GET.get("sort", None)
         if orderby:

@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import Case, Count, Q, When
+from django.db.models import Case, Count, Prefetch, Q, When
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
@@ -32,7 +32,7 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import ConsentRuling, Study, StudyLog, StudyType, Video
+from studies.models import Study, StudyLog, StudyType, get_consented_responses_qs
 from studies.tasks import build_experiment, build_zipfile_of_videos
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -173,20 +173,31 @@ class StudyListView(
         and sort.
         """
         request = self.request.GET
-        queryset = get_objects_for_user(
-            self.request.user, "studies.can_view_study"
-        ).exclude(state="archived")
-        queryset = queryset.select_related("creator")
-        queryset = queryset.annotate(
-            completed_responses_count=Count(
-                Case(When(responses__completed=True, then=1))
+
+        queryset = (
+            get_objects_for_user(self.request.user, "studies.can_view_study")
+            .exclude(state="archived")
+            .prefetch_related(
+                Prefetch(
+                    "logs",
+                    queryset=StudyLog.objects.filter(
+                        action__in=("active", "deactivated")
+                    ),
+                ),
+                Prefetch("responses", queryset=get_consented_responses_qs()),
+            )
+            .select_related("creator")
+            .annotate(
+                completed_responses_count=Count(
+                    Case(When(responses__completed=True, then=1))
+                ),
+                incomplete_responses_count=Count(
+                    Case(When(responses__completed=False, then=1))
+                ),
             )
         )
-        queryset = queryset.annotate(
-            incomplete_responses_count=Count(
-                Case(When(responses__completed=False, then=1))
-            )
-        )
+
+        # TODO: Starting date and ending date as subqueries, then delete the model methods.
 
         state = request.get("state")
         if state and state != "all":
@@ -643,8 +654,6 @@ class StudyUpdateView(
         """
         study = self.get_object()
 
-        print(self.request.POST)
-
         if "trigger" in self.request.POST:
             update_trigger(self)
 
@@ -900,7 +909,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
             response_data["videos"] = [
                 {"aws_url": video.download_url, "filename": video.filename}
-                for video in response.videos.all()
+                for video in response.videos.all()  # we did a prefetch, so all() is really is_consent_footage=True
             ]
 
             response_data["details"] = {

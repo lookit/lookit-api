@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from django.db.models import Prefetch, Q, Subquery, OuterRef
+from django.db.models import OuterRef, Prefetch, Q, Subquery
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
@@ -19,29 +19,13 @@ from accounts.serializers import (
     OrganizationSerializer,
 )
 from api.permissions import FeedbackPermissions, ResponsePermissions
-from studies.models import Feedback, Response, Study, ConsentRuling
+from studies.models import Feedback, Response, Study, get_consented_responses_qs
 from studies.serializers import (
     FeedbackSerializer,
     ResponseSerializer,
     ResponseWriteableSerializer,
     StudySerializer,
 )
-
-
-def get_consented_responses_qs():
-    """Retrieve a queryset for the set of consented responses belonging to a set of studies."""
-    # Create the subquery where we get the action from the most recent ruling.
-    newest_ruling_subquery = Subquery(
-        ConsentRuling.objects.filter(response=OuterRef("pk")).order_by("-created_at").values("action")[:1]
-    )
-
-    # Annotate that value as "current ruling" on our response queryset.
-    responses_with_current_ruling = Response.objects.prefetch_related("consent_rulings").annotate(
-        current_ruling=newest_ruling_subquery
-    )
-
-    # Only return the things for which our annotated property == accepted
-    return responses_with_current_ruling.filter(current_ruling="accepted")
 
 
 class FilterByUrlKwargsMixin(views.ModelViewSet):
@@ -126,8 +110,10 @@ class DemographicDataViewSet(ChildViewSet):
 
     resource_name = "demographics"
     queryset = DemographicData.objects.filter(
-        id__in=get_consented_responses_qs().values_list("demographic_snapshot", flat=True),
-        user__is_active=True
+        id__in=get_consented_responses_qs().values_list(
+            "demographic_snapshot", flat=True
+        ),
+        user__is_active=True,
     )
     serializer_class = DemographicDataSerializer
     filter_fields = [("user", "user")]
@@ -179,7 +165,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
-    Allows viewing a list of studies or retrieivng a single study
+    Allows viewing a list of studies or retrieving a single study
 
     You can view studies that are active as well as studies you have permission to edit.
     """

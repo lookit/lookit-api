@@ -45,6 +45,25 @@ S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 
 
+# Probably want a queries module for this...
+def get_consented_responses_qs():
+    """Retrieve a queryset for the set of consented responses belonging to a set of studies."""
+    # Create the subquery where we get the action from the most recent ruling.
+    newest_ruling_subquery = models.Subquery(
+        ConsentRuling.objects.filter(response=models.OuterRef("pk"))
+        .order_by("-created_at")
+        .values("action")[:1]
+    )
+
+    # Annotate that value as "current ruling" on our response queryset.
+    responses_with_current_ruling = Response.objects.prefetch_related(
+        "consent_rulings"
+    ).annotate(current_ruling=newest_ruling_subquery)
+
+    # Only return the things for which our annotated property == accepted
+    return responses_with_current_ruling.filter(current_ruling="accepted")
+
+
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     configuration = DateTimeAwareJSONField(
