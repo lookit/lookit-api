@@ -118,12 +118,12 @@
                       <a href="{% url 'exp:study-detail' pk=study.id %}"><strong>{{ study.name }}</strong></a>
                   </div>
                   <div class="col-xs-12 col-sm-3">
-                      <span class="visible-xs">Begin date: <strong> {{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong> </span>
-                      <strong class="hidden-xs"> {{ study.begin_date|date:"M d, Y"|default:"N/A" }}</strong>
+                      <span class="visible-xs">Begin date: <strong> {{ study.starting_date|date:"M d, Y"|default:"N/A" }}</strong> </span>
+                      <strong class="hidden-xs"> {{ study.starting_date|date:"M d, Y"|default:"N/A" }}</strong>
                   </div>
                   <div class="col-xs-12 col-sm-3">
-                      <span class="visible-xs">End date: <strong>{{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong> </span>
-                      <strong class="hidden-xs"> {{ study.end_date|date:"M d, Y"|default:"N/A" }}</strong>
+                      <span class="visible-xs">End date: <strong>{{ study.ending_date|date:"M d, Y"|default:"N/A" }}</strong> </span>
+                      <strong class="hidden-xs"> {{ study.ending_date|date:"M d, Y"|default:"N/A" }}</strong>
                   </div>
               </div>
               <div class="row table-block">

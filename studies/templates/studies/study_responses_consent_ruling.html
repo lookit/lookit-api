@@ -261,8 +261,13 @@
                 updateBadges();
             });
 
-            $videoSource.on("error", function() {
-               $currentVideoInfo.addClass("bg-danger").text("Uh oh, we can't load the video.");
+            $videoSource.on("error", function(event) {
+                if ($videoSource.attr("src").length) {
+                    $currentVideoInfo.addClass("bg-danger").text("Uh oh, we can't load the video.");
+                } else {
+                    $currentVideoInfo.text("Please select a response from the list on the left.");
+                }
+
             });
 
             $videoElement.on("canplay", function() {

@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import Case, Count, Prefetch, Q, When
+from django.db.models import Case, Count, Prefetch, Q, When, Subquery, OuterRef
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
@@ -193,6 +193,18 @@ class StudyListView(
                 ),
                 incomplete_responses_count=Count(
                     Case(When(responses__completed=False, then=1))
+                ),
+                starting_date=Subquery(
+                    StudyLog.objects.filter(study=OuterRef("pk"))
+                    .order_by("-created_at")
+                    .filter(action="active")
+                    .values("created_at")[:1]
+                ),
+                ending_date=Subquery(
+                    StudyLog.objects.filter(study=OuterRef("pk"))
+                    .order_by("-created_at")
+                    .filter(action="deactivated")
+                    .values("created_at")[:1]
                 ),
             )
         )
@@ -410,7 +422,7 @@ class StudyDetailView(
         Returns the queryset that is used to lookup the study object. Annotates
         the queryset with the completed and incomplete responses counts.
         """
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().prefetch_related("responses")
         queryset = queryset.annotate(
             completed_responses_count=Count(
                 Case(When(responses__completed=True, then=1))
