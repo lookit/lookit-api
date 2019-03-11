@@ -13,7 +13,16 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import Case, Count, Prefetch, Q, When, Subquery, OuterRef
+from django.db.models import (
+    Case,
+    Count,
+    Prefetch,
+    Q,
+    When,
+    Subquery,
+    OuterRef,
+    IntegerField,
+)
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
@@ -32,7 +41,15 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import Study, StudyLog, StudyType, get_consented_responses_qs
+from studies.models import (
+    Study,
+    StudyLog,
+    StudyType,
+    ConsentRuling,
+    Response,
+    get_consented_responses_qs,
+    get_annotated_responses_qs,
+)
 from studies.tasks import build_experiment, build_zipfile_of_videos
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -174,6 +191,8 @@ class StudyListView(
         """
         request = self.request.GET
 
+        annotated_responses_qs = get_annotated_responses_qs()
+
         queryset = (
             get_objects_for_user(self.request.user, "studies.can_view_study")
             .exclude(state="archived")
@@ -184,7 +203,10 @@ class StudyListView(
                         action__in=("active", "deactivated")
                     ),
                 ),
-                Prefetch("responses", queryset=get_consented_responses_qs()),
+                Prefetch(
+                    "responses",
+                    queryset=annotated_responses_qs
+                ),
             )
             .select_related("creator")
             .annotate(
@@ -192,7 +214,23 @@ class StudyListView(
                     Case(When(responses__completed=True, then=1))
                 ),
                 incomplete_responses_count=Count(
-                    Case(When(responses__completed=False, then=1))
+                    Case(When(responses__completed=False, responses__completed_consent_frame=True, then=1))
+                ),
+                valid_consent_count=Subquery(
+                    annotated_responses_qs.filter(study=OuterRef("pk"))
+                    .values("current_ruling")  # NEED THIS AS A GROUP BY!
+                    .filter(current_ruling="accepted")
+                    .annotate(count=Count("*"))
+                    .values("count")[:1],
+                    output_field=IntegerField()
+                ),
+                pending_consent_count=Subquery(
+                    annotated_responses_qs.filter(study=OuterRef("pk"))
+                    .values("current_ruling")  # NEED THIS AS A GROUP BY!
+                    .filter(Q(current_ruling="pending"))
+                    .annotate(count=Count("*"))
+                    .values("count")[:1],
+                    output_field=IntegerField()
                 ),
                 starting_date=Subquery(
                     StudyLog.objects.filter(study=OuterRef("pk"))

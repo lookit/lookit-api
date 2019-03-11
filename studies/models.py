@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
+from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
@@ -46,8 +47,8 @@ S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 
 
 # Probably want a queries module for this...
-def get_consented_responses_qs():
-    """Retrieve a queryset for the set of consented responses belonging to a set of studies."""
+def get_annotated_responses_qs():
+    """Retrieve a queryset for the set of responses belonging to a set of studies."""
     # Create the subquery where we get the action from the most recent ruling.
     newest_ruling_subquery = models.Subquery(
         ConsentRuling.objects.filter(response=models.OuterRef("pk"))
@@ -56,12 +57,23 @@ def get_consented_responses_qs():
     )
 
     # Annotate that value as "current ruling" on our response queryset.
-    responses_with_current_ruling = Response.objects.prefetch_related(
-        "consent_rulings"
-    ).annotate(current_ruling=newest_ruling_subquery)
+    return (
+        Response.objects.prefetch_related("consent_rulings")
+        .filter(completed_consent_frame=True)
+        .annotate(current_ruling=Coalesce(newest_ruling_subquery, models.Value(PENDING)))
+    )
 
-    # Only return the things for which our annotated property == accepted
-    return responses_with_current_ruling.filter(current_ruling="accepted")
+
+def get_consented_responses_qs():
+    """Retrieve a queryset for the set of consented responses belonging to a set of studies."""
+    # Create the subquery where we get the action from the most recent ruling.
+    return get_annotated_responses_qs().filter(current_ruling=ACCEPTED)
+
+
+def get_pending_responses_qs():
+    """Retrieve a queryset for the set of pending judgement responses belonging to a set of studies."""
+    # Create the subquery where we get the action from the most recent ruling.
+    return get_annotated_responses_qs().filter(models.Q(current_ruling=PENDING) | models.Q(current_ruling=None))
 
 
 class StudyType(models.Model):
