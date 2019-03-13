@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, DemographicData, User
-from studies.models import Feedback, Response, Study
+from studies.models import Feedback, Response, Study, ConsentRuling
 
 
 class DemographicsTestCase(APITestCase):
@@ -28,7 +28,13 @@ class DemographicsTestCase(APITestCase):
             child=self.child,
             study=self.study,
             demographic_snapshot=self.demographics,
+            completed_consent_frame=True
         )
+        self.positive_consent_ruling = G(
+            ConsentRuling,
+            study=self.study,
+            response=self.response,
+            action="accepted")
         self.url = "/api/v1/demographics/"
         self.demo_data_url = f"/api/v1/demographics/{str(self.demographics.uuid)}/"
         self.client = APIClient()

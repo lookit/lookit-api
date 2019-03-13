@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, DemographicData, User
-from studies.models import Feedback, Response, Study
+from studies.models import Feedback, Response, Study, ConsentRuling
 
 
 class ResponseTestCase(APITestCase):
@@ -34,6 +34,11 @@ class ResponseTestCase(APITestCase):
             completed=False,
             completed_consent_frame=True,
         )
+        self.positive_consent_ruling = G(
+            ConsentRuling,
+            study=self.study,
+            response=self.consented_response,
+            action="accepted")
         self.url = reverse("response-list", kwargs={"version": "v1"})
         self.response_detail_url = self.url + str(self.response.uuid) + "/"
         self.consented_response_detail_url = (
@@ -89,12 +94,24 @@ class ResponseTestCase(APITestCase):
             completed=False,
             completed_consent_frame=True,
         )
+        self.positive_consent_ruling2 = G(
+            ConsentRuling,
+            study=self.study,
+            response=self.response2,
+            action="accepted"
+        )
         self.response3 = G(
             Response,
             child=self.child,
             study=self.study,
             completed=False,
             completed_consent_frame=True,
+        )
+        self.positive_consent_ruling3 = G(
+            ConsentRuling,
+            study=self.study,
+            response=self.response3,
+            action="accepted"
         )
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"

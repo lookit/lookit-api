@@ -103,20 +103,46 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         )
 
 
-class DemographicDataViewSet(ChildViewSet):
+class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
     Allows viewing a list of all demographic data you have permission to view as well as your own demographic data.
     """
 
     resource_name = "demographics"
     queryset = DemographicData.objects.filter(
-        id__in=get_consented_responses_qs().values_list(
-            "demographic_snapshot", flat=True
-        ),
         user__is_active=True,
     )
     serializer_class = DemographicDataSerializer
+    lookup_field = "uuid"
     filter_fields = [("user", "user")]
+    http_method_names = ["get", "head", "options"]
+    permission_classes = [IsAuthenticated]
+    filter_backends = (OrderingFilter,)
+
+    def get_queryset(self):
+        """Queryset getter override.
+
+        Largely duplicated from ChildViewSet but not completely, so we should duplicate before introducing the wrong
+        abstraction.
+
+        :return: The properly configured queryset.
+        """
+        demographics_for_active_users = super().get_queryset()
+
+        if self.request.user.has_perm("accounts.can_read_all_user_data"):
+            return demographics_for_active_users
+
+        studies = get_objects_for_user(
+            self.request.user, "studies.can_view_study_responses"
+        )
+
+        consented_responses = get_consented_responses_qs().filter(study__in=studies)
+
+        demographics_ids = consented_responses.values_list("demographic_snapshot", flat=True)
+
+        return demographics_for_active_users.filter(
+            (Q(id__in=demographics_ids) | Q(user__id=self.request.user.id))
+        )
 
 
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
