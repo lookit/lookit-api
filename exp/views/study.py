@@ -211,7 +211,7 @@ class StudyListView(
             .select_related("creator")
             .annotate(
                 completed_responses_count=Count(
-                    Case(When(responses__completed=True, then=1))
+                    Case(When(responses__completed=True, responses__completed_consent_frame=True, then=1))
                 ),
                 incomplete_responses_count=Count(
                     Case(When(responses__completed=False, responses__completed_consent_frame=True, then=1))
@@ -947,14 +947,42 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Need to prefetch our responses with consent-footage videos.
-        responses = context["study"].responses_with_prefetched_relationships
+        study = context["study"]
+        responses = study.responses_with_prefetched_relationships
         context["loaded_responses"] = responses
+        context["summary_statistics"] = statistics = {
+            "accepted": {
+                "responses": 0,
+                "children": set()
+            },
+            "rejected": {
+                "responses": 0,
+                "children": set()
+            },
+            "pending": {
+                "responses": 0,
+                "children": set()
+            },
+            "total": {
+                "responses": 0,
+                "children": set()
+            },
+        }
+
+        total_stats = statistics["total"]
 
         # Using a map for arbitrarily structured data - lists and objects that we can't just trivially shove onto
         # data-* properties in HTML
         response_key_value_store = {}
 
-        for response in responses:
+        for response in responses:  # two jobs - generate statistics and populate k/v store.
+
+            stat_for_status = statistics.get(response.most_recent_ruling)
+            stat_for_status["responses"] += 1
+            stat_for_status["children"].add(response.child)
+            total_stats["responses"] += 1
+            total_stats["children"].add(response.child)
+
             response_data = response_key_value_store[str(response.uuid)] = {}
 
             response_data["videos"] = [
@@ -996,6 +1024,9 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
             response_key_value_store,
             default=lambda x: str(x) if isinstance(x, datetime.date) else x,
         )
+
+        for category, counts in statistics.items():
+            counts["children"] = len(counts["children"])
 
         return context
 

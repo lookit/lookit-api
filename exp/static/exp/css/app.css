@@ -267,9 +267,9 @@ h3.study-logs-label {
     overflow-y: scroll;
 }
 
-#response-filter-buttons {
-    margin-bottom: 10px;
-}
+/*#response-status-filters {*/
+    /*display: inline;*/
+/*}*/
 
 #video-manager nav {
     /* centering the inline-block ul*/
@@ -282,10 +282,45 @@ h3.study-logs-label {
     overflow-x: hidden;
 }
 
-#list-of-responses .response-option.approved span {
-    display: inline-block;
-    max-width: 75%;
-    overflow-x: hidden;
+/*#list-of-responses .response-option .dropdown-menu li {*/
+    /*color: black;*/
+/*}*/
+
+/*#list-of-responses .response-option.approved span {*/
+    /*display: inline-block;*/
+    /*max-width: 75%;*/
+    /*overflow-x: hidden;*/
+/*}*/
+
+.response-actor {
+    text-transform: capitalize;
+}
+
+/*
+ Unbelievable! How could they forget to leave out proper list item styling for actual list items?!?!
+ */
+li.list-group-item-success.active,
+li.list-group-item-success.active:hover,
+li.list-group-item-success.active:focus {
+  color: #fff;
+  background-color: #3c763d;
+  border-color: #3c763d;
+}
+
+li.list-group-item-danger.active,
+li.list-group-item-danger.active:hover,
+li.list-group-item-danger.active:focus {
+  color: #fff;
+  background-color: #a94442;
+  border-color: #a94442;
+}
+
+li.list-group-item-warning.active,
+li.list-group-item-warning.active:hover,
+li.list-group-item-warning.active:focus {
+  color: #fff;
+  background-color: #8a6d3b;
+  border-color: #8a6d3b;
 }
 
 button[value=reset].glyphicon-repeat {
@@ -294,6 +329,20 @@ button[value=reset].glyphicon-repeat {
 
 span.glyphicon-repeat {
     transform: rotateY(180deg);
+}
+
+#consent-ruling-form {
+    border-top-width: 1px;
+}
+
+#consent-ruling-form .panel {
+    padding: 10px;
+}
+
+#consent-ruling-form .label {
+    /* see https://github.com/twbs/bootstrap/issues/13219 to understand rendering issues */
+    display: inline-block;
+    padding: .2em .6em .2em;
 }
 
 /* Study Edit */
