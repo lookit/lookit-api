@@ -526,7 +526,9 @@ def check_modification_of_approved_study(
     Leaves comment for user with explanation.
     """
     approved_states = ["approved", "active", "paused", "deactivated"]
-    study_in_db = Study.objects.get(pk=instance.id)
+    study_in_db = Study.objects.filter(pk=instance.id).first()
+    if not study_in_db:
+        return
     important_fields_changed = any(
         getattr(instance, field) != getattr(study_in_db, field)
         for field in Study.MONITORING_FIELDS
