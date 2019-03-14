@@ -162,9 +162,13 @@
 
                 if (currentlyConsideredVideos.length) { // Auto-set first video.
                     let awsUrl = currentlyConsideredVideos[0]["aws_url"];
+                    $videoElement.css("visibility", "visible");
                     $videoSource.attr("src", awsUrl);
                     numberedVideoButtons[0].addClass("active");
                     $videoElement.load().trigger("play");
+                } else {
+                    $videoElement.css("visibility", "hidden");
+                    $currentVideoInfo.addClass("bg-warning").text("No video found for this response.")
                 }
             }
 
@@ -267,18 +271,18 @@
             });
 
             $videoSource.on("error", function (event) {
+                console.log(event);
                 if ($videoSource.attr("src").length) {
                     $currentVideoInfo.addClass("bg-danger").text("Uh oh, we can't load the video.");
                 } else {
                     $currentVideoInfo.text("Please select a response from the list on the left.");
                 }
-
             });
 
             $videoElement.on("canplay", function () {
                 let currentVideo = currentlyConsideredVideos[currentVideoListIndex],
                     timeString = new Date(parseInt(currentVideo["filename"].split("_")[4])).toLocaleString();
-                $currentVideoInfo.removeClass("bg-danger").text("Processed: " + timeString);
+                $currentVideoInfo.removeClass("bg-danger bg-warning").text("Processed: " + timeString);
             });
         });
     </script>
@@ -340,22 +344,26 @@
                     <ul id="list-of-responses" class="list-group">
                         {% for response in loaded_responses %}
                             <li id="response-option-{{ response.uuid }}"
-                               class="response-option list-group-item {{ response.most_recent_ruling }}"
-                               data-id="{{ response.uuid }}"
-                               data-original-status="{{ response.most_recent_ruling }}">
+                                class="response-option list-group-item {{ response.most_recent_ruling }}"
+                                data-id="{{ response.uuid }}"
+                                data-original-status="{{ response.most_recent_ruling }}">
                                 <span>
                                     <strong>{{ response.date_created | date:"D F d, P e" }}</strong>
                                     <p><em class="small">{{ response.comment_or_reason_for_absence }}</em></p>
                                 </span>
                                 <div class="btn-group btn-group-sm pull-right" role="group">
-                                    <button id="response-actor-{{ response.uuid }}" type="button" class="btn btn-default dropdown-toggle response-actor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button id="response-actor-{{ response.uuid }}" type="button"
+                                            class="btn btn-default dropdown-toggle response-actor"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         {{ response.most_recent_ruling }}
                                         <span class="caret"></span>
                                         <span class="sr-only">Toggle Dropdown</span>
                                     </button>
-                                    <ul class="dropdown-menu" role="menu" aria-labelledby="response-actor-{{ response.uuid }}">
+                                    <ul class="dropdown-menu" role="menu"
+                                        aria-labelledby="response-actor-{{ response.uuid }}">
                                         <li>
-                                            <a class="consent-judgment" data-action="reset" style="display:none;">Undo</a>
+                                            <a class="consent-judgment" data-action="reset"
+                                               style="display:none;">Undo</a>
                                         </li>
                                         {% if not response.pending_consent_judgement %}
                                             <li>
@@ -379,9 +387,12 @@
                     </ul>
                     <form id="consent-ruling-form" class="panel-footer clearfix" method="POST">{% csrf_token %}
                         <div class="panel panel-default">
-                            <span class="label label-warning">Revert to Pending <span class="pending-count badge">0</span></span>
-                            <span class="label label-success">Approvals <span class="approvals-count badge">0</span></span>
-                            <span class="label label-danger">Rejections <span class="rejections-count badge">0</span></span>
+                            <span class="label label-warning">Revert to Pending <span
+                                    class="pending-count badge">0</span></span>
+                            <span class="label label-success">Approvals <span
+                                    class="approvals-count badge">0</span></span>
+                            <span class="label label-danger">Rejections <span
+                                    class="rejections-count badge">0</span></span>
                         </div>
                         <input name="comments" type="hidden" value="{}"/>
                         <button type="submit" class="btn btn-primary btn-lg btn-block">

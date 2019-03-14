@@ -109,9 +109,7 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
 
     resource_name = "demographics"
-    queryset = DemographicData.objects.filter(
-        user__is_active=True,
-    )
+    queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
     lookup_field = "uuid"
     filter_fields = [("user", "user")]
@@ -138,7 +136,9 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         consented_responses = get_consented_responses_qs().filter(study__in=studies)
 
-        demographics_ids = consented_responses.values_list("demographic_snapshot", flat=True)
+        demographics_ids = consented_responses.values_list(
+            "demographic_snapshot", flat=True
+        )
 
         return demographics_for_active_users.filter(
             (Q(id__in=demographics_ids) | Q(user__id=self.request.user.id))

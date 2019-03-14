@@ -38,7 +38,8 @@ class ResponseTestCase(APITestCase):
             ConsentRuling,
             study=self.study,
             response=self.consented_response,
-            action="accepted")
+            action="accepted",
+        )
         self.url = reverse("response-list", kwargs={"version": "v1"})
         self.response_detail_url = self.url + str(self.response.uuid) + "/"
         self.consented_response_detail_url = (
@@ -95,10 +96,7 @@ class ResponseTestCase(APITestCase):
             completed_consent_frame=True,
         )
         self.positive_consent_ruling2 = G(
-            ConsentRuling,
-            study=self.study,
-            response=self.response2,
-            action="accepted"
+            ConsentRuling, study=self.study, response=self.response2, action="accepted"
         )
         self.response3 = G(
             Response,
@@ -108,10 +106,7 @@ class ResponseTestCase(APITestCase):
             completed_consent_frame=True,
         )
         self.positive_consent_ruling3 = G(
-            ConsentRuling,
-            study=self.study,
-            response=self.response3,
-            action="accepted"
+            ConsentRuling, study=self.study, response=self.response3, action="accepted"
         )
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"

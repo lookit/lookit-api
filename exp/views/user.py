@@ -73,6 +73,11 @@ class ParticipantDetailView(
     """
     ParticipantDetailView shows demographic information, children information, and
     studies that a participant has responded to.
+
+    Participant (account) + demographic data should only show up if the participant
+    has at least one child who has at least one confirmed-consented response that the
+    researcher can see. Each child should only show up if they have such a response, i.e.
+    the siblings don't show up "for free."
     """
 
     fields = ("is_active",)

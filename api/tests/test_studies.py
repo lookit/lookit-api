@@ -42,10 +42,7 @@ class StudiesTestCase(APITestCase):
         )
 
         self.positive_consent_ruling = G(
-            ConsentRuling,
-            study=self.study,
-            response=self.response,
-            action="accepted"
+            ConsentRuling, study=self.study, response=self.response, action="accepted"
         )
 
         self.url = reverse("study-list", kwargs={"version": "v1"})

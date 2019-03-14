@@ -60,7 +60,9 @@ def get_annotated_responses_qs():
     return (
         Response.objects.prefetch_related("consent_rulings")
         .filter(completed_consent_frame=True)
-        .annotate(current_ruling=Coalesce(newest_ruling_subquery, models.Value(PENDING)))
+        .annotate(
+            current_ruling=Coalesce(newest_ruling_subquery, models.Value(PENDING))
+        )
     )
 
 
@@ -73,7 +75,9 @@ def get_consented_responses_qs():
 def get_pending_responses_qs():
     """Retrieve a queryset for the set of pending judgement responses belonging to a set of studies."""
     # Create the subquery where we get the action from the most recent ruling.
-    return get_annotated_responses_qs().filter(models.Q(current_ruling=PENDING) | models.Q(current_ruling=None))
+    return get_annotated_responses_qs().filter(
+        models.Q(current_ruling=PENDING) | models.Q(current_ruling=None)
+    )
 
 
 class StudyType(models.Model):

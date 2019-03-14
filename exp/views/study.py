@@ -203,18 +203,27 @@ class StudyListView(
                         action__in=("active", "deactivated")
                     ),
                 ),
-                Prefetch(
-                    "responses",
-                    queryset=annotated_responses_qs
-                ),
+                Prefetch("responses", queryset=annotated_responses_qs),
             )
             .select_related("creator")
             .annotate(
                 completed_responses_count=Count(
-                    Case(When(responses__completed=True, responses__completed_consent_frame=True, then=1))
+                    Case(
+                        When(
+                            responses__completed=True,
+                            responses__completed_consent_frame=True,
+                            then=1,
+                        )
+                    )
                 ),
                 incomplete_responses_count=Count(
-                    Case(When(responses__completed=False, responses__completed_consent_frame=True, then=1))
+                    Case(
+                        When(
+                            responses__completed=False,
+                            responses__completed_consent_frame=True,
+                            then=1,
+                        )
+                    )
                 ),
                 valid_consent_count=Subquery(
                     annotated_responses_qs.filter(study=OuterRef("pk"))
@@ -222,7 +231,7 @@ class StudyListView(
                     .filter(current_ruling="accepted")
                     .annotate(count=Count("*"))
                     .values("count")[:1],
-                    output_field=IntegerField()
+                    output_field=IntegerField(),
                 ),
                 pending_consent_count=Subquery(
                     annotated_responses_qs.filter(study=OuterRef("pk"))
@@ -230,7 +239,7 @@ class StudyListView(
                     .filter(Q(current_ruling="pending"))
                     .annotate(count=Count("*"))
                     .values("count")[:1],
-                    output_field=IntegerField()
+                    output_field=IntegerField(),
                 ),
                 starting_date=Subquery(
                     StudyLog.objects.filter(study=OuterRef("pk"))
@@ -951,22 +960,10 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         responses = study.responses_with_prefetched_relationships
         context["loaded_responses"] = responses
         context["summary_statistics"] = statistics = {
-            "accepted": {
-                "responses": 0,
-                "children": set()
-            },
-            "rejected": {
-                "responses": 0,
-                "children": set()
-            },
-            "pending": {
-                "responses": 0,
-                "children": set()
-            },
-            "total": {
-                "responses": 0,
-                "children": set()
-            },
+            "accepted": {"responses": 0, "children": set()},
+            "rejected": {"responses": 0, "children": set()},
+            "pending": {"responses": 0, "children": set()},
+            "total": {"responses": 0, "children": set()},
         }
 
         total_stats = statistics["total"]
@@ -975,7 +972,9 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         # data-* properties in HTML
         response_key_value_store = {}
 
-        for response in responses:  # two jobs - generate statistics and populate k/v store.
+        for (
+            response
+        ) in responses:  # two jobs - generate statistics and populate k/v store.
 
             stat_for_status = statistics.get(response.most_recent_ruling)
             stat_for_status["responses"] += 1

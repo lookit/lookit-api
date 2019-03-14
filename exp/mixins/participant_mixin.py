@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
+from django.db.models import Prefetch
 from guardian.shortcuts import get_objects_for_user
 
-from accounts.models import User
+from accounts.models import User, Child
 from studies.models import get_consented_responses_qs
 
 
@@ -26,4 +27,12 @@ class ParticipantMixin(DjangoPermissionRequiredMixin):
             .values_list("child", flat=True)
         )
 
-        return User.objects.filter(children__in=valid_child_ids).distinct()
+        return (
+            User.objects.filter(children__in=valid_child_ids)
+            .prefetch_related(
+                Prefetch(
+                    "children", queryset=Child.objects.filter(id__in=valid_child_ids)
+                )
+            )
+            .distinct()
+        )
