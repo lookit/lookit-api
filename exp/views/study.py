@@ -229,10 +229,12 @@ class StudyListView(
                     annotated_responses_qs.filter(
                         study=OuterRef("pk"), current_ruling="accepted"
                     )
-                    .values("current_ruling")  # Group by
-                    .order_by()  # Need to reset ordering as well.
-                    .annotate(count=Count("*"))
-                    .values("count")[:1],
+                    .values("current_ruling")
+                    .order_by(
+                        "current_ruling"
+                    )  # Need this for GROUP BY to work properly
+                    .annotate(count=Count("current_ruling"))
+                    .values("count")[:1],  # [:1] ensures that a queryset is returned
                     output_field=IntegerField(),
                 ),
                 pending_consent_count=Subquery(
@@ -240,8 +242,8 @@ class StudyListView(
                         study=OuterRef("pk"), current_ruling="pending"
                     )
                     .values("current_ruling")
-                    .order_by()
-                    .annotate(count=Count("*"))
+                    .order_by("current_ruling")
+                    .annotate(count=Count("current_ruling"))
                     .values("count")[:1],
                     output_field=IntegerField(),
                 ),
