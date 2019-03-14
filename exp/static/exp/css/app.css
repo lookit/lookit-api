@@ -267,9 +267,6 @@ h3.study-logs-label {
     overflow-y: scroll;
 }
 
-/*#response-status-filters {*/
-    /*display: inline;*/
-/*}*/
 
 #video-manager nav {
     /* centering the inline-block ul*/
@@ -282,18 +279,29 @@ h3.study-logs-label {
     overflow-x: hidden;
 }
 
-/*#list-of-responses .response-option .dropdown-menu li {*/
-    /*color: black;*/
-/*}*/
-
-/*#list-of-responses .response-option.approved span {*/
-    /*display: inline-block;*/
-    /*max-width: 75%;*/
-    /*overflow-x: hidden;*/
-/*}*/
 
 .response-actor {
     text-transform: capitalize;
+}
+
+#response-statistics .child-count {
+    margin-left: 2em;
+}
+
+#response-statistics .child-count em {
+    padding: 0.2em;
+    font-weight: bold;
+    font-size: 0.75em;
+    border-radius: 3px;
+}
+
+#response-statistics li:nth-child(6) {
+    margin-top: 2em;
+    border-top: 3px solid #bbb;
+}
+
+#response-statistics li.totals {
+    border-right: 3px solid #bbb;
 }
 
 /*

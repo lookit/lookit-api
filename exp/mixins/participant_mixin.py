@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import (
 from django.db.models import Prefetch
 from guardian.shortcuts import get_objects_for_user
 
-from accounts.models import User, Child
+from accounts.models import Child, User
 from studies.models import get_consented_responses_qs
 
 

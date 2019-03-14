@@ -16,12 +16,13 @@ from django.core.mail import BadHeaderError
 from django.db.models import (
     Case,
     Count,
+    IntegerField,
+    OuterRef,
     Prefetch,
     Q,
-    When,
     Subquery,
-    OuterRef,
-    IntegerField,
+    Sum,
+    When,
 )
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -45,10 +46,9 @@ from studies.models import (
     Study,
     StudyLog,
     StudyType,
-    ConsentRuling,
-    Response,
-    get_consented_responses_qs,
     get_annotated_responses_qs,
+    get_consented_responses_qs,
+    get_pending_responses_qs,
 )
 from studies.tasks import build_experiment, build_zipfile_of_videos
 from studies.workflow import (
@@ -226,17 +226,21 @@ class StudyListView(
                     )
                 ),
                 valid_consent_count=Subquery(
-                    annotated_responses_qs.filter(study=OuterRef("pk"))
-                    .values("current_ruling")  # NEED THIS AS A GROUP BY!
-                    .filter(current_ruling="accepted")
+                    annotated_responses_qs.filter(
+                        study=OuterRef("pk"), current_ruling="accepted"
+                    )
+                    .values("current_ruling")  # Group by
+                    .order_by()  # Need to reset ordering as well.
                     .annotate(count=Count("*"))
                     .values("count")[:1],
                     output_field=IntegerField(),
                 ),
                 pending_consent_count=Subquery(
-                    annotated_responses_qs.filter(study=OuterRef("pk"))
-                    .values("current_ruling")  # NEED THIS AS A GROUP BY!
-                    .filter(Q(current_ruling="pending"))
+                    annotated_responses_qs.filter(
+                        study=OuterRef("pk"), current_ruling="pending"
+                    )
+                    .values("current_ruling")
+                    .order_by()
                     .annotate(count=Count("*"))
                     .values("count")[:1],
                     output_field=IntegerField(),
@@ -972,9 +976,8 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         # data-* properties in HTML
         response_key_value_store = {}
 
-        for (
-            response
-        ) in responses:  # two jobs - generate statistics and populate k/v store.
+        # two jobs - generate statistics and populate k/v store.
+        for response in responses:
 
             stat_for_status = statistics.get(response.most_recent_ruling)
             stat_for_status["responses"] += 1
@@ -1022,6 +1025,13 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         context["response_key_value_store"] = json.dumps(
             response_key_value_store,
             default=lambda x: str(x) if isinstance(x, datetime.date) else x,
+        )
+
+        rejected = statistics["rejected"]
+        rejected_child_set = rejected["children"]
+        accepted_child_set = statistics["accepted"]["children"]
+        rejected["count_without_accepted"] = len(
+            rejected_child_set - accepted_child_set
         )
 
         for category, counts in statistics.items():

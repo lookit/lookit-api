@@ -436,42 +436,38 @@
                     </div>
                 </div>
             </section>
-            <section class="col-md-4 col-xs-12">
+            <section id="response-statistics" class="col-md-4 col-xs-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">Response Statistics</h4>
                     </div>
                     <div class="panel-body">
                         <ul class="list-group">
-                            <li class="list-group-item">
+                            <li class="list-group-item list-group-item-warning">
                                 Pending Responses
                                 <span class="badge">{{ summary_statistics.pending.responses }}</span>
                             </li>
-                            <li class="list-group-item">
-                                Pending Children
-                                <span class="badge">{{ summary_statistics.pending.children }}</span>
-                            </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item list-group-item-success">
                                 Accepted Responses
                                 <span class="badge">{{ summary_statistics.accepted.responses }}</span>
                             </li>
-                            <li class="list-group-item">
-                                Accepted Children
+                            <li class="list-group-item child-count">
+                                <em class="bg-success">Unique Children</em>
                                 <span class="badge">{{ summary_statistics.accepted.children }}</span>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item list-group-item-danger">
                                 Rejected Responses
                                 <span class="badge">{{ summary_statistics.rejected.responses }}</span>
                             </li>
-                            <li class="list-group-item">
-                                Rejected Children
-                                <span class="badge">{{ summary_statistics.rejected.children }}</span>
+                            <li class="list-group-item child-count">
+                                <em class="bg-danger">Children with no accepted responses</em>
+                                <span class="badge">{{ summary_statistics.rejected.count_without_accepted }}</span>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item totals">
                                 <strong>Total # Responses</strong>
                                 <span class="badge">{{ summary_statistics.total.responses }}</span>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item totals">
                                 <strong>Total # Children</strong>
                                 <span class="badge">{{ summary_statistics.total.children }}</span>
                             </li>

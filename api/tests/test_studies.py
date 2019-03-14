@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Feedback, Response, Study, ConsentRuling
+from studies.models import ConsentRuling, Feedback, Response, Study
 
 
 class StudiesTestCase(APITestCase):
