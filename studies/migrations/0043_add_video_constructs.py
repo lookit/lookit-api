@@ -24,8 +24,29 @@ def generate_videos_from_responses(apps, schema_editor):
     """Custom migration code to generate videos from responses."""
     ResponseModel = apps.get_model("studies", "Response")
     VideoModel = apps.get_model("studies", "Video")
+    ConsentRulingModel = apps.get_model("studies", "ConsentRuling")
+    UserModel = apps.get_model("accounts", "User")
+    kim = UserModel.objects.filter(email="kimscott@mit.edu").first()
     for response in ResponseModel.objects.all():
         generate_videos_from_events(response, VideoModel)
+        apply_initial_consent_ruling(response, ConsentRulingModel, kim)
+
+
+def apply_initial_consent_ruling(response, consent_ruling_model, kim):
+    """
+
+    :param response: a Response object
+    :param consent_ruling_model: the ConsentRuling model
+    :param kim: Kim
+    """
+    ConsentRuling = consent_ruling_model
+
+    ConsentRuling.objects.create(
+        action="accepted",
+        arbiter=kim,
+        response=response,
+        comments="Automatically accepted and may not be verified; recorded before consent manager deployed.",
+    )
 
 
 def generate_videos_from_events(response, video_model):
