@@ -1,13 +1,13 @@
 from collections import OrderedDict
 
-from django.db.models import Q
+from django.db.models import OuterRef, Prefetch, Q, Subquery
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
 from rest_framework import status
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import MethodNotAllowed
 from rest_framework_json_api import views
 
 from accounts.models import Child, DemographicData, Organization, User
@@ -19,7 +19,7 @@ from accounts.serializers import (
     OrganizationSerializer,
 )
 from api.permissions import FeedbackPermissions, ResponsePermissions
-from studies.models import Feedback, Response, Study
+from studies.models import Feedback, Response, Study, get_consented_responses_qs
 from studies.serializers import (
     FeedbackSerializer,
     ResponseSerializer,
@@ -70,7 +70,7 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
 
     resource_name = "children"
-    queryset = Child.objects.filter(user__is_active=True).distinct()
+    queryset = Child.objects.filter(user__is_active=True)
     serializer_class = ChildSerializer
     lookup_field = "uuid"
     filter_fields = [("user", "user")]
@@ -85,22 +85,25 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         Show children that have 1) responded to studies you can view and 2) are your own children
         """
-        original_queryset = super().get_queryset()
+        children_for_active_users = super().get_queryset()
         # Users with can_read_all_user_data permissions can view all children/demographics of active users via the API
         if self.request.user.has_perm("accounts.can_read_all_user_data"):
-            return original_queryset
-        qs_ids = original_queryset.values_list("id", flat=True)
+            return children_for_active_users
+
         studies = get_objects_for_user(
             self.request.user, "studies.can_view_study_responses"
         )
-        study_ids = studies.values_list("id", flat=True)
-        return qs_ids.model.objects.filter(
-            (Q(response__study__id__in=study_ids) | Q(user__id=self.request.user.id)),
-            (Q(id__in=qs_ids)),
-        ).distinct()
+
+        consented_responses = get_consented_responses_qs().filter(study__in=studies)
+
+        child_ids = consented_responses.values_list("child", flat=True)
+
+        return children_for_active_users.filter(
+            (Q(id__in=child_ids) | Q(user__id=self.request.user.id))
+        )
 
 
-class DemographicDataViewSet(ChildViewSet):
+class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
     Allows viewing a list of all demographic data you have permission to view as well as your own demographic data.
     """
@@ -108,7 +111,38 @@ class DemographicDataViewSet(ChildViewSet):
     resource_name = "demographics"
     queryset = DemographicData.objects.filter(user__is_active=True)
     serializer_class = DemographicDataSerializer
+    lookup_field = "uuid"
     filter_fields = [("user", "user")]
+    http_method_names = ["get", "head", "options"]
+    permission_classes = [IsAuthenticated]
+    filter_backends = (OrderingFilter,)
+
+    def get_queryset(self):
+        """Queryset getter override.
+
+        Largely duplicated from ChildViewSet but not completely, so we should duplicate before introducing the wrong
+        abstraction.
+
+        :return: The properly configured queryset.
+        """
+        demographics_for_active_users = super().get_queryset()
+
+        if self.request.user.has_perm("accounts.can_read_all_user_data"):
+            return demographics_for_active_users
+
+        studies = get_objects_for_user(
+            self.request.user, "studies.can_view_study_responses"
+        )
+
+        consented_responses = get_consented_responses_qs().filter(study__in=studies)
+
+        demographics_ids = consented_responses.values_list(
+            "demographic_snapshot", flat=True
+        )
+
+        return demographics_for_active_users.filter(
+            (Q(id__in=demographics_ids) | Q(user__id=self.request.user.id))
+        )
 
 
 class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -157,7 +191,7 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
-    Allows viewing a list of studies or retrieivng a single study
+    Allows viewing a list of studies or retrieving a single study
 
     You can view studies that are active as well as studies you have permission to edit.
     """
@@ -222,13 +256,15 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     def get_queryset(self):
         """Overrides queryset.
 
+        The overall idea is that we want to limit the responses one can retrieve through the API to two cases:
+        1) A user is in a session in the frameplayer, and they're hitting the response API to update their session.
+        2) A researcher is programmatically accessing the API to get responses for a given study
+
         XXX: HERE BE DRAGONS: this method is invoked with PATCH as well as GET requests!
         TODO: Break this out into multiple handlers. The logic-gymnastics is getting annoying.
         """
 
-        children_belonging_to_user = Child.objects.filter(
-            user__id=self.request.user.id
-        ).values_list("id", flat=True)
+        children_belonging_to_user = Child.objects.filter(user__id=self.request.user.id)
 
         # NESTED ROUTE:
         # GET /api/v1/studies/{STUDY_ID}/responses/?{Query string with pagination and child id}
@@ -238,37 +274,56 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         #        API to retrieve responses for a given study.
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
-            queryset = Response.objects.filter(study__uuid=study_uuid)
+            study = get_object_or_404(Study, uuid=study_uuid)
+            consented_responses = study.consented_responses
             if self.request.user.has_perm(
                 "studies.can_view_study_responses",
                 get_object_or_404(Study, uuid=study_uuid),
             ):
-                return queryset.filter(
-                    Q(completed_consent_frame=True)
-                    | Q(child__id__in=children_belonging_to_user)
-                ).order_by("-date_modified")
+                return (
+                    Response.objects.filter(
+                        Q(pk__in=consented_responses)
+                        | Q(child__in=children_belonging_to_user)
+                    )
+                    .select_related(
+                        "child",
+                        "child__user",
+                        "study",
+                        "study__study_type",
+                        "demographic_snapshot",
+                    )
+                    .order_by("-date_modified")
+                )
             else:
-                return queryset.filter(
-                    child__id__in=children_belonging_to_user
-                ).order_by("-date_modified")
+                return Response.objects.filter(
+                    child__in=children_belonging_to_user
+                ).order_by(
+                    "-date_modified"
+                )  # Don't need extra stuff here.
         else:  # NON-NESTED ROUTE
-            # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{STUDY_UUID}'.
+            # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{RESPONSE_UUID}'.
             # This route gets accessed by:
             #     1) Participant sessions PATCHing (partial updating) ongoing response-sessions.
             #     2) Experimenters/parents programmatically GETting the Responses API
-            ids_of_viewable_studies = get_objects_for_user(
+            viewable_studies = get_objects_for_user(
                 self.request.user, "studies.can_view_study_responses"
-            ).values_list("id", flat=True)
-
-            response_queryset = Response.objects.filter(
-                Q(child__id__in=children_belonging_to_user)  # Case #1
-                | (
-                    Q(study__id__in=ids_of_viewable_studies)  # Case #2
-                    & Q(completed_consent_frame=True)
-                )
             )
 
-            return response_queryset.distinct().order_by("-date_modified")
+            response_queryset = Response.objects.filter(
+                Q(child__in=children_belonging_to_user)  # Case #1
+                | (
+                    Q(study__in=viewable_studies)  # Case #2
+                    & Q(pk__in=get_consented_responses_qs())
+                )
+            ).select_related(
+                "child",
+                "child__user",
+                "study",
+                "study__study_type",
+                "demographic_snapshot",
+            )
+
+            return response_queryset.order_by("-date_modified")
 
 
 class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):

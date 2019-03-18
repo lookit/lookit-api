@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Feedback, Response, Study
+from studies.models import ConsentRuling, Feedback, Response, Study
 
 
 class StudiesTestCase(APITestCase):
@@ -40,6 +40,11 @@ class StudiesTestCase(APITestCase):
             exp_data={"first": "response"},
             completed_consent_frame=True,
         )
+
+        self.positive_consent_ruling = G(
+            ConsentRuling, study=self.study, response=self.response, action="accepted"
+        )
+
         self.url = reverse("study-list", kwargs={"version": "v1"})
         self.study_detail_url = self.url + str(self.study.uuid) + "/"
         self.study_responses_url = self.url + str(self.study.uuid) + "/responses/"
@@ -156,9 +161,9 @@ class StudiesTestCase(APITestCase):
     def testStudyResponsesAsParticipant(self):
         # Participants can only see the study responses they created
         self.study2 = G(Study, creator=self.researcher)
-        self.response2 = self.response = G(
+        self.response2 = G(
             Response,
-            child=self.child,
+            child=G(Child, user=self.researcher),
             study=self.study2,
             exp_data={"second": "response"},
             completed_consent_frame=True,

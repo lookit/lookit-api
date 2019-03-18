@@ -1,9 +1,11 @@
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
+from django.db.models import Prefetch
 from guardian.shortcuts import get_objects_for_user
 
-from accounts.models import User
+from accounts.models import Child, User
+from studies.models import get_consented_responses_qs
 
 
 class ParticipantMixin(DjangoPermissionRequiredMixin):
@@ -18,7 +20,19 @@ class ParticipantMixin(DjangoPermissionRequiredMixin):
         Restricts queryset to participants that a researcher has permission to view.
         """
         studies = get_objects_for_user(self.request.user, "studies.can_view_study")
-        study_ids = studies.values_list("id", flat=True)
-        return User.objects.filter(
-            children__response__study__id__in=study_ids
-        ).distinct()
+        valid_study_ids = studies.values_list("id", flat=True)
+        valid_child_ids = (
+            get_consented_responses_qs()
+            .filter(study__id__in=valid_study_ids)
+            .values_list("child", flat=True)
+        )
+
+        return (
+            User.objects.filter(children__in=valid_child_ids)
+            .prefetch_related(
+                Prefetch(
+                    "children", queryset=Child.objects.filter(id__in=valid_child_ids)
+                )
+            )
+            .distinct()
+        )

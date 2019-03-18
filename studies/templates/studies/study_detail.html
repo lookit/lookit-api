@@ -149,17 +149,6 @@
             </div>
             <h1 class="col-xs-6"> {{ study.name }} </h1>
             <div class="col-xs-6">
-                {#                <div class="edit-study-button">#}
-                {#                    {% get_obj_perms user for study as "study_perms" %}#}
-                {#                    {% if "can_edit_study" in study_perms %}#}
-                {#                        <a class="btn btn-default" href="{% url 'exp:study-participant-email' pk=study.id %}">#}
-                {#                            <i class="fas fa-envelope-open" aria-hidden="true"></i> Email Participants#}
-                {#                        </a>#}
-                {#                        <a class="mr-md btn btn-primary" href="{% url 'exp:study-edit' pk=study.id %}">#}
-                {#                            <i aria-hidden="true" class="fas fa-edit"></i> Edit Study#}
-                {#                        </a>#}
-                {#                    {% endif %}#}
-                {#                </div>#}
                 <div class="pull-right btn-group">
                     {% get_obj_perms user for study as "study_perms" %}
                     {% if "can_edit_study" in study_perms %}
@@ -168,9 +157,8 @@
                         </a>
                     {% endif %}
                     <a type="button" class="btn btn-default"
-                       href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
+                       href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
                         <i aria-hidden="true" class="fa fas fa-envelope"></i> View Responses
-                        ({{ study.consented_responses.count }})
                     </a>
                     <a type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                        aria-expanded="false">

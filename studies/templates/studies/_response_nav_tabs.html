@@ -1,6 +1,11 @@
 {% load exp_extras %}
 
 <ul class="nav nav-tabs">
+    <li {% if active == 'manage-consent' %} class="active" {% endif %}>
+        <a href="{% url 'exp:study-responses-consent-manager' study.id %}">
+            Consent Manager
+        </a>
+    </li>
     <li {% if active == 'individual' %} class="active" {% endif %}>
         <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}">
             Individual <span class="hidden-xs"> Responses </span>

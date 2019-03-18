@@ -1,3 +1,4 @@
+import datetime
 import io
 import json
 import operator
@@ -12,7 +13,17 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import Case, Count, Q, When
+from django.db.models import (
+    Case,
+    Count,
+    IntegerField,
+    OuterRef,
+    Prefetch,
+    Q,
+    Subquery,
+    Sum,
+    When,
+)
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
@@ -31,7 +42,14 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import Study, StudyLog, StudyType
+from studies.models import (
+    Study,
+    StudyLog,
+    StudyType,
+    get_annotated_responses_qs,
+    get_consented_responses_qs,
+    get_pending_responses_qs,
+)
 from studies.tasks import build_experiment, build_zipfile_of_videos
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -172,20 +190,79 @@ class StudyListView(
         and sort.
         """
         request = self.request.GET
-        queryset = get_objects_for_user(
-            self.request.user, "studies.can_view_study"
-        ).exclude(state="archived")
-        queryset = queryset.select_related("creator")
-        queryset = queryset.annotate(
-            completed_responses_count=Count(
-                Case(When(responses__completed=True, then=1))
+
+        annotated_responses_qs = get_annotated_responses_qs()
+
+        queryset = (
+            get_objects_for_user(self.request.user, "studies.can_view_study")
+            .exclude(state="archived")
+            .prefetch_related(
+                Prefetch(
+                    "logs",
+                    queryset=StudyLog.objects.filter(
+                        action__in=("active", "deactivated")
+                    ),
+                ),
+                Prefetch("responses", queryset=annotated_responses_qs),
+            )
+            .select_related("creator")
+            .annotate(
+                completed_responses_count=Count(
+                    Case(
+                        When(
+                            responses__completed=True,
+                            responses__completed_consent_frame=True,
+                            then=1,
+                        )
+                    )
+                ),
+                incomplete_responses_count=Count(
+                    Case(
+                        When(
+                            responses__completed=False,
+                            responses__completed_consent_frame=True,
+                            then=1,
+                        )
+                    )
+                ),
+                valid_consent_count=Subquery(
+                    annotated_responses_qs.filter(
+                        study=OuterRef("pk"), current_ruling="accepted"
+                    )
+                    .values("current_ruling")
+                    .order_by(
+                        "current_ruling"
+                    )  # Need this for GROUP BY to work properly
+                    .annotate(count=Count("current_ruling"))
+                    .values("count")[:1],  # [:1] ensures that a queryset is returned
+                    output_field=IntegerField(),
+                ),
+                pending_consent_count=Subquery(
+                    annotated_responses_qs.filter(
+                        study=OuterRef("pk"), current_ruling="pending"
+                    )
+                    .values("current_ruling")
+                    .order_by("current_ruling")
+                    .annotate(count=Count("current_ruling"))
+                    .values("count")[:1],
+                    output_field=IntegerField(),
+                ),
+                starting_date=Subquery(
+                    StudyLog.objects.filter(study=OuterRef("pk"))
+                    .order_by("-created_at")
+                    .filter(action="active")
+                    .values("created_at")[:1]
+                ),
+                ending_date=Subquery(
+                    StudyLog.objects.filter(study=OuterRef("pk"))
+                    .order_by("-created_at")
+                    .filter(action="deactivated")
+                    .values("created_at")[:1]
+                ),
             )
         )
-        queryset = queryset.annotate(
-            incomplete_responses_count=Count(
-                Case(When(responses__completed=False, then=1))
-            )
-        )
+
+        # TODO: Starting date and ending date as subqueries, then delete the model methods.
 
         state = request.get("state")
         if state and state != "all":
@@ -398,7 +475,7 @@ class StudyDetailView(
         Returns the queryset that is used to lookup the study object. Annotates
         the queryset with the completed and incomplete responses counts.
         """
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().prefetch_related("responses")
         queryset = queryset.annotate(
             completed_responses_count=Count(
                 Case(When(responses__completed=True, then=1))
@@ -633,8 +710,12 @@ class StudyUpdateView(
 
     def post(self, request, *args, **kwargs):
         """
-        Handles all post forms on page - 1) study metadata like name, short_description, etc. 2) researcher add 3) researcher update
-        4) researcher delete 5) Changing study status / adding rejection comments
+        Handles all post forms on page:
+            1) study metadata like name, short_description, etc.
+            2) researcher add
+            3) researcher update
+            4) researcher delete
+            5) Changing study status / adding rejection comments
         """
         study = self.get_object()
 
@@ -822,12 +903,11 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
         responses = context["study"].consented_responses.order_by(orderby)
-        context["responses"] = self.paginated_queryset(responses, page, 10)
-        context["response_data"] = self.build_responses(context["responses"])
-        context["csv_data"] = self.build_individual_csv(context["responses"])
-        context["attachment_list"] = self.sort_attachments_by_response(
-            context["responses"]
+        paginated_responses = context["responses"] = self.paginated_queryset(
+            responses, page, 10
         )
+        context["response_data"] = self.build_responses(paginated_responses)
+        context["csv_data"] = self.build_individual_csv(paginated_responses)
         return context
 
     def build_individual_csv(self, responses):
@@ -872,6 +952,123 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         return ". . ." + ". . .".join(
             vid_name.split(study_uuid + "_")[1].split("_" + response_uuid + "_")
         )
+
+
+class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
+    """Manage videos from here."""
+
+    template_name = "studies/study_responses_consent_ruling.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Need to prefetch our responses with consent-footage videos.
+        study = context["study"]
+        responses = study.responses_with_prefetched_relationships
+        context["loaded_responses"] = responses
+        context["summary_statistics"] = statistics = {
+            "accepted": {"responses": 0, "children": set()},
+            "rejected": {"responses": 0, "children": set()},
+            "pending": {"responses": 0, "children": set()},
+            "total": {"responses": 0, "children": set()},
+        }
+
+        total_stats = statistics["total"]
+
+        # Using a map for arbitrarily structured data - lists and objects that we can't just trivially shove onto
+        # data-* properties in HTML
+        response_key_value_store = {}
+
+        # two jobs - generate statistics and populate k/v store.
+        for response in responses:
+
+            stat_for_status = statistics.get(response.most_recent_ruling)
+            stat_for_status["responses"] += 1
+            stat_for_status["children"].add(response.child)
+            total_stats["responses"] += 1
+            total_stats["children"].add(response.child)
+
+            response_data = response_key_value_store[str(response.uuid)] = {}
+
+            response_data["videos"] = [
+                {"aws_url": video.download_url, "filename": video.filename}
+                for video in response.videos.all()  # we did a prefetch, so all() is really is_consent_footage=True
+            ]
+
+            response_data["details"] = {
+                "general": {
+                    "id": response.id,
+                    "uuid": str(response.uuid),
+                    "sequence": response.sequence,
+                    "conditions": json.dumps(response.conditions),
+                    "global_event_timings": json.dumps(response.global_event_timings),
+                    "completed": response.completed,
+                    "last_comment": response.most_recent_ruling_comment,
+                },
+                "participant": {
+                    "id": response.child.user_id,
+                    "uuid": str(response.child.user.uuid),
+                    "nickname": response.child.user.nickname,
+                },
+                "child": {
+                    "id": response.child.id,
+                    "uuid": str(response.child.uuid),
+                    "name": response.child.given_name,
+                    "birthday": response.child.birthday,
+                    "gender": response.child.gender,
+                    "age_at_birth": response.child.age_at_birth,
+                    "additional_information": response.child.additional_information,
+                },
+            }
+
+            if response.has_valid_consent:
+                response_data["details"]["exp_data"] = response.exp_data
+
+        # TODO: Upgrade to Django 2.x and use json_script.
+        context["response_key_value_store"] = json.dumps(
+            response_key_value_store,
+            default=lambda x: str(x) if isinstance(x, datetime.date) else x,
+        )
+
+        rejected = statistics["rejected"]
+        rejected_child_set = rejected["children"]
+        accepted_child_set = statistics["accepted"]["children"]
+        rejected["count_without_accepted"] = len(
+            rejected_child_set - accepted_child_set
+        )
+
+        for category, counts in statistics.items():
+            counts["children"] = len(counts["children"])
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """This is where consent is submitted."""
+        form_data = self.request.POST
+        user = self.request.user
+        responses = self.get_object().responses
+
+        comments = json.loads(form_data.get("comments"))
+
+        # We now accept pending rulings to reverse old reject/approve decisions.
+        for ruling in ("accepted", "rejected", "pending"):
+            judged_responses = responses.filter(uuid__in=form_data.getlist(ruling))
+            for response in judged_responses:
+                response.consent_rulings.create(
+                    action=ruling,
+                    arbiter=user,
+                    comments=comments.pop(str(response.uuid), None),
+                )
+                response.save()
+
+        # if there are any comments left over, these will count as new rulings that are the same as the last.
+        if comments:
+            for resp_uuid, comment in comments.items():
+                response = responses.get(uuid=resp_uuid)
+                response.consent_rulings.create(
+                    action=response.most_recent_ruling, arbiter=user, comments=comment
+                )
+
+        return super().post(request, *args, **kwargs)
 
 
 class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
@@ -1003,11 +1200,14 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get("sort", "id") or "id"
+        orderby = self.request.GET.get("sort", "full_name")
         match = self.request.GET.get("match", "")
-        context["attachments"] = attachment_helpers.get_study_attachments(
-            context["study"], orderby, match
-        )
+        videos = context["study"].videos_for_consented_responses
+        if match:
+            videos = videos.filter(full_name__icontains=match)
+        if orderby:
+            videos = videos.order_by(orderby)
+        context["videos"] = videos
         context["match"] = match
         return context
 
@@ -1015,12 +1215,12 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
         """
         Downloads study video
         """
-        attachment = self.request.POST.get("attachment")
+        attachment_url = self.request.POST.get("attachment")
         match = self.request.GET.get("match", "")
         orderby = self.request.GET.get("sort", "id") or "id"
-        if attachment:
-            download_url = attachment_helpers.get_download_url(attachment)
-            return redirect(download_url)
+
+        if attachment_url:
+            return redirect(attachment_url)
 
         if self.request.POST.get("all-attachments"):
             build_zipfile_of_videos.delay(

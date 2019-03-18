@@ -357,18 +357,14 @@ def build_zipfile_of_videos(
     from studies.models import Study
     from accounts.models import User
 
-    # get the study in question
     study = Study.objects.get(uuid=study_uuid)
-    # get the user
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
-    # find the requested attachments
-    if consent:
-        attachments = attachment_helpers.get_consent_videos(study.uuid)
-    else:
-        attachments = attachment_helpers.get_study_attachments(study, orderby, match)
+    videos = study.consent_videos if consent else study.videos_for_consented_responses
+
     m = hashlib.sha256()
-    for attachment in attachments:
-        m.update(attachment.key.encode("utf-8"))
+
+    for video in videos:
+        m.update(video.full_name.encode("utf-8"))
     # create a sha256 of the included filenames
     sha = m.hexdigest()
     # use that sha in the filename
@@ -387,16 +383,14 @@ def build_zipfile_of_videos(
         # if it doesn't exist build the zipfile
         with tempfile.TemporaryDirectory() as temp_directory:
             zip_file_path = os.path.join(temp_directory, zip_filename)
-            with zipfile.ZipFile(zip_file_path, "w") as zip:
-                for attachment in attachments:
-                    temporary_file_path = os.path.join(temp_directory, attachment.key)
-                    file_response = requests.get(
-                        attachment_helpers.get_download_url(attachment.key), stream=True
-                    )
+            with zipfile.ZipFile(zip_file_path, "w") as zf:
+                for video in videos:
+                    temporary_file_path = os.path.join(temp_directory, video.full_name)
+                    file_response = requests.get(video.download_url, stream=True)
                     with open(temporary_file_path, mode="w+b") as local_file:
                         for chunk in file_response.iter_content(8192):
                             local_file.write(chunk)
-                    zip.write(temporary_file_path, attachment.key)
+                    zf.write(temporary_file_path, video.full_name)
                     os.remove(temporary_file_path)
 
             # upload the zip to GoogleCloudStorage
@@ -410,7 +404,7 @@ def build_zipfile_of_videos(
     context = dict(
         signed_url=signed_url,
         user=requesting_user,
-        videos=attachments,
+        videos=videos,
         zip_filename=zip_filename,
     )
     send_mail(

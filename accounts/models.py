@@ -305,7 +305,7 @@ class Child(models.Model):
     )
 
     def __str__(self):
-        return f"<Child: {self.given_name}, child of {self.user.nickname}>"
+        return f"<Child: {self.given_name}>"
 
     class Meta:
         ordering = ["-birthday"]
@@ -504,7 +504,7 @@ class DemographicData(models.Model):
         lookup_field = "uuid"
 
     def __str__(self):
-        return f"<DemographicData: {self.user.nickname} @ {self.created_at:%c}>"
+        return f"<DemographicData: @ {self.created_at:%c}>"
 
     def to_display(self):
         return dict(
