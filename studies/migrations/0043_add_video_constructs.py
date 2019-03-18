@@ -39,7 +39,7 @@ def apply_initial_consent_ruling(response, consent_ruling_model, consent_admin):
 
     :param response: a Response object
     :param consent_ruling_model: the ConsentRuling model
-    :param kim: Kim
+    :param consent_admin: User model for consent administrator
     """
     ConsentRuling = consent_ruling_model
 
