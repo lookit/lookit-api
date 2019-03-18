@@ -32,6 +32,9 @@ def unset_study_types(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [("studies", "0042_add_consent_flag_to_response")]
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ("studies", "0043_add_video_constructs"),
+    ]
 
     operations = [migrations.RunPython(set_study_types, reverse_code=unset_study_types)]
