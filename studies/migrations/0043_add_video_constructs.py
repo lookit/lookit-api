@@ -26,13 +26,15 @@ def generate_videos_from_responses(apps, schema_editor):
     VideoModel = apps.get_model("studies", "Video")
     ConsentRulingModel = apps.get_model("studies", "ConsentRuling")
     UserModel = apps.get_model("accounts", "User")
-    kim = UserModel.objects.filter(email="kimscott@mit.edu").first()
+    consent_admin = UserModel.objects.filter(
+        username="lookit-consent-manager@mit.edu"
+    ).first()
     for response in ResponseModel.objects.all():
         generate_videos_from_events(response, VideoModel)
-        apply_initial_consent_ruling(response, ConsentRulingModel, kim)
+        apply_initial_consent_ruling(response, ConsentRulingModel, consent_admin)
 
 
-def apply_initial_consent_ruling(response, consent_ruling_model, kim):
+def apply_initial_consent_ruling(response, consent_ruling_model, consent_admin):
     """
 
     :param response: a Response object
@@ -43,7 +45,7 @@ def apply_initial_consent_ruling(response, consent_ruling_model, kim):
 
     ConsentRuling.objects.create(
         action="accepted",
-        arbiter=kim,
+        arbiter=consent_admin,
         response=response,
         comments="Automatically accepted and may not be verified; recorded before consent manager deployed.",
     )
