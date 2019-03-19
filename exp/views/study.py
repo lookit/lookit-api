@@ -650,7 +650,7 @@ class StudyParticipantEmailView(
                 "custom_email",
                 subject,
                 settings.EMAIL_FROM_ADDRESS,
-                bcc=recipients,
+                bcc=recipients + [sender],
                 from_email=sender,
                 **context,
             )
