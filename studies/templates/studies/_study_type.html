@@ -35,7 +35,7 @@
                     {% for key, value in type.items %}
                         <div class="form-group">
                             <label>{{ key }} </label>
-                            <input name="{{key}}" type="text" value="{% if forloop.parentloop.counter == currentType and not create %}{{study.metadata|get_key:key}}{% else %}{{value | default:""}}{% endif %}" class="form-control">
+                            <input name="{{key}}" type="text" value="{% if forloop.parentloop.counter == currentType and not create %}{{study.metadata|get_key:key|default:""}}{% else %}{{value | default:""}}{% endif %}" class="form-control">
                         </div>
                     {% endfor %}
                 </div>

@@ -5,12 +5,13 @@ from __future__ import unicode_literals
 from django.db import migrations
 import project.fields.datetime_aware_jsonfield
 from django.conf import settings
+import json
 
 
 def set_study_types(apps, schema_editor):
     StudyType = apps.get_model("studies.StudyType")
     Study = apps.get_model("studies.Study")
-    st, created = StudyType.objects.get_or_create(name="Ember Frame Player (default)")
+    st = StudyType.objects.get(name="Ember Frame Player (default)")
 
     st.configuration = {
         "task_module": "studies.tasks",
@@ -22,12 +23,22 @@ def set_study_types(apps, schema_editor):
         },
     }
     st.save()
-    ids = Study.objects.all().update(study_type=st)
+
+    study_metadata_json = st.configuration["metadata"]["fields"]
+
+    Study.objects.all().update(metadata=study_metadata_json)
 
 
 def unset_study_types(apps, schema_editor):
     Study = apps.get_model("studies.Study")
-    ids = Study.objects.all().update(study_type=None)
+    ids = Study.objects.all().update(
+        metadata={
+            "addons_repo_url": settings.EMBER_ADDONS_REPO,
+            "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
+            "last_known_addons_sha": None,
+            "last_known_player_sha": None,
+        }
+    )
 
 
 class Migration(migrations.Migration):
