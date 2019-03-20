@@ -206,6 +206,7 @@
                 // UI Signal - we're paying attention to this video.
                 if ($currentlySelectedResponse) { // If we've got something, deselect it.
                     $currentlySelectedResponse.removeClass("active");
+                    $videoElement.trigger("pause");
                 }
 
                 // Keep these in order for now, figure out a clean way to factor this out later.
@@ -278,7 +279,6 @@
             });
 
             $videoSource.on("error", function (event) {
-                console.log(event);
                 if ($videoSource.attr("src").length) {
                     $currentVideoInfo.addClass("bg-danger").text("Uh oh, we can't load the video.");
                 } else {
