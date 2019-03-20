@@ -46,7 +46,7 @@ class StudyTypeMixin:
 
 
 def is_valid_ember_frame_player(metadata):
-    """Checks commit shas and addons repo url.
+    """Checks commit sha and player repo url.
 
     This must fulfill the contract of returning a list. We are exploiting the fact that empty
     lists evaluate falsey.
@@ -56,20 +56,15 @@ def is_valid_ember_frame_player(metadata):
     :return: a list of errors.
     :rtype: list.
     """
-    addons_repo_url = metadata.get("addons_repo_url", settings.EMBER_ADDONS_REPO)
+    player_repo_url = metadata.get("player_repo_url", settings.EMBER_EXP_PLAYER_REPO)
     frameplayer_commit_sha = metadata.get("last_known_player_sha", "")
-    addons_commit_sha = metadata.get("last_known_addons_sha", "")
 
     errors = []
 
-    if not requests.get(addons_repo_url).ok:
-        errors.append(f"Addons repo url {addons_repo_url} does not work.")
-    if not requests.get(
-        f"{settings.EMBER_EXP_PLAYER_REPO}/commit/{frameplayer_commit_sha}"
-    ).ok:
+    if not requests.get(player_repo_url).ok:
+        errors.append(f"Frameplayer repo url {player_repo_url} does not work.")
+    if not requests.get(f"{player_repo_url}/commit/{frameplayer_commit_sha}").ok:
         errors.append(f"Frameplayer commit {frameplayer_commit_sha} does not exist.")
-    if not requests.get(f"{settings.EMBER_ADDONS_REPO}/commit/{addons_commit_sha}").ok:
-        errors.append(f"Addons commit {addons_commit_sha} does not exist.")
 
     return errors
 

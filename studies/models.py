@@ -91,9 +91,8 @@ class StudyType(models.Model):
             "metadata": {
                 # defines the default metadata fields for that type of study
                 "fields": {
-                    "addons_repo_url": settings.EMBER_ADDONS_REPO,
+                    "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
                     "last_known_player_sha": None,
-                    "last_known_addons_sha": None,
                 }
             },
         }
@@ -228,7 +227,7 @@ class Study(models.Model):
         return self.responses.filter(completed_consent_frame=True)
 
     @property
-    def responses_with_prefetched_relationships(self):
+    def responses_with_consent_videos(self):
         """Custom Queryset for the Consent Manager view."""
         return (
             self.judgeable_responses.prefetch_related(
@@ -237,6 +236,16 @@ class Study(models.Model):
                 ),
                 "consent_rulings",
             )
+            .select_related("child", "child__user")
+            .order_by("-date_created")
+            .all()
+        )
+
+    @property
+    def responses_with_all_videos(self):
+        """Custom Queryset for the Consent Manager view."""
+        return (
+            self.judgeable_responses.prefetch_related("videos", "consent_rulings")
             .select_related("child", "child__user")
             .order_by("-date_created")
             .all()
@@ -253,7 +262,7 @@ class Study(models.Model):
         )
 
         # Annotate that value as "current ruling" on our response queryset.
-        annotated = self.responses_with_prefetched_relationships.annotate(
+        annotated = self.responses_with_all_videos.annotate(
             current_ruling=newest_ruling_subquery
         )
 

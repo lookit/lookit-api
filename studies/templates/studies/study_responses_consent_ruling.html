@@ -85,6 +85,12 @@
 
                 $toShow.show();
                 $toHide.hide();
+                
+                // Start out with no response selected
+                $currentVideoInfo.text("Please select a response from the list on the left.");
+                $currentVideoInfo.removeClass("bg-danger bg-warning");
+                $videoElement.css("visibility", "hidden");
+                $responseComments.css("visibility", "hidden");
             }
 
             function handleRulingActions($button, $responseListItem, responseData) {
@@ -200,13 +206,15 @@
                 // UI Signal - we're paying attention to this video.
                 if ($currentlySelectedResponse) { // If we've got something, deselect it.
                     $currentlySelectedResponse.removeClass("active");
+                    $videoElement.trigger("pause");
                 }
 
                 // Keep these in order for now, figure out a clean way to factor this out later.
                 saveComments();
                 $currentlySelectedResponse = $(this);
                 retrieveComments();
-
+                $responseComments.css("visibility", "visible");
+                
                 $currentlySelectedResponse.addClass("active");
 
                 let $target = $(event.target);
@@ -271,7 +279,6 @@
             });
 
             $videoSource.on("error", function (event) {
-                console.log(event);
                 if ($videoSource.attr("src").length) {
                     $currentVideoInfo.addClass("bg-danger").text("Uh oh, we can't load the video.");
                 } else {
