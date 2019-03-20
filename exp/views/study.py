@@ -1045,7 +1045,8 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         """This is where consent is submitted."""
         form_data = self.request.POST
         user = self.request.user
-        responses = self.get_object().responses
+        study = self.get_object()
+        responses = study.responses
 
         comments = json.loads(form_data.get("comments"))
 
@@ -1068,7 +1069,12 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     action=response.most_recent_ruling, arbiter=user, comments=comment
                 )
 
-        return super().post(request, *args, **kwargs)
+        return HttpResponseRedirect(
+            reverse(
+                "exp:study-responses-consent-manager",
+                kwargs=dict(pk=self.get_object().pk),
+            )
+        )
 
 
 class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
