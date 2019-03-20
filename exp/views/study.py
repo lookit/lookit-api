@@ -963,7 +963,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         # Need to prefetch our responses with consent-footage videos.
         study = context["study"]
-        responses = study.responses_with_prefetched_relationships
+        responses = study.responses_with_consent_videos
         context["loaded_responses"] = responses
         context["summary_statistics"] = statistics = {
             "accepted": {"responses": 0, "children": set()},
