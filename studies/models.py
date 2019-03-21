@@ -541,10 +541,28 @@ def check_modification_of_approved_study(
     study_in_db = Study.objects.filter(pk=instance.id).first()
     if not study_in_db:
         return
-    important_fields_changed = any(
-        getattr(instance, field) != getattr(study_in_db, field)
+
+    field_transitions = {
+        field: (getattr(study_in_db, field), getattr(instance, field))
         for field in Study.MONITORING_FIELDS
-    )
+    }
+
+    build_changed_metadata = update_fields is not None and "metadata" in update_fields
+
+    # Special treatment for metadata field.
+    important_fields_changed = False
+    for field, (current, new) in field_transitions.items():
+        if (
+            field == "metadata"
+            and build_changed_metadata
+            and not current.get("last_known_player_sha", None)
+        ):
+            continue  # Skip, since we're technically just encoding the most recent SHA.
+        else:
+            if new != current:
+                important_fields_changed = True
+                break
+
     if instance.state in approved_states and important_fields_changed:
         instance.state = "rejected"
         instance.comments = "Your study has been modified following approval.  You must resubmit this study to get it approved again."
