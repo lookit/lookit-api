@@ -154,6 +154,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
     :param preview: Boolean. Is this study build a preview?
     """
     ex = None
+    update_fields = []
     try:
         from studies.models import Study, StudyLog
         from accounts.models import User
@@ -171,6 +172,9 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             raise
 
         player_sha = study.metadata.get("last_known_player_sha", None)
+        if not player_sha:  # We will technically be updating metadata here.
+            update_fields += ["metadata"]
+
         player_repo_url = study.metadata.get(
             "player_repo_url", settings.EMBER_EXP_PLAYER_REPO
         )
@@ -274,10 +278,10 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         # Only update field for particular build, in case we have parallel builds running
         if preview:
             study.previewed = True
-            study.save(update_fields=["previewed"])
+            study.save(update_fields=update_fields + ["previewed"])
         else:
             study.built = True
-            study.save(update_fields=["built"])
+            study.save(update_fields=update_fields + ["built"])
 
     except Exception as e:
         ex = e
