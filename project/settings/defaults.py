@@ -15,9 +15,6 @@ import os
 import raven
 from django.contrib.messages import constants as messages
 
-# TODO: deliberate then choose on a methodology for dynamic class selection,
-# i.e. for Storages. Should we choose the storages here, or defer that
-# to initialization of the Storages module?
 MODE = "prod"  # Overridden by local settings.
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -107,7 +104,7 @@ if not DEBUG:
     }
 
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar"]
+    INSTALLED_APPS += ["debug_toolbar", "shells"]
     MIDDLEWARE_CLASSES += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
 
@@ -333,7 +330,7 @@ EMBER_EXP_PLAYER_REPO = os.environ.get(
 EMBER_EXP_PLAYER_BRANCH = os.environ.get("EMBER_EXP_PLAYER_BRANCH", "master")
 EMBER_ADDONS_REPO = os.environ.get(
     "EMBER_ADDONS_REPO", "https://github.com/lookit/exp-addons"
-)
+)  # leave for compatibility with previous migrations
 EMBER_ADDONS_BRANCH = os.environ.get("EMBER_ADDONS_BRANCH", "master")
 
 RABBITMQ_USERNAME = os.environ.get("RABBITMQ_USERNAME", "guest")

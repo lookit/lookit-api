@@ -25,4 +25,4 @@ def query_transform(request, **kwargs):
 
 @register.filter
 def get_key(dictionary, key):
-    return dictionary.get(key)
+    return dictionary.get(key, None)

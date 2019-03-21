@@ -154,7 +154,7 @@
                   </select>
                 </div>
                 <a id='download-individual-data' class='mb-sm btn btn-primary'>
-                    Download Individual Response <span id="download-data-label">JSON <span>
+                    Download Individual Response <span id="download-data-label">JSON </span>
                 </a>
                 {% for response in response_data %}
                     <div class='response-data' id='response-data-{{ forloop.counter }}' style="display:none">
@@ -168,20 +168,19 @@
                 {% endfor %}
                 <div class="pb-md">
                     <h2> Attachments </h2>
-                    {% for attachments in attachment_list %}
+                    {% for response in responses %}
                         <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
-                            {% for attachment in attachments %}
+                            {% for video in response.videos.all %}
                                 <div class="row pt-xs">
                                     <form method="POST"> {% csrf_token %}
                                         <div class="col-xs-9">
-                                            {{ attachment.display }}
+                                            {{ video.full_name }}
                                         </div>
                                         <div class="col-xs-3">
-                                            <button name="attachment" type="submit" value="{{attachment.key}}" class="btn btn-primary btn-sm"> Download </button>
+                                            <button name="attachment" type="submit" value="{{video.id}}" class="btn btn-primary btn-sm"> Download </button>
                                         </div>
+                                    </form>
                                 </div>
-
-                                </form>
                             {% empty %}
                                 <p><em> Expect a delay of a few minutes for video attachments to be available for download. </em></p>
                             {% endfor %}
@@ -193,7 +192,7 @@
     {% else %}
         <div class="row">
         	<div class="col-xs-12">
-                <p class="pt-md"><em>No responses recorded!</em></p>
+                <p class="pt-md"><em>No responses with confirmed consent.</em></p>
         	</div>
     	</div>
     {% endif %}

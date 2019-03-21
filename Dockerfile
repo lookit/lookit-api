@@ -1,4 +1,4 @@
-FROM python:3.6-slim-jessie
+FROM python:3.6-stretch
 
 RUN apt-get update \
     && apt-get install -y \
@@ -18,6 +18,8 @@ RUN apt-get update \
         libgraphviz-dev \
         pkg-config \
         curl \
+        gosu \
+        # libmagic-dev \
     # Docker
     && export DOCKER_CHANNEL=stable \
     && export DOCKER_VERSION=17.06.1-ce \
@@ -29,14 +31,8 @@ RUN apt-get update \
     && dockerd -v \
     && docker -v \
     # /Docker
-    # gosu
-    && export GOSU_VERSION=1.10 \
-    && gpg --keyserver pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-    && curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-    && curl -o /usr/local/bin/gosu.asc -SL "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
-    && gpg --verify /usr/local/bin/gosu.asc \
-    && rm /usr/local/bin/gosu.asc \
-    && chmod +x /usr/local/bin/gosu \
+    # gosu, verify that it works
+    && gosu nobody true \
     # /gosu
     && apt-get clean \
     && apt-get autoremove -y \

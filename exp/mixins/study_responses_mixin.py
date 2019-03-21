@@ -3,23 +3,33 @@ import datetime
 import io
 import json
 
+from django.db.models import Prefetch, QuerySet
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, reverse
+from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user
 
 import attachment_helpers
+from accounts.models import Child, User
 from exp.views.mixins import ExperimenterLoginRequiredMixin
-from studies.models import Study
+from studies.models import Response, Study
+
+# PREFETCH = Response.objects.filter(completed_consent_frame=True)
+# CHILDREN_WITH_USERS = Child.objects.select_related("user")
+WITH_PREFETCHED_RESPONSES = Study.objects.prefetch_related("responses", "videos")
 
 
-class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixin):
+class StudyResponsesMixin(
+    SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin
+):
     """
-    Mixin with shared items for StudyResponsesList, StudyResponsesAll, and
-    StudyAttachments Views
+    Mixin with shared items for StudyResponsesList, StudyResponsesAll, and StudyAttachments Views.
+
+    TODO: deprecate this beast
     """
 
-    model = Study
+    queryset = WITH_PREFETCHED_RESPONSES
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
@@ -172,6 +182,7 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
                             "age_at_birth": resp.child.age_at_birth,
                             "additional_information": resp.child.additional_information,
                         },
+                        "consent_information": resp.current_consent_details,
                     },
                     indent=4,
                     default=self.convert_to_string,
@@ -195,6 +206,10 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
             resp.exp_data,
             resp.global_event_timings,
             resp.completed,
+            resp.most_recent_ruling,
+            resp.most_recent_ruling_arbiter,
+            resp.most_recent_ruling_date,
+            resp.most_recent_ruling_comment,
             resp.study.id,
             str(resp.study.uuid),
             resp.child.user_id,
@@ -221,6 +236,10 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
             "response_exp_data",
             "response_global_event_timings",
             "response_completed",
+            "response_consent_ruling",
+            "response_consent_arbiter",
+            "response_consent_time",
+            "response_consent_comment",
             "study_id",
             "study_uuid",
             "participant_id",
@@ -237,11 +256,11 @@ class StudyResponsesMixin(ExperimenterLoginRequiredMixin, PermissionRequiredMixi
 
     def post(self, request, *args, **kwargs):
         """
-        Downloads study video
+        Downloads a single study video.
         """
-        attachment = self.request.POST.get("attachment")
-        if attachment:
-            download_url = attachment_helpers.get_download_url(attachment)
+        attachment_id = self.request.POST.get("attachment")
+        if attachment_id:
+            download_url = self.get_object().videos.get(pk=attachment_id).download_url
             return redirect(download_url)
 
         return HttpResponseRedirect(

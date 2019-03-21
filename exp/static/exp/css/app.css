@@ -3,13 +3,14 @@ body {
     font-size : 15px;
 }
 
-h1 {
-  font-size: 32px;
-}
+/* Who did this? */
+/*h1 {*/
+  /*font-size: 32px;*/
+/*}*/
 
-h2 {
-  font-size: 24px;
-}
+/*h2 {*/
+  /*font-size: 24px;*/
+/*}*/
 
 .center {
     text-align: center;
@@ -138,7 +139,6 @@ a.state-link {
     margin: 0 auto;
 }
 
-
 /* Study Detail */
 a.view-responses-link {
     text-decoration: none;
@@ -258,6 +258,99 @@ h3.study-logs-label {
 
 .comments-text {
     color: gray;
+}
+
+
+/* Consent Manager */
+#list-of-responses {
+    max-height: 300px;  /* same height as video */
+    overflow-y: scroll;
+}
+
+
+#video-manager nav {
+    /* centering the inline-block ul*/
+    text-align: center;
+}
+
+#list-of-responses .response-option span {
+    display: inline-block;
+    max-width: 65%;
+    overflow-x: hidden;
+}
+
+
+.response-actor {
+    text-transform: capitalize;
+}
+
+#response-statistics .child-count {
+    margin-left: 2em;
+}
+
+#response-statistics .child-count em {
+    padding: 0.2em;
+    font-weight: bold;
+    font-size: 0.75em;
+    border-radius: 3px;
+}
+
+#response-statistics li:nth-child(6) {
+    margin-top: 2em;
+    border-top: 3px solid #bbb;
+}
+
+#response-statistics li.totals {
+    border-right: 3px solid #bbb;
+}
+
+/*
+ Unbelievable! How could they forget to leave out proper list item styling for actual list items?!?!
+ */
+li.list-group-item-success.active,
+li.list-group-item-success.active:hover,
+li.list-group-item-success.active:focus {
+  color: #fff;
+  background-color: #3c763d;
+  border-color: #3c763d;
+}
+
+li.list-group-item-danger.active,
+li.list-group-item-danger.active:hover,
+li.list-group-item-danger.active:focus {
+  color: #fff;
+  background-color: #a94442;
+  border-color: #a94442;
+}
+
+li.list-group-item-warning.active,
+li.list-group-item-warning.active:hover,
+li.list-group-item-warning.active:focus {
+  color: #fff;
+  background-color: #8a6d3b;
+  border-color: #8a6d3b;
+}
+
+button[value=reset].glyphicon-repeat {
+    transform: rotateY(180deg);
+}
+
+span.glyphicon-repeat {
+    transform: rotateY(180deg);
+}
+
+#consent-ruling-form {
+    border-top-width: 1px;
+}
+
+#consent-ruling-form .panel {
+    padding: 10px;
+}
+
+#consent-ruling-form .label {
+    /* see https://github.com/twbs/bootstrap/issues/13219 to understand rendering issues */
+    display: inline-block;
+    padding: .2em .6em .2em;
 }
 
 /* Study Edit */
