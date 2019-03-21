@@ -270,12 +270,15 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             ),
             **context,
         )
+
+        # Only update field for particular build, in case we have parallel builds running
         if preview:
             study.previewed = True
+            study.save(update_fields=["previewed"])
         else:
             study.built = True
+            study.save(update_fields=["built"])
 
-        study.save()
     except Exception as e:
         ex = e
         logger.error(e)

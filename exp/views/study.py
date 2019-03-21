@@ -368,6 +368,8 @@ class StudyDetailView(
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.study_type = self.get_object().study_type
+            clone.built = False
+            clone.previewed = False
             clone.save()
             # Adds success message when study is cloned
             messages.success(self.request, f"{self.get_object().name} copied.")

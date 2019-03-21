@@ -120,7 +120,6 @@ class Study(models.Model):
         "min_age_days",
         "image",
         "exit_url",
-        "previewed",
         "metadata",
         "study_type",
     ]
