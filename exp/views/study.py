@@ -200,13 +200,21 @@ class StudyListView(
             .select_related("creator")
             .annotate(
                 completed_responses_count=Subquery(
-                    Response.objects.filter(study=OuterRef("pk"), completed=True)
+                    Response.objects.filter(
+                        study=OuterRef("pk"),
+                        completed_consent_frame=True,
+                        completed=True,
+                    )
                     .annotate(count=Count("pk"))
                     .values("count")[:1],  # [:1] ensures that a queryset is returned
                     output_field=IntegerField(),
                 ),
                 incomplete_responses_count=Subquery(
-                    Response.objects.filter(study=OuterRef("pk"), completed=False)
+                    Response.objects.filter(
+                        study=OuterRef("pk"),
+                        completed_consent_frame=True,
+                        completed=False,
+                    )
                     .annotate(count=Count("pk"))
                     .values("count")[:1],  # [:1] ensures that a queryset is returned
                     output_field=IntegerField(),
