@@ -71,7 +71,13 @@ def generate_videos_from_events(response, video_model):
             for event in events:
                 video_id = event["videoId"]
                 pipe_name = event["pipeId"]  # what we call "ID" they call "name"
-                if video_id not in seen_ids and pipe_name and event["streamTime"] > 0:
+                stream_time = event["streamTime"]
+                if (
+                    video_id not in seen_ids
+                    and pipe_name
+                    and stream_time
+                    and stream_time > 0
+                ):
                     # Try looking for the regular ID first.
                     file_obj = S3_RESOURCE.Object(
                         settings.BUCKET_NAME, f"{video_id}.mp4"
