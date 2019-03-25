@@ -197,33 +197,16 @@ class StudyListView(
         queryset = (
             get_objects_for_user(self.request.user, "studies.can_view_study")
             .exclude(state="archived")
-            .prefetch_related(
-                Prefetch(
-                    "logs",
-                    queryset=StudyLog.objects.filter(
-                        action__in=("active", "deactivated")
-                    ),
-                ),
-                Prefetch("responses", queryset=annotated_responses_qs),
-            )
             .select_related("creator")
             .annotate(
                 completed_responses_count=Subquery(
-                    Response.objects.filter(
-                        study=OuterRef("pk"),
-                        completed=True,
-                        completed_consent_frame=True,
-                    )
+                    Response.objects.filter(study=OuterRef("pk"), completed=True)
                     .annotate(count=Count("pk"))
                     .values("count")[:1],  # [:1] ensures that a queryset is returned
                     output_field=IntegerField(),
                 ),
                 incomplete_responses_count=Subquery(
-                    Response.objects.filter(
-                        study=OuterRef("pk"),
-                        completed=False,
-                        completed_consent_frame=True,
-                    )
+                    Response.objects.filter(study=OuterRef("pk"), completed=False)
                     .annotate(count=Count("pk"))
                     .values("count")[:1],  # [:1] ensures that a queryset is returned
                     output_field=IntegerField(),
