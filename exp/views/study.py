@@ -46,6 +46,7 @@ from studies.models import (
     Study,
     StudyLog,
     StudyType,
+    Response,
     get_annotated_responses_qs,
     get_consented_responses_qs,
     get_pending_responses_qs,
@@ -207,23 +208,25 @@ class StudyListView(
             )
             .select_related("creator")
             .annotate(
-                completed_responses_count=Count(
-                    Case(
-                        When(
-                            responses__completed=True,
-                            responses__completed_consent_frame=True,
-                            then=1,
-                        )
+                completed_responses_count=Subquery(
+                    Response.objects.filter(
+                        study=OuterRef("pk"),
+                        completed=True,
+                        completed_consent_frame=True,
                     )
+                    .annotate(count=Count("pk"))
+                    .values("count")[:1],  # [:1] ensures that a queryset is returned
+                    output_field=IntegerField(),
                 ),
-                incomplete_responses_count=Count(
-                    Case(
-                        When(
-                            responses__completed=False,
-                            responses__completed_consent_frame=True,
-                            then=1,
-                        )
+                incomplete_responses_count=Subquery(
+                    Response.objects.filter(
+                        study=OuterRef("pk"),
+                        completed=False,
+                        completed_consent_frame=True,
                     )
+                    .annotate(count=Count("pk"))
+                    .values("count")[:1],  # [:1] ensures that a queryset is returned
+                    output_field=IntegerField(),
                 ),
                 valid_consent_count=Subquery(
                     annotated_responses_qs.filter(
