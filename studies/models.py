@@ -778,11 +778,12 @@ class Response(models.Model):
 
 
 @receiver(post_save, sender=Response)
-def take_action_on_exp_data(sender, response, created, **kwargs):
+def take_action_on_exp_data(sender, instance, created, **kwargs):
     """Performs post-save actions based on the current frame.
 
     For now, this just includes deleting videos for withdrawn videos.
     """
+    response = instance  # Aliasing because instance is hooked as a kwarg.
     current_frame = response.sequence[-1]
 
     if any(postfix in current_frame for postfix in VALID_EXIT_FRAME_POSTFIXES):
@@ -957,7 +958,7 @@ class Video(models.Model):
 
 
 @receiver(pre_delete, sender=Video)
-def delete_s3_video(sender, video, using, **kwargs):
+def delete_s3_video(sender, instance, using, **kwargs):
     """Kick off tasks to delete S3 videos from the cloud.
 
     Why are we not overriding delete here? Per the following:
@@ -968,6 +969,7 @@ def delete_s3_video(sender, video, using, **kwargs):
         pre_delete and/or post_delete signals.
       "
     """
+    video = instance  # Again, instance is hooked as a kwarg.
     delete_video_from_cloud.apply_async(
         video.full_name, countdown=60 * 60 * 24 * 7
     )  # Delete after 1 week.
