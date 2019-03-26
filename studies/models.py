@@ -11,7 +11,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models.functions import Coalesce
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, pre_delete
 from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_groups_with_perms
@@ -27,13 +27,14 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies import workflow
 from studies.helpers import send_mail
-from studies.tasks import build_experiment
+from studies.tasks import build_experiment, delete_video_from_cloud
 
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
 
 
 VALID_CONSENT_FRAMES = ("1-video-consent",)
+VALID_EXIT_FRAME_POSTFIXES = ("exit-survey",)
 STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
 
 # Consent ruling stuff
@@ -776,6 +777,21 @@ class Response(models.Model):
         return Video.objects.bulk_create(video_objects)
 
 
+@receiver(post_save, sender=Response)
+def take_action_on_exp_data(sender, response, created, **kwargs):
+    """Performs post-save actions based on the current frame.
+
+    For now, this just includes deleting videos for withdrawn videos.
+    """
+    current_frame = response.sequence[-1]
+
+    if any(postfix in current_frame for postfix in VALID_EXIT_FRAME_POSTFIXES):
+        # check for withdrawal
+        withdrawal = response.exp_data[current_frame].get("withdrawal", False)
+        if withdrawal:
+            response.videos.delete()  # Should trigger a pre-delete hook.
+
+
 class Feedback(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     response = models.ForeignKey(
@@ -938,6 +954,23 @@ class Video(models.Model):
     @property
     def download_url(self):
         return get_download_url(self.full_name)
+
+
+@receiver(pre_delete, sender=Video)
+def delete_s3_video(sender, video, using, **kwargs):
+    """Kick off tasks to delete S3 videos from the cloud.
+
+    Why are we not overriding delete here? Per the following:
+    https://docs.djangoproject.com/en/1.11/topics/db/models/#overriding-predefined-model-methods
+
+      " Note that the delete() method for an object is not necessarily called when deleting objects in bulk using a
+        QuerySet or as a result of a cascading delete. To ensure customized delete logic gets executed, you can use
+        pre_delete and/or post_delete signals.
+      "
+    """
+    delete_video_from_cloud.apply_async(
+        video.full_name, countdown=60 * 60 * 24 * 7
+    )  # Delete after 1 week.
 
 
 class ConsentRuling(models.Model):
