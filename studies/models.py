@@ -784,6 +784,10 @@ def take_action_on_exp_data(sender, instance, created, **kwargs):
     For now, this just includes deleting videos for withdrawn videos.
     """
     response = instance  # Aliasing because instance is hooked as a kwarg.
+
+    if not response.sequence:
+        return
+
     current_frame = response.sequence[-1]
 
     if any(postfix in current_frame for postfix in VALID_EXIT_FRAME_POSTFIXES):
