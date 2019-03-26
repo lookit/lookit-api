@@ -205,9 +205,9 @@ class StudyListView(
                         completed_consent_frame=True,
                         completed=True,
                     )
-                    .values("completed_consent_frame")
+                    .values("completed")
                     .order_by()
-                    .annotate(count=Count("completed_consent_frame"))
+                    .annotate(count=Count("completed"))
                     .values("count")[:1],  # [:1] ensures that a queryset is returned
                     output_field=IntegerField(),
                 ),
@@ -217,9 +217,9 @@ class StudyListView(
                         completed_consent_frame=True,
                         completed=False,
                     )
-                    .values("completed_consent_frame")
+                    .values("completed")
                     .order_by()
-                    .annotate(count=Count("completed_consent_frame"))
+                    .annotate(count=Count("completed"))
                     .values("count")[:1],  # [:1] ensures that a queryset is returned
                     output_field=IntegerField(),
                 ),
