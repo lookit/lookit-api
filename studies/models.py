@@ -26,7 +26,7 @@ from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies import workflow
-from studies.helpers import send_mail
+from studies.helpers import send_mail, FrameActionDispatcher
 from studies.tasks import build_experiment, delete_video_from_cloud
 
 logger = logging.getLogger(__name__)
@@ -45,6 +45,8 @@ CONSENT_RULINGS = (ACCEPTED, REJECTED, PENDING)
 
 S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
+
+dispatch_frame_action = FrameActionDispatcher()
 
 
 # Probably want a queries module for this...
@@ -785,16 +787,10 @@ def take_action_on_exp_data(sender, instance, created, **kwargs):
     """
     response = instance  # Aliasing because instance is hooked as a kwarg.
 
-    if not response.sequence:
+    if created or not response.sequence:
         return
-
-    current_frame = response.sequence[-1]
-
-    if any(postfix in current_frame for postfix in VALID_EXIT_FRAME_POSTFIXES):
-        # check for withdrawal
-        withdrawal = response.exp_data[current_frame].get("withdrawal", False)
-        if withdrawal:
-            response.videos.delete()  # Should trigger a pre-delete hook.
+    else:
+        dispatch_frame_action(response)
 
 
 class Feedback(models.Model):
