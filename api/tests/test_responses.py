@@ -51,7 +51,7 @@ class ResponseTestCase(APITestCase):
             "data": {
                 "attributes": {
                     "global_event_timings": [],
-                    "exp_data": {},
+                    "exp_data": {"first_frame": {}, "second_frame": {}},
                     "sequence": [],
                     "completed": False,
                     "completed_consent_frame": False,
