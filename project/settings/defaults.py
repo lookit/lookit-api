@@ -348,6 +348,7 @@ CELERY_TASK_REJECT_ON_WORKER_LOST = True
 CELERY_TASK_ROUTES = {
     "studies.tasks.build_experiment": {"queue": "builds"},
     "studies.tasks.build_zipfile_of_videos": {"queue": "builds"},
+    "studies.tasks.delete_video_from_cloud": {"queue": "cleanup"},
     "studies.tasks.cleanup*": {"queue": "cleanup"},
     "studies.helpers.send_mail": {"queue": "email"},
 }

@@ -10,6 +10,7 @@ import time
 import zipfile
 from io import BytesIO, StringIO
 
+import boto3
 import requests
 from celery.utils.log import get_task_logger
 from django.conf import settings
@@ -17,13 +18,14 @@ from django.core.files import File
 from django.utils import timezone
 from google.cloud import storage as gc_storage
 
-import attachment_helpers
 from project import storages
 from project.celery import app
 from studies.helpers import send_mail
 
 logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)
+
+S3_RESOURCE = boto3.resource("s3")
 
 # setup a stream handler for capturing logs for db logging
 log_buffer = StringIO()
@@ -410,3 +412,12 @@ def build_zipfile_of_videos(
         from_email=settings.EMAIL_FROM_ADDRESS,
         **context,
     )
+
+
+@app.task(bind=True)
+def delete_video_from_cloud(task, s3_video_name):
+    """Delete videos in S3.
+
+    Meant to have a delay of about 7 days.
+    """
+    S3_RESOURCE.Object(settings.BUCKET_NAME, s3_video_name).delete()
