@@ -956,23 +956,14 @@ class Video(models.Model):
     def download_url(self):
         return get_download_url(self.full_name)
 
+    def delete(self, delete_in_s3=False, **kwargs):
+        """Delete hook override."""
+        super().delete(**kwargs)
 
-@receiver(pre_delete, sender=Video)
-def delete_s3_video(sender, instance, using, **kwargs):
-    """Kick off tasks to delete S3 videos from the cloud.
-
-    Why are we not overriding delete here? Per the following:
-    https://docs.djangoproject.com/en/1.11/topics/db/models/#overriding-predefined-model-methods
-
-      " Note that the delete() method for an object is not necessarily called when deleting objects in bulk using a
-        QuerySet or as a result of a cascading delete. To ensure customized delete logic gets executed, you can use
-        pre_delete and/or post_delete signals.
-      "
-    """
-    video = instance  # Again, instance is hooked as a kwarg.
-    delete_video_from_cloud.apply_async(
-        args=(video.full_name,), countdown=60 * 60 * 24 * 7
-    )  # Delete after 1 week.
+        if delete_in_s3:
+            delete_video_from_cloud.apply_async(
+                args=(self.full_name,), countdown=60 * 60 * 24 * 7
+            )  # Delete after 1 week.
 
 
 class ConsentRuling(models.Model):

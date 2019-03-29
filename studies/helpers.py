@@ -85,11 +85,14 @@ class FrameActionDispatcher(object):
             response: Response Model.
             frame_data: dictionary of frame data.
         """
-        withdrawal = frame_data.get("withdrawal", False)
+        withdrawal = frame_data.get("withdrawal", None)
         if withdrawal:
-            response.videos.filter(
-                is_consent_footage=False
-            ).delete()  # Should trigger a pre-delete hook.
+            for video in response.videos.filter(is_consent_footage=False):
+                video.delete(delete_in_s3=True)
+        else:
+            logger.warning(
+                f"withdrawal property not found in exit frame for {response}"
+            )
 
     def consent(self, response, frame_data: dict, *args, **kwargs):
         """This will eventually take over the functionality that's currently covered in the frontend."""
