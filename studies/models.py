@@ -971,7 +971,7 @@ def delete_s3_video(sender, instance, using, **kwargs):
     """
     video = instance  # Again, instance is hooked as a kwarg.
     delete_video_from_cloud.apply_async(
-        video.full_name, countdown=60 * 60 * 24 * 7
+        args=(video.full_name,), countdown=20
     )  # Delete after 1 week.
 
 
