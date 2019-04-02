@@ -714,6 +714,13 @@ class Response(models.Model):
             "date": self.most_recent_ruling_date,
         }
 
+    @property
+    def withdrawn(self):
+        exit_frames = [
+            f for f in self.exp_data.values() if f.get("frameType", None) == "EXIT"
+        ]
+        return exit_frames[0].get("withdrawal", False) if exit_frames else False
+
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
 

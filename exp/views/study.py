@@ -1002,7 +1002,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "conditions": json.dumps(response.conditions),
                     "global_event_timings": json.dumps(response.global_event_timings),
                     "completed": response.completed,
-                    "last_comment": response.most_recent_ruling_comment,
+                    "withdrawn": response.withdrawn,
                 },
                 "participant": {
                     "id": response.child.user_id,
