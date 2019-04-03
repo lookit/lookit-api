@@ -279,6 +279,16 @@ h3.study-logs-label {
     overflow-x: hidden;
 }
 
+.response-option.withdrawn span strong {
+    text-decoration: line-through;
+    font-style: italic;
+    color: lightgray;
+}
+
+.response-option.withdrawn span em {
+    font-style: italic;
+    color: lightgray;
+}
 
 .response-actor {
     text-transform: capitalize;

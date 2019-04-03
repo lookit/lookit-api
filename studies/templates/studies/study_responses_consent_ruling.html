@@ -351,12 +351,14 @@
                     <ul id="list-of-responses" class="list-group">
                         {% for response in loaded_responses %}
                             <li id="response-option-{{ response.uuid }}"
-                                class="response-option list-group-item {{ response.most_recent_ruling }}"
+                                class="response-option list-group-item {{ response.most_recent_ruling }} {% if response.withdrawn %}withdrawn{% endif %}"
                                 data-id="{{ response.uuid }}"
                                 data-original-status="{{ response.most_recent_ruling }}">
                                 <span>
                                     <strong>{{ response.date_created | date:"D F d, P e" }}</strong>
-                                    <p><em class="small">{{ response.comment_or_reason_for_absence }}</em></p>
+                                    <p>
+                                        <em class="small">{% if response.withdrawn %}Withdrawn. {% endif %}{{ response.comment_or_reason_for_absence }}</em>
+                                    </p>
                                 </span>
                                 <div class="btn-group btn-group-sm pull-right" role="group">
                                     <button id="response-actor-{{ response.uuid }}" type="button"
@@ -496,6 +498,7 @@
                     <th>Conditions</th>
                     <th>Global Event Timing</th>
                     <th>Completed</th>
+                    <th>Withdrawn</th>
                 </tr>
                 </thead>
                 <tbody>
