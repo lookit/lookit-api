@@ -719,7 +719,7 @@ class Response(models.Model):
         exit_frames = [
             f for f in self.exp_data.values() if f.get("frameType", None) == "EXIT"
         ]
-        return exit_frames[0].get("withdrawal", False) if exit_frames else False
+        return exit_frames[0].get("withdrawal", None) if exit_frames else None
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
