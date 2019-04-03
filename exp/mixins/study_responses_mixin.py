@@ -166,6 +166,7 @@ class StudyResponsesMixin(
                             "exp_data": resp.exp_data,
                             "global_event_timings": resp.global_event_timings,
                             "completed": resp.completed,
+                            "withdrawn": resp.withdrawn,
                         },
                         "study": {"id": resp.study.id, "uuid": str(resp.study.uuid)},
                         "participant": {
@@ -206,6 +207,7 @@ class StudyResponsesMixin(
             resp.exp_data,
             resp.global_event_timings,
             resp.completed,
+            resp.withdrawn,
             resp.most_recent_ruling,
             resp.most_recent_ruling_arbiter,
             resp.most_recent_ruling_date,
@@ -236,6 +238,7 @@ class StudyResponsesMixin(
             "response_exp_data",
             "response_global_event_timings",
             "response_completed",
+            "response_withdrawn",
             "response_consent_ruling",
             "response_consent_arbiter",
             "response_consent_time",

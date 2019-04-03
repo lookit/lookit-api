@@ -11,7 +11,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models.functions import Coalesce
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, pre_delete
 from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_groups_with_perms
@@ -26,14 +26,15 @@ from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies import workflow
-from studies.helpers import send_mail
-from studies.tasks import build_experiment
+from studies.helpers import send_mail, FrameActionDispatcher
+from studies.tasks import build_experiment, delete_video_from_cloud
 
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
 
 
 VALID_CONSENT_FRAMES = ("1-video-consent",)
+VALID_EXIT_FRAME_POSTFIXES = ("exit-survey",)
 STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
 
 # Consent ruling stuff
@@ -44,6 +45,8 @@ CONSENT_RULINGS = (ACCEPTED, REJECTED, PENDING)
 
 S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
+
+dispatch_frame_action = FrameActionDispatcher()
 
 
 # Probably want a queries module for this...
@@ -711,6 +714,13 @@ class Response(models.Model):
             "date": self.most_recent_ruling_date,
         }
 
+    @property
+    def withdrawn(self):
+        exit_frames = [
+            f for f in self.exp_data.values() if f.get("frameType", None) == "EXIT"
+        ]
+        return exit_frames[0].get("withdrawal", None) if exit_frames else None
+
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
 
@@ -774,6 +784,20 @@ class Response(models.Model):
                         seen_ids.add(video_id)
 
         return Video.objects.bulk_create(video_objects)
+
+
+@receiver(post_save, sender=Response)
+def take_action_on_exp_data(sender, instance, created, **kwargs):
+    """Performs post-save actions based on the current frame.
+
+    For now, this just includes deleting videos for withdrawn videos.
+    """
+    response = instance  # Aliasing because instance is hooked as a kwarg.
+
+    if created or not response.sequence:
+        return
+    else:
+        dispatch_frame_action(response)
 
 
 class Feedback(models.Model):
@@ -938,6 +962,15 @@ class Video(models.Model):
     @property
     def download_url(self):
         return get_download_url(self.full_name)
+
+    def delete(self, delete_in_s3=False, **kwargs):
+        """Delete hook override."""
+        super().delete(**kwargs)
+
+        if delete_in_s3:
+            delete_video_from_cloud.apply_async(
+                args=(self.full_name,), countdown=60 * 60 * 24 * 7
+            )  # Delete after 1 week.
 
 
 class ConsentRuling(models.Model):

@@ -130,6 +130,7 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
             "demographic_snapshot",
             "created_on",
             "pk",
+            "withdrawn",
         )
 
 
