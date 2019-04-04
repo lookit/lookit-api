@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals, update_session_auth_hash
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.dispatch import receiver
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
@@ -312,10 +312,17 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
             "id", flat=True
         )
-        study_ids = Response.objects.filter(
-            child__id__in=children_ids, completed_consent_frame=True
-        ).values_list("study_id", flat=True)
-        return Study.objects.filter(id__in=study_ids)
+        responses = Response.objects.filter(
+            completed_consent_frame=True, child__id__in=children_ids
+        )
+
+        study_ids = responses.values_list("study_id", flat=True)
+
+        return Study.objects.filter(id__in=study_ids).prefetch_related(
+            Prefetch("responses", queryset=responses),
+            "responses__child",
+            "responses__feedback",
+        )
 
 
 class StudyDetailView(generic.DetailView):

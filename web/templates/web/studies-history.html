@@ -3,22 +3,22 @@
 {% block title %}Past Studies{% endblock %}
 
 {% block flash %}
-  {% if form.errors %}
-  <div class="alert alert-danger" role="alert">
-    <p>Your username and password didn't match. Please try again.</p>
-  </div>
-  {% endif %}
+    {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            <p>Your username and password didn't match. Please try again.</p>
+        </div>
+    {% endif %}
 
-  {% if next %}
-  <div class="alert alert-danger" role="alert">
-      {% if user.is_authenticated %}
-      <p>Your account doesn't have access to this page. To proceed,
-      please login with an account that has access.</p>
-      {% else %}
-      <p>Please login to see this page.</p>
-      {% endif %}
-  </div>
-  {% endif %}
+    {% if next %}
+        <div class="alert alert-danger" role="alert">
+            {% if user.is_authenticated %}
+                <p>Your account doesn't have access to this page. To proceed,
+                    please login with an account that has access.</p>
+            {% else %}
+                <p>Please login to see this page.</p>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
 {% block content %}
     <script>
@@ -29,36 +29,36 @@
         }
     </script>
     <div>
-		<div class="lookit-row lookit-page-title">
-			<div class="container">
-				<h2>Past Studies</h2>
-			</div>
-		</div>
+        <div class="lookit-row lookit-page-title">
+            <div class="container">
+                <h2>Past Studies</h2>
+            </div>
+        </div>
         {% bootstrap_messages %}
         <div class="container">
             <ul class="pt-sm nav nav-tabs">
                 <li>
-                    <a href="{% url 'web:studies-list'%}">Current studies</a>
+                    <a href="{% url 'web:studies-list' %}">Current studies</a>
                 </li>
                 <li class="active">
-                    <a href="{% url 'web:studies-history'%}">Your past studies</a>
+                    <a href="{% url 'web:studies-history' %}">Your past studies</a>
                 </li>
             </ul>
-		</div>
-	</div>
+        </div>
+    </div>
     <div class="container">
         <div class="tab-content">
-    		<div class="tab-pane active" role="tabpanel">
-    			<div class="lookit-row studies-row">
-    				<div class="container">
-    					<div id="past-studies">
+            <div class="tab-pane active" role="tabpanel">
+                <div class="lookit-row studies-row">
+                    <div class="container">
+                        <div id="past-studies">
                             {% if object_list %}
                                 <div class="row study-detail-caption mb-lg">
-        							Here you can view your studies and see comments left by researchers:
-        						</div>
+                                    Here you can view your studies and see comments left by researchers:
+                                </div>
                             {% endif %}
-    						<div class="row">
-    							<div>
+                            <div class="row">
+                                <div>
                                     {% for study in object_list %}
                                         <div class="col-md-12">
                                             <div class="thumbnail">
@@ -68,71 +68,81 @@
                                                     <div class="study-feedback-experiment-info">
                                                         <div class="study-feedback-thumbnail-wrapper">
                                                             {% if study.image %}
-                                                              <p class="image-block">
-                                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})" height="150" width="auto" src="{{ study.image.url }}" width="300px">
-                                                                  <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
-                                                                    	<i aria-hidden="true" class="fas fa-flask"></i>
-                                                                  </div>
-                                                              </p>
+                                                                <p class="image-block">
+                                                                    <img class="study-list-thumbnail"
+                                                                         onerror="imgError(this, {{ forloop.counter }})"
+                                                                         height="150" width="auto"
+                                                                         src="{{ study.image.url }}" width="300px">
+                                                                <div style="display:none;"
+                                                                     class="study-list-placeholder"
+                                                                     id="image-placeholder-{{ forloop.counter }}">
+                                                                    <i aria-hidden="true" class="fas fa-flask"></i>
+                                                                </div>
+                                                                </p>
                                                             {% else %}
-                                                              <div class="study-list-placeholder">
-                                                                  <i aria-hidden="true" class="fas fa-flask"></i>
-                                                              </div>
+                                                                <div class="study-list-placeholder">
+                                                                    <i aria-hidden="true" class="fas fa-flask"></i>
+                                                                </div>
                                                             {% endif %}
                                                         </div>
                                                         <div class="study-feedback-description-wrapper">
                                                             {{ study.short_description }}
                                                             <div class="pt-sm">
-                                                                <strong>Age Range:</strong> {{ study.min_age_years }} year{{ study.min_age_years|pluralize}} {{ study.min_age_months}} month{{ study.min_age_months|pluralize}} {{ study.min_age_days}} day{{ study.min_age_days|pluralize}} - {{ study.max_age_years }} year{{ study.max_age_years|pluralize}} {{ study.max_age_months}} month{{ study.max_age_months|pluralize}} {{ study.max_age_days}} day{{ study.max_age_days|pluralize}}<br>
+                                                                <strong>Age Range:</strong> {{ study.min_age_years }}
+                                                                year{{ study.min_age_years|pluralize }} {{ study.min_age_months }}
+                                                                month{{ study.min_age_months|pluralize }} {{ study.min_age_days }}
+                                                                day{{ study.min_age_days|pluralize }}
+                                                                - {{ study.max_age_years }}
+                                                                year{{ study.max_age_years|pluralize }} {{ study.max_age_months }}
+                                                                month{{ study.max_age_months|pluralize }} {{ study.max_age_days }}
+                                                                day{{ study.max_age_days|pluralize }}<br>
                                                                 <strong>Duration:</strong> {{ study.duration }}
                                                             </div>
                                                         </div>
                                                     </div><!-- Responses -->
                                                     <h4 class="study-feedback-label">Study Responses</h4>
-                                                        <div class="row pb-sm hidden-xs">
+                                                    <div class="row pb-sm hidden-xs">
+                                                        <div class="col-md-3">
+                                                            <strong>Child</strong>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <strong>Date</strong>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <strong>Feedback</strong>
+                                                        </div>
+                                                    </div>
+                                                    {% for response in study.responses.all %}
+                                                        <div class="row">
                                                             <div class="col-md-3">
-                                                                <strong>Child</strong>
+                                                                {{ response.child.given_name }}
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <strong>Date</strong>
+                                                                <strong>{{ response.date_modified | date:"M d Y" }}</strong>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <strong>Feedback</strong>
-                                                            </div>
-                                                        </div>
-                                                    {% for response in study.consented_responses.all %}
-                                                        {% if response.child.user == request.user %}
-                                                            <div class="row">
-                                                                <div class="col-md-3">
-                                                                    {{ response.child.given_name}}
-                                                                </div>
-                                                                <div class="col-md-3">
-                                                                    <strong>{{ response.date_modified | date:"M d Y" }}</strong>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <ul>
+                                                                <ul>
                                                                     {% for feedback in response.feedback.all %}
-                                                                        <li class="response-feedback"> {{ feedback.comment}} </li>
+                                                                        <li class="response-feedback"> {{ feedback.comment }} </li>
                                                                     {% empty %}
                                                                         <span class="response-feedback-none"><em>None</em></span>
                                                                     {% endfor %}
-                                                                    </ul>
-                                                                </div>
-                                                            </div><!-- each response -->
-                                                        {% endif %}
+                                                                </ul>
+                                                            </div>
+                                                        </div><!-- each response -->
                                                     {% endfor %}
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                        </div>
                                     {% empty %}
                                         <p><em> You have not yet participated in any studies. </em></p>
                                     {% endfor %}
-    							</div>
-    						</div>
-    					</div>
-    				</div>
-    			</div>
-    		</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 {% endblock %}
