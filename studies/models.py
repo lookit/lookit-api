@@ -174,6 +174,7 @@ class Study(models.Model):
     metadata = DateTimeAwareJSONField(default={})
     previewed = models.BooleanField(default=False)
     built = models.BooleanField(default=False)
+    compensation_description = models.TextField(null=True)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
@@ -976,7 +977,7 @@ class Video(models.Model):
 class ConsentRuling(models.Model):
     """A consent ruling for a given response."""
 
-    RULINGS = Choices(CONSENT_RULINGS)
+    RULINGS = Choices(*CONSENT_RULINGS)
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)

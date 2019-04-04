@@ -96,6 +96,7 @@ class StudyEditForm(BaseStudyForm):
             "image",
             "short_description",
             "long_description",
+            "compensation_description",
             "exit_url",
             "criteria",
             "min_age_days",
@@ -117,10 +118,12 @@ class StudyEditForm(BaseStudyForm):
             "contact_info": "Researcher Contact Information",
             "public": "Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?",
             "study_type": "Study Type",
+            "compensation_description": "Compensation",
         }
         widgets = {
             "short_description": Textarea(attrs={"rows": 2}),
             "long_description": Textarea(attrs={"rows": 2}),
+            "compensation_description": Textarea(attrs={"rows": 2}),
             "exit_url": Textarea(attrs={"rows": 1}),
             "criteria": Textarea(attrs={"rows": 1}),
             "duration": Textarea(attrs={"rows": 1}),
