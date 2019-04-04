@@ -117,6 +117,12 @@
                                       <td>Duration</td>
                                       <td>{{ object.duration }}</td>
                                   </tr>
+                                  {% if object.compensation_description %}
+                                  <tr>
+                                      <td>Compensation</td>
+                                      <td>{{ object.compensation_description }}</td>
+                                  </tr>
+                                  {% endif %}
                                   <tr>
                                       <td>What happens</td>
                                       <td>{{ object.short_description }}</td>
