@@ -7,6 +7,8 @@ from accounts.models import Child, DemographicData, Organization, User
 class ChildAdmin(GuardedModelAdmin):
     list_display = ("id", "uuid", "given_name", "birthday", "user")
     list_filter = ("id", "uuid")
+    date_hierarchy = "birthday"
+    search_fields = ["uuid", "given_name"]
 
 
 class UserAdmin(GuardedModelAdmin):
@@ -20,8 +22,9 @@ class UserAdmin(GuardedModelAdmin):
         "date_created",
         "last_login",
     )
-    list_filter = ("id", "uuid")
+    list_filter = ("is_researcher",)
     exclude = ("is_superuser", "is_staff")
+    search_fields = ["uuid", "nickname", "given_name", "family_name"]
 
 
 class OrganizationAdmin(GuardedModelAdmin):
@@ -29,8 +32,8 @@ class OrganizationAdmin(GuardedModelAdmin):
 
 
 class DemographicDataAdmin(GuardedModelAdmin):
-    list_display = ("id", "uuid", "created_at", "user")
-    list_filter = ("id", "uuid")
+    list_display = ("uuid", "created_at", "user")
+    list_filter = ("user", "country", "lookit_referrer", "number_of_children")
 
 
 admin.site.register(User, UserAdmin)
