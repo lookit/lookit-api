@@ -133,11 +133,12 @@ class StudyEditForm(BaseStudyForm):
         help_texts = {
             "image": "Please keep your file size less than 1 MB",
             "exit_url": "Specify the page where you want to send your participants after they've completed the study.",
-            "short_description": "Give your study a description here.",
-            "long_description": "Explain the purpose of your study here.",
+            "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers.",
+            "long_description": "Explain the purpose of your study here. This should address what question this study answers AND why that is an interesting or important question, in layperson-friendly terms.",
             "contact_info": "This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)",
             "criteria": "Text shown to families - this is not used to actually verify eligibility.",
             "study_type": STUDY_HELP_TEXT_EDIT,
+            "compensation_description": "Provide a description of any compensation for participation, including when and how participants will receive it and any limitations or eligibility criteria (e.g., only one gift card per participant, being in age range for study, child being visible in consent video). Please see the Terms of Use for details on allowable compensation and restrictions. If this field is left blank it will not be displayed to participants.",
         }
 
 
