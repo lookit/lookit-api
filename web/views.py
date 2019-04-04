@@ -312,7 +312,9 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
             "id", flat=True
         )
-        responses = Response.objects.filter(child__id__in=children_ids)
+        responses = Response.objects.filter(
+            completed_consent_frame=True, child__id__in=children_ids
+        )
 
         study_ids = responses.values_list("study_id", flat=True)
 
