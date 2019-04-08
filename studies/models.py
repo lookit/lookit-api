@@ -125,6 +125,7 @@ class Study(models.Model):
         "exit_url",
         "metadata",
         "study_type",
+        "compensation_description",
     ]
 
     DAY_CHOICES = [(i, i) for i in range(0, 32)]
