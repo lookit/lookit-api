@@ -269,16 +269,16 @@ CORS_ORIGIN_WHITELIST = [
 
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     # if we're trying to use cloud storage
-    STATICFILES_LOCATION = "/static"
+    STATICFILES_LOCATION = "static"
     STATICFILES_STORAGE = "project.storages.LookitStaticStorage"
     STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 
-    MEDIAFILES_LOCATION = "/media"
+    MEDIAFILES_LOCATION = "media"
     DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
     MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
 
-    EXPERIMENT_LOCATION = "/experiments"
-    PREVIEW_EXPERIMENT_LOCATION = "/preview_experiments"
+    EXPERIMENT_LOCATION = "experiments"
+    PREVIEW_EXPERIMENT_LOCATION = "preview_experiments"
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
