@@ -120,9 +120,6 @@ class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="child-detail", lookup_field="uuid"
     )
-    # included_serializers = {
-    #     'user': UserSerializer,
-    # }
 
     user = UUIDResourceRelatedField(
         queryset=User.objects,
@@ -145,6 +142,3 @@ class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
             "former_lookit_profile_id",
             "pk",
         )
-
-    # class JSONAPIMeta:
-    # included_resources = ['user', ]

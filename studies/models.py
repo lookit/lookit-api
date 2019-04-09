@@ -470,8 +470,6 @@ class Study(models.Model):
         )
 
     def deploy_study(self, ev):
-        # self.state = 'deploying'
-        # self.save()
         build_experiment.delay(self.uuid, ev.kwargs.get("user").uuid, preview=False)
 
     def notify_administrators_of_pause(self, ev):
