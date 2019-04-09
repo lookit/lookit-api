@@ -14,13 +14,13 @@ router.register(r"feedback", api_views.FeedbackViewSet)
 
 user_router = routers.NestedSimpleRouter(router, r"users", lookup="user")
 user_router.register(
-    r"demographics", api_views.DemographicDataViewSet, base_name="user-demographics"
+    r"demographics", api_views.DemographicDataViewSet, basename="user-demographics"
 )
-user_router.register(r"children", api_views.ChildViewSet, base_name="user-children")
+user_router.register(r"children", api_views.ChildViewSet, basename="user-children")
 
 study_router = routers.NestedSimpleRouter(router, r"studies", lookup="study")
 study_router.register(
-    r"responses", api_views.ResponseViewSet, base_name="study-responses"
+    r"responses", api_views.ResponseViewSet, basename="study-responses"
 )
 
 child_router = routers.NestedSimpleRouter(router, r"children", lookup="child")
