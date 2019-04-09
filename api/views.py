@@ -1,11 +1,8 @@
-from collections import OrderedDict
-
-from django.db.models import OuterRef, Prefetch, Q, Subquery
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
-from rest_framework import status
-from rest_framework.exceptions import MethodNotAllowed
+
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_json_api import views
@@ -210,7 +207,12 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         "can_edit_study" permissions allows the researcher to preview the study before it has been made active/public
         """
-        qs = super().get_queryset()
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("creator", "organization")
+            .prefetch_related("responses__demographic_snapshot")
+        )
         # List View restricted to public.  Detail view can show a private or public study.
         if "List" in self.get_view_name():
             qs = qs.filter(public=True)
@@ -243,7 +245,6 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     lookup_field = "uuid"
     filter_fields = [("study", "study")]
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = ResponseFilter
     http_method_names = ["get", "post", "put", "patch", "head", "options"]
     permission_classes = [IsAuthenticated, ResponsePermissions]
 

@@ -96,7 +96,7 @@ class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
         source="child.user",
         queryset=User.objects,
         many=False,
-        related_link_view_name="user-list",
+        related_link_view_name="user-detail",
         related_link_lookup_field="uuid",
         required=False,
     )
