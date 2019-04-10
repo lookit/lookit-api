@@ -23,6 +23,9 @@ from project import storages
 from project.celery import app
 from studies.helpers import send_mail
 
+from studies.models import Study, StudyLog
+from accounts.models import User
+
 logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -116,14 +119,14 @@ def download_repos(player_repo_url, player_sha=None):
 
     if os.path.isdir(local_repo_destination_folder):
         logger.debug(f"Found directory {local_repo_destination_folder}")
-        return (repo_destination_folder, player_sha)
+        return repo_destination_folder, player_sha
 
     player_zip_path = f"{player_repo_url}/archive/{player_sha}.zip"
 
     logger.debug(f"Downloading {player_zip_path}...")
     unzip_file(requests.get(player_zip_path).content, local_repo_destination_folder)
 
-    return (repo_destination_folder, player_sha)
+    return repo_destination_folder, player_sha
 
 
 def build_docker_image():
@@ -306,6 +309,79 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
         log_buffer.close()
     if ex:
         raise self.retry(exc=ex, countdown=30)
+
+
+@app.task(bind=True, max_retries=10, retry_backoff=10)
+def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
+    """Celery task to build experiments.
+
+    Build an experiment with docker, and persist the built results in the
+    deployments volume.
+
+    :param self: Task. This is a celery/kombu convention.
+    :param study_uuid: String.
+    :param researcher_uuid: String.
+    :param preview: Boolean. Is this study build a preview?
+    """
+    update_fields = []
+    study = Study.objects.get(uuid=study_uuid)
+    researcher = User.objects.get(uuid=researcher_uuid)
+
+    player_sha = study.metadata.get("last_known_player_sha", None)
+    if not player_sha:  # We will technically be updating metadata here.
+        update_fields += ["metadata"]
+
+    player_repo_url = study.metadata.get(
+        "player_repo_url", settings.EMBER_EXP_PLAYER_REPO
+    )
+
+    # How can we make download repos more efficient?
+    checkout_directory, player_sha = download_repos(
+        player_repo_url, player_sha=player_sha
+    )
+
+    destination_directory = study_uuid
+
+    study.metadata["last_known_player_sha"] = player_sha
+
+    container_checkout_directory = os.path.join("/checkouts/", checkout_directory)
+    container_destination_directory = os.path.join(
+        "/deployments/", destination_directory
+    )
+
+    image_build_logs = DOCKER_CLIENT.images.build(
+        path=settings.EMBER_BUILD_ROOT_PATH,
+        pull=True,
+        cache_from="ember_build",
+        tag="ember_build",
+    )
+
+    local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, "checkouts")
+    local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, "deployments")
+
+    DOCKER_CLIENT.containers.run(
+        "ember_build",
+        command="bash build.sh",
+        auto_remove=True,
+        environment={
+            "CHECKOUT_DIR": container_checkout_directory,
+            "PREPEND_FINGERPRINT": f"/studies/{study_uuid}/",
+            "STUDY_OUTPUT_DIR": container_destination_directory,
+            "SENTRY_DSN": os.environ.get("SENTRY_DSN_JS", None),
+            "PIPE_ACCOUNT_HASH": os.environ.get("PIPE_ACCOUNT_HASH"),
+            "PIPE_ENVIRONMENT": os.environ.get("PIPE_ENVIRONMENT"),
+        },
+        volumes={
+            local_checkout_path: {"bind": "/checkouts", "mode": "ro"},
+            local_deployments_path: {"bind": "/deployments", "mode": "rw"},
+        },
+    )
+
+    storage = (
+        storages.LookitPreviewExperimentStorage()
+        if preview
+        else storages.LookitExperimentStorage()
+    )
 
 
 def cleanup_old_directories(root_path, older_than):
