@@ -23,8 +23,6 @@ from project import storages
 from project.celery import app
 from studies.helpers import send_mail
 
-from studies.models import Study, StudyLog
-from accounts.models import User
 
 logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -323,6 +321,9 @@ def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
     :param researcher_uuid: String.
     :param preview: Boolean. Is this study build a preview?
     """
+    from studies.models import Study, StudyLog
+    from accounts.models import User
+
     update_fields = []
     study = Study.objects.get(uuid=study_uuid)
     researcher = User.objects.get(uuid=researcher_uuid)
