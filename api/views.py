@@ -275,31 +275,41 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
             study = get_object_or_404(Study, uuid=study_uuid)
-            consented_responses = study.consented_responses
-            if self.request.user.has_perm(
-                "studies.can_view_study_responses",
-                get_object_or_404(Study, uuid=study_uuid),
-            ):
-                return (
-                    Response.objects.filter(
+
+            nestedResponses = study.responses
+
+            # CASE 1: Participant session, using query string with child ID.
+            # Want same functionality regardless of whether user is a researcher.
+            childID = self.request.query_params.get("child", None)
+            if childID is not None:
+                nestedResponses = nestedResponses.filter(
+                    child__uuid=childID, child__in=children_belonging_to_user
+                )
+
+            # CASE 2: Experimenters/parents getting responses for study.
+            else:
+                if self.request.user.has_perm(
+                    "studies.can_view_study_responses",
+                    get_object_or_404(Study, uuid=study_uuid),
+                ):
+                    consented_responses = study.consented_responses
+                    nestedResponses = nestedResponses.filter(
                         Q(pk__in=consented_responses)
                         | Q(child__in=children_belonging_to_user)
-                    )
-                    .select_related(
+                    ).select_related(
                         "child",
                         "child__user",
                         "study",
                         "study__study_type",
                         "demographic_snapshot",
                     )
-                    .order_by("-date_modified")
-                )
-            else:
-                return Response.objects.filter(
-                    child__in=children_belonging_to_user
-                ).order_by(
-                    "-date_modified"
-                )  # Don't need extra stuff here.
+                else:
+                    nestedResponses = nestedResponses.filter(
+                        child__in=children_belonging_to_user
+                    )
+
+            return nestedResponses.order_by("-date_modified")
+
         else:  # NON-NESTED ROUTE
             # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{RESPONSE_UUID}'.
             # This route gets accessed by:
