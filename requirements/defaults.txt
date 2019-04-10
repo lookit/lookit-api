@@ -36,3 +36,4 @@ django-celery-beat==1.0.1
 requests==2.21.0
 urllib3==1.24.1
 fleep==1.0.1
+docker==3.7.2
