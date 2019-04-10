@@ -26,6 +26,8 @@ django-revproxy==0.9.15
 django-multiselectfield==0.1.7
 django-storages==1.7.1
 django-allauth==0.32.0
+google-cloud-storage==1.14.0
+docker==3.7.2
 boto3==1.4.5
 raven==6.1.0
 celery==4.1.0

@@ -11,6 +11,7 @@ import zipfile
 from io import BytesIO, StringIO
 
 import boto3
+import docker
 import requests
 from celery.utils.log import get_task_logger
 from django.conf import settings
@@ -26,6 +27,8 @@ logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)
 
 S3_RESOURCE = boto3.resource("s3")
+
+DOCKER_CLIENT = docker.from_env()
 
 # setup a stream handler for capturing logs for db logging
 log_buffer = StringIO()

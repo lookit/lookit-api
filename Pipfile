@@ -52,7 +52,8 @@ Werkzeug = "==0.12.1"
 django_celery_beat = "==1.0.1"
 fleep = "==1.0.1"
 psycopg2 = "==2.7.5"
-google-cloud-storage = "*"
+google-cloud-storage = "==1.14.0"
+docker = "==3.7.2"
 
 [requires]
 python_version = "3.6"
