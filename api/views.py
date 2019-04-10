@@ -224,14 +224,6 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         )
 
 
-class ResponseFilter(filters.FilterSet):
-    child = filters.UUIDFilter(name="child__uuid")
-
-    class Meta:
-        model = Response
-        fields = ["child"]
-
-
 class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
     Allows viewing a list of responses, retrieving a response, creating a response, or updating a response.
@@ -243,7 +235,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = Response.objects.all()
     serializer_class = ResponseSerializer
     lookup_field = "uuid"
-    filter_fields = [("study", "study")]
+    filterset_fields = ("study", "child")
     filter_backends = (filters.DjangoFilterBackend,)
     http_method_names = ["get", "post", "put", "patch", "head", "options"]
     permission_classes = [IsAuthenticated, ResponsePermissions]
@@ -346,7 +338,7 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
 
     resource_name = "feedback"
-    queryset = Feedback.objects.all()
+    queryset = Feedback.related_manager.get_queryset()
     serializer_class = FeedbackSerializer
     lookup_field = "uuid"
     http_method_names = ["get", "post", "put", "patch", "head", "options"]
