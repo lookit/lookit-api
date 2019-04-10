@@ -62,7 +62,7 @@ class FeedbackSerializer(UUIDSerializerMixin, ModelSerializer):
         view_name="feedback-detail", lookup_field="uuid"
     )
     response = UUIDResourceRelatedField(
-        queryset=Response.objects,
+        queryset=Response.related_manager,
         many=False,
         related_link_view_name="response-detail",
         related_link_lookup_field="uuid",
