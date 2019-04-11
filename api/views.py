@@ -263,7 +263,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         XXX: HERE BE DRAGONS: this method is invoked with PATCH as well as GET requests!
         TODO: Break this out into multiple handlers. The logic-gymnastics is getting annoying.
         """
-
+        
         children_belonging_to_user = Child.objects.filter(user__id=self.request.user.id)
 
         # NESTED ROUTE:
@@ -281,7 +281,9 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             # CASE 1: Participant session, using query string with child ID.
             # Want same functionality regardless of whether user is a researcher.
             child_id = self.request.query_params.get("child", None)
-            if child_id is not None:
+            if child_id == 'TEST_CHILD_DISREGARD':
+                return Response.objects.none() # Preview route
+            elif child_id is not None:
                 nested_responses = nested_responses.filter(
                     child__uuid=child_id, child__in=children_belonging_to_user
                 )
