@@ -14,9 +14,7 @@ class FeedbackPermissions(permissions.BasePermission):
         if request.method not in permissions.SAFE_METHODS:
             response = request.data.get("response")
             if response and response.get("id"):
-                related_study = get_object_or_404(
-                    Response, uuid=response.get("uuid")
-                ).study
+                related_study = get_object_or_404(Response, id=response.get("id")).study
                 user = request.user
                 if not user.has_perm("studies.can_edit_study", related_study):
                     return False
@@ -32,7 +30,7 @@ class ResponsePermissions(permissions.BasePermission):
         if request.method not in permissions.SAFE_METHODS:
             child_id = request.data.get("child")
             if child_id and child_id.get("id"):
-                child = get_object_or_404(Child, uuid=child_id.get("uuid"))
+                child = get_object_or_404(Child, id=child_id.get("id"))
                 if child.user != request.user:
                     return False
         return True

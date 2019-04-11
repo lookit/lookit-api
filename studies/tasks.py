@@ -253,7 +253,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
 
         deploy_to_remote(cloud_deployment_directory, storage)
 
-        context = {
+        email_context = {
             "org_name": study.organization.name,
             "study_name": study.name,
             "study_id": study.pk,
@@ -269,7 +269,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
                     "username", flat=True
                 )
             ),
-            **context,
+            **email_context,
         )
         send_mail.delay(
             "notify_researchers_of_deployment",
@@ -278,7 +278,7 @@ def build_experiment(self, study_uuid, researcher_uuid, preview=True):
             bcc=list(
                 study.study_admin_group.user_set.values_list("username", flat=True)
             ),
-            **context,
+            **email_context,
         )
 
         # Only update field for particular build, in case we have parallel builds running
@@ -350,7 +350,7 @@ def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
         "/deployments/", destination_directory
     )
 
-    image_build_logs = DOCKER_CLIENT.images.build(
+    image, image_log_gen = DOCKER_CLIENT.images.build(
         path=settings.EMBER_BUILD_ROOT_PATH,
         pull=True,
         cache_from="ember_build",
@@ -360,7 +360,7 @@ def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
     local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, "checkouts")
     local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, "deployments")
 
-    DOCKER_CLIENT.containers.run(
+    proc_stdout, proc_stderr = DOCKER_CLIENT.containers.run(
         "ember_build",
         command="bash build.sh",
         auto_remove=True,
@@ -376,12 +376,67 @@ def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
             local_checkout_path: {"bind": "/checkouts", "mode": "ro"},
             local_deployments_path: {"bind": "/deployments", "mode": "rw"},
         },
+        working_dir=settings.EMBER_BUILD_ROOT_PATH,
+        stdout=True,
+        stderr=True,
     )
 
     storage = (
         storages.LookitPreviewExperimentStorage()
         if preview
         else storages.LookitExperimentStorage()
+    )
+
+    cloud_deployment_directory = os.path.join(
+        local_deployments_path, destination_directory
+    )
+
+    deploy_to_remote(cloud_deployment_directory, storage)
+
+    email_context = {
+        "org_name": study.organization.name,
+        "study_name": study.name,
+        "study_id": study.pk,
+        "study_uuid": str(study.uuid),
+        "action": "previewed" if preview else "deployed",
+    }
+    send_mail.delay(
+        "notify_admins_of_study_action",
+        "Study Previewed" if preview else "Study Deployed",
+        settings.EMAIL_FROM_ADDRESS,
+        bcc=list(
+            study.study_organization_admin_group.user_set.values_list(
+                "username", flat=True
+            )
+        ),
+        **email_context,
+    )
+    send_mail.delay(
+        "notify_researchers_of_deployment",
+        "Study Previewed" if preview else "Study Deployed",
+        settings.EMAIL_FROM_ADDRESS,
+        bcc=list(study.study_admin_group.user_set.values_list("username", flat=True)),
+        **email_context,
+    )
+
+    # Only update field for particular build, in case we have parallel builds running
+    if preview:
+        study.previewed = True
+        study.save(update_fields=update_fields + ["previewed"])
+    else:
+        study.built = True
+        study.save(update_fields=update_fields + ["built"])
+
+    StudyLog.objects.create(
+        study=study,
+        action="preview" if preview else "deploy",
+        user=researcher,
+        extra={
+            "ember_build": str(init_container_comp_process.stdout),
+            "image_build": str(build_image_comp_process.stdout),
+            "ex": str(ex),
+            "log": log_buffer.getvalue(),
+        },
     )
 
 
@@ -478,7 +533,7 @@ def build_zipfile_of_videos(
         int(time.time() + datetime.timedelta(minutes=30).seconds)
     )
     # send an email with the signed url and return
-    context = dict(
+    email_context = dict(
         signed_url=signed_url,
         user=requesting_user,
         videos=videos,
@@ -490,7 +545,7 @@ def build_zipfile_of_videos(
         settings.EMAIL_FROM_ADDRESS,
         bcc=[requesting_user.username],
         from_email=settings.EMAIL_FROM_ADDRESS,
-        **context,
+        **email_context,
     )
 
 
