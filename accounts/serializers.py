@@ -1,7 +1,7 @@
 from rest_framework_json_api import serializers
 
 from accounts.models import Child, DemographicData, Organization, User
-from api.serializers import UUIDResourceRelatedField, ModelWithUuidPkSerializer
+from api.serializers import UuidResourceRelatedField, ModelWithUuidPkSerializer
 
 
 class OrganizationSerializer(ModelWithUuidPkSerializer):
@@ -58,20 +58,20 @@ class BasicUserSerializer(ModelWithUuidPkSerializer):
         view_name="user-detail", lookup_field="uuid"
     )
 
-    demographics = UUIDResourceRelatedField(
+    demographics = UuidResourceRelatedField(
         queryset=DemographicData.objects,
         many=True,
         related_link_view_name="user-demographics-list",
         related_link_url_kwarg="user_uuid",
         related_link_lookup_field="uuid",
     )
-    organization = UUIDResourceRelatedField(
+    organization = UuidResourceRelatedField(
         queryset=Organization.objects,
         many=False,
         related_link_view_name="organization-detail",
         related_link_lookup_field="uuid",
     )
-    children = UUIDResourceRelatedField(
+    children = UuidResourceRelatedField(
         queryset=Child.objects,
         many=True,
         related_link_view_name="user-children-list",
@@ -117,7 +117,7 @@ class ChildSerializer(ModelWithUuidPkSerializer):
         view_name="child-detail", lookup_field="uuid"
     )
 
-    user = UUIDResourceRelatedField(
+    user = UuidResourceRelatedField(
         queryset=User.objects,
         many=False,
         related_link_view_name="user-detail",
