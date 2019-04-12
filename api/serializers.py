@@ -1,4 +1,4 @@
-from collections import OrderedDict
+from rest_framework import serializers
 
 from rest_framework_json_api.relations import ResourceRelatedField
 from rest_framework_json_api.serializers import (
@@ -12,18 +12,20 @@ class UUIDResourceRelatedField(ResourceRelatedField):
     def to_representation(self, value):
         """What I think is the proper way to do this."""
         representation = super().to_representation(value)
-        representation["id"] = value.uuid
+        representation["id"] = str(value.uuid)
         return representation
 
 
-class ModelSerializer(JSONAPIModelSerializer):
+class ModelWithUuidPkSerializer(JSONAPIModelSerializer):
+    """Ensuring that pk is never shown, but UUID is used instead.
+
+    Per the docstring of the DJA class we're inheriting from:
+
+    If the `ModelSerializer` class *doesn't* generate the set of fields that
+    you need you should either declare the extra/differing fields explicitly on
+    the serializer class, or simply use a `Serializer` class.
+    """
+
     serializer_related_field = UUIDResourceRelatedField
 
-
-class UUIDSerializerMixin(ModelSerializer):
-    def to_representation(self, instance):
-        # this might not do anything
-        retval = super().to_representation(instance)
-        retval["id"] = instance.uuid
-        retval["pk"] = instance.uuid
-        return retval
+    uuid = serializers.UUIDField(source="uuid", read_only=True)

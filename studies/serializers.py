@@ -1,28 +1,24 @@
 from rest_framework_json_api import serializers
 
 from accounts.models import Child, DemographicData, Organization, User
-from api.serializers import (
-    ModelSerializer,
-    UUIDResourceRelatedField,
-    UUIDSerializerMixin,
-)
+from api.serializers import UUIDResourceRelatedField, ModelWithUuidPkSerializer
 from studies.models import Feedback, Response, Study
 
 
-class StudySerializer(UUIDSerializerMixin, ModelSerializer):
+class StudySerializer(ModelWithUuidPkSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="study-detail", lookup_field="uuid"
     )
     organization = UUIDResourceRelatedField(
         queryset=Organization.objects,
         related_link_view_name="organization-detail",
-        related_link_lookup_field="uuid",
+        related_link_url_kwarg="study_uuid",
         many=False,
     )
     creator = UUIDResourceRelatedField(
         queryset=User.objects,
-        related_link_view_name="user-detail",
-        related_link_lookup_field="uuid",
+        related_link_view_name="users-user-detail",
+        related_link_url_kwarg="study_uuid",
         many=False,
     )
     responses = UUIDResourceRelatedField(
@@ -30,7 +26,6 @@ class StudySerializer(UUIDSerializerMixin, ModelSerializer):
         many=True,
         related_link_view_name="study-responses-list",
         related_link_url_kwarg="study_uuid",
-        related_link_lookup_field="uuid",
     )
 
     class Meta:
@@ -57,7 +52,7 @@ class StudySerializer(UUIDSerializerMixin, ModelSerializer):
         )
 
 
-class FeedbackSerializer(UUIDSerializerMixin, ModelSerializer):
+class FeedbackSerializer(ModelWithUuidPkSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="feedback-detail", lookup_field="uuid"
     )
@@ -80,37 +75,29 @@ class FeedbackSerializer(UUIDSerializerMixin, ModelSerializer):
         read_only_fields = ("researcher",)
 
 
-class ResponseSerializer(UUIDSerializerMixin, ModelSerializer):
+class ResponseSerializer(ModelWithUuidPkSerializer):
     created_on = serializers.DateTimeField(read_only=True, source="date_created")
     url = serializers.HyperlinkedIdentityField(
         view_name="response-detail", lookup_field="uuid"
     )
 
     study = UUIDResourceRelatedField(
-        queryset=Study.objects,
-        many=False,
-        related_link_view_name="study-detail",
-        related_link_lookup_field="uuid",
+        queryset=Study.objects, many=False, related_link_url_kwarg="response_uuid"
     )
     user = UUIDResourceRelatedField(
         source="child.user",
         queryset=User.objects,
         many=False,
-        related_link_view_name="user-detail",
-        related_link_lookup_field="uuid",
+        related_link_url_kwarg="response_uuid",
         required=False,
     )
     child = UUIDResourceRelatedField(
-        queryset=Child.objects,
-        many=False,
-        related_link_view_name="child-detail",
-        related_link_lookup_field="uuid",
+        queryset=Child.objects, many=False, related_link_url_kwarg="response_uuid"
     )
     demographic_snapshot = UUIDResourceRelatedField(
         queryset=DemographicData.objects,
         many=False,
-        related_link_view_name="demographicdata-detail",
-        related_link_lookup_field="uuid",
+        related_link_url_kwarg="response_uuid",
         required=False,
     )
 

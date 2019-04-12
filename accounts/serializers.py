@@ -1,14 +1,10 @@
 from rest_framework_json_api import serializers
 
 from accounts.models import Child, DemographicData, Organization, User
-from api.serializers import (
-    ModelSerializer,
-    UUIDResourceRelatedField,
-    UUIDSerializerMixin,
-)
+from api.serializers import UUIDResourceRelatedField, ModelWithUuidPkSerializer
 
 
-class OrganizationSerializer(UUIDSerializerMixin, ModelSerializer):
+class OrganizationSerializer(ModelWithUuidPkSerializer):
     resource_name = "organizations"
     url = serializers.HyperlinkedIdentityField(
         view_name="organization-detail", lookup_field="uuid"
@@ -19,7 +15,7 @@ class OrganizationSerializer(UUIDSerializerMixin, ModelSerializer):
         fields = ("name", "url", "pk")
 
 
-class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
+class DemographicDataSerializer(ModelWithUuidPkSerializer):
     resource_name = "demographics"
     country = serializers.CharField(default="")
     date_created = serializers.DateTimeField(read_only=True, source="created_at")
@@ -56,7 +52,7 @@ class DemographicDataSerializer(UUIDSerializerMixin, ModelSerializer):
         )
 
 
-class BasicUserSerializer(UUIDSerializerMixin, ModelSerializer):
+class BasicUserSerializer(ModelWithUuidPkSerializer):
     resource_name = "users"
     url = serializers.HyperlinkedIdentityField(
         view_name="user-detail", lookup_field="uuid"
@@ -115,7 +111,7 @@ class FullUserSerializer(BasicUserSerializer):
         fields = BasicUserSerializer.Meta.fields + ("username",)
 
 
-class ChildSerializer(UUIDSerializerMixin, ModelSerializer):
+class ChildSerializer(ModelWithUuidPkSerializer):
     lookup_field = "uuid"
     url = serializers.HyperlinkedIdentityField(
         view_name="child-detail", lookup_field="uuid"

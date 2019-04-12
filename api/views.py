@@ -25,6 +25,15 @@ from studies.serializers import (
 )
 
 
+CONVERSION_TYPES = {
+    "child": Child,
+    "study": Study,
+    "response": Response,
+    "feedback": Feedback,
+    "user": User,
+}
+
+
 class FilterByUrlKwargsMixin(views.ModelViewSet):
     filter_fields = []
 
@@ -43,6 +52,26 @@ class FilterByUrlKwargsMixin(views.ModelViewSet):
             if kwarg_key in self.kwargs:
                 qs = qs.filter(**{qs_key: self.kwargs.get(kwarg_key)})
         return qs
+
+
+class ConvertUuidToIdMixin(views.ModelViewSet):
+    """Utility mixin to bridge the ID <--> UUID gap in the frontend.
+
+    This is obviously a wonky solution, but it's far better than copying and pasting and version-locking
+    the codebase.
+    """
+
+    def initial(self, request, *args, **kwargs):
+        """Do regular initialize, except replace id fields with UUID."""
+        if self.action in ("create", "update"):
+            # find things in request.data
+            for prop, value in request.data.items():
+                if value and isinstance(value, dict) and value.get("id", None):
+                    value["id"] = (
+                        CONVERSION_TYPES[prop].objects.get(uuid=value["id"]).id
+                    )
+
+        super().initial(request, *args, **kwargs)
 
 
 class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -224,7 +253,18 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         )
 
 
-class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+class ResponsesFilter(filters.FilterSet):
+    """A Response filter that actually works."""
+
+    child = filters.UUIDFilter(field_name="child__uuid")
+    study = filters.UUIDFilter(field_name="study__uuid")
+
+    class Meta:
+        model = Response
+        fields = []
+
+
+class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
     """
     Allows viewing a list of responses, retrieving a response, creating a response, or updating a response.
 
@@ -235,7 +275,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = Response.objects.all()
     serializer_class = ResponseSerializer
     lookup_field = "uuid"
-    filterset_fields = ("study", "child")
+    filterset_class = ResponsesFilter
     filter_backends = (filters.DjangoFilterBackend,)
     http_method_names = ["get", "post", "put", "patch", "head", "options"]
     permission_classes = [IsAuthenticated, ResponsePermissions]
@@ -256,7 +296,6 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         XXX: HERE BE DRAGONS: this method is invoked with PATCH as well as GET requests!
         TODO: Break this out into multiple handlers. The logic-gymnastics is getting annoying.
         """
-
         children_belonging_to_user = Child.objects.filter(user__id=self.request.user.id)
 
         # NESTED ROUTE:
