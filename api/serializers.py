@@ -93,7 +93,7 @@ class PatchedResourceRelatedField(ResourceRelatedField):
     def to_representation(self, value):
         """ID becomes UUID in the frontend."""
         representation = super().to_representation(value)
-        representation["id"] = value.uuid
+        representation["id"] = str(value.uuid)  # make it serializable by json.dumps
         return representation
 
 
