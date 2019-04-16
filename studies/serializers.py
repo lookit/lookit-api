@@ -2,59 +2,38 @@ from rest_framework_json_api import serializers
 
 from accounts.models import Child, DemographicData, Organization, User
 from api.serializers import (
-    UuidResourceRelatedField,
-    ModelWithUuidPkSerializer,
-    UuidHyperlinkedRelatedField,
-    NestedUuidHyperlinkedRelatedField,
+    UuidHyperlinkedModelSerializer,
+    UuidResourceModelSerializer,
+    PatchedHyperlinkedRelatedField,
+    PatchedResourceRelatedField,
 )
-from studies.models import Feedback, Response, Study, Organization
+from studies.models import Feedback, Response, Study
 
 
-class RelatedOrganizationSerializer(ModelWithUuidPkSerializer):
-    class Meta:
-        model = Organization
-        fields = ("uuid",)
-
-
-class RelatedCreatorSerializer(ModelWithUuidPkSerializer):
-    class Meta:
-        model = User
-        fields = ("uuid",)
-
-
-class StudySerializer(ModelWithUuidPkSerializer):
+class StudySerializer(UuidHyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="study-detail", lookup_field="uuid"
     )
-    organization = UuidHyperlinkedRelatedField(
-        # queryset=Organization.objects,
-        read_only=True,
-        view_name="organization-detail",
-        # lookup_url_kwarg="uuid",
-        lookup_field="uuid",
-        # many=False,
+    organization = PatchedHyperlinkedRelatedField(
+        queryset=Organization.objects,
+        related_link_view_name="organization-detail",
+        related_link_lookup_field="organization.uuid",
+        related_link_url_kwarg="uuid",
     )
-    creator = UuidHyperlinkedRelatedField(
-        # queryset=User.objects,
-        read_only=True,
-        view_name="user-detail",
-        # lookup_url_kwarg="uuid",
-        lookup_field="uuid",
-        # many=False,
+
+    creator = PatchedHyperlinkedRelatedField(
+        queryset=User.objects,
+        related_link_view_name="user-detail",
+        related_link_lookup_field="creator.uuid",
+        related_link_url_kwarg="uuid",
     )
-    responses = NestedUuidHyperlinkedRelatedField(
-        # queryset=Response.objects,
+    responses = PatchedHyperlinkedRelatedField(
+        queryset=Response.objects,
         many=True,
-        read_only=True,
         related_link_view_name="study-responses-list",
         related_link_url_kwarg="study_uuid",
         related_link_lookup_field="uuid",
     )
-
-    # included_serializers = {
-    #     "organization": "studies.serializers.RelatedOrganizationSerializer",
-    #     "creator": "studies.serializers.RelatedCreatorSerializer",
-    # }
 
     class Meta:
         model = Study
@@ -80,21 +59,23 @@ class StudySerializer(ModelWithUuidPkSerializer):
         )
 
 
-class FeedbackSerializer(ModelWithUuidPkSerializer):
+class FeedbackSerializer(UuidHyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="feedback-detail", lookup_field="uuid"
     )
-    response = UuidHyperlinkedRelatedField(
+    response = PatchedHyperlinkedRelatedField(
         queryset=Response.related_manager,
         # many=False,
-        view_name="response-detail",
-        lookup_field="uuid",
+        related_link_view_name="response-detail",
+        related_link_lookup_field="response.uuid",
+        related_link_url_kwarg="uuid",
     )
-    researcher = UuidHyperlinkedRelatedField(
+    researcher = PatchedHyperlinkedRelatedField(
         read_only=True,
         # many=False,
-        view_name="user-detail",
-        lookup_field="uuid",
+        related_link_view_name="user-detail",
+        related_link_lookup_field="user.uuid",
+        related_link_url_kwarg="uuid",
     )
 
     class Meta:
@@ -103,28 +84,41 @@ class FeedbackSerializer(ModelWithUuidPkSerializer):
         read_only_fields = ("researcher",)
 
 
-class ResponseSerializer(ModelWithUuidPkSerializer):
+class ResponseSerializerMixin(object):
+    pass
+
+
+class ResponseSerializer(UuidHyperlinkedModelSerializer):
+
     created_on = serializers.DateTimeField(read_only=True, source="date_created")
     url = serializers.HyperlinkedIdentityField(
         view_name="response-detail", lookup_field="uuid"
     )
 
-    study = UuidResourceRelatedField(
-        queryset=Study.objects, many=False, related_link_url_kwarg="uuid"
+    study = PatchedHyperlinkedRelatedField(
+        queryset=Study.objects,
+        related_link_view_name="study-detail",
+        related_link_lookup_field="study.uuid",
+        related_link_url_kwarg="uuid",
     )
-    user = UuidResourceRelatedField(
-        source="child.user",
+    user = PatchedHyperlinkedRelatedField(
         queryset=User.objects,
-        # many=False,
+        source="child.user",
+        related_link_view_name="user-detail",
+        related_link_lookup_field="child.user.uuid",
         related_link_url_kwarg="uuid",
         required=False,
     )
-    child = UuidResourceRelatedField(
-        queryset=Child.objects, many=False, related_link_url_kwarg="uuid"
+    child = PatchedHyperlinkedRelatedField(
+        queryset=Child.objects,
+        related_link_view_name="child-detail",
+        related_link_lookup_field="child.uuid",
+        related_link_url_kwarg="uuid",
     )
-    demographic_snapshot = UuidResourceRelatedField(
+    demographic_snapshot = PatchedHyperlinkedRelatedField(
         queryset=DemographicData.objects,
-        many=False,
+        related_link_view_name="demographicdata-detail",
+        related_link_lookup_field="demographic_snapshot.uuid",
         related_link_url_kwarg="uuid",
         required=False,
     )
@@ -149,18 +143,46 @@ class ResponseSerializer(ModelWithUuidPkSerializer):
         )
 
 
-class ResponseWriteableSerializer(ResponseSerializer):
+class ResponseWriteableSerializer(UuidResourceModelSerializer):
+    """Serialize according to the way the frontend likes to send data - true-ID specific."""
+
+    url = serializers.HyperlinkedIdentityField(
+        view_name="response-detail", lookup_field="uuid"
+    )
+
+    study = PatchedResourceRelatedField(
+        queryset=Study.objects,
+        related_link_view_name="study-detail",
+        related_link_lookup_field="study_id",
+        related_link_url_kwarg="uuid",
+    )
+
+    child = PatchedResourceRelatedField(
+        queryset=Child.objects,
+        related_link_view_name="child-detail",
+        related_link_lookup_field="child_id",
+        related_link_url_kwarg="uuid",
+    )
+
     def create(self, validated_data):
-        """
-        Use the ids for objects so django rest framework doesn't
-        try to create new objects out of spite
-        """
-        study = validated_data.pop("study")
-        validated_data["study_id"] = study.id
-        # implicitly set the demographic data because we know what it will be
+        """Implicitly capture Demographic Data."""
         validated_data["demographic_snapshot_id"] = validated_data.get(
             "child"
         ).user.latest_demographics.id
-        child = validated_data.pop("child")
-        validated_data["child_id"] = child.id
         return super().create(validated_data)
+
+    class Meta:
+        model = Response
+        fields = (
+            "url",
+            "conditions",
+            "global_event_timings",
+            "exp_data",
+            "sequence",
+            "completed",
+            "child",
+            "study",
+            "completed_consent_frame",
+            "pk",
+            "withdrawn",
+        )

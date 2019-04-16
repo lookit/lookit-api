@@ -63,7 +63,7 @@ class ConvertUuidToIdMixin(views.ModelViewSet):
 
     def initial(self, request, *args, **kwargs):
         """Do regular initialize, except replace id fields with UUID."""
-        if self.action in ("create", "update"):
+        if self.action in ("create", "partial_update"):
             # find things in request.data
             for prop, value in request.data.items():
                 if value and isinstance(value, dict) and value.get("id", None):
@@ -282,7 +282,7 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
 
     def get_serializer_class(self):
         """Return a different serializer for create views"""
-        if self.action == "create":
+        if self.action in ("create", "partial_update"):
             return ResponseWriteableSerializer
         return super().get_serializer_class()
 
