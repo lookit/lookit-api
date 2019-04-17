@@ -59,22 +59,20 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
         )
 
 
-class FeedbackSerializer(UuidHyperlinkedModelSerializer):
+class FeedbackSerializer(UuidResourceModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="feedback-detail", lookup_field="uuid"
     )
-    response = PatchedHyperlinkedRelatedField(
+    response = PatchedResourceRelatedField(
         queryset=Response.related_manager,
-        # many=False,
         related_link_view_name="response-detail",
         related_link_lookup_field="response.uuid",
         related_link_url_kwarg="uuid",
     )
-    researcher = PatchedHyperlinkedRelatedField(
+    researcher = PatchedResourceRelatedField(
         read_only=True,
-        # many=False,
         related_link_view_name="user-detail",
-        related_link_lookup_field="user.uuid",
+        related_link_lookup_field="researcher.uuid",
         related_link_url_kwarg="uuid",
     )
 
@@ -84,11 +82,12 @@ class FeedbackSerializer(UuidHyperlinkedModelSerializer):
         read_only_fields = ("researcher",)
 
 
-class ResponseSerializerMixin(object):
-    pass
-
-
 class ResponseSerializer(UuidHyperlinkedModelSerializer):
+    """Gets hyperlink related fields.
+
+    XXX: It's important to keep read_only set to true here - otherwise, a queryset is necessitated, which implicates
+    get_attribute from ResourceRelatedField
+    """
 
     created_on = serializers.DateTimeField(read_only=True, source="date_created")
     url = serializers.HyperlinkedIdentityField(
@@ -96,27 +95,27 @@ class ResponseSerializer(UuidHyperlinkedModelSerializer):
     )
 
     study = PatchedHyperlinkedRelatedField(
-        queryset=Study.objects,
+        read_only=True,
         related_link_view_name="study-detail",
         related_link_lookup_field="study.uuid",
         related_link_url_kwarg="uuid",
     )
     user = PatchedHyperlinkedRelatedField(
-        queryset=User.objects,
-        source="child.user",
+        read_only=True,
+        source="child",
         related_link_view_name="user-detail",
         related_link_lookup_field="child.user.uuid",
         related_link_url_kwarg="uuid",
         required=False,
     )
     child = PatchedHyperlinkedRelatedField(
-        queryset=Child.objects,
+        read_only=True,
         related_link_view_name="child-detail",
         related_link_lookup_field="child.uuid",
         related_link_url_kwarg="uuid",
     )
     demographic_snapshot = PatchedHyperlinkedRelatedField(
-        queryset=DemographicData.objects,
+        read_only=True,
         related_link_view_name="demographicdata-detail",
         related_link_lookup_field="demographic_snapshot.uuid",
         related_link_url_kwarg="uuid",

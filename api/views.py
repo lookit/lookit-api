@@ -67,9 +67,9 @@ class ConvertUuidToIdMixin(views.ModelViewSet):
             # find things in request.data
             for prop, value in request.data.items():
                 if value and isinstance(value, dict) and value.get("id", None):
-                    value["id"] = (
-                        CONVERSION_TYPES[prop].objects.get(uuid=value["id"]).id
-                    )
+                    value["id"] = get_object_or_404(
+                        CONVERSION_TYPES[prop], uuid=value["id"]
+                    ).id
 
         super().initial(request, *args, **kwargs)
 
@@ -368,7 +368,7 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
             return response_queryset.order_by("-date_modified")
 
 
-class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+class FeedbackViewSet(FilterByUrlKwargsMixin, ConvertUuidToIdMixin, views.ModelViewSet):
     """
     Allows viewing a list of feedback, retrieving a single piece of feedback, or creating feedback.
 

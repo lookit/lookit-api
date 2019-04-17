@@ -2,17 +2,12 @@ from rest_framework import serializers
 from collections import OrderedDict
 from operator import attrgetter
 
-from rest_framework.relations import (
-    PrimaryKeyRelatedField,
-    RelatedField,
-    MANY_RELATION_KWARGS,
-)
+from rest_framework.relations import PrimaryKeyRelatedField
 
 from rest_framework_json_api.relations import (
     ResourceRelatedField,
+    HyperlinkedRelatedField,
     HyperlinkedMixin,
-    SkipDataMixin,
-    ManyRelatedFieldWithNoData,
 )
 from rest_framework_json_api.serializers import (
     ModelSerializer,
@@ -87,7 +82,9 @@ class DotPropertyRelatedLookupHyperlinkedMixin(HyperlinkedMixin):
         return return_data
 
 
-class PatchedResourceRelatedField(ResourceRelatedField):
+class PatchedResourceRelatedField(
+    DotPropertyRelatedLookupHyperlinkedMixin, ResourceRelatedField
+):
     """Shoo-in for rest_framework_json_api.relations.ResourceRelatedField, with better serialization behavior."""
 
     def to_representation(self, value):
@@ -99,23 +96,9 @@ class PatchedResourceRelatedField(ResourceRelatedField):
 
 # Hyperlinked Fields.
 class PatchedHyperlinkedRelatedField(
-    DotPropertyRelatedLookupHyperlinkedMixin, SkipDataMixin, RelatedField
+    DotPropertyRelatedLookupHyperlinkedMixin, HyperlinkedRelatedField
 ):
     """"Shoo-in for rest_framework_json_api.relations.HyperlinkedRelatedField, with better get_links behavior."""
-
-    @classmethod
-    def many_init(cls, *args, **kwargs):
-        """XXX: Direct copy of many_init from rest_framework_json_api.relations.HyperlinkedRelatedField.
-
-        Style checkers will see this class and worry about you not having overridden to_representation. This dynamic
-        "new"-ing of the class with many_init acts like a factory for ManyRelatedFieldWithNoData, which is how we can
-        get away with this.
-        """
-        list_kwargs = {"child_relation": cls(*args, **kwargs)}
-        for key in kwargs:
-            if key in MANY_RELATION_KWARGS:
-                list_kwargs[key] = kwargs[key]
-        return ManyRelatedFieldWithNoData(**list_kwargs)
 
 
 # Serializers.
