@@ -88,7 +88,7 @@ class DotPropertyRelatedLookupHyperlinkedMixin(HyperlinkedMixin):
 
 
 class PatchedResourceRelatedField(ResourceRelatedField):
-    """Shoo-in for rest_framework_json_api.relations.ResourceRelatedField, with better get_links behavior."""
+    """Shoo-in for rest_framework_json_api.relations.ResourceRelatedField, with better serialization behavior."""
 
     def to_representation(self, value):
         """ID becomes UUID in the frontend."""
