@@ -644,7 +644,7 @@ class StudyParticipantEmailView(
                 "username", flat=True
             )
         )
-        if sender != settings.EMAIL_FROM_ADDRESS:
+        if sender != settings.EMAIL_FROM_ADDRESS and sender not in recipients:
             recipients += [sender]
         try:
             context = {"custom_message": message}
