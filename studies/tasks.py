@@ -7,8 +7,11 @@ import shutil
 import subprocess
 import tempfile
 import time
+import json
 import zipfile
 from io import BytesIO, StringIO
+from typing import NamedTuple
+from enum import IntEnum
 
 import boto3
 import docker
@@ -22,6 +25,7 @@ from google.cloud import storage as gc_storage
 from project import storages
 from project.celery import app
 from studies.helpers import send_mail
+from studies.experiment_builder import EmberFrameplayerBuilder
 
 
 logger = get_task_logger(__name__)
@@ -39,6 +43,29 @@ handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
+
+class DirectoryTargets(NamedTuple):
+    checkouts: str
+    deployments: str
+
+
+class BuildStage(IntEnum):
+    GET_STUDY = 0
+    GET_RESEARCHER = 1
+    BUILD_DOCKER_IMAGE = 2
+    GET_FRAMEPLAYER_CODE = 3
+    RUN_DOCKER_CONTAINER = 4
+    DEPLOY_TO_CLOUD = 5
+
+
+class BuildLog(NamedTuple):
+    stage: BuildStage
+    success: bool
+    logs: str
+
+    def as_dict(self):
+        return self._asdict()
 
 
 def get_repo_path(full_repo_path):
@@ -321,17 +348,56 @@ def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
     :param researcher_uuid: String.
     :param preview: Boolean. Is this study build a preview?
     """
-    from studies.models import Study, StudyLog
+
+    fp_builder = EmberFrameplayerBuilder(
+        study_uuid=study_uuid, researcher_uuid=researcher_uuid, is_preview=preview
+    )
+
+    fp_builder.build()
+
+
+def _get_study(study_uuid):
+    from studies.models import Study
+
+    try:
+        study = Study.objects.get(uuid=study_uuid)
+        error = None
+    except Study.DoesNotExist as ex:
+        study = None
+        error = str(ex)
+
+    return (
+        study,
+        BuildLog(
+            stage=BuildStage.GET_STUDY,
+            success=not error,
+            logs=error or f"Successfully retrieved study {study.name}",
+        ).as_dict(),
+    )
+
+
+def _get_researcher(researcher_uuid):
     from accounts.models import User
 
-    update_fields = []
-    study = Study.objects.get(uuid=study_uuid)
-    researcher = User.objects.get(uuid=researcher_uuid)
+    try:
+        researcher = User.objects.get(uuid=researcher_uuid)
+        error = None
+    except User.DoesNotExist as ex:
+        researcher = None
+        error = str(ex)
 
-    player_sha = study.metadata.get("last_known_player_sha", None)
-    if not player_sha:  # We will technically be updating metadata here.
-        update_fields += ["metadata"]
+    return (
+        researcher,
+        BuildLog(
+            stage=BuildStage.GET_RESEARCHER,
+            success=not error,
+            logs=error
+            or f"Successfully retrieved researcher {researcher.get_full_name()}",
+        ).as_dict(),
+    )
 
+
+def _get_container_directories(study, study_uuid, player_sha):
     player_repo_url = study.metadata.get(
         "player_repo_url", settings.EMBER_EXP_PLAYER_REPO
     )
@@ -341,49 +407,21 @@ def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
         player_repo_url, player_sha=player_sha
     )
 
-    destination_directory = study_uuid
-
     study.metadata["last_known_player_sha"] = player_sha
 
     container_checkout_directory = os.path.join("/checkouts/", checkout_directory)
-    container_destination_directory = os.path.join(
-        "/deployments/", destination_directory
+    container_destination_directory = os.path.join("/deployments/", study_uuid)
+
+    return DirectoryTargets(
+        checkouts=container_checkout_directory,
+        deployments=container_destination_directory,
     )
 
-    image, image_log_gen = DOCKER_CLIENT.images.build(
-        path=settings.EMBER_BUILD_ROOT_PATH,
-        pull=True,
-        cache_from="ember_build",
-        tag="ember_build",
-    )
 
-    local_checkout_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, "checkouts")
-    local_deployments_path = os.path.join(settings.EMBER_BUILD_ROOT_PATH, "deployments")
-
-    proc_stdout, proc_stderr = DOCKER_CLIENT.containers.run(
-        "ember_build",
-        command="bash build.sh",
-        auto_remove=True,
-        environment={
-            "CHECKOUT_DIR": container_checkout_directory,
-            "PREPEND_FINGERPRINT": f"/studies/{study_uuid}/",
-            "STUDY_OUTPUT_DIR": container_destination_directory,
-            "SENTRY_DSN": os.environ.get("SENTRY_DSN_JS", None),
-            "PIPE_ACCOUNT_HASH": os.environ.get("PIPE_ACCOUNT_HASH"),
-            "PIPE_ENVIRONMENT": os.environ.get("PIPE_ENVIRONMENT"),
-        },
-        volumes={
-            local_checkout_path: {"bind": "/checkouts", "mode": "ro"},
-            local_deployments_path: {"bind": "/deployments", "mode": "rw"},
-        },
-        working_dir=settings.EMBER_BUILD_ROOT_PATH,
-        stdout=True,
-        stderr=True,
-    )
-
+def _deploy_study(is_preview, local_deployments_path, destination_directory):
     storage = (
         storages.LookitPreviewExperimentStorage()
-        if preview
+        if is_preview
         else storages.LookitExperimentStorage()
     )
 
@@ -393,50 +431,54 @@ def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
 
     deploy_to_remote(cloud_deployment_directory, storage)
 
+
+def _notify_involved_parties_of_build_status(
+    study, is_preview, failure_stage=None, log_output=None
+):
     email_context = {
         "org_name": study.organization.name,
         "study_name": study.name,
         "study_id": study.pk,
         "study_uuid": str(study.uuid),
-        "action": "previewed" if preview else "deployed",
     }
+
+    if failure_stage is not None:
+        email_context["action"] = ("previewed" if is_preview else "deployed",)
+
+        send_mail.delay(
+            "notify_admins_of_study_action",
+            "Study Previewed" if is_preview else "Study Deployed",
+            settings.EMAIL_FROM_ADDRESS,
+            bcc=list(
+                study.study_organization_admin_group.user_set.values_list(
+                    "username", flat=True
+                )
+            ),
+            **email_context,
+        )
+        subject_line = f"Study {'preview ' if is_preview else ''}built"
+        researcher_notification_template = "notify_researchers_of_deployment"
+    else:
+        email_context["is_preview"] = is_preview
+        email_context["failure_stage"] = failure_stage
+        email_context["log_output"] = log_output
+        subject_line = f"Study {'preview ' if is_preview else ''}failed to build."
+        researcher_notification_template = "notify_researchers_of_build_failure"
+
     send_mail.delay(
-        "notify_admins_of_study_action",
-        "Study Previewed" if preview else "Study Deployed",
-        settings.EMAIL_FROM_ADDRESS,
-        bcc=list(
-            study.study_organization_admin_group.user_set.values_list(
-                "username", flat=True
-            )
-        ),
-        **email_context,
-    )
-    send_mail.delay(
-        "notify_researchers_of_deployment",
-        "Study Previewed" if preview else "Study Deployed",
+        researcher_notification_template,
+        subject_line,
         settings.EMAIL_FROM_ADDRESS,
         bcc=list(study.study_admin_group.user_set.values_list("username", flat=True)),
         **email_context,
     )
 
-    # Only update field for particular build, in case we have parallel builds running
-    if preview:
-        study.previewed = True
-        study.save(update_fields=update_fields + ["previewed"])
-    else:
-        study.built = True
-        study.save(update_fields=update_fields + ["built"])
+
+def _log_study_action(study, action, researcher, logs):
+    from studies.models import StudyLog
 
     StudyLog.objects.create(
-        study=study,
-        action="preview" if preview else "deploy",
-        user=researcher,
-        extra={
-            "ember_build": str(init_container_comp_process.stdout),
-            "image_build": str(build_image_comp_process.stdout),
-            "ex": str(ex),
-            "log": log_buffer.getvalue(),
-        },
+        study=study, action=action, user=researcher, extra=json.dumps(logs, indent=4)
     )
 
 
