@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.files import File
 from typing import NamedTuple
-from enum import IntEnum
 import os
 import re
 import requests
@@ -46,7 +45,7 @@ class ExperimentBuilder(object):
     build_stages: Sequence[str]
     build_context: dict
 
-    def __init__(self, build_stages: Sequence = None, **kwargs):
+    def __init__(self, build_stages: Sequence = None, logger=None, **kwargs):
         """
 
         Args:
@@ -55,18 +54,7 @@ class ExperimentBuilder(object):
         self.build_logs = []
         self.build_stages = build_stages or self.build_stages
         self.build_context = {**(self.DEFAULT_CONTEXT or {}), **(kwargs or {})}
-
-    # def __getattr__(self, item):
-    #     try:
-    #         return self.build_context[item]
-    #     except KeyError as e:
-    #         raise AttributeError(e.args)
-    #
-    # def __setattr__(self, key, value):
-    #     if key in self.__dict__:
-    #         return super().__setattr__(key, value)
-    #     else:
-    #         return self.build_context.__setitem__(key, value)
+        self.logger = logger
 
     def build(self) -> bool:
         """The build method.
@@ -81,7 +69,7 @@ class ExperimentBuilder(object):
             try:
                 self._do_stage(stage)
             except BuildError as e:
-                print(e)
+                self.logger.debug(e)
                 broken_stage = stage
                 break
 
@@ -163,7 +151,8 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         "local_paths": DirectoryTargets(
             checkouts=os.path.join(settings.EMBER_BUILD_ROOT_PATH, "checkouts"),
             deployments=os.path.join(settings.EMBER_BUILD_ROOT_PATH, "deployments"),
-        )
+        ),
+        "update_fields": [],
     }
 
     build_stages = (
@@ -210,7 +199,7 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
             "player_repo_url", settings.EMBER_EXP_PLAYER_REPO
         )
 
-        # How can we make download repos more efficient?
+        # TODO: How can we make download repos more efficient?
         checkout_directory, player_sha = download_repos(
             player_repo_url, player_sha=player_sha
         )
@@ -246,7 +235,7 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
             stderr=True,
         )
 
-        return {"success": True, "logs": stdout_and_stderr}
+        return {"success": True, "logs": stdout_and_stderr.decode("utf-8")}
 
     def deploy_study(self, is_preview, local_paths, destination_directory):
         storage = (
@@ -266,18 +255,20 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         if is_preview:
             study.previewed = True
             study.save(update_fields=update_fields + ["previewed"])
+            self.build_context["action"] = "previewed"
         else:
             study.built = True
             study.save(update_fields=update_fields + ["built"])
+            self.build_context["action"] = "deployed"
 
     def finalize_build_log(self, failure_stage=None):
         from studies.models import StudyLog
 
         study = self.build_context["study"]
-        action = self.build_context["action"]
+        action = self.build_context.get("action", "failed to build")
         researcher = self.build_context["researcher"]
         is_preview = self.build_context["is_preview"]
-        logs = json.dumps(self.build_logs, indent=4)
+        logs = json.dumps(self.build_logs, indent=4, default=str)
 
         notify_involved_parties_of_build_status(
             study, is_preview, failure_stage=failure_stage, log_output=logs
@@ -373,8 +364,10 @@ def notify_involved_parties_of_build_status(
         "study_uuid": str(study.uuid),
     }
 
-    if failure_stage is not None:
-        email_context["action"] = ("previewed" if is_preview else "deployed",)
+    success = failure_stage is None
+
+    if success:
+        email_context["action"] = "previewed" if is_preview else "deployed"
 
         send_mail.delay(
             "notify_admins_of_study_action",

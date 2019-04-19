@@ -1,29 +1,15 @@
 import datetime
-import io
 import json
 import operator
-import os
-import zipfile
 from functools import reduce
 from typing import NamedTuple
 
-import requests
 from django.contrib import messages
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import (
-    Case,
-    Count,
-    IntegerField,
-    OuterRef,
-    Prefetch,
-    Q,
-    Subquery,
-    Sum,
-    When,
-)
+from django.db.models import Case, Count, IntegerField, OuterRef, Q, Subquery, When
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
@@ -31,7 +17,6 @@ from django.utils import timezone
 from django.views import generic
 from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
-from localflavor import pk
 from revproxy.views import ProxyView
 
 import attachment_helpers
@@ -48,10 +33,8 @@ from studies.models import (
     StudyType,
     Response,
     get_annotated_responses_qs,
-    get_consented_responses_qs,
-    get_pending_responses_qs,
 )
-from studies.tasks import build_experiment, build_zipfile_of_videos
+from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy
 from studies.workflow import (
     STATE_UI_SIGNALS,
     STATUS_HELP_TEXT,
@@ -353,7 +336,7 @@ class StudyDetailView(
                 )
 
         if "build" in self.request.POST:
-            build_experiment.delay(
+            ember_build_and_gcp_deploy.delay(
                 self.get_object().uuid, self.request.user.uuid, preview=False
             )
             messages.success(
@@ -1285,7 +1268,9 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         study_permissions = get_perms(request.user, self.object)
 
         if study_permissions and "can_edit_study" in study_permissions:
-            build_experiment.delay(self.object.uuid, request.user.uuid, preview=True)
+            ember_build_and_gcp_deploy.delay(
+                self.object.uuid, request.user.uuid, preview=True
+            )
             messages.success(
                 request,
                 f"Scheduled Study {self.object.name} for preview. You will be emailed when it's completed.",
