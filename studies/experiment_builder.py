@@ -62,12 +62,11 @@ class ExperimentBuilder(object):
         Returns:
             A boolean indicating whether or not the build went to completion.
         """
-        iter_stages = iter(self.build_stages)
-
         broken_stage = None
-        for stage in iter_stages:
+        for index, stage in enumerate(self.build_stages):
             try:
                 self._do_stage(stage)
+                self.logger.debug(f"Stage {index + 1}: {stage} successfully completed.")
             except BuildError as e:
                 self.logger.debug(e)
                 broken_stage = stage
