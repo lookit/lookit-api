@@ -144,7 +144,7 @@ class ExperimentBuilder(object):
 
 
 class EmberFrameplayerBuilder(ExperimentBuilder):
-    """The thing that does the thing."""
+    """Builds Ember Frameplayer experiments."""
 
     DEFAULT_CONTEXT = {
         "local_paths": DirectoryTargets(
