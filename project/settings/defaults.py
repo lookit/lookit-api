@@ -171,10 +171,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.TokenAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ),
     "PAGE_SIZE": 10,
     "EXCEPTION_HANDLER": "rest_framework_json_api.exceptions.exception_handler",
     "DEFAULT_PAGINATION_CLASS": "api.pagination.PageNumberPagination",
@@ -184,11 +180,16 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.MultiPartParser",
     ),
     "DEFAULT_RENDERER_CLASSES": (
-        "api.renderers.JSONAPIRenderer",
+        "api.renderers.JsonApiWithUuidRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ),
     "DEFAULT_METADATA_CLASS": "rest_framework_json_api.metadata.JSONAPIMetadata",
+    "SEARCH_PARAM": "filter[search]",
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ),
 }
 
 JSON_API_PLURALIZE_TYPES = True
@@ -269,16 +270,16 @@ CORS_ORIGIN_WHITELIST = [
 
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     # if we're trying to use cloud storage
-    STATICFILES_LOCATION = "/static"
+    STATICFILES_LOCATION = "static"
     STATICFILES_STORAGE = "project.storages.LookitStaticStorage"
     STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 
-    MEDIAFILES_LOCATION = "/media"
+    MEDIAFILES_LOCATION = "media"
     DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
     MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
 
-    EXPERIMENT_LOCATION = "/experiments"
-    PREVIEW_EXPERIMENT_LOCATION = "/preview_experiments"
+    EXPERIMENT_LOCATION = "experiments"
+    PREVIEW_EXPERIMENT_LOCATION = "preview_experiments"
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
@@ -346,7 +347,7 @@ CELERY_BROKER_URL = os.environ.get(
 CELERY_TASK_ACKS_LATE = True
 CELERY_TASK_REJECT_ON_WORKER_LOST = True
 CELERY_TASK_ROUTES = {
-    "studies.tasks.build_experiment": {"queue": "builds"},
+    "studies.tasks.ember_build_and_gcp_deploy": {"queue": "builds"},
     "studies.tasks.build_zipfile_of_videos": {"queue": "builds"},
     "studies.tasks.delete_video_from_cloud": {"queue": "cleanup"},
     "studies.tasks.cleanup*": {"queue": "cleanup"},

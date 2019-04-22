@@ -27,7 +27,7 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies import workflow
 from studies.helpers import send_mail, FrameActionDispatcher
-from studies.tasks import build_experiment, delete_video_from_cloud
+from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
 
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
@@ -470,9 +470,9 @@ class Study(models.Model):
         )
 
     def deploy_study(self, ev):
-        # self.state = 'deploying'
-        # self.save()
-        build_experiment.delay(self.uuid, ev.kwargs.get("user").uuid, preview=False)
+        ember_build_and_gcp_deploy.delay(
+            self.uuid, ev.kwargs.get("user").uuid, preview=False
+        )
 
     def notify_administrators_of_pause(self, ev):
         context = {
@@ -624,6 +624,13 @@ def study_post_save(sender, **kwargs):
                     assign_perm(perm, study_group_instance, obj=study)
 
 
+class ResponseApiManager(models.Manager):
+    """Overrides to enable the display name."""
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("child", "child__user")
+
+
 class Response(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     study = models.ForeignKey(
@@ -641,6 +648,8 @@ class Response(models.Model):
     demographic_snapshot = models.ForeignKey(
         DemographicData, on_delete=models.DO_NOTHING
     )
+    objects = models.Manager()
+    related_manager = ResponseApiManager()
 
     def __str__(self):
         return self.display_name
@@ -648,6 +657,7 @@ class Response(models.Model):
     class Meta:
         permissions = (("view_response", "View Response"),)
         ordering = ["-demographic_snapshot__created_at"]
+        base_manager_name = "related_manager"
 
     class JSONAPIMeta:
         resource_name = "responses"
@@ -802,6 +812,24 @@ def take_action_on_exp_data(sender, instance, created, **kwargs):
         dispatch_frame_action(response)
 
 
+class FeedbackApiManager(models.Manager):
+    """Prefetch all the things."""
+
+    def get_queryset(self):
+        """Prefetch things that matter."""
+        return (
+            super()
+            .get_queryset()
+            .select_related("researcher")
+            .prefetch_related(
+                models.Prefetch(
+                    "response",
+                    queryset=Response.objects.select_related("child", "child__user"),
+                )
+            )
+        )
+
+
 class Feedback(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     response = models.ForeignKey(
@@ -810,11 +838,15 @@ class Feedback(models.Model):
     researcher = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     comment = models.TextField()
 
+    objects = models.Manager()  # Set a default
+    related_manager = FeedbackApiManager()
+
     def __str__(self):
         return f"<Feedback: on {self.response} by {self.researcher}>"
 
     class Meta:
         permissions = (("can_view_feedback", "Can View Feedback"),)
+        base_manager_name = "related_manager"
 
     class JSONAPIMeta:
         resource_name = "responses"

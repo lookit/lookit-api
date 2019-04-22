@@ -223,10 +223,8 @@ class ResponseTestCase(APITestCase):
             self.url, json.dumps(data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            api_response.data["detail"],
-            "Received document does not contain primary data",
-        )
+        self.assertEqual(api_response.data[0]["detail"].code, "parse_error")
+        self.assertEqual(api_response.data[0]["source"]["pointer"], "/data")
 
     def testPostResponseNeedResponsesType(self):
         self.client.force_authenticate(user=self.participant)
@@ -245,7 +243,10 @@ class ResponseTestCase(APITestCase):
             self.url, json.dumps(self.data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(api_response.data["child"][0], "This field is required.")
+        self.assertEqual(api_response.data[0]["detail"].code, "required")
+        self.assertEqual(
+            api_response.data[0]["source"]["pointer"], "/data/attributes/child"
+        )
 
     def testPostResponseNeedStudyRelationship(self):
         self.client.force_authenticate(user=self.participant)
@@ -256,7 +257,10 @@ class ResponseTestCase(APITestCase):
             self.url, json.dumps(self.data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(api_response.data["study"][0], "This field is required.")
+        self.assertEqual(api_response.data[0]["detail"].code, "required")
+        self.assertEqual(
+            api_response.data[0]["source"]["pointer"], "/data/attributes/study"
+        )
 
     def testPostResponseWithEmptyAttributes(self):
         self.client.force_authenticate(user=self.participant)
