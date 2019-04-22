@@ -189,7 +189,10 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
 
     def build_docker_image(self):
         image, image_log_gen = DOCKER_CLIENT.images.build(
-            path=settings.EMBER_BUILD_ROOT_PATH, pull=True, tag="ember_build"
+            path=settings.EMBER_BUILD_ROOT_PATH,
+            pull=True,
+            tag="ember_build",
+            cache_from=["ember_build"],
         )
         self.build_context["docker_image"] = image
 
