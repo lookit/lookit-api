@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
-import raven
 from django.contrib.messages import constants as messages
 
 MODE = "prod"  # Overridden by local settings.
@@ -95,13 +94,14 @@ MIDDLEWARE_CLASSES = [
 ]
 
 if not DEBUG:
-    INSTALLED_APPS += ["raven.contrib.django.raven_compat"]
-    RAVEN_CONFIG = {
-        "dsn": os.environ.get("SENTRY_DSN", None),
-        # If you are using git, you can also automatically configure the
-        # release based on the git info.
-        "release": os.environ.get("GIT_COMMIT", "No version"),
-    }
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=os.environ.get("SENTRY_DSN", None),
+        release=os.environ.get("GIT_COMMIT", "No version"),
+        integrations=[DjangoIntegration()],
+    )
 
 if DEBUG:
     INSTALLED_APPS += ["debug_toolbar", "shells"]
