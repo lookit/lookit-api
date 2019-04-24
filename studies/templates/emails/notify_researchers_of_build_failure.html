@@ -1,0 +1,14 @@
+<p>
+    Dear Study Researchers,
+</p>
+<p>
+    Your study, <a href="{{ base_url }}{% url 'exp:study-detail' pk=study_id %}">{{ study_name }}</a>,
+    has failed to build its {% if is_preview %}preview{% endif %} dependencies.
+</p>
+<p>
+    It failed during the {{ failure_stage }} stage. Logs are provided below to help with troubleshooting.
+</p>
+<h1>Log output:</h1>
+<pre>
+    {{ log_output }}
+</pre>

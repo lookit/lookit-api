@@ -1,11 +1,8 @@
-from collections import OrderedDict
-
-from django.db.models import OuterRef, Prefetch, Q, Subquery
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from guardian.shortcuts import get_objects_for_user
-from rest_framework import status
-from rest_framework.exceptions import MethodNotAllowed
+
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_json_api import views
@@ -28,6 +25,15 @@ from studies.serializers import (
 )
 
 
+CONVERSION_TYPES = {
+    "child": Child,
+    "study": Study,
+    "response": Response,
+    "feedback": Feedback,
+    "user": User,
+}
+
+
 class FilterByUrlKwargsMixin(views.ModelViewSet):
     filter_fields = []
 
@@ -46,6 +52,26 @@ class FilterByUrlKwargsMixin(views.ModelViewSet):
             if kwarg_key in self.kwargs:
                 qs = qs.filter(**{qs_key: self.kwargs.get(kwarg_key)})
         return qs
+
+
+class ConvertUuidToIdMixin(views.ModelViewSet):
+    """Utility mixin to bridge the ID <--> UUID gap in the frontend.
+
+    This is obviously a wonky solution, but it's far better than copying and pasting and version-locking
+    the codebase.
+    """
+
+    def initial(self, request, *args, **kwargs):
+        """Do regular initialize, except replace id fields with UUID."""
+        if self.action in ("create", "partial_update"):
+            # find things in request.data
+            for prop, value in request.data.items():
+                if value and isinstance(value, dict) and value.get("id", None):
+                    value["id"] = get_object_or_404(
+                        CONVERSION_TYPES[prop], uuid=value["id"]
+                    ).id
+
+        super().initial(request, *args, **kwargs)
 
 
 class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
@@ -210,7 +236,12 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
         "can_edit_study" permissions allows the researcher to preview the study before it has been made active/public
         """
-        qs = super().get_queryset()
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("creator", "organization")
+            .prefetch_related("responses__demographic_snapshot")
+        )
         # List View restricted to public.  Detail view can show a private or public study.
         if "List" in self.get_view_name():
             qs = qs.filter(public=True)
@@ -222,15 +253,18 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         )
 
 
-class ResponseFilter(filters.FilterSet):
-    child = filters.UUIDFilter(name="child__uuid")
+class ResponsesFilter(filters.FilterSet):
+    """A Response filter that actually works."""
+
+    child = filters.UUIDFilter(field_name="child__uuid")
+    study = filters.UUIDFilter(field_name="study__uuid")
 
     class Meta:
         model = Response
-        fields = ["child"]
+        fields = []
 
 
-class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
     """
     Allows viewing a list of responses, retrieving a response, creating a response, or updating a response.
 
@@ -241,15 +275,14 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     queryset = Response.objects.all()
     serializer_class = ResponseSerializer
     lookup_field = "uuid"
-    filter_fields = [("study", "study")]
+    filterset_class = ResponsesFilter
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = ResponseFilter
     http_method_names = ["get", "post", "put", "patch", "head", "options"]
     permission_classes = [IsAuthenticated, ResponsePermissions]
 
     def get_serializer_class(self):
         """Return a different serializer for create views"""
-        if self.action == "create":
+        if self.action in ("create", "partial_update"):
             return ResponseWriteableSerializer
         return super().get_serializer_class()
 
@@ -263,7 +296,6 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         XXX: HERE BE DRAGONS: this method is invoked with PATCH as well as GET requests!
         TODO: Break this out into multiple handlers. The logic-gymnastics is getting annoying.
         """
-
         children_belonging_to_user = Child.objects.filter(user__id=self.request.user.id)
 
         # NESTED ROUTE:
@@ -275,31 +307,41 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
             study = get_object_or_404(Study, uuid=study_uuid)
-            consented_responses = study.consented_responses
-            if self.request.user.has_perm(
-                "studies.can_view_study_responses",
-                get_object_or_404(Study, uuid=study_uuid),
-            ):
-                return (
-                    Response.objects.filter(
+
+            nested_responses = study.responses
+
+            # CASE 1: Participant session, using query string with child ID.
+            # Want same functionality regardless of whether user is a researcher.
+            child_id = self.request.query_params.get("child", None)
+            if child_id is not None:
+                nested_responses = nested_responses.filter(
+                    child__uuid=child_id, child__in=children_belonging_to_user
+                )
+
+            # CASE 2: Experimenters/parents getting responses for study.
+            else:
+                if self.request.user.has_perm(
+                    "studies.can_view_study_responses",
+                    get_object_or_404(Study, uuid=study_uuid),
+                ):
+                    consented_responses = study.consented_responses
+                    nested_responses = nested_responses.filter(
                         Q(pk__in=consented_responses)
                         | Q(child__in=children_belonging_to_user)
-                    )
-                    .select_related(
+                    ).select_related(
                         "child",
                         "child__user",
                         "study",
                         "study__study_type",
                         "demographic_snapshot",
                     )
-                    .order_by("-date_modified")
-                )
-            else:
-                return Response.objects.filter(
-                    child__in=children_belonging_to_user
-                ).order_by(
-                    "-date_modified"
-                )  # Don't need extra stuff here.
+                else:
+                    nested_responses = nested_responses.filter(
+                        child__in=children_belonging_to_user
+                    )
+
+            return nested_responses.order_by("-date_modified")
+
         else:  # NON-NESTED ROUTE
             # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{RESPONSE_UUID}'.
             # This route gets accessed by:
@@ -326,7 +368,7 @@ class ResponseViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             return response_queryset.order_by("-date_modified")
 
 
-class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+class FeedbackViewSet(FilterByUrlKwargsMixin, ConvertUuidToIdMixin, views.ModelViewSet):
     """
     Allows viewing a list of feedback, retrieving a single piece of feedback, or creating feedback.
 
@@ -335,7 +377,7 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
 
     resource_name = "feedback"
-    queryset = Feedback.objects.all()
+    queryset = Feedback.related_manager.get_queryset()
     serializer_class = FeedbackSerializer
     lookup_field = "uuid"
     http_method_names = ["get", "post", "put", "patch", "head", "options"]

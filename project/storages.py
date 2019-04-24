@@ -1,43 +1,34 @@
 from django.conf import settings
 from storages.backends.gcloud import GoogleCloudStorage
-from storages.utils import clean_name, safe_join
 
 
-class LocationPrefixedPublicGoogleCloudStorage(GoogleCloudStorage):
-    location = None
+class LookitGoogleCloudStorage(GoogleCloudStorage):
+    """Overrides to compensate for the fact that we're proxying requests through nginx's proxypass."""
 
     def _normalize_name(self, name):
-        if self.location:
-            return super()._normalize_name(safe_join(self.location, name))
         return super()._normalize_name(name.lower())
 
     def url(self, name):
+        """Override for the URL getter function.
+
+        Since we're proxying requests through nginx's proxy_pass to GCS, we can avoid blob
+        creation and the signed url generation that might happen otherwise (see parent implementation for details).
         """
-        The parent implementation calls GoogleCloudStorage on every request
-        once for oauth and again to get the file. Since we're proxying requests
-        through nginx's proxy_pass to GoogleCloudStorage we don't need their url
-        nonsense or to use the actual domain or bucket name.
-        """
-        name = self._normalize_name(clean_name(name))
+        name = self._normalize_name(name)
         return f"/{name.lstrip('/')}"
 
 
-class LowercaseNameMixin(GoogleCloudStorage):
-    def _normalize_name(self, name):
-        return super()._normalize_name(name.lower())
-
-
-class LookitStaticStorage(LowercaseNameMixin, LocationPrefixedPublicGoogleCloudStorage):
+class LookitStaticStorage(LookitGoogleCloudStorage):
     location = settings.STATICFILES_LOCATION
 
 
-class LookitMediaStorage(LowercaseNameMixin, LocationPrefixedPublicGoogleCloudStorage):
+class LookitMediaStorage(LookitGoogleCloudStorage):
     location = settings.MEDIAFILES_LOCATION
 
 
-class LookitExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
+class LookitExperimentStorage(LookitGoogleCloudStorage):
     location = settings.EXPERIMENT_LOCATION
 
 
-class LookitPreviewExperimentStorage(LocationPrefixedPublicGoogleCloudStorage):
+class LookitPreviewExperimentStorage(LookitGoogleCloudStorage):
     location = settings.PREVIEW_EXPERIMENT_LOCATION
