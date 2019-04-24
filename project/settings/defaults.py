@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
-import raven
 from django.contrib.messages import constants as messages
 
 MODE = "prod"  # Overridden by local settings.
