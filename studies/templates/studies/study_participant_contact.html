@@ -1,0 +1,28 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+{% load guardian_tags %}
+
+{% block head %}
+    {{ block.super }}
+
+{#    {{ form.media }}#}
+{% endblock %}
+
+{% block title %}Contact Participants{% endblock %}
+
+{# "Flash" Block is just notifications. This is defined in base. #}
+{% block flash %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
+                <div id="details" class="alert {{ message.tags }} alert-dismissable">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}

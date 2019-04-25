@@ -663,6 +663,19 @@ class StudyParticipantEmailView(
         return reverse("exp:study-detail", kwargs={"pk": self.object.id})
 
 
+class StudyParticipantContactView(
+    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
+):
+    """
+    StudyParticipantContactView manages study participation.
+    """
+
+    model = Study
+    permission_required = "studies.can_edit_study"
+    raise_exception = True
+    template_name = "studies/study_participant_contact.html"
+
+
 class StudyUpdateView(
     ExperimenterLoginRequiredMixin,
     PermissionRequiredMixin,

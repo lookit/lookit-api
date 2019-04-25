@@ -1,7 +1,6 @@
 import base64
 import hashlib
 import uuid
-from datetime import date
 
 import pydenticon
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -10,7 +9,7 @@ from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import timezone
+from django.conf import settings
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 from django_countries.fields import CountryField
@@ -528,4 +527,29 @@ class DemographicData(models.Model):
             density=self.get_density_display(),
             extra=self.extra,
             lookit_referrer=self.lookit_referrer,
+        )
+
+
+class Message(models.Model):
+    """A message can be sent from one person to multiple people."""
+
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    sender = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_index=True)
+    recipients = models.ManyToManyField(User, related_name="messages")
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    email_sent = models.DateTimeField(
+        null=True, default=None
+    )  # Timestamp serves as a truth check as well.
+
+    def send_as_email(self):
+        send_mail.delay(
+            "custom_email",
+            self.subject,
+            settings.EMAIL_FROM_ADDRESS,
+            bcc=self.recipients.values_list("username", flat=True),
+            from_email=self.sender.username,
+            custom_message=self.body,
+            message_uuid=self.uuid,
         )
