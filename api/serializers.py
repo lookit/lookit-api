@@ -41,12 +41,16 @@ class DotPropertyRelatedLookupHyperlinkedMixin(HyperlinkedMixin):
         view = self.context.get("view", None)
         return_data = OrderedDict()
 
-        kwargs = {
-            lookup_field: attrgetter(lookup_field)(obj)
-            # Above is literally the single changed line of code.
-            if obj
-            else view.kwargs[lookup_field]
-        }
+        try:
+            kwargs = {
+                lookup_field: attrgetter(lookup_field)(obj)
+                if obj
+                else view.kwargs[lookup_field]
+            }
+        except AttributeError:
+            # Currently a patch for optional relationships - for instance, users may or may
+            # not have an organization.
+            return {"related": None}
 
         self_kwargs = kwargs.copy()
         self_kwargs.update(
