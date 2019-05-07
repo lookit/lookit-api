@@ -667,13 +667,19 @@ class StudyParticipantContactView(
     ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
 ):
     """
-    StudyParticipantContactView manages study participation.
+    StudyParticipantContactView lets you contact study participants.
     """
 
     model = Study
     permission_required = "studies.can_edit_study"
     raise_exception = True
     template_name = "studies/study_participant_contact.html"
+
+    def get_context_data(self, **kwargs):
+        """Gets the required data for emailing participants."""
+        ctx = super().get_context_data(**kwargs)
+        ctx["participants"] = ctx["study"].participants
+        return ctx
 
 
 class StudyUpdateView(
