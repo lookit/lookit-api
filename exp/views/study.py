@@ -681,6 +681,16 @@ class StudyParticipantContactView(
         ctx["participants"] = ctx["study"].participants
         return ctx
 
+    def post(self, request, *args, **kwargs):
+        print(args)
+        print(kwargs)
+        print(request)
+        return HttpResponseRedirect(
+            reverse(
+                "exp:study-participant-contact", kwargs=dict(pk=self.get_object().pk)
+            )
+        )
+
 
 class StudyUpdateView(
     ExperimenterLoginRequiredMixin,

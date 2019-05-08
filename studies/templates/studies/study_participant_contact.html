@@ -4,15 +4,50 @@
 
 {% block head %}
     {{ block.super }}
-   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.6/b-html5-1.5.6/fh-3.1.4/r-2.2.2/sc-2.0.0/sl-1.3.0/datatables.min.css"/>
-
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs/dt-1.10.18/b-1.5.6/b-html5-1.5.6/fh-3.1.4/r-2.2.2/sc-2.0.0/sl-1.3.0/datatables.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-html5-1.5.6/fh-3.1.4/r-2.2.2/rg-1.1.0/sc-2.0.0/sl-1.3.0/datatables.min.css"/>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.css" rel="stylesheet">
+    <!-- Datatables -->
+    <script type="text/javascript"
+            src="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-html5-1.5.6/fh-3.1.4/r-2.2.2/rg-1.1.0/sc-2.0.0/sl-1.3.0/datatables.min.js"></script>
+    <!-- Bootstrap Select -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+    <!-- Summernote -->
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.js"></script>
+    <!-- Initialization -->
     <script type="text/javascript">
-        $(document).ready(function() {
-           $("#participant-table").DataTable();
+        $(document).ready(function () {
+
+            function initializeView() {
+                // Set up Datatable.
+                $('#participant-table').DataTable({
+                    {#rowGroup: true#}
+                });
+
+                // Add event handlers.
+                $('#list-of-recipients').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+                    console.log(e, clickedIndex, isSelected, previousValue);
+                });
+
+
+                // Set up email container
+                $('#email-editor').summernote({
+                    codeviewFilter: false, // Prevent XSS
+                    codeviewIframeFilter: true, // Prevent XSS
+                    placeholder: 'Write email contents here.',
+                    tabsize: 2,
+                    height: 150
+                });
+            }
+
+            // Run initializations.
+            initializeView();
         });
     </script>
-{#    {{ form.media }}#}
+    {#    {{ form.media }}#}
 {% endblock %}
 
 {% block title %}Contact Participants{% endblock %}
@@ -43,37 +78,74 @@
             </div>
         </div>
         <div class="row">
-            <section class="col-lg-4">
+            <section class="col-lg-6">
                 <div class="panel panel-default mt-md">
-                    Container for list of emails?
+                    <div class="panel-heading">Previous Responses</div>
+                    <div class="panel-body">
+                        Stuff
+                    </div>
                 </div>
 
             </section>
-            <main class="col-lg-8">
-                <div class="panel panel-default mt-md">
-                    Container for seeing/writing emails?
+            <main class="col-lg-6">
+                <div id="email-viewport" class="panel panel-default mt-md">
+                    <div class="panel-heading">Contact Form</div>
+                    <form id="email-participants-form" class="panel-group" method="post">{% csrf_token %}
+                        <section class="form-group">
+                            <label for="list-of-recipients">Participants</label>
+                            <select id="list-of-recipients"
+                                    name="recipients"
+                                    class="selectpicker form-control"
+                                    multiple data-live-search="true"
+                                    data-actions-box="true"
+                                    data-width="auto"
+                                    data-header="Who would you like to email?"
+                                    title="Select as many participants as you'd like!">
+                                {% for person in participants %}
+                                    <option value="{{ person.uuid }}"
+                                            data-subtext="{{ person.username }}">
+                                        {{ person.get_full_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </section>
+                        <section class="form-group">
+                            <label for="email-editor">Email Body</label>
+                            <textarea id="email-editor" name="body"></textarea>
+                        </section>
+                        <section class="form-group">
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                Send Messages to Participants
+                            </button>
+                        </section>
+                    </form>
                 </div>
             </main>
         </div>
         <div class="row">
-            <table id="participant-table" class="table">
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Full Name</th>
-                        <th>Organization</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for person in participants %}
-                    <tr>
-                        <td>{{ person.uuid }}</td>
-                        <td>{{ person.get_full_name }}</td>
-                        <td>{{ person.organization }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <section class="panel panel-default">
+                <div class="panel-heading">Previous Messages</div>
+                <div class="panel-body">
+                    <table id="participant-table" class="table">
+                        <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Full Name</th>
+                            <th>Organization</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for person in participants %}
+                            <tr>
+                                <td>{{ person.uuid }}</td>
+                                <td>{{ person.get_full_name }}</td>
+                                <td>{{ person.organization }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </div>
     </div>
 {% endblock %}

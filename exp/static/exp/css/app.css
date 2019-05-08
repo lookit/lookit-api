@@ -1,15 +1,15 @@
 body {
     font-family: 'Lato', sans-serif;
-    font-size : 15px;
+    font-size: 15px;
 }
 
 /* Who did this? */
 /*h1 {*/
-  /*font-size: 32px;*/
+/*font-size: 32px;*/
 /*}*/
 
 /*h2 {*/
-  /*font-size: 24px;*/
+/*font-size: 24px;*/
 /*}*/
 
 .center {
@@ -17,26 +17,32 @@ body {
 }
 
 .flush-top {
-  margin-top: 0; padding-top: 0;
+    margin-top: 0;
+    padding-top: 0;
 }
+
 .flush-bottom {
-  margin-bottom: 0; padding-bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
+
 .margin-right-1 {
-  margin-right: 1em;
+    margin-right: 1em;
 }
 
 nav.navigation-list ul {
-  list-style-type: none;
+    list-style-type: none;
 }
+
 nav.navigation-list ul li {
-  display: inline-block;
+    display: inline-block;
 }
 
 a.state-link {
     color: inherit;
     text-decoration: inherit;
 }
+
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
     background-color: rgba(96, 96, 96, 0.15);
     color: black
@@ -46,84 +52,111 @@ a.state-link {
     color: inherit;
     text-decoration: inherit;
 }
+
 .pb-xs {
     padding-bottom: 5px;
 }
+
 .pb-sm {
     padding-bottom: 10px;
 }
+
 .pb-md {
     padding-bottom: 15px;
 }
+
 .pb-lg {
     padding-bottom: 20px;
 }
+
 .pr-xs {
     padding-right: 5px;
 }
+
 .pr-sm {
     padding-right: 10px;
 }
+
 .pr-md {
     padding-right: 15px;
 }
+
 .pr-lg {
     padding-right: 20px;
 }
+
 .pt-xs {
     padding-top: 5px;
 }
+
 .pt-sm {
     padding-top: 10px;
 }
+
 .pt-md {
     padding-top: 15px;
 }
+
 .pt-lg {
     padding-top: 20px;
 }
+
 .pt-xl {
     padding-top: 25px;
 }
+
 .pt-xxl {
     padding-top: 30px;
 }
+
 .pt-xxxl {
     padding-top: 35px;
 }
+
 .pl-sm {
     padding-left: 5px;
 }
+
 .pl-md {
     padding-left: 10px;
 }
+
 .pl-lg {
     padding-left: 15px;
 }
+
 .pl-xl {
     padding-left: 20px;
 }
+
 .mb-xs {
-    margin-bottom:10px;
+    margin-bottom: 10px;
 }
+
 .mb-sm {
     margin-bottom: 15px;
 }
+
 .mb-md {
     margin-bottom: 20px;
 }
+
 .mb-lg {
     margin-bottom: 25px;
 }
+
 .mt-sm {
     margin-top: 10px;
 }
+
 .mt-md {
     margin-top: 15px;
 }
+
 .mt-lg {
     margin-top: 20px;
 }
+
 .mt-xl {
     margin-top: 25px;
 }
@@ -135,7 +168,7 @@ a.state-link {
 
 .modal.in {
     width: 80%; /* respsonsive width */
-    top:5%;
+    top: 5%;
     margin: 0 auto;
 }
 
@@ -150,16 +183,16 @@ a:hover.view-responses-link {
 }
 
 #cloneForm:hover {
-    color:gray;
+    color: gray;
 }
 
 #buildForm:hover {
-    color:gray;
+    color: gray;
 }
 
 .study-detail-block {
     display: block;
-    width:100%;
+    width: 100%;
     height: 520px;
 }
 
@@ -177,27 +210,33 @@ div.uuid-padding {
     width: 100%;
     height: 160px;
 }
+
 @media (max-width: 780px) {
-  .button-toolbar {
-      padding-top: 20px;
-  }
-  .edit-study-button {
-      padding-top: 5px;
-  }
-  .researcher-name {
-      padding-top: 10px;
-  }
-  .researcher-delete {
-      padding-top: 5px;
-  }
-  .password-button {
-      margin-top: 5px;
-      margin-bottom: 5px;
-  }
-  .researcher-emails {
-      padding-top: 20px;
-      padding-bottom: 20px;
-  }
+    .button-toolbar {
+        padding-top: 20px;
+    }
+
+    .edit-study-button {
+        padding-top: 5px;
+    }
+
+    .researcher-name {
+        padding-top: 10px;
+    }
+
+    .researcher-delete {
+        padding-top: 5px;
+    }
+
+    .password-button {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .researcher-emails {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
 }
 
 @media (min-width: 780px) {
@@ -222,11 +261,11 @@ h4.change-status {
 }
 
 textarea.rejection-comments {
-   resize: none;
-   -webkit-box-sizing: border-box;
-   -moz-box-sizing: border-box;
-   box-sizing: border-box;
-   width: 100%;
+    resize: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .comments-block {
@@ -263,7 +302,7 @@ h3.study-logs-label {
 
 /* Consent Manager */
 #list-of-responses {
-    max-height: 300px;  /* same height as video */
+    max-height: 300px; /* same height as video */
     overflow-y: scroll;
 }
 
@@ -320,25 +359,25 @@ h3.study-logs-label {
 li.list-group-item-success.active,
 li.list-group-item-success.active:hover,
 li.list-group-item-success.active:focus {
-  color: #fff;
-  background-color: #3c763d;
-  border-color: #3c763d;
+    color: #fff;
+    background-color: #3c763d;
+    border-color: #3c763d;
 }
 
 li.list-group-item-danger.active,
 li.list-group-item-danger.active:hover,
 li.list-group-item-danger.active:focus {
-  color: #fff;
-  background-color: #a94442;
-  border-color: #a94442;
+    color: #fff;
+    background-color: #a94442;
+    border-color: #a94442;
 }
 
 li.list-group-item-warning.active,
 li.list-group-item-warning.active:hover,
 li.list-group-item-warning.active:focus {
-  color: #fff;
-  background-color: #8a6d3b;
-  border-color: #8a6d3b;
+    color: #fff;
+    background-color: #8a6d3b;
+    border-color: #8a6d3b;
 }
 
 button[value=reset].glyphicon-repeat {
@@ -397,13 +436,16 @@ a:hover.build-study-link {
 .selectable-participant {
     cursor: pointer;
 }
+
 .selectable-participant.selected {
     background-color: #B7D4EE;
 }
-.table-striped>tbody>tr {
+
+.table-striped > tbody > tr {
     background-color: transparent;
 }
-.table-striped>tbody>tr.selected {
+
+.table-striped > tbody > tr.selected {
     background-color: #B7D4EE;
 }
 
@@ -415,4 +457,10 @@ pre.individual-block {
     word-break: normal !important;
     word-wrap: normal !important;
     white-space: pre !important;
-}​
+}
+
+
+/* Participant Contact */
+#email-participants-form section.form-group {
+    padding: 10px 10px 10px;
+}
