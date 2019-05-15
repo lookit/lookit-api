@@ -202,6 +202,27 @@
               $subjectLineView   = $messageViewer.find('#subject-line-view'),
               $messageBodyView   = $messageViewer.find('#message-body-view');
 
+        /**
+         * Main function.
+         */
+        function initializeView() {
+            // Set up Datatable.
+            $participantTable.DataTable(DATATABLE_SETTINGS)
+                .on("select", tableSelectionCallback);
+
+            // Set up email container
+            $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
+
+            // Add event handlers.
+            $recipientSelector.selectpicker(RECIPIENT_SELECTOR_SETTINGS)
+                .on('changed.bs.select', participantSelectionCallback);
+
+            $messageSearch.on("keyup", handleMessageSearch);
+
+            $messageList.on("click", "a", handleMessageSelection)
+
+        }
+
         // https://getbootstrap.com/docs/3.4/javascript/#tabs-usage
         // will want for dynamically modifying tabs...
 
@@ -214,7 +235,9 @@
          * @param indices The indices of the selection within the table.
          */
         function tableSelectionCallback($jqEvent, datatablesApi, itemType, indices) {
-            console.log($jqEvent, datatablesApi, itemType, indices);
+            console.log($jqEvent);
+            console.log(datatablesApi);
+
         }
 
 
@@ -247,28 +270,6 @@
          */
         function participantSelectionCallback($jqEvent, clickedIndex, isSelected, previousValue) {
             console.log($jqEvent, clickedIndex, isSelected, previousValue);
-        }
-
-
-        /**
-         * Main function.
-         */
-        function initializeView() {
-            // Set up Datatable.
-            $participantTable.DataTable(DATATABLE_SETTINGS)
-                .on("select", tableSelectionCallback);
-
-            // Set up email container
-            $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
-
-            // Add event handlers.
-            $recipientSelector.selectpicker(RECIPIENT_SELECTOR_SETTINGS) // Could use .selectpicker({}) constructor here...
-                .on('changed.bs.select', participantSelectionCallback);
-
-            $messageSearch.on("keyup", handleMessageSearch);
-
-            $messageList.on("click", "a", handleMessageSelection)
-
         }
 
         // Run initializations.
