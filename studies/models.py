@@ -229,8 +229,8 @@ class Study(models.Model):
     @property
     def participants(self):
         """Get all participants for the given study."""
-        children_of_participants = self.responses.values_list("child", flat=True)
-        return User.objects.filter(children__in=children_of_participants)
+        participants = self.responses.values_list("child__user", flat=True)
+        return User.objects.filter(pk__in=participants)
 
     @property
     def judgeable_responses(self):

@@ -26,3 +26,13 @@ def query_transform(request, **kwargs):
 @register.filter
 def get_key(dictionary, key):
     return dictionary.get(key, None)
+
+
+@register.simple_tag
+def values_list(queryset, key):
+    return list(getattr(obj, key) for obj in queryset)
+
+
+@register.simple_tag
+def recipients_from_participants(participant_qs, message_recipients_qs):
+    """Instead of going """

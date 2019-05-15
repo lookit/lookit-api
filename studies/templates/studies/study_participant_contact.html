@@ -1,6 +1,7 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 {% load guardian_tags %}
+{% load exp_extras %}
 
 {% block head %}
     {{ block.super }}
@@ -17,37 +18,6 @@
     <!-- Summernote -->
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.js"></script>
-    <!-- Initialization -->
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            function initializeView() {
-                // Set up Datatable.
-                $('#participant-table').DataTable({
-                    {#rowGroup: true#}
-                });
-
-                // Add event handlers.
-                $('#list-of-recipients').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-                    console.log(e, clickedIndex, isSelected, previousValue);
-                });
-
-
-                // Set up email container
-                $('#email-editor').summernote({
-                    codeviewFilter: false, // Prevent XSS
-                    codeviewIframeFilter: true, // Prevent XSS
-                    placeholder: 'Write email contents here.',
-                    tabsize: 2,
-                    height: 150
-                });
-            }
-
-            // Run initializations.
-            initializeView();
-        });
-    </script>
-    {#    {{ form.media }}#}
 {% endblock %}
 
 {% block title %}Contact Participants{% endblock %}
@@ -80,66 +50,107 @@
         <div class="row">
             <section class="col-lg-6">
                 <div class="panel panel-default mt-md">
-                    <div class="panel-heading">Previous Responses</div>
+                    <div class="panel-heading"><h3 class="panel-title">Previous Messages</h3></div>
                     <div class="panel-body">
-                        Stuff
+                        <form class="form-horizontal">
+                            <div class="input-group">
+                                <label class="input-group-addon" for="full-text-search">Text</label>
+                                <input id="full-text-search" type="text" class="form-control"
+                                       placeholder="Full Text Search">
+                            </div>
+                        </form>
+                    </div>
+                    <div id="previous-messages-list" class="list-group pretty-scroll">
+                        {% for message in previous_messages %}
+                            <a href="#previous-message-viewer?uuid={{ message.uuid }}" class="list-group-item">
+                                <h4 class="list-group-item-heading">{{ message.subject }}</h4>
+                                <p>
+                                    <small>Recipients: {% values_list message.recipients.all "username" %}</small>
+                                </p>
+                                <p class="list-group-item-text"><blockquote class="small message-body">{{ message.body }}</blockquote></p>
+                            </a>
+                        {% endfor %}
                     </div>
                 </div>
 
             </section>
             <main class="col-lg-6">
                 <div id="email-viewport" class="panel panel-default mt-md">
-                    <div class="panel-heading">Contact Form</div>
-                    <form id="email-participants-form" class="panel-group" method="post">{% csrf_token %}
-                        <section class="form-group">
-                            <label for="list-of-recipients">Participants</label>
-                            <select id="list-of-recipients"
-                                    name="recipients"
-                                    class="selectpicker form-control"
-                                    multiple data-live-search="true"
-                                    data-actions-box="true"
-                                    data-width="auto"
-                                    data-header="Who would you like to email?"
-                                    title="Select as many participants as you'd like!">
-                                {% for person in participants %}
-                                    <option value="{{ person.uuid }}"
-                                            data-subtext="{{ person.username }}">
-                                        {{ person.get_full_name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </section>
-                        <section class="form-group">
-                            <label for="email-editor">Email Body</label>
-                            <textarea id="email-editor" name="body"></textarea>
-                        </section>
-                        <section class="form-group">
-                            <button type="submit" class="btn btn-primary btn-lg btn-block">
-                                Send Messages to Participants
-                            </button>
-                        </section>
-                    </form>
+                    <div class="panel-heading"><h3 class="panel-title">Messages</h3></div>
+                    <ul id="email-viewer-tabs" class="nav nav-tabs nav-justified">
+                        <li class="active" role="presentation">
+                            <a data-toggle="tab" aria-controls="email-participants-form" href="#email-participants-form">
+                                Compose New
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a data-toggle="tab" aria-controls="previous-message-viewer" href="#previous-message-viewer">Message Viewer</a>
+                        </li>
+                    </ul>
+                    <section class="tab-content">
+                        <form id="email-participants-form" class="tab-pane fade in active"
+                              method="post">{% csrf_token %}
+                            <section class="form-group">
+                                <label for="recipient-selector">Recipients</label>
+                                <select id="recipient-selector"
+                                        name="recipients"
+                                        class="selectpicker form-control"
+                                        title="Search and add recipients"
+                                        multiple>
+                                    {% for person in participants %}
+                                        <option value="{{ person.uuid }}"
+                                                data-subtext="{{ person.username }}">
+                                            {{ person.get_full_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </section>
+                            <section class="form-group">
+                                <label for="email-subject">Subject</label>
+                                <input id="email-subject" name="subject" type="text" class="form-control"/>
+                            </section>
+                            <section class="form-group">
+                                <label for="email-editor">Body</label>
+                                <textarea id="email-editor" name="body"></textarea>
+                            </section>
+                            <section class="form-group">
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                    Send Messages to Participants
+                                </button>
+                            </section>
+                        </form>
+                        <div id="previous-message-viewer" class="tab-pane fade pretty-scroll">
+                            <h3 id="subject-line-view"></h3>
+                            <section class="pretty-scroll" id="message-body-view">
+                                {# Contents loaded here #}
+                            </section>
+                        </div>
+                    </section>
                 </div>
             </main>
         </div>
         <div class="row">
             <section class="panel panel-default">
-                <div class="panel-heading">Previous Messages</div>
+                <div class="panel-heading"><h3 class="panel-title">Participants (Contacts)</h3></div>
                 <div class="panel-body">
                     <table id="participant-table" class="table">
                         <thead>
                         <tr>
-                            <th>User ID</th>
                             <th>Full Name</th>
                             <th>Organization</th>
+                            <th>Email Preferences</th>
                         </tr>
                         </thead>
                         <tbody>
                         {% for person in participants %}
                             <tr>
-                                <td>{{ person.uuid }}</td>
                                 <td>{{ person.get_full_name }}</td>
                                 <td>{{ person.organization }}</td>
+                                <td>
+                                    {% if person.email_next_session %}
+                                        <span class="label label-primary">Next Session</span>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -148,4 +159,119 @@
             </section>
         </div>
     </div>
+    {#  TODO: move this out to a javascript file so we can defer it!  #}
+    <script type="text/javascript">
+        const DATATABLE_SETTINGS = {
+            select: true,
+            dom: 'BSfrtip',
+            buttons: ['copy', 'excel'],
+            fixedHeader: true,
+        };
+
+        const EMAIL_EDITOR_SETTINGS = {
+            codeviewFilter: false, // Prevent XSS
+            codeviewIframeFilter: true, // Prevent XSS
+            placeholder: 'Write email contents here.',
+            tabsize: 2,
+            height: 150,
+        };
+
+        const RECIPIENT_SELECTOR_SETTINGS = {
+            actionsBox: true,
+            showSubtext: true,
+            width: "100%",
+            liveSearch: true,
+            selectedTextFormat: "count > 3",
+            header: "Use mouse and/or arrow keys for navigation; return key to select participants",
+
+
+        };
+
+        const VIEW_INIT_PARAMS = new URLSearchParams(window.location.search);
+
+        // jqElements
+        const $participantTable  = $('#participant-table'),
+              $recipientSelector = $('#recipient-selector'),
+              $emailEditor       = $('#email-editor'),
+              $messageList       = $('#previous-messages-list'),
+              $messageListItems  = $('#previous-messages-list a'),
+              $messageSearch     = $('#full-text-search'),
+              $composeTab        = $('#email-viewer-tabs a[href=#email-participants-form]'),
+              $viewerTab         = $('#email-viewer-tabs a[href=#previous-message-viewer]'),
+              $messageViewer     = $('#previous-message-viewer'),
+              $subjectLineView   = $messageViewer.find('#subject-line-view'),
+              $messageBodyView   = $messageViewer.find('#message-body-view');
+
+        // https://getbootstrap.com/docs/3.4/javascript/#tabs-usage
+        // will want for dynamically modifying tabs...
+
+        /**
+         * Do things when we select from the table.
+         *
+         * @param $jqEvent The jquery Event object.
+         * @param datatablesApi the Datatables API (see: https://datatables.net/reference/api/).
+         * @param itemType This will pretty much always be a column or row.
+         * @param indices The indices of the selection within the table.
+         */
+        function tableSelectionCallback($jqEvent, datatablesApi, itemType, indices) {
+            console.log($jqEvent, datatablesApi, itemType, indices);
+        }
+
+
+        function handleMessageSearch() {
+            let searchValue = this.value.toLowerCase();
+            $messageListItems.filter((index, li) => $(li).toggle(li.innerText.toLowerCase().indexOf(searchValue) > -1));
+        }
+
+        function handleMessageSelection() {
+            let $message = $(this);
+            $messageListItems.not($message).removeClass("active");
+            $message.toggleClass('active');
+            if ($message.hasClass('active')) {
+                $viewerTab.tab('show');
+                $subjectLineView.html($message.find('h4').text());
+                $messageBodyView.html($message.find("blockquote.message-body").text());
+            } else {
+                $composeTab.tab("show");
+            }
+
+        }
+
+        /**
+         * Do things when we select a participant from the Bootstrap-select component.
+         *
+         * @param $jqEvent
+         * @param clickedIndex
+         * @param isSelected
+         * @param previousValue
+         */
+        function participantSelectionCallback($jqEvent, clickedIndex, isSelected, previousValue) {
+            console.log($jqEvent, clickedIndex, isSelected, previousValue);
+        }
+
+
+        /**
+         * Main function.
+         */
+        function initializeView() {
+            // Set up Datatable.
+            $participantTable.DataTable(DATATABLE_SETTINGS)
+                .on("select", tableSelectionCallback);
+
+            // Set up email container
+            $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
+
+            // Add event handlers.
+            $recipientSelector.selectpicker(RECIPIENT_SELECTOR_SETTINGS) // Could use .selectpicker({}) constructor here...
+                .on('changed.bs.select', participantSelectionCallback);
+
+            $messageSearch.on("keyup", handleMessageSearch);
+
+            $messageList.on("click", "a", handleMessageSelection)
+
+        }
+
+        // Run initializations.
+        initializeView();
+    </script>
 {% endblock %}

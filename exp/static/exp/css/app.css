@@ -462,5 +462,44 @@ pre.individual-block {
 
 /* Participant Contact */
 #email-participants-form section.form-group {
-    padding: 10px 10px 10px;
+    padding: 5px 10px;
+}
+
+#email-viewport {
+    height: 650px;
+}
+
+#previous-message-viewer h3, #previous-message-viewer section {
+    padding: 10px;
+}
+
+#previous-messages-list {
+    overflow-y: scroll;
+    height: 546px;  /* TODO: figure out how to do less implicit styling on the parent container */
+}
+
+#message-body-view {
+    overflow-y: scroll;
+    height: 480px;
+}
+
+#previous-messages-list > a > blockquote {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.pretty-scroll::-webkit-scrollbar {
+    width: 10px;
+}
+
+.pretty-scroll::-webkit-scrollbar-thumb {
+    background: #666666;
+    border-radius: 2px;
+
+}
+
+.pretty-scroll::-webkit-scrollbar-track {
+    background: #dddddd;
+    border-radius: 2px;
 }

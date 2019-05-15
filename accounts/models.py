@@ -539,7 +539,10 @@ class Message(models.Model):
     recipients = models.ManyToManyField(User, related_name="messages")
     subject = models.CharField(max_length=255)
     body = models.TextField()
-    email_sent = models.DateTimeField(
+    related_study = models.ForeignKey(
+        "studies.Study", on_delete=models.DO_NOTHING, null=True
+    )
+    email_sent_timestamp = models.DateTimeField(
         null=True, default=None
     )  # Timestamp serves as a truth check as well.
 
