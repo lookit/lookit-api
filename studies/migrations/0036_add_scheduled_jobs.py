@@ -54,6 +54,9 @@ def remove_scheduled_jobs(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [("studies", "0035_auto_20170911_1832")]
+    dependencies = [
+        ("studies", "0035_auto_20170911_1832"),
+        ("django_celery_beat", "0001_initial"),
+    ]
 
     operations = [migrations.RunPython(create_scheduled_jobs, remove_scheduled_jobs)]
