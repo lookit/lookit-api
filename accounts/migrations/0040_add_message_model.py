@@ -11,8 +11,8 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("studies", "0046_feedback-related-managers"),
         ("accounts", "0039_auto_20180219_1259"),
+        ("studies", "0046_feedback-related-managers"),
     ]
 
     operations = [
