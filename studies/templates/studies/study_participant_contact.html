@@ -62,7 +62,9 @@
                     </div>
                     <div id="previous-messages-list" class="list-group pretty-scroll">
                         {% for message in previous_messages %}
-                            <a href="#previous-message-viewer?uuid={{ message.uuid }}" class="list-group-item">
+                            <a href="#previous-message-viewer?uuid={{ message.uuid }}"
+                               class="list-group-item"
+                               data-recipients="{% values_list message.recipients.all "username" %}">
                                 <h4 class="list-group-item-heading">{{ message.subject }}</h4>
                                 <p>
                                     <small>Recipients: {% values_list message.recipients.all "username" %}</small>
@@ -137,6 +139,7 @@
                         <thead>
                         <tr>
                             <th>Full Name</th>
+                            <th>Email</th>
                             <th>Organization</th>
                             <th>Email Preferences</th>
                         </tr>
@@ -145,6 +148,7 @@
                         {% for person in participants %}
                             <tr>
                                 <td>{{ person.get_full_name }}</td>
+                                <td>{{ person.username }}</td>
                                 <td>{{ person.organization }}</td>
                                 <td>
                                     {% if person.email_next_session %}
@@ -206,7 +210,7 @@
         function initializeView() {
             // Set up Datatable.
             $participantTable.DataTable(DATATABLE_SETTINGS)
-                .on("select", tableSelectionCallback);
+                .on("select deselect", tableSelectionCallback);
 
             // Set up email container
             $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
@@ -233,9 +237,14 @@
          * @param indices The indices of the selection within the table.
          */
         function tableSelectionCallback($jqEvent, datatablesApi, itemType, indices) {
-            console.log($jqEvent);
-            console.log(datatablesApi);
 
+            let selectedEmails = new Set(datatablesApi.cells(indices, 1).data().toArray());
+
+            $messageListItems.filter(function(index, li) {
+                let $anchorTag = $(li);
+                let recipientList = $anchorTag.data("recipients");
+                $anchorTag.toggle(recipientList.some(person => selectedEmails.has(person)));
+            });
         }
 
 

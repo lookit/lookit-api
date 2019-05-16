@@ -1,4 +1,5 @@
 from django import template
+import json
 
 register = template.Library()
 
@@ -30,9 +31,4 @@ def get_key(dictionary, key):
 
 @register.simple_tag
 def values_list(queryset, key):
-    return list(getattr(obj, key) for obj in queryset)
-
-
-@register.simple_tag
-def recipients_from_participants(participant_qs, message_recipients_qs):
-    """Instead of going """
+    return json.dumps(list(getattr(obj, key) for obj in queryset))
