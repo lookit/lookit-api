@@ -149,7 +149,7 @@
                             <tr>
                                 <td>{{ person.get_full_name }}</td>
                                 <td>{{ person.username }}</td>
-                                <td>{{ person.organization }}</td>
+                                <td>{{ person.organization.name }}</td>
                                 <td>
                                     {% if person.email_next_session %}
                                         <span class="label label-primary">Next Session</span>
