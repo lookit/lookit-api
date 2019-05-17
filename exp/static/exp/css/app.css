@@ -489,6 +489,11 @@ pre.individual-block {
     text-overflow: ellipsis;
 }
 
+#previous-messages-list section strong {
+    width: 5em; /* Don't intrude on "Recipients: " label */
+    display: inline-block;
+}
+
 .pretty-scroll::-webkit-scrollbar {
     width: 10px;
 }
@@ -502,4 +507,24 @@ pre.individual-block {
 .pretty-scroll::-webkit-scrollbar-track {
     background: #dddddd;
     border-radius: 2px;
+}
+
+/* XXX: HACKS for bootstrap-select */
+.filter-option-inner-inner span.hide-if-in-select-box {
+    display: none;
+}
+
+#email-participants-form .bootstrap-select .dropdown-menu li a span.text {
+    width: 98%;
+    margin: 2px;
+}
+
+#email-participants-form .bootstrap-select .dropdown-menu li a span.text h5 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#email-participants-form .bootstrap-select h5 {
+    display: inline-block;
+    margin: 0;
 }

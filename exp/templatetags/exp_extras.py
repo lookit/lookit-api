@@ -30,5 +30,13 @@ def get_key(dictionary, key):
 
 
 @register.simple_tag
-def values_list(queryset, key):
-    return json.dumps(list(getattr(obj, key) for obj in queryset))
+def values_list_as_json(queryset, attribute):
+    return json.dumps(
+        list(
+            getattr(obj, attribute)()
+            if callable(attribute)
+            else getattr(obj, attribute)
+            for obj in queryset
+        ),
+        default=str,
+    )

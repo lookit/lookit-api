@@ -1,0 +1,25 @@
+{% comment "SINGLE QUOTES ONLY" %}
+XXX: Only use single quotes in this file, as we're trying to pass it into the data-content string of the
+bootstrap-select component. It's not really worth filing a bug, seeing as this is sane behavior on part of
+the plugin.
+{% endcomment %}
+
+<h5>{{ recipient.get_full_name }} <em class='small'>{{ recipient.nickname }}</em></h5>
+
+<span class='hide-if-in-select-box pull-right'>
+    {% if recipient.email_next_session %}
+        <div class='label label-warning'>Next Session</div>
+    {% endif %}
+
+    {% if recipient.email_new_studies %}
+        <div class='label label-success'>New Studies</div>
+    {% endif %}
+    <br />
+    {% if recipient.email_study_updates %}
+        <div class='label label-info'>Study Updates</div>
+    {% endif %}
+
+    {% if recipient.email_response_questions %}
+        <div class='label label-info'>Response Questions</div>
+    {% endif %}
+</span>

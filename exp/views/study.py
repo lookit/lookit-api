@@ -689,9 +689,11 @@ class StudyParticipantContactView(
         ctx = super().get_context_data(**kwargs)
         study = ctx["study"]
         ctx["participants"] = study.participants.select_related("organization").all()
-        ctx["previous_messages"] = study.message_set.prefetch_related(
-            "recipients"
-        ).all()
+        ctx["previous_messages"] = (
+            study.message_set.prefetch_related("recipients")
+            .select_related("sender")
+            .all()
+        )
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -705,14 +707,12 @@ class StudyParticipantContactView(
             sender=request.user, subject=subject, body=body, related_study=study
         )
 
-        # through_model = outgoing_message.recipients.through
-
         # TODO: Check into the performance of .iterator() with some real load testing
         outgoing_message.recipients.add(
             *User.objects.filter(uuid__in=participant_uuids).iterator()
         )
 
-        messages.success(self.request, "Message sent!")
+        messages.success(self.request, f'Message "{subject}"sent!')
         return HttpResponseRedirect(
             reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
         )
