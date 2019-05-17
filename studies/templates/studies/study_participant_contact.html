@@ -110,6 +110,13 @@
                                 </tr>
                             {% endfor %}
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>UUID</th>
+                                    <th>Full Name</th>
+                                    <th>Organization</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -199,7 +206,7 @@
             fixedHeader: true,
             columnDefs: [
                 {visible: false, searchable: false, targets: HIDDEN_UUID_COLUMN}
-            ]
+            ],
         };
 
         const EMAIL_EDITOR_SETTINGS = {
@@ -246,7 +253,8 @@
         function initializeView() {
             // Set up Datatable.
             $participantTable.DataTable(DATATABLE_SETTINGS)
-                .on("select deselect", handleParticipantTableSelection);
+                .on("select deselect", handleParticipantTableSelection)
+                .columns().every(initializeColumnFilters);
 
             // Set up email container
             $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
@@ -260,6 +268,26 @@
             $messageList.on("click", "a", handleMessageSelection);
 
             $messageParticipantsForm.on("submit", handleMessageFormSubmit);
+        }
+
+        function initializeColumnFilters() {
+            let column = this;
+            let select = $('<select class="form-control"><option value=""></option></select>')
+                .appendTo($(column.footer()).empty())
+                .on('change', function() {
+                    let val = $.fn.dataTable.util.escapeRegex(
+                        $(this).val()
+                    );
+
+                    column
+                        .search( val ? '^' + val + '$' : '', true, false )
+                        .draw();
+                });
+
+            // Create a new option for each piece of data.
+            column.data().unique().sort().each(function(datum) {
+                select.append('<option value="' + datum + '">'+ datum + '</option>')
+            });
         }
 
         /**
