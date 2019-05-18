@@ -694,6 +694,7 @@ class StudyParticipantContactView(
             .select_related("sender")
             .all()
         )
+        ctx["researchers"] = self.get_researchers()
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -716,6 +717,11 @@ class StudyParticipantContactView(
         return HttpResponseRedirect(
             reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
         )
+
+    def get_researchers(self):
+        """Pulls researchers that belong to Study Admin and Study Read groups"""
+        study = self.get_object()
+        return User.objects.filter(organization=study.organization)
 
 
 class StudyUpdateView(
