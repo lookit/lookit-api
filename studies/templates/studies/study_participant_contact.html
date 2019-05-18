@@ -329,7 +329,8 @@
             $dateFilter = $('#date-filter'),
             $subjectFilter = $('#subject-filter');
 
-        let MESSAGE_TABLE;
+        let MESSAGE_TABLE,
+            DATE_RANGE_PICKER;
 
         /**
          * Main function.
@@ -339,8 +340,6 @@
             MESSAGE_TABLE = $messagesTable.DataTable(DATATABLE_SETTINGS)
                 .on("select deselect", handleMessageTableSelection);
 
-            console.log(MESSAGE_TABLE);
-
             // Set up filters.
             $recipientFilter.selectpicker(RECIPIENT_FILTER_SETTINGS)
                 .on('changed.bs.select', handleRecipientFiltering);
@@ -348,7 +347,8 @@
             $senderFilter.selectpicker(SENDER_FILTER_SETTINGS)
                 .on('changed.bs.select', handleSenderFiltering);
 
-            $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
+            DATE_RANGE_PICKER = $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
+            $.fn.dataTable.ext.search.push(datePickerSearchFunctionality);
 
             // $subjectFilter.on('keyup', doStuff);
 
@@ -362,7 +362,20 @@
         }
 
         function handleDateFiltering(startDate, endDate) {
-            console.log(startDate, endDate);
+            MESSAGE_TABLE.draw()
+        }
+
+        function datePickerSearchFunctionality(settings, searchData, dataIndex, rowData, counter) {
+            if (rowData['sentDate'] !== searchData[counter]) return true;
+            // early exit if we're not actually looking @date
+
+            let {startDate, endDate} = DATE_RANGE_PICKER,
+                target = moment(rowData['sentDate']);
+
+            console.log(rowData['sentDate'], searchData[counter]);
+
+            return target.isSameOrAfter(startDate) && target.isSameOrBefore(endDate);
+
         }
 
         /**
@@ -382,8 +395,6 @@
         function handleRecipientFiltering($jqEvent, clickedIndex, isSelected, previousValue) {
             let recipients = $(this).val(),
                 searchValue = recipients ? recipients.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|'): "";
-
-            console.log(searchValue);
 
             MESSAGE_TABLE.column('recipients:name').search(searchValue, true, false).draw();
         }
