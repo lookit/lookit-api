@@ -2,6 +2,7 @@
 {% load bootstrap3 %}
 {% load guardian_tags %}
 {% load exp_extras %}
+{% load tz %}
 
 {% block head %}
     {{ block.super }}
@@ -11,6 +12,8 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <!-- Moment -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <!-- Datatables -->
     <script type="text/javascript"
             src="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.18/b-1.5.6/b-html5-1.5.6/fh-3.1.4/r-2.2.2/rg-1.1.0/sc-2.0.0/sl-1.3.0/datatables.min.js"></script>
@@ -19,8 +22,6 @@
     <!-- Summernote -->
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.11/summernote.js"></script>
-    <!-- Moment -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <!-- Datepicker -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 {% endblock %}
@@ -85,53 +86,56 @@
                                             {% endfor %}
                                         {% endif %}
                                     </td>
-                                    <td>{{ message.date_created }}</td>
+                                    <td data-sort="{{ message.date_created|localtime|date:"U" }}"
+                                        data-search="{{ message.date_created|localtime|date:"r" }}"> {# Use POSIX timestamp for sorting #}
+                                        {{ message.date_created|localtime|date:"r" }}
+                                    </td>
                                     {# Prevent thrash on initial render with display: none; #}
                                     <td style="display: none;">{{ message.body|safe }}</td>
                                 </tr>
                             {% endfor %}
                             </tbody>
                             <tfoot>
-                            <form>
-                                <tr>
-                                    <th>{# UUID - unsearchable #}</th>
-                                    <th>
-                                        <label class="control-label sr-only" for="sender-filter">Sender</label>
-                                        <select id="sender-filter"
-                                                class="selectpicker form-control"
-                                                multiple>
-                                            {% for researcher in researchers %}
-                                                <option value="{{ researcher.uuid }}">
-                                                    {{ researcher.get_full_name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </th>
-                                    <th>
-                                        <input id="subject-filter"
-                                               class="form-control input-sm"
-                                               type="text"
-                                               placeholder="Filter Subject"/>
-                                    </th>
-                                    <th>
-                                        <label class="control-label sr-only" for="recipient-filter">Recipients</label>
-                                        <select id="recipient-filter"
-                                                class="selectpicker form-control"
-                                                multiple>
-                                            {% for person in participants %}
-                                                <option value="{{ person.uuid }}">
-                                                    {{ person.get_full_name }}
-                                                </option>
-                                            {% endfor %}
-                                        </select>
-                                    </th>
-                                    <th>
-                                        {# Not using datetime-local input due to poor support #}
-                                        <input id="date-filter" class="form-control input-sm" type="text"/>
-                                    </th>
-                                    <th>{# Body - searchable but not present in footer #}</th>
-                                </tr>
-                            </form>
+                                <form>
+                                    <tr>
+                                        <th>{# UUID - unsearchable #}</th>
+                                        <th>
+                                            <label class="control-label sr-only" for="sender-filter">Sender</label>
+                                            <select id="sender-filter"
+                                                    class="selectpicker form-control"
+                                                    multiple>
+                                                {% for researcher in researchers %}
+                                                    <option value="{{ researcher.uuid }}">
+                                                        {{ researcher.get_full_name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <input id="subject-filter"
+                                                   class="form-control input-sm"
+                                                   type="text"
+                                                   placeholder="Filter Subject"/>
+                                        </th>
+                                        <th>
+                                            <label class="control-label sr-only" for="recipient-filter">Recipients</label>
+                                            <select id="recipient-filter"
+                                                    class="selectpicker form-control"
+                                                    multiple>
+                                                {% for person in participants %}
+                                                    <option value="{{ person.uuid }}">
+                                                        {{ person.get_full_name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </th>
+                                        <th>
+                                            {# Not using datetime-local input due to poor support #}
+                                            <input id="date-filter" class="form-control input-sm" type="text"/>
+                                        </th>
+                                        <th>{# Body - searchable but not present in footer #}</th>
+                                    </tr>
+                                </form>
                             </tfoot>
                         </table>
 
@@ -235,7 +239,8 @@
                 {
                     name: 'sentDate',
                     data: 'sentDate',
-                    width: '20%'
+                    type: 'date',
+                    width: '20%',
                 },
                 {
                     name: 'body',
@@ -296,7 +301,7 @@
 
         const DATE_FILTER_SETTINGS = {
             ranges: {
-                'Today': [moment(), moment()],
+                'Today': [moment().startOf('day'), moment()],
                 'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
                 'Last 7 Days': [moment().subtract(6, 'days'), moment()],
                 'Last 30 Days': [moment().subtract(29, 'days'), moment()],
@@ -304,7 +309,7 @@
                 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
             },
             timePicker: true,
-            startDate: moment().startOf('week'),
+            startDate: moment().startOf('month'),
             endDate: moment(),
             locale: {
                 format: 'M/DD hh:mm A',
@@ -332,6 +337,12 @@
         let MESSAGE_TABLE,
             DATE_RANGE_PICKER;
 
+        // Possibly move everything here later...
+        const GLOBAL_QUERY_PARAMS = {
+            after: moment().startOf("month"),
+            before: moment(),
+        };
+
         /**
          * Main function.
          */
@@ -350,7 +361,7 @@
             DATE_RANGE_PICKER = $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
             $.fn.dataTable.ext.search.push(datePickerSearchFunctionality);
 
-            // $subjectFilter.on('keyup', doStuff);
+            $subjectFilter.on('keyup', handleSubjectFiltering);
 
             // Set up Email form
             $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
@@ -361,20 +372,30 @@
             $messageParticipantsForm.on("submit", handleMessageFormSubmit);
         }
 
-        function handleDateFiltering(startDate, endDate) {
-            MESSAGE_TABLE.draw()
+        function handleDateFiltering(after, before) {
+            GLOBAL_QUERY_PARAMS.after = after;
+            GLOBAL_QUERY_PARAMS.before = before;
+            MESSAGE_TABLE.draw();
         }
 
-        function datePickerSearchFunctionality(settings, searchData, dataIndex, rowData, counter) {
-            if (rowData['sentDate'] !== searchData[counter]) return true;
-            // early exit if we're not actually looking @date
+        /**
+         * Custom plugin for date range filtering.
+         *
+         * @param settings The datatables settings object (see: https://datatables.net/reference/api/settings())
+         * @param rowArrayData The array of row data.
+         * @param rowIndex The index of the row.
+         * @param rowData The object of the data row (what we will be using).
+         * @param counter Search counter. This is the loop index that DataTables uses internally to loop over the
+         * rows in the table. This is likely to be most useful when it is 0 which indicates that a new search is
+         * occurring and any cached search values could be updated.
+         */
+        function datePickerSearchFunctionality(settings, rowArrayData, rowIndex, rowData, counter) {
+            let {after, before} = GLOBAL_QUERY_PARAMS,
+                target = moment(new Date(rowData['sentDate'])); // XXX: Date wrapper is needed here to preserve TZ.
 
-            let {startDate, endDate} = DATE_RANGE_PICKER,
-                target = moment(rowData['sentDate']);
+            console.log(rowData);
 
-            console.log(rowData['sentDate'], searchData[counter]);
-
-            return target.isSameOrAfter(startDate) && target.isSameOrBefore(endDate);
+            return target.isSameOrAfter(after) && target.isSameOrBefore(before);
 
         }
 
@@ -430,6 +451,34 @@
         /**
          * Return proper data object with filters.
          */
+        function deserializeSentDateData(row, type, value, meta) {
+            switch (type) {
+                case 'set':
+                    row.sentDate = value;
+                    row.sentDateDisplay = value;
+                    return;
+                case 'display':
+                    return row.sentDateDisplay;
+                case 'filter':
+                    if (!row.$jqRow) {
+                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
+                    }
+                    row.recipientUuidArray = row.recipientUuidArray ||
+                                             row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
+
+                    return row.recipientUuidArray.join(" "); // Regex will successfully execute against this!
+                case 'sort':
+                    return row.recipients;
+                case 'type':
+                    return row.recipients;
+                default:
+                    return row.recipients;
+            }
+        }
+
+        /**
+         * Return proper data object with filters.
+         */
         function deserializeSenderData(row, type, value, meta) {
             switch (type) {
                 case 'set':
@@ -457,7 +506,7 @@
          * Filter DataTable results based on subject input.
          */
         function handleSubjectFiltering($jqEvent) {
-
+            MESSAGE_TABLE.column('subject:name').search($(this).val()).draw();
         }
 
         /**
@@ -494,7 +543,7 @@
                     //    the css animation will get preempted by the inline styling that comes with show().
                     currentRow.child(
                         `<div class="panel panel-default">
-                             <div class="panel-body small">${currentRow.data()[HIDDEN_BODY_COLUMN]}</div>
+                             <div class="panel-body small">${currentRow.data()["body"]}</div>
                          </div>`
                     );
                     informationRow = currentRow.child();
