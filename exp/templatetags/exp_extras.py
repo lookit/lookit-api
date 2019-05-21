@@ -1,4 +1,5 @@
 from django import template
+import json
 
 register = template.Library()
 
@@ -26,3 +27,16 @@ def query_transform(request, **kwargs):
 @register.filter
 def get_key(dictionary, key):
     return dictionary.get(key, None)
+
+
+@register.simple_tag
+def values_list_as_json(queryset, attribute):
+    return json.dumps(
+        list(
+            getattr(obj, attribute)()
+            if callable(attribute)
+            else getattr(obj, attribute)
+            for obj in queryset
+        ),
+        default=str,
+    )

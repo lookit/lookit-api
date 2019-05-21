@@ -1,16 +1,18 @@
 import base64
+import datetime
 import hashlib
 import uuid
-from datetime import date
 
 import pydenticon
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import timezone
+from django.conf import settings
+from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 from django_countries.fields import CountryField
@@ -529,3 +531,46 @@ class DemographicData(models.Model):
             extra=self.extra,
             lookit_referrer=self.lookit_referrer,
         )
+
+
+class Message(models.Model):
+    """A message can be sent from one person to multiple people."""
+
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    sender = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_index=True)
+    recipients = models.ManyToManyField(User, related_name="messages")
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    related_study = models.ForeignKey(
+        "studies.Study", on_delete=models.DO_NOTHING, null=True
+    )
+    email_sent_timestamp = models.DateTimeField(
+        null=True, default=None
+    )  # Timestamp serves as a truth check as well.
+
+    def send_as_email(self):
+        context = {
+            "base_url": settings.BASE_URL,
+            "osf_url": settings.OSF_URL,
+            "custom_message": mark_safe(self.body),
+        }
+
+        text_content = get_template("emails/{}.txt".format("custom_email")).render(
+            context
+        )
+        html_content = get_template("emails/{}.html".format("custom_email")).render(
+            context
+        )
+
+        email = EmailMultiAlternatives(
+            self.subject,
+            text_content,
+            from_email=EMAIL_FROM_ADDRESS,
+            to=[EMAIL_FROM_ADDRESS],
+            bcc=self.recipients.values_list("username", flat=True),
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+        self.email_sent_timestamp = datetime.datetime.now()
+        self.save()
