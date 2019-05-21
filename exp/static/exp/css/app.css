@@ -525,14 +525,8 @@ so we have to do this manually.
 */
 #messages-table tr.information-row td {
     padding: 0;
+    border-top: 0;
 }
-
-/*#participant-table tr.information-row.open td {*/
-/*    padding: 5px;*/
-/*    -webkit-transition: max-height 2s ease;*/
-/*    -moz-transition: max-height 2s ease;*/
-/*    transition: max-height 2s ease;*/
-/*}*/
 
 #messages-table tr.information-row > td > div.panel {
     max-height: 0;
@@ -546,7 +540,7 @@ so we have to do this manually.
 }
 
 #messages-table tr.information-row.open > td > div.panel {
-    max-height: 100px;
+    max-height: 20em;  /*  20 x font size of document, so about 240px */
     -webkit-transition: max-height 1.3s ease;
     -moz-transition: max-height 1.3s ease;
     transition: max-height 1.3s ease;
