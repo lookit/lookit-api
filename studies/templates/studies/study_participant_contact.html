@@ -86,8 +86,7 @@
                                             {% endfor %}
                                         {% endif %}
                                     </td>
-                                    <td data-sort="{{ message.date_created|localtime|date:"U" }}"
-                                        data-search="{{ message.date_created|localtime|date:"r" }}"> {# Use POSIX timestamp for sorting #}
+                                    <td>
                                         {{ message.date_created|localtime|date:"r" }}
                                     </td>
                                     {# Prevent thrash on initial render with display: none; #}
@@ -131,6 +130,7 @@
                                         </th>
                                         <th>
                                             {# Not using datetime-local input due to poor support #}
+                                            <label class="control-label sr-only" for="date-filter">Date Sent</label>
                                             <input id="date-filter" class="form-control input-sm" type="text"/>
                                         </th>
                                         <th>{# Body - searchable but not present in footer #}</th>
@@ -238,7 +238,7 @@
                 },
                 {
                     name: 'sentDate',
-                    data: 'sentDate',
+                    data: deserializeSentDateData,
                     type: 'date',
                     width: '20%',
                 },
@@ -249,6 +249,7 @@
                     width: '0'
                 },
             ],
+            order: [[4, 'desc']]
         };
 
         const EMAIL_EDITOR_SETTINGS = {
@@ -391,9 +392,7 @@
          */
         function datePickerSearchFunctionality(settings, rowArrayData, rowIndex, rowData, counter) {
             let {after, before} = GLOBAL_QUERY_PARAMS,
-                target = moment(new Date(rowData['sentDate'])); // XXX: Date wrapper is needed here to preserve TZ.
-
-            console.log(rowData);
+                target = rowData.sentDate.asMoment;
 
             return target.isSameOrAfter(after) && target.isSameOrBefore(before);
 
@@ -454,25 +453,25 @@
         function deserializeSentDateData(row, type, value, meta) {
             switch (type) {
                 case 'set':
-                    row.sentDate = value;
-                    row.sentDateDisplay = value;
+                    let dateObj   = new Date(value),
+                        momentObj = moment(dateObj);
+
+                    row.sentDate = {
+                        asDate: dateObj,
+                        asMoment: momentObj,
+                        display: momentObj.format('MMMM Do YYYY, h:mm a'),
+                    };
                     return;
                 case 'display':
-                    return row.sentDateDisplay;
+                    return row.sentDate.display;
                 case 'filter':
-                    if (!row.$jqRow) {
-                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
-                    }
-                    row.recipientUuidArray = row.recipientUuidArray ||
-                                             row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
-
-                    return row.recipientUuidArray.join(" "); // Regex will successfully execute against this!
+                    return row.sentDate.asDate;  // Unused b/c of datePickerSearchFunctionality()
                 case 'sort':
-                    return row.recipients;
+                    return row.sentDate.asDate;
                 case 'type':
-                    return row.recipients;
+                    return 'date';
                 default:
-                    return row.recipients;
+                    return row.sentDate.asDate;
             }
         }
 
