@@ -13,14 +13,7 @@ logger = logging.getLogger(__name__)
 
 @app.task
 def send_mail(
-    template_name,
-    subject,
-    to_addresses,
-    cc=None,
-    bcc=None,
-    from_email=None,
-    message_uuid=None,
-    **context,
+    template_name, subject, to_addresses, cc=None, bcc=None, from_email=None, **context
 ):
     """
     Helper for sending templated email
@@ -49,13 +42,6 @@ def send_mail(
     )
     email.attach_alternative(html_content, "text/html")
     email.send()
-
-    if message_uuid:
-        from accounts.models import Message  # Prevent circular import.
-
-        message = Message.objects.get(uuid=message_uuid)
-        message.email_sent = datetime.now()
-        message.save()
 
 
 class FrameActionDispatcher(object):

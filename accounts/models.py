@@ -1,4 +1,5 @@
 import base64
+import datetime
 import hashlib
 import uuid
 
@@ -6,10 +7,12 @@ import pydenticon
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.translation import ugettext as _
 from django_countries.fields import CountryField
@@ -547,12 +550,27 @@ class Message(models.Model):
     )  # Timestamp serves as a truth check as well.
 
     def send_as_email(self):
-        send_mail.delay(
-            "custom_email",
-            self.subject,
-            settings.EMAIL_FROM_ADDRESS,
-            bcc=self.recipients.values_list("username", flat=True),
-            from_email=self.sender.username,
-            custom_message=self.body,
-            message_uuid=self.uuid,
+        context = {
+            "base_url": settings.BASE_URL,
+            "osf_url": settings.OSF_URL,
+            "custom_message": mark_safe(self.body),
+        }
+
+        text_content = get_template("emails/{}.txt".format("custom_email")).render(
+            context
         )
+        html_content = get_template("emails/{}.html".format("custom_email")).render(
+            context
+        )
+
+        email = EmailMultiAlternatives(
+            self.subject,
+            text_content,
+            from_email=EMAIL_FROM_ADDRESS,
+            to=[EMAIL_FROM_ADDRESS],
+            bcc=self.recipients.values_list("username", flat=True),
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+        self.email_sent_timestamp = datetime.datetime.now()
+        self.save()

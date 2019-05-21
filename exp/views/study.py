@@ -713,6 +713,8 @@ class StudyParticipantContactView(
             *User.objects.filter(uuid__in=participant_uuids).iterator()
         )
 
+        outgoing_message.send_as_email()
+
         messages.success(self.request, f'Message "{subject}"sent!')
         return HttpResponseRedirect(
             reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
