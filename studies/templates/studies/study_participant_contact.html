@@ -83,7 +83,7 @@
                                             <span>{{ message.recipients.all|length }} Participants</span>
                                         {% else %}
                                             {% for recipient in message.recipients.all %}
-                                                <span>{{ recipient.get_full_name }}</span>{% if not forloop.last %},
+                                                <span>{{ recipient.nickname }}</span>{% if not forloop.last %},
                                             {% endif %}
                                             {% endfor %}
                                         {% endif %}
@@ -125,7 +125,7 @@
                                                 multiple>
                                             {% for person in participants %}
                                                 <option value="{{ person.uuid }}">
-                                                    {{ person.get_full_name }}
+                                                    {{ person.nickname }}
                                                 </option>
                                             {% endfor %}
                                         </select>
@@ -389,64 +389,62 @@
             $messageParticipantsForm.on('submit', handleMessageFormSubmit);
         }
 
+
         /**
          * A custom set of filters that involve some black magic with the bootstrap-select component.
          */
         function initializeHeaderFilters() {
             $emailPreferenceFilters = $('#email-preference-filters');
-            let $allButtons = $emailPreferenceFilters.find('button');
-            
-            $emailPreferenceFilters.on('click', 'button', function() {
-                let currentFilter = $(this).toggleClass('active').data('filter'),  // also toggle button.
-                    activeFilters = $allButtons.filter('.active').map(function() {
-                        return `data-email-${this.dataset.filter}`;
-                    }).toArray();
 
-                let $allOptions         = $recipientSelector.find('option').detach(),
-                    $emailFriendlyGroup = $recipientSelector.find('optgroup.email-friendly'),
-                    $doNotEmailGroup    = $recipientSelector.find('optgroup.email-discouraged');
+            $emailPreferenceFilters.on('click', 'button', handleEmailPreferenceSelection);
+        }
 
-                // We have a list of active filters. Now iterate through each option, choose which group it should go
-                // to, and prepare the options for re-rendering with mutated data-content.
-                let [chosen, unchosen] = $allOptions.get().reduce((emailPreferenceBuckets, option) => {
-                    // First, does the option have a data-email-* preference matching our current query?
-                    let // ... and while we're here, we'll create a reference for the data-comment DOM.
-                        // XXX: Wrapping seems like the only way to do this so far, otherwise it's create a document
-                        // fragment and append to it, which requires a new div anyway!
-                        $oldContentDom         = $(`<div>${option.dataset.content}</div>`),
-                        $allPreferenceBadges   = $oldContentDom.find('span.glyphicon'),
-                        $targetPreferenceBadge = $oldContentDom.find(`span[data-filter=${currentFilter}]`);
+        function handleEmailPreferenceSelection() {
+            let currentFilter = $(this).toggleClass('active').data('filter'),  // also toggle button.
+                $allOptions = $recipientSelector.find('option').detach(),
+                $emailFriendlyGroup = $recipientSelector.find('optgroup.email-friendly'),
+                $doNotEmailGroup = $recipientSelector.find('optgroup.email-discouraged');
 
-                    // Switch the context class based on whether or not it's a positive indicator
-                    if ($targetPreferenceBadge.hasClass('email-friendly')) {
-                        $targetPreferenceBadge.toggleClass('text-success text-muted');
-                    } else {
-                        $targetPreferenceBadge.toggleClass('text-danger text-muted');
-                    }
+            // We have a list of active filters. Now iterate through each option, choose which group it should go
+            // to, and prepare the options for re-rendering with mutated data-content.
+            let [chosen, unchosen] = $allOptions.get().reduce((emailPreferenceBuckets, option) => {
+                // First, does the option have a data-email-* preference matching our current query?
+                let // ... and while we're here, we'll create a reference for the data-comment DOM.
+                    // XXX: Wrapping seems like the only way to do this so far, otherwise it's create a document
+                    // fragment and append to it, which requires a new div anyway!
+                    $oldContentDom = $(`<div>${option.dataset.content}</div>`),
+                    $allPreferenceBadges = $oldContentDom.find('span.glyphicon'),
+                    $targetPreferenceBadge = $oldContentDom.find(`span[data-filter=${currentFilter}]`);
 
-                    // If we've got no red flags, it's friendly!
-                    if (!$allPreferenceBadges.is('.text-danger')) {
-                        emailPreferenceBuckets[0].push(option);
-                        console.log('%cPushing object to friendly', 'background-color: green; padding: 3px; color: white;');
-                    } else {
-                        emailPreferenceBuckets[1].push(option);
-                        option.removeAttribute('selected');
-                        console.log('%cPushing object to unfriendly', 'background-color: red; padding: 3px; color: white;');
-                    }
+                // TODO: deliberate on whether or not it's worth it to put currentFilter into the accumulator object
+                // so that we can factor out this reducer method.
 
-                    option.setAttribute('data-content', $oldContentDom[0].innerHTML);
+                // Switch the context class based on whether or not it's a positive indicator
+                if ($targetPreferenceBadge.hasClass('email-friendly')) {
+                    $targetPreferenceBadge.toggleClass('text-success text-muted');
+                } else {
+                    $targetPreferenceBadge.toggleClass('text-danger text-muted');
+                }
 
-                    return emailPreferenceBuckets;
-                }, [[], []] /* <--- emailPreferenceBuckets initializing object */);
+                // If we've got no red flags, we can suggest emailing them.
+                if (!$allPreferenceBadges.is('.text-danger')) {
+                    emailPreferenceBuckets[0].push(option);
+                } else {
+                    emailPreferenceBuckets[1].push(option);
+                    option.removeAttribute('selected');
+                }
 
-                // Redraw select after sorting
-                console.log(chosen.map(opt => opt.value));
-                $(chosen).appendTo($emailFriendlyGroup);
-                $(unchosen).appendTo($doNotEmailGroup);
-                $recipientSelector.selectpicker('refresh')
-                    .selectpicker('deselectAll')
-                    .selectpicker('val', chosen.map(opt => opt.value));
-            });
+                option.setAttribute('data-content', $oldContentDom[0].innerHTML);
+
+                return emailPreferenceBuckets;
+            }, [[], []] /* <--- emailPreferenceBuckets initializing object */);
+
+            // Redraw select after sorting
+            $(chosen).appendTo($emailFriendlyGroup);
+            $(unchosen).appendTo($doNotEmailGroup);
+            $recipientSelector.selectpicker('refresh')
+                .selectpicker('deselectAll')
+                .selectpicker('val', chosen.map(opt => opt.value));
         }
 
         function handleDateFiltering(after, before) {
@@ -477,7 +475,7 @@
         /**
          * Filter DataTable results based on sender input.
          */
-        function handleSenderFiltering($jqEvent, clickedIndex, isSelected, previousValue) {
+        function handleSenderFiltering({#$jqEvent, clickedIndex, isSelected, previousValue #}) {
 
             let senders = $(this).val(),
                 searchValue = senders ? senders.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
@@ -488,7 +486,7 @@
         /**
          * Filter DataTable results based on recipient input.
          */
-        function handleRecipientFiltering($jqEvent, clickedIndex, isSelected, previousValue) {
+        function handleRecipientFiltering({# $jqEvent, clickedIndex, isSelected, previousValue #}) {
             let recipients = $(this).val(),
                 searchValue = recipients ? recipients.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
 
@@ -584,7 +582,7 @@
         /**
          * Filter DataTable results based on subject input.
          */
-        function handleSubjectFiltering($jqEvent) {
+        function handleSubjectFiltering() {
             MESSAGE_TABLE.column('subject:name').search($(this).val()).draw();
         }
 
