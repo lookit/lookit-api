@@ -1,0 +1,20 @@
+{% comment "SINGLE QUOTES ONLY" %}
+XXX: Only use single quotes in this file, as we're trying to pass it into the data-header string of the
+bootstrap-select component. It's not really worth filing a bug, seeing as this is sane behavior on part of
+the plugin.
+{% endcomment %}
+<h5><em>Filter by email preferences</em></h5>
+<div id='email-preference-filters' class='btn-group btn-group-xs' role='group' aria-label='email-preference-filters'>
+    <button type='button' class='btn btn-default active' data-filter='next-session'>
+        <span class='glyphicon glyphicon-calendar' aria-hidden='true'></span> Next Session
+    </button>
+    <button type='button' class='btn btn-default active' data-filter='new-studies'>
+        <span class='glyphicon glyphicon-duplicate' aria-hidden='true'></span> New Studies
+    </button>
+    <button type='button' class='btn btn-default active' data-filter='study-updates'>
+        <span class='glyphicon glyphicon-bullhorn' aria-hidden='true'></span> Study Updates
+    </button>
+    <button type='button' class='btn btn-default active' data-filter='response-questions'>
+        <span class='glyphicon glyphicon-comment' aria-hidden='true'></span> Responses
+    </button>
+</div>

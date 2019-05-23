@@ -4,22 +4,25 @@ bootstrap-select component. It's not really worth filing a bug, seeing as this i
 the plugin.
 {% endcomment %}
 
+<span class='hide-if-in-select-box'>
+    <span class='glyphicon glyphicon-calendar
+                 text-{% if recipient.email_next_session %}success email-friendly{% else %}danger{% endif %}'
+          data-filter='next-session'
+          aria-hidden='true'></span>
+
+    <span class='glyphicon glyphicon-duplicate
+                 text-{% if recipient.email_new_studies %}success email-friendly{% else %}danger{% endif %}'
+          data-filter='new-studies'
+          aria-hidden='true'></span>
+    <span class='glyphicon glyphicon-bullhorn
+                 text-{% if recipient.email_study_updates %}success email-friendly{% else %}danger{% endif %}'
+          data-filter='study-updates'
+          aria-hidden='true'></span>
+
+    <span class='glyphicon glyphicon-comment
+                 text-{% if recipient.email_response_questions %}success email-friendly{% else %}danger{% endif %}'
+          data-filter='response-questions'
+          aria-hidden='true'></span>
+</span>
 <h5>{{ recipient.get_full_name }} <em class='small'>{{ recipient.nickname }}</em></h5>
 
-<span class='hide-if-in-select-box pull-right'>
-    {% if recipient.email_next_session %}
-        <div class='label label-warning'>Next Session</div>
-    {% endif %}
-
-    {% if recipient.email_new_studies %}
-        <div class='label label-success'>New Studies</div>
-    {% endif %}
-    <br />
-    {% if recipient.email_study_updates %}
-        <div class='label label-info'>Study Updates</div>
-    {% endif %}
-
-    {% if recipient.email_response_questions %}
-        <div class='label label-info'>Response Questions</div>
-    {% endif %}
-</span>

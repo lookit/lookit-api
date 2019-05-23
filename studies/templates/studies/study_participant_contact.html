@@ -74,9 +74,11 @@
                             {% for message in previous_messages %}
                                 <tr class="small">
                                     <td style="display: none;">{{ message.uuid }}</td>
-                                    <td data-col-key="sender" data-col-value="{{ message.sender.uuid }}">{{ message.sender.get_full_name }}</td>
+                                    <td data-col-key="sender"
+                                        data-col-value="{{ message.sender.uuid }}">{{ message.sender.get_full_name }}</td>
                                     <td>{{ message.subject }}</td>
-                                    <td data-col-key="recipients" data-col-value="{% values_list_as_json message.recipients.all "uuid" %}">
+                                    <td data-col-key="recipients"
+                                        data-col-value="{% values_list_as_json message.recipients.all "uuid" %}">
                                         {% if message.recipients.all|length >= 4 %}
                                             <span>{{ message.recipients.all|length }} Participants</span>
                                         {% else %}
@@ -95,50 +97,49 @@
                             {% endfor %}
                             </tbody>
                             <tfoot>
-                                <form>
-                                    <tr>
-                                        <th>{# UUID - unsearchable #}</th>
-                                        <th>
-                                            <label class="control-label sr-only" for="sender-filter">Sender</label>
-                                            <select id="sender-filter"
-                                                    class="selectpicker form-control"
-                                                    multiple>
-                                                {% for researcher in researchers %}
-                                                    <option value="{{ researcher.uuid }}">
-                                                        {{ researcher.get_full_name }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
-                                        </th>
-                                        <th>
-                                            <input id="subject-filter"
-                                                   class="form-control input-sm"
-                                                   type="text"
-                                                   placeholder="Filter Subject"/>
-                                        </th>
-                                        <th>
-                                            <label class="control-label sr-only" for="recipient-filter">Recipients</label>
-                                            <select id="recipient-filter"
-                                                    class="selectpicker form-control"
-                                                    multiple>
-                                                {% for person in participants %}
-                                                    <option value="{{ person.uuid }}">
-                                                        {{ person.get_full_name }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
-                                        </th>
-                                        <th>
-                                            {# Not using datetime-local input due to poor support #}
-                                            <label class="control-label sr-only" for="date-filter">Date Sent</label>
-                                            <input id="date-filter" class="form-control input-sm" type="text"/>
-                                        </th>
-                                        <th>{# Body - searchable but not present in footer #}</th>
-                                    </tr>
-                                </form>
+                            <form>
+                                <tr>
+                                    <th>{# UUID - unsearchable #}</th>
+                                    <th>
+                                        <label class="control-label sr-only" for="sender-filter">Sender</label>
+                                        <select id="sender-filter"
+                                                class="selectpicker form-control"
+                                                multiple>
+                                            {% for researcher in researchers %}
+                                                <option value="{{ researcher.uuid }}">
+                                                    {{ researcher.get_full_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </th>
+                                    <th>
+                                        <input id="subject-filter"
+                                               class="form-control input-sm"
+                                               type="text"
+                                               placeholder="Filter Subject"/>
+                                    </th>
+                                    <th>
+                                        <label class="control-label sr-only" for="recipient-filter">Recipients</label>
+                                        <select id="recipient-filter"
+                                                class="selectpicker form-control"
+                                                multiple>
+                                            {% for person in participants %}
+                                                <option value="{{ person.uuid }}">
+                                                    {{ person.get_full_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </th>
+                                    <th>
+                                        {# Not using datetime-local input due to poor support #}
+                                        <label class="control-label sr-only" for="date-filter">Date Sent</label>
+                                        <input id="date-filter" class="form-control input-sm" type="text"/>
+                                    </th>
+                                    <th>{# Body - searchable but not present in footer #}</th>
+                                </tr>
+                            </form>
                             </tfoot>
                         </table>
-
                     </div>
 
                     <div class="panel-footer">
@@ -157,12 +158,23 @@
                             <select id="recipient-selector"
                                     name="recipients"
                                     class="selectpicker form-control"
+                                    data-header="{% include "studies/_recipient_select_filter_header.html" %}"
                                     multiple>
-                                {% for person in participants %}
-                                    <option value="{{ person.uuid }}"
-                                            data-content="{% include "studies/_recipient_select_content.html" with recipient=person %}">
-                                        {{ person.get_full_name }}
-                                    </option>
+                                {% regroup participants by default_email_preference_group as grouped_participants %}
+                                {% for group, participants in grouped_participants %}
+                                    <optgroup class="{{ group|slugify }}" label="{{ group }}">
+                                        {% for person in participants %}
+                                            <option value="{{ person.uuid }}"
+                                                         data-content="{% include "studies/_recipient_select_content.html" with recipient=person %}"
+                                                         data-tokens="{{ person.uuid }}"
+                                                         {% if person.email_next_session %}data-email-next-session{% endif %}
+                                                         {% if person.email_new_studies %}data-email-new-studies{% endif %}
+                                                         {% if person.email_study_updates %}data-email-study-updates{% endif %}
+                                                         {% if person.email_response_questions %}data-email-response-questions{% endif %}>
+                                                {{ person.get_full_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </optgroup>
                                 {% endfor %}
                             </select>
                         </section>
@@ -186,8 +198,6 @@
     </div>
     {#  TODO: move this out to a javascript file so we can defer it!  #}
     <script type="text/javascript">
-        const HIDDEN_UUID_COLUMN = 0,
-            HIDDEN_BODY_COLUMN = 5;
 
         const DATATABLE_SETTINGS = {
             select: true,
@@ -283,7 +293,7 @@
             {
                 selectedTextFormat: 'count > 3',
                 title: 'Search and add recipients',
-                header: 'Use mouse and/or arrow keys for navigation; return key to select participants',
+                liveSearchPlaceholder: 'Search by name or UUID!',
             }
         );
 
@@ -304,7 +314,7 @@
         const DATE_FILTER_SETTINGS = {
             ranges: {
                 'Today': [moment().startOf('day'), moment()],
-                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
                 'Last 7 Days': [moment().subtract(6, 'days'), moment()],
                 'Last 30 Days': [moment().subtract(29, 'days'), moment()],
                 'This Month': [moment().startOf('month'), moment().endOf('month')],
@@ -330,21 +340,25 @@
             /* --- Email Table --- */
             $messagesTable = $('#messages-table'),
             $messageViewer = $('#previous-message-viewer'),
+
             // --> Filters
             $recipientFilter = $('#recipient-filter'),
             $senderFilter = $('#sender-filter'),
             $dateFilter = $('#date-filter'),
             $subjectFilter = $('#subject-filter');
 
+        // Lazy initialization so we can use in handlers.
         let MESSAGE_TABLE,
-            DATE_RANGE_PICKER;
+            DATE_RANGE_PICKER,
+            RECIPIENT_SELECTOR,
+            $emailPreferenceFilters;
 
         // Possibly move everything here later...
         const GLOBAL_QUERY_PARAMS = {
             after: moment().startOf("month"),
             before: moment(),
         };
-
+        
         /**
          * Main function.
          */
@@ -369,15 +383,76 @@
             $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
 
             $recipientSelector.selectpicker(RECIPIENT_SELECTOR_SETTINGS)
+                .on('loaded.bs.select', initializeHeaderFilters)
                 .on('changed.bs.select', recipientSelectionCallback);
 
-            $messageParticipantsForm.on("submit", handleMessageFormSubmit);
+            $messageParticipantsForm.on('submit', handleMessageFormSubmit);
+        }
+
+        /**
+         * A custom set of filters that involve some black magic with the bootstrap-select component.
+         */
+        function initializeHeaderFilters() {
+            $emailPreferenceFilters = $('#email-preference-filters');
+            let $allButtons = $emailPreferenceFilters.find('button');
+            
+            $emailPreferenceFilters.on('click', 'button', function() {
+                let currentFilter = $(this).toggleClass('active').data('filter'),  // also toggle button.
+                    activeFilters = $allButtons.filter('.active').map(function() {
+                        return `data-email-${this.dataset.filter}`;
+                    }).toArray();
+
+                let $allOptions         = $recipientSelector.find('option').detach(),
+                    $emailFriendlyGroup = $recipientSelector.find('optgroup.email-friendly'),
+                    $doNotEmailGroup    = $recipientSelector.find('optgroup.email-discouraged');
+
+                // We have a list of active filters. Now iterate through each option, choose which group it should go
+                // to, and prepare the options for re-rendering with mutated data-content.
+                let [chosen, unchosen] = $allOptions.get().reduce((emailPreferenceBuckets, option) => {
+                    // First, does the option have a data-email-* preference matching our current query?
+                    let // ... and while we're here, we'll create a reference for the data-comment DOM.
+                        // XXX: Wrapping seems like the only way to do this so far, otherwise it's create a document
+                        // fragment and append to it, which requires a new div anyway!
+                        $oldContentDom         = $(`<div>${option.dataset.content}</div>`),
+                        $allPreferenceBadges   = $oldContentDom.find('span.glyphicon'),
+                        $targetPreferenceBadge = $oldContentDom.find(`span[data-filter=${currentFilter}]`);
+
+                    // Switch the context class based on whether or not it's a positive indicator
+                    if ($targetPreferenceBadge.hasClass('email-friendly')) {
+                        $targetPreferenceBadge.toggleClass('text-success text-muted');
+                    } else {
+                        $targetPreferenceBadge.toggleClass('text-danger text-muted');
+                    }
+
+                    // If we've got no red flags, it's friendly!
+                    if (!$allPreferenceBadges.is('.text-danger')) {
+                        emailPreferenceBuckets[0].push(option);
+                        console.log('%cPushing object to friendly', 'background-color: green; padding: 3px; color: white;');
+                    } else {
+                        emailPreferenceBuckets[1].push(option);
+                        option.removeAttribute('selected');
+                        console.log('%cPushing object to unfriendly', 'background-color: red; padding: 3px; color: white;');
+                    }
+
+                    option.setAttribute('data-content', $oldContentDom[0].innerHTML);
+
+                    return emailPreferenceBuckets;
+                }, [[], []] /* <--- emailPreferenceBuckets initializing object */);
+
+                // Redraw select after sorting
+                console.log(chosen.map(opt => opt.value));
+                $(chosen).appendTo($emailFriendlyGroup);
+                $(unchosen).appendTo($doNotEmailGroup);
+                $recipientSelector.selectpicker('refresh')
+                    .selectpicker('deselectAll')
+                    .selectpicker('val', chosen.map(opt => opt.value));
+            });
         }
 
         function handleDateFiltering(after, before) {
             GLOBAL_QUERY_PARAMS.after = after;
             GLOBAL_QUERY_PARAMS.before = before;
-            MESSAGE_TABLE.draw(); // Executes search, and datePickerSearchFunctionality transitively.
+            MESSAGE_TABLE.draw(); // Executes search --> datePickerSearchFunctionality transitively.
         }
 
         /**
@@ -405,7 +480,7 @@
         function handleSenderFiltering($jqEvent, clickedIndex, isSelected, previousValue) {
 
             let senders = $(this).val(),
-                searchValue = senders ? senders.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|'): "";
+                searchValue = senders ? senders.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
 
             MESSAGE_TABLE.column('sender:name').search(searchValue, true, false).draw();
         }
@@ -415,7 +490,7 @@
          */
         function handleRecipientFiltering($jqEvent, clickedIndex, isSelected, previousValue) {
             let recipients = $(this).val(),
-                searchValue = recipients ? recipients.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|'): "";
+                searchValue = recipients ? recipients.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
 
             MESSAGE_TABLE.column('recipients:name').search(searchValue, true, false).draw();
         }
@@ -436,7 +511,7 @@
                         row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
                     }
                     row.recipientUuidArray = row.recipientUuidArray ||
-                                             row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
+                        row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
 
                     return row.recipientUuidArray.join(" "); // Regex will successfully execute against this!
                 case 'sort':
@@ -458,7 +533,7 @@
         function deserializeSentDateData(row, type, value, meta) {
             switch (type) {
                 case 'set':
-                    let dateObj   = new Date(value),
+                    let dateObj = new Date(value),
                         momentObj = moment(dateObj);
 
                     row.sentDate = {
@@ -603,6 +678,8 @@
          * @param previousValue
          */
         function recipientSelectionCallback($jqEvent, clickedIndex, isSelected, previousValue) {
+            window.recipientSelector = $recipientSelector;
+
             if (isSelected) {
                 $(this).closest('.form-group').removeClass('has-error');
             }
