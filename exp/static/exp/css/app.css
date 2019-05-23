@@ -544,8 +544,8 @@ span.hide-if-in-select-box {
 
 /** Overrides for summernote */
 
-.note-toolbar {
-    z-index: auto;  /* Otherwise, the DataTables copy button popup can get clobbered */
+.dt-button-info#datatables_buttons_info {
+    z-index: 2000;  /* Otherwise, the DataTables copy button popup can get clobbered */
 }
 
 
