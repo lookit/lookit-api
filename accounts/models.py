@@ -225,6 +225,17 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         else:
             return "No organization groups"
 
+    @property
+    def default_email_preference_group(self):
+        return (
+            "Email Friendly"
+            if self.email_new_studies
+            and self.email_next_session
+            and self.email_response_questions
+            and self.email_study_updates
+            else "Email Discouraged"
+        )
+
     def _make_rainbow(self):
         rbw = []
         for i in range(0, 255, 10):

@@ -466,7 +466,7 @@ pre.individual-block {
 }
 
 #email-viewport {
-    height: 650px;
+    min-height: 650px;
 }
 
 #previous-message-viewer h3, #previous-message-viewer section {
@@ -490,7 +490,18 @@ pre.individual-block {
 .pretty-scroll::-webkit-scrollbar-thumb {
     background: #666666;
     border-radius: 2px;
+}
 
+#message-recipient-filters {
+    margin-left: 12px;
+}
+
+#message-recipient-filters table {
+    margin-left: 30px;
+}
+
+#message-recipient-filters table td {
+    padding: 0 0.5em;
 }
 
 .pretty-scroll::-webkit-scrollbar-track {
@@ -501,6 +512,19 @@ pre.individual-block {
 /* XXX: HACKS for bootstrap-select */
 .filter-option-inner-inner span.hide-if-in-select-box {
     display: none;
+}
+
+span.hide-if-in-select-box {
+    display: inline-block;
+    width: 70px;  /* ~4 small glyphicons */
+}
+
+.dropdown-menu.open li.active span.hide-if-in-select-box span.glyphicon {
+    color: white;
+}
+
+.dropdown-menu.open li.active h5 > em {
+    color: white;
 }
 
 #email-participants-form .bootstrap-select .dropdown-menu li a span.text {
@@ -517,6 +541,13 @@ pre.individual-block {
     display: inline-block;
     margin: 0;
 }
+
+/** Overrides for summernote */
+
+.note-toolbar {
+    z-index: auto;  /* Otherwise, the DataTables copy button popup can get clobbered */
+}
+
 
 /** For animating the information row.
 

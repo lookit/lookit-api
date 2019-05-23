@@ -688,7 +688,13 @@ class StudyParticipantContactView(
         """Gets the required data for emailing participants."""
         ctx = super().get_context_data(**kwargs)
         study = ctx["study"]
-        ctx["participants"] = study.participants.select_related("organization").all()
+        ctx["participants"] = (
+            study.participants.select_related("organization")
+            .order_by(
+                "-email_next_session"
+            )  # Just to get the grouping in the right order
+            .all()
+        )
         ctx["previous_messages"] = (
             study.message_set.prefetch_related("recipients")
             .select_related("sender")
