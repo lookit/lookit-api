@@ -519,6 +519,14 @@ span.hide-if-in-select-box {
     width: 70px;  /* ~4 small glyphicons */
 }
 
+.dropdown-menu.open li.active span.hide-if-in-select-box span.glyphicon {
+    color: white;
+}
+
+.dropdown-menu.open li.active h5 > em {
+    color: white;
+}
+
 #email-participants-form .bootstrap-select .dropdown-menu li a span.text {
     width: 98%;
     margin: 2px;
