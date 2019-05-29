@@ -5,24 +5,24 @@ the plugin.
 {% endcomment %}
 
 <span class='hide-if-in-select-box'>
-    <span class='glyphicon glyphicon-calendar
-                 text-{% if recipient.email_next_session %}success email-friendly{% else %}danger{% endif %}'
+    <span class='glyphicon glyphicon-calendar text-muted
+                 {% if recipient.email_next_session %}email-friendly{% endif %}'
           data-filter='next-session'
           aria-hidden='true'></span>
 
-    <span class='glyphicon glyphicon-duplicate
-                 text-{% if recipient.email_new_studies %}success email-friendly{% else %}danger{% endif %}'
+    <span class='glyphicon glyphicon-duplicate text-muted
+                 {% if recipient.email_new_studies %}email-friendly{% endif %}'
           data-filter='new-studies'
           aria-hidden='true'></span>
-    <span class='glyphicon glyphicon-bullhorn
-                 text-{% if recipient.email_study_updates %}success email-friendly{% else %}danger{% endif %}'
+    <span class='glyphicon glyphicon-bullhorn text-muted
+                 {% if recipient.email_study_updates %}email-friendly{% endif %}'
           data-filter='study-updates'
           aria-hidden='true'></span>
 
-    <span class='glyphicon glyphicon-comment
-                 text-{% if recipient.email_response_questions %}success email-friendly{% else %}danger{% endif %}'
+    <span class='glyphicon glyphicon-comment text-muted
+                 {% if recipient.email_response_questions %}email-friendly{% endif %}'
           data-filter='response-questions'
           aria-hidden='true'></span>
 </span>
-<h5>{{ recipient.nickname }} <em class='small'>{{ recipient.uuid }}</em></h5>
+<h5>{{ recipient.slug }} <em class='small'>{{ recipient.uuid }}</em></h5>
 
