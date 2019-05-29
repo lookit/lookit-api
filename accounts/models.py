@@ -14,6 +14,7 @@ from django.dispatch import receiver
 from django.conf import settings
 from django.template.loader import get_template
 from django.utils.html import mark_safe
+from django.utils.text import slugify
 from django.utils.translation import ugettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
@@ -226,15 +227,9 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             return "No organization groups"
 
     @property
-    def default_email_preference_group(self):
-        return (
-            "Email Friendly"
-            if self.email_new_studies
-            and self.email_next_session
-            and self.email_response_questions
-            and self.email_study_updates
-            else "Email Discouraged"
-        )
+    def slug(self):
+        """Temporary workaround."""
+        return f"{slugify(self.nickname or 'anonymous')}-{str(self.uuid).split('-')[0]}"
 
     def _make_rainbow(self):
         rbw = []

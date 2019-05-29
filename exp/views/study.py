@@ -704,6 +704,10 @@ class StudyParticipantContactView(
         return ctx
 
     def post(self, request, *args, **kwargs):
+        """Handles saving message and sending email.
+
+        TODO: enable mail merge with tokens.
+        """
         study = self.get_object()
 
         participant_uuids = request.POST.getlist("recipients")
@@ -721,7 +725,7 @@ class StudyParticipantContactView(
 
         outgoing_message.send_as_email()
 
-        messages.success(self.request, f'Message "{subject}"sent!')
+        messages.success(self.request, f'Message "{subject}" sent!')
         return HttpResponseRedirect(
             reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
         )

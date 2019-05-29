@@ -78,15 +78,15 @@
                                         data-col-value="{{ message.sender.uuid }}">{{ message.sender.get_full_name }}</td>
                                     <td>{{ message.subject }}</td>
                                     <td data-col-key="recipients"
-                                        data-col-value="{% values_list_as_json message.recipients.all "uuid" %}">
-                                        {% if message.recipients.all|length >= 4 %}
-                                            <span>{{ message.recipients.all|length }} Participants</span>
-                                        {% else %}
-                                            {% for recipient in message.recipients.all %}
-                                                <span>{{ recipient.nickname }}</span>{% if not forloop.last %},
-                                            {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
+                                        data-col-value="{% values_list_as_json message.recipients.all "slug" %}">
+{#                                        {% if message.recipients.all|length >= 2 %}#}
+{#                                            <span>{{ message.recipients.all|length }} Participants</span>#}
+{#                                        {% else %}#}
+{#                                            {% for recipient in message.recipients.all %}#}
+{#                                                <span>{{ recipient.slug }}</span>{% if not forloop.last %},#}
+{#                                            {% endif %}#}
+{#                                            {% endfor %}#}
+{#                                        {% endif %}#}
                                     </td>
                                     <td>
                                         {{ message.date_created|localtime|date:"r" }}
@@ -124,7 +124,7 @@
                                                 class="selectpicker form-control"
                                                 multiple>
                                             {% for person in participants %}
-                                                <option value="{{ person.uuid }}">
+                                                <option value="{{ person.slug }}">
                                                     {{ person.nickname }}
                                                 </option>
                                             {% endfor %}
@@ -160,22 +160,20 @@
                                     class="selectpicker form-control"
                                     data-header="{% include "studies/_recipient_select_filter_header.html" %}"
                                     multiple>
-                                {% regroup participants by default_email_preference_group as grouped_participants %}
-                                {% for group, participants in grouped_participants %}
-                                    <optgroup class="{{ group|slugify }}" label="{{ group }}">
-                                        {% for person in participants %}
-                                            <option value="{{ person.uuid }}"
-                                                         data-content="{% include "studies/_recipient_select_content.html" with recipient=person %}"
-                                                         data-tokens="{{ person.uuid }}"
-                                                         {% if person.email_next_session %}data-email-next-session{% endif %}
-                                                         {% if person.email_new_studies %}data-email-new-studies{% endif %}
-                                                         {% if person.email_study_updates %}data-email-study-updates{% endif %}
-                                                         {% if person.email_response_questions %}data-email-response-questions{% endif %}>
-                                                {{ person.get_full_name }}
-                                            </option>
-                                        {% endfor %}
-                                    </optgroup>
-                                {% endfor %}
+                                <optgroup class="opted-in" label="Opted into email">
+                                    {% for person in participants %}
+                                        <option value="{{ person.uuid }}"
+                                                data-content="{% include "studies/_recipient_select_content.html" with recipient=person %}"
+                                                data-tokens="{{ person.nickname }}"
+                                                {% if person.email_next_session %}data-email-next-session{% endif %}
+                                                {% if person.email_new_studies %}data-email-new-studies{% endif %}
+                                                {% if person.email_study_updates %}data-email-study-updates{% endif %}
+                                                {% if person.email_response_questions %}data-email-response-questions{% endif %}>
+                                            {{ person.uuid }}
+                                        </option>
+                                    {% endfor %}
+                                </optgroup>
+                                <optgroup class="opted-out" label="Opted out of email"></optgroup>
                             </select>
                         </section>
                         <section class="form-group">
@@ -199,6 +197,11 @@
     {#  TODO: move this out to a javascript file so we can defer it!  #}
     <script type="text/javascript">
 
+        const EXPORT_OPTIONS = {
+            columns: ['sender:name', 'subject:name', 'recipients:name', 'sentDate:name', 'body:name'],
+            orthogonal: 'display',
+        };
+
         const DATATABLE_SETTINGS = {
             select: true,
             autoWidth: false,
@@ -211,14 +214,17 @@
                 {
                     extend: 'copy',
                     text: 'Copy to Clipboard',
+                    exportOptions: EXPORT_OPTIONS,
                 },
                 {
                     extend: 'excel',
                     text: 'Excel',
+                    exportOptions: EXPORT_OPTIONS,
                 },
                 {
                     extend: 'csv',
                     text: 'CSV',
+                    exportOptions: EXPORT_OPTIONS,
                 },
             ],
             fixedHeader: true,
@@ -351,14 +357,15 @@
         let MESSAGE_TABLE,
             DATE_RANGE_PICKER,
             RECIPIENT_SELECTOR,
-            $emailPreferenceFilters;
+            $emailPreferenceFilters,
+            $emailFilterNameBox;
 
         // Possibly move everything here later...
         const GLOBAL_QUERY_PARAMS = {
             after: moment().startOf("month"),
             before: moment(),
         };
-        
+
         /**
          * Main function.
          */
@@ -395,15 +402,20 @@
          */
         function initializeHeaderFilters() {
             $emailPreferenceFilters = $('#email-preference-filters');
+            $emailFilterNameBox = $emailPreferenceFilters.find('#email-filter-name');
 
             $emailPreferenceFilters.on('click', 'button', handleEmailPreferenceSelection);
         }
 
         function handleEmailPreferenceSelection() {
-            let currentFilter = $(this).toggleClass('active').data('filter'),  // also toggle button.
+            let $filterBtn = $(this);
+            // Treat this like a radio button set.
+            $filterBtn.addClass('active').siblings().removeClass('active');
+
+            let currentFilter = $filterBtn.data('filter'),
                 $allOptions = $recipientSelector.find('option').detach(),
-                $emailFriendlyGroup = $recipientSelector.find('optgroup.email-friendly'),
-                $doNotEmailGroup = $recipientSelector.find('optgroup.email-discouraged');
+                $emailFriendlyGroup = $recipientSelector.find('optgroup.opted-in'),
+                $doNotEmailGroup = $recipientSelector.find('optgroup.opted-out');
 
             // We have a list of active filters. Now iterate through each option, choose which group it should go
             // to, and prepare the options for re-rendering with mutated data-content.
@@ -419,19 +431,32 @@
                 // TODO: deliberate on whether or not it's worth it to put currentFilter into the accumulator object
                 // so that we can factor out this reducer method.
 
+                $allPreferenceBadges.removeClass('text-success text-danger');
+
+                $emailFilterNameBox.text(
+                    currentFilter.replace(/(\w+)-(\w+)/g,
+                        (match, first, second) => {
+                            return first.charAt(0).toUpperCase() + first.slice(1) +
+                                   ' ' + second.charAt(0).toUpperCase() + second.slice(1);
+                        }));
                 // Switch the context class based on whether or not it's a positive indicator
-                if ($targetPreferenceBadge.hasClass('email-friendly')) {
-                    $targetPreferenceBadge.toggleClass('text-success text-muted');
+                if (!$targetPreferenceBadge.length) {
+                    $allPreferenceBadges.addClass('text-muted');
+                } else if ($targetPreferenceBadge.hasClass('email-friendly')) {
+                    $targetPreferenceBadge.addClass('text-success');
                 } else {
-                    $targetPreferenceBadge.toggleClass('text-danger text-muted');
+                    $targetPreferenceBadge.addClass('text-danger');
                 }
 
-                // If we've got no red flags, we can suggest emailing them.
-                if (!$allPreferenceBadges.is('.text-danger')) {
+                // Sort according to flag. Duplicated logic because it's still unclear as to whether or not we should
+                // break out styling vs sorting for such a simple thing.
+                if (!$targetPreferenceBadge.length || $targetPreferenceBadge.hasClass('email-friendly')) {
                     emailPreferenceBuckets[0].push(option);
+                    option.removeAttribute('disabled');
                 } else {
                     emailPreferenceBuckets[1].push(option);
                     option.removeAttribute('selected');
+                    option.setAttribute('disabled', true);
                 }
 
                 option.setAttribute('data-content', $oldContentDom[0].innerHTML);
@@ -475,7 +500,7 @@
         /**
          * Filter DataTable results based on sender input.
          */
-        function handleSenderFiltering({#$jqEvent, clickedIndex, isSelected, previousValue #}) {
+        function handleSenderFiltering({# $jqEvent, clickedIndex, isSelected, previousValue #}) {
 
             let senders = $(this).val(),
                 searchValue = senders ? senders.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
@@ -503,14 +528,18 @@
                     row.recipientsDisplay = value;
                     return;
                 case 'display':
-                    return row.recipientsDisplay;
+                    if (!row.$jqRow) {
+                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
+                    }
+                    row.recipientUuidArray = row.recipientUuidArray ||
+                        row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
+                    return row.recipientUuidArray;
                 case 'filter':
                     if (!row.$jqRow) {
                         row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
                     }
                     row.recipientUuidArray = row.recipientUuidArray ||
                         row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
-
                     return row.recipientUuidArray.join(" "); // Regex will successfully execute against this!
                 case 'sort':
                     return row.recipients;

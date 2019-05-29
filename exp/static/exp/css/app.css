@@ -460,7 +460,9 @@ pre.individual-block {
 }
 
 
-/* Participant Contact */
+/*
+------- PARTICIPANT CONTACT FORM ---------
+*/
 #email-participants-form section.form-group {
     padding: 5px 10px;
 }
@@ -509,7 +511,11 @@ pre.individual-block {
     border-radius: 2px;
 }
 
-/* XXX: HACKS for bootstrap-select */
+/*
+-------- BOOTSTRAP-SELECT ---------
+*/
+
+/* We don't want to show the data-content stuff when it's inside the actual select box */
 .filter-option-inner-inner span.hide-if-in-select-box {
     display: none;
 }
@@ -519,6 +525,18 @@ span.hide-if-in-select-box {
     width: 70px;  /* ~4 small glyphicons */
 }
 
+/* Filter title stuff */
+#email-preference-filters {
+    width: 90%; /* space it out a little bit from the close button */
+    margin: auto; /* center it */
+}
+
+#email-preference-filters .input-group-addon {
+    width: 0; /* Ensure that the addon collapses onto the buttons */
+}
+
+
+/* Make sure selections w/ blue background white out the text */
 .dropdown-menu.open li.active span.hide-if-in-select-box span.glyphicon {
     color: white;
 }
@@ -527,6 +545,8 @@ span.hide-if-in-select-box {
     color: white;
 }
 
+
+/* Below is stuff for data-content */
 #email-participants-form .bootstrap-select .dropdown-menu li a span.text {
     width: 98%;
     margin: 2px;
@@ -542,8 +562,9 @@ span.hide-if-in-select-box {
     margin: 0;
 }
 
-/** Overrides for summernote */
-
+/*
+ -------- SUMMERNOTE ---------
+*/
 .dt-button-info#datatables_buttons_info {
     z-index: 2000;  /* Otherwise, the DataTables copy button popup can get clobbered */
 }
@@ -565,7 +586,6 @@ so we have to do this manually.
     transition: max-height 1s cubic-bezier(0, 1.05, 0, 1);
     -webkit-transition: max-height 1s cubic-bezier(0, 1.05, 0, 1);
     -moz-transition: max-height 1s cubic-bezier(0, 1.05, 0, 1);
-
     margin-bottom: 0;
     border: 0;
 }
