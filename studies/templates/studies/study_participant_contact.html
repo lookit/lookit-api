@@ -125,7 +125,7 @@
                                                 multiple>
                                             {% for person in participants %}
                                                 <option value="{{ person.slug }}">
-                                                    {{ person.nickname }}
+                                                    {{ person.slug }}
                                                 </option>
                                             {% endfor %}
                                         </select>
@@ -533,7 +533,7 @@
                     }
                     row.recipientUuidArray = row.recipientUuidArray ||
                         row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
-                    return row.recipientUuidArray;
+                    return row.recipientUuidArray.join(', ');
                 case 'filter':
                     if (!row.$jqRow) {
                         row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
