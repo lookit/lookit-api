@@ -167,8 +167,8 @@
                     <ul class="dropdown-menu">
                         {% if "can_edit_study" in study_perms %}
                             <li>
-                                <a href="{% url 'exp:study-participant-email' pk=study.id %}">
-                                    <i class="fas fa-envelope-open" aria-hidden="true"></i> Email Participants
+                                <a href="{% url 'exp:study-participant-contact' pk=study.id %}">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i> Message Participants
                                 </a>
                             </li>
                         {% endif %}

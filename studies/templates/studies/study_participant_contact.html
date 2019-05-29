@@ -79,14 +79,6 @@
                                     <td>{{ message.subject }}</td>
                                     <td data-col-key="recipients"
                                         data-col-value="{% values_list_as_json message.recipients.all "slug" %}">
-{#                                        {% if message.recipients.all|length >= 2 %}#}
-{#                                            <span>{{ message.recipients.all|length }} Participants</span>#}
-{#                                        {% else %}#}
-{#                                            {% for recipient in message.recipients.all %}#}
-{#                                                <span>{{ recipient.slug }}</span>{% if not forloop.last %},#}
-{#                                            {% endif %}#}
-{#                                            {% endfor %}#}
-{#                                        {% endif %}#}
                                     </td>
                                     <td>
                                         {{ message.date_created|localtime|date:"r" }}
@@ -97,7 +89,6 @@
                             {% endfor %}
                             </tbody>
                             <tfoot>
-                            <form>
                                 <tr>
                                     <th>{# UUID - unsearchable #}</th>
                                     <th>
@@ -137,11 +128,9 @@
                                     </th>
                                     <th>{# Body - searchable but not present in footer #}</th>
                                 </tr>
-                            </form>
                             </tfoot>
                         </table>
                     </div>
-
                     <div class="panel-footer">
                     </div>
                 </div>
@@ -151,25 +140,53 @@
                 <div id="email-viewport" class="panel panel-default mt-md">
                     <section class="panel-heading"><h3 class="panel-title">Compose</h3></section>
 
-                    <form id="email-participants-form" class="tab-pane active"
-                          method="post">{% csrf_token %}
+                    <form id="email-participants-form" class="tab-pane active" method="post">{% csrf_token %}
+                        <section class="form-group">
+                            <label for="message-type">Message Type</label>
+                            <div class="input-group input-group-sm" id="email-preference-filters"
+                                 aria-label="email-preference-filters">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default" data-filter="next-session">
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default" data-filter="new-studies">
+                                        <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default" data-filter="study-updates">
+                                        <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default" data-filter="response-questions">
+                                        <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-warning" data-filter="transactional-message">
+                                        <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <span id="email-filter-name" class="bg-warning input-group-addon">Please Select</span>
+                            </div>
+                            <input id="message-type" name="message-type" type="hidden"/>
+                            <p id="message-type-help-block"
+                               class="help-block small">
+                                You must select a message type before adding recipients.
+                            </p>
+                        </section>
                         <section class="form-group">
                             <label class="control-label" for="recipient-selector">Recipients</label>
                             <select id="recipient-selector"
                                     name="recipients"
                                     class="selectpicker form-control"
-                                    data-header="{% include "studies/_recipient_select_filter_header.html" %}"
-                                    multiple>
+                                    multiple
+                                    disabled>
                                 <optgroup class="opted-in" label="Opted into email">
                                     {% for person in participants %}
                                         <option value="{{ person.uuid }}"
-                                                data-content="{% include "studies/_recipient_select_content.html" with recipient=person %}"
-                                                data-tokens="{{ person.nickname }}"
-                                                {% if person.email_next_session %}data-email-next-session{% endif %}
-                                                {% if person.email_new_studies %}data-email-new-studies{% endif %}
-                                                {% if person.email_study_updates %}data-email-study-updates{% endif %}
-                                                {% if person.email_response_questions %}data-email-response-questions{% endif %}>
-                                            {{ person.uuid }}
+                                                data-subtext="{{ person.nickname|default:"Anonymous" }}"
+                                                data-tokens="{{ person.nickname }} {{ person.uuid }}"
+                                                {% if person.email_next_session %}data-next-session{% endif %}
+                                                {% if person.email_new_studies %}data-new-studies{% endif %}
+                                                {% if person.email_study_updates %}data-study-updates{% endif %}
+                                                {% if person.email_response_questions %}data-response-questions{% endif %}>
+                                            {{ person.slug }}
                                         </option>
                                     {% endfor %}
                                 </optgroup>
@@ -341,7 +358,12 @@
             $messageParticipantsForm = $('#email-participants-form'),
             $subjectLine = $('#message-subject'),
             $recipientSelector = $('#recipient-selector'),
+            $emailFriendlyGroup = $recipientSelector.find('optgroup.opted-in'),
+            $doNotEmailGroup = $recipientSelector.find('optgroup.opted-out'),
+            $emailPreferenceFilters = $('#email-preference-filters'),
+            $emailFilterNameBox = $emailPreferenceFilters.find('#email-filter-name'),
             $emailEditor = $('#email-editor'),
+            $messageTypeHelp = $('#message-type-help-block'),
 
             /* --- Email Table --- */
             $messagesTable = $('#messages-table'),
@@ -353,12 +375,12 @@
             $dateFilter = $('#date-filter'),
             $subjectFilter = $('#subject-filter');
 
+
         // Lazy initialization so we can use in handlers.
         let MESSAGE_TABLE,
             DATE_RANGE_PICKER,
-            RECIPIENT_SELECTOR,
-            $emailPreferenceFilters,
-            $emailFilterNameBox;
+            RECIPIENT_SELECTOR;
+
 
         // Possibly move everything here later...
         const GLOBAL_QUERY_PARAMS = {
@@ -389,87 +411,86 @@
             // Set up Email form
             $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
 
-            $recipientSelector.selectpicker(RECIPIENT_SELECTOR_SETTINGS)
-                .on('loaded.bs.select', initializeHeaderFilters)
+            $recipientSelector
+                .selectpicker(RECIPIENT_SELECTOR_SETTINGS)
                 .on('changed.bs.select', recipientSelectionCallback);
+
+            $('section.form-group .bootstrap-select').tooltip(
+                {
+                    placement: 'top',
+                    title: 'Disabled until a message type has been selected.'
+                }
+            );
+
+            $emailPreferenceFilters
+                .on('click', 'button', handleEmailPreferenceSelection);
 
             $messageParticipantsForm.on('submit', handleMessageFormSubmit);
         }
 
-
-        /**
-         * A custom set of filters that involve some black magic with the bootstrap-select component.
-         */
-        function initializeHeaderFilters() {
-            $emailPreferenceFilters = $('#email-preference-filters');
-            $emailFilterNameBox = $emailPreferenceFilters.find('#email-filter-name');
-
-            $emailPreferenceFilters.on('click', 'button', handleEmailPreferenceSelection);
-        }
-
         function handleEmailPreferenceSelection() {
-            let $filterBtn = $(this);
+            // First, activate recipient box after selection.
+            $recipientSelector.removeAttr('disabled');
+            $('section.form-group .bootstrap-select').tooltip('destroy');
+
+            let $filterBtn = $(this),
+                currentFilter = $filterBtn.data('filter'),
+                transactional = currentFilter.indexOf('transactional') !== -1,
+                $allOptions = $recipientSelector.find('option').detach();  // Is this a transactional email?
+
             // Treat this like a radio button set.
-            $filterBtn.addClass('active').siblings().removeClass('active');
+            $filterBtn
+                .addClass('active')
+                .siblings()
+                .removeClass('active');
 
-            let currentFilter = $filterBtn.data('filter'),
-                $allOptions = $recipientSelector.find('option').detach(),
-                $emailFriendlyGroup = $recipientSelector.find('optgroup.opted-in'),
-                $doNotEmailGroup = $recipientSelector.find('optgroup.opted-out');
+            let {optedIn, optedOut} = $allOptions.get().reduce(({optedIn, optedOut}, option) => {
 
-            // We have a list of active filters. Now iterate through each option, choose which group it should go
-            // to, and prepare the options for re-rendering with mutated data-content.
-            let [chosen, unchosen] = $allOptions.get().reduce((emailPreferenceBuckets, option) => {
-                // First, does the option have a data-email-* preference matching our current query?
-                let // ... and while we're here, we'll create a reference for the data-comment DOM.
-                    // XXX: Wrapping seems like the only way to do this so far, otherwise it's create a document
-                    // fragment and append to it, which requires a new div anyway!
-                    $oldContentDom = $(`<div>${option.dataset.content}</div>`),
-                    $allPreferenceBadges = $oldContentDom.find('span.glyphicon'),
-                    $targetPreferenceBadge = $oldContentDom.find(`span[data-filter=${currentFilter}]`);
+                // Title Case the name and change the box color.
+                let titleCaseEmailPreference = currentFilter.replace(/(\w+)-(\w+)/g,
+                    (match, first, second) => {
+                        return first.charAt(0).toUpperCase() + first.slice(1) +
+                            ' ' + second.charAt(0).toUpperCase() + second.slice(1);
+                    });
 
-                // TODO: deliberate on whether or not it's worth it to put currentFilter into the accumulator object
-                // so that we can factor out this reducer method.
+                $emailFilterNameBox // bg-warning won't win out in cascade, so directly modify css
+                    .css({backgroundColor: transactional ? "#fcf8e3" : "#eee"})
+                    .text(titleCaseEmailPreference);
 
-                $allPreferenceBadges.removeClass('text-success text-danger');
+                $messageTypeHelp
+                    .toggleClass('text-center', transactional)
+                    .html(
+                        transactional ?
+                            `<br><p class="label label-warning collapsed">WARNING</p>
+                             <p class="text-warning mt-sm collapsed">
+                                 Transactional emails are only for one-off purposes only; it's the only way to contact
+                                 recipients who have opted out of all email.
+                                 <strong>Please use sparingly!</strong></p>`
+                            :
+                            `Filtering for users who want to receive "${titleCaseEmailPreference}" emails.`
+                    );
 
-                $emailFilterNameBox.text(
-                    currentFilter.replace(/(\w+)-(\w+)/g,
-                        (match, first, second) => {
-                            return first.charAt(0).toUpperCase() + first.slice(1) +
-                                   ' ' + second.charAt(0).toUpperCase() + second.slice(1);
-                        }));
-                // Switch the context class based on whether or not it's a positive indicator
-                if (!$targetPreferenceBadge.length) {
-                    $allPreferenceBadges.addClass('text-muted');
-                } else if ($targetPreferenceBadge.hasClass('email-friendly')) {
-                    $targetPreferenceBadge.addClass('text-success');
-                } else {
-                    $targetPreferenceBadge.addClass('text-danger');
-                }
+                setTimeout( () => $messageTypeHelp.find('p').removeClass('collapsed'), 10);
 
-                // Sort according to flag. Duplicated logic because it's still unclear as to whether or not we should
-                // break out styling vs sorting for such a simple thing.
-                if (!$targetPreferenceBadge.length || $targetPreferenceBadge.hasClass('email-friendly')) {
-                    emailPreferenceBuckets[0].push(option);
+                // Sort according to flag (lowerCamelCase the tag for data-* attributes.
+                if (currentFilter.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) in option.dataset || transactional) {
+                    optedIn.push(option);
                     option.removeAttribute('disabled');
                 } else {
-                    emailPreferenceBuckets[1].push(option);
+                    optedOut.push(option);
                     option.removeAttribute('selected');
                     option.setAttribute('disabled', true);
                 }
 
-                option.setAttribute('data-content', $oldContentDom[0].innerHTML);
-
-                return emailPreferenceBuckets;
-            }, [[], []] /* <--- emailPreferenceBuckets initializing object */);
+                return {optedIn, optedOut};
+            }, {optedIn: [], optedOut: []});
 
             // Redraw select after sorting
-            $(chosen).appendTo($emailFriendlyGroup);
-            $(unchosen).appendTo($doNotEmailGroup);
+            $(optedIn).appendTo($emailFriendlyGroup);
+            $(optedOut).appendTo($doNotEmailGroup);
             $recipientSelector.selectpicker('refresh')
                 .selectpicker('deselectAll')
-                .selectpicker('val', chosen.map(opt => opt.value));
+                .selectpicker('val', transactional ? null : optedIn.map(opt => opt.value));
         }
 
         function handleDateFiltering(after, before) {
