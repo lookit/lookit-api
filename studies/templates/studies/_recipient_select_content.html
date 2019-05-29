@@ -4,6 +4,9 @@ bootstrap-select component. It's not really worth filing a bug, seeing as this i
 the plugin.
 {% endcomment %}
 
+{% comment %}
+
+{# Hiding for now, we may eventually add these back. #}
 <span class='hide-if-in-select-box'>
     <span class='glyphicon glyphicon-calendar text-muted
                  {% if recipient.email_next_session %}email-friendly{% endif %}'
@@ -24,5 +27,9 @@ the plugin.
           data-filter='response-questions'
           aria-hidden='true'></span>
 </span>
+
+{% endcomment %}
+
+
 <h5>{{ recipient.slug }} <em class='small'>{{ recipient.uuid }}</em></h5>
 

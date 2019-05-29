@@ -525,12 +525,6 @@ span.hide-if-in-select-box {
     width: 70px;  /* ~4 small glyphicons */
 }
 
-/* Filter title stuff */
-#email-preference-filters {
-    width: 90%; /* space it out a little bit from the close button */
-    margin: auto; /* center it */
-}
-
 #email-preference-filters .input-group-addon {
     width: 0; /* Ensure that the addon collapses onto the buttons */
 }
@@ -561,6 +555,19 @@ span.hide-if-in-select-box {
     display: inline-block;
     margin: 0;
 }
+
+#message-type-help-block p {
+    overflow: hidden;
+    height: auto;
+    max-height: 100px;
+    transition: max-height 0.5s ease-in-out;
+}
+
+#message-type-help-block p.collapsed {
+    max-height: 0;
+    transition: max-height 0.5s ease-in-out;
+}
+
 
 /*
  -------- SUMMERNOTE ---------

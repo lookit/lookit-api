@@ -1,25 +1,22 @@
-{% comment "SINGLE QUOTES ONLY" %}
-XXX: Only use single quotes in this file, as we're trying to pass it into the data-header string of the
-bootstrap-select component. It's not really worth filing a bug, seeing as this is sane behavior on part of
-the plugin.
-{% endcomment %}
-<div class='input-group input-group-sm' id='email-preference-filters' aria-label='email-preference-filters'>
-    <div class='input-group-btn'>
-        <button type='button' class='btn btn-default' data-filter='next-session'>
-            <span class='glyphicon glyphicon-calendar' aria-hidden='true'></span>
+<label for="message-type">Message Type</label>
+<div class="input-group input-group-sm" id="email-preference-filters" aria-label="email-preference-filters">
+    <div class="input-group-btn">
+        <button type="button" class="btn btn-default" data-filter="next-session">
+            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
         </button>
-        <button type='button' class='btn btn-default' data-filter='new-studies'>
-            <span class='glyphicon glyphicon-duplicate' aria-hidden='true'></span>
+        <button type="button" class="btn btn-default" data-filter="new-studies">
+            <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
         </button>
-        <button type='button' class='btn btn-default' data-filter='study-updates'>
-            <span class='glyphicon glyphicon-bullhorn' aria-hidden='true'></span>
+        <button type="button" class="btn btn-default" data-filter="study-updates">
+            <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
         </button>
-        <button type='button' class='btn btn-default' data-filter='response-questions'>
-            <span class='glyphicon glyphicon-comment' aria-hidden='true'></span>
+        <button type="button" class="btn btn-default" data-filter="response-questions">
+            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
         </button>
-        <button type='button' class='btn btn-default active' data-filter='transactional-message'>
-            <span class='glyphicon glyphicon-transfer' aria-hidden='true'></span>
+        <button type="button" class="btn btn-warning active" data-filter="transactional-message">
+            <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
         </button>
     </div>
-    <span id='email-filter-name' class='bg-warning input-group-addon'>Transactional Message</span>
+    <span id="email-filter-name" class="bg-warning input-group-addon">Transactional Message</span>
 </div>
+<input id="message-type" name="message-type" type="hidden" />
