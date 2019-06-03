@@ -407,7 +407,8 @@
         function initializeView() {
             // Set up Datatable.
             MESSAGE_TABLE = $messagesTable.DataTable(DATATABLE_SETTINGS)
-                .on("select deselect", handleMessageTableSelection);
+                {#.on("select deselect", handleMessageTableSelection)#}
+                .on('dblclick', 'tr', toggleMessageBody);
 
             // Set up filters.
             $recipientFilter.selectpicker(RECIPIENT_FILTER_SETTINGS)
@@ -651,6 +652,7 @@
             MESSAGE_TABLE.column('subject:name').search($(this).val()).draw();
         }
 
+        {% comment %}
         /**
          * Show email body.
          *
@@ -660,7 +662,6 @@
          * @param indices The indices of the selection within the table.
          */
         function handleMessageTableSelection($jqEvent, datatablesApi, itemType, indices) {
-
             // Gracefully close all unselected rows.
             datatablesApi.rows({selected: false}).every(function (rowIndex, tableLoop, rowLoop) {
                 let informationRow = this.child();
@@ -691,10 +692,36 @@
                     informationRow = currentRow.child();
                     informationRow.addClass('information-row');
                     currentRow.child.show();
-                    setTimeout(() => informationRow.addClass('open'), 10);
+                    // setTimeout(() => informationRow.addClass('open'), 10);
                 }
             });
 
+        }
+        {% endcomment %}
+
+        /**
+         * Show email body.
+         *
+         * @param $jqEvent The jquery Event object.
+         */
+        function toggleMessageBody($jqEvent) {
+            let $clickedRow = $($jqEvent.currentTarget),
+                messageRow = MESSAGE_TABLE.row($clickedRow.is('.information-row') ? $clickedRow.prev() : $clickedRow);
+
+            let messageBody = messageRow.child();
+
+            if (!messageBody) {
+                messageRow.child(
+                    `<div class="panel panel-default">
+                         <div class="panel-body small">${messageRow.data()["body"]}</div>
+                     </div>`
+                );
+                messageBody = messageRow.child();
+                messageBody.addClass('information-row');
+                messageRow.child.show();
+            }
+
+            setTimeout(() => messageBody.toggleClass('open'), 10);
         }
 
         function handleMessageFormSubmit($jqEvent) {
