@@ -357,7 +357,7 @@
                 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
             },
             timePicker: true,
-            startDate: moment().startOf('month'),
+            startDate: moment().subtract(29, 'days'),
             endDate: moment(),
             locale: {
                 format: 'M/DD hh:mm A',
@@ -397,8 +397,8 @@
 
         // Possibly move everything here later...
         const GLOBAL_QUERY_PARAMS = {
-            after: moment().subtract(29, 'days'),
-            before: moment(),
+            after: DATE_FILTER_SETTINGS.startDate,
+            before: DATE_FILTER_SETTINGS.endDate,
         };
 
         /**
