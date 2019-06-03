@@ -397,7 +397,7 @@
 
         // Possibly move everything here later...
         const GLOBAL_QUERY_PARAMS = {
-            after: moment().startOf("month"),
+            after: moment().subtract(29, 'days'),
             before: moment(),
         };
 
