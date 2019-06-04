@@ -227,6 +227,12 @@ class Study(models.Model):
             return None
 
     @property
+    def participants(self):
+        """Get all participants for the given study."""
+        participants = self.responses.values_list("child__user", flat=True)
+        return User.objects.filter(pk__in=participants)
+
+    @property
     def judgeable_responses(self):
         return self.responses.filter(completed_consent_frame=True)
 

@@ -9,7 +9,16 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import Case, Count, IntegerField, OuterRef, Q, Subquery, When
+from django.db.models import (
+    Case,
+    Count,
+    IntegerField,
+    OuterRef,
+    Q,
+    Subquery,
+    When,
+    Prefetch,
+)
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
@@ -20,7 +29,7 @@ from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import User
+from accounts.models import User, Message
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
@@ -661,6 +670,70 @@ class StudyParticipantEmailView(
 
     def get_success_url(self):
         return reverse("exp:study-detail", kwargs={"pk": self.object.id})
+
+
+class StudyParticipantContactView(
+    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
+):
+    """
+    StudyParticipantContactView lets you contact study participants.
+    """
+
+    model = Study
+    permission_required = "studies.can_edit_study"
+    raise_exception = True
+    template_name = "studies/study_participant_contact.html"
+
+    def get_context_data(self, **kwargs):
+        """Gets the required data for emailing participants."""
+        ctx = super().get_context_data(**kwargs)
+        study = ctx["study"]
+        ctx["participants"] = (
+            study.participants.select_related("organization")
+            .order_by(
+                "-email_next_session"
+            )  # Just to get the grouping in the right order
+            .all()
+        )
+        ctx["previous_messages"] = (
+            study.message_set.prefetch_related("recipients")
+            .select_related("sender")
+            .all()
+        )
+        ctx["researchers"] = self.get_researchers()
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+        """Handles saving message and sending email.
+
+        TODO: enable mail merge with tokens.
+        """
+        study = self.get_object()
+
+        participant_uuids = request.POST.getlist("recipients")
+        subject = request.POST["subject"]
+        body = request.POST["body"]
+
+        outgoing_message = Message.objects.create(
+            sender=request.user, subject=subject, body=body, related_study=study
+        )
+
+        # TODO: Check into the performance of .iterator() with some real load testing
+        outgoing_message.recipients.add(
+            *User.objects.filter(uuid__in=participant_uuids).iterator()
+        )
+
+        outgoing_message.send_as_email()
+
+        messages.success(self.request, f'Message "{subject}" sent!')
+        return HttpResponseRedirect(
+            reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
+        )
+
+    def get_researchers(self):
+        """Pulls researchers that belong to Study Admin and Study Read groups"""
+        study = self.get_object()
+        return User.objects.filter(organization=study.organization)
 
 
 class StudyUpdateView(
