@@ -1,5 +1,4 @@
 import base64
-import datetime
 import hashlib
 import uuid
 
@@ -13,6 +12,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.template.loader import get_template
+from django.utils.timezone import now
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import ugettext as _
@@ -578,5 +578,5 @@ class Message(models.Model):
         )
         email.attach_alternative(html_content, "text/html")
         email.send()
-        self.email_sent_timestamp = datetime.datetime.now()
+        self.email_sent_timestamp = now()  # will use UTC now (see USE_TZ in settings)
         self.save()

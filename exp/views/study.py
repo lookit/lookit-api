@@ -467,23 +467,19 @@ class StudyDetailView(
         Returns the queryset that is used to lookup the study object. Annotates
         the queryset with the completed and incomplete responses counts.
         """
-        queryset = super().get_queryset().prefetch_related("responses")
-        queryset = queryset.annotate(
-            completed_responses_count=Count(
-                Case(When(responses__completed=True, then=1))
+        if (
+            not self.queryset
+        ):  # Clear the ordering - otherwise the query is massively slow
+            self.queryset = (
+                super().get_queryset().order_by().prefetch_related("responses")
             )
-        )
-        queryset = queryset.annotate(
-            incomplete_responses_count=Count(
-                Case(When(responses__completed=False, then=1))
-            )
-        )
-        return queryset
+
+        return self.queryset
 
     @property
     def study_logs(self):
         """ Returns a page object with 10 study logs"""
-        logs_list = self.object.logs.all().order_by("-created_at")
+        logs_list = self.object.logs.select_related("user").order_by("-created_at")
         page = self.request.GET.get("page")
         return self.paginated_queryset(logs_list, page, 10)
 
@@ -492,10 +488,10 @@ class StudyDetailView(
         Adds several items to the context dictionary - the study, applicable triggers for the study,
         paginated study logs, and a tooltip that is dependent on the study's current state
         """
-        study = self.get_object()
-        admin_group = study.study_admin_group
-
         context = super(StudyDetailView, self).get_context_data(**kwargs)
+
+        study = context["study"]
+        admin_group = study.study_admin_group
 
         context["triggers"] = get_permitted_triggers(
             self, self.object.machine.get_triggers(self.object.state)
@@ -527,7 +523,7 @@ class StudyDetailView(
     def get_study_researchers(self):
         """  Pulls researchers that belong to Study Admin and Study Read groups - Not showing Org Admin and Org Read in this list (even though they technically
         can view the project.) """
-        study = self.get_object()
+        study = self.object
         return (
             User.objects.filter(
                 Q(groups__name=study.study_admin_group.name)

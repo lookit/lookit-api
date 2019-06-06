@@ -498,57 +498,7 @@
                     </div>
                     {#  ------ END MANAGE RESEARCHERS ------- #}
                 </div>
-                {#                <div class="row">#}
-                {#                    <div class="col-md-12">#}
-                {#                        {% include 'studies/_study_status.html' with study=study %}#}
-                {#                    </div>#}
-                {#                    <div class="col-md-4">#}
-                {#                        {% if "can_view_study_responses" in study_perms %}#}
-                {#                            <a class="view-responses-link"#}
-                {#                               href="{% url 'exp:study-responses-list' pk=study.id %}?{% query_transform request sort='-date_modified' %}">#}
-                {#                                <div class="well view-response-block">#}
-                {#                                    <center class="mt-sm">#}
-                {#                                        <p><i aria-hidden="true" class="fa-2x fas fa-envelope"></i></p>#}
-                {#                                        <h4> View <strong>{{ study.completed_responses_count|default:"0" }}</strong>#}
-                {#                                            Response{{ study.completed_responses_count|pluralize }}</h4>#}
-                {#                                        <p> (plus {{ study.incomplete_responses_count|default:"0" }} incomplete)</p>#}
-                {#                                        <p> Inspect responses from study sessions </p>#}
-                {#                                    </center>#}
-                {#                                </div>#}
-                {#                            </a>#}
-                {#                        {% endif %}#}
-                {#                        {% if perms.studies.can_create_study %}#}
-                {#                            <form id="cloneForm" method="POST" style="display:inline">{% csrf_token %}#}
-                {#                                <input type="hidden" name="clone_study" value="{{ study.id }}"/>#}
-                {#                                <div onclick="cloneStudy()" class="view-responses-link" role="button" type="submit">#}
-                {#                                    <div class="well view-response-block">#}
-                {#                                        <center class="mt-sm">#}
-                {#                                            <p><i aria-hidden="true" class="fa-2x fas fa-copy"></i></p>#}
-                {#                                            <h4> Clone Study </h4>#}
-                {#                                            <p> Copy study structure and details </p>#}
-                {#                                        </center>#}
-                {#                                    </div>#}
-                {#                                </div>#}
-                {#                            </form>#}
-                {#                            <form id="buildForm" method="POST" style="display:inline">{% csrf_token %}#}
-                {#                                <input type="hidden" name="build" value="{{ study.id }}"/>#}
-                {#                                <div onclick="buildStudy()" class="view-responses-link" role="button" type="submit">#}
-                {#                                    <div class="well view-response-block">#}
-                {#                                        <center class="mt-sm">#}
-                {#                                            <p>#}
-                {#                                                <i aria-hidden="true" class="fa-2x fas fa-hammer"></i>#}
-                {#                                            </p>#}
-                {#                                            <h4>#}
-                {#                                                Build Study#}
-                {#                                            </h4>#}
-                {#                                            <p> Build framework dependencies for your study </p>#}
-                {#                                        </center>#}
-                {#                                    </div>#}
-                {#                                </div>#}
-                {#                            </form>#}
-                {#                        {% endif %}#}
-                {#                    </div>#}
-                {#                </div>#}
+
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="well">
