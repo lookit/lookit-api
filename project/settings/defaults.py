@@ -95,7 +95,10 @@ MIDDLEWARE_CLASSES = [
 
 if DEBUG:
     INSTALLED_APPS += ["debug_toolbar", "shells"]
-    MIDDLEWARE_CLASSES += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+    MIDDLEWARE_CLASSES += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+        "pyinstrument.middleware.ProfilerMiddleware",
+    ]
 else:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
