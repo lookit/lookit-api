@@ -6,6 +6,9 @@ from botocore.exceptions import ClientError
 from django.conf import settings
 
 
+S3_CLIENT = boto3.client("s3")
+
+
 def get_all_study_attachments(study_uuid):
     """
     Get all video responses to a study by fetching all objects in the bucket with
@@ -35,8 +38,7 @@ def get_download_url(video_key):
     """
     Generate a presigned url for the video that expires in 60 seconds.
     """
-    s3Client = boto3.client("s3")
-    return s3Client.generate_presigned_url(
+    return S3_CLIENT.generate_presigned_url(
         "get_object",
         Params={"Bucket": settings.BUCKET_NAME, "Key": video_key},
         ExpiresIn=60,
