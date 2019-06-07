@@ -462,20 +462,6 @@ class StudyDetailView(
         study_admin_group.user_set.add(self.request.user)
         return study_admin_group
 
-    def get_queryset(self):
-        """
-        Returns the queryset that is used to lookup the study object. Annotates
-        the queryset with the completed and incomplete responses counts.
-        """
-        if (
-            not self.queryset
-        ):  # Clear the ordering - otherwise the query is massively slow
-            self.queryset = (
-                super().get_queryset().order_by().prefetch_related("responses")
-            )
-
-        return self.queryset
-
     @property
     def study_logs(self):
         """ Returns a page object with 10 study logs"""

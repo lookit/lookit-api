@@ -15,6 +15,7 @@ ipython = "*"
 watchdog = "*"
 pgcli = "*"
 pyopenssl = "*"
+pyinstrument = "*"
 
 [packages]
 djangorestframework-jsonapi = "==2.7.0"
