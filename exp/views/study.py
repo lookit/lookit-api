@@ -1153,7 +1153,7 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
-        cleaned_data = ", ".join(self.build_responses(responses))
+        cleaned_data = self.build_responses(responses)
         filename = "{}-{}.json".format(study.name, "all_responses")
         response = HttpResponse(cleaned_data, content_type="text/json")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
