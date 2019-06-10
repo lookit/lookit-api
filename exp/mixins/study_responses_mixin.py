@@ -185,7 +185,7 @@ class StudyResponsesMixin(
                     "consent_information": resp.current_consent_details,
                 }
             )
-        return json.dumps(json_responses, indent=4, default=str)
+        return json_responses
 
     def csv_output_and_writer(self):
         output = io.StringIO()

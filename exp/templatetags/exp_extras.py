@@ -40,3 +40,8 @@ def values_list_as_json(queryset, attribute):
         ),
         default=str,
     )
+
+
+@register.filter
+def pretty_json(value):
+    return json.dumps(value, indent=4, default=str)

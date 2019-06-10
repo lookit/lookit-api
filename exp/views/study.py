@@ -915,7 +915,7 @@ class StudyBuildView(
 
 class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
-    Study Responses View allows user to view individual responses to a study.
+    View to acquire a list of study responses.
     """
 
     template_name = "studies/study_responses.html"
@@ -1153,7 +1153,9 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
-        cleaned_data = self.build_responses(responses)
+        cleaned_data = json.dumps(
+            self.build_responses(responses), indent=4, default=str
+        )
         filename = "{}-{}.json".format(study.name, "all_responses")
         response = HttpResponse(cleaned_data, content_type="text/json")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
