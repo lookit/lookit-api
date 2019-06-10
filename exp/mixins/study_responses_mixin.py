@@ -156,38 +156,34 @@ class StudyResponsesMixin(
         json_responses = []
         for resp in responses:
             json_responses.append(
-                json.dumps(
-                    {
-                        "response": {
-                            "id": resp.id,
-                            "uuid": str(resp.uuid),
-                            "sequence": resp.sequence,
-                            "conditions": resp.conditions,
-                            "exp_data": resp.exp_data,
-                            "global_event_timings": resp.global_event_timings,
-                            "completed": resp.completed,
-                            "withdrawn": resp.withdrawn,
-                        },
-                        "study": {"id": resp.study.id, "uuid": str(resp.study.uuid)},
-                        "participant": {
-                            "id": resp.child.user_id,
-                            "uuid": str(resp.child.user.uuid),
-                            "nickname": resp.child.user.nickname,
-                        },
-                        "child": {
-                            "id": resp.child.id,
-                            "uuid": str(resp.child.uuid),
-                            "name": resp.child.given_name,
-                            "birthday": resp.child.birthday,
-                            "gender": resp.child.gender,
-                            "age_at_birth": resp.child.age_at_birth,
-                            "additional_information": resp.child.additional_information,
-                        },
-                        "consent_information": resp.current_consent_details,
+                {
+                    "response": {
+                        "id": resp.id,
+                        "uuid": str(resp.uuid),
+                        "sequence": resp.sequence,
+                        "conditions": resp.conditions,
+                        "exp_data": resp.exp_data,
+                        "global_event_timings": resp.global_event_timings,
+                        "completed": resp.completed,
+                        "withdrawn": resp.withdrawn,
                     },
-                    indent=4,
-                    default=self.convert_to_string,
-                )
+                    "study": {"id": resp.study.id, "uuid": str(resp.study.uuid)},
+                    "participant": {
+                        "id": resp.child.user_id,
+                        "uuid": str(resp.child.user.uuid),
+                        "nickname": resp.child.user.nickname,
+                    },
+                    "child": {
+                        "id": resp.child.id,
+                        "uuid": str(resp.child.uuid),
+                        "name": resp.child.given_name,
+                        "birthday": resp.child.birthday,
+                        "gender": resp.child.gender,
+                        "age_at_birth": resp.child.age_at_birth,
+                        "additional_information": resp.child.additional_information,
+                    },
+                    "consent_information": resp.current_consent_details,
+                }
             )
         return json_responses
 
