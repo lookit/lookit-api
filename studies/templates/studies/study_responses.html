@@ -158,7 +158,7 @@
                 </a>
                 {% for response in response_data %}
                     <div class='response-data' id='response-data-{{ forloop.counter }}' style="display:none">
-                        <pre class='json-data individual-block' id='json-data-{{ forloop.counter }}'>{{ response }}</pre>
+                        <pre class='json-data individual-block' id='json-data-{{ forloop.counter }}'>{{ response | pretty_json }}</pre>
                     </div>
                 {% endfor %}
                 {% for csv in csv_data %}
