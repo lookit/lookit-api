@@ -10,7 +10,7 @@ django-localflavor==1.4.1
 django-model-utils==3.0.0
 django-pdb==0.5.1
 django-prettyjson==0.2.2
-Django==1.11.20
+Django==1.11.21
 djangorestframework==3.9.2
 kombu==4.5.0
 psycopg2==2.7.5
