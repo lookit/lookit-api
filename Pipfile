@@ -55,6 +55,7 @@ fleep = "==1.0.1"
 psycopg2 = "==2.7.5"
 google-cloud-storage = "==1.14.0"
 docker = "==3.7.2"
+django-bitfield = "==1.9.3"
 
 [requires]
 python_version = "3.6"
