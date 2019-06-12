@@ -32,7 +32,6 @@ from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
 
-
 VALID_CONSENT_FRAMES = ("1-video-consent",)
 VALID_EXIT_FRAME_POSTFIXES = ("exit-survey",)
 STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
