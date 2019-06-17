@@ -1,5 +1,4 @@
 """Fields constants - at the moment, just used for BitFields."""
-from django.conf import settings
 
 # General Flags
 CONDITIONS = (
@@ -42,7 +41,64 @@ MULTIPLE_BIRTH = (
 )
 
 
-SPEAKS_LANGUAGES = tuple(
-    (f"speaks_{lang_code}", f"Speaks {lang_name}")
-    for lang_code, lang_name in settings.LANGUAGES
+LANGUAGES = (
+    ("cmn", "Mandarin"),
+    ("es", "Spanish"),
+    ("en", "English"),
+    ("hi", "Hindi"),
+    ("bn", "Bengali"),
+    ("pt", "Portuguese"),
+    ("ru", "Russian"),
+    ("ja", "Japanese"),
+    ("lah", "Western Punjabi"),
+    ("mr", "Marathi"),
+    ("te", "Telugu"),
+    ("wuu", "Wu"),
+    ("tr", "Turkish"),
+    ("ko", "Korean"),
+    ("fr", "French"),
+    ("de", "German"),
+    ("vi", "Vietnamese"),
+    ("ta", "Tamil"),
+    ("yue", "Yue"),
+    ("ur", "Urdu"),
+    ("jv", "Javanese"),
+    ("it", "Italian"),
+    ("egy", "Egyptian Spoken Arabic"),
+    ("gu", "Gujarati"),
+    ("pes", "Iranian Persian"),
+    ("bho", "Bhojpuri"),
+    ("nan", "Min Nan"),
+    ("hak", "Hakka"),
+    ("cjy", "Jinyu"),
+    ("ha", "Hausa"),
+    ("kn", "Kannada"),
+    ("id", "Indonesian"),
+    ("pl", "Polish"),
+    ("yo", "Yoruba"),
+    ("hsn", "Xiang Chinese"),
+    ("ml", "Malayalam"),
+    ("or", "Odia"),
+    ("mai", "Maithili"),
+    ("my", "Burmese"),
+    ("su", "Sunda"),
+    ("mor", "Moroccan Spoken Arabic"),
+    ("uk", "Ukrainian"),
+    ("ig", "Igbo"),
+    ("uzn", "Northern Uzbek"),
+    ("sd", "Sindhi"),
+    ("ro", "Romanian"),
+    ("tl", "Tagalog"),
+    ("nl", "Dutch"),
+    ("gan", "Gan"),
+    ("am", "Amharic"),
+    ("pbu", "Northern Pashto"),
+    ("mag", "Magahi"),
+    ("th", "Thai"),
+    ("skr", "Saraiki"),
+    ("km", "Khmer"),
+    ("hne", "Chhattisgarhi"),
+    ("so", "Somali"),
+    ("ms", "Malay"),
+    ("ceb", "Cebuano"),
 )

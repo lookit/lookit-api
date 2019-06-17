@@ -3,6 +3,8 @@ import hashlib
 import uuid
 
 import pydenticon
+from bitfield import BitField
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
@@ -10,11 +12,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
 from django.template.loader import get_template
-from django.utils.timezone import now
 from django.utils.html import mark_safe
 from django.utils.text import slugify
+from django.utils.timezone import now
 from django.utils.translation import ugettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
@@ -28,6 +29,7 @@ from multiselectfield import MultiSelectField
 from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
+from studies.fields import CONDITIONS, LANGUAGES, MULTIPLE_BIRTH
 from studies.helpers import send_mail
 
 
@@ -307,6 +309,9 @@ class Child(models.Model):
     additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)
     former_lookit_profile_id = models.CharField(max_length=255, blank=True)
+    existing_conditions = BitField(flags=CONDITIONS, default=0)
+    multiple_birth = BitField(flags=MULTIPLE_BIRTH, default=0)
+    languages_spoken = BitField(flags=LANGUAGES, default=0)
 
     user = models.ForeignKey(
         "accounts.User", related_name="children", related_query_name="children"

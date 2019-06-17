@@ -5,7 +5,6 @@ import uuid
 import boto3
 import dateutil
 import fleep
-from bitfield import BitField
 from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
@@ -27,7 +26,7 @@ from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies import workflow
-from studies.fields import CONDITIONS, MULTIPLE_BIRTH, SPEAKS_LANGUAGES
+from studies.fields import CONDITIONS, LANGUAGES, MULTIPLE_BIRTH
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
 
