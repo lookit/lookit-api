@@ -1,6 +1,8 @@
 """Fields constants - at the moment, just used for BitFields."""
+from django.utils.translation import ugettext as _
+from model_utils import Choices
 
-# General Flags
+
 CONDITIONS = (
     ("autism_spectrum_disorder", "Autism Spectrum Disorder"),
     ("aspergers_syndrome", "Asperger's Syndrome"),
@@ -30,14 +32,14 @@ CONDITIONS = (
 )
 
 
-MULTIPLE_BIRTH = (
-    ("twin", "Twin"),
-    ("triplet", "Triplet"),
-    ("quadruplet", "Quadruplet"),
-    ("quintuplet", "Quintuplet"),
-    ("sextuplet", "Sextuplet"),
-    ("septuplet", "Septuplet"),
-    ("octuplet", "Octuplet"),
+MULTIPLE_BIRTH_CHOICES = Choices(
+    ("twin", _("Twin")),
+    ("triplet", _("Triplet")),
+    ("quadruplet", _("Quadruplet")),
+    ("quintuplet", _("Quintuplet")),
+    ("sextuplet", _("Sextuplet")),
+    ("septuplet", _("Septuplet")),
+    ("octuplet", _("Octuplet")),
 )
 
 

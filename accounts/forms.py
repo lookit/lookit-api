@@ -206,7 +206,7 @@ class ChildForm(forms.ModelForm):
             "gender",
             "age_at_birth",
             "existing_conditions",
-            "multiple_birth",
+            "multiple_birth_kind",
             "languages_spoken",
             "additional_information",
         )
@@ -235,7 +235,7 @@ class ChildUpdateForm(forms.ModelForm):
             "gender",
             "age_at_birth",
             "existing_conditions",
-            "multiple_birth",
+            "multiple_birth_kind",
             "languages_spoken",
             "additional_information",
         )

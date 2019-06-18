@@ -29,7 +29,7 @@ from multiselectfield import MultiSelectField
 from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
-from studies.fields import CONDITIONS, LANGUAGES, MULTIPLE_BIRTH
+from studies.fields import CONDITIONS, LANGUAGES, MULTIPLE_BIRTH_CHOICES
 from studies.helpers import send_mail
 
 
@@ -310,7 +310,9 @@ class Child(models.Model):
     deleted = models.BooleanField(default=False)
     former_lookit_profile_id = models.CharField(max_length=255, blank=True)
     existing_conditions = BitField(flags=CONDITIONS, default=0)
-    multiple_birth = BitField(flags=MULTIPLE_BIRTH, default=0)
+    multiple_birth_kind = models.CharField(
+        max_length=16, choices=MULTIPLE_BIRTH_CHOICES, null=True
+    )
     languages_spoken = BitField(flags=LANGUAGES, default=0)
 
     user = models.ForeignKey(
