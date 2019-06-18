@@ -1,5 +1,6 @@
 import datetime
 
+from bitfield.forms import BitFieldCheckboxSelectMultiple, BitFormField
 from django import forms
 from django.contrib.auth.forms import (
     PasswordChangeForm,
@@ -223,6 +224,15 @@ class ChildForm(forms.ModelForm):
             "additional_information": "for instance, diagnosed developmental disorders or vision or hearing problems",
         }
 
+        widgets = {
+            "existing_conditions": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
+            "languages_spoken": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
+        }
+
 
 class ChildUpdateForm(forms.ModelForm):
     birthday = forms.DateField(disabled=True, help_text="YYYY-MM-DD")
@@ -250,4 +260,13 @@ class ChildUpdateForm(forms.ModelForm):
         help_texts = {
             "given_name": "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research.",
             "additional_information": "for instance, diagnosed developmental disorders or vision or hearing problems",
+        }
+
+        widgets = {
+            "existing_conditions": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
+            "languages_spoken": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
         }
