@@ -310,9 +310,6 @@ class Child(models.Model):
     deleted = models.BooleanField(default=False)
     former_lookit_profile_id = models.CharField(max_length=255, blank=True)
     existing_conditions = BitField(flags=CONDITIONS, default=0)
-    multiple_birth_kind = models.CharField(
-        max_length=16, choices=MULTIPLE_BIRTH_CHOICES, null=True, blank=True
-    )
     languages_spoken = BitField(flags=LANGUAGES, default=0)
 
     user = models.ForeignKey(

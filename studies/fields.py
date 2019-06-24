@@ -25,13 +25,22 @@ CONDITIONS = (
     ("post_traumatic_stress_disorder", "Post-Traumatic Stress Disorder"),
     ("social_phobia_social_anxiety_disorder", "Social Phobia/Social Anxiety Disorder"),
     ("depression", "Depression"),
-    ("mood_disorder", "Mood Disorder"),
+    ("other_mood_disorder", "Other Mood Disorder"),
     ("allergies", "Allergies"),
     ("fetal_alcohol_syndrome", "Fetal Alcohol Syndrome"),
     ("epilepsy", "Epilepsy"),
+    ("diabetes", "Diabetes"),
+    ("other_chronic_medical_condition", "Other Chronic Medical Condition"),
+    ("other_genetic_condition", "Other Genetic Condition"),
+    ("gifted_advanced_learning_needs", "Gifted/Advanced learning needs"),
+    ("adopted", "Adopted"),
+    ("multiple birth", "Multiple Birth (twin, triplet, or higher order)"),
+    ("has_older_sibling", "Has at least one older sibling"),
+    ("has_younger_sibling", "Has at least one younger sibling"),
 )
 
 
+# Keeping for now, though this will probably not be needed.
 MULTIPLE_BIRTH_CHOICES = Choices(
     ("twin", _("Twin")),
     ("triplet", _("Triplet")),
