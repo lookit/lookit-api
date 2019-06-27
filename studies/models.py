@@ -5,10 +5,10 @@ import uuid
 import boto3
 import dateutil
 import fleep
+from bitfield import BitField
 from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save, pre_delete, pre_save
@@ -24,9 +24,13 @@ from accounts.utils import build_study_group_name
 from attachment_helpers import get_download_url
 from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
-from project.settings import EMAIL_FROM_ADDRESS
 from studies import workflow
-from studies.fields import CONDITIONS, LANGUAGES, MULTIPLE_BIRTH_CHOICES
+from studies.fields import (
+    CONDITIONS,
+    GENDER_CHOICES,
+    GESTATIONAL_AGE_FILTER_CHOICES,
+    LANGUAGES,
+)
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
 
@@ -1036,3 +1040,48 @@ class ConsentRuling(models.Model):
 
     def __str__(self):
         return f"<{self.arbiter.get_short_name()}: {self.action} {self.response} @ {self.created_at:%c}>"
+
+
+class EligibleParticipantQueryModel(models.Model):
+    """The persistent model that generates participant eligibility queries for a given study.
+
+    This is targeted at the child, so all fields are corresponding to child model fields as such.
+    """
+
+    include_conditions = BitField(flags=CONDITIONS, default=0)
+    exclude_conditions = BitField(flags=CONDITIONS, default=0)
+
+    include_languages = BitField(flags=LANGUAGES, default=0)
+    exclude_languages = BitField(flags=LANGUAGES, default=0)
+
+    # Not using time delta - an actual birthdate will be dynamically computed from these static properties
+    # each time the get_participant_query method is invoked.
+    age_range_start_years = models.PositiveSmallIntegerField(null=True)
+    age_range_start_months = models.PositiveSmallIntegerField(null=True)
+    age_range_start_days = models.PositiveSmallIntegerField(null=True)
+
+    age_range_end_years = models.PositiveSmallIntegerField(null=True)
+    age_range_end_months = models.PositiveSmallIntegerField(null=True)
+    age_range_end_days = models.PositiveSmallIntegerField(null=True)
+
+    # We want to enable the choice "Marked as N/A" and have null be "Nothing specified"
+    gender_specification = models.PositiveSmallIntegerField(
+        choices=GENDER_CHOICES, null=True
+    )
+
+    # For gestational age start and end, null would indicate "not specified" by the *query*, as opposed to
+    # "not answered" by the potential participant...
+    gestational_age_start = models.PositiveSmallIntegerField(
+        choices=GESTATIONAL_AGE_FILTER_CHOICES, null=True
+    )
+    gestational_age_end = models.PositiveSmallIntegerField(
+        choices=GESTATIONAL_AGE_FILTER_CHOICES, null=True
+    )
+
+    # ... Hence the existence of this separate field indicating whether or not the participant eligibility query should
+    # should contain "Not Answered"
+    gestational_age_include_na = models.BooleanField(default=False)
+
+    study = models.ForeignKey(
+        Study, on_delete=models.DO_NOTHING, related_name="eligible_participant_query"
+    )

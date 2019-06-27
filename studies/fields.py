@@ -3,6 +3,7 @@ from django.utils.translation import ugettext as _
 from model_utils import Choices
 
 
+# Conditions and Multiple birth are bitfield, NOT choices!
 CONDITIONS = (
     ("autism_spectrum_disorder", "Autism Spectrum Disorder"),
     ("aspergers_syndrome", "Asperger's Syndrome"),
@@ -113,3 +114,43 @@ LANGUAGES = (
     ("ms", "Malay"),
     ("ceb", "Cebuano"),
 )
+
+
+# XXX: These are only *mostly* copied and pasted the corresponding choices in the Child model - do not try to
+# create a single source of truth from these!
+# As noted in studies/models.py, we want to enable the choice "Marked as N/A" (by participant) and have null be
+# "Nothing specified." (by the experimenter generating the query model).
+GENDER_CHOICES = Choices(
+    ("m", _("Male")), ("f", _("Female")), ("o", _("Other")), ("na", _("Not answered"))
+)
+
+# Element #1 == database representation, #2 == valid python identifier used in code, #3 == human readable version.
+# See https://django-model-utils.readthedocs.io/en/latest/utilities.html#choices
+
+DEFAULT_GESTATIONAL_AGE_CHOICES = (
+    (None, "no_answer", _("Not sure or prefer not to answer")),
+    (0, "under_twenty_four_weeks", _("Under 24 weeks")),
+    (1, "twenty_four_weeks", _("24 weeks")),
+    (2, "twenty_five_weeks", _("25 weeks")),
+    (3, "twenty_six_weeks", _("26 weeks")),
+    (4, "twenty_seven_weeks", _("27 weeks")),
+    (5, "twenty_eight_weeks", _("28 weeks")),
+    (6, "twenty_nine_weeks", _("29 weeks")),
+    (7, "thirty_weeks", _("30 weeks")),
+    (8, "thirty_one_weeks", _("31 weeks")),
+    (9, "thirty_two_weeks", _("32 weeks")),
+    (10, "thirty_three_weeks", _("33 weeks")),
+    (11, "thirty_four_weeks", _("34 weeks")),
+    (12, "thirty_five_weeks", _("35 weeks")),
+    (13, "thirty_six_weeks", _("36 weeks")),
+    (14, "thirty_seven_weeks", _("37 weeks")),
+    (15, "thirty_eight_weeks", _("38 weeks")),
+    (16, "thirty_nine_weeks", _("39 weeks")),
+    (17, "over_forty_weeks", _("40 or more weeks")),
+)
+
+GESTATIONAL_AGE_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_CHOICES)
+
+# No null values for filters - must explicitly include N/A in the query model itself since we are dealing with a
+# range of (enumerated) values.
+GESTATIONAL_AGE_FILTER_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_CHOICES[1:])

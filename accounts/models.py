@@ -29,7 +29,7 @@ from multiselectfield import MultiSelectField
 from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
-from studies.fields import CONDITIONS, LANGUAGES, MULTIPLE_BIRTH_CHOICES
+from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
 
 
@@ -277,6 +277,8 @@ class Child(models.Model):
         ("o", _("other")),
         ("na", _("prefer not to answer")),
     )
+
+    # Deprecating
     AGE_AT_BIRTH_CHOICES = Choices(
         ("na", _("Not sure or prefer not to answer")),
         ("<24", _("Under 24 weeks")),
@@ -305,7 +307,14 @@ class Child(models.Model):
     given_name = models.CharField(max_length=255)
     birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
-    age_at_birth = models.CharField(max_length=25, choices=AGE_AT_BIRTH_CHOICES)
+    age_at_birth = models.CharField(
+        max_length=25, choices=AGE_AT_BIRTH_CHOICES
+    )  # DEPRECATING
+    gestational_age_at_birth = models.PositiveSmallIntegerField(
+        choices=GESTATIONAL_AGE_CHOICES,
+        default=GESTATIONAL_AGE_CHOICES.no_answer,
+        null=True,
+    )
     additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)
     former_lookit_profile_id = models.CharField(max_length=255, blank=True)
