@@ -200,7 +200,7 @@ class ChildForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
-            "age_at_birth",
+            "gestational_age_at_birth",
             "existing_conditions",
             "languages_spoken",
             "additional_information",
@@ -209,7 +209,7 @@ class ChildForm(forms.ModelForm):
         labels = {
             "given_name": "First Name",
             "birthday": "Birthday",
-            "age_at_birth": "Gestational Age at Birth",
+            "gestational_age_at_birth": "Gestational Age at Birth",
             "additional_information": "Any additional information you'd like us to know",
         }
 
@@ -237,7 +237,7 @@ class ChildUpdateForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
-            "age_at_birth",
+            "gestational_age_at_birth",
             "existing_conditions",
             "languages_spoken",
             "additional_information",
@@ -246,7 +246,7 @@ class ChildUpdateForm(forms.ModelForm):
         labels = {
             "given_name": "First Name",
             "birthday": "Birthday",
-            "age_at_birth": "Gestational Age at Birth",
+            "gestational_age_at_birth": "Gestational Age at Birth",
             "additional_information": "Any additional information you'd like us to know",
         }
 

@@ -10,14 +10,14 @@ from django.contrib.auth.mixins import (
 )
 from django.core.mail import BadHeaderError
 from django.db.models import (
+    Q,
     Case,
     Count,
     IntegerField,
     OuterRef,
-    Q,
+    Prefetch,
     Subquery,
     When,
-    Prefetch,
 )
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -29,7 +29,7 @@ from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import User, Message
+from accounts.models import Message, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
@@ -37,10 +37,10 @@ from project import settings
 from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import (
+    Response,
     Study,
     StudyLog,
     StudyType,
-    Response,
     get_annotated_responses_qs,
 )
 from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy

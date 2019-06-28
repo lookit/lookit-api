@@ -29,6 +29,11 @@ GESTATIONAL_AGE_CHAR_TO_INT_MAPPING = {
 }
 
 
+REVERSE_GESTATIONAL_AGE_MAPPING = {
+    v: k for k, v in GESTATIONAL_AGE_CHAR_TO_INT_MAPPING.items()
+}
+
+
 def _forwards_migrate_ga_birth_char_field_to_int(apps, schema_editor):
 
     ChildModel = apps.get_model("accounts", "Child")
@@ -36,6 +41,16 @@ def _forwards_migrate_ga_birth_char_field_to_int(apps, schema_editor):
     for child in ChildModel.objects.all():
         child.gestational_age_at_birth = GESTATIONAL_AGE_CHAR_TO_INT_MAPPING[
             child.age_at_birth
+        ]
+        child.save()
+
+
+def _backwards_reverse_int_field_to_char(apps, schema_editor):
+    ChildModel = apps.get_model("accounts", "Child")
+
+    for child in ChildModel.objects.all():
+        child.age_at_birth = REVERSE_GESTATIONAL_AGE_MAPPING[
+            child.gestational_age_at_birth
         ]
         child.save()
 
@@ -201,6 +216,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RunPython(
             _forwards_migrate_ga_birth_char_field_to_int,
-            reverse_code=migrations.RunPython.noop,
+            reverse_code=_backwards_reverse_int_field_to_char,
         ),
     ]

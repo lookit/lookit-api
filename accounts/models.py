@@ -307,9 +307,6 @@ class Child(models.Model):
     given_name = models.CharField(max_length=255)
     birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
-    age_at_birth = models.CharField(
-        max_length=25, choices=AGE_AT_BIRTH_CHOICES
-    )  # DEPRECATING
     gestational_age_at_birth = models.PositiveSmallIntegerField(
         choices=GESTATIONAL_AGE_CHOICES,
         default=GESTATIONAL_AGE_CHOICES.no_answer,
@@ -327,6 +324,10 @@ class Child(models.Model):
 
     def __str__(self):
         return f"<Child: {self.given_name}>"
+
+    @property
+    def age_at_birth(self):
+        return GESTATIONAL_AGE_CHOICES[self.gestational_age_at_birth]
 
     class Meta:
         ordering = ["-birthday"]
