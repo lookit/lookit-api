@@ -1294,6 +1294,12 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
         return super().dispatch(request, path)
 
 
+class StudyParticipantEligibilityModel(
+    ExperimenterLoginRequiredMixin, generic.DetailView
+):
+    """Modifying study participant eligibility."""
+
+
 # UTILITY FUNCTIONS
 def get_permitted_triggers(view_instance, triggers):
     """Takes in the available triggers (next possible states) for a study and restricts that list

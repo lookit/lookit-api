@@ -652,53 +652,6 @@
             MESSAGE_TABLE.column('subject:name').search($(this).val()).draw();
         }
 
-        {% comment %}
-        /**
-         * Show email body.
-         *
-         * @param $jqEvent The jquery Event object.
-         * @param datatablesApi the Datatables API (see: https://datatables.net/reference/api/).
-         * @param itemType This will pretty much always be a column or row.
-         * @param indices The indices of the selection within the table.
-         */
-        function handleMessageTableSelection($jqEvent, datatablesApi, itemType, indices) {
-            // Gracefully close all unselected rows.
-            datatablesApi.rows({selected: false}).every(function (rowIndex, tableLoop, rowLoop) {
-                let informationRow = this.child();
-
-                if (informationRow) informationRow.removeClass('open');
-            });
-
-            // Gracefully open all selected rows.
-            datatablesApi.rows({selected: true}).every(function (rowIndex, tableLoop, rowLoop) {
-                let currentRow = this,
-                    informationRow = currentRow.child();
-
-                if (informationRow) {
-                    informationRow.addClass('open');
-                } else { // Create a new child.
-                    // XXX: The steps below (precise ordering included) are both necessary and complete:
-                    // 1) There is no DataTables configuration for producing templated child rows, so we have to do
-                    //    it here.
-                    // 2) most DataTables methods return the DataTables API itself, *not* an element implicitly
-                    //    specified by the calling method (currentRow.child(htmlString) does *not* return a child!
-                    // 3) The child must be "shown" prior to "opening" with a slight delay; without the delay
-                    //    the css animation will get preempted by the inline styling that comes with show().
-                    currentRow.child(
-                        `<div class="panel panel-default">
-                             <div class="panel-body small">${currentRow.data()["body"]}</div>
-                         </div>`
-                    );
-                    informationRow = currentRow.child();
-                    informationRow.addClass('information-row');
-                    currentRow.child.show();
-                    // setTimeout(() => informationRow.addClass('open'), 10);
-                }
-            });
-
-        }
-        {% endcomment %}
-
         /**
          * Show email body.
          *

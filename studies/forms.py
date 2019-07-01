@@ -4,7 +4,7 @@ from ace_overlay.widgets import AceOverlayWidget
 from django import forms
 from django.forms import ModelForm, Textarea
 
-from studies.models import Response, Study
+from studies.models import EligibleParticipantQueryModel, Response, Study
 
 
 class ResponseForm(ModelForm):
@@ -60,10 +60,13 @@ STUDY_HELP_TEXT_EDIT = (
     then clicking on "See Preview" above after the build finishes.</p>"""
 )
 
-# Form for editing an existing a new study. Study type is NOT included in this form as that
-# submission is handled separately during edit, although metadata about the field is stored
-# here for consistency.
+
 class StudyEditForm(BaseStudyForm):
+    """Form for editing an existing a new study.
+
+    Study type is NOT included in this form as that submission is handled separately during edit, although metadata
+    about the field is stored here for consistency.
+    """
 
     structure = forms.CharField(
         label="Build Study - Add JSON",
@@ -177,3 +180,31 @@ class StudyBuildForm(forms.ModelForm):
     class Meta:
         model = Study
         fields = ["structure"]
+
+
+class EligibleParticipantQueryModelForm(ModelForm):
+    """Modifying the stateful backing for the queryset for eligible participants."""
+
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     return
+
+    class Meta:
+        fields = (
+            "include_conditions",
+            "exclude_conditions",
+            "include_languages",
+            "exclude_languages",
+            "age_range_start_years",
+            "age_range_start_months",
+            "age_range_start_days",
+            "age_range_end_years",
+            "age_range_end_months",
+            "age_range_end_days",
+            "gender_specification",
+            "gestational_age_start",
+            "gestational_age_end",
+            "gestational_age_include_na",
+            "study",
+        )
+        model = EligibleParticipantQueryModel
