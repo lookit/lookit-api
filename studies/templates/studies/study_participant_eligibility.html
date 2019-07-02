@@ -82,7 +82,8 @@
 
                             {# Characteristics - custom set of button groups? #}
                             <section class="col-md-6">
-                                <table>
+                                <h4>Characteristics</h4>
+                                <table class="table">
                                     <tbody>
                                     {% for option in form.fields.include_conditions.choices %}
                                         <tr>
@@ -108,34 +109,25 @@
 
                             {# Languages Spoken - custom set of button groups? #}
                             <section class="col-md-6">
-                                <table id="languages-table" class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Filter</th>
-                                        <th>Include or Exclude</th>
-                                    </tr>
-                                    </thead>
+                                <h4>Languages Spoken</h4>
+                                <table class="table">
                                     <tbody>
                                     {% for option in form.fields.include_languages.choices %}
                                         <tr>
                                             <td>
-                                                <label><input type="checkbox" checked></label>
-                                            </td>
-                                            <td>
-                                                <div class="checkbox">
-                                                    <label class="checkbox">
-                                                        <input checked
-                                                               type="checkbox"
-                                                               data-toggle="toggle"
-                                                               data-size="mini"
-                                                               data-on="Include"
-                                                               data-off="Exclude"
-                                                               data-onstyle="success"
-                                                               data-offstyle="danger">
-                                                        {{ option.1 }}
+                                                <div class="btn-group btn-group-xs" data-toggle="buttons">
+                                                    <label class="btn btn-danger" for="exclude-{{ option.0 }}">
+                                                        <input id="exclude-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off">Exclude
+                                                    </label>
+                                                    <label class="btn btn-default active" for="unspecified-{{ option.0 }}">
+                                                        <input id="unspecified-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off" checked>N/A
+                                                    </label>
+                                                    <label class="btn btn-success" for="include-{{ option.0 }}">
+                                                        <input id="include-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off">Include
                                                     </label>
                                                 </div>
                                             </td>
+                                            <td class="small">{{ option.1 }}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
