@@ -2,9 +2,19 @@
 {% load bootstrap3 %}
 {% load exp_extras %}
 
-{% block title %}{{ object.study }}{% endblock %}
+{% block title %}Participant Eligibility | {{ eligible_participant_query_model.study }} {% endblock %}
 {% block head %}
     {{ block.super }}
+    {# Bootstrap Slider #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/bootstrap-slider.min.js"
+            integrity="sha256-nviKEC91moGfyFMMzT31WyNxuAvIIgOSkSGi7K6U7EU=" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.min.css"
+          integrity="sha256-+xqVrdbLgHjiKF8ULvcwzQ545r7lCVfOqXlNJCB3XOg=" crossorigin="anonymous"/>
+
+    {# Bootstrap Toggle #}
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 {% endblock %}
 
 {% block flash %}
@@ -17,12 +27,125 @@
 {% endblock %}
 
 {% block content %}
-    <form>
-        {% csrf_token %}
-{#        {% for field in form %}#}
-{#            {% bootstrap_field field %}#}
-{#        {% endfor %}#}
-        {%  bootstrap_form form %}
-    </form>
+    <div class="container mb-lg">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+                    <li>
+                        <a href="{% url 'exp:study-detail' pk=eligible_participant_query_model.study.id %}">
+                            {{ eligible_participant_query_model.study.name }}
+                        </a>
+                    </li>
+                    <li class="active">Participant Eligibility</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1">
+                <div class="panel panel-default mt-xl">
+                    <div class="panel-heading">
+                        <h1 class="panel-title">Edit Participant Eligibility</h1>
+                    </div>
+                    <div class="panel-body">
+                        <form method="POST" id="edit-participant-eligibility">
+                            {% csrf_token %}
+                            {# Age Range -- slider #}
+                            <label for="age-range-slider">Age Range</label>
+                            <input id="age-range-slider"
+                                   type="text"
+                                   name="age-range"
+                                   data-provide="slider"
+                                   data-slider-ticks="[1, 2, 3]"
+                                   data-slider-ticks-labels='["short", "medium", "long"]'
+                                   data-slider-min="1"
+                                   data-slider-max="3"
+                                   data-slider-step="1"
+                                   data-slider-value="3"
+                                   data-slider-tooltip="hide">
+                            {# Gender - quad button group #}
+                            <label for="gender-selector">Age Range</label>
+                            <div id="gender-selector" class="btn-group" role="group" aria-label="Gender Selector">
+                                <button type="button" class="btn btn-default">Male</button>
+                                <button type="button" class="btn btn-default">Female</button>
+                                <button type="button" class="btn btn-default">Other</button>
+                                <button type="button" class="btn btn-default">Not Specified</button>
+                            </div>
 
+                            {# Gestational Age at birth - slider, + checkbox for "include N/A" #}
+
+                            {# Characteristics - custom set of button groups? #}
+                            <section class="col-md-6">
+                                <table id="characteristics-table" class="table">
+                                    <thead>
+                                    <th>Filter</th>
+                                    <th>Include or Exclude</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for option in form.fields.include_conditions.choices %}
+                                        <tr>
+                                            <td>
+                                                <label><input type="checkbox" checked></label>
+                                            </td>
+                                            <td>
+                                                <div class="checkbox">
+                                                    <label class="checkbox">
+                                                        <input checked
+                                                               type="checkbox"
+                                                               data-toggle="toggle"
+                                                               data-size="mini"
+                                                               data-on="Include"
+                                                               data-off="Exclude"
+                                                               data-onstyle="success"
+                                                               data-offstyle="danger">
+                                                        {{ option.1 }}
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </section>
+
+                            {# Languages Spoken - custom set of button groups? #}
+                            <section class="col-md-6">
+                                <table id="languages-table" class="table">
+                                    <thead>
+                                    <th>Filter</th>
+                                    <th>Include or Exclude</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for option in form.fields.include_languages.choices %}
+                                        <tr>
+                                            <td>
+                                                <label><input type="checkbox" checked></label>
+                                            </td>
+                                            <td>
+                                                <div class="checkbox">
+                                                    <label class="checkbox">
+                                                        <input checked
+                                                               type="checkbox"
+                                                               data-toggle="toggle"
+                                                               data-size="mini"
+                                                               data-on="Include"
+                                                               data-off="Exclude"
+                                                               data-onstyle="success"
+                                                               data-offstyle="danger">
+                                                        {{ option.1 }}
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </section>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 {% endblock %}

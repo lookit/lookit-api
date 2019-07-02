@@ -728,6 +728,7 @@ class StudyParticipantEligibilityManager(
     form_class = EligibleParticipantQueryModelForm
     template_name = "studies/study_participant_eligibility.html"
     permission_required = "studies.can_edit_study"
+    context_object_name = "eligible_participant_query_model"
 
     def get_object(self, queryset=None):
         """Override"""
@@ -735,6 +736,11 @@ class StudyParticipantEligibilityManager(
             pk=self.kwargs.get(self.pk_url_kwarg)
         )
         return query_model
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print(context)
+        return context
 
 
 class StudyUpdateView(

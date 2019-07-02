@@ -653,3 +653,17 @@ so we have to do this manually.
 #messages-table {
     table-layout: fixed;
 }
+
+/**
+ Eligibility Page
+ */
+/**
+ Column checkbox fixes:
+ https://number1.co.za/django-displaying-checkboxselectmulatiple-in-columns-with-bootstrap/
+ */
+.column-checkbox .checkbox {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 0;
+    width: 24%;
+}
