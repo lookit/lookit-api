@@ -34,9 +34,10 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
+from studies.forms import EligibleParticipantQueryModelForm, StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import (
+    EligibleParticipantQueryModel,
     Response,
     Study,
     StudyLog,
@@ -718,6 +719,24 @@ class StudyParticipantContactView(
         return User.objects.filter(organization=study.organization)
 
 
+class StudyParticipantEligibilityManager(
+    ExperimenterLoginRequiredMixin, generic.UpdateView
+):
+    """Modifying study participant eligibility."""
+
+    model = EligibleParticipantQueryModel
+    form_class = EligibleParticipantQueryModelForm
+    template_name = "studies/study_participant_eligibility.html"
+    permission_required = "studies.can_edit_study"
+
+    def get_object(self, queryset=None):
+        """Override"""
+        query_model, created = self.get_queryset().get_or_create(
+            pk=self.kwargs.get(self.pk_url_kwarg)
+        )
+        return query_model
+
+
 class StudyUpdateView(
     ExperimenterLoginRequiredMixin,
     PermissionRequiredMixin,
@@ -1292,12 +1311,6 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
         if request.path[-1] == "/":
             path = f"{path.split('/')[0]}/index.html"
         return super().dispatch(request, path)
-
-
-class StudyParticipantEligibilityModel(
-    ExperimenterLoginRequiredMixin, generic.DetailView
-):
-    """Modifying study participant eligibility."""
 
 
 # UTILITY FUNCTIONS

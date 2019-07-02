@@ -1,1 +1,28 @@
-<!-- Hold for development -->
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+{% load exp_extras %}
+
+{% block title %}{{ object.study }}{% endblock %}
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+
+{% block flash %}
+    {% bootstrap_messages %}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <form>
+        {% csrf_token %}
+{#        {% for field in form %}#}
+{#            {% bootstrap_field field %}#}
+{#        {% endfor %}#}
+        {%  bootstrap_form form %}
+    </form>
+
+{% endblock %}

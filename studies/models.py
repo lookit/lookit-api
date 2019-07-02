@@ -1082,6 +1082,9 @@ class EligibleParticipantQueryModel(models.Model):
     # should contain "Not Answered"
     gestational_age_include_na = models.BooleanField(default=False)
 
-    study = models.ForeignKey(
-        Study, on_delete=models.DO_NOTHING, related_name="eligible_participant_query"
+    study = models.OneToOneField(
+        Study,
+        on_delete=models.DO_NOTHING,
+        related_name="eligible_participant_query",
+        primary_key=True,
     )

@@ -205,6 +205,5 @@ class EligibleParticipantQueryModelForm(ModelForm):
             "gestational_age_start",
             "gestational_age_end",
             "gestational_age_include_na",
-            "study",
         )
         model = EligibleParticipantQueryModel
