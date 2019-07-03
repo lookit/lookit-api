@@ -123,7 +123,7 @@ class Migration(migrations.Migration):
             model_name="child",
             name="age_at_birth",
             field=models.CharField(
-                max_length=25, choices=AGE_AT_BIRTH_CHOICES, default="na", null=True
+                max_length=25, choices=AGE_AT_BIRTH_CHOICES, default="na"
             ),
             preserve_default=False,
         ),

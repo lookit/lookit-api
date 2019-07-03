@@ -5,21 +5,18 @@
 {% block title %}Participant Eligibility | {{ eligible_participant_query_model.study }} {% endblock %}
 {% block head %}
     {{ block.super }}
-    {# Bootstrap Slider #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/bootstrap-slider.min.js"
-            integrity="sha256-nviKEC91moGfyFMMzT31WyNxuAvIIgOSkSGi7K6U7EU=" crossorigin="anonymous"></script>
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.min.css"
-          integrity="sha256-+xqVrdbLgHjiKF8ULvcwzQ545r7lCVfOqXlNJCB3XOg=" crossorigin="anonymous"/>
+    {# NoUI Slider #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.0.2/nouislider.min.js"
+            integrity="sha256-VG+4f1Hm2q4e+DTEOaiZKlWjJm5W4yqnXNvKkWBYA20=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.0.2/nouislider.min.css"
+          integrity="sha256-6pa9Ln4B/FyHlxOYaXuwpET9xH0e21iX0SPLg9P5Ro0=" crossorigin="anonymous"/>
 
-    {# Bootstrap Toggle #}
+    {# Bootstrap Toggle -- keeping here in case it is needed later #}
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
-    {# CSS-toggle-switch #}
-    <link rel="stylesheet"
-          type="text/css"
-          href="https://cdn.jsdelivr.net/npm/css-toggle-switch@4.0.3/dist/toggle-switch.css"/>
+    {# Moment #}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
 {% endblock %}
 
@@ -56,47 +53,135 @@
                     <div class="panel-body">
                         <form method="POST" id="edit-participant-eligibility">
                             {% csrf_token %}
-                            {# Age Range -- slider #}
-                            <label for="age-range-slider">Age Range</label>
-                            <input id="age-range-slider"
-                                   type="text"
-                                   name="age-range"
-                                   data-provide="slider"
-                                   data-slider-ticks="[1, 2, 3]"
-                                   data-slider-ticks-labels='["short", "medium", "long"]'
-                                   data-slider-min="1"
-                                   data-slider-max="3"
-                                   data-slider-step="1"
-                                   data-slider-value="3"
-                                   data-slider-tooltip="hide">
-                            {# Gender - quad button group #}
-                            <label for="gender-selector">Age Range</label>
-                            <div id="gender-selector" class="btn-group" role="group" aria-label="Gender Selector">
-                                <button type="button" class="btn btn-default">Male</button>
-                                <button type="button" class="btn btn-default">Female</button>
-                                <button type="button" class="btn btn-default">Other</button>
-                                <button type="button" class="btn btn-default">Not Specified</button>
-                            </div>
-
-                            {# Gestational Age at birth - slider, + checkbox for "include N/A" #}
+                            <section class="form-group col-md-5">
+                                <h4>
+                                    Gestational Age
+                                </h4>
+                                <div id="gestational-age-range-specifier" class="range-specifier"></div>
+                                <label for="gestational-age-include-na">
+                                    <input id="gestational-age-include-na"
+                                           type="checkbox"
+                                           data-toggle="toggle"
+                                           data-on="Include N/A"
+                                           data-off="Exclude N/A"
+                                           data-onstyle="success"
+                                           data-offstyle="danger"
+                                           data-size="mini"
+                                           data-width="120"
+                                           checked>
+                                </label>
+                            </section>
+                            <section class="form-group col-md-7">{# Age Range -- slider #}
+                                <h4>Age Range</h4>
+                                <div id="age-range-specifier" class="range-specifier"></div>
+                                <table id="age-range-details" class="table small">
+                                    <tr>
+                                        <td>Total Range:</td>
+                                        <td><input id="total-days" class="form-control" type="number" min=0 max=7300>
+                                            Days in total
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Current range start:</td>
+                                        <td><input class="form-control" type="date"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Current range end:</td>
+                                        <td><input class="form-control" type="date"></td>
+                                    </tr>
+                                </table>
+                            </section>
+                            <section class="form-group col-md-12">{# Gender - quad button group #}
+                                <h4>Gender Specification</h4>
+                                <div id="gender-selector" class="btn-group btn-group-justified" data-toggle="buttons">
+                                    <label class="btn btn-default active" for="not-specified">
+                                        <input id="not-specified"
+                                               name="gender"
+                                               type="radio"
+                                               autocomplete="off"
+                                               checked>
+                                        Doesn't Matter
+                                    </label>
+                                    <label class="btn btn-primary" for="other-only">
+                                        <input id="other-only"
+                                               name="gender"
+                                               type="radio"
+                                               value="o"
+                                               autocomplete="off">
+                                        Other Only
+                                    </label>
+                                    <label class="btn btn-primary" for="male-only">
+                                        <input id="male-only"
+                                               name="gender"
+                                               type="radio"
+                                               value="m"
+                                               autocomplete="off">
+                                        Male Only
+                                    </label>
+                                    <label class="btn btn-primary" for="female-only">
+                                        <input id="female-only"
+                                               name="gender"
+                                               type="radio"
+                                               value="f"
+                                               autocomplete="off">
+                                        Female Only
+                                    </label>
+                                </div>
+                            </section>
 
                             {# Characteristics - custom set of button groups? #}
-                            <section class="col-md-6">
-                                <h4>Characteristics</h4>
+                            <section class="form-group col-md-6">
+                                <h4>
+                                    Characteristics
+                                    <div id="control-all-conditions"
+                                         class="btn-group btn-group-xs pull-right"
+                                         role="group"
+                                         aria-label="Gender Selector">
+                                        <button type="button" class="btn btn-danger">Exclude All</button>
+                                        <button type="button" class="btn btn-default">Reset</button>
+                                        <button type="button" class="btn btn-success">Require All</button>
+                                    </div>
+                                </h4>
                                 <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th colspan=2>
+                                        </th>
+                                    </tr>
+                                    </thead>
                                     <tbody>
-                                    {% for option in form.fields.include_conditions.choices %}
+                                    {%  comment %}
+                                        Not optimal to use the form fields as a proxy this way.
+                                        Maybe we can directly reference the fields in the context object?
+                                    {% endcomment %}
+                                    {% for option in form.fields.require_conditions.choices %}
                                         <tr>
                                             <td>
                                                 <div class="btn-group btn-group-xs" data-toggle="buttons">
                                                     <label class="btn btn-danger" for="exclude-{{ option.0 }}">
-                                                        <input id="exclude-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off">Exclude
+                                                        <input id="exclude-{{ option.0 }}"
+                                                               name="exclude_conditions"
+                                                               type="radio"
+                                                               autocomplete="off"
+                                                               value="{{ option.0 }}">
+                                                        Exclude
                                                     </label>
-                                                    <label class="btn btn-default active" for="unspecified-{{ option.0 }}">
-                                                        <input id="unspecified-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off" checked>N/A
+                                                    <label class="btn btn-default active"
+                                                           for="unspecified-{{ option.0 }}">
+                                                        <input id="unspecified-{{ option.0 }}"
+                                                               name="group-{{ option.0 }}"
+                                                               type="radio"
+                                                               autocomplete="off"
+                                                               checked>
+                                                        N/A
                                                     </label>
-                                                    <label class="btn btn-success" for="include-{{ option.0 }}">
-                                                        <input id="include-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off">Include
+                                                    <label class="btn btn-success" for="require-{{ option.0 }}">
+                                                        <input id="require-{{ option.0 }}"
+                                                               name="require_conditions"
+                                                               type="radio"
+                                                               value="{{ option.0 }}"
+                                                               autocomplete="off">
+                                                        Require
                                                     </label>
                                                 </div>
                                             </td>
@@ -108,22 +193,44 @@
                             </section>
 
                             {# Languages Spoken - custom set of button groups? #}
-                            <section class="col-md-6">
-                                <h4>Languages Spoken</h4>
+                            <section class="form-group col-md-6">
+                                <h4>
+                                    Languages Spoken
+                                    <div id="control-all-languages"
+                                         class="btn-group btn-group-xs pull-right"
+                                         role="group"
+                                         aria-label="Gender Selector">
+                                        <button type="button" class="btn btn-danger">Exclude All</button>
+                                        <button type="button" class="btn btn-default">Reset</button>
+                                        <button type="button" class="btn btn-success">Require All</button>
+                                    </div>
+                                </h4>
                                 <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th colspan=2>
+
+                                        </th>
+                                    </tr>
+                                    </thead>
                                     <tbody>
-                                    {% for option in form.fields.include_languages.choices %}
+                                    {% for option in form.fields.require_languages.choices %}
                                         <tr>
                                             <td>
                                                 <div class="btn-group btn-group-xs" data-toggle="buttons">
                                                     <label class="btn btn-danger" for="exclude-{{ option.0 }}">
-                                                        <input id="exclude-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off">Exclude
+                                                        <input id="exclude-{{ option.0 }}" name="group-{{ option.0 }}"
+                                                               type="radio" autocomplete="off">Exclude
                                                     </label>
-                                                    <label class="btn btn-default active" for="unspecified-{{ option.0 }}">
-                                                        <input id="unspecified-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off" checked>N/A
+                                                    <label class="btn btn-default active"
+                                                           for="unspecified-{{ option.0 }}">
+                                                        <input id="unspecified-{{ option.0 }}"
+                                                               name="group-{{ option.0 }}" type="radio"
+                                                               autocomplete="off" checked>N/A
                                                     </label>
-                                                    <label class="btn btn-success" for="include-{{ option.0 }}">
-                                                        <input id="include-{{ option.0 }}" name="group-{{ option.0 }}" type="radio" autocomplete="off">Include
+                                                    <label class="btn btn-success" for="require-{{ option.0 }}">
+                                                        <input id="require-{{ option.0 }}" name="group-{{ option.0 }}"
+                                                               type="radio" autocomplete="off">Require
                                                     </label>
                                                 </div>
                                             </td>
@@ -138,6 +245,163 @@
                 </div>
             </div>
         </div>
-
     </div>
+    {#  TODO: Once we have a static asset pipeline, move this out to a javascript file so we can defer it. #}
+    <script type="text/javascript">
+        /*----------------
+         * Element handles.
+         ---------------- */
+        // Regular DOM
+        const ageRangeSpecifier = document.getElementById('age-range-specifier'),
+              gestationalAgeRangeSpecifier = document.getElementById('gestational-age-range-specifier');
+
+        // jQuery
+
+
+        /* ----------------
+         * Options objects.
+         ---------------- */
+        const EX_UTERO_AGE_VALUE_FORMATTER = {
+            to(pseudoNumericValue) {
+                return `${Math.round(Math.round(pseudoNumericValue) / 365)} Years Old`;
+            },
+            from(stringValue) {
+                console.log('FROM: ', stringValue);
+            }
+        };
+
+        // Age range slider will calculate in days.
+        const AGE_RANGE_SLIDER_OPTIONS = {
+            start: [365 * 4, 365 * 11],  // 4 to 11 years old.
+            // limit: 40,
+            behaviour: 'drag',
+            connect: true,
+            tooltips: [EX_UTERO_AGE_VALUE_FORMATTER, EX_UTERO_AGE_VALUE_FORMATTER],
+            range: {
+                min: 0,
+                max: 365 * 20  // 20 years in days.
+            }
+        };
+
+        const GESTATIONAL_AGE_STRING_TO_ENUM_INT = {
+            "Under 24 weeks": 0,
+            "24 weeks": 1,
+            "25 weeks": 2,
+            "26 weeks": 3,
+            "27 weeks": 4,
+            "28 weeks": 5,
+            "29 weeks": 6,
+            "30 weeks": 7,
+            "31 weeks": 8,
+            "32 weeks": 9,
+            "33 weeks": 10,
+            "34 weeks": 11,
+            "35 weeks": 12,
+            "36 weeks": 13,
+            "37 weeks": 14,
+            "38 weeks": 15,
+            "39 weeks": 16,
+            "40 or more weeks": 17,
+        };
+
+        const GESTATIONAL_AGE_ENUM_INT_TO_STRING = invertObject(GESTATIONAL_AGE_STRING_TO_ENUM_INT);
+
+        const GESTATIONAL_AGE_VALUE_FORMATTER = {
+            {% comment %}
+                The documentation lies. This function does NOT receive an actual JavaScript number; it receives a
+                string that looks like a number 🙄.
+            {% endcomment %}
+            to: numericValue => GESTATIONAL_AGE_ENUM_INT_TO_STRING[parseInt(numericValue, 10)],
+            // 'from' the formatted value.
+            // Receives a string, should return a number.
+            from: stringValue => GESTATIONAL_AGE_STRING_TO_ENUM_INT[stringValue],
+        };
+
+        // Regular weeks, easier
+        const GESTATIONAL_AGE_RANGE_SLIDER_OPTIONS = {
+            start: [12, 17],
+            behaviour: 'drag',
+            step: 1,
+            connect: true,
+            range: {
+                "min": [0],
+                "max": [17],
+            },
+            orientation: 'vertical',
+            direction: 'rtl',
+            tooltips: [GESTATIONAL_AGE_VALUE_FORMATTER, GESTATIONAL_AGE_VALUE_FORMATTER],
+            pips: {
+                mode: 'values',
+                density: 1,
+                stepped: true,
+                values: [0, 12, 17],
+                format: GESTATIONAL_AGE_VALUE_FORMATTER
+            },
+            // format: GESTATIONAL_AGE_VALUE_FORMATTER
+        };
+
+        /* -----------------
+         * Helper functions.
+         ----------------- */
+        function invertObject(json) {
+            let ret = {};
+            for (let key in json) {
+                ret[json[key]] = key;
+            }
+            return ret;
+        }
+
+
+        /* -------------------
+         * Listener functions.
+         ------------------- */
+
+
+
+
+        /* ------------------------
+         * Initialization procedures.
+         ------------------------ */
+        function initializeComponents() {
+            noUiSlider.create(
+                ageRangeSpecifier,
+                AGE_RANGE_SLIDER_OPTIONS
+            );
+
+            ageRangeSpecifier.noUiSlider.on('update', (values, handleIndex) => {
+                switch (handleIndex) {
+                    case 0:     // start handle
+                        break;
+                    case 1:     // end handle
+                        break;
+                    default:
+                        break;  // This should never happen.
+                }
+            });
+
+            noUiSlider.create(
+                gestationalAgeRangeSpecifier,
+                GESTATIONAL_AGE_RANGE_SLIDER_OPTIONS
+            );
+
+            gestationalAgeRangeSpecifier.noUiSlider.on('update', (values, handleIndex) => {
+                switch (handleIndex) {
+                    case 0:     // start handle
+                        break;
+                    case 1:     // end handle
+                        break;
+                    default:
+                        break;  // This should never happen.
+                }
+            });
+
+            // also use steps api to connect dt input https://refreshless.com/nouislider/examples/#section-steps-api
+        }
+
+        function initializeView() {
+            initializeComponents();
+        }
+
+        initializeView();
+    </script>
 {% endblock %}

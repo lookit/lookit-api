@@ -1048,10 +1048,10 @@ class EligibleParticipantQueryModel(models.Model):
     This is targeted at the child, so all fields are corresponding to child model fields as such.
     """
 
-    include_conditions = BitField(flags=CONDITIONS, default=0)
+    require_conditions = BitField(flags=CONDITIONS, default=0)
     exclude_conditions = BitField(flags=CONDITIONS, default=0)
 
-    include_languages = BitField(flags=LANGUAGES, default=0)
+    require_languages = BitField(flags=LANGUAGES, default=0)
     exclude_languages = BitField(flags=LANGUAGES, default=0)
 
     # Not using time delta - an actual birthdate will be dynamically computed from these static properties

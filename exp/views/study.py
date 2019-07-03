@@ -731,7 +731,7 @@ class StudyParticipantEligibilityManager(
     context_object_name = "eligible_participant_query_model"
 
     def get_object(self, queryset=None):
-        """Override"""
+        """Override so that we have something approaching an AutoOneToOneField in terms of functionality."""
         query_model, created = self.get_queryset().get_or_create(
             pk=self.kwargs.get(self.pk_url_kwarg)
         )
@@ -739,7 +739,6 @@ class StudyParticipantEligibilityManager(
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(context)
         return context
 
 

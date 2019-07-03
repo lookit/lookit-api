@@ -193,9 +193,9 @@ class EligibleParticipantQueryModelForm(ModelForm):
 
     class Meta:
         fields = (
-            "include_conditions",
+            "require_conditions",
             "exclude_conditions",
-            "include_languages",
+            "require_languages",
             "exclude_languages",
             "age_range_start_years",
             "age_range_start_months",
@@ -211,7 +211,7 @@ class EligibleParticipantQueryModelForm(ModelForm):
         model = EligibleParticipantQueryModel
 
         widgets = {
-            "include_conditions": BitFieldCheckboxSelectMultiple(
+            "require_conditions": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
             ),
             "exclude_conditions": BitFieldCheckboxSelectMultiple(
