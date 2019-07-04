@@ -71,23 +71,23 @@
                                            checked>
                                 </label>
                             </section>
-                            <section class="form-group col-md-7">{# Age Range -- slider #}
+                            <section class="form-group col-md-push-1 col-md-6">{# Age Range -- slider #}
                                 <h4>Age Range</h4>
                                 <div id="age-range-specifier" class="range-specifier"></div>
                                 <table id="age-range-details" class="table small">
                                     <tr>
-                                        <td>Total Range:</td>
+                                        <td><label for="total-days">Total Range:</label></td>
                                         <td><input id="total-days" class="form-control" type="number" min=0 max=7300>
                                             Days in total
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td>Current range start:</td>
-                                        <td><input class="form-control" type="date"></td>
+                                        <td><label for="age-range-start">Current latest birthday:</label></td>
+                                        <td><input id="age-range-start" class="form-control" type="date"></td>
                                     </tr>
                                     <tr>
-                                        <td>Current range end:</td>
-                                        <td><input class="form-control" type="date"></td>
+                                        <td><label for="age-range-end">Current earliest birthday:</label></td>
+                                        <td><input id="age-range-end" class="form-control" type="date"></td>
                                     </tr>
                                 </table>
                             </section>
@@ -252,8 +252,11 @@
          * Element handles.
          ---------------- */
         // Regular DOM
-        const ageRangeSpecifier = document.getElementById('age-range-specifier'),
-              gestationalAgeRangeSpecifier = document.getElementById('gestational-age-range-specifier');
+        const ageRangeSpecifier            = document.getElementById('age-range-specifier'),
+              gestationalAgeRangeSpecifier = document.getElementById('gestational-age-range-specifier'),
+              totalDaysInput               = document.getElementById('total-days'),
+              ageRangeStartInput           = document.getElementById('age-range-start'),
+              ageRangeEndInput             = document.getElementById('age-range-end');
 
         // jQuery
 
@@ -262,18 +265,17 @@
          * Options objects.
          ---------------- */
         const EX_UTERO_AGE_VALUE_FORMATTER = {
-            to(pseudoNumericValue) {
-                return `${Math.round(Math.round(pseudoNumericValue) / 365)} Years Old`;
+            to(floatNumber) {
+                let days = Math.round(floatNumber),
+                    duration = moment.duration(days, 'days');
+                return `${duration.years()} years, ${duration.months()} months`;
             },
-            from(stringValue) {
-                console.log('FROM: ', stringValue);
-            }
         };
 
         // Age range slider will calculate in days.
         const AGE_RANGE_SLIDER_OPTIONS = {
             start: [365 * 4, 365 * 11],  // 4 to 11 years old.
-            // limit: 40,
+            step: 30,
             behaviour: 'drag',
             connect: true,
             tooltips: [EX_UTERO_AGE_VALUE_FORMATTER, EX_UTERO_AGE_VALUE_FORMATTER],
@@ -307,11 +309,7 @@
         const GESTATIONAL_AGE_ENUM_INT_TO_STRING = invertObject(GESTATIONAL_AGE_STRING_TO_ENUM_INT);
 
         const GESTATIONAL_AGE_VALUE_FORMATTER = {
-            {% comment %}
-                The documentation lies. This function does NOT receive an actual JavaScript number; it receives a
-                string that looks like a number 🙄.
-            {% endcomment %}
-            to: numericValue => GESTATIONAL_AGE_ENUM_INT_TO_STRING[parseInt(numericValue, 10)],
+            to: numericValue => GESTATIONAL_AGE_ENUM_INT_TO_STRING[Math.round(numericValue)],
             // 'from' the formatted value.
             // Receives a string, should return a number.
             from: stringValue => GESTATIONAL_AGE_STRING_TO_ENUM_INT[stringValue],
@@ -337,7 +335,6 @@
                 values: [0, 12, 17],
                 format: GESTATIONAL_AGE_VALUE_FORMATTER
             },
-            // format: GESTATIONAL_AGE_VALUE_FORMATTER
         };
 
         /* -----------------
@@ -369,10 +366,19 @@
             );
 
             ageRangeSpecifier.noUiSlider.on('update', (values, handleIndex) => {
+                let [start, end] = values,
+                    startDays    = Math.round(start),
+                    endDays      = Math.round(end);
+
+                totalDaysInput.value = Math.round(end) - Math.round(start);
+
                 switch (handleIndex) {
                     case 0:     // start handle
+                        ageRangeStartInput.value = moment().subtract(startDays, 'days').format('YYYY-MM-DD');
+                        console.log(ageRangeStartInput);
                         break;
                     case 1:     // end handle
+                        ageRangeEndInput.value = moment().subtract(endDays, 'days').format('YYYY-MM-DD');
                         break;
                     default:
                         break;  // This should never happen.
@@ -384,18 +390,8 @@
                 GESTATIONAL_AGE_RANGE_SLIDER_OPTIONS
             );
 
-            gestationalAgeRangeSpecifier.noUiSlider.on('update', (values, handleIndex) => {
-                switch (handleIndex) {
-                    case 0:     // start handle
-                        break;
-                    case 1:     // end handle
-                        break;
-                    default:
-                        break;  // This should never happen.
-                }
-            });
-
-            // also use steps api to connect dt input https://refreshless.com/nouislider/examples/#section-steps-api
+            // also use steps api to have inputs control sliders
+            // https://refreshless.com/nouislider/examples/#section-steps-api
         }
 
         function initializeView() {
