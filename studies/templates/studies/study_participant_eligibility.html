@@ -77,17 +77,17 @@
                                 <table id="age-range-details" class="table small">
                                     <tr>
                                         <td><label for="total-days">Total Range:</label></td>
-                                        <td><input id="total-days" class="form-control" type="number" min=0 max=7300>
+                                        <td><input id="total-days" class="form-control" type="number" min=0 max=7300 step=30>
                                             Days in total
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><label for="age-range-start">Current latest birthday:</label></td>
-                                        <td><input id="age-range-start" class="form-control" type="date"></td>
+                                        <td><input id="age-range-start" class="form-control" type="month"></td>
                                     </tr>
                                     <tr>
                                         <td><label for="age-range-end">Current earliest birthday:</label></td>
-                                        <td><input id="age-range-end" class="form-control" type="date"></td>
+                                        <td><input id="age-range-end" class="form-control" type="month"></td>
                                     </tr>
                                 </table>
                             </section>
@@ -249,6 +249,12 @@
     {#  TODO: Once we have a static asset pipeline, move this out to a javascript file so we can defer it. #}
     <script type="text/javascript">
         /*----------------
+         * Constants
+         --------------- */
+        const DATE_INPUT_MOMENT_FORMAT = 'YYYY-MM',
+              MOMENT_OF_PAGE_LOAD = moment();
+
+        /*----------------
          * Element handles.
          ---------------- */
         // Regular DOM
@@ -353,6 +359,25 @@
          * Listener functions.
          ------------------- */
 
+        function synchronizeWithAgeRangeInputs(values, handleIndex) {
+            let [start, end] = values,
+                startDays    = Math.round(start),
+                endDays      = Math.round(end);
+
+            totalDaysInput.value = Math.round(end) - Math.round(start);
+
+            switch (handleIndex) {
+                case 0:     // start handle
+                    ageRangeStartInput.value = moment().subtract(startDays, 'days').format(DATE_INPUT_MOMENT_FORMAT);
+                    break;
+                case 1:     // end handle
+                    ageRangeEndInput.value = moment().subtract(endDays, 'days').format(DATE_INPUT_MOMENT_FORMAT);
+                    break;
+                default:
+                    break;  // This should never happen.
+            }
+        }
+
 
 
 
@@ -365,25 +390,7 @@
                 AGE_RANGE_SLIDER_OPTIONS
             );
 
-            ageRangeSpecifier.noUiSlider.on('update', (values, handleIndex) => {
-                let [start, end] = values,
-                    startDays    = Math.round(start),
-                    endDays      = Math.round(end);
-
-                totalDaysInput.value = Math.round(end) - Math.round(start);
-
-                switch (handleIndex) {
-                    case 0:     // start handle
-                        ageRangeStartInput.value = moment().subtract(startDays, 'days').format('YYYY-MM-DD');
-                        console.log(ageRangeStartInput);
-                        break;
-                    case 1:     // end handle
-                        ageRangeEndInput.value = moment().subtract(endDays, 'days').format('YYYY-MM-DD');
-                        break;
-                    default:
-                        break;  // This should never happen.
-                }
-            });
+            ageRangeSpecifier.noUiSlider.on('update', synchronizeWithAgeRangeInputs);
 
             noUiSlider.create(
                 gestationalAgeRangeSpecifier,
@@ -392,6 +399,38 @@
 
             // also use steps api to have inputs control sliders
             // https://refreshless.com/nouislider/examples/#section-steps-api
+
+            [ageRangeStartInput, ageRangeEndInput].forEach((inputElement, handleIndex) => {
+                inputElement.addEventListener(
+                    'change',
+                    /**
+                     * Change the NoUISlider to match what's on the inputs - i.e. calculate how many days ago the given
+                     * date was.
+                     *
+                     * @param event
+                     */
+                    function(event) {
+                        let givenDate   = moment(new Date(this.value)),
+                            deltaInDays = moment.duration(MOMENT_OF_PAGE_LOAD.diff(givenDate)).asDays();
+
+                        ageRangeSpecifier.noUiSlider.setHandle(handleIndex, deltaInDays);
+                    }
+                );
+            });
+
+            totalDaysInput.addEventListener(
+                'change',
+                function() {
+                    let newDayRange = Math.floor(this.value);
+
+                    // Was not my decision to return integers as strings...
+                    let [startString, endString] = ageRangeSpecifier.noUiSlider.get(),
+                        currentStart             = parseInt(startString),
+                        currentEnd               = parseInt(endString);
+
+                    ageRangeSpecifier.noUiSlider.setHandle(1 /* end slider */, currentStart + newDayRange);
+                }
+            )
         }
 
         function initializeView() {
