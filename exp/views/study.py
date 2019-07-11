@@ -738,8 +738,16 @@ class StudyParticipantEligibilityManager(
         return query_model
 
     def get_context_data(self, **kwargs):
+        """Override (TBD if this is needed)."""
         context = super().get_context_data(**kwargs)
         return context
+
+    def post(self, request, *args, **kwargs):
+        """Handle form submission."""
+        from pprint import pprint
+
+        pprint(dict(request.POST))
+        return super().post(request, *args, **kwargs)
 
 
 class StudyUpdateView(

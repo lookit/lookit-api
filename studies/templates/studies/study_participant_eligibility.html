@@ -60,6 +60,7 @@
                                 <div id="gestational-age-range-specifier" class="range-specifier"></div>
                                 <label for="gestational-age-include-na">
                                     <input id="gestational-age-include-na"
+                                           name="gestational_age_include_na"
                                            type="checkbox"
                                            data-toggle="toggle"
                                            data-on="Include N/A"
@@ -77,17 +78,17 @@
                                 <table id="age-range-details" class="table small">
                                     <tr>
                                         <td><label for="total-days">Total Range:</label></td>
-                                        <td><input id="total-days" class="form-control" type="number" min=0 max=7300 step=30>
+                                        <td><input id="total-days" class="form-control" type="number" min=0 max=7300 step=1>
                                             Days in total
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><label for="age-range-start">Current latest birthday:</label></td>
-                                        <td><input id="age-range-start" class="form-control" type="month"></td>
+                                        <td><input id="age-range-start" class="form-control" type="date"></td>
                                     </tr>
                                     <tr>
                                         <td><label for="age-range-end">Current earliest birthday:</label></td>
-                                        <td><input id="age-range-end" class="form-control" type="month"></td>
+                                        <td><input id="age-range-end" class="form-control" type="date"></td>
                                     </tr>
                                 </table>
                             </section>
@@ -99,6 +100,7 @@
                                                name="gender"
                                                type="radio"
                                                autocomplete="off"
+                                               value="na"
                                                checked>
                                         Doesn't Matter
                                     </label>
@@ -149,7 +151,7 @@
                                         </th>
                                     </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="characteristics-switch-table">
                                     {%  comment %}
                                         Not optimal to use the form fields as a proxy this way.
                                         Maybe we can directly reference the fields in the context object?
@@ -161,7 +163,7 @@
                                                     <label class="btn btn-danger" for="exclude-{{ option.0 }}">
                                                         <input id="exclude-{{ option.0 }}"
                                                                name="exclude_conditions"
-                                                               type="radio"
+                                                               type="checkbox"
                                                                autocomplete="off"
                                                                value="{{ option.0 }}">
                                                         Exclude
@@ -169,8 +171,7 @@
                                                     <label class="btn btn-default active"
                                                            for="unspecified-{{ option.0 }}">
                                                         <input id="unspecified-{{ option.0 }}"
-                                                               name="group-{{ option.0 }}"
-                                                               type="radio"
+                                                               type="checkbox"
                                                                autocomplete="off"
                                                                checked>
                                                         N/A
@@ -178,7 +179,7 @@
                                                     <label class="btn btn-success" for="require-{{ option.0 }}">
                                                         <input id="require-{{ option.0 }}"
                                                                name="require_conditions"
-                                                               type="radio"
+                                                               type="checkbox"
                                                                value="{{ option.0 }}"
                                                                autocomplete="off">
                                                         Require
@@ -213,24 +214,30 @@
                                         </th>
                                     </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="languages-switch-table">
                                     {% for option in form.fields.require_languages.choices %}
                                         <tr>
                                             <td>
                                                 <div class="btn-group btn-group-xs" data-toggle="buttons">
                                                     <label class="btn btn-danger" for="exclude-{{ option.0 }}">
-                                                        <input id="exclude-{{ option.0 }}" name="group-{{ option.0 }}"
-                                                               type="radio" autocomplete="off">Exclude
+                                                        <input id="exclude-{{ option.0 }}"
+                                                               name="exclude_languages"
+                                                               type="checkbox"
+                                                               value="{{ option.0 }}"
+                                                               autocomplete="off">Exclude
                                                     </label>
                                                     <label class="btn btn-default active"
                                                            for="unspecified-{{ option.0 }}">
                                                         <input id="unspecified-{{ option.0 }}"
-                                                               name="group-{{ option.0 }}" type="radio"
+                                                               type="radio"
                                                                autocomplete="off" checked>N/A
                                                     </label>
                                                     <label class="btn btn-success" for="require-{{ option.0 }}">
-                                                        <input id="require-{{ option.0 }}" name="group-{{ option.0 }}"
-                                                               type="radio" autocomplete="off">Require
+                                                        <input id="require-{{ option.0 }}"
+                                                               name="include_languages"
+                                                               type="checkbox"
+                                                               value="{{ option.0 }}"
+                                                               autocomplete="off">Require
                                                     </label>
                                                 </div>
                                             </td>
@@ -251,8 +258,9 @@
         /*----------------
          * Constants
          --------------- */
-        const DATE_INPUT_MOMENT_FORMAT = 'YYYY-MM',
-              MOMENT_OF_PAGE_LOAD = moment();
+        const DATE_INPUT_MOMENT_FORMAT = 'YYYY-MM-DD',
+              MOMENT_OF_PAGE_LOAD      = moment(),
+              TWENTY_YEARS_AGO         = moment().subtract(20, 'year');
 
         /*----------------
          * Element handles.
@@ -262,9 +270,9 @@
               gestationalAgeRangeSpecifier = document.getElementById('gestational-age-range-specifier'),
               totalDaysInput               = document.getElementById('total-days'),
               ageRangeStartInput           = document.getElementById('age-range-start'),
-              ageRangeEndInput             = document.getElementById('age-range-end');
-
-        // jQuery
+              ageRangeEndInput             = document.getElementById('age-range-end'),
+              characteristicSwitches       = document.getElementById('characteristics-switch-table'),
+              languageSwitches             = document.getElementById('languages-switch-table');
 
 
         /* ----------------
@@ -274,20 +282,21 @@
             to(floatNumber) {
                 let days = Math.round(floatNumber),
                     duration = moment.duration(days, 'days');
-                return `${duration.years()} years, ${duration.months()} months`;
+                return `<span class="small">${duration.years()} years,<br />
+                        ${duration.months()} months, <br />
+                        ${duration.days()} days</span>`;
             },
         };
 
-        // Age range slider will calculate in days.
         const AGE_RANGE_SLIDER_OPTIONS = {
             start: [365 * 4, 365 * 11],  // 4 to 11 years old.
-            step: 30,
+            step: 1,
             behaviour: 'drag',
             connect: true,
             tooltips: [EX_UTERO_AGE_VALUE_FORMATTER, EX_UTERO_AGE_VALUE_FORMATTER],
             range: {
                 min: 0,
-                max: 365 * 20  // 20 years in days.
+                max: MOMENT_OF_PAGE_LOAD.diff(TWENTY_YEARS_AGO, 'days'),  // Account for leap years, etc.
             }
         };
 
@@ -355,42 +364,103 @@
         }
 
 
-        /* -------------------
-         * Listener functions.
-         ------------------- */
+        /* ------------------------
+         * Event Handler functions.
+         ------------------------ */
 
-        function synchronizeWithAgeRangeInputs(values, handleIndex) {
+        // This is a factory function to generate knob handlers.
+        function createBirthdayBoundsInputHandler(handleIndex, inputElement) {
+            /**
+             * Change the NoUISlider to match what's on the inputs - i.e. calculate how many days ago the given
+             * date was.
+             */
+            return () => {
+                let givenDate   = moment(new Date(inputElement.value)),
+                    deltaInDays = moment.duration(MOMENT_OF_PAGE_LOAD.diff(givenDate)).asDays();
+
+                ageRangeSpecifier.noUiSlider.setHandle(handleIndex, Math.round(deltaInDays));
+            }
+        }
+
+
+        function synchronizeBirthdayInputsWithSlider(values, handleIndex) {
             let [start, end] = values,
-                startDays    = Math.round(start),
-                endDays      = Math.round(end);
+                startDays    = parseInt(start),
+                endDays      = parseInt(end);
 
             totalDaysInput.value = Math.round(end) - Math.round(start);
 
             switch (handleIndex) {
                 case 0:     // start handle
-                    ageRangeStartInput.value = moment().subtract(startDays, 'days').format(DATE_INPUT_MOMENT_FORMAT);
+                    ageRangeStartInput.value = moment()
+                        .subtract(startDays, 'days')
+                        .format(DATE_INPUT_MOMENT_FORMAT);
                     break;
                 case 1:     // end handle
-                    ageRangeEndInput.value = moment().subtract(endDays, 'days').format(DATE_INPUT_MOMENT_FORMAT);
+                    ageRangeEndInput.value = moment()
+                        .subtract(endDays, 'days')
+                        .format(DATE_INPUT_MOMENT_FORMAT);
                     break;
                 default:
                     break;  // This should never happen.
             }
         }
 
+        function synchronizeSliderWithDayRangeInputs() {
+            let newDayRange = Math.floor(this.value);
+            console.log('inside day range inputs handler');
 
+            // Was not my decision to return integers as strings...
+            let [startString, endString] = ageRangeSpecifier.noUiSlider.get(),
+                currentStart             = parseInt(startString),
+                currentEnd               = parseInt(endString);
+
+            ageRangeSpecifier.noUiSlider.setHandle(1 /* end slider */, currentStart + newDayRange);
+        }
+
+
+        /**
+         * This function exists to allow type=checkbox inputs across characteristic and language switches so that we can
+         * use a singular name label for bitfield inputs (e.g. "include_languages") to gather all the
+         * language/characteristic choices into a single list for sensible FormData structure, while enforcing
+         * radio button-like behavior within the individual switch (i.e., don't allow the user to both include and
+         * exclude a given language/characteristic).
+         */
+        function uncheckSiblingBitfields(event) {
+
+            let target = event.target;
+
+            if (target.tagName === 'LABEL') { // Manual event delegation
+                let inputs = target.parentElement.querySelectorAll('input');
+
+                inputs.forEach(input => { // label active class, input checked
+                    if (input.parentNode === label) {
+                        input.checked = true;
+                        // It appears that bootstrap adds the active class based on the checkbox state, so no need to
+                        // manually modify.
+                    } else { // label inactive class, input unchecked
+                        input.checked = false;
+                        input.parentElement.classList.remove('active');
+                    }
+                });
+            }
+        }
 
 
         /* ------------------------
          * Initialization procedures.
          ------------------------ */
+        function loadInitialState(event) {
+
+        }
+
         function initializeComponents() {
             noUiSlider.create(
                 ageRangeSpecifier,
                 AGE_RANGE_SLIDER_OPTIONS
             );
 
-            ageRangeSpecifier.noUiSlider.on('update', synchronizeWithAgeRangeInputs);
+            ageRangeSpecifier.noUiSlider.on('update', synchronizeBirthdayInputsWithSlider);
 
             noUiSlider.create(
                 gestationalAgeRangeSpecifier,
@@ -401,36 +471,14 @@
             // https://refreshless.com/nouislider/examples/#section-steps-api
 
             [ageRangeStartInput, ageRangeEndInput].forEach((inputElement, handleIndex) => {
-                inputElement.addEventListener(
-                    'change',
-                    /**
-                     * Change the NoUISlider to match what's on the inputs - i.e. calculate how many days ago the given
-                     * date was.
-                     *
-                     * @param event
-                     */
-                    function(event) {
-                        let givenDate   = moment(new Date(this.value)),
-                            deltaInDays = moment.duration(MOMENT_OF_PAGE_LOAD.diff(givenDate)).asDays();
-
-                        ageRangeSpecifier.noUiSlider.setHandle(handleIndex, deltaInDays);
-                    }
-                );
+                inputElement.addEventListener('change', createBirthdayBoundsInputHandler(handleIndex, inputElement));
             });
 
-            totalDaysInput.addEventListener(
-                'change',
-                function() {
-                    let newDayRange = Math.floor(this.value);
+            totalDaysInput.addEventListener('change', synchronizeSliderWithDayRangeInputs);
 
-                    // Was not my decision to return integers as strings...
-                    let [startString, endString] = ageRangeSpecifier.noUiSlider.get(),
-                        currentStart             = parseInt(startString),
-                        currentEnd               = parseInt(endString);
+            characteristicSwitches.addEventListener('click', uncheckSiblingBitfields);
 
-                    ageRangeSpecifier.noUiSlider.setHandle(1 /* end slider */, currentStart + newDayRange);
-                }
-            )
+            languageSwitches.addEventListener('click', uncheckSiblingBitfields);
         }
 
         function initializeView() {
