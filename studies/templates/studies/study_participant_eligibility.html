@@ -97,7 +97,7 @@
                                 <div id="gender-selector" class="btn-group btn-group-justified" data-toggle="buttons">
                                     <label class="btn btn-default active" for="not-specified">
                                         <input id="not-specified"
-                                               name="gender"
+                                               name="gender_specification"
                                                type="radio"
                                                autocomplete="off"
                                                value="na"
@@ -106,7 +106,7 @@
                                     </label>
                                     <label class="btn btn-primary" for="other-only">
                                         <input id="other-only"
-                                               name="gender"
+                                               name="gender_specification"
                                                type="radio"
                                                value="o"
                                                autocomplete="off">
@@ -114,7 +114,7 @@
                                     </label>
                                     <label class="btn btn-primary" for="male-only">
                                         <input id="male-only"
-                                               name="gender"
+                                               name="gender_specification"
                                                type="radio"
                                                value="m"
                                                autocomplete="off">
@@ -122,7 +122,7 @@
                                     </label>
                                     <label class="btn btn-primary" for="female-only">
                                         <input id="female-only"
-                                               name="gender"
+                                               name="gender_specification"
                                                type="radio"
                                                value="f"
                                                autocomplete="off">
@@ -247,6 +247,15 @@
                                     </tbody>
                                 </table>
                             </section>
+                            {# Hidden inputs #}
+                            <input id="gestational-age-start" name="gestational_age_start" type="hidden">
+                            <input id="gestational-age-end" name="gestational_age_end" type="hidden">
+                            <input id="age-range-start-years" name="age-range-start-years" type="hidden">
+                            <input id="age-range-start-months" name="age-range-start-months" type="hidden">
+                            <input id="age-range-start-days" name="age-range-start-days" type="hidden">
+                            <input id="age-range-end-years" name="age-range-end-years" type="hidden">
+                            <input id="age-range-end-months" name="age-range-end-months" type="hidden">
+                            <input id="age-range-end-days" name="age-range-end-days" type="hidden">
                         </form>
                     </div>
                 </div>
@@ -266,13 +275,22 @@
          * Element handles.
          ---------------- */
         // Regular DOM
-        const ageRangeSpecifier            = document.getElementById('age-range-specifier'),
+        const participantEligibilityForm   = document.getElementById('edit-participant-eligibility'),
+              ageRangeSpecifier            = document.getElementById('age-range-specifier'),
               gestationalAgeRangeSpecifier = document.getElementById('gestational-age-range-specifier'),
               totalDaysInput               = document.getElementById('total-days'),
               ageRangeStartInput           = document.getElementById('age-range-start'),
               ageRangeEndInput             = document.getElementById('age-range-end'),
               characteristicSwitches       = document.getElementById('characteristics-switch-table'),
-              languageSwitches             = document.getElementById('languages-switch-table');
+              languageSwitches             = document.getElementById('languages-switch-table'),
+              gestationalAgeStartInput     = document.getElementById('gestational-age-start'),
+              gestationalAgeEndInput       = document.getElementById('gestational-age-end'),
+              ageRangeStartYearsInput      = document.getElementById('age-range-start-years'),
+              ageRangeStartMonthsInput     = document.getElementById('age-range-start-months'),
+              ageRangeStartDaysInput       = document.getElementById('age-range-start-days'),
+              ageRangeEndYearsInput        = document.getElementById('age-range-end-years'),
+              ageRangeEndMonthsInput       = document.getElementById('age-range-end-months'),
+              ageRangeEndDaysInput         = document.getElementById('age-range-end-days');
 
 
         /* ----------------
@@ -364,6 +382,26 @@
         }
 
 
+        function saveAgeRangeSliderStatesInHiddenFormInputs() {
+            let [ageRangeStartInDays, ageRangeEndInDays] = ageRangeSpecifier.noUiSlider.get().map(d => parseInt(d));
+            let [gestationalAgeStart, gestationalAgeEnd] = gestationalAgeRangeSpecifier.noUiSlider.get();
+
+            gestationalAgeStartInput.value = parseInt(gestationalAgeStart);
+            gestationalAgeEndInput.value   = parseInt(gestationalAgeEnd);
+
+            let ageRangeStartMoment = moment.duration(ageRangeStartInDays, 'days'),
+                ageRangeEndMoment   = moment.duration(ageRangeEndInDays, 'days');
+
+            ageRangeStartYearsInput.value  = ageRangeStartMoment.years();
+            ageRangeStartMonthsInput.value = ageRangeStartMoment.months();
+            ageRangeStartDaysInput.value   = ageRangeStartMoment.days();
+
+            ageRangeEndYearsInput.value    = ageRangeEndMoment.years();
+            ageRangeEndMonthsInput.value   = ageRangeEndMoment.months();
+            ageRangeEndDaysInput.value     = ageRangeEndMoment.days();
+        }
+
+
         /* ------------------------
          * Event Handler functions.
          ------------------------ */
@@ -418,6 +456,18 @@
             ageRangeSpecifier.noUiSlider.setHandle(1 /* end slider */, currentStart + newDayRange);
         }
 
+        /**
+         * Add requisite data to form from the rest of the fields.
+         */
+        function onFormSubmit(event) {
+            let form = this;
+
+            event.preventDefault();
+
+            saveAgeRangeSliderStatesInHiddenFormInputs();
+
+            form.submit();
+        }
 
         /**
          * This function exists to allow type=checkbox inputs across characteristic and language switches so that we can
@@ -434,7 +484,7 @@
                 let inputs = target.parentElement.querySelectorAll('input');
 
                 inputs.forEach(input => { // label active class, input checked
-                    if (input.parentNode === label) {
+                    if (input.parentNode === target) {
                         input.checked = true;
                         // It appears that bootstrap adds the active class based on the checkbox state, so no need to
                         // manually modify.
@@ -479,6 +529,8 @@
             characteristicSwitches.addEventListener('click', uncheckSiblingBitfields);
 
             languageSwitches.addEventListener('click', uncheckSiblingBitfields);
+
+            participantEligibilityForm.addEventListener('submit', onFormSubmit);
         }
 
         function initializeView() {
