@@ -744,10 +744,12 @@ class StudyParticipantEligibilityManager(
 
     def post(self, request, *args, **kwargs):
         """Handle form submission."""
-        from pprint import pprint
-
-        pprint(dict(request.POST))
         return super().post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse(
+            "exp:study-participant-eligibility", kwargs={"pk": self.object.study.id}
+        )
 
 
 class StudyUpdateView(

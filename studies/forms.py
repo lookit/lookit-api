@@ -186,6 +186,8 @@ class StudyBuildForm(forms.ModelForm):
 class EligibleParticipantQueryModelForm(ModelForm):
     """Modifying the stateful backing for the queryset for eligible participants."""
 
+    gender_specification = forms.IntegerField(required=False)
+
     # TODO: validation function
     # def clean(self):
     #     cleaned_data = super().clean()
@@ -210,11 +212,11 @@ class EligibleParticipantQueryModelForm(ModelForm):
         )
         model = EligibleParticipantQueryModel
 
-        widgets = {
-            "require_conditions": BitFieldCheckboxSelectMultiple(
-                attrs={"class": "column-checkbox"}
-            ),
-            "exclude_conditions": BitFieldCheckboxSelectMultiple(
-                attrs={"class": "column-checkbox"}
-            ),
-        }
+        # widgets = {
+        #     "require_conditions": BitFieldCheckboxSelectMultiple(
+        #         attrs={"class": "column-checkbox"}
+        #     ),
+        #     "exclude_conditions": BitFieldCheckboxSelectMultiple(
+        #         attrs={"class": "column-checkbox"}
+        #     ),
+        # }

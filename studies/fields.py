@@ -120,9 +120,14 @@ LANGUAGES = (
 # create a single source of truth from these!
 # As noted in studies/models.py, we want to enable the choice "Marked as N/A" (by participant) and have null be
 # "Nothing specified." (by the experimenter generating the query model).
-GENDER_CHOICES = Choices(
-    ("m", _("Male")), ("f", _("Female")), ("o", _("Other")), ("na", _("Not answered"))
+GENDER_OPTIONS = (
+    (0, "na", _("Not answered")),
+    (1, "o", _("Other")),
+    (2, "m", _("Male")),
+    (3, "f", _("Female")),
 )
+
+GENDER_CHOICES = Choices(*GENDER_OPTIONS)
 
 # Element #1 == database representation, #2 == valid python identifier used in code, #3 == human readable version.
 # See https://django-model-utils.readthedocs.io/en/latest/utilities.html#choices

@@ -51,8 +51,90 @@
                         <h1 class="panel-title">Edit Participant Eligibility</h1>
                     </div>
                     <div class="panel-body">
-                        <form method="POST" id="edit-participant-eligibility">
+                        <h3>Current Eligibility Criteria</h3>
+                        <div class="well well-sm">
+                            <dl class="dl-horizontal">
+                                <dt>Gestational Age</dt>
+                                <dd id="gestational-age-summary">
+                                    Born between <em>{{ object.get_gestational_age_start_display }}</em> and <em>{{ object.get_gestational_age_end_display }}</em> <em></em>
+                                </dd>
+                                <dt>Age Range</dt>
+                                <dd id="age-range-summary">
+                                    Between <em>{{ object.age_range_start_years }}</em> years,
+                                    <em>{{ object.age_range_start_months }}</em> months,
+                                    <em>{{ object.age_range_start_days }}</em> days old
+                                    and <em>{{ object.age_range_end_years }}</em> years,
+                                    <em>{{ object.age_range_end_months }}</em> months, and
+                                    <em>{{ object.age_range_end_days}}</em> days old
+                                </dd>
+                                <dt>Gender Specification</dt>
+                                <dd id="gender-specification-summary">
+                                    <em>{{ object.get_gender_specification_display|default_if_none:"Doesn't matter" }}</em>
+                                </dd>
+                                <dt>Characteristics</dt>
+                                <dd id="characteristics-summary">
+                                    {% if object.require_conditions.mask == 0 %}
+                                        No required characteristics/conditions.
+                                    {% else %}
+                                        Require:
+                                        <ul>
+                                            {% for bit in object.require_conditions %}
+                                                {% bit_is_set object.require_conditions forloop.counter0 as show_bit %}
+                                                {% if show_bit %}
+                                                    <li>{% get_bit_label object.require_conditions forloop.counter0 %}</li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                    {% if object.exclude_conditions.mask == 0 %}
+                                        No excluded characteristics/conditions.
+                                    {% else %}
+                                        Exclude:
+                                        <ul>
+                                            {% for bit in object.exclude_conditions %}
+                                                {% bit_is_set object.exclude_conditions forloop.counter0 as show_bit %}
+                                                {% if show_bit %}
+                                                    <li>{% get_bit_label object.exclude_conditions forloop.counter0 %}</li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </dd>
+                                <dt>Languages Spoken</dt>
+                                <dd id="languages-spoken-summary">
+                                    {% if object.require_languages.mask == 0 %}
+                                        No required languages.
+                                    {% else %}
+                                        Require:
+                                        <ul>
+                                            {% for bit in object.require_languages %}
+                                                {% bit_is_set object.require_languages forloop.counter0 as show_bit %}
+                                                {% if show_bit %}
+                                                    <li>{% get_bit_label object.require_languages forloop.counter0 %}</li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                    {% if object.exclude_languages.mask == 0 %}
+                                        No excluded conditions.
+                                    {% else %}
+                                        Exclude:
+                                        <ul>
+                                            {% for bit in object.exclude_languages %}
+                                                {% bit_is_set object.exclude_languages forloop.counter0 as show_bit %}
+                                                {% if show_bit %}
+                                                    <li>{% get_bit_label object.exclude_languages forloop.counter0 %}</li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                        <h3>Define New Eligibility Criteria</h3>
+                        <form method="POST" id="edit-participant-eligibility" class="well well-sm clearfix">
                             {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Proposed Changes</button>
                             <section class="form-group col-md-5">
                                 <h4>
                                     Gestational Age
@@ -94,21 +176,34 @@
                             </section>
                             <section class="form-group col-md-12">{# Gender - quad button group #}
                                 <h4>Gender Specification</h4>
+                                <div class="debug-django-choices">
+                                    {% for choice in object.gender_specification.choices %}
+                                        {{ choice }}
+                                    {% endfor %}
+                                </div>
                                 <div id="gender-selector" class="btn-group btn-group-justified" data-toggle="buttons">
-                                    <label class="btn btn-default active" for="not-specified">
-                                        <input id="not-specified"
+                                    <label class="btn btn-default active" for="does-not-matter">
+                                        <input id="does-not-matter"
                                                name="gender_specification"
                                                type="radio"
                                                autocomplete="off"
-                                               value="na"
+                                               value=""
                                                checked>
                                         Doesn't Matter
+                                    </label>
+                                    <label class="btn btn-warning" for="unspecified-only">
+                                        <input id="unspecified-only"
+                                               name="gender_specification"
+                                               type="radio"
+                                               autocomplete="off"
+                                               value="0">
+                                        Unspecified Only
                                     </label>
                                     <label class="btn btn-primary" for="other-only">
                                         <input id="other-only"
                                                name="gender_specification"
                                                type="radio"
-                                               value="o"
+                                               value="1"
                                                autocomplete="off">
                                         Other Only
                                     </label>
@@ -116,7 +211,7 @@
                                         <input id="male-only"
                                                name="gender_specification"
                                                type="radio"
-                                               value="m"
+                                               value="2"
                                                autocomplete="off">
                                         Male Only
                                     </label>
@@ -124,7 +219,7 @@
                                         <input id="female-only"
                                                name="gender_specification"
                                                type="radio"
-                                               value="f"
+                                               value="3"
                                                autocomplete="off">
                                         Female Only
                                     </label>
@@ -138,7 +233,7 @@
                                     <div id="control-all-conditions"
                                          class="btn-group btn-group-xs pull-right"
                                          role="group"
-                                         aria-label="Gender Selector">
+                                         aria-label="Toggle All Characteristics/Conditions">
                                         <button type="button" class="btn btn-danger">Exclude All</button>
                                         <button type="button" class="btn btn-default">Reset</button>
                                         <button type="button" class="btn btn-success">Require All</button>
@@ -200,7 +295,7 @@
                                     <div id="control-all-languages"
                                          class="btn-group btn-group-xs pull-right"
                                          role="group"
-                                         aria-label="Gender Selector">
+                                         aria-label="Toggle All Languages">
                                         <button type="button" class="btn btn-danger">Exclude All</button>
                                         <button type="button" class="btn btn-default">Reset</button>
                                         <button type="button" class="btn btn-success">Require All</button>
@@ -234,7 +329,7 @@
                                                     </label>
                                                     <label class="btn btn-success" for="require-{{ option.0 }}">
                                                         <input id="require-{{ option.0 }}"
-                                                               name="include_languages"
+                                                               name="require_languages"
                                                                type="checkbox"
                                                                value="{{ option.0 }}"
                                                                autocomplete="off">Require
@@ -250,12 +345,12 @@
                             {# Hidden inputs #}
                             <input id="gestational-age-start" name="gestational_age_start" type="hidden">
                             <input id="gestational-age-end" name="gestational_age_end" type="hidden">
-                            <input id="age-range-start-years" name="age-range-start-years" type="hidden">
-                            <input id="age-range-start-months" name="age-range-start-months" type="hidden">
-                            <input id="age-range-start-days" name="age-range-start-days" type="hidden">
-                            <input id="age-range-end-years" name="age-range-end-years" type="hidden">
-                            <input id="age-range-end-months" name="age-range-end-months" type="hidden">
-                            <input id="age-range-end-days" name="age-range-end-days" type="hidden">
+                            <input id="age-range-start-years" name="age_range_start_years" type="hidden">
+                            <input id="age-range-start-months" name="age_range_start_months" type="hidden">
+                            <input id="age-range-start-days" name="age_range_start_days" type="hidden">
+                            <input id="age-range-end-years" name="age_range_end_years" type="hidden">
+                            <input id="age-range-end-months" name="age_range_end_months" type="hidden">
+                            <input id="age-range-end-days" name="age_range_end_days" type="hidden">
                         </form>
                     </div>
                 </div>
