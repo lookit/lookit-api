@@ -276,6 +276,7 @@
                                                 <div class="btn-group btn-group-xs" data-toggle="buttons">
                                                     <label class="btn btn-danger {% if excluded_bit %}active{% endif %}" for="exclude-{{ option.0 }}">
                                                         <input id="exclude-{{ option.0 }}"
+                                                               class="exclusion"
                                                                name="exclude_conditions"
                                                                type="checkbox"
                                                                autocomplete="off"
@@ -294,6 +295,7 @@
                                                     <label class="btn btn-success {% if required_bit %}active{% endif %}"
                                                            for="require-{{ option.0 }}">
                                                         <input id="require-{{ option.0 }}"
+                                                               class="requirement"
                                                                name="require_conditions"
                                                                type="checkbox"
                                                                value="{{ option.0 }}"
@@ -303,7 +305,7 @@
                                                     </label>
                                                 </div>
                                             </td>
-                                            <td class="small">{{ option.1 }}</td>
+                                            <td class="small {% if required_bit %}bg-success{% elif excluded_bit %}bg-danger{% endif %}">{{ option.1 }}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -340,6 +342,7 @@
                                                 <div class="btn-group btn-group-xs" data-toggle="buttons">
                                                     <label class="btn btn-danger {% if excluded_bit %}active{% endif %}" for="exclude-{{ option.0 }}">
                                                         <input id="exclude-{{ option.0 }}"
+                                                               class="exclusion"
                                                                name="exclude_languages"
                                                                type="checkbox"
                                                                value="{{ option.0 }}"
@@ -357,6 +360,7 @@
                                                     </label>
                                                     <label class="btn btn-success {% if required_bit %}active{% endif %}" for="require-{{ option.0 }}">
                                                         <input id="require-{{ option.0 }}"
+                                                               class="requirement"
                                                                name="require_languages"
                                                                type="checkbox"
                                                                value="{{ option.0 }}"
@@ -366,7 +370,7 @@
                                                     </label>
                                                 </div>
                                             </td>
-                                            <td class="small">{{ option.1 }}</td>
+                                            <td class="small {% if required_bit %}bg-success{% elif excluded_bit %}bg-danger{% endif %}">{{ option.1 }}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -627,21 +631,50 @@
          */
         function uncheckSiblingBitfields(event) {
 
+            // We really have to hand-hold here since browsers don't actually have a native understanding of tri-state
+            // components, much less an array thereof.
+
             let target = event.target;
 
             if (target.tagName === 'LABEL') { // Manual event delegation
-                let inputs = target.parentElement.querySelectorAll('input');
+                let buttonGroup      = target.parentElement,
+                    requireInput     = buttonGroup.querySelector('input.requirement'),
+                    excludeInput     = buttonGroup.querySelector('input.exclusion'),
+                    unspecifiedInput = buttonGroup.querySelector('input:not(.requirement):not(.exclusion)'),
+                    buttonClasses    = target.children[0].classList,
+                    titleCell        = buttonGroup.parentElement.parentElement.children[1];
 
-                inputs.forEach(input => { // label active class, input checked
-                    if (input.parentNode === target) {
-                        input.checked = true;
-                        // It appears that bootstrap adds the active class based on the checkbox state, so no need to
-                        // manually modify.
-                    } else { // label inactive class, input unchecked
-                        input.checked = false;
-                        input.parentElement.classList.remove('active');
-                    }
-                });
+                // Removing the active class before checking induces radio-button like behavior by tricking bootstrap's
+                // data-toggle behavior into thinking this is the first time something's been checked.
+                [requireInput, excludeInput, unspecifiedInput]
+                    .forEach(input => input.parentElement.classList.remove('active'));
+
+                switch (buttonClasses.value) {
+                    case 'requirement':
+                        requireInput.checked     = true;
+                        excludeInput.checked     = false;
+                        unspecifiedInput.checked = false;
+
+                        titleCell.classList.add('bg-success');
+                        titleCell.classList.remove('bg-danger');
+                        break;
+                    case 'exclusion':
+                        requireInput.checked     = false;
+                        excludeInput.checked     = true;
+                        unspecifiedInput.checked = false;
+
+                        titleCell.classList.add('bg-danger');
+                        titleCell.classList.remove('bg-success');
+                        break;
+                    default:  // Unspecified
+                        requireInput.checked     = false;
+                        excludeInput.checked     = false;
+                        unspecifiedInput.checked = true;
+
+                        titleCell.classList.remove('bg-danger');
+                        titleCell.classList.remove('bg-success');
+                        break;
+                }
             }
         }
 
