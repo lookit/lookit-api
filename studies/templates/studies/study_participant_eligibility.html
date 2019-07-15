@@ -153,7 +153,7 @@
                                            data-offstyle="danger"
                                            data-size="mini"
                                            data-width="120"
-                                           checked>
+                                           {% if object.gestational_age_include_na %}checked{% endif %}>
                                 </label>
                             </section>
                             <section class="form-group col-md-push-1 col-md-6">{# Age Range -- slider #}
@@ -649,8 +649,27 @@
         /* ------------------------
          * Initialization procedures.
          ------------------------ */
-        function loadInitialState(event) {
+        function loadInitialState() {
+            // Age Range Inputs
+            let ageRangeStartInDays = moment.duration({
+               years: ageRangeStartYearsInput.value,
+               months: ageRangeStartMonthsInput.value,
+               days: ageRangeStartDaysInput.value,
+            }).asDays();
 
+            let ageRangeEndInDays = moment.duration({
+               years: ageRangeEndYearsInput.value,
+               months: ageRangeEndMonthsInput.value,
+               days: ageRangeEndDaysInput.value,
+            }).asDays();
+
+            ageRangeSpecifier.noUiSlider.set([ageRangeStartInDays, ageRangeEndInDays]);
+
+            // Gestational Age Inputs
+
+            gestationalAgeRangeSpecifier.noUiSlider.set(
+                [gestationalAgeStartInput.value, gestationalAgeEndInput.value]
+            );
         }
 
         function initializeComponents() {
@@ -684,6 +703,7 @@
 
         function initializeView() {
             initializeComponents();
+            loadInitialState();
         }
 
         initializeView();
