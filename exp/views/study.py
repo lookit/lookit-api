@@ -737,15 +737,6 @@ class StudyParticipantEligibilityManager(
         )
         return query_model
 
-    def get_context_data(self, **kwargs):
-        """Override (TBD if this is needed)."""
-        context = super().get_context_data(**kwargs)
-        return context
-
-    def post(self, request, *args, **kwargs):
-        """Handle form submission."""
-        return super().post(request, *args, **kwargs)
-
     def get_success_url(self):
         return reverse(
             "exp:study-participant-eligibility", kwargs={"pk": self.object.study.id}

@@ -56,7 +56,9 @@
                             <dl class="dl-horizontal">
                                 <dt>Gestational Age</dt>
                                 <dd id="gestational-age-summary">
-                                    Born between <em>{{ object.get_gestational_age_start_display }}</em> and <em>{{ object.get_gestational_age_end_display }}</em> <em></em>
+                                    Born between <em>{{ object.get_gestational_age_start_display }}</em>
+                                    and <em>{{ object.get_gestational_age_end_display }}</em>
+                                    ({% if not object.gestational_age_include_na %}don't {% endif %}include N/A)
                                 </dd>
                                 <dt>Age Range</dt>
                                 <dd id="age-range-summary">
@@ -74,7 +76,7 @@
                                 <dt>Characteristics</dt>
                                 <dd id="characteristics-summary">
                                     {% if object.require_conditions.mask == 0 %}
-                                        No required characteristics/conditions.
+                                        <p>No required characteristics/conditions.</p>
                                     {% else %}
                                         Require:
                                         <ul>
@@ -87,7 +89,7 @@
                                         </ul>
                                     {% endif %}
                                     {% if object.exclude_conditions.mask == 0 %}
-                                        No excluded characteristics/conditions.
+                                        <p>No excluded characteristics/conditions.</p>
                                     {% else %}
                                         Exclude:
                                         <ul>
@@ -103,7 +105,7 @@
                                 <dt>Languages Spoken</dt>
                                 <dd id="languages-spoken-summary">
                                     {% if object.require_languages.mask == 0 %}
-                                        No required languages.
+                                        <p>No required languages.</p>
                                     {% else %}
                                         Require:
                                         <ul>
@@ -116,7 +118,7 @@
                                         </ul>
                                     {% endif %}
                                     {% if object.exclude_languages.mask == 0 %}
-                                        No excluded conditions.
+                                        <p>No excluded languages.</p>
                                     {% else %}
                                         Exclude:
                                         <ul>
@@ -181,46 +183,61 @@
                                         {{ choice }}
                                     {% endfor %}
                                 </div>
+                                {% comment %}
+                                The values below - na, 1, 2, 3, -  are defined in studies/fields.py, copied here for
+                                clarity:
+
+                                GENDER_OPTIONS = (
+                                    (0, "na", _("Not answered")),
+                                    (1, "o", _("Other")),
+                                    (2, "m", _("Male")),
+                                    (3, "f", _("Female")),
+                                )
+                                {% endcomment %}
                                 <div id="gender-selector" class="btn-group btn-group-justified" data-toggle="buttons">
-                                    <label class="btn btn-default active" for="does-not-matter">
+                                    <label class="btn btn-default {% if object.gender_specification == None %}active{% endif %}" for="does-not-matter">
                                         <input id="does-not-matter"
                                                name="gender_specification"
                                                type="radio"
                                                autocomplete="off"
                                                value=""
-                                               checked>
+                                               {% if object.gender_specification == None %}checked{% endif %}>
                                         Doesn't Matter
                                     </label>
-                                    <label class="btn btn-warning" for="unspecified-only">
+                                    <label class="btn btn-warning {% if object.gender_specification == 0 %}active{% endif %}" for="unspecified-only">
                                         <input id="unspecified-only"
                                                name="gender_specification"
                                                type="radio"
                                                autocomplete="off"
-                                               value="0">
+                                               value="0"
+                                               {% if object.gender_specification == 0 %}checked{% endif %}>
                                         Unspecified Only
                                     </label>
-                                    <label class="btn btn-primary" for="other-only">
+                                    <label class="btn btn-primary {% if object.gender_specification == 1 %}active{% endif %}" for="other-only">
                                         <input id="other-only"
                                                name="gender_specification"
                                                type="radio"
+                                               autocomplete="off"
                                                value="1"
-                                               autocomplete="off">
+                                               {% if object.gender_specification == 1 %}checked{% endif %}>
                                         Other Only
                                     </label>
-                                    <label class="btn btn-primary" for="male-only">
+                                    <label class="btn btn-primary {% if object.gender_specification == 2 %}active{% endif %}" for="male-only">
                                         <input id="male-only"
                                                name="gender_specification"
                                                type="radio"
+                                               autocomplete="off"
                                                value="2"
-                                               autocomplete="off">
+                                               {% if object.gender_specification == 2 %}checked{% endif %}>
                                         Male Only
                                     </label>
-                                    <label class="btn btn-primary" for="female-only">
+                                    <label class="btn btn-primary {% if object.gender_specification == 3 %}active{% endif %}" for="female-only">
                                         <input id="female-only"
                                                name="gender_specification"
                                                type="radio"
+                                               autocomplete="off"
                                                value="3"
-                                               autocomplete="off">
+                                               {% if object.gender_specification == 3 %}checked{% endif %}>
                                         Female Only
                                     </label>
                                 </div>
@@ -252,31 +269,36 @@
                                         Maybe we can directly reference the fields in the context object?
                                     {% endcomment %}
                                     {% for option in form.fields.require_conditions.choices %}
+                                        {% bit_is_set object.require_conditions forloop.counter0 as required_bit %}
+                                        {% bit_is_set object.exclude_conditions forloop.counter0 as excluded_bit %}
                                         <tr>
                                             <td>
                                                 <div class="btn-group btn-group-xs" data-toggle="buttons">
-                                                    <label class="btn btn-danger" for="exclude-{{ option.0 }}">
+                                                    <label class="btn btn-danger {% if excluded_bit %}active{% endif %}" for="exclude-{{ option.0 }}">
                                                         <input id="exclude-{{ option.0 }}"
                                                                name="exclude_conditions"
                                                                type="checkbox"
                                                                autocomplete="off"
-                                                               value="{{ option.0 }}">
+                                                               value="{{ option.0 }}"
+                                                               {% if excluded_bit %}checked{% endif %}>
                                                         Exclude
                                                     </label>
-                                                    <label class="btn btn-default active"
+                                                    <label class="btn btn-default {% if not required_bit and not excluded_bit %}active{% endif %}"
                                                            for="unspecified-{{ option.0 }}">
                                                         <input id="unspecified-{{ option.0 }}"
                                                                type="checkbox"
                                                                autocomplete="off"
-                                                               checked>
+                                                               {% if not required_bit and not excluded_bit %}checked{% endif %}>
                                                         N/A
                                                     </label>
-                                                    <label class="btn btn-success" for="require-{{ option.0 }}">
+                                                    <label class="btn btn-success {% if required_bit %}active{% endif %}"
+                                                           for="require-{{ option.0 }}">
                                                         <input id="require-{{ option.0 }}"
                                                                name="require_conditions"
                                                                type="checkbox"
                                                                value="{{ option.0 }}"
-                                                               autocomplete="off">
+                                                               autocomplete="off"
+                                                               {% if required_bit %}checked{% endif %}>
                                                         Require
                                                     </label>
                                                 </div>
@@ -311,28 +333,36 @@
                                     </thead>
                                     <tbody id="languages-switch-table">
                                     {% for option in form.fields.require_languages.choices %}
+                                        {% bit_is_set object.require_languages forloop.counter0 as required_bit %}
+                                        {% bit_is_set object.exclude_languages forloop.counter0 as excluded_bit %}
                                         <tr>
                                             <td>
                                                 <div class="btn-group btn-group-xs" data-toggle="buttons">
-                                                    <label class="btn btn-danger" for="exclude-{{ option.0 }}">
+                                                    <label class="btn btn-danger {% if excluded_bit %}active{% endif %}" for="exclude-{{ option.0 }}">
                                                         <input id="exclude-{{ option.0 }}"
                                                                name="exclude_languages"
                                                                type="checkbox"
                                                                value="{{ option.0 }}"
-                                                               autocomplete="off">Exclude
+                                                               autocomplete="off"
+                                                               {% if excluded_bit %}checked{% endif %}>
+                                                        Exclude
                                                     </label>
-                                                    <label class="btn btn-default active"
+                                                    <label class="btn btn-default {% if not required_bit and not excluded_bit %}active{% endif %}"
                                                            for="unspecified-{{ option.0 }}">
                                                         <input id="unspecified-{{ option.0 }}"
                                                                type="radio"
-                                                               autocomplete="off" checked>N/A
+                                                               autocomplete="off"
+                                                               {% if not required_bit and not excluded_bit %}checked{% endif %}>
+                                                        N/A
                                                     </label>
-                                                    <label class="btn btn-success" for="require-{{ option.0 }}">
+                                                    <label class="btn btn-success {% if required_bit %}active{% endif %}" for="require-{{ option.0 }}">
                                                         <input id="require-{{ option.0 }}"
                                                                name="require_languages"
                                                                type="checkbox"
                                                                value="{{ option.0 }}"
-                                                               autocomplete="off">Require
+                                                               autocomplete="off"
+                                                               {% if required_bit %}checked{% endif %}>
+                                                        Require
                                                     </label>
                                                 </div>
                                             </td>
@@ -343,14 +373,38 @@
                                 </table>
                             </section>
                             {# Hidden inputs #}
-                            <input id="gestational-age-start" name="gestational_age_start" type="hidden">
-                            <input id="gestational-age-end" name="gestational_age_end" type="hidden">
-                            <input id="age-range-start-years" name="age_range_start_years" type="hidden">
-                            <input id="age-range-start-months" name="age_range_start_months" type="hidden">
-                            <input id="age-range-start-days" name="age_range_start_days" type="hidden">
-                            <input id="age-range-end-years" name="age_range_end_years" type="hidden">
-                            <input id="age-range-end-months" name="age_range_end_months" type="hidden">
-                            <input id="age-range-end-days" name="age_range_end_days" type="hidden">
+                            <input id="gestational-age-start"
+                                   name="gestational_age_start"
+                                   type="hidden"
+                                   value="{{ object.gestational_age_start }}">
+                            <input id="gestational-age-end"
+                                   name="gestational_age_end"
+                                   type="hidden"
+                                   value="{{ object.gestational_age_end }}">
+                            <input id="age-range-start-years"
+                                   name="age_range_start_years"
+                                   type="hidden"
+                                   value="{{ object.age_range_start_years }}">
+                            <input id="age-range-start-months"
+                                   name="age_range_start_months"
+                                   type="hidden"
+                                   value="{{ object.age_range_start_months }}">
+                            <input id="age-range-start-days"
+                                   name="age_range_start_days"
+                                   type="hidden"
+                                   value="{{ object.age_range_start_days }}">
+                            <input id="age-range-end-years"
+                                   name="age_range_end_years"
+                                   type="hidden"
+                                   value="{{ object.age_range_end_years }}">
+                            <input id="age-range-end-months"
+                                   name="age_range_end_months"
+                                   type="hidden"
+                                   value="{{ object.age_range_end_months }}">
+                            <input id="age-range-end-days"
+                                   name="age_range_end_days"
+                                   type="hidden"
+                                   value="{{ object.age_range_end_days }}">
                         </form>
                     </div>
                 </div>
