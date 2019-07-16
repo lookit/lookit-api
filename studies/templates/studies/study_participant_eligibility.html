@@ -251,9 +251,9 @@
                                          class="btn-group btn-group-xs pull-right"
                                          role="group"
                                          aria-label="Toggle All Characteristics/Conditions">
-                                        <button type="button" class="btn btn-danger">Exclude All</button>
-                                        <button type="button" class="btn btn-default">Reset</button>
-                                        <button type="button" class="btn btn-success">Require All</button>
+                                        <button type="button" class="btn btn-danger" value="exclude-all">Exclude All</button>
+                                        <button type="button" class="btn btn-default" value="reset-all">Reset</button>
+                                        <button type="button" class="btn btn-success" value="require-all">Require All</button>
                                     </div>
                                 </h4>
                                 <table class="table">
@@ -320,9 +320,9 @@
                                          class="btn-group btn-group-xs pull-right"
                                          role="group"
                                          aria-label="Toggle All Languages">
-                                        <button type="button" class="btn btn-danger">Exclude All</button>
-                                        <button type="button" class="btn btn-default">Reset</button>
-                                        <button type="button" class="btn btn-success">Require All</button>
+                                        <button type="button" class="btn btn-danger" value="exclude-all">Exclude All</button>
+                                        <button type="button" class="btn btn-default" value="reset-all">Reset</button>
+                                        <button type="button" class="btn btn-success" value="require-all">Require All</button>
                                     </div>
                                 </h4>
                                 <table class="table">
@@ -443,7 +443,9 @@
               ageRangeStartDaysInput       = document.getElementById('age-range-start-days'),
               ageRangeEndYearsInput        = document.getElementById('age-range-end-years'),
               ageRangeEndMonthsInput       = document.getElementById('age-range-end-months'),
-              ageRangeEndDaysInput         = document.getElementById('age-range-end-days');
+              ageRangeEndDaysInput         = document.getElementById('age-range-end-days'),
+              globalConditionControl       = document.getElementById('control-all-conditions'),
+              globalLanguageControl        = document.getElementById('control-all-languages');
 
 
         /* ----------------
@@ -574,6 +576,39 @@
         }
 
 
+        /**
+         * Creates an event listener that flips all the bits on a table of tri-state elements.
+         *
+         * @param tableBodyElement
+         * @return {Function}
+         */
+        function createGlobalSwitchHandler(tableBodyElement) {
+            /**
+             * This will be an event listener on a control-all-* button group element.
+             */
+            return (event) => {
+                let target = event.target;
+
+                if (target.tagName === 'BUTTON') { // Manual event delegation
+                    // 1) Figure out what action to take
+                    let action                     = target.value,
+                        // a. "Query selector fragment" just a convenient way to parsimoniously target elements.
+                        inputQuerySelectorFragment = action === 'exclude-all' ? '.exclusion'
+                                                   : action === 'require-all' ? '.requirement'
+                                                   : ':not(.exclusion):not(.requirement)';
+
+                    // 2) Make appropriate labels active
+                    tableBodyElement.querySelectorAll(`input${inputQuerySelectorFragment}`).forEach(input => {
+                        let labelElement = input.parentElement;
+                        // XXX: optimizing for clarity here rather than efficiency, since we have very few elements.
+                        handleLabelSelectionForTristateComponent(labelElement);
+                        labelElement.classList.add('active'); // we're not clicking directly so we have to add active.
+                    });
+                }
+            }
+        }
+
+
         function synchronizeBirthdayInputsWithSlider(values, handleIndex) {
             let [start, end] = values,
                 startDays    = parseInt(start),
@@ -622,6 +657,47 @@
             form.submit();
         }
 
+        function handleLabelSelectionForTristateComponent(labelElement) {
+            let buttonGroup = labelElement.parentElement,
+                requireInput = buttonGroup.querySelector('input.requirement'),
+                excludeInput = buttonGroup.querySelector('input.exclusion'),
+                unspecifiedInput = buttonGroup.querySelector('input:not(.requirement):not(.exclusion)'),
+                buttonClasses = labelElement.children[0].classList,
+                labelCell = buttonGroup.parentElement.parentElement.children[1];
+
+            // Removing the active class before checking induces radio-button like behavior by tricking bootstrap's
+            // data-toggle behavior into thinking this is the first time something's been checked.
+            [requireInput, excludeInput, unspecifiedInput]
+                .forEach(input => input.parentElement.classList.remove('active'));
+
+            switch (buttonClasses.value) {
+                case 'requirement':
+                    requireInput.checked = true;
+                    excludeInput.checked = false;
+                    unspecifiedInput.checked = false;
+
+                    labelCell.classList.add('bg-success');
+                    labelCell.classList.remove('bg-danger');
+                    break;
+                case 'exclusion':
+                    requireInput.checked = false;
+                    excludeInput.checked = true;
+                    unspecifiedInput.checked = false;
+
+                    labelCell.classList.add('bg-danger');
+                    labelCell.classList.remove('bg-success');
+                    break;
+                default:  // Unspecified
+                    requireInput.checked = false;
+                    excludeInput.checked = false;
+                    unspecifiedInput.checked = true;
+
+                    labelCell.classList.remove('bg-danger');
+                    labelCell.classList.remove('bg-success');
+                    break;
+            }
+        }
+
         /**
          * This function exists to allow type=checkbox inputs across characteristic and language switches so that we can
          * use a singular name label for bitfield inputs (e.g. "include_languages") to gather all the
@@ -629,52 +705,14 @@
          * radio button-like behavior within the individual switch (i.e., don't allow the user to both include and
          * exclude a given language/characteristic).
          */
-        function uncheckSiblingBitfields(event) {
+        function handleTristateSelection(event) {
 
             // We really have to hand-hold here since browsers don't actually have a native understanding of tri-state
             // components, much less an array thereof.
-
             let target = event.target;
 
             if (target.tagName === 'LABEL') { // Manual event delegation
-                let buttonGroup      = target.parentElement,
-                    requireInput     = buttonGroup.querySelector('input.requirement'),
-                    excludeInput     = buttonGroup.querySelector('input.exclusion'),
-                    unspecifiedInput = buttonGroup.querySelector('input:not(.requirement):not(.exclusion)'),
-                    buttonClasses    = target.children[0].classList,
-                    titleCell        = buttonGroup.parentElement.parentElement.children[1];
-
-                // Removing the active class before checking induces radio-button like behavior by tricking bootstrap's
-                // data-toggle behavior into thinking this is the first time something's been checked.
-                [requireInput, excludeInput, unspecifiedInput]
-                    .forEach(input => input.parentElement.classList.remove('active'));
-
-                switch (buttonClasses.value) {
-                    case 'requirement':
-                        requireInput.checked     = true;
-                        excludeInput.checked     = false;
-                        unspecifiedInput.checked = false;
-
-                        titleCell.classList.add('bg-success');
-                        titleCell.classList.remove('bg-danger');
-                        break;
-                    case 'exclusion':
-                        requireInput.checked     = false;
-                        excludeInput.checked     = true;
-                        unspecifiedInput.checked = false;
-
-                        titleCell.classList.add('bg-danger');
-                        titleCell.classList.remove('bg-success');
-                        break;
-                    default:  // Unspecified
-                        requireInput.checked     = false;
-                        excludeInput.checked     = false;
-                        unspecifiedInput.checked = true;
-
-                        titleCell.classList.remove('bg-danger');
-                        titleCell.classList.remove('bg-success');
-                        break;
-                }
+                handleLabelSelectionForTristateComponent(target);
             }
         }
 
@@ -718,8 +756,6 @@
                 GESTATIONAL_AGE_RANGE_SLIDER_OPTIONS
             );
 
-            // also use steps api to have inputs control sliders
-            // https://refreshless.com/nouislider/examples/#section-steps-api
 
             [ageRangeStartInput, ageRangeEndInput].forEach((inputElement, handleIndex) => {
                 inputElement.addEventListener('change', createBirthdayBoundsInputHandler(handleIndex, inputElement));
@@ -727,11 +763,14 @@
 
             totalDaysInput.addEventListener('change', synchronizeSliderWithDayRangeInputs);
 
-            characteristicSwitches.addEventListener('click', uncheckSiblingBitfields);
+            characteristicSwitches.addEventListener('click', handleTristateSelection);
 
-            languageSwitches.addEventListener('click', uncheckSiblingBitfields);
+            languageSwitches.addEventListener('click', handleTristateSelection);
 
             participantEligibilityForm.addEventListener('submit', onFormSubmit);
+
+            globalConditionControl.addEventListener('click', createGlobalSwitchHandler(characteristicSwitches));
+            globalLanguageControl.addEventListener('click', createGlobalSwitchHandler(languageSwitches));
         }
 
         function initializeView() {
