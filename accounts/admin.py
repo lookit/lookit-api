@@ -1,14 +1,25 @@
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
+from bitfield import BitField
+from bitfield.forms import BitFieldCheckboxSelectMultiple
+from bitfield.admin import BitFieldListFilter
+
 
 from accounts.models import Child, DemographicData, Organization, User
 
 
 class ChildAdmin(GuardedModelAdmin):
     list_display = ("id", "uuid", "given_name", "birthday", "user")
-    list_filter = ("id", "uuid")
+    list_filter = (
+        "id",
+        "uuid",
+        # ("existing_conditions", BitFieldListFilter),
+        # ("multiple_birth", BitFieldListFilter),
+        # leave out until https://github.com/disqus/django-bitfield/issues/64 is fixed
+    )
     date_hierarchy = "birthday"
     search_fields = ["uuid", "given_name"]
+    formfield_overrides = {BitField: {"widget": BitFieldCheckboxSelectMultiple}}
 
 
 class UserAdmin(GuardedModelAdmin):

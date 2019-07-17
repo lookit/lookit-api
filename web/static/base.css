@@ -29,7 +29,7 @@ body {
 }
 .lookit-row {
     padding: 1em 0;
-  
+
 }
 .lookit-page-title {
     background: #337ab7;
@@ -51,7 +51,7 @@ footer .social-link {
 }
 
 .footer-row .funding-statement {
-	font-size: 75%;	
+	font-size: 75%;
 }
 
 .footer-row .footer-resources ul {
@@ -222,6 +222,17 @@ button.account-row {
     margin-top: 20px;
 }
 
+/**
+ Column checkbox fixes:
+ https://number1.co.za/django-displaying-checkboxselectmulatiple-in-columns-with-bootstrap/
+ */
+.column-checkbox .checkbox {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 0;
+    width: 24%;
+}
+
 
 /* STUDIES PAGE */
 .study-list-panel {
@@ -330,7 +341,7 @@ a.no-link-formatting {
     line-height: 25px;
     font-size: 18px;
     font-weight: 300;
-   
+
 }
 .study-detail-info {
     margin-top: 30px;

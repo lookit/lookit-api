@@ -1,5 +1,7 @@
-from django import template
 import json
+
+from django import template
+
 
 register = template.Library()
 
@@ -40,6 +42,16 @@ def values_list_as_json(queryset, attribute):
         ),
         default=str,
     )
+
+
+@register.simple_tag
+def bit_is_set(bit_handler, bit_number):
+    return bit_handler.get_bit(bit_number).is_set
+
+
+@register.simple_tag
+def get_bit_label(bit_handler, bit_number):
+    return bit_handler.get_label(bit_number)
 
 
 @register.filter

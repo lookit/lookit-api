@@ -14,6 +14,7 @@ import os
 
 from django.contrib.messages import constants as messages
 
+
 MODE = "prod"  # Overridden by local settings.
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -72,7 +73,8 @@ INSTALLED_APPS = [
     "accounts",
     "studies",
     "exp",
-    # at the bottom so overriding form widget templates have a fallback
+    # at the bottom so overriding form widget templates have a fallback -
+    # See https://stackoverflow.com/a/46836189
     "django.forms",
     "django.contrib.admin",
     # at the bottom so overriding templates is possible
