@@ -53,10 +53,11 @@ MULTIPLE_BIRTH_CHOICES = Choices(
 )
 
 
+# Ranked by # of speakers globally, except English is on top.
 LANGUAGES = (
+    ("en", "English"),
     ("cmn", "Mandarin"),
     ("es", "Spanish"),
-    ("en", "English"),
     ("hi", "Hindi"),
     ("bn", "Bengali"),
     ("pt", "Portuguese"),
