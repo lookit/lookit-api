@@ -462,13 +462,15 @@
         };
 
         const AGE_RANGE_SLIDER_OPTIONS = {
-            start: [365 * 4, 365 * 11],  // 4 to 11 years old.
+            start: [30 * 4, 365],  // Defaults
             step: 1,
             behaviour: 'drag',
             connect: true,
             tooltips: [EX_UTERO_AGE_VALUE_FORMATTER, EX_UTERO_AGE_VALUE_FORMATTER],
             range: {
                 min: 0,
+                '30%': 365,
+                '60%': 365 * 3,
                 max: MOMENT_OF_PAGE_LOAD.diff(TWENTY_YEARS_AGO, 'days'),  // Account for leap years, etc.
             }
         };
