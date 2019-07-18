@@ -695,11 +695,28 @@ section.form-group.col-md-12 {
 }
 
 #age-range-specifier {
-    margin: 7em 0 2em;
+    margin: 7em 0 4.5em;
+}
+
+#age-range-specifier .noUi-pips-horizontal p.tiny-ticks {
+    font: 100 10px Arial;
+    transform: rotate(-45deg);
+    position: relative;
+    top: 20px;
+    right:15px;
+}
+
+/**
+ Note - nth-of-type is fragile here. We don't really have an "nth-of-class" available to us in CSS so that kind of
+ screws us over.
+ */
+#age-range-specifier .noUi-value-horizontal:nth-of-type(2) p.tiny-ticks {
+    top: 30px;
+    right:15px;
 }
 
 #gestational-age-range-specifier {
-    height: 250px;
+    height: 320px;
     margin: 2em 0 1em;
     left: 50%;
 }
