@@ -160,20 +160,96 @@
                                 <h4>Age Range</h4>
                                 <div id="age-range-specifier" class="range-specifier"></div>
                                 <table id="age-range-details" class="table small">
-                                    <tr>
-                                        <td><label for="total-days">Total Range:</label></td>
-                                        <td><input id="total-days" class="form-control" type="number" min=0 max=7300 step=1>
-                                            Days in total
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="age-range-start">Current latest birthday:</label></td>
-                                        <td><input id="age-range-start" class="form-control" type="date"></td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="age-range-end">Current earliest birthday:</label></td>
-                                        <td><input id="age-range-end" class="form-control" type="date"></td>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th>Lower Bound</th>
+                                            <th>Upper Bound</th>
+                                            <th>Unit of Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <label for="age-range-start-years" class="sr-only">
+                                                    Age range start in years
+                                                </label>
+                                                <input id="age-range-start-years"
+                                                       class="form-control"
+                                                       name="age_range_start_years"
+                                                       type="number"
+                                                       min=0
+                                                       value={{ object.age_range_start_years }}>
+                                            </td>
+                                            <td>
+                                                <label for="age-range-end-years" class="sr-only">
+                                                    Age range end in years
+                                                </label>
+                                                <input id="age-range-end-years"
+                                                       class="form-control"
+                                                       name="age_range_end_years"
+                                                       type="number"
+                                                       min=0
+                                                       value={{ object.age_range_end_years }}>
+                                            </td>
+                                            <td>
+                                                Years
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label for="age-range-start-months" class="sr-only">
+                                                    Age range start in months
+                                                </label>
+                                                <input id="age-range-start-months"
+                                                       class="form-control"
+                                                       name="age_range_start_months"
+                                                       type="number"
+                                                       min=0
+                                                       max=11
+                                                       value={{ object.age_range_start_months }}>
+                                            </td>
+                                            <td>
+                                                <label for="age-range-end-months" class="sr-only">
+                                                    Age range start in months
+                                                </label>
+                                                <input id="age-range-end-months"
+                                                       class="form-control"
+                                                       name="age_range_end_months"
+                                                       type="number"
+                                                       min=0
+                                                       max=11
+                                                       value={{ object.age_range_end_months }}>
+                                            </td>
+                                            <td>Months</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label for="age-range-start-days" class="sr-only">
+                                                    Age range start in days
+                                                </label>
+                                                <input id="age-range-start-days"
+                                                       class="form-control"
+                                                       name="age_range_start_days"
+                                                       type="number"
+                                                       min=0
+                                                       max=30
+                                                       value={{ object.age_range_start_days }}>
+                                            </td>
+                                            <td>
+                                                <label for="age-range-end-days" class="sr-only">
+                                                    Age range end in days
+                                                </label>
+                                                <input id="age-range-end-days"
+                                                       class="form-control"
+                                                       name="age_range_end_days"
+                                                       type="number"
+                                                       min=0
+                                                       max=30
+                                                       value={{ object.age_range_end_days }}>
+                                            </td>
+                                            <td>Days</td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </section>
                             <section class="form-group col-md-12">{# Gender - quad button group #}
@@ -385,30 +461,6 @@
                                    name="gestational_age_end"
                                    type="hidden"
                                    value="{{ object.gestational_age_end }}">
-                            <input id="age-range-start-years"
-                                   name="age_range_start_years"
-                                   type="hidden"
-                                   value="{{ object.age_range_start_years }}">
-                            <input id="age-range-start-months"
-                                   name="age_range_start_months"
-                                   type="hidden"
-                                   value="{{ object.age_range_start_months }}">
-                            <input id="age-range-start-days"
-                                   name="age_range_start_days"
-                                   type="hidden"
-                                   value="{{ object.age_range_start_days }}">
-                            <input id="age-range-end-years"
-                                   name="age_range_end_years"
-                                   type="hidden"
-                                   value="{{ object.age_range_end_years }}">
-                            <input id="age-range-end-months"
-                                   name="age_range_end_months"
-                                   type="hidden"
-                                   value="{{ object.age_range_end_months }}">
-                            <input id="age-range-end-days"
-                                   name="age_range_end_days"
-                                   type="hidden"
-                                   value="{{ object.age_range_end_days }}">
                         </form>
                     </div>
                 </div>
@@ -432,12 +484,11 @@
               ageRangeSpecifier            = document.getElementById('age-range-specifier'),
               gestationalAgeRangeSpecifier = document.getElementById('gestational-age-range-specifier'),
               totalDaysInput               = document.getElementById('total-days'),
-              ageRangeStartInput           = document.getElementById('age-range-start'),
-              ageRangeEndInput             = document.getElementById('age-range-end'),
               characteristicSwitches       = document.getElementById('characteristics-switch-table'),
               languageSwitches             = document.getElementById('languages-switch-table'),
               gestationalAgeStartInput     = document.getElementById('gestational-age-start'),
               gestationalAgeEndInput       = document.getElementById('gestational-age-end'),
+              ageRangeDetailsContainer     = document.getElementById('age-range-details'),
               ageRangeStartYearsInput      = document.getElementById('age-range-start-years'),
               ageRangeStartMonthsInput     = document.getElementById('age-range-start-months'),
               ageRangeStartDaysInput       = document.getElementById('age-range-start-days'),
@@ -461,8 +512,16 @@
             },
         };
 
+        const HUMANIZE_AGE_FORMATTER = {
+            to(floatNumber) {
+                let days = Math.round(floatNumber),
+                    duration = moment.duration(days, 'days');
+                return `<p class="tiny-ticks">${duration.humanize()}</p>`;
+            },
+        };
+
         const AGE_RANGE_SLIDER_OPTIONS = {
-            start: [30 * 4, 365],  // Defaults
+            start: [30 * 4, 365],  // Defaults.
             step: 1,
             behaviour: 'drag',
             connect: true,
@@ -472,6 +531,12 @@
                 '30%': 365,
                 '60%': 365 * 3,
                 max: MOMENT_OF_PAGE_LOAD.diff(TWENTY_YEARS_AGO, 'days'),  // Account for leap years, etc.
+            },
+            pips: {
+                mode: 'positions',
+                values: [0, 30, 60, 100],
+                density: 4,
+                format: HUMANIZE_AGE_FORMATTER
             }
         };
 
@@ -539,43 +604,9 @@
         }
 
 
-        function saveAgeRangeSliderStatesInHiddenFormInputs() {
-            let [ageRangeStartInDays, ageRangeEndInDays] = ageRangeSpecifier.noUiSlider.get().map(d => parseInt(d));
-            let [gestationalAgeStart, gestationalAgeEnd] = gestationalAgeRangeSpecifier.noUiSlider.get();
-
-            gestationalAgeStartInput.value = parseInt(gestationalAgeStart);
-            gestationalAgeEndInput.value   = parseInt(gestationalAgeEnd);
-
-            let ageRangeStartMoment = moment.duration(ageRangeStartInDays, 'days'),
-                ageRangeEndMoment   = moment.duration(ageRangeEndInDays, 'days');
-
-            ageRangeStartYearsInput.value  = ageRangeStartMoment.years();
-            ageRangeStartMonthsInput.value = ageRangeStartMoment.months();
-            ageRangeStartDaysInput.value   = ageRangeStartMoment.days();
-
-            ageRangeEndYearsInput.value    = ageRangeEndMoment.years();
-            ageRangeEndMonthsInput.value   = ageRangeEndMoment.months();
-            ageRangeEndDaysInput.value     = ageRangeEndMoment.days();
-        }
-
-
         /* ------------------------
          * Event Handler functions.
          ------------------------ */
-
-        // This is a factory function to generate knob handlers.
-        function createBirthdayBoundsInputHandler(handleIndex, inputElement) {
-            /**
-             * Change the NoUISlider to match what's on the inputs - i.e. calculate how many days ago the given
-             * date was.
-             */
-            return () => {
-                let givenDate   = moment(new Date(inputElement.value)),
-                    deltaInDays = moment.duration(MOMENT_OF_PAGE_LOAD.diff(givenDate)).asDays();
-
-                ageRangeSpecifier.noUiSlider.setHandle(handleIndex, Math.round(deltaInDays));
-            }
-        }
 
 
         /**
@@ -610,40 +641,32 @@
             }
         }
 
+        /**
+         * Save age range slider states into the numeric inputs directly below.
+         */
+        function loadAgeRangeSliderStatesIntoNumericInputs(event) {
+            let [ageRangeStartInDays, ageRangeEndInDays] = ageRangeSpecifier.noUiSlider.get().map(d => parseInt(d));
 
-        function synchronizeBirthdayInputsWithSlider(values, handleIndex) {
-            let [start, end] = values,
-                startDays    = parseInt(start),
-                endDays      = parseInt(end);
+            let ageRangeStartMoment = moment.duration(ageRangeStartInDays, 'days'),
+                ageRangeEndMoment   = moment.duration(ageRangeEndInDays, 'days');
 
-            totalDaysInput.value = Math.round(end) - Math.round(start);
+            ageRangeStartYearsInput.value  = ageRangeStartMoment.years();
+            ageRangeStartMonthsInput.value = ageRangeStartMoment.months();
+            ageRangeStartDaysInput.value   = ageRangeStartMoment.days();
 
-            switch (handleIndex) {
-                case 0:     // start handle
-                    ageRangeStartInput.value = moment()
-                        .subtract(startDays, 'days')
-                        .format(DATE_INPUT_MOMENT_FORMAT);
-                    break;
-                case 1:     // end handle
-                    ageRangeEndInput.value = moment()
-                        .subtract(endDays, 'days')
-                        .format(DATE_INPUT_MOMENT_FORMAT);
-                    break;
-                default:
-                    break;  // This should never happen.
-            }
+            ageRangeEndYearsInput.value    = ageRangeEndMoment.years();
+            ageRangeEndMonthsInput.value   = ageRangeEndMoment.months();
+            ageRangeEndDaysInput.value     = ageRangeEndMoment.days();
         }
 
-        function synchronizeSliderWithDayRangeInputs() {
-            let newDayRange = Math.floor(this.value);
-            console.log('inside day range inputs handler');
+        /**
+         * Save the gestational age range slider state into the hidden fields.
+         */
+        function loadGestationalAgeRangeSliderStateIntoHiddenInputs(event) {
+            let [gestationalAgeStart, gestationalAgeEnd] = gestationalAgeRangeSpecifier.noUiSlider.get();
 
-            // Was not my decision to return integers as strings...
-            let [startString, endString] = ageRangeSpecifier.noUiSlider.get(),
-                currentStart             = parseInt(startString),
-                currentEnd               = parseInt(endString);
-
-            ageRangeSpecifier.noUiSlider.setHandle(1 /* end slider */, currentStart + newDayRange);
+            gestationalAgeStartInput.value = parseInt(gestationalAgeStart);
+            gestationalAgeEndInput.value   = parseInt(gestationalAgeEnd);
         }
 
         /**
@@ -653,8 +676,6 @@
             let form = this;
 
             event.preventDefault();
-
-            saveAgeRangeSliderStatesInHiddenFormInputs();
 
             form.submit();
         }
@@ -719,30 +740,48 @@
         }
 
 
+        function synchronizeAgeRangeSliderWithNumericInputChanges() {
+            let ageRangeStartInDays = moment.duration({
+                years: parseInt(ageRangeStartYearsInput.value),
+                months: parseInt(ageRangeStartMonthsInput.value),
+                days: parseInt(ageRangeStartDaysInput.value),
+            }).asDays();
+
+            let ageRangeEndInDays = moment.duration({
+                years: parseInt(ageRangeEndYearsInput.value),
+                months: parseInt(ageRangeEndMonthsInput.value),
+                days: parseInt(ageRangeEndDaysInput.value),
+            }).asDays();
+
+            if (!(ageRangeStartInDays < ageRangeEndInDays)) {
+                // Set to bottom bound.
+                ageRangeEndInDays = ageRangeStartInDays;
+                ageRangeEndYearsInput.value  = ageRangeStartYearsInput.value;
+                ageRangeEndMonthsInput.value = ageRangeStartMonthsInput.value;
+                ageRangeEndDaysInput.value   = ageRangeStartDaysInput.value;
+            }
+
+            ageRangeSpecifier.noUiSlider.set([ageRangeStartInDays, ageRangeEndInDays]);
+        }
+
+        function synchronizeGestationalAgeRangeSliderWithHiddenInputs() {
+            gestationalAgeRangeSpecifier.noUiSlider.set(
+                [
+                    parseInt(gestationalAgeStartInput.value),
+                    parseInt(gestationalAgeEndInput.value)
+                ]
+            );
+        }
+
         /* ------------------------
          * Initialization procedures.
          ------------------------ */
         function loadInitialState() {
             // Age Range Inputs
-            let ageRangeStartInDays = moment.duration({
-               years: ageRangeStartYearsInput.value,
-               months: ageRangeStartMonthsInput.value,
-               days: ageRangeStartDaysInput.value,
-            }).asDays();
-
-            let ageRangeEndInDays = moment.duration({
-               years: ageRangeEndYearsInput.value,
-               months: ageRangeEndMonthsInput.value,
-               days: ageRangeEndDaysInput.value,
-            }).asDays();
-
-            ageRangeSpecifier.noUiSlider.set([ageRangeStartInDays, ageRangeEndInDays]);
+            synchronizeAgeRangeSliderWithNumericInputChanges();
 
             // Gestational Age Inputs
-
-            gestationalAgeRangeSpecifier.noUiSlider.set(
-                [gestationalAgeStartInput.value, gestationalAgeEndInput.value]
-            );
+            synchronizeGestationalAgeRangeSliderWithHiddenInputs();
         }
 
         function initializeComponents() {
@@ -751,19 +790,18 @@
                 AGE_RANGE_SLIDER_OPTIONS
             );
 
-            ageRangeSpecifier.noUiSlider.on('update', synchronizeBirthdayInputsWithSlider);
-
             noUiSlider.create(
                 gestationalAgeRangeSpecifier,
                 GESTATIONAL_AGE_RANGE_SLIDER_OPTIONS
             );
 
+            gestationalAgeRangeSpecifier.noUiSlider
+                .on('change', loadGestationalAgeRangeSliderStateIntoHiddenInputs);
+            ageRangeSpecifier.noUiSlider
+                .on('change', loadAgeRangeSliderStatesIntoNumericInputs);
 
-            [ageRangeStartInput, ageRangeEndInput].forEach((inputElement, handleIndex) => {
-                inputElement.addEventListener('change', createBirthdayBoundsInputHandler(handleIndex, inputElement));
-            });
-
-            totalDaysInput.addEventListener('change', synchronizeSliderWithDayRangeInputs);
+            // No need for two-way sync with gestational age, since there's no visible input component.
+            ageRangeDetailsContainer.addEventListener('change', synchronizeAgeRangeSliderWithNumericInputChanges);
 
             characteristicSwitches.addEventListener('click', handleTristateSelection);
 
