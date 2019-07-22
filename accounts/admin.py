@@ -1,9 +1,8 @@
+from bitfield import BitField
+from bitfield.admin import BitFieldListFilter
+from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
-from bitfield import BitField
-from bitfield.forms import BitFieldCheckboxSelectMultiple
-from bitfield.admin import BitFieldListFilter
-
 
 from accounts.models import Child, DemographicData, Organization, User
 
