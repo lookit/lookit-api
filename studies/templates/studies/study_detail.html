@@ -155,6 +155,9 @@
                         <a type="button" class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
                             <i aria-hidden="true" class="fas fa-edit"></i> Edit Study
                         </a>
+                        <a type="button" class="btn btn-default" href="{% url 'exp:study-participant-eligibility' pk=study.id %}">
+                            <i aria-hidden="true" class="fas fa-check-circle"></i> Change Eligibility
+                        </a>
                     {% endif %}
                     <a type="button" class="btn btn-default"
                        href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_modified' %}">

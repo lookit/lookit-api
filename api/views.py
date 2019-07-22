@@ -255,8 +255,8 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 class ResponsesFilter(filters.FilterSet):
     """A Response filter that actually works."""
 
-	# Temporarily leave this out so that response requests on TEST_CHILD_DISREGARD 
-	# work
+    # Temporarily leave this out so that response requests on TEST_CHILD_DISREGARD
+    # work
     # child = filters.UUIDFilter(field_name="child__uuid")
     study = filters.UUIDFilter(field_name="study__uuid")
 
@@ -314,8 +314,8 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
             # CASE 1: Participant session, using query string with child ID.
             # Want same functionality regardless of whether user is a researcher.
             child_id = self.request.query_params.get("child", None)
-            if child_id == 'TEST_CHILD_DISREGARD':
-                return Response.objects.none() # Preview route
+            if child_id == "TEST_CHILD_DISREGARD":
+                return Response.objects.none()  # Preview route
             elif child_id is not None:
                 nested_responses = nested_responses.filter(
                     child__uuid=child_id, child__in=children_belonging_to_user
