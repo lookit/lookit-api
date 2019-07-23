@@ -21,13 +21,6 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-    <script>
-        function imgError(image, index) {
-            image.style.display = 'none';
-            var placeholder = document.getElementById('image-placeholder-' + index);
-            placeholder.style.display = 'block';
-        }
-    </script>
     <div>
         <div class="lookit-row lookit-page-title">
             <div class="container">
@@ -70,15 +63,15 @@
                                                             {% if study.image %}
                                                                 <p class="image-block">
                                                                     <img class="study-list-thumbnail"
-                                                                         onerror="imgError(this, {{ forloop.counter }})"
                                                                          height="150" width="auto"
-                                                                         src="{{ study.image.url }}" width="300px">
-                                                                <div style="display:none;"
-                                                                     class="study-list-placeholder"
-                                                                     id="image-placeholder-{{ forloop.counter }}">
-                                                                    <i aria-hidden="true" class="fas fa-flask"></i>
-                                                                </div>
+                                                                         alt="Study Thumbnail"
+                                                                         src="{{ study.image.url }}">
                                                                 </p>
+{#                                                                <div style="display:none;"#}
+{#                                                                     class="study-list-placeholder"#}
+{#                                                                     id="image-placeholder-{{ forloop.counter }}">#}
+{#                                                                    <i aria-hidden="true" class="fas fa-flask"></i>#}
+{#                                                                </div>#}
                                                             {% else %}
                                                                 <div class="study-list-placeholder">
                                                                     <i aria-hidden="true" class="fas fa-flask"></i>
@@ -101,36 +94,45 @@
                                                         </div>
                                                     </div><!-- Responses -->
                                                     <h4 class="study-feedback-label">Study Responses</h4>
-                                                    <div class="row pb-sm hidden-xs">
-                                                        <div class="col-md-3">
-                                                            <strong>Child</strong>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <strong>Date</strong>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <strong>Feedback</strong>
-                                                        </div>
-                                                    </div>
-                                                    {% for response in study.responses.all %}
-                                                        <div class="row">
-                                                            <div class="col-md-3">
-                                                                {{ response.child.given_name }}
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                <strong>{{ response.date_modified | date:"M d Y" }}</strong>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <ul>
-                                                                    {% for feedback in response.feedback.all %}
-                                                                        <li class="response-feedback"> {{ feedback.comment }} </li>
-                                                                    {% empty %}
-                                                                        <span class="response-feedback-none"><em>None</em></span>
-                                                                    {% endfor %}
-                                                                </ul>
-                                                            </div>
-                                                        </div><!-- each response -->
-                                                    {% endfor %}
+                                                    <section class="session-media-boxes">
+                                                        {% for response in study.responses.all %}
+                                                            {% with videos=response.videos.all %}
+                                                                <div class="media">
+                                                                    <div class="media-left media-top">
+                                                                        {% if videos.0.download_url %}
+                                                                            <video controls
+                                                                                   class="media-object"
+                                                                                   width="200">
+                                                                                {% for video in videos %}
+                                                                                    <source src="{{ video.download_url }}"
+                                                                                            type="video/mp4">
+                                                                                {% endfor %}
+                                                                            </video>
+                                                                            <button class="btn btn-primary btn-xs btn-block"
+                                                                                    type="button">
+                                                                                <span class="glyphicon glyphicon-arrow-right"
+                                                                                      aria-hidden="true"></span> Next
+                                                                                Video
+                                                                            </button>
+                                                                        {% else %}
+                                                                            <i aria-hidden="true"
+                                                                               class="fas fa-question-circle fa-5x"></i>
+                                                                        {% endif %}
+                                                                    </div>
+                                                                    <div class="media-body">
+                                                                        <dl class="dl-horizontal">
+                                                                            <dt>Child</dt>
+                                                                            <dd>{{ response.child.given_name }}</dd>
+                                                                            <dt>Date</dt>
+                                                                            <dd>{{ response.date_created }}</dd>
+                                                                            <dt>Consent Ruling</dt>
+                                                                            <dd>{{ response.most_recent_ruling }}</dd>
+                                                                        </dl>
+                                                                    </div>
+                                                                </div>
+                                                            {% endwith %}
+                                                        {% endfor %}
+                                                    </section>
                                                 </div>
                                             </div>
                                         </div>
@@ -145,4 +147,22 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        function handleVideoRotation(event) {
+            if (event.target.tagName === 'BUTTON') {
+                let button = event.target,
+                    video  = button.parentElement.children[0];
+
+                for (let i = 1; i < video.childElementCount; i++) {
+                    // Rotate.
+                    let source = video.children[i];
+                    video.insertBefore(source, source.previousElementSibling);
+                }
+
+                video.load();
+            }
+        }
+
+        document.getElementById('past-studies').addEventListener('click', handleVideoRotation);
+    </script>
 {% endblock %}
