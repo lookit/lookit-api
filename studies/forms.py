@@ -188,10 +188,11 @@ class EligibleParticipantQueryModelForm(ModelForm):
 
     gender_specification = forms.IntegerField(required=False)
 
-    # TODO: validation function
+    # # TODO: validation function
     # def clean(self):
-    #     cleaned_data = super().clean()
-    #     return
+    #     super().clean()
+    #
+    #     return self.cleaned_data
 
     class Meta:
         fields = (
@@ -211,12 +212,3 @@ class EligibleParticipantQueryModelForm(ModelForm):
             "gestational_age_include_na",
         )
         model = EligibleParticipantQueryModel
-
-        # widgets = {
-        #     "require_conditions": BitFieldCheckboxSelectMultiple(
-        #         attrs={"class": "column-checkbox"}
-        #     ),
-        #     "exclude_conditions": BitFieldCheckboxSelectMultiple(
-        #         attrs={"class": "column-checkbox"}
-        #     ),
-        # }

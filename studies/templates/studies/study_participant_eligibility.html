@@ -18,6 +18,9 @@
     {# Moment #}
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
+    {# Filtrex #}
+    <script src="https://rawgit.com/joewalnes/filtrex/master/filtrex.js"></script>
+
 {% endblock %}
 
 {% block flash %}
@@ -54,7 +57,7 @@
                         <h3>Current Eligibility Criteria</h3>
                         <div class="well well-sm">
                             <dl class="dl-horizontal">
-                                <dt>Gestational Age</dt>
+                                <dt>Gestational Age at Birth</dt>
                                 <dd id="gestational-age-summary">
                                     Born between <em>{{ object.get_gestational_age_start_display }}</em>
                                     and <em>{{ object.get_gestational_age_end_display }}</em>
@@ -139,7 +142,7 @@
                             <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Proposed Changes</button>
                             <section class="form-group col-md-5">
                                 <h4>
-                                    Gestational Age
+                                    Gestational Age at Birth
                                 </h4>
                                 <div id="gestational-age-range-specifier" class="range-specifier"></div>
                                 <label for="gestational-age-include-na">
@@ -158,6 +161,9 @@
                             </section>
                             <section class="form-group col-md-push-1 col-md-6">{# Age Range -- slider #}
                                 <h4>Age Range</h4>
+                                <p class="help-block">
+                                    Use text inputs to specify age range; using the slider as a visual aid.
+                                </p>
                                 <div id="age-range-specifier" class="range-specifier"></div>
                                 <table id="age-range-details" class="table small">
                                     <thead>
@@ -251,6 +257,12 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <em class="small help-block">
+                                    * Families who select a child outside the age range see a warning indicating that
+                                    their data may not be used. The child's age in days is compared to these (inclusive)
+                                    min and max ages (computed as years * 365 + months * 30 + days) to check
+                                    eligibility.
+                                </em>
                             </section>
                             <section class="form-group col-md-12">{# Gender - quad button group #}
                                 <h4>Gender Specification</h4>
@@ -789,6 +801,8 @@
                 ageRangeSpecifier,
                 AGE_RANGE_SLIDER_OPTIONS
             );
+
+            ageRangeSpecifier.setAttribute('disabled', true);
 
             noUiSlider.create(
                 gestationalAgeRangeSpecifier,
