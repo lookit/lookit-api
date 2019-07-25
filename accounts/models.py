@@ -26,6 +26,7 @@ from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 from multiselectfield import MultiSelectField
 
+from accounts.queries import BitfieldQuerySet
 from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
@@ -321,6 +322,8 @@ class Child(models.Model):
     user = models.ForeignKey(
         "accounts.User", related_name="children", related_query_name="children"
     )
+
+    objects = BitfieldQuerySet.as_manager()
 
     def __str__(self):
         return f"<Child: {self.given_name}>"

@@ -9,7 +9,7 @@ CONDITIONS = (
     ("deaf", "Deaf"),
     ("hearing_impairment", "Hearing Impairment"),
     ("dyslexia", "Dyslexia"),
-    ("multiple birth", "Multiple Birth (twin, triplet, or higher order)"),
+    ("multiple_birth", "Multiple Birth (twin, triplet, or higher order)"),
     # ("aspergers_syndrome", "Asperger's Syndrome"),
     # ("down_syndrome", "Down Syndrome"),
     # ("williams_syndrome", "Williams Syndrome"),
