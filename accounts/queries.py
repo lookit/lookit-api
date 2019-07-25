@@ -16,8 +16,8 @@ there are matching set bits between my_field and some_mask.
 
 For has_one_of, we take all the bits we care about and OR them into a single mask (e.g., 01101)
 
-For has_all_of, we split the individual bits we care about (e.g. 01000, 00100, 00001) and split them across AND
-filters in the where clause.
+For has_all_of, we split the individual bits we care about (e.g. 01000, 00100, 00001 - only powers of 2 in decimal)
+and split them across AND filters in the where clause of our SQL query.
 """
 
 import operator
