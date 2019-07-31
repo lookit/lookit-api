@@ -20,11 +20,199 @@ For has_all_of, we split the individual bits we care about (e.g. 01000, 00100, 0
 and split them across AND filters in the where clause of our SQL query.
 """
 
+import ast
 import operator
+from datetime import date
 from functools import reduce
+from itertools import chain
 
 from django.db import models
 from django.db.models import F, Q
+from lark import Lark, Transformer, v_args
+from lark.exceptions import GrammarError
+
+from studies.fields import DEFAULT_GESTATIONAL_AGE_OPTIONS
+
+
+CONST_MAPPING = {"true": True, "false": False, "null": None}
+
+QUERY_GRAMMAR = """
+?start: bool_expr
+
+?bool_expr: bool_term ["OR" bool_term]
+?bool_term: bool_factor ["AND" bool_factor]
+?bool_factor: id
+              | not_bool_factor
+              | "(" bool_expr ")"
+              | relation_expr
+?relation_expr: id comparator (NUMBER | TRUE | FALSE | NULL | id)
+
+?comparator: EQ | NE | LT | LTE | GT | GTE
+
+not_bool_factor: "NOT" bool_factor
+
+id: NAME
+
+// TERMINALS
+
+EQ: "="
+NE: "!="
+LT: "<"
+LTE: "<="
+GT: ">"
+GTE: ">="
+
+TRUE: "true"
+FALSE: "false"
+NULL: "null"
+
+%import common.NUMBER
+%import common.CNAME -> NAME
+%import common.WS
+%ignore WS
+"""
+
+QUERY_DSL_PARSER = Lark(QUERY_GRAMMAR)
+
+
+def get_child_eligibility_for_study(child_obj, study_obj):
+    return get_child_eligibility(child_obj, study_obj.criteria_expression)
+
+
+def get_child_eligibility(child_obj, criteria_expr):
+    if criteria_expr:
+        compiled_tester_func = _compile_expression(criteria_expr)
+
+        expanded_child = _get_expanded_child(child_obj)
+
+        return bool(compiled_tester_func(expanded_child))
+    else:
+        return True
+
+
+def _compile_expression(boolean_algebra_expression: str):
+    """Compiles a boolean algebra expression into a python function.
+
+    Args:
+        boolean_algebra_expression: a string boolean algebra expression.
+
+    Returns:
+        A function.
+
+    Raises:
+        lark.exceptions.ParseError: in case we cannot parse the boolean algebra.
+    """
+    parse_tree = QUERY_DSL_PARSER.parse(boolean_algebra_expression)
+
+    func_body = FunctionTransformer().transform(parse_tree)
+
+    func_text = " ".join(["def property_tester(child_obj):  return", func_body])
+
+    code_object = ast.parse(func_text, mode="exec")
+
+    new_func = compile(code_object, filename="temp.py", mode="exec")
+
+    temp_namespace = {}
+
+    exec(new_func, temp_namespace)
+
+    return temp_namespace["property_tester"]
+
+
+def _get_expanded_child(child_object):
+    """Expands a child object such that it can be evaluated easily.
+
+    The output of this method should be such that _compile_expression can
+    evaluate it; i.e. all keys are first-level.
+
+    Args:
+        child_object: a accounts.models.Child instance.
+
+    Returns:
+        A dict representing the child.
+    """
+    expanded_child = _to_dict(child_object)
+
+    # 1) Change birthday to age in days.
+    age_delta = date.today() - expanded_child.pop("birthday")
+    expanded_child["age_in_days"] = age_delta.days
+
+    # 2) Expand existing conditions in-place.
+    expanded_conditions = dict(expanded_child.pop("existing_conditions").items())
+    expanded_child.update(expanded_conditions)
+
+    # 3) Expand languages in place.
+    expanded_languages = {
+        f"speaks_{langcode}": boolean
+        for langcode, boolean in expanded_child.pop("languages_spoken").items()
+    }
+    expanded_child.update(expanded_languages)
+
+    return expanded_child
+
+
+def _to_dict(model_instance):
+    """Better version of django.forms.models.model_to_dict.
+
+    Args:
+        model_instance: A django model instance.
+
+    Returns:
+        A dictionary formed from a model instance.
+    """
+    opts = model_instance._meta
+    data = {}
+    for f in chain(opts.concrete_fields, opts.private_fields):
+        data[f.name] = f.value_from_object(model_instance)
+    for f in opts.many_to_many:
+        data[f.name] = [i.id for i in f.value_from_object(i)]
+    return data
+
+
+@v_args(inline=True)
+class FunctionTransformer(Transformer):
+    def bool_expr(self, bool_term, other):
+        return f"({bool_term} or {other})"
+
+    def bool_term(self, bool_factor, other):
+        return f"({bool_factor} and {other})"
+
+    def relation_expr(self, name, comparator, other):
+        """Translation rule for relational expressions.
+
+        We have special, hardcoded behavior here for gender testing because we
+        don't want to pollute the grammar. Better to enforce on the transformer
+        level the particulars of our application.
+
+        Args:
+            name: string of format CNAME from common.lark
+            comparator: one of =, <, <= >, >=, !=
+            other: string of format CNAME from common.lark
+
+        Returns: The string form of the intended python expression.
+
+        Raises:
+            GrammarError if a gender test does not obey the contract.
+        """
+        if (
+            name == "gender"
+            and comparator not in ("=", "!=")
+            and other not in ("f", "m", "o", "na")
+        ):
+            raise GrammarError(
+                'Gender criteria must fit format "gender (=|!=) (m|f|o|na)"'
+            )
+        return (
+            f"{name} "
+            f"{'==' if comparator == '=' else comparator} "
+            f"{CONST_MAPPING.get(other, other)}"
+        )
+
+    def not_bool_factor(self, bool_factor):
+        return f"not {bool_factor}"
+
+    def id(self, name):
+        return f"child_obj.get('{name}', None)"
 
 
 class BitfieldQuerySet(models.QuerySet):

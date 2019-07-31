@@ -133,7 +133,7 @@ GENDER_CHOICES = Choices(*GENDER_OPTIONS)
 # Element #1 == database representation, #2 == valid python identifier used in code, #3 == human readable version.
 # See https://django-model-utils.readthedocs.io/en/latest/utilities.html#choices
 
-DEFAULT_GESTATIONAL_AGE_CHOICES = (
+DEFAULT_GESTATIONAL_AGE_OPTIONS = (
     (None, "no_answer", _("Not sure or prefer not to answer")),
     (0, "under_twenty_four_weeks", _("Under 24 weeks")),
     (1, "twenty_four_weeks", _("24 weeks")),
@@ -155,8 +155,8 @@ DEFAULT_GESTATIONAL_AGE_CHOICES = (
     (17, "over_forty_weeks", _("40 or more weeks")),
 )
 
-GESTATIONAL_AGE_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_CHOICES)
+GESTATIONAL_AGE_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_OPTIONS)
 
 # No null values for filters - must explicitly include N/A in the query model itself since we are dealing with a
 # range of (enumerated) values.
-GESTATIONAL_AGE_FILTER_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_CHOICES[1:])
+GESTATIONAL_AGE_FILTER_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_OPTIONS[1:])
