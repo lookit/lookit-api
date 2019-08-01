@@ -113,6 +113,7 @@ class StudyEditForm(BaseStudyForm):
             "contact_info",
             "public",
             "structure",
+            "criteria_expression",
         ]
         labels = {
             "short_description": "Short Description",
@@ -132,6 +133,7 @@ class StudyEditForm(BaseStudyForm):
             "criteria": Textarea(attrs={"rows": 1}),
             "duration": Textarea(attrs={"rows": 1}),
             "contact_info": Textarea(attrs={"rows": 1}),
+            "criteria_expression": Textarea(attrs={"rows": 3}),
         }
 
         help_texts = {
@@ -143,6 +145,7 @@ class StudyEditForm(BaseStudyForm):
             "criteria": "Text shown to families - this is not used to actually verify eligibility.",
             "study_type": STUDY_HELP_TEXT_EDIT,
             "compensation_description": "Provide a description of any compensation for participation, including when and how participants will receive it and any limitations or eligibility criteria (e.g., only one gift card per participant, being in age range for study, child being visible in consent video). Please see the Terms of Use for details on allowable compensation and restrictions. If this field is left blank it will not be displayed to participants.",
+            "criteria_expression": "Provide a relational expression indicating the criteria for eligibility.",
         }
 
 
