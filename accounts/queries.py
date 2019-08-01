@@ -1,24 +1,4 @@
-"""Queries and managers.
-
-The trick is in constructs like this:
-
-F(field_name) + F(field_name).bitand(reduce(operator.or_, bitmasks, 0))
-
-which might produce a SQL query like so:
-
-WHERE ... "accounts_child"."existing_conditions" <
-        (("accounts_child"."existing_conditions" + (1 * ("accounts_child"."existing_conditions" & 12))))
-
-This is a "bit hack" that relies on the fact that a bit state ANDed with a mask will give us a result that is
-greater than zero if ~any~ of the bits match between the mask and the state. So what we are saying is, "give me
-rows from this table where my_field is less than my_field + (my_field AND some_mask). This will only ever be true if
-there are matching set bits between my_field and some_mask.
-
-For has_one_of, we take all the bits we care about and OR them into a single mask (e.g., 01101)
-
-For has_all_of, we split the individual bits we care about (e.g. 01000, 00100, 00001 - only powers of 2 in decimal)
-and split them across AND filters in the where clause of our SQL query.
-"""
+"""Constructs for different kinds of queries and managers."""
 
 import ast
 import operator
@@ -32,7 +12,6 @@ from lark import Lark, Transformer, v_args
 from lark.exceptions import GrammarError
 
 from studies.fields import DEFAULT_GESTATIONAL_AGE_OPTIONS
-
 
 CONST_MAPPING = {"true": True, "false": False, "null": None}
 
@@ -122,8 +101,8 @@ def _compile_expression(boolean_algebra_expression: str):
 def _get_expanded_child(child_object):
     """Expands a child object such that it can be evaluated easily.
 
-    The output of this method should be such that _compile_expression can
-    evaluate it; i.e. all keys are first-level.
+    The output of this method should be such that _compile_expression
+    can evaluate it; i.e. all keys are first-level.
 
     Args:
         child_object: a accounts.models.Child instance.
@@ -138,7 +117,8 @@ def _get_expanded_child(child_object):
     expanded_child["age_in_days"] = age_delta.days
 
     # 2) Expand existing conditions in-place.
-    expanded_conditions = dict(expanded_child.pop("existing_conditions").items())
+    expanded_conditions = dict(
+        expanded_child.pop("existing_conditions").items())
     expanded_child.update(expanded_conditions)
 
     # 3) Expand languages in place.
@@ -171,6 +151,7 @@ def _to_dict(model_instance):
     for f in chain(opts.concrete_fields, opts.private_fields):
         data[f.name] = f.value_from_object(model_instance)
     for f in opts.many_to_many:
+        print(f)
         data[f.name] = [i.id for i in f.value_from_object(i)]
     return data
 
@@ -178,15 +159,16 @@ def _to_dict(model_instance):
 def _gestational_age_enum_value_to_weeks(enum_value: int):
     """Convert enum value on child object to actual # of weeks.
 
-    This enables us to directly query the expanded child object with a scalar
-    value. 0 == "under 24 weeks"; 17 = "Over 40 weeks". To see enumerated
-    values, please referehce studies/fields.py.
+    This enables us to directly query the expanded child object with a
+    scalar value. 0 == "under 24 weeks"; 17 = "Over 40 weeks". To see
+    enumerated values, please referehce studies/fields.py.
     """
-    return min(max(24, enum_value + 24), 40)
+    return min(max(23, enum_value + 23), 40)
 
 
 @v_args(inline=True)
 class FunctionTransformer(Transformer):
+
     def bool_expr(self, bool_term, other):
         return f"({bool_term} or {other})"
 
@@ -196,33 +178,28 @@ class FunctionTransformer(Transformer):
     def relation_expr(self, name, comparator, other):
         """Translation rule for relational expressions.
 
-        We have special, hardcoded behavior here for gender testing because we
-        don't want to pollute the grammar. Better to enforce on the transformer
-        level the particulars of our application.
+        We have special, hardcoded behavior here for gender testing
+        because we don't want to pollute the grammar. Better to enforce
+        on the transformer level the particulars of our application.
 
         Args:
             name: string of format CNAME from common.lark
             comparator: one of =, <, <= >, >=, !=
             other: string of format CNAME from common.lark
 
-        Returns: The string form of the intended python expression.
+        Returns:
+            The string form of the intended python expression.
 
         Raises:
             GrammarError if a gender test does not obey the contract.
         """
-        if (
-            name == "gender"
-            and comparator not in ("=", "!=")
-            and other not in ("f", "m", "o", "na")
-        ):
+        if (name == "gender" and comparator not in ("=", "!=") and
+                other not in ("f", "m", "o", "na")):
             raise GrammarError(
-                'Gender criteria must fit format "gender (=|!=) (m|f|o|na)"'
-            )
-        return (
-            f"{name} "
-            f"{'==' if comparator == '=' else comparator} "
-            f"{CONST_MAPPING.get(other, other)}"
-        )
+                'Gender criteria must fit format "gender (=|!=) (m|f|o|na)"')
+        return (f"{name} "
+                f"{'==' if comparator == '=' else comparator} "
+                f"{CONST_MAPPING.get(other, other)}")
 
     def not_bool_factor(self, bool_factor):
         return f"not {bool_factor}"
@@ -232,8 +209,30 @@ class FunctionTransformer(Transformer):
 
 
 class BitfieldQuerySet(models.QuerySet):
+    """A QuerySet that can handle bitwise queries intelligently.
+
+    The trick is in constructs like this:  F(field_name) +
+    F(field_name).bitand(reduce(operator.or_, bitmasks, 0))  which might
+    produce a SQL query like so:
+
+        WHERE ...
+        "accounts_child"."existing_conditions" <
+        (("accounts_child"."existing_conditions" + (1 * ("accounts_child"."existing_conditions" & 12))))
+
+    This is a "bit hack" that relies on the fact that a bit state ANDed with a mask will give us a result that
+    is greater than zero if ~any~ of the bits match between the mask and the state. So what we are saying is,
+    "give me rows from this table where my_field is less than my_field + (my_field AND some_mask). This will only
+    ever be true if there are matching set bits between my_field and some_mask.
+
+    For has_one_of, we take all the bits we care about and OR them into a single mask (e.g., 01101)
+
+    For has_all_of, we split the individual bits we care about (e.g. 01000, 00100, 00001 - only powers of 2 in decimal)
+    and split them across AND filters in the where clause of our SQL query.
+    """
+
     def has_one_of(self, field_name: str, bitmasks: list):
-        """Check to see that field_name has at least one of the bits in bitmasks.
+        """Check to see that field_name has at least one of the bits in
+        bitmasks.
 
         Args:
             field_name: The field which we will be querying against - usually a BigInt
@@ -243,10 +242,12 @@ class BitfieldQuerySet(models.QuerySet):
             A filtered queryset.
         """
         filter_dict = {
-            f"{field_name}__gt": 0,
+            f"{field_name}__gt":
+                0,
             # field value contains one of supplied field bits
-            f"{field_name}__lt": F(field_name)
-            + F(field_name).bitand(reduce(operator.or_, bitmasks, 0)),
+            f"{field_name}__lt":
+                F(field_name) +
+                F(field_name).bitand(reduce(operator.or_, bitmasks, 0)),
         }
 
         return self.filter(**filter_dict)
@@ -259,16 +260,18 @@ class BitfieldQuerySet(models.QuerySet):
             bitmasks: the list of integers which will serve as bitmasks
 
         Returns:
-            A filtered queryset
+            A filtered queryset.
         """
 
         def make_query_dict(specific_mask):
             return {
-                f"{field_name}__lt": F(field_name) + F(field_name).bitand(specific_mask)
+                f"{field_name}__lt":
+                    F(field_name) + F(field_name).bitand(specific_mask)
             }
 
         has_each = map(lambda c: Q(**make_query_dict(c)), bitmasks)
 
-        filter_query = reduce(operator.and_, has_each, Q(**{f"{field_name}__gt": 0}))
+        filter_query = reduce(operator.and_, has_each,
+                              Q(**{f"{field_name}__gt": 0}))
 
         return self.filter(filter_query)
