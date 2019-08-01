@@ -13,6 +13,7 @@ from lark.exceptions import GrammarError
 
 from studies.fields import DEFAULT_GESTATIONAL_AGE_OPTIONS
 
+
 CONST_MAPPING = {"true": True, "false": False, "null": None}
 
 QUERY_GRAMMAR = """
@@ -117,8 +118,7 @@ def _get_expanded_child(child_object):
     expanded_child["age_in_days"] = age_delta.days
 
     # 2) Expand existing conditions in-place.
-    expanded_conditions = dict(
-        expanded_child.pop("existing_conditions").items())
+    expanded_conditions = dict(expanded_child.pop("existing_conditions").items())
     expanded_child.update(expanded_conditions)
 
     # 3) Expand languages in place.
@@ -168,7 +168,6 @@ def _gestational_age_enum_value_to_weeks(enum_value: int):
 
 @v_args(inline=True)
 class FunctionTransformer(Transformer):
-
     def bool_expr(self, bool_term, other):
         return f"({bool_term} or {other})"
 
@@ -193,13 +192,19 @@ class FunctionTransformer(Transformer):
         Raises:
             GrammarError if a gender test does not obey the contract.
         """
-        if (name == "gender" and comparator not in ("=", "!=") and
-                other not in ("f", "m", "o", "na")):
+        if (
+            name == "gender"
+            and comparator not in ("=", "!=")
+            and other not in ("f", "m", "o", "na")
+        ):
             raise GrammarError(
-                'Gender criteria must fit format "gender (=|!=) (m|f|o|na)"')
-        return (f"{name} "
-                f"{'==' if comparator == '=' else comparator} "
-                f"{CONST_MAPPING.get(other, other)}")
+                'Gender criteria must fit format "gender (=|!=) (m|f|o|na)"'
+            )
+        return (
+            f"{name} "
+            f"{'==' if comparator == '=' else comparator} "
+            f"{CONST_MAPPING.get(other, other)}"
+        )
 
     def not_bool_factor(self, bool_factor):
         return f"not {bool_factor}"
@@ -242,12 +247,10 @@ class BitfieldQuerySet(models.QuerySet):
             A filtered queryset.
         """
         filter_dict = {
-            f"{field_name}__gt":
-                0,
+            f"{field_name}__gt": 0,
             # field value contains one of supplied field bits
-            f"{field_name}__lt":
-                F(field_name) +
-                F(field_name).bitand(reduce(operator.or_, bitmasks, 0)),
+            f"{field_name}__lt": F(field_name)
+            + F(field_name).bitand(reduce(operator.or_, bitmasks, 0)),
         }
 
         return self.filter(**filter_dict)
@@ -265,13 +268,11 @@ class BitfieldQuerySet(models.QuerySet):
 
         def make_query_dict(specific_mask):
             return {
-                f"{field_name}__lt":
-                    F(field_name) + F(field_name).bitand(specific_mask)
+                f"{field_name}__lt": F(field_name) + F(field_name).bitand(specific_mask)
             }
 
         has_each = map(lambda c: Q(**make_query_dict(c)), bitmasks)
 
-        filter_query = reduce(operator.and_, has_each,
-                              Q(**{f"{field_name}__gt": 0}))
+        filter_query = reduce(operator.and_, has_each, Q(**{f"{field_name}__gt": 0}))
 
         return self.filter(filter_query)
