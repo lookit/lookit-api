@@ -148,6 +148,12 @@ def _get_expanded_child(child_object):
     }
     expanded_child.update(expanded_languages)
 
+    ga_enum = expanded_child.pop("gestational_age_at_birth")
+
+    gestational_age_in_weeks = _gestational_age_enum_value_to_weeks(ga_enum)
+
+    expanded_child["gestational_age_in_weeks"] = gestational_age_in_weeks
+
     return expanded_child
 
 
@@ -167,6 +173,16 @@ def _to_dict(model_instance):
     for f in opts.many_to_many:
         data[f.name] = [i.id for i in f.value_from_object(i)]
     return data
+
+
+def _gestational_age_enum_value_to_weeks(enum_value: int):
+    """Convert enum value on child object to actual # of weeks.
+
+    This enables us to directly query the expanded child object with a scalar
+    value. 0 == "under 24 weeks"; 17 = "Over 40 weeks". To see enumerated
+    values, please referehce studies/fields.py.
+    """
+    return min(max(24, enum_value + 24), 40)
 
 
 @v_args(inline=True)
