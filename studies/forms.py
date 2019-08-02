@@ -119,7 +119,7 @@ class StudyEditForm(BaseStudyForm):
             "short_description": "Short Description",
             "long_description": "Purpose",
             "exit_url": "Exit URL",
-            "criteria": "Participant Eligibility",
+            "criteria": "Participant Eligibility Description",
             "contact_info": "Researcher Contact Information",
             "public": "Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?",
             "study_type": "Study Type",
@@ -133,7 +133,16 @@ class StudyEditForm(BaseStudyForm):
             "criteria": Textarea(attrs={"rows": 1}),
             "duration": Textarea(attrs={"rows": 1}),
             "contact_info": Textarea(attrs={"rows": 1}),
-            "criteria_expression": Textarea(attrs={"rows": 3}),
+            "criteria_expression": Textarea(
+                attrs={
+                    "rows": 3,
+                    "placeholder": (
+                        "ex: ((deaf OR hearing_impairment) OR NOT speaks_en) "
+                        "AND "
+                        "(age_in_days >= 365 AND age_in_days <= 1095)"
+                    ),
+                }
+            ),
         }
 
         help_texts = {

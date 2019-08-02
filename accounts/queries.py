@@ -52,7 +52,7 @@ NULL: "null"
 %ignore WS
 """
 
-QUERY_DSL_PARSER = Lark(QUERY_GRAMMAR)
+QUERY_DSL_PARSER = Lark(QUERY_GRAMMAR, parser="earley")
 
 
 def get_child_eligibility_for_study(child_obj, study_obj):
@@ -161,7 +161,7 @@ def _gestational_age_enum_value_to_weeks(enum_value: int):
 
     This enables us to directly query the expanded child object with a
     scalar value. 0 == "under 24 weeks"; 17 = "Over 40 weeks". To see
-    enumerated values, please referehce studies/fields.py.
+    enumerated values, please reference studies/fields.py.
     """
     return min(max(23, enum_value + 23), 40)
 
