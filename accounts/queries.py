@@ -61,7 +61,7 @@ def get_child_eligibility_for_study(child_obj, study_obj):
 
 def get_child_eligibility(child_obj, criteria_expr):
     if criteria_expr:
-        compiled_tester_func = _compile_expression(criteria_expr)
+        compiled_tester_func = compile_expression(criteria_expr)
 
         expanded_child = _get_expanded_child(child_obj)
 
@@ -70,7 +70,7 @@ def get_child_eligibility(child_obj, criteria_expr):
         return True
 
 
-def _compile_expression(boolean_algebra_expression: str):
+def compile_expression(boolean_algebra_expression: str):
     """Compiles a boolean algebra expression into a python function.
 
     Args:

@@ -5,6 +5,7 @@ from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
 from django.forms import ModelForm, Textarea
 
+from accounts.queries import compile_expression
 from studies.models import EligibleParticipantQueryModel, Response, Study
 
 
@@ -85,13 +86,24 @@ class StudyEditForm(BaseStudyForm):
 
     def clean_structure(self):
         structure = self.cleaned_data["structure"]
+
         try:
             json_data = json.loads(structure)  # loads string as json
         except:
             raise forms.ValidationError(
                 "Save failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
+
         return json_data
+
+    def clean_criteria_expression(self):
+        criteria_expression = self.cleaned_data["criteria_expression"]
+        try:
+            compile_expression(criteria_expression)
+        except Exception as e:
+            raise forms.ValidationError(f"Invalid criteria expression:\n{e.args[0]}")
+
+        return criteria_expression
 
     class Meta:
         model = Study
