@@ -163,7 +163,7 @@ def _gestational_age_enum_value_to_weeks(enum_value: int):
     scalar value. 0 == "under 24 weeks"; 17 = "Over 40 weeks". To see
     enumerated values, please reference studies/fields.py.
     """
-    return min(max(23, enum_value + 23), 40)
+    return min(max(23, enum_value + 23), 40) if enum_value else None
 
 
 @v_args(inline=True)
