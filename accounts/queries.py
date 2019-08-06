@@ -150,9 +150,6 @@ def _to_dict(model_instance):
     data = {}
     for f in chain(opts.concrete_fields, opts.private_fields):
         data[f.name] = f.value_from_object(model_instance)
-    for f in opts.many_to_many:
-        print(f)
-        data[f.name] = [i.id for i in f.value_from_object(i)]
     return data
 
 
