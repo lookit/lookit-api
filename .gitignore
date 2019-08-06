@@ -149,3 +149,5 @@ ember_build/checkouts/
 ember_build/deployments/
 preview_experiments/
 fake_cloud/
+
+certs
