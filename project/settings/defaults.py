@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "sslserver",
 ]
 MIDDLEWARE_CLASSES = [
     "django.middleware.security.SecurityMiddleware",
