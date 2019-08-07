@@ -38,3 +38,4 @@ urllib3==1.24.2
 fleep==1.0.1
 docker==3.7.2
 django-bitfield==1.9.3
+django-sslserver==1.11.21
