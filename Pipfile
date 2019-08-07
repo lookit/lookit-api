@@ -57,7 +57,7 @@ google-cloud-storage = "==1.14.0"
 docker = "==3.7.2"
 django-bitfield = "==1.9.3"
 django-sslserver = "*"
-djangoo-debug-toolbar = "*"
+django-debug-toolbar = "*"
 
 [requires]
 python_version = "3.6"
