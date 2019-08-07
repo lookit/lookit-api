@@ -19,8 +19,8 @@ CONST_MAPPING = {"true": True, "false": False, "null": None}
 QUERY_GRAMMAR = """
 ?start: bool_expr
 
-?bool_expr: bool_term ["OR" bool_term]
-?bool_term: bool_factor ["AND" bool_factor]
+?bool_expr: bool_term ("OR" bool_term)*
+?bool_term: bool_factor ("AND" bool_factor)*
 ?bool_factor: id
               | not_bool_factor
               | "(" bool_expr ")"
@@ -165,11 +165,13 @@ def _gestational_age_enum_value_to_weeks(enum_value: int):
 
 @v_args(inline=True)
 class FunctionTransformer(Transformer):
-    def bool_expr(self, bool_term, other):
-        return f"({bool_term} or {other})"
+    def bool_expr(self, bool_term, *others):
+        or_clauses = " ".join(f"or {other}" for other in others)
+        return f"({bool_term} {or_clauses})"
 
-    def bool_term(self, bool_factor, other):
-        return f"({bool_factor} and {other})"
+    def bool_term(self, bool_factor, *others):
+        and_clauses = " ".join(f"and {other}" for other in others)
+        return f"({bool_factor} {and_clauses})"
 
     def relation_expr(self, name, comparator, other):
         """Translation rule for relational expressions.
