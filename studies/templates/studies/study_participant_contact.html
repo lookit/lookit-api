@@ -456,26 +456,25 @@
                 .addClass('active')
                 .siblings()
                 .removeClass('active');
+                
+            // Title Case the name and change the box color.
+            let titleCaseEmailPreference = currentFilter.replace(/(\w+)-(\w+)/g,
+                (match, first, second) => {
+                    return first.charAt(0).toUpperCase() + first.slice(1) +
+                        ' ' + second.charAt(0).toUpperCase() + second.slice(1);
+                });
+
+            $emailFilterNameBox // bg-warning won't win out in cascade, so directly modify css
+                .css({backgroundColor: transactional ? "#fcf8e3" : "#eee"})
+                .text(titleCaseEmailPreference);
+
+            $messageTypeHelp
+                .find(transactional ? '#transaction-warning' : '#other-message-type')
+                .removeClass('collapsed')
+                .siblings('.help-block')
+                .addClass('collapsed');
 
             let {optedIn, optedOut} = $allOptions.get().reduce(({optedIn, optedOut}, option) => {
-
-                // Title Case the name and change the box color.
-                let titleCaseEmailPreference = currentFilter.replace(/(\w+)-(\w+)/g,
-                    (match, first, second) => {
-                        return first.charAt(0).toUpperCase() + first.slice(1) +
-                            ' ' + second.charAt(0).toUpperCase() + second.slice(1);
-                    });
-
-                $emailFilterNameBox // bg-warning won't win out in cascade, so directly modify css
-                    .css({backgroundColor: transactional ? "#fcf8e3" : "#eee"})
-                    .text(titleCaseEmailPreference);
-
-
-                $messageTypeHelp
-                    .find(transactional ? '#transaction-warning' : '#other-message-type')
-                    .removeClass('collapsed')
-                    .siblings('.help-block')
-                    .addClass('collapsed');
 
                 // Sort according to flag (lowerCamelCase the tag for data-* attributes.
                 if (currentFilter.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) in option.dataset || transactional) {
