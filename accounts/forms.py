@@ -218,6 +218,7 @@ class ChildForm(forms.ModelForm):
         help_texts = {
             "given_name": "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research.",
             "additional_information": "For instance, diagnosed developmental disorders or vision or hearing problems",
+            "gestational_age_at_birth": "Please round down to the nearest full week of pregnancy completed",
         }
 
         widgets = {

@@ -6,6 +6,7 @@ from lark.exceptions import UnexpectedCharacters
 
 from accounts.models import Child
 from accounts.queries import get_child_eligibility
+from studies.fields import GESTATIONAL_AGE_CHOICES
 from studies.models import Study
 
 
@@ -21,11 +22,18 @@ class CriteriaExpressionTestCase(TestCase):
 
         self.compound_or_condition = "deaf OR hearing_impairment OR multiple_birth"
 
+        self.gestational_age_range_condition = (
+            "gestational_age_in_weeks <= 28 AND gestational_age_in_weeks > 24"
+        )
+
+        self.gender_specific_condition = "gender = male OR gender = OTHER"
+
         self.compound_and_condition = "deaf AND dyslexia AND age_in_days >= 1000"
 
-        self.deaf_child = G(
+        self.deaf_male_child = G(
             Child,
             existing_conditions=Child.existing_conditions.deaf,
+            gender="m",
             languages_spoken=Child.languages_spoken.en,
             birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
         )
@@ -37,10 +45,11 @@ class CriteriaExpressionTestCase(TestCase):
             birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
         )
 
-        self.french_twin = G(
+        self.french_female_twin = G(
             Child,
             existing_conditions=Child.existing_conditions.multiple_birth,
             languages_spoken=Child.languages_spoken.fr,
+            gender="f",
             birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
         )
 
@@ -52,15 +61,31 @@ class CriteriaExpressionTestCase(TestCase):
             birthday=datetime.date.today() - datetime.timedelta(days=10 * 365),
         )
 
+        self.born_at_25_weeks = G(
+            Child,
+            gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.twenty_five_weeks,
+            birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
+        )
+
+        self.born_at_35_weeks = G(
+            Child,
+            gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.thirty_five_weeks,
+            birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
+        )
+
     def test_simple_condition(self):
-        self.assertTrue(get_child_eligibility(self.deaf_child, "deaf"))
+        self.assertTrue(get_child_eligibility(self.deaf_male_child, "deaf"))
 
     def test_complex_condition(self):
-        self.assertTrue(get_child_eligibility(self.deaf_child, self.complex_condition))
+        self.assertTrue(
+            get_child_eligibility(self.deaf_male_child, self.complex_condition)
+        )
         self.assertTrue(
             get_child_eligibility(self.hearing_impaired_child, self.complex_condition)
         )
-        self.assertTrue(get_child_eligibility(self.french_twin, self.complex_condition))
+        self.assertTrue(
+            get_child_eligibility(self.french_female_twin, self.complex_condition)
+        )
         self.assertFalse(
             get_child_eligibility(
                 self.older_deaf_child_with_dyslexia, self.complex_condition
@@ -71,13 +96,13 @@ class CriteriaExpressionTestCase(TestCase):
         self.assertRaises(
             UnexpectedCharacters,
             get_child_eligibility,
-            self.deaf_child,
+            self.deaf_male_child,
             self.malformed_condition,
         )
 
     def test_compound_or(self):
         self.assertTrue(
-            get_child_eligibility(self.deaf_child, self.compound_or_condition)
+            get_child_eligibility(self.deaf_male_child, self.compound_or_condition)
         )
         self.assertTrue(
             get_child_eligibility(
@@ -86,7 +111,7 @@ class CriteriaExpressionTestCase(TestCase):
         )
         # Non-english speaking also multiple birth
         self.assertTrue(
-            get_child_eligibility(self.french_twin, self.compound_or_condition)
+            get_child_eligibility(self.french_female_twin, self.compound_or_condition)
         )
 
     def test_compound_and(self):
@@ -97,5 +122,29 @@ class CriteriaExpressionTestCase(TestCase):
         )
 
         self.assertFalse(
-            get_child_eligibility(self.french_twin, self.compound_and_condition)
+            get_child_eligibility(self.french_female_twin, self.compound_and_condition)
+        )
+
+    def test_gestational_age_range(self):
+        self.assertTrue(
+            get_child_eligibility(
+                self.born_at_25_weeks, self.gestational_age_range_condition
+            )
+        )
+
+        self.assertFalse(
+            get_child_eligibility(
+                self.born_at_35_weeks, self.gestational_age_range_condition
+            )
+        )
+
+    def test_gender_specification(self):
+        self.assertTrue(
+            get_child_eligibility(self.deaf_male_child, self.gender_specific_condition)
+        )
+
+        self.assertFalse(
+            get_child_eligibility(
+                self.french_female_twin, self.gender_specific_condition
+            )
         )

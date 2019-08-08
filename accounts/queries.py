@@ -9,31 +9,53 @@ from itertools import chain
 from django.db import models
 from django.db.models import F, Q
 from lark import Lark, Transformer, v_args
-from lark.exceptions import GrammarError
 
-from studies.fields import DEFAULT_GESTATIONAL_AGE_OPTIONS
+from studies.fields import CONDITIONS, LANGUAGES
 
 
 CONST_MAPPING = {"true": True, "false": False, "null": None}
+
+CONDITION_FIELDS = {condition_tuple[0] for condition_tuple in CONDITIONS}
+
+LANGUAGE_FIELDS = {f"speaks_{language_tuple[0]}" for language_tuple in LANGUAGES}
 
 QUERY_GRAMMAR = """
 ?start: bool_expr
 
 ?bool_expr: bool_term ("OR" bool_term)*
 ?bool_term: bool_factor ("AND" bool_factor)*
-?bool_factor: id
-              | not_bool_factor
+?bool_factor: not_bool_factor
               | "(" bool_expr ")"
               | relation_expr
-?relation_expr: id comparator (NUMBER | TRUE | FALSE | NULL | id)
-
-?comparator: EQ | NE | LT | LTE | GT | GTE
+?relation_expr: gender_comparison 
+    | gestational_age_comparison 
+    | age_in_days_comparison 
+    | language_comparison
+    | condition_comparison
 
 not_bool_factor: "NOT" bool_factor
 
-id: NAME
+gender_comparison: "gender" (EQ | NE) gender_target
+
+// 24 to 40 weeks
+gestational_age_comparison: "gestational_age_in_weeks" comparator GESTATIONAL_AGE_AS_WEEKS
+
+age_in_days_comparison: "age_in_days" comparator INT
+
+comparator: EQ | NE | LT | LTE | GT | GTE
+
+gender_target: MALE | FEMALE | OTHER_GENDER | UNSPECIFIED_GENDER
+
+language_comparison: LANGUAGE_TARGET
+
+condition_comparison: CONDITION_TARGET
 
 // TERMINALS
+
+LANGUAGE_TARGET: {language_targets}
+CONDITION_TARGET: {condition_targets}
+
+GESTATIONAL_AGE_AS_WEEKS: /(2[4-9]|3[0-9]|40)/
 
 EQ: "="
 NE: "!="
@@ -42,15 +64,22 @@ LTE: "<="
 GT: ">"
 GTE: ">="
 
-TRUE: "true"
-FALSE: "false"
-NULL: "null"
+TRUE: "true"i
+FALSE: "false"i
+NULL: "null"i
 
-%import common.NUMBER
-%import common.CNAME -> NAME
+MALE: "m"i | "male"i
+FEMALE: "f"i | "female"i
+OTHER_GENDER: "o"i | "other"i
+UNSPECIFIED_GENDER: "na"i
+
+%import common.INT
 %import common.WS
 %ignore WS
-"""
+""".format(
+    language_targets=" | ".join([f'"{target}"' for target in LANGUAGE_FIELDS]),
+    condition_targets=" | ".join([f'"{target}"' for target in CONDITION_FIELDS]),
+)
 
 QUERY_DSL_PARSER = Lark(QUERY_GRAMMAR, parser="earley")
 
@@ -173,43 +202,26 @@ class FunctionTransformer(Transformer):
         and_clauses = " ".join(f"and {other}" for other in others)
         return f"({bool_factor} {and_clauses})"
 
-    def relation_expr(self, name, comparator, other):
-        """Translation rule for relational expressions.
+    def gender_comparison(self, comparator, target_gender):
+        return f"child_obj.get('gender') {comparator} {target_gender}"
 
-        We have special, hardcoded behavior here for gender testing
-        because we don't want to pollute the grammar. Better to enforce
-        on the transformer level the particulars of our application.
+    def gestational_age_comparison(self, comparator, num_weeks):
+        return f"child_obj.get('gestational_age_in_weeks') {comparator} {num_weeks}"
 
-        Args:
-            name: string of format CNAME from common.lark
-            comparator: one of =, <, <= >, >=, !=
-            other: string of format CNAME from common.lark
+    def age_in_days_comparison(self, comparator, num_days):
+        return f"child_obj.get('age_in_days') {comparator} {num_days}"
 
-        Returns:
-            The string form of the intended python expression.
+    def language_comparison(self, lang_target):
+        return f"child_obj.get('{lang_target}', False)"
 
-        Raises:
-            GrammarError if a gender test does not obey the contract.
-        """
-        if (
-            name == "gender"
-            and comparator not in ("=", "!=")
-            and other not in ("f", "m", "o", "na")
-        ):
-            raise GrammarError(
-                'Gender criteria must fit format "gender (=|!=) (m|f|o|na)"'
-            )
-        return (
-            f"{name} "
-            f"{'==' if comparator == '=' else comparator} "
-            f"{CONST_MAPPING.get(other, other)}"
-        )
+    def condition_comparison(self, condition_target):
+        return f"child_obj.get('{condition_target}', False)"
+
+    def comparator(self, relation):
+        return relation
 
     def not_bool_factor(self, bool_factor):
         return f"not {bool_factor}"
-
-    def id(self, name):
-        return f"child_obj.get('{name}', None)"
 
 
 class BitfieldQuerySet(models.QuerySet):
