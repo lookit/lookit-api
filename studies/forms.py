@@ -5,6 +5,7 @@ from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
 from django.forms import ModelForm, Textarea
 
+from accounts.queries import compile_expression
 from studies.models import EligibleParticipantQueryModel, Response, Study
 
 
@@ -44,7 +45,7 @@ class BaseStudyForm(ModelForm):
         return cleaned_data
 
 
-STUDY_HELP_TEXT_INITIAL = """<p>After selecting a study type above, you'll be asked 
+STUDY_HELP_TEXT_INITIAL = """<p>After selecting a study type above, you'll be asked
     to fill out some study type metadata as well. This metadata is unique to the 
     study type, and provides important configurations for building your study.</p>
     <p>If you're not sure what to enter here, just leave the defaults (you can change this later).</p>
@@ -85,13 +86,24 @@ class StudyEditForm(BaseStudyForm):
 
     def clean_structure(self):
         structure = self.cleaned_data["structure"]
+
         try:
             json_data = json.loads(structure)  # loads string as json
         except:
             raise forms.ValidationError(
                 "Save failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
+
         return json_data
+
+    def clean_criteria_expression(self):
+        criteria_expression = self.cleaned_data["criteria_expression"]
+        try:
+            compile_expression(criteria_expression)
+        except Exception as e:
+            raise forms.ValidationError(f"Invalid criteria expression:\n{e.args[0]}")
+
+        return criteria_expression
 
     class Meta:
         model = Study
@@ -113,12 +125,13 @@ class StudyEditForm(BaseStudyForm):
             "contact_info",
             "public",
             "structure",
+            "criteria_expression",
         ]
         labels = {
             "short_description": "Short Description",
             "long_description": "Purpose",
             "exit_url": "Exit URL",
-            "criteria": "Participant Eligibility",
+            "criteria": "Participant Eligibility Description",
             "contact_info": "Researcher Contact Information",
             "public": "Discoverable - Do you want this study to be publicly discoverable on Lookit once activated?",
             "study_type": "Study Type",
@@ -132,6 +145,16 @@ class StudyEditForm(BaseStudyForm):
             "criteria": Textarea(attrs={"rows": 1}),
             "duration": Textarea(attrs={"rows": 1}),
             "contact_info": Textarea(attrs={"rows": 1}),
+            "criteria_expression": Textarea(
+                attrs={
+                    "rows": 3,
+                    "placeholder": (
+                        "ex: ((deaf OR hearing_impairment) OR NOT speaks_en) "
+                        "AND "
+                        "(age_in_days >= 365 AND age_in_days <= 1095)"
+                    ),
+                }
+            ),
         }
 
         help_texts = {
@@ -143,6 +166,7 @@ class StudyEditForm(BaseStudyForm):
             "criteria": "Text shown to families - this is not used to actually verify eligibility.",
             "study_type": STUDY_HELP_TEXT_EDIT,
             "compensation_description": "Provide a description of any compensation for participation, including when and how participants will receive it and any limitations or eligibility criteria (e.g., only one gift card per participant, being in age range for study, child being visible in consent video). Please see the Terms of Use for details on allowable compensation and restrictions. If this field is left blank it will not be displayed to participants.",
+            "criteria_expression": "Provide a relational expression indicating the criteria for eligibility.",
         }
 
 
@@ -188,10 +212,11 @@ class EligibleParticipantQueryModelForm(ModelForm):
 
     gender_specification = forms.IntegerField(required=False)
 
-    # TODO: validation function
+    # # TODO: validation function
     # def clean(self):
-    #     cleaned_data = super().clean()
-    #     return
+    #     super().clean()
+    #
+    #     return self.cleaned_data
 
     class Meta:
         fields = (
@@ -211,12 +236,3 @@ class EligibleParticipantQueryModelForm(ModelForm):
             "gestational_age_include_na",
         )
         model = EligibleParticipantQueryModel
-
-        # widgets = {
-        #     "require_conditions": BitFieldCheckboxSelectMultiple(
-        #         attrs={"class": "column-checkbox"}
-        #     ),
-        #     "exclude_conditions": BitFieldCheckboxSelectMultiple(
-        #         attrs={"class": "column-checkbox"}
-        #     ),
-        # }

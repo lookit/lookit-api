@@ -211,11 +211,14 @@ class ChildForm(forms.ModelForm):
             "birthday": "Birthday",
             "gestational_age_at_birth": "Gestational Age at Birth",
             "additional_information": "Any additional information you'd like us to know",
+            "existing_conditions": "Characteristics and conditions",
+            "languages_spoken": "Languages this child is exposed to at home, school, or with another caregiver.",
         }
 
         help_texts = {
             "given_name": "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research.",
-            "additional_information": "for instance, diagnosed developmental disorders or vision or hearing problems",
+            "additional_information": "For instance, diagnosed developmental disorders or vision or hearing problems",
+            "gestational_age_at_birth": "Please round down to the nearest full week of pregnancy completed",
         }
 
         widgets = {
@@ -248,11 +251,13 @@ class ChildUpdateForm(forms.ModelForm):
             "birthday": "Birthday",
             "gestational_age_at_birth": "Gestational Age at Birth",
             "additional_information": "Any additional information you'd like us to know",
+            "existing_conditions": "Characteristics and conditions",
+            "languages_spoken": "Languages this child is exposed to at home, school, or with another caregiver.",
         }
 
         help_texts = {
             "given_name": "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research.",
-            "additional_information": "for instance, diagnosed developmental disorders or vision or hearing problems",
+            "additional_information": "For instance, diagnosed developmental disorders or vision or hearing problems",
         }
 
         widgets = {
