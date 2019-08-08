@@ -30,7 +30,7 @@ def system_setup(c,verbose=False):
 
     for package in packages:
 
-        if (run("sudo pip install {}".format(package), hide=not verbose, warn=True).ok):
+        if (run("pip install {}".format(package), hide=not verbose, warn=True).ok):
 
             run("echo \"===>{} {}\"".format(package, MESSAGE_OK))
 
@@ -46,6 +46,10 @@ def system_setup(c,verbose=False):
         run("test -r ~/.bash_profile && echo \"eval \$($(brew --prefix)/bin/brew shellenv)\" >>~/.bash_profile", hide= not verbose, warn=True)
         run("echo \"eval $($(brew --prefix)/bin/brew shellenv)\"", hide=not verbose, warn=True)
         run("sudo apt-get install build-essential curl git", hide= not verbose, warn=True)
+        if (run("command -v brew", hide=not verbose, warn=True).ok):
+            run("echo \"===>brew {}\"".format(MESSAGE_OK))
+        else:
+            run("echo \"===>brew {}\"".format(MESSAGE_FAILED))
 
     if PLATFORM=="Darwin":
         if (run('command -v cask ', hide=not verbose, warn=True).ok):
@@ -90,7 +94,7 @@ def pygraphviz(c, verbose=False):
         else:
             run("echo \"Graphyviz {}\"".format(MESSAGE_FAILED))
         #Installing pygraphviz
-        if (run("sudo pip install pygraphviz --install-option='--include-path=/usr/include/graphviz' --install-option='--library-path=/usr/lib/graphviz/'", hide=not verbose, warn=True).ok):
+        if (run("sudo pip3 install pygraphviz --install-option='--include-path=/usr/include/graphviz' --install-option='--library-path=/usr/lib/graphviz/'", hide=not verbose, warn=True).ok):
             run("echo \"===>pygraphyviz {}\"".format(MESSAGE_OK))
         else:
             run("echo \"===>pygraphyviz {}\"".format(MESSAGE_FAILED))
