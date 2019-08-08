@@ -1,0 +1,1 @@
+deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-22.x su /etc/apt/sources.list.d/bintray.erlang.list
