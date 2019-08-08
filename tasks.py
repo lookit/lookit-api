@@ -10,7 +10,7 @@ MESSAGE_ALREADY_INSTALLED="already installed"
 SERVE_CELERY="celery worker --app=project --loglevel=INFO -Q builds,email,cleanup"
 SERVE_HTTPS_SERVER="python manage.py runsslserver --certificate certs/local_lookit.mit.edu.pem --key certs/local_lookit.mit.edu-key.pem"
 SERVE_HTTP_SERVER="python manage.py runserver"
-SERVE_NGROK="ngrok http 80"
+SERVE_NGROK="ngrok http https://127.0.0.1:8000"
 BASE_DIR=os.getcwd()
 PATH_TO_CERTS=os.path.join(BASE_DIR, 'certs')
 
@@ -27,7 +27,7 @@ def system_setup(c,verbose=False):
     """
 
     run("echo '*** SYSTEM SETUP ***'")
-    run("echo 'Installing pipenv, brew, and docutils'")
+    run("echo 'Installing pipenv, brew, and docutils & Configuring local settings'")
     packages=("pipenv", "docutils", "celery")
 
     for package in packages:
