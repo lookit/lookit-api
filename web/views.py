@@ -314,7 +314,7 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
         )
         responses = Response.objects.filter(
             completed_consent_frame=True, child__id__in=children_ids
-        )
+        ).order_by("-date_created")
 
         study_ids = responses.values_list("study_id", flat=True)
 
@@ -322,6 +322,8 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
             Prefetch("responses", queryset=responses),
             "responses__child",
             "responses__feedback",
+            "responses__videos",
+            "responses__consent_rulings",
         )
 
 
