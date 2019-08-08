@@ -15,6 +15,8 @@ from studies.fields import CONDITIONS, LANGUAGES
 
 CONST_MAPPING = {"true": True, "false": False, "null": None}
 
+GENDER_MAPPING = {"male": "m", "female": "f", "other": "o"}
+
 CONDITION_FIELDS = {condition_tuple[0] for condition_tuple in CONDITIONS}
 
 LANGUAGE_FIELDS = {f"speaks_{language_tuple[0]}" for language_tuple in LANGUAGES}
@@ -32,6 +34,7 @@ QUERY_GRAMMAR = """
     | age_in_days_comparison 
     | language_comparison
     | condition_comparison
+    | language_count_comparison
 
 not_bool_factor: "NOT" bool_factor
 
@@ -41,6 +44,8 @@ gender_comparison: "gender" (EQ | NE) gender_target
 gestational_age_comparison: "gestational_age_in_weeks" comparator GESTATIONAL_AGE_AS_WEEKS
 
 age_in_days_comparison: "age_in_days" comparator INT
+
+language_count_comparison: ("n_languages" | "num_languages") comparator INT
 
 comparator: EQ | NE | LT | LTE | GT | GTE
 
@@ -68,9 +73,9 @@ TRUE: "true"i
 FALSE: "false"i
 NULL: "null"i
 
-MALE: "m"i | "male"i
-FEMALE: "f"i | "female"i
-OTHER_GENDER: "o"i | "other"i
+MALE: "male"i | "m"i
+FEMALE: "female"i | "f"i
+OTHER_GENDER: "other"i | "o"i
 UNSPECIFIED_GENDER: "na"i
 
 %import common.INT
@@ -114,6 +119,7 @@ def compile_expression(boolean_algebra_expression: str):
     parse_tree = QUERY_DSL_PARSER.parse(boolean_algebra_expression)
 
     func_body = FunctionTransformer().transform(parse_tree)
+    print(func_body)
 
     func_text = " ".join(["def property_tester(child_obj):  return", func_body])
 
@@ -203,7 +209,7 @@ class FunctionTransformer(Transformer):
         return f"({bool_factor} {and_clauses})"
 
     def gender_comparison(self, comparator, target_gender):
-        return f"child_obj.get('gender') {comparator} {target_gender}"
+        return f"child_obj.get('gender') {'==' if comparator == '=' else comparator} {target_gender}"
 
     def gestational_age_comparison(self, comparator, num_weeks):
         return f"child_obj.get('gestational_age_in_weeks') {comparator} {num_weeks}"
@@ -217,8 +223,18 @@ class FunctionTransformer(Transformer):
     def condition_comparison(self, condition_target):
         return f"child_obj.get('{condition_target}', False)"
 
+    def language_count_comparison(self, comparator, num_langs):
+        return (
+            f"len({{k: v for k, v in child_obj.items() if k.startswith('speaks_') and v}}) "
+            f"{comparator} {num_langs}"
+        )
+
+    def gender_target(self, gender):
+        gender = gender.lower()
+        return f"'{GENDER_MAPPING.get(gender, gender)}'"
+
     def comparator(self, relation):
-        return relation
+        return "==" if relation == "=" else relation
 
     def not_bool_factor(self, bool_factor):
         return f"not {bool_factor}"

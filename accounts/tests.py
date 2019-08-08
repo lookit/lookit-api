@@ -28,6 +28,8 @@ class CriteriaExpressionTestCase(TestCase):
 
         self.gender_specific_condition = "gender = male OR gender = OTHER"
 
+        self.number_of_languages_condition = "num_languages < 6 AND n_languages > 1"
+
         self.compound_and_condition = "deaf AND dyslexia AND age_in_days >= 1000"
 
         self.deaf_male_child = G(
@@ -70,6 +72,16 @@ class CriteriaExpressionTestCase(TestCase):
         self.born_at_35_weeks = G(
             Child,
             gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.thirty_five_weeks,
+            birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
+        )
+
+        self.polyglot_child = G(
+            Child,
+            languages_spoken=Child.languages_spoken.en
+            | Child.languages_spoken.fr
+            | Child.languages_spoken.ja
+            | Child.languages_spoken.nl
+            | Child.languages_spoken.ko,
             birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
         )
 
@@ -146,5 +158,18 @@ class CriteriaExpressionTestCase(TestCase):
         self.assertFalse(
             get_child_eligibility(
                 self.french_female_twin, self.gender_specific_condition
+            )
+        )
+
+    def test_num_languages_spoken(self):
+        self.assertTrue(
+            get_child_eligibility(
+                self.polyglot_child, self.number_of_languages_condition
+            )
+        )
+
+        self.assertFalse(
+            get_child_eligibility(
+                self.french_female_twin, self.number_of_languages_condition
             )
         )
