@@ -30,7 +30,7 @@ def system_setup(c,verbose=False):
 
     for package in packages:
 
-        if (run("pip install {}".format(package), hide=not verbose, warn=True).ok):
+        if (run("sudo pip install {}".format(package), hide=not verbose, warn=True).ok):
 
             run("echo \"===>{} {}\"".format(package, MESSAGE_OK))
 
@@ -45,6 +45,7 @@ def system_setup(c,verbose=False):
         run("test -d /home/linuxbrew/.linuxbrew && eval \$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)", hide=not verbose, warn=True)
         run("test -r ~/.bash_profile && echo \"eval \$($(brew --prefix)/bin/brew shellenv)\" >>~/.bash_profile", hide= not verbose, warn=True)
         run("echo \"eval $($(brew --prefix)/bin/brew shellenv)\"", hide=not verbose, warn=True)
+        run("sudo apt-get install build-essential curl git", hide= not verbose, warn=True)
 
     if PLATFORM=="Darwin":
         if (run('command -v cask ', hide=not verbose, warn=True).ok):
