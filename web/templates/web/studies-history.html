@@ -89,7 +89,10 @@
                                                                 year{{ study.max_age_years|pluralize }} {{ study.max_age_months }}
                                                                 month{{ study.max_age_months|pluralize }} {{ study.max_age_days }}
                                                                 day{{ study.max_age_days|pluralize }}<br>
-                                                                <strong>Duration:</strong> {{ study.duration }}
+                                                                <strong>Contact:</strong> {{study.contact_info}} <br>
+                                                                <strong>Still collecting data?</strong> {% if study.state == 'active' %} Yes {% else %} No {% endif %} <br>
+                                                                {% if study.compensation_description %} <strong>Compensation: </strong>{{study.compensation_description}}  {% endif %}
+                                                                
                                                             </div>
                                                         </div>
                                                     </div><!-- Responses -->
@@ -125,8 +128,18 @@
                                                                             <dd>{{ response.child.given_name }}</dd>
                                                                             <dt>Date</dt>
                                                                             <dd>{{ response.date_created }}</dd>
-                                                                            <dt>Consent Ruling</dt>
-                                                                            <dd>{{ response.most_recent_ruling }}</dd>
+                                                                            <dt>Consent status</dt>
+                                                                            <dd>
+                                                                                {% if response.most_recent_ruling == 'accepted' %}
+                                                                                    Approved <br> Your consent video was reviewed by a researcher and is valid.
+                                                                                {% elif response.most_recent_ruling == 'pending' %}
+                                                                                    Pending <br> Your consent video has not yet been reviewed by a researcher.
+                                                                                {% elif response.most_recent_ruling == 'rejected' %}
+                                                                                    Invalid <br> There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers.
+                                                                                {% else %}
+                                                                                    No information about consent video review status.
+                                                                                {% endif %}
+                                                                            </dd>
                                                                         </dl>
                                                                     </div>
                                                                 </div>
