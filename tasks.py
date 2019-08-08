@@ -19,7 +19,9 @@ PATH_TO_CERTS=os.path.join(BASE_DIR, 'certs')
 def system_setup(c,verbose=False):
     """
 
-    Install pipenv, brew, docutils, and celery
+    1. Install pipenv, brew, docutils, and celery
+    2. Set the debug to False in a local setting file for serving locally.
+
     usage: invoke system-setup or invoke system-setup --verbose
 
     """
@@ -59,6 +61,11 @@ def system_setup(c,verbose=False):
                 run("echo \"===>Cask {}\"".format(MESSAGE_OK))
             else:
                 run("echo \"===>Cask {}\"".format(MESSAGE_FAILED))
+
+    #creating a local setting file
+    if (run("cd project/settings && touch local.py && echo \"DEBUG=True\" > local.py").ok):
+        run("echo \"===>Successfully configured settings for local development\"")
+
 
 @task
 def install_dependencies(c, verbose= False):
@@ -118,31 +125,33 @@ def rabbitmq(c, verbose=False):
 
     run("echo '***INSTALLING RabbitMq***'")
     if PLATFORM=="Linux":
-        '''
         #Rabbimq requires recent versions of erlang, which may not be available in the Debian and ubuntu distributions
         run("sudo curl -fsSL https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc | sudo apt-key add -", hide=not verbose, warn=True)
         run("sudo apt-get update && sudo apt-get install apt-transport-https", hide= not verbose, warn=True)
         res=str(run("cat /etc/os-release", hide= not verbose, warn=True))
         if "stretch" in res:
-            run("sudo echo 'deb http://dl.bintray.com/rabbitmq-erlang/debian stretch erlang-22.x' > /etc/apt/sources.list.d/bintray.erlang.list", hide=not verbose)
-            run("sudo echo 'deb https://dl.bintray.com/rabbitmq/debian stretch main' > /etc/apt/sources.list.d/bintray.rabbitmq.list", hide=not verbose)
+            run("sudo echo 'deb http://dl.bintray.com/rabbitmq-erlang/debian stretch erlang-22.x' > /etc/apt/sources.list.d/bintray.erlang.list", hide=not verbose, warn=True)
+            run("sudo echo 'deb https://dl.bintray.com/rabbitmq/debian stretch main' > /etc/apt/sources.list.d/bintray.rabbitmq.list", hide=not verbose, warn=True)
         elif "bionic" in res:
-            run("sudo echo 'deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-22.x' > sudo su /etc/apt/sources.list.d/bintray.erlang.list", hide=not verbose)
-            run("sudo su echo 'deb https://dl.bintray.com/rabbitmq/debian bionic main' > /etc/apt/sources.list.d/bintray.rabbitmq.list", hide=not verbose)
+            run("sudo echo 'deb http://dl.bintray.com/rabbitmq-erlang/debian bionic erlang-22.x' > sudo su /etc/apt/sources.list.d/bintray.erlang.list", hide=not verbose, warn=True)
+            run("sudo su echo 'deb https://dl.bintray.com/rabbitmq/debian bionic main' > /etc/apt/sources.list.d/bintray.rabbitmq.list", hide=not verbose, warn=True)
         elif "xenial" in res:
-            run("sudo su echo 'deb http://dl.bintray.com/rabbitmq-erlang/debian xenial erlang-22.x' > /etc/apt/sources.list.d/bintray.erlang.list", hide=not verbose)
-            run("sudo su echo 'deb https://dl.bintray.com/rabbitmq/debian xenial main' > /etc/apt/sources.list.d/bintray.rabbitmq.list", hide=not verbose)
+            run("sudo su echo 'deb http://dl.bintray.com/rabbitmq-erlang/debian xenial erlang-22.x' > /etc/apt/sources.list.d/bintray.erlang.list", hide=not verbose, warn=True)
+            run("sudo su echo 'deb https://dl.bintray.com/rabbitmq/debian xenial main' > /etc/apt/sources.list.d/bintray.rabbitmq.list", hide=not verbose, warn=True)
         elif "buster" in res:
-            run("sudo echo 'deb http://dl.bintray.com/rabbitmq-erlang/debian buster erlang-22.x' > /etc/apt/sources.list.d/bintray.erlang.list", hide=not verbose)
-            run("sudo echo 'deb https://dl.bintray.com/rabbitmq/debian buster main' > /etc/apt/sources.list.d/bintray.rabbitmq.list", hide=not verbose)
+            run("sudo echo 'deb http://dl.bintray.com/rabbitmq-erlang/debian buster erlang-22.x' > /etc/apt/sources.list.d/bintray.erlang.list", hide=not verbose, warn=True)
+            run("sudo echo 'deb https://dl.bintray.com/rabbitmq/debian buster main' > /etc/apt/sources.list.d/bintray.rabbitmq.list", hide=not verbose, warn=True)
         else:
             run("echo {}".format(MESSAGE_WRONG_PLATFORM))
-        run("sudo apt-get update -y && sudo apt-get install -y erlang-base \
+        if (run("sudo apt-get update -y && sudo apt-get install -y erlang-base \
             erlang-asn1 erlang-crypto erlang-eldap erlang-ftp erlang-inets \
             erlang-mnesia erlang-os-mon erlang-parsetools erlang-public-key \
             erlang-runtime-tools erlang-snmp erlang-ssl \
-            erlang-syntax-tools erlang-tftp erlang-tools erlang-xmerl", warn=True, hide= not verbose)
-            '''
+            erlang-syntax-tools erlang-tftp erlang-tools erlang-xmerl", warn=True, hide= not verbose).ok):
+            run("echo \"===>Erlang {}\"".format(MESSAGE_OK))
+        else:
+            run("echo \"Warning: Attempt to update Erlang failed. Rabbitmq has a requirement version of Erlang. Please, check and install it manually.\"")
+
         #Installing rabbitmq from packagecloud
         run("sudo apt-get update -y && sudo apt-get install rabbitmq-server -y --fix-missing", hide= not verbose, warn=True)
         #Starting rabbitmq and creating administrators
