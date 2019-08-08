@@ -119,7 +119,6 @@ def compile_expression(boolean_algebra_expression: str):
     parse_tree = QUERY_DSL_PARSER.parse(boolean_algebra_expression)
 
     func_body = FunctionTransformer().transform(parse_tree)
-    print(func_body)
 
     func_text = " ".join(["def property_tester(child_obj):  return", func_body])
 
