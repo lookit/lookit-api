@@ -81,15 +81,11 @@
                                                         <div class="study-feedback-description-wrapper">
                                                             {{ study.short_description }}
                                                             <div class="pt-sm">
-                                                                <strong>Age Range:</strong> {{ study.min_age_years }}
-                                                                year{{ study.min_age_years|pluralize }} {{ study.min_age_months }}
-                                                                month{{ study.min_age_months|pluralize }} {{ study.min_age_days }}
-                                                                day{{ study.min_age_days|pluralize }}
-                                                                - {{ study.max_age_years }}
-                                                                year{{ study.max_age_years|pluralize }} {{ study.max_age_months }}
-                                                                month{{ study.max_age_months|pluralize }} {{ study.max_age_days }}
-                                                                day{{ study.max_age_days|pluralize }}<br>
-                                                                <strong>Duration:</strong> {{ study.duration }}
+                                                                <strong>Eligibility:</strong> {{ study.criteria }}<br>
+                                                                <strong>Contact:</strong> {{study.contact_info}} <br>
+                                                                <strong>Still collecting data?</strong> {% if study.state == 'active' %} Yes {% else %} No {% endif %} <br>
+                                                                {% if study.compensation_description %} <strong>Compensation: </strong>{{study.compensation_description}}  {% endif %}
+                                                                
                                                             </div>
                                                         </div>
                                                     </div><!-- Responses -->
@@ -125,8 +121,30 @@
                                                                             <dd>{{ response.child.given_name }}</dd>
                                                                             <dt>Date</dt>
                                                                             <dd>{{ response.date_created }}</dd>
-                                                                            <dt>Consent Ruling</dt>
-                                                                            <dd>{{ response.most_recent_ruling }}</dd>
+                                                                            <dt>Consent status</dt>
+                                                                            <dd>
+                                                                                {% if response.most_recent_ruling == 'accepted' %}
+                                                                                    Approved <br> Your consent video was reviewed by a researcher and is valid.
+                                                                                {% elif response.most_recent_ruling == 'pending' %}
+                                                                                    Pending <br> Your consent video has not yet been reviewed by a researcher.
+                                                                                {% elif response.most_recent_ruling == 'rejected' %}
+                                                                                    Invalid <br> There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers.
+                                                                                {% else %}
+                                                                                    No information about consent video review status.
+                                                                                {% endif %}
+                                                                            </dd>
+                                                                            {% if response.feedback.all %}
+                                                                                <dt>Feedback</dt>
+                                                                                <dd>
+                                                                                    <ul>	                                                                     
+                                                                                        {% for feedback in response.feedback.all %}	                                                                          
+                                                                                            <li class="response-feedback"> {{ feedback.comment }} </li>
+                                                                                        {% empty %}	                                                     
+                                                                                            <span class="response-feedback-none"><em>None</em></span>
+                                                                                        {% endfor %}	                                                                    
+                                                                                    </ul>
+                                                                                </dd>
+                                                                            {% endif %}
                                                                         </dl>
                                                                     </div>
                                                                 </div>
