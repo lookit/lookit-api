@@ -393,9 +393,9 @@ def server(c):
     """
 
     if os.listdir(PATH_TO_CERTS):
-        run(SERVE_HTTPS_SERVER, hide=False)
+        run("echo -e '\a Serving at https://127.0.0.1:8000\a'"+"&&"+SERVE_HTTPS_SERVER, hide=False)
     else:
-        run(SERVE_HTTP_SERVER, hide=False)
+        run("echo -e '\a Serving at http://127.0.0.1:8000\a'"+"&&"+SERVE_HTTP_SERVER, hide=False)
     
 @task
 def ngrok_service(c):
@@ -417,21 +417,9 @@ def celery_service(c):
     """
     run(SERVE_CELERY)
 
-@task
-def serve(c):
-    """
 
-    Serves the django application, starts celery, and ngrok
-    usage: invoke serve
 
-    """
-
-    if(os.listdir(PATH_TO_CERTS)):
-        run(SERVE_HTTPS_SERVER + "&" + SERVE_NGROK + "&" + SERVE_CELERY)
-    else:
-        run(SERVE_HTTP_SERVER+"&" + SERVE_NGROK + "&" + SERVE_CELERY)
-
-@task(system_setup, install_dependencies,pygraphviz, rabbitmq, postgresql, ssl_certificate, ngrok, docker)
+@task(system_setup, install_dependencies,pygraphviz, rabbitmq, postgresql, ssl_certificate, ngrok, docker, server)
 def setup(c):
     pass
 
