@@ -63,6 +63,7 @@ django-bitfield = "==1.9.3"
 django-sslserver = "*"
 django-debug-toolbar = "*"
 lark-parser = "==0.7.2"
+lark = "*"
 
 [requires]
 python_version = "3.6"
