@@ -181,6 +181,7 @@ class Study(models.Model):
     previewed = models.BooleanField(default=False)
     built = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
+    criteria_expression = models.TextField(blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
