@@ -318,7 +318,7 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
             )
             .select_related("child")
             .prefetch_related(
-                Prefetch("videos", queryset=Video.objects.order_by("created_at")),
+                Prefetch("videos", queryset=Video.objects.order_by("s3_timestamp")),
                 "consent_rulings",
                 "feedback",
             )
