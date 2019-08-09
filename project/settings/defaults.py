@@ -80,7 +80,6 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "sslserver",
 ]
 MIDDLEWARE_CLASSES = [
     "django.middleware.security.SecurityMiddleware",
@@ -96,7 +95,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar", "shells"]
+    INSTALLED_APPS += ["debug_toolbar", "shells", "sslserver"]
     MIDDLEWARE_CLASSES += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
         "pyinstrument.middleware.ProfilerMiddleware",
