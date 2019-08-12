@@ -885,7 +885,11 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         context = super().get_context_data(**kwargs)
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
-        responses = context["study"].consented_responses.order_by(orderby)
+        responses = (
+            context["study"]
+            .consented_responses.prefetch_related("consent_rulings__arbiter")
+            .order_by(orderby)
+        )
         paginated_responses = context["responses"] = self.paginated_queryset(
             responses, page, 10
         )
