@@ -38,6 +38,7 @@ from studies.forms import EligibleParticipantQueryModelForm, StudyEditForm, Stud
 from studies.helpers import send_mail
 from studies.models import (
     EligibleParticipantQueryModel,
+    Feedback,
     Response,
     Study,
     StudyLog,
@@ -863,6 +864,22 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     template_name = "studies/study_responses.html"
 
+    def post(self, request, *args, **kwargs):
+        """Currently, handles feedback form."""
+        form_data = self.request.POST
+        user = self.request.user
+        study = self.get_object()
+
+        Feedback.objects.create(
+            response_id=int(form_data.get("response_id")),
+            researcher=user,
+            comment=form_data.get("comment"),
+        )
+
+        return HttpResponseRedirect(
+            reverse("exp:study-responses-list", kwargs=dict(pk=self.get_object().pk))
+        )
+
     def get_responses_orderby(self):
         """
         Determine sort field and order. Sorting on id actually sorts on user id, not response id.
@@ -887,7 +904,10 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         orderby = self.get_responses_orderby()
         responses = (
             context["study"]
-            .consented_responses.prefetch_related("consent_rulings__arbiter")
+            .consented_responses.prefetch_related(
+                "consent_rulings__arbiter",
+                Prefetch("feedback", queryset=Feedback.objects.order_by("-id")),
+            )
             .order_by(orderby)
         )
         paginated_responses = context["responses"] = self.paginated_queryset(

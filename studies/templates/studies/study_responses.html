@@ -10,6 +10,8 @@
             hideResponses();
             prepareDataForDownload('#json-data-1', 'download-individual-data', 'json');
             $( ".selectable-participant").first().addClass('selected');
+            let currentResponseId = $(".selectable-participant.selected").data("response-id");
+            showFeedbackList(currentResponseId);
             $( ".response-data").first().show();
             $( ".response-attachments").first().show();
 
@@ -17,11 +19,13 @@
                 // Shows selected individual's response data
                 var id = $(this)[0].id;
                 var index = extractIdNumber(id);
+                let responseId = $(this).data("response-id");
                 $('.selectable-participant').removeClass('selected');
                 $('#' + id).addClass('selected');
                 hideResponses();
                 showResponse($('#data-type-selector').val(), index);
                 showAttachments(index);
+                showFeedbackList(responseId);
             });
 
             $('#data-type-selector').on('change', function(){
@@ -47,6 +51,12 @@
                 $('#resp-attachment-' + index).show();
             }
 
+            function showFeedbackList(responseId) {
+                $('.feedback-list').hide();
+                $('#response-id-for-feedback').val(responseId);
+                $(`#feedback-list-for-${responseId}`).show();
+            }
+
             function extractIdNumber(id) {
                 return id.split('-').slice(-1)[0];
             }
@@ -61,7 +71,6 @@
                     $('#csv-response-data-' + index).show();
                     prepareDataForDownload('#csv-data-' + index, 'download-individual-data', 'csv');
                 }
-                return;
             }
 
             function hideResponses() {
@@ -134,26 +143,53 @@
                         </thead>
                         <tbody>
                         {% for response in responses %}
-                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}'>
+                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.id }}">
                             <td>{{ response.child.user.id }}</td>
-                            <td>{{ response.id}} </td>
+                            <td>{{ response.id }} </td>
                             <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
                             <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
                           </tr>
                         {% endfor %}
                         </tbody>
                     </table>
+                    <form method="POST">{% csrf_token %}
+                        <section class="form-group-sm">
+                            <label for="response-feedback">
+                                Response feedback
+                            </label>
+                            <textarea class="form-control" id="response-feedback" name="comment"></textarea>
+                            <input id="response-id-for-feedback" type="hidden" name="response_id" value=0 />
+                            <button class="btn mt-sm btn-primary" type="submit">Issue New Feedback</button>
+                        </section>
+                    </form>
+                    <section class="mt-md">
+                        {% for response in responses %}
+                            <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
+                            {% for feedback in response.feedback.all %}
+                                <blockquote class="small">
+                                    <p>
+                                        {{ feedback.comment }}
+                                    </p>
+                                <footer>
+                                    {{ feedback.researcher.get_full_name }}
+                                </footer>
+                                </blockquote>
+                            {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </section>
                 </div>
                 {% include 'studies/_paginator.html' with items=responses request=request %}
             </div>
             <div class="col-md-6 col-xs-12">
                 <div class="form-group pt-xxxl">
-                  <select class="form-control" id="data-type-selector">
-                    <option>JSON</option>
-                    <option>CSV</option>
-                  </select>
+                    <label for="data-type-selector">Data Type</label>
+                    <select class="form-control" id="data-type-selector">
+                        <option>JSON</option>
+                        <option>CSV</option>
+                    </select>
                 </div>
-                <a id='download-individual-data' class='mb-sm btn btn-primary'>
+                <a id='download-individual-data' class='btn mb-sm btn-primary'>
                     Download Individual Response <span id="download-data-label">JSON </span>
                 </a>
                 {% for response in response_data %}
@@ -166,6 +202,7 @@
                         <pre class='csv-data individual-block' id='csv-data-{{ forloop.counter }}'>{{ csv }}</pre>
                     </div>
                 {% endfor %}
+
                 <div class="pb-md">
                     <h2> Attachments </h2>
                     {% for response in responses %}
