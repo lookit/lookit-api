@@ -119,6 +119,7 @@ def pygraphviz(c, verbose=False):
 
     if PLATFORM == "Linux":
         # Installing graphviz
+        """
         if run(
             "sudo apt-get update && sudo apt-get install graphviz",
             hide=not verbose,
@@ -127,9 +128,11 @@ def pygraphviz(c, verbose=False):
             run('echo "graphviz {}"'.format(MESSAGE_OK))
         else:
             run('echo "graphviz {}"'.format(MESSAGE_FAILED))
+            
+        """
         # Installing pygraphviz
         if run(
-            "sudo pip3 install pygraphviz --install-option='--include-path=/usr/include/graphviz' --install-option='--library-path=/usr/lib/graphviz/'",
+            "sudo pip install pygraphviz --install-option='--include-path=/usr/include/graphviz' --install-option='--library-path=/usr/lib/graphviz/'",
             hide=not verbose,
             warn=True,
         ).ok:
