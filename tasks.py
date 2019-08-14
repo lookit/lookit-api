@@ -1,3 +1,32 @@
+""" invoke tasks for local development. 
+
+tasks.py is a set of invoke tasks for automatically installing and configuring all the dependencies necessary
+for local development.
+
+Example:
+    invoke task_name
+
+    where task_name can be rabbitmq, celery, or any other dependencies that is represented by a func
+
+Requirement:
+    invoke library 
+
+Attributes:
+    PLATFORM (str): holds OS details of the working env. ex: 'Linux'
+    MESSAGE_FAILED (str): holds the message that displays when a package fails to install
+    MESSAGE_WRONG_PLATFORM (str): holds a message that displays when the OS being used is not supported by the tasks. 
+    MESSAGE_ALREADY_INSTALLED (str): holds a message that displays when the package is already available in the system.
+    SERVE_CELERY (str): holds a command that serves celery
+    SERVE_HTTPS_SERVER (str): holds a command that serves securely the django web application (HTTPS) 
+    SERVE_HTTP_SERVER (str): holds a command that serces django web application (HTTP)
+    SERVE_NGROK (str): holds a command that serves ngrok
+    BASE_DIR (str): holds the path to the current working directory
+    PATH_TO_CERTS (str): holds the path to certificates used to serve the django application securely.
+
+Todo:
+    *Coloring stdout responses for emphasize and readability purposes
+
+"""
 from invoke import task, run
 import platform
 import os
@@ -19,12 +48,26 @@ PATH_TO_CERTS = os.path.join(BASE_DIR, "certs")
 
 @task
 def system_setup(c, verbose=False):
-    """
+    """system-setup invoke task.
+    
+    This func installs pipenv, brew, docutils, and celery.
+    This func also sets the debug to False in a local setting file for serving locally.
 
-    1. Install pipenv, brew, docutils, and celery
-    2. Set the debug to False in a local setting file for serving locally.
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+        verbose (bool): states whether stdout should be printed.
 
-    usage: invoke system-setup or invoke system-setup --verbose
+    Returns:
+        None.
+
+        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        depending on the state of the installation process.
+
+    Note:
+        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
+
+    Usage:
+        invoke system-setup or invoke system-setup --verbose
 
     """
 
@@ -78,23 +121,38 @@ def system_setup(c, verbose=False):
             run('echo "===>brew {}"'.format(MESSAGE_FAILED))
 
     if PLATFORM == "Darwin":
-        if(run("brew tap caskroom/cask", hide= not verbose, warm=True).ok):
-            run("echo \"===>homebrew/cask is installed\"")
+        if run("brew tap caskroom/cask", hide=not verbose, warm=True).ok:
+            run('echo "===>homebrew/cask is installed"')
         else:
-            run("echo \"===>homebrew/cask is not working.\"")
-
+            run('echo "===>homebrew/cask is not working."')
 
     # creating a local setting file
     if run('cd project/settings && touch local.py && echo "DEBUG=True" > local.py').ok:
         run('echo "===>Successfully configured settings for local development"')
+    return None
 
 
 @task
 def install_dependencies(c, verbose=False):
-    """
+    """ install-dependencies invoke task. 
 
-    Install all the dependencies of the API
-    usage: invoke install-dependencies or invoke install-dependencies --verbose
+    This func installs all the dependencies listed in the pipfile + djangosslserver.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+        verbose (bool): states whether stdout should be printed.
+
+    Returns:
+        None.
+
+        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        depending on the state of the installation process.
+
+    Note:
+        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
+
+    usage: 
+        invoke install-dependencies or invoke install-dependencies --verbose
 
     """
 
@@ -106,14 +164,30 @@ def install_dependencies(c, verbose=False):
             run('echo "===>{} {}"'.format(package, MESSAGE_OK))
         else:
             run('echo "===>{} {}"'.format(package, MESSAGE_FAILED))
+    return None
 
 
 @task
 def pygraphviz(c, verbose=False):
-    """
+    """ pygraphviz invoke task.
 
-    Install graphyviz & pygraphviz 
-    usage: invoke pygraphviz or invoke pygraphviz --verbose
+    This func installs graphyviz & pygraphviz.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+        verbose (bool): states whether stdout should be printed.
+
+    Returns:
+        None.
+
+        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        depending on the state of the installation process.
+
+    Note:
+        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
+
+    Usage: 
+        invoke pygraphviz or invoke pygraphviz --verbose
 
     """
 
@@ -131,11 +205,7 @@ def pygraphviz(c, verbose=False):
             
         """
         # Installing pygraphviz
-        if run(
-            "sudo pip install pygraphviz",
-            hide=not verbose,
-            warn=True,
-        ).ok:
+        if run("sudo pip install pygraphviz", hide=not verbose, warn=True).ok:
             run('echo "===>pygraphviz {}"'.format(MESSAGE_OK))
         else:
             run('echo "===>pygraphviz {}"'.format(MESSAGE_FAILED))
@@ -152,13 +222,30 @@ def pygraphviz(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
+    return None
+
 
 @task
 def rabbitmq(c, verbose=False):
-    """
+    """rabbitmq invoke task. 
 
-    Install rabbitmq, create users, and queues for the API
-    usage: invoke rabbitmq or invoke rabbitmq --verbose
+    This func installs rabbitmq and creates users and queues for the API.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+        verbose (bool): states whether stdout should be printed.
+
+    Returns:
+        None.
+
+        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        depending on the state of the installation process.
+
+    Note:
+        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
+
+    Usage: 
+        invoke rabbitmq or invoke rabbitmq --verbose
 
     """
 
@@ -346,13 +433,30 @@ def rabbitmq(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
+    return None
+
 
 @task
 def postgresql(c, verbose=False):
-    """
+    """ postgresql invoke task.
+    
+    This func installs postgresql, create the database of the API and create required tables. 
 
-    Installs postgresql, create the database of the API and create the tables necessary
-    usage: invoke postgresql or invoke postgresql --verbose
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+        verbose (bool): states whether stdout should be printed.
+
+    Returns:
+        None.
+
+        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        depending on the state of the installation process.
+
+    Note:
+        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
+
+    Usage: 
+        invoke postgresql or invoke postgresql --verbose
 
     """
     run("echo '***INSTALLING Postgresql***'")
@@ -408,13 +512,30 @@ def postgresql(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
+    return None
+
 
 @task
 def ssl_certificate(c, verbose=False):
-    """
+    """ssl-certificate invoke task. 
 
-    Setup local https development env
-    usage: invoke ssl-certificate or invoke ssl-certificate --verbose
+    this func sets up local https development env.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+        verbose (bool): states whether stdout should be printed.
+
+    Returns:
+        None.
+
+        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        depending on the state of the installation process.
+
+    Note:
+        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
+
+    Usage:
+        invoke ssl-certificate or invoke ssl-certificate --verbose
 
     """
     run("echo '***Setting HTTPS for local development***'")
@@ -462,13 +583,30 @@ def ssl_certificate(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
+    return None
+
 
 @task
 def ngrok(c, verbose=False):
-    """
+    """ngork invoke task. 
 
-    Installing ngrok for Linux and Darwin platforms
-    usage: invoke ngrok or invoke ngrok --version 
+    This func installs ngrok for Linux and Darwin platforms
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+        verbose (bool): states whether stdout should be printed.
+
+    Returns:
+        None.
+
+        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        depending on the state of the installation process.
+
+    Note:
+        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
+
+    Usage: 
+        invoke ngrok or invoke ngrok --version 
 
     """
     run("echo '***Installing Ngrok***'")
@@ -500,13 +638,30 @@ def ngrok(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
+    return None
+
 
 @task
 def docker(c, verbose=False):
-    """
+    """docker invoke task.
 
-    Installing docker for both Ubuntu(Linux) and Darwin(MacOS/OSX)
-    usage: invoke docker
+    this func installs docker for both Ubuntu(Linux) and Darwin(MacOS/OSX)
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+        verbose (bool): states whether stdout should be printed.
+
+    Returns:
+        None.
+
+        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        depending on the state of the installation process.
+
+    Note:
+        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
+
+    usage: 
+        invoke docker
 
     """
 
@@ -584,13 +739,23 @@ def docker(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
+    return None
+
 
 @task
 def server(c):
-    """
+    """ serving invoke task.
 
-    serves django application server
-    usage:invoke server
+    This func serves django application server.
+    
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+
+    Returns:
+        None.
+
+    usage:
+        invoke server
 
     """
 
@@ -609,27 +774,50 @@ def server(c):
             hide=False,
         )
 
+    return None
+
 
 @task
 def ngrok_service(c):
     """
 
-    Serves ngrok
-    usage: invoke ngrok_service
+    This func serves ngrok.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+
+    Returns:
+        None.
+
+    Usage: 
+        invoke ngrok_service
 
     """
+
     run(SERVE_NGROK)
+
+    return None
 
 
 @task
 def celery_service(c):
-    """
+    """celery-service invoke task
 
-    serves celery
-    usage: invoke celery 
+    This func serves celery.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+
+    Returns:
+        None.
+
+    usage: 
+        invoke celery 
 
     """
     run(SERVE_CELERY)
+
+    return None
 
 
 @task(
@@ -639,9 +827,25 @@ def celery_service(c):
     rabbitmq,
     postgresql,
     ssl_certificate,
-    ngrok,
     docker,
     server,
 )
 def setup(c):
-    pass
+    """setup invoke task.
+
+    This func runs the tasks specified in the task decorator.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+
+    Returns:
+        None.
+    
+    Note: 
+        This func does not serve celery and ngrok. 
+
+    usage: 
+        invoke setup
+
+    """
+    return None
