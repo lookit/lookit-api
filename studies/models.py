@@ -1,10 +1,12 @@
 import json
 import logging
 import uuid
+from datetime import datetime
 
 import boto3
 import dateutil
 import fleep
+import pytz
 from bitfield import BitField
 from botocore.exceptions import ClientError
 from django.conf import settings
@@ -916,7 +918,7 @@ class Video(models.Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    s3_timestamp = models.DateTimeField()
     pipe_name = models.CharField(max_length=255, unique=True, blank=False)
     pipe_numeric_id = models.IntegerField(
         null=True
@@ -984,6 +986,7 @@ class Video(models.Model):
             return cls.objects.create(
                 pipe_name=old_pipe_name,
                 pipe_numeric_id=data["id"],
+                s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=pytz.utc),
                 frame_id=frame_id,
                 size=data["size"],
                 full_name=new_full_name,

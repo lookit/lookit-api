@@ -15,7 +15,7 @@ from revproxy.views import ProxyView
 from accounts import forms
 from accounts.models import Child, DemographicData, User
 from project import settings
-from studies.models import Response, Study
+from studies.models import Response, Study, Video
 
 
 @receiver(signals.user_logged_out)
@@ -312,18 +312,26 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
             "id", flat=True
         )
-        responses = Response.objects.filter(
-            completed_consent_frame=True, child__id__in=children_ids
-        ).order_by("-date_created")
+        responses = (
+            Response.objects.filter(
+                completed_consent_frame=True, child__id__in=children_ids
+            )
+            .select_related("child")
+            .prefetch_related(
+                Prefetch(
+                    "videos",
+                    queryset=Video.objects.order_by("pipe_numeric_id", "s3_timestamp"),
+                ),
+                "consent_rulings",
+                "feedback",
+            )
+            .order_by("-date_created")
+        )
 
         study_ids = responses.values_list("study_id", flat=True)
 
         return Study.objects.filter(id__in=study_ids).prefetch_related(
-            Prefetch("responses", queryset=responses),
-            "responses__child",
-            "responses__feedback",
-            "responses__videos",
-            "responses__consent_rulings",
+            Prefetch("responses", queryset=responses)
         )
 
 

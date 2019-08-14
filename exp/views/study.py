@@ -38,6 +38,7 @@ from studies.forms import EligibleParticipantQueryModelForm, StudyEditForm, Stud
 from studies.helpers import send_mail
 from studies.models import (
     EligibleParticipantQueryModel,
+    Feedback,
     Response,
     Study,
     StudyLog,
@@ -863,6 +864,25 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     template_name = "studies/study_responses.html"
 
+    def post(self, request, *args, **kwargs):
+        """Currently, handles feedback form."""
+        form_data = self.request.POST
+        user = self.request.user
+        feedback_id = form_data.get("feedback_id", None)
+        comment = form_data.get("comment", "")
+
+        if feedback_id:
+            Feedback.objects.filter(id=feedback_id).update(comment=comment)
+        else:
+            response_id = int(form_data.get("response_id"))
+            Feedback.objects.create(
+                response_id=response_id, researcher=user, comment=comment
+            )
+
+        return HttpResponseRedirect(
+            reverse("exp:study-responses-list", kwargs=dict(pk=self.get_object().pk))
+        )
+
     def get_responses_orderby(self):
         """
         Determine sort field and order. Sorting on id actually sorts on user id, not response id.
@@ -885,7 +905,19 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         context = super().get_context_data(**kwargs)
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
-        responses = context["study"].consented_responses.order_by(orderby)
+        responses = (
+            context["study"]
+            .consented_responses.prefetch_related(
+                "consent_rulings__arbiter",
+                Prefetch(
+                    "feedback",
+                    queryset=Feedback.objects.select_related("researcher").order_by(
+                        "-id"
+                    ),
+                ),
+            )
+            .order_by(orderby)
+        )
         paginated_responses = context["responses"] = self.paginated_queryset(
             responses, page, 10
         )
