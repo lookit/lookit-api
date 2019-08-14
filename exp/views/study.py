@@ -868,13 +868,16 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         """Currently, handles feedback form."""
         form_data = self.request.POST
         user = self.request.user
-        study = self.get_object()
+        feedback_id = form_data.get("feedback_id", None)
+        comment = form_data.get("comment", "")
 
-        Feedback.objects.create(
-            response_id=int(form_data.get("response_id")),
-            researcher=user,
-            comment=form_data.get("comment"),
-        )
+        if feedback_id:
+            Feedback.objects.filter(id=feedback_id).update(comment=comment)
+        else:
+            response_id = int(form_data.get("response_id"))
+            Feedback.objects.create(
+                response_id=response_id, researcher=user, comment=comment
+            )
 
         return HttpResponseRedirect(
             reverse("exp:study-responses-list", kwargs=dict(pk=self.get_object().pk))

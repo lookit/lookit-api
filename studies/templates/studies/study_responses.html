@@ -152,28 +152,46 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <form method="POST">{% csrf_token %}
-                        <section class="form-group-sm">
-                            <label for="response-feedback">
+                    <form method="POST" class="form-inline">{% csrf_token %}
+                        <h4>New Feedback</h4>
+                        <section class="form-group">
+                            <label class="sr-only" for="response-feedback">
                                 Response feedback
                             </label>
-                            <textarea class="form-control" id="response-feedback" name="comment"></textarea>
+                            <textarea
+                                    id="response-feedback"
+                                    class="form-control"
+                                    name="comment"
+                                    rows="4"
+                                    cols="50"></textarea>
                             <input id="response-id-for-feedback" type="hidden" name="response_id" value=0 />
-                            <button class="btn mt-sm btn-primary" type="submit">Issue New Feedback</button>
+                            <button class="btn mt-sm btn-primary" type="submit">Create</button>
                         </section>
                     </form>
                     <section class="mt-md">
+                        <h4>Existing Feedback</h4>
                         {% for response in responses %}
                             <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
                             {% for feedback in response.feedback.all %}
-                                <blockquote class="small">
-                                    <p>
-                                        {{ feedback.comment }}
-                                    </p>
-                                <footer>
-                                    {{ feedback.researcher.get_full_name }}
-                                </footer>
-                                </blockquote>
+                                <form method="POST" class="small form-inline">{% csrf_token %}
+                                    <div class="form-group">
+                                        <label class="sr-only"
+                                               for="feedback-edit-{{ feedback.id }}">
+                                            <strong>Edit Feedback</strong>
+                                        </label>
+
+                                        <textarea id="feedback-edit-{{ feedback.id }}"
+                                                  class="form-control"
+                                                  name="comment"
+                                                  rows="2"
+                                                  cols="50">{{ feedback.comment }}</textarea>
+                                        <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
+                                        <button type="submit" class="btn btn-xs btn-warning">Update</button>
+                                        <footer class="pt-sm pb-sm">
+                                            {{ feedback.researcher.get_full_name }}
+                                        </footer>
+                                    </div>
+                                </form>
                             {% endfor %}
                             </div>
                         {% endfor %}
