@@ -116,9 +116,11 @@ def compile_expression(boolean_algebra_expression: str):
     Raises:
         lark.exceptions.ParseError: in case we cannot parse the boolean algebra.
     """
-    parse_tree = QUERY_DSL_PARSER.parse(boolean_algebra_expression)
-
-    func_body = FunctionTransformer().transform(parse_tree)
+    if boolean_algebra_expression:
+        parse_tree = QUERY_DSL_PARSER.parse(boolean_algebra_expression)
+        func_body = FunctionTransformer().transform(parse_tree)
+    else:
+        func_body = "True"
 
     func_text = " ".join(["def property_tester(child_obj):  return", func_body])
 
