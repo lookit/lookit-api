@@ -132,7 +132,7 @@ def pygraphviz(c, verbose=False):
         """
         # Installing pygraphviz
         if run(
-            "sudo pip install pygraphviz --install-option='--include-path=/usr/include/graphviz' --install-option='--library-path=/usr/lib/graphviz/'",
+            "sudo pip install pygraphviz",
             hide=not verbose,
             warn=True,
         ).ok:
