@@ -909,7 +909,12 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
             context["study"]
             .consented_responses.prefetch_related(
                 "consent_rulings__arbiter",
-                Prefetch("feedback", queryset=Feedback.objects.order_by("-id")),
+                Prefetch(
+                    "feedback",
+                    queryset=Feedback.objects.select_related("researcher").order_by(
+                        "-id"
+                    ),
+                ),
             )
             .order_by(orderby)
         )
