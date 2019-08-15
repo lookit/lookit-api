@@ -211,6 +211,12 @@ def pygraphviz(c, verbose=False):
             run('echo "===>pygraphviz {}"'.format(MESSAGE_FAILED))
 
     elif PLATFORM == "Darwin":
+        """
+
+        Pygrapviz on Darwin usually fails to locate graphviz to solve the issue,
+        the install-option falg is used to include the path. 
+        
+        """
         if run(
             "sudo pip install pygraphviz --install-option='--include-path=/usr/include/graphviz' --install-option='--library-path=/usr/lib/graphviz/'",
             hide=not verbose,
