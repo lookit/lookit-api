@@ -48,7 +48,7 @@ PATH_TO_CERTS = os.path.join(BASE_DIR, "certs")
 
 @task
 def system_setup(c, verbose=False):
-    """system-setup invoke task.
+    """System-setup invoke task.
     
     This func installs pipenv, brew, docutils, and celery.
     This func also sets the debug to False in a local setting file for serving locally.
@@ -129,12 +129,11 @@ def system_setup(c, verbose=False):
     # creating a local setting file
     if run('cd project/settings && touch local.py && echo "DEBUG=True" > local.py').ok:
         run('echo "===>Successfully configured settings for local development"')
-    return None
 
 
 @task
 def install_dependencies(c, verbose=False):
-    """ install-dependencies invoke task. 
+    """Install-dependencies invoke task. 
 
     This func installs all the dependencies listed in the pipfile + djangosslserver.
 
@@ -164,12 +163,11 @@ def install_dependencies(c, verbose=False):
             run('echo "===>{} {}"'.format(package, MESSAGE_OK))
         else:
             run('echo "===>{} {}"'.format(package, MESSAGE_FAILED))
-    return None
 
 
 @task
 def pygraphviz(c, verbose=False):
-    """ pygraphviz invoke task.
+    """Pygraphviz invoke task.
 
     This func installs graphyviz & pygraphviz.
 
@@ -211,12 +209,10 @@ def pygraphviz(c, verbose=False):
             run('echo "===>pygraphviz {}"'.format(MESSAGE_FAILED))
 
     elif PLATFORM == "Darwin":
-        """
 
-        Pygrapviz on Darwin usually fails to locate graphviz to solve the issue,
-        the install-option falg is used to include the path. 
-        
-        """
+        # Pygrapviz on Darwin usually fails to locate graphviz to solve the issue,
+        # the install-option falg is used to include the path.
+
         if run(
             "sudo pip install pygraphviz --install-option='--include-path=/usr/include/graphviz' --install-option='--library-path=/usr/lib/graphviz/'",
             hide=not verbose,
@@ -228,12 +224,11 @@ def pygraphviz(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
-    return None
 
 
 @task
 def rabbitmq(c, verbose=False):
-    """rabbitmq invoke task. 
+    """Rabbitmq invoke task. 
 
     This func installs rabbitmq and creates users and queues for the API.
 
@@ -439,12 +434,11 @@ def rabbitmq(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
-    return None
 
 
 @task
 def postgresql(c, verbose=False):
-    """ postgresql invoke task.
+    """Postgresql invoke task.
     
     This func installs postgresql, create the database of the API and create required tables. 
 
@@ -518,12 +512,11 @@ def postgresql(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
-    return None
 
 
 @task
 def ssl_certificate(c, verbose=False):
-    """ssl-certificate invoke task. 
+    """Ssl-certificate invoke task. 
 
     this func sets up local https development env.
 
@@ -589,12 +582,11 @@ def ssl_certificate(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
-    return None
 
 
 @task
 def ngrok(c, verbose=False):
-    """ngork invoke task. 
+    """Ngrok invoke task. 
 
     This func installs ngrok for Linux and Darwin platforms
 
@@ -644,12 +636,11 @@ def ngrok(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
-    return None
 
 
 @task
 def docker(c, verbose=False):
-    """docker invoke task.
+    """Docker invoke task.
 
     this func installs docker for both Ubuntu(Linux) and Darwin(MacOS/OSX)
 
@@ -745,12 +736,11 @@ def docker(c, verbose=False):
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
-    return None
 
 
 @task
 def server(c):
-    """ serving invoke task.
+    """Serving invoke task.
 
     This func serves django application server.
     
@@ -780,8 +770,6 @@ def server(c):
             hide=False,
         )
 
-    return None
-
 
 @task
 def ngrok_service(c):
@@ -802,12 +790,11 @@ def ngrok_service(c):
 
     run(SERVE_NGROK)
 
-    return None
 
 
 @task
 def celery_service(c):
-    """celery-service invoke task
+    """Celery-service invoke task
 
     This func serves celery.
 
@@ -823,7 +810,6 @@ def celery_service(c):
     """
     run(SERVE_CELERY)
 
-    return None
 
 
 @task(
@@ -837,7 +823,7 @@ def celery_service(c):
     server,
 )
 def setup(c):
-    """setup invoke task.
+    """Setup invoke task.
 
     This func runs the tasks specified in the task decorator.
 
@@ -854,4 +840,4 @@ def setup(c):
         invoke setup
 
     """
-    return None
+    pass

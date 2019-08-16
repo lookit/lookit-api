@@ -21,6 +21,7 @@ invoke = "*"
 autopep8 = "*"
 docformatter = "*"
 yapf = "*"
+django-sslserver= "==0.20"
 
 [packages]
 djangorestframework-jsonapi = "==2.7.0"
@@ -60,10 +61,8 @@ psycopg2 = "==2.7.5"
 google-cloud-storage = "==1.14.0"
 docker = "==3.7.2"
 django-bitfield = "==1.9.3"
-django-sslserver = "*"
 django-debug-toolbar = "*"
 lark-parser = "==0.7.2"
-lark = "*"
 
 [requires]
 python_version = "3.6"
