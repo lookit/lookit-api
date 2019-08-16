@@ -225,7 +225,6 @@ def pygraphviz(c, verbose=False):
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
 
-
 @task
 def rabbitmq(c, verbose=False):
     """Rabbitmq invoke task. 
@@ -435,7 +434,6 @@ def rabbitmq(c, verbose=False):
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
 
-
 @task
 def postgresql(c, verbose=False):
     """Postgresql invoke task.
@@ -513,7 +511,6 @@ def postgresql(c, verbose=False):
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
 
-
 @task
 def ssl_certificate(c, verbose=False):
     """Ssl-certificate invoke task. 
@@ -583,7 +580,6 @@ def ssl_certificate(c, verbose=False):
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
 
-
 @task
 def ngrok(c, verbose=False):
     """Ngrok invoke task. 
@@ -635,7 +631,6 @@ def ngrok(c, verbose=False):
 
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
-
 
 
 @task
@@ -737,7 +732,6 @@ def docker(c, verbose=False):
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
 
-
 @task
 def server(c):
     """Serving invoke task.
@@ -791,7 +785,6 @@ def ngrok_service(c):
     run(SERVE_NGROK)
 
 
-
 @task
 def celery_service(c):
     """Celery-service invoke task
@@ -809,7 +802,6 @@ def celery_service(c):
 
     """
     run(SERVE_CELERY)
-
 
 
 @task(
