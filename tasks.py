@@ -156,13 +156,11 @@ def install_dependencies(c, verbose=False):
     """
 
     run("echo '***INSTALLING ALL DEPENDENCIES***'")
-    packages = ("", "django-sslserver")
-    for package in packages:
 
-        if run("pipenv install {}".format(package), hide=not verbose, warn=True).ok:
-            run('echo "===>{} {}"'.format(package, MESSAGE_OK))
-        else:
-            run('echo "===>{} {}"'.format(package, MESSAGE_FAILED))
+    if run("pipenv install ", hide=not verbose, warn=True).ok:
+        run('echo "===>all dependencies {}"'.format( MESSAGE_OK))
+    else:
+        run('echo "===>some dependencies {}"'.format(MESSAGE_FAILED))
 
 
 @task
