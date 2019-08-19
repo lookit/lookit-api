@@ -34,10 +34,9 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.forms import EligibleParticipantQueryModelForm, StudyEditForm, StudyForm
+from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import (
-    EligibleParticipantQueryModel,
     Feedback,
     Response,
     Study,
@@ -718,30 +717,6 @@ class StudyParticipantContactView(
         """Pulls researchers that belong to Study Admin and Study Read groups"""
         study = self.get_object()
         return User.objects.filter(organization=study.organization)
-
-
-class StudyParticipantEligibilityManager(
-    ExperimenterLoginRequiredMixin, generic.UpdateView
-):
-    """Modifying study participant eligibility."""
-
-    model = EligibleParticipantQueryModel
-    form_class = EligibleParticipantQueryModelForm
-    template_name = "studies/study_participant_eligibility.html"
-    permission_required = "studies.can_edit_study"
-    context_object_name = "eligible_participant_query_model"
-
-    def get_object(self, queryset=None):
-        """Override so that we have something approaching an AutoOneToOneField in terms of functionality."""
-        query_model, created = self.get_queryset().get_or_create(
-            pk=self.kwargs.get(self.pk_url_kwarg)
-        )
-        return query_model
-
-    def get_success_url(self):
-        return reverse(
-            "exp:study-participant-eligibility", kwargs={"pk": self.object.study.id}
-        )
 
 
 class StudyUpdateView(
