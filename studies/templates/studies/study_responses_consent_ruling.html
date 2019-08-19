@@ -181,7 +181,7 @@
             function updateResponseDataSection(responseData) {
                 let details = responseData["details"];
                 let expData = details["exp_data"];
-                $responseDataSection.find("#exp-data").html(JSON.stringify(expData, undefined, 2));
+                $responseDataSection.find("#exp-data").html(JSON.stringify(expData, undefined, 2) || "No data");
 
                 $generalRow.empty();
                 $generalRow.append(Array.from(Object.values(details["general"]), val => $(`<td>${val}</td>`)));
