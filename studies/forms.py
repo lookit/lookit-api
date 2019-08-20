@@ -8,6 +8,9 @@ from accounts.queries import compile_expression
 from studies.models import Response, Study
 
 
+CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
+
+
 class ResponseForm(ModelForm):
     results = forms.CharField(
         widget=AceOverlayWidget(
@@ -165,7 +168,11 @@ class StudyEditForm(BaseStudyForm):
             "criteria": "Text shown to families - this is not used to actually verify eligibility.",
             "study_type": STUDY_HELP_TEXT_EDIT,
             "compensation_description": "Provide a description of any compensation for participation, including when and how participants will receive it and any limitations or eligibility criteria (e.g., only one gift card per participant, being in age range for study, child being visible in consent video). Please see the Terms of Use for details on allowable compensation and restrictions. If this field is left blank it will not be displayed to participants.",
-            "criteria_expression": "Provide a relational expression indicating the criteria for eligibility.",
+            "criteria_expression": (
+                "Provide a relational expression indicating the criteria for eligibility. "
+                "For more information on how to structure criteria expressions, please visit our "
+                f"<a href={CRITERIA_EXPRESSION_HELP_LINK}>documentation</a>."
+            ),
         }
 
 
