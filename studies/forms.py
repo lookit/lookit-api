@@ -1,12 +1,11 @@
 import json
 
 from ace_overlay.widgets import AceOverlayWidget
-from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
 from django.forms import ModelForm, Textarea
 
 from accounts.queries import compile_expression
-from studies.models import EligibleParticipantQueryModel, Response, Study
+from studies.models import Response, Study
 
 
 class ResponseForm(ModelForm):
@@ -205,34 +204,3 @@ class StudyBuildForm(forms.ModelForm):
     class Meta:
         model = Study
         fields = ["structure"]
-
-
-class EligibleParticipantQueryModelForm(ModelForm):
-    """Modifying the stateful backing for the queryset for eligible participants."""
-
-    gender_specification = forms.IntegerField(required=False)
-
-    # # TODO: validation function
-    # def clean(self):
-    #     super().clean()
-    #
-    #     return self.cleaned_data
-
-    class Meta:
-        fields = (
-            "require_conditions",
-            "exclude_conditions",
-            "require_languages",
-            "exclude_languages",
-            "age_range_start_years",
-            "age_range_start_months",
-            "age_range_start_days",
-            "age_range_end_years",
-            "age_range_end_months",
-            "age_range_end_days",
-            "gender_specification",
-            "gestational_age_start",
-            "gestational_age_end",
-            "gestational_age_include_na",
-        )
-        model = EligibleParticipantQueryModel
