@@ -158,7 +158,7 @@ def install_dependencies(c, verbose=False):
     run("echo '***INSTALLING ALL DEPENDENCIES***'")
 
     if run("pipenv install ", hide=not verbose, warn=True).ok:
-        run('echo "===>all dependencies {}"'.format( MESSAGE_OK))
+        run('echo "===>all dependencies {}"'.format(MESSAGE_OK))
     else:
         run('echo "===>some dependencies {}"'.format(MESSAGE_FAILED))
 
