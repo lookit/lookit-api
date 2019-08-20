@@ -60,7 +60,7 @@ def system_setup(c, verbose=False):
     Returns:
         None.
 
-        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
         depending on the state of the installation process.
 
     Note:
@@ -144,7 +144,7 @@ def install_dependencies(c, verbose=False):
     Returns:
         None.
 
-        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
         depending on the state of the installation process.
 
     Note:
@@ -176,7 +176,7 @@ def pygraphviz(c, verbose=False):
     Returns:
         None.
 
-        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
         depending on the state of the installation process.
 
     Note:
@@ -188,18 +188,6 @@ def pygraphviz(c, verbose=False):
     """
 
     if PLATFORM == "Linux":
-        # Installing graphviz
-        """
-        if run(
-            "sudo apt-get update && sudo apt-get install graphviz",
-            hide=not verbose,
-            warn=True,
-        ).ok:
-            run('echo "graphviz {}"'.format(MESSAGE_OK))
-        else:
-            run('echo "graphviz {}"'.format(MESSAGE_FAILED))
-            
-        """
         # Installing pygraphviz
         if run("sudo pip install pygraphviz", hide=not verbose, warn=True).ok:
             run('echo "===>pygraphviz {}"'.format(MESSAGE_OK))
@@ -208,8 +196,8 @@ def pygraphviz(c, verbose=False):
 
     elif PLATFORM == "Darwin":
 
-        # Pygrapviz on Darwin usually fails to locate graphviz to solve the issue,
-        # the install-option falg is used to include the path.
+        # Pygraphviz on Darwin usually fails to locate graphviz to solve the issue,
+        # the install-option flag is used to include the path.
 
         if run(
             "sudo pip install pygraphviz --install-option='--include-path=/usr/include/graphviz' --install-option='--library-path=/usr/lib/graphviz/'",
@@ -236,7 +224,7 @@ def rabbitmq(c, verbose=False):
     Returns:
         None.
 
-        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
         depending on the state of the installation process.
 
     Note:
@@ -445,7 +433,7 @@ def postgresql(c, verbose=False):
     Returns:
         None.
 
-        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
         depending on the state of the installation process.
 
     Note:
@@ -522,7 +510,7 @@ def ssl_certificate(c, verbose=False):
     Returns:
         None.
 
-        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
         depending on the state of the installation process.
 
     Note:
@@ -591,7 +579,7 @@ def ngrok(c, verbose=False):
     Returns:
         None.
 
-        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
         depending on the state of the installation process.
 
     Note:
@@ -644,7 +632,7 @@ def docker(c, verbose=False):
     Returns:
         None.
 
-        However, this func echoes MESSAGE_FAILED, MESSSAGE_OK, or MESSAGE_ALREADY_INSTALLED
+        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
         depending on the state of the installation process.
 
     Note:
@@ -765,7 +753,7 @@ def server(c):
 
 @task
 def ngrok_service(c):
-    """
+    """Ngrok-service invoke task.
 
     This func serves ngrok.
 
