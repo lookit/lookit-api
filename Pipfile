@@ -22,6 +22,7 @@ watchdog = "*"
 Werkzeug = "==0.12.1"
 
 [packages]
+# This should map on EXACTLY to defaults.txt!!!
 bcrypt = "==3.0.0"
 boto3 = "==1.4.5"
 celery = "==4.3.0"
