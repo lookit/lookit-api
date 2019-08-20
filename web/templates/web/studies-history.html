@@ -67,11 +67,6 @@
                                                                          alt="Study Thumbnail"
                                                                          src="{{ study.image.url }}">
                                                                 </p>
-{#                                                                <div style="display:none;"#}
-{#                                                                     class="study-list-placeholder"#}
-{#                                                                     id="image-placeholder-{{ forloop.counter }}">#}
-{#                                                                    <i aria-hidden="true" class="fas fa-flask"></i>#}
-{#                                                                </div>#}
                                                             {% else %}
                                                                 <div class="study-list-placeholder">
                                                                     <i aria-hidden="true" class="fas fa-flask"></i>
@@ -101,14 +96,15 @@
                                                                                    width="200">
                                                                                 {% for video in videos %}
                                                                                     <source src="{{ video.download_url }}"
-                                                                                            type="video/mp4">
+                                                                                            type="video/mp4"
+                                                                                            data-index="{{ forloop.counter }}">
                                                                                 {% endfor %}
                                                                             </video>
                                                                             <button class="btn btn-primary btn-xs btn-block"
                                                                                     type="button">
                                                                                 <span class="glyphicon glyphicon-arrow-right"
                                                                                       aria-hidden="true"></span> Next
-                                                                                Video
+                                                                                Video (<span class="video-number">1</span>/{{ videos | length }})
                                                                             </button>
                                                                         {% else %}
                                                                             <i aria-hidden="true"
@@ -171,11 +167,10 @@
                 let button = event.target,
                     video  = button.parentElement.children[0];
 
-                for (let i = 1; i < video.childElementCount; i++) {
-                    // Rotate.
-                    let source = video.children[i];
-                    video.insertBefore(source, source.previousElementSibling);
-                }
+                // This actually works.
+                // See: https://stackoverflow.com/questions/7742305/changing-the-order-of-elements
+                video.appendChild(video.firstElementChild);
+                button.querySelector('span.video-number').innerHTML = video.firstElementChild.dataset['index'];
 
                 video.load();
             }
