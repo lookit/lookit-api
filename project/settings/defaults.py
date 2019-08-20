@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
 ]
+
 MIDDLEWARE_CLASSES = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

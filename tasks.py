@@ -27,9 +27,11 @@ Todo:
     *Coloring stdout responses for emphasize and readability purposes
 
 """
-from invoke import task, run
-import platform
 import os
+import platform
+
+from invoke import run, task
+
 
 PLATFORM = platform.system()
 MESSAGE_FAILED = 'failed to install. Please, use "invoke task_name --verbose" to check out the stderr and stdout responses.'

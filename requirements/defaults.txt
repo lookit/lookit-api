@@ -4,7 +4,7 @@ django-ace-overlay==0.8.0
 django-bootstrap3==11.0.0
 django-countries==4.4
 django-debug-toolbar==1.11
-django-extensions==2.1.9
+django-extensions==2.2.1
 django-guardian==1.4.8
 django-localflavor==1.4.1
 django-model-utils==3.0.0
