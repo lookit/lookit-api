@@ -15,6 +15,7 @@ from accounts.models import Child, User
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 from studies.models import Response, Study
 
+
 # PREFETCH = Response.objects.filter(completed_consent_frame=True)
 # CHILDREN_WITH_USERS = Child.objects.select_related("user")
 WITH_PREFETCHED_RESPONSES = Study.objects.prefetch_related("responses", "videos")

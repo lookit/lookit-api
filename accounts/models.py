@@ -3,6 +3,8 @@ import hashlib
 import uuid
 
 import pydenticon
+from bitfield import BitField
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
@@ -10,11 +12,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
 from django.template.loader import get_template
-from django.utils.timezone import now
 from django.utils.html import mark_safe
 from django.utils.text import slugify
+from django.utils.timezone import now
 from django.utils.translation import ugettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
@@ -25,9 +26,11 @@ from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 from multiselectfield import MultiSelectField
 
+from accounts.queries import BitfieldQuerySet
 from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
+from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
 
 
@@ -275,6 +278,8 @@ class Child(models.Model):
         ("o", _("other")),
         ("na", _("prefer not to answer")),
     )
+
+    # Deprecating
     AGE_AT_BIRTH_CHOICES = Choices(
         ("na", _("Not sure or prefer not to answer")),
         ("<24", _("Under 24 weeks")),
@@ -303,17 +308,30 @@ class Child(models.Model):
     given_name = models.CharField(max_length=255)
     birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
-    age_at_birth = models.CharField(max_length=25, choices=AGE_AT_BIRTH_CHOICES)
+    gestational_age_at_birth = models.PositiveSmallIntegerField(
+        choices=GESTATIONAL_AGE_CHOICES,
+        default=GESTATIONAL_AGE_CHOICES.no_answer,
+        null=True,
+        blank=True,
+    )
     additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)
     former_lookit_profile_id = models.CharField(max_length=255, blank=True)
+    existing_conditions = BitField(flags=CONDITIONS, default=0)
+    languages_spoken = BitField(flags=LANGUAGES, default=0)
 
     user = models.ForeignKey(
         "accounts.User", related_name="children", related_query_name="children"
     )
 
+    objects = BitfieldQuerySet.as_manager()
+
     def __str__(self):
         return f"<Child: {self.given_name}>"
+
+    @property
+    def age_at_birth(self):
+        return GESTATIONAL_AGE_CHOICES[self.gestational_age_at_birth]
 
     class Meta:
         ordering = ["-birthday"]

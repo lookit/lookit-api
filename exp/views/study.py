@@ -10,14 +10,14 @@ from django.contrib.auth.mixins import (
 )
 from django.core.mail import BadHeaderError
 from django.db.models import (
+    Q,
     Case,
     Count,
     IntegerField,
     OuterRef,
-    Q,
+    Prefetch,
     Subquery,
     When,
-    Prefetch,
 )
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -29,18 +29,19 @@ from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import User, Message
+from accounts.models import Message, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.forms import StudyBuildForm, StudyEditForm, StudyForm
+from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import (
+    Feedback,
+    Response,
     Study,
     StudyLog,
     StudyType,
-    Response,
     get_annotated_responses_qs,
 )
 from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy
@@ -831,94 +832,31 @@ class StudyUpdateView(
         return reverse("exp:study-edit", kwargs={"pk": self.object.id})
 
 
-class StudyBuildView(
-    ExperimenterLoginRequiredMixin,
-    PermissionRequiredMixin,
-    generic.UpdateView,
-    StudyTypeMixin,
-):
-    """
-    ---> DEPRECATED: all functionality is currently being transferred to Study Edit view.
-
-    StudyBuildView allows user to modify study structure - JSON field.
-    """
-
-    model = Study
-    form_class = StudyBuildForm
-    template_name = "studies/study_json.html"
-    permission_required = "studies.can_edit_study"
-    raise_exception = True
-
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        initial = super().get_initial()
-        structure = self.object.structure
-        if structure:
-            # Ensures that json displayed in edit form is valid json w/ double quotes,
-            # so incorrect json is not saved back into the db
-            initial["structure"] = json.dumps(structure)
-        return initial
-
-    def post(self, request, *args, **kwargs):
-        """
-        Form for allowing user to change study type and study metadata fields
-        """
-        study = self.get_object()
-        if "structure" not in self.request.POST:
-            study.metadata = self.extract_type_metadata()
-            study.study_type_id = StudyType.objects.filter(
-                id=self.request.POST.get("study_type")
-            ).values_list("id", flat=True)[0]
-            study.save()
-            messages.success(
-                self.request, f"{self.get_object().name} type and metadata saved."
-            )
-            return HttpResponseRedirect(
-                reverse("exp:study-build", kwargs=dict(pk=study.pk))
-            )
-        return super().post(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        """
-        In addition to the study, adds whether save confirmation is needed to study, as well as all study_types
-        and current metadata
-        """
-        context = super().get_context_data(**kwargs)
-        context["save_confirmation"] = self.object.state in [
-            "approved",
-            "active",
-            "paused",
-            "deactivated",
-        ]
-        context["study_types"] = StudyType.objects.all()
-        context["study_metadata"] = self.object.metadata
-        context["types"] = [
-            exp_type.configuration["metadata"]["fields"]
-            for exp_type in context["study_types"]
-        ]
-
-        return context
-
-    def get_success_url(self):
-        return reverse("exp:study-build", kwargs=dict(pk=self.object.id))
-
-    def form_valid(self, form):
-        """
-        Add success message that study JSON has been successfully saved.
-        """
-        ret = super().form_valid(form)
-        messages.success(self.request, f"{self.get_object().name} study JSON saved.")
-        return ret
-
-
 class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
     View to acquire a list of study responses.
     """
 
     template_name = "studies/study_responses.html"
+
+    def post(self, request, *args, **kwargs):
+        """Currently, handles feedback form."""
+        form_data = self.request.POST
+        user = self.request.user
+        feedback_id = form_data.get("feedback_id", None)
+        comment = form_data.get("comment", "")
+
+        if feedback_id:
+            Feedback.objects.filter(id=feedback_id).update(comment=comment)
+        else:
+            response_id = int(form_data.get("response_id"))
+            Feedback.objects.create(
+                response_id=response_id, researcher=user, comment=comment
+            )
+
+        return HttpResponseRedirect(
+            reverse("exp:study-responses-list", kwargs=dict(pk=self.get_object().pk))
+        )
 
     def get_responses_orderby(self):
         """
@@ -942,7 +880,19 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         context = super().get_context_data(**kwargs)
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
-        responses = context["study"].consented_responses.order_by(orderby)
+        responses = (
+            context["study"]
+            .consented_responses.prefetch_related(
+                "consent_rulings__arbiter",
+                Prefetch(
+                    "feedback",
+                    queryset=Feedback.objects.select_related("researcher").order_by(
+                        "-id"
+                    ),
+                ),
+            )
+            .order_by(orderby)
+        )
         paginated_responses = context["responses"] = self.paginated_queryset(
             responses, page, 10
         )

@@ -1,17 +1,19 @@
 import json
 import logging
 import uuid
+from datetime import datetime
 
 import boto3
 import dateutil
 import fleep
+import pytz
+from bitfield import BitField
 from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models.functions import Coalesce
-from django.db.models.signals import post_save, pre_save, pre_delete
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_groups_with_perms
@@ -24,14 +26,19 @@ from accounts.utils import build_study_group_name
 from attachment_helpers import get_download_url
 from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
-from project.settings import EMAIL_FROM_ADDRESS
 from studies import workflow
-from studies.helpers import send_mail, FrameActionDispatcher
+from studies.fields import (
+    CONDITIONS,
+    GENDER_CHOICES,
+    GESTATIONAL_AGE_FILTER_CHOICES,
+    LANGUAGES,
+)
+from studies.helpers import FrameActionDispatcher, send_mail
 from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
+
 
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
-
 
 VALID_CONSENT_FRAMES = ("1-video-consent",)
 VALID_EXIT_FRAME_POSTFIXES = ("exit-survey",)
@@ -176,6 +183,7 @@ class Study(models.Model):
     previewed = models.BooleanField(default=False)
     built = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
+    criteria_expression = models.TextField(blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
@@ -910,7 +918,7 @@ class Video(models.Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    s3_timestamp = models.DateTimeField()
     pipe_name = models.CharField(max_length=255, unique=True, blank=False)
     pipe_numeric_id = models.IntegerField(
         null=True
@@ -978,6 +986,7 @@ class Video(models.Model):
             return cls.objects.create(
                 pipe_name=old_pipe_name,
                 pipe_numeric_id=data["id"],
+                s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=pytz.utc),
                 frame_id=frame_id,
                 size=data["size"],
                 full_name=new_full_name,

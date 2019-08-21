@@ -41,7 +41,7 @@ def get_download_url(video_key):
     return S3_CLIENT.generate_presigned_url(
         "get_object",
         Params={"Bucket": settings.BUCKET_NAME, "Key": video_key},
-        ExpiresIn=60,
+        ExpiresIn=600,
     )
 
 

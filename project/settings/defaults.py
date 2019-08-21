@@ -14,6 +14,7 @@ import os
 
 from django.contrib.messages import constants as messages
 
+
 MODE = "prod"  # Overridden by local settings.
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -31,7 +32,6 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DEBUG", False))
-
 ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -72,7 +72,8 @@ INSTALLED_APPS = [
     "accounts",
     "studies",
     "exp",
-    # at the bottom so overriding form widget templates have a fallback
+    # at the bottom so overriding form widget templates have a fallback -
+    # See https://stackoverflow.com/a/46836189
     "django.forms",
     "django.contrib.admin",
     # at the bottom so overriding templates is possible
@@ -80,6 +81,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
 ]
+
 MIDDLEWARE_CLASSES = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -94,7 +96,7 @@ MIDDLEWARE_CLASSES = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar", "shells"]
+    INSTALLED_APPS += ["debug_toolbar", "shells", "sslserver"]
     MIDDLEWARE_CLASSES += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
         "pyinstrument.middleware.ProfilerMiddleware",

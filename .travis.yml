@@ -19,6 +19,9 @@ cache:
   directories:
     - $HOME/docker
 
+notifications:
+  slack: lookit-mit:Sc6ZVxrtb0vIiXtft93BtXNI
+
 jobs:
   include:
     - stage: Build & Test

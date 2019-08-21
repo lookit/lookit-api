@@ -1,13 +1,9 @@
 import datetime
 
+from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
-from django.contrib.auth.forms import (
-    PasswordChangeForm,
-    UserChangeForm,
-    UserCreationForm,
-)
+from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from django.core.exceptions import ValidationError
-from django.forms.widgets import DateInput
 from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 from accounts.models import Child, DemographicData, User
@@ -204,20 +200,34 @@ class ChildForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
-            "age_at_birth",
+            "gestational_age_at_birth",
+            "existing_conditions",
+            "languages_spoken",
             "additional_information",
         )
 
         labels = {
             "given_name": "First Name",
             "birthday": "Birthday",
-            "age_at_birth": "Gestational Age at Birth",
+            "gestational_age_at_birth": "Gestational Age at Birth",
             "additional_information": "Any additional information you'd like us to know",
+            "existing_conditions": "Characteristics and conditions",
+            "languages_spoken": "Languages this child is exposed to at home, school, or with another caregiver.",
         }
 
         help_texts = {
             "given_name": "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research.",
-            "additional_information": "for instance, diagnosed developmental disorders or vision or hearing problems",
+            "additional_information": "For instance, diagnosed developmental disorders or vision or hearing problems",
+            "gestational_age_at_birth": "Please round down to the nearest full week of pregnancy completed",
+        }
+
+        widgets = {
+            "existing_conditions": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
+            "languages_spoken": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
         }
 
 
@@ -230,18 +240,31 @@ class ChildUpdateForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
-            "age_at_birth",
+            "gestational_age_at_birth",
+            "existing_conditions",
+            "languages_spoken",
             "additional_information",
         )
 
         labels = {
             "given_name": "First Name",
             "birthday": "Birthday",
-            "age_at_birth": "Gestational Age at Birth",
+            "gestational_age_at_birth": "Gestational Age at Birth",
             "additional_information": "Any additional information you'd like us to know",
+            "existing_conditions": "Characteristics and conditions",
+            "languages_spoken": "Languages this child is exposed to at home, school, or with another caregiver.",
         }
 
         help_texts = {
             "given_name": "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research.",
-            "additional_information": "for instance, diagnosed developmental disorders or vision or hearing problems",
+            "additional_information": "For instance, diagnosed developmental disorders or vision or hearing problems",
+        }
+
+        widgets = {
+            "existing_conditions": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
+            "languages_spoken": BitFieldCheckboxSelectMultiple(
+                attrs={"class": "column-checkbox"}
+            ),
         }

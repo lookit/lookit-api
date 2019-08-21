@@ -1,5 +1,6 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
+{% load web_extras %}
 
 {% block title %}{{ object.name }}{% endblock %}
 
@@ -31,6 +32,7 @@
                 participateButton.disabled = true;
                 document.getElementById('too-old').style.display = 'none';
                 document.getElementById('too-young').style.display = 'none';
+                document.getElementById('criteria-not-met').style.display = 'none';
             } else {
                 participateButton.disabled = false;
             }
@@ -38,19 +40,24 @@
             modifyTemplateWithAgeCheck(selected);
         }
 
-        function modifyTemplateWithAgeCheck(selected) {
+        function modifyTemplateWithAgeCheck(selectElement) {
             document.getElementById('too-old').style.display = 'none';
             document.getElementById('too-young').style.display = 'none';
-            var birthday = selected.value.split('|')[1];
-            var age = calculateAgeInDays(birthday);
-            var ineligible = ageCheck(age);
-            if (ineligible) {
-                if (ineligible > 0) {
+            document.getElementById('criteria-not-met').style.display = 'none';
+            let birthday                  = selectElement.value.split('|')[1],
+                age                       = calculateAgeInDays(birthday),
+                ineligibleBasedOnAge      = ageCheck(age),
+                ineligibleBasedOnCriteria = selectElement.selectedOptions[0].dataset["eligible"] === "False";
+
+            if (ineligibleBasedOnAge) {
+                if (ineligibleBasedOnAge > 0) {
                     document.getElementById('too-old').style.display = 'inline-block';
                 } else {
-                	$('#wait-until').text(moment.duration(-ineligible, "days").humanize() + ' until ' + moment(moment()._d).add(-ineligible, 'days').format("dddd, MMMM Do YYYY") + ' when ');
+                	$('#wait-until').text(moment.duration(-ineligibleBasedOnAge, "days").humanize() + ' until ' + moment(moment()._d).add(-ineligibleBasedOnAge, 'days').format("dddd, MMMM Do YYYY") + ' when ');
                     document.getElementById('too-young').style.display = 'inline-block';
                 }
+            } else if (ineligibleBasedOnCriteria) {
+                document.getElementById('criteria-not-met').style.display = 'inline-block';
             }
         }
 
@@ -145,15 +152,21 @@
                             <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">Complete demographic survey to participate</a>
                         {% else %}
                         <div class="form-group">
-                            <label>Select a child:</label>
-                            <select class="childDropdown" onchange="childSelected(this)">
+                            <label for="child-dropdown">Select a child:</label>
+                            <select id="child-dropdown" class="childDropdown" onchange="childSelected(this)">
                                 <option value=none >None Selected</option>
                                 {% for child in children %}
-                                <option onemptied="" value="{{child.uuid}}|{{child.birthday}}">{{child.given_name}}</option>
+                                    {% child_is_valid_for_study child object as child_is_eligible %}
+                                    <option onemptied=""
+                                            value="{{child.uuid}}|{{child.birthday|date:'c'}}"
+                                            data-eligible="{{ child_is_eligible }}">
+                                        {{child.given_name}}
+                                    </option>
                                 {% endfor %}
                             </select>
                             <p class="text-warning" style="display:none" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research! </p>
             	            <p class="text-warning" style="display:none" id='too-old'>Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research.</p>
+                            <p class="text-warning" style="display:none" id='criteria-not-met'>Your child is in the age range for this study, but does not meet the other eligibility criteria listed. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ study.contact_info }} if you feel this is in error.</p>
                             <button type="button" onclick="portToParticipate(this)" disabled class="btn-lg btn-primary" id="participate-button"> Participate now! </button>
                         </div>
                         {% endif %}
