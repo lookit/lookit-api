@@ -312,6 +312,7 @@ class Child(models.Model):
         choices=GESTATIONAL_AGE_CHOICES,
         default=GESTATIONAL_AGE_CHOICES.no_answer,
         null=True,
+        blank=True,
     )
     additional_information = models.TextField(blank=True)
     deleted = models.BooleanField(default=False)

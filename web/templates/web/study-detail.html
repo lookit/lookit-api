@@ -158,7 +158,7 @@
                                 {% for child in children %}
                                     {% child_is_valid_for_study child object as child_is_eligible %}
                                     <option onemptied=""
-                                            value="{{child.uuid}}|{{child.birthday}}"
+                                            value="{{child.uuid}}|{{child.birthday|date:'c'}}"
                                             data-eligible="{{ child_is_eligible }}">
                                         {{child.given_name}}
                                     </option>
