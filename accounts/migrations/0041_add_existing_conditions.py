@@ -33,6 +33,7 @@ AGE_AT_BIRTH_CHOICES = Choices(
 
 
 GESTATIONAL_AGE_CHAR_TO_INT_MAPPING = {
+    "": None,
     "na": None,
     "<24": 0,
     "24": 1,
