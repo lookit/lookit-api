@@ -19,7 +19,7 @@ pygraphviz = "*"
 pyinstrument = "*"
 pyopenssl = "*"
 watchdog = "*"
-Werkzeug = "==0.12.1"
+werkzeug = "==0.15.5"
 
 [packages]
 # This should map on EXACTLY to defaults.txt!!!
