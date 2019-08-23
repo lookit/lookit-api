@@ -4,26 +4,20 @@ import operator
 from functools import reduce
 from typing import NamedTuple
 
+import altair
+import pandas
 from django.contrib import messages
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import (
-    Q,
-    Case,
-    Count,
-    IntegerField,
-    OuterRef,
-    Prefetch,
-    Subquery,
-    When,
-)
+from django.db.models import Q, Count, IntegerField, OuterRef, Prefetch, Subquery
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
 from django.utils import timezone
 from django.views import generic
+from django_pandas.io import read_frame
 from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
@@ -51,6 +45,10 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
+
+
+pandas.set_option("display.max_columns", None)
+pandas.set_option("display.max_rows", None)
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -1311,6 +1309,54 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
             )
 
         return obj
+
+
+class StudyParticipantAnalyticsView(
+    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
+):
+    template_name = "studies/study_participant_analytics.html"
+    model = Study
+    permission_required = "studies.can_edit_study"
+    context_object_name = "study"
+    raise_exception = True
+
+    def get_context_data(self, **kwargs):
+        """Context getter override."""
+        ctx = super().get_context_data(**kwargs)
+        responses = get_annotated_responses_qs().filter(study_id=ctx["study"].id)
+        response_dataframe = read_frame(
+            responses,
+            fieldnames=("date_created", "completed_consent_frame", "current_ruling"),
+            index_col="uuid",
+        )
+        cumulative_responses_dataframe = (
+            pandas.crosstab(
+                response_dataframe.date_created,
+                columns=response_dataframe.current_ruling,
+            )
+            .cumsum()
+            .stack()
+            .reset_index()
+            .rename(columns={0: "cumulative_responses"})
+        )
+        ctx["registration_graph_spec"] = json.dumps(
+            (
+                altair.Chart(cumulative_responses_dataframe)
+                .mark_area(interpolate="step-after")
+                .encode(
+                    x=altair.X(
+                        "date_created:T",
+                        title="Date of Response",
+                        axis=altair.Axis(format="%b. %d, %Y", labelAngle=-45),
+                    ),
+                    y=altair.Y("cumulative_responses:Q", title="Response Count"),
+                    color=altair.Color("current_ruling:N", title="Current Ruling"),
+                )
+                .properties(width=400, height=400)
+                .interactive()
+            ).to_dict()
+        )
+        return ctx
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):

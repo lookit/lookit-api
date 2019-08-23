@@ -32,6 +32,7 @@ from exp.views import (
     StudyDemographicsDownloadJSON,
     StudyDetailView,
     StudyListView,
+    StudyParticipantAnalyticsView,
     StudyParticipantContactView,
     StudyParticipantEmailView,
     StudyPreviewBuildView,
@@ -70,6 +71,11 @@ urlpatterns = [
         r"studies/(?P<pk>\d+)/contact/$",
         StudyParticipantContactView.as_view(),
         name="study-participant-contact",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/analytics/$",
+        StudyParticipantAnalyticsView.as_view(),
+        name="study-participant-analytics",
     ),
     url(r"studies/(?P<pk>\d+)/edit/$", StudyUpdateView.as_view(), name="study-edit"),
     url(

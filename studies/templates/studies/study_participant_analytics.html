@@ -1,0 +1,55 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+{% load guardian_tags %}
+
+{% block head %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.4.0/build/vega.min.js" integrity="sha256-PrkRj4B3I5V9yHBLdO3jyyqNUwSKS1CXXIh3VrnFPEU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.4.0/build/vega-lite.min.js" integrity="sha256-ro+FWr16NboXJ5rSwInNli1P16ObUXnWUJMgKc8KnHI=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.2.4/build/vega-embed.min.js" integrity="sha256-jS6iUok3H7bzAMWIQhal64FAcuO3/OILX5X5CghMmeA=" crossorigin="anonymous"></script>    <script type="application/javascript">
+        // Stuff goes here
+    </script>
+    {{ form.media }}
+{% endblock %}
+
+{% block title %}Participant Analytics | {{ study.name }}{% endblock %}
+
+{% block flash %}
+    {% if messages %}
+        {% for message in messages %}
+            <div id="details" class="alert {{ message.tags }} alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <nav class='row'>
+            <section class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+                    <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
+                    <li class="active">Participant Analytics</li>
+                </ol>
+            </section>
+        </nav>
+        <section id="registration-section" class="row">
+            <h3>Registration</h3>
+            <article id="registration-line-graph"></article>
+        </section>
+        <section id="participation-section" class="row">
+            <h3>Participation</h3>
+        </section>
+        <section id="demographics-section" class="row">
+            <h3>Demographics</h3>
+        </section>
+    </div>
+    {# Load all the graphs now that vega has been loaded #}
+    <script type="text/javascript">
+        vegaEmbed("#registration-line-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});
+    </script>
+{% endblock %}
