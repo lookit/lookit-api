@@ -29,7 +29,7 @@ from studies.forms import StudyEditForm, StudyForm
 from studies.graphs import get_participation_graph
 from studies.helpers import send_mail
 from studies.models import Feedback, Response, Study, StudyLog, StudyType
-from studies.queries import get_annotated_responses_qs
+from studies.queries import get_annotated_responses_qs, get_study_list_qs
 from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -171,73 +171,7 @@ class StudyListView(
         """
         request = self.request.GET
 
-        annotated_responses_qs = get_annotated_responses_qs()
-
-        queryset = (
-            get_objects_for_user(self.request.user, "studies.can_view_study")
-            .exclude(state="archived")
-            .select_related("creator")
-            .annotate(
-                completed_responses_count=Subquery(
-                    Response.objects.filter(
-                        study=OuterRef("pk"),
-                        completed_consent_frame=True,
-                        completed=True,
-                    )
-                    .values("completed")
-                    .order_by()
-                    .annotate(count=Count("completed"))
-                    .values("count")[:1],  # [:1] ensures that a queryset is returned
-                    output_field=IntegerField(),
-                ),
-                incomplete_responses_count=Subquery(
-                    Response.objects.filter(
-                        study=OuterRef("pk"),
-                        completed_consent_frame=True,
-                        completed=False,
-                    )
-                    .values("completed")
-                    .order_by()
-                    .annotate(count=Count("completed"))
-                    .values("count")[:1],  # [:1] ensures that a queryset is returned
-                    output_field=IntegerField(),
-                ),
-                valid_consent_count=Subquery(
-                    annotated_responses_qs.filter(
-                        study=OuterRef("pk"), current_ruling="accepted"
-                    )
-                    .values("current_ruling")
-                    .order_by(
-                        "current_ruling"
-                    )  # Need this for GROUP BY to work properly
-                    .annotate(count=Count("current_ruling"))
-                    .values("count")[:1],  # [:1] ensures that a queryset is returned
-                    output_field=IntegerField(),
-                ),
-                pending_consent_count=Subquery(
-                    annotated_responses_qs.filter(
-                        study=OuterRef("pk"), current_ruling="pending"
-                    )
-                    .values("current_ruling")
-                    .order_by("current_ruling")
-                    .annotate(count=Count("current_ruling"))
-                    .values("count")[:1],
-                    output_field=IntegerField(),
-                ),
-                starting_date=Subquery(
-                    StudyLog.objects.filter(study=OuterRef("pk"))
-                    .order_by("-created_at")
-                    .filter(action="active")
-                    .values("created_at")[:1]
-                ),
-                ending_date=Subquery(
-                    StudyLog.objects.filter(study=OuterRef("pk"))
-                    .order_by("-created_at")
-                    .filter(action="deactivated")
-                    .values("created_at")[:1]
-                ),
-            )
-        )
+        queryset = get_study_list_qs(self.request.user)
 
         # TODO: Starting date and ending date as subqueries, then delete the model methods.
 
