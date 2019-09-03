@@ -39,10 +39,11 @@
         </nav>
         <section id="registration-section" class="row">
             <h3>Registration</h3>
-            <article id="registration-line-graph"></article>
+            <article id="registration-graph"></article>
         </section>
         <section id="participation-section" class="row">
             <h3>Participation</h3>
+            <article id="participation-graph"></article>
         </section>
         <section id="demographics-section" class="row">
             <h3>Demographics</h3>
@@ -50,6 +51,6 @@
     </div>
     {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
-        vegaEmbed("#registration-line-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});
+        vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});
     </script>
 {% endblock %}

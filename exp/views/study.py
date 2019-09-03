@@ -29,6 +29,7 @@ from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyEditForm, StudyForm
+from studies.graphs import graph_responses
 from studies.helpers import send_mail
 from studies.models import (
     Feedback,
@@ -1324,37 +1325,8 @@ class StudyParticipantAnalyticsView(
         """Context getter override."""
         ctx = super().get_context_data(**kwargs)
         responses = get_annotated_responses_qs().filter(study_id=ctx["study"].id)
-        response_dataframe = read_frame(
-            responses,
-            fieldnames=("date_created", "completed_consent_frame", "current_ruling"),
-            index_col="uuid",
-        )
-        cumulative_responses_dataframe = (
-            pandas.crosstab(
-                response_dataframe.date_created,
-                columns=response_dataframe.current_ruling,
-            )
-            .cumsum()
-            .stack()
-            .reset_index()
-            .rename(columns={0: "cumulative_responses"})
-        )
-        ctx["registration_graph_spec"] = json.dumps(
-            (
-                altair.Chart(cumulative_responses_dataframe)
-                .mark_area(interpolate="step-after")
-                .encode(
-                    x=altair.X(
-                        "date_created:T",
-                        title="Date of Response",
-                        axis=altair.Axis(format="%b. %d, %Y", labelAngle=-45),
-                    ),
-                    y=altair.Y("cumulative_responses:Q", title="Response Count"),
-                    color=altair.Color("current_ruling:N", title="Current Ruling"),
-                )
-                .properties(width=400, height=400)
-                .interactive()
-            ).to_dict()
+        ctx["participation_graph_spec"] = json.dumps(
+            graph_responses(responses).to_dict()
         )
         return ctx
 
