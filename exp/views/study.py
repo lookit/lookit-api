@@ -4,8 +4,6 @@ import operator
 from functools import reduce
 from typing import NamedTuple
 
-import altair
-import pandas
 from django.contrib import messages
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
@@ -17,7 +15,6 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
 from django.utils import timezone
 from django.views import generic
-from django_pandas.io import read_frame
 from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
@@ -29,16 +26,10 @@ from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyEditForm, StudyForm
-from studies.graphs import graph_responses
+from studies.graphs import get_participation_graph
 from studies.helpers import send_mail
-from studies.models import (
-    Feedback,
-    Response,
-    Study,
-    StudyLog,
-    StudyType,
-    get_annotated_responses_qs,
-)
+from studies.models import Feedback, Response, Study, StudyLog, StudyType
+from studies.queries import get_annotated_responses_qs
 from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -46,10 +37,6 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
-
-
-pandas.set_option("display.max_columns", None)
-pandas.set_option("display.max_rows", None)
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -1326,7 +1313,7 @@ class StudyParticipantAnalyticsView(
         ctx = super().get_context_data(**kwargs)
         responses = get_annotated_responses_qs().filter(study_id=ctx["study"].id)
         ctx["participation_graph_spec"] = json.dumps(
-            graph_responses(responses).to_dict()
+            get_participation_graph(responses).to_dict()
         )
         return ctx
 

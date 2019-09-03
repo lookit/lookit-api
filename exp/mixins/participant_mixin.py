@@ -5,7 +5,7 @@ from django.db.models import Prefetch
 from guardian.shortcuts import get_objects_for_user
 
 from accounts.models import Child, User
-from studies.models import get_consented_responses_qs
+from studies.queries import get_consented_responses_qs
 
 
 class ParticipantMixin(DjangoPermissionRequiredMixin):
