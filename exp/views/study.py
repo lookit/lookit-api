@@ -20,7 +20,7 @@ from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import Message, User
+from accounts.models import Message, Organization, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
@@ -1244,11 +1244,30 @@ class StudyParticipantAnalyticsView(
 
     def get_context_data(self, **kwargs):
         """Context getter override."""
-        ctx = super().get_context_data(**kwargs)
-        responses = get_annotated_responses_qs().filter(study_id=ctx["study"].id)
-        ctx["participation_graph_spec"] = json.dumps(
-            get_participation_graph(responses).to_dict()
+        if self.request.user.is_superuser:
+            organizations = Organization.objects.all()
+        else:
+            organizations = Organization.objects.filter(
+                id=self.request.user.organization_id
+            )
+
+        studies_for_orgs = Study.objects.filter(organization__in=organizations)
+        study_names = list(studies_for_orgs.values_list("name", flat=True))
+
+        # Responses for studies
+        annotated_responses = get_annotated_responses_qs().filter(
+            study__in=studies_for_orgs
         )
+        # Users and Children for responses - how should we get this?
+
+        users = annotated_responses.values_list("user", flat=True)
+
+        # Now populate actual graph specs with helpers.
+        ctx = super().get_context_data(**kwargs)
+        ctx["participation_graph_spec"] = json.dumps(
+            get_participation_graph(annotated_responses, study_names).to_dict()
+        )
+        ctx["registration_graph_spec"] = json.dumps({})
         return ctx
 
 

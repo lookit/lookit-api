@@ -1,8 +1,9 @@
 from django.db import models
-from django.db.models import Q, Count, IntegerField, OuterRef, Prefetch, Subquery
+from django.db.models import Q, Count, IntegerField, OuterRef, Subquery
 from django.db.models.functions import Coalesce
-from guardian.shortcuts import get_objects_for_user, get_perms
+from guardian.shortcuts import get_objects_for_user
 
+from accounts.models import Child, User
 from studies.models import ACCEPTED, PENDING, ConsentRuling, Response, StudyLog
 
 
@@ -39,8 +40,22 @@ def get_pending_responses_qs():
     )
 
 
-def get_study_list_qs(user):
+def get_registration_analytics_qs():
     """
+
+    Args:
+        user: django.utils.functional.SimpleLazyObject masquerading as a user.
+
+    Returns:
+        An annotated queryset containing user data.
+    """
+
+
+def get_study_list_qs(user):
+    """Gets a study list query set annotated with response counts.
+
+    TODO: Factor in all the query mutation from the (view) caller.
+    TODO: Upgrade to Django 2.x and use the improved query mechanisms to clean this up.
 
     Args:
         user: django.utils.functional.SimpleLazyObject masquerading as a user.

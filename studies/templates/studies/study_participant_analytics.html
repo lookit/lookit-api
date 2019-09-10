@@ -52,5 +52,6 @@
     {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
         vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});
+        vegaEmbed("#registration-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});
     </script>
 {% endblock %}
