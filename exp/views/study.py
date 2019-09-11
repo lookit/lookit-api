@@ -20,13 +20,13 @@ from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import Message, Organization, User
+from accounts.models import Child, Message, Organization, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyEditForm, StudyForm
-from studies.graphs import get_participation_graph
+from studies.graphs import get_participation_graph, get_registration_graph
 from studies.helpers import send_mail
 from studies.models import Feedback, Response, Study, StudyLog, StudyType
 from studies.queries import get_annotated_responses_qs, get_study_list_qs
@@ -1260,14 +1260,22 @@ class StudyParticipantAnalyticsView(
         )
         # Users and Children for responses - how should we get this?
 
-        users = annotated_responses.values_list("user", flat=True)
+        children = Child.objects.filter(
+            id__in=annotated_responses.values_list("child", flat=True).distinct()
+        )
+
+        parents = User.objects.filter(
+            id__in=annotated_responses.values_list("child__user", flat=True).distinct()
+        )
 
         # Now populate actual graph specs with helpers.
         ctx = super().get_context_data(**kwargs)
         ctx["participation_graph_spec"] = json.dumps(
             get_participation_graph(annotated_responses, study_names).to_dict()
         )
-        ctx["registration_graph_spec"] = json.dumps({})
+        ctx["registration_graph_spec"] = json.dumps(
+            get_registration_graph(parents).to_dict()
+        )
         return ctx
 
 
