@@ -6,8 +6,20 @@
     {{ block.super }}
     <script src="https://cdn.jsdelivr.net/npm/vega@5.4.0/build/vega.min.js" integrity="sha256-PrkRj4B3I5V9yHBLdO3jyyqNUwSKS1CXXIh3VrnFPEU=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.4.0/build/vega-lite.min.js" integrity="sha256-ro+FWr16NboXJ5rSwInNli1P16ObUXnWUJMgKc8KnHI=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.2.4/build/vega-embed.min.js" integrity="sha256-jS6iUok3H7bzAMWIQhal64FAcuO3/OILX5X5CghMmeA=" crossorigin="anonymous"></script>    <script type="application/javascript">
-        // Stuff goes here
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.2.4/build/vega-embed.min.js" integrity="sha256-jS6iUok3H7bzAMWIQhal64FAcuO3/OILX5X5CghMmeA=" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css" integrity="sha256-nn3M6N8S2BjPirPhvCF61ZCcgcppdLtnaNOLhiwro7E=" crossorigin="anonymous" />
+
+    <script src="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/pivot.min.js" integrity="sha256-/btBGbvOvx2h/NcXVS+JPFhnoUGbZXDX0O2v6AaABLU=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/gchart_renderers.min.js" integrity="sha256-Ve5qXDsBeNuaKKg22jpTMlWThC0OWupW9JtFrXxdy1Q=" crossorigin="anonymous"></script>
+    <script type="application/json" id="response-pivot-data">
+        {% comment %}
+            When we upgrade to django 2.x, please convert to json_script. Please see:
+            https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
+        {% endcomment %}
+        {{ response_pivot_data | safe }}
     </script>
     {{ form.media }}
 {% endblock %}
@@ -47,11 +59,54 @@
         </section>
         <section id="demographics-section" class="row">
             <h3>Demographics</h3>
+            <article id="responses-pivot"></article>
         </section>
     </div>
     {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
+        const RESPONSE_PIVOT_DATA = JSON.parse(document.querySelector("#response-pivot-data").innerText);
+        // Need to actually have isoformatted dates as Date objects for PivotTable to bucket properly.
+        RESPONSE_PIVOT_DATA.forEach(resp => resp["Date of Response"] = new Date(resp["Date of Response"]));
+        console.log(RESPONSE_PIVOT_DATA);
+        // Vega Charts (timeseries)
         vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});
         vegaEmbed("#registration-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});
+
+        // Summary statistics
+        google.load("visualization", "1", {packages:["corechart", "charteditor"]});
+        let pivotTableDerivers = $.pivotUtilities.derivers;
+        let pivotAggregatorTemplates = $.pivotUtilities.aggregatorTemplates;
+        let pivotTableRenderers = $.extend(
+            {},
+            $.pivotUtilities.renderers,
+            $.pivotUtilities.gchart_renderers
+        );
+
+        $("#responses-pivot")
+            .pivotUI(
+                RESPONSE_PIVOT_DATA,
+                {
+                    cols: ["Study"],
+                    rows: ["Child Gender", "Child Gestational Age at Birth"],
+                    renderers: pivotTableRenderers,
+                    rendererName: "Table",
+                    // aggregatorName: "Count Unique Values",
+                    derivedAttributes: {
+                        "Date of Response": pivotTableDerivers.dateFormat("Time of Response", "%y/%m/%d")
+                    },
+                    aggregators: {
+                        "Unique Children": () => pivotAggregatorTemplates.countUnique()(["Child (unique identifier)"]),
+                        "Total # Responses": () => pivotAggregatorTemplates.count()(),
+                        "Average Child Age (days)": () => pivotAggregatorTemplates.average()(["Child Age in Days"])
+                    },
+                    hiddenFromDragDrop: ["Time of Response"],
+                    rendererOptions: {
+                        gchart: {
+                            width: 800,
+                            height: 600
+                        }
+                    }
+                }
+            );
     </script>
 {% endblock %}

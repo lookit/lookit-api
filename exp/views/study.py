@@ -1,6 +1,7 @@
 import datetime
 import json
 import operator
+from collections import defaultdict
 from functools import reduce
 from typing import NamedTuple
 
@@ -20,11 +21,12 @@ from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import Child, Message, Organization, User
+from accounts.models import Child, DemographicData, Message, Organization, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
+from studies.fields import CONDITIONS, LANGUAGES
 from studies.forms import StudyEditForm, StudyForm
 from studies.graphs import get_participation_graph, get_registration_graph
 from studies.helpers import send_mail
@@ -73,6 +75,10 @@ DISCOVERABILITY_HELP_TEXT = {
     ): "Private. Your study is not currently active, and is not public. When it is active, participants will be able to access it at your study link, "
     f"but it will not be listed in {STUDY_LISTING_A_TAG}. ",
 }
+
+
+LANGUAGES_MAP = {code: lang for code, lang in LANGUAGES}
+CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDITIONS}
 
 
 def get_discoverability_text(study):
@@ -1252,18 +1258,20 @@ class StudyParticipantAnalyticsView(
             )
 
         studies_for_orgs = Study.objects.filter(organization__in=organizations)
-        study_names = list(studies_for_orgs.values_list("name", flat=True))
 
         # Responses for studies
-        annotated_responses = get_annotated_responses_qs().filter(
-            study__in=studies_for_orgs
-        )
-        # Users and Children for responses - how should we get this?
-
-        children = Child.objects.filter(
-            id__in=annotated_responses.values_list("child", flat=True).distinct()
+        annotated_responses = (
+            get_annotated_responses_qs()
+            .filter(study__in=studies_for_orgs)
+            .select_related("child", "child__user", "study", "demographic_snapshot")
         )
 
+        # now, map studies for each child, and gather demographic data as well.
+        studies_for_child = defaultdict(set)
+        for resp in annotated_responses:
+            studies_for_child[resp.child.id].add(resp.study.name)
+
+        # Use the responses to seed the rest of the querysets
         parents = User.objects.filter(
             id__in=annotated_responses.values_list("child__user", flat=True).distinct()
         )
@@ -1271,11 +1279,32 @@ class StudyParticipantAnalyticsView(
         # Now populate actual graph specs with helpers.
         ctx = super().get_context_data(**kwargs)
         ctx["participation_graph_spec"] = json.dumps(
-            get_participation_graph(annotated_responses, study_names).to_dict()
+            get_participation_graph(
+                annotated_responses,
+                list(studies_for_orgs.values_list("name", flat=True)),
+            ).to_dict()
         )
         ctx["registration_graph_spec"] = json.dumps(
             get_registration_graph(parents).to_dict()
         )
+
+        demographics = DemographicData.objects.filter(
+            id__in=annotated_responses.values_list(
+                "demographic_snapshot", flat=True
+            ).distinct()
+        )
+
+        children_queryset = Child.objects.filter(
+            id__in=annotated_responses.values_list("child", flat=True).distinct()
+        )
+
+        children = unstack_children(children_queryset, studies_for_child)
+
+        flattened_responses = get_flattened_responses(annotated_responses)
+
+        ctx["response_pivot_data"] = json.dumps(flattened_responses, default=str)
+
+        ctx["children"] = json.dumps(children, default=str)
         return ctx
 
 
@@ -1290,6 +1319,54 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
         if request.path[-1] == "/":
             path = f"{path.split('/')[0]}/index.html"
         return super().dispatch(request, path)
+
+
+def get_flattened_responses(response_qs):
+    response_data = []
+    for resp in response_qs:
+        response_data.append(
+            {
+                "Child (unique identifier)": resp.child.uuid,
+                "Child Age in Days": (datetime.date.today() - resp.child.birthday).days,
+                "Child Gender": resp.child.gender,
+                "Child Gestational Age at Birth": resp.child.get_gestational_age_at_birth_display(),
+                "Study": resp.study.name,
+                "Family # of Children": resp.demographic_snapshot.number_of_children,
+                "Family Race/Ethnicity": resp.demographic_snapshot.race_identification,
+                "Time of Response": resp.date_created.isoformat(),
+                "Consent Ruling": resp.current_ruling,
+            }
+        )
+
+    return response_data
+
+
+def unstack_children(children_queryset, studies_for_child_map):
+    """Unstack spoken languages and characteristics/conditions"""
+    all_children = []
+    for child in children_queryset:
+        child_obj = {
+            "uuid": child.uuid,
+            "age_in_days": (datetime.date.today() - child.birthday).days,
+            "gender": child.gender,
+            "gestational_age_at_birth": child.get_gestational_age_at_birth_display(),
+        }
+        for study_name in studies_for_child_map[child.id]:
+            child_obj[f"Participated in {study_name}"] = True
+        for lang in child.languages_spoken:
+            if lang[1]:
+                child_obj[f"Speaks {LANGUAGES_MAP[lang[0]]}"] = True
+            else:
+                child_obj[f"Speaks {LANGUAGES_MAP[lang[0]]}"] = False
+        for cond in child.existing_conditions:
+            if cond[1]:
+                child_obj[f"{CONDITIONS_MAP[cond[0]]}"] = True
+            else:
+                child_obj[f"{CONDITIONS_MAP[cond[0]]}"] = False
+
+        all_children.append(child_obj)
+
+    return all_children
 
 
 # UTILITY FUNCTIONS
