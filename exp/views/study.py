@@ -1322,10 +1322,13 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
 def get_flattened_responses(response_qs, studies_for_child):
     response_data = []
     for resp in response_qs:
+        child_age_in_days = (datetime.date.today() - resp.child.birthday).days
         response_data.append(
             {
                 "Child (unique identifier)": resp.child.uuid,
-                "Child Age in Days": (datetime.date.today() - resp.child.birthday).days,
+                "Child Age in Days": child_age_in_days,
+                "Child Age in Months": round(child_age_in_days / 30, 2),
+                "Child Age in Years": round(child_age_in_days / 365, 2),
                 "Child Gender": resp.child.gender,
                 "Child Gestational Age at Birth": resp.child.get_gestational_age_at_birth_display(),
                 "Child # Languages Spoken": bin(int(resp.child.languages_spoken)).count(

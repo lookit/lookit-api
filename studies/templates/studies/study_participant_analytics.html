@@ -53,10 +53,24 @@
         <section id="summary-section" class="row">
             <h3>Summary Statistics</h3>
             <h4>Pivot Presets</h4>
-            <div id="pivot-presets" class="btn-group btn-group-sm" role="group" aria-label="Preset Pivot Choices">
-              <button type="button" class="btn btn-default">Left</button>
-              <button type="button" class="btn btn-default">Middle</button>
-              <button type="button" class="btn btn-default">Right</button>
+            <div id="pivot-presets" class="btn-group btn-group-lg" role="group" aria-label="Preset Pivot Choices">
+                <button type="button"
+                        class="btn btn-default"
+                        data-cols="Parent/Guardian Age"
+                        data-aggregator="Total # Responses"
+                        data-renderer="Table">Parent Age</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-cols="Study"
+                        data-rows="Consent Ruling"
+                        data-aggregator="Total # Responses"
+                        data-renderer="Stacked Bar Chart">Rulings by Study</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-cols="Child Gender"
+                        data-rows="Study"
+                        data-aggregator="Unique Children"
+                        data-renderer="Table">Unique Children per Study by Gender</button>
             </div>
             <h4>Pivot Table</h4>
             <article id="responses-pivot" class="col-md-12"></article>
@@ -162,6 +176,8 @@
                 // TODO: This average will probably multiple-count children - we only want to include ages and
                 //       incomes per child/family for a more accurate read. A custom aggregator is needed.
                 "Average Child Age (days)": () => pivotAggregatorTemplates.average()(["Child Age in Days"]),
+                "Average Child Age (months)": () => pivotAggregatorTemplates.average()(["Child Age in Months"]),
+                "Average Child Age (years)": () => pivotAggregatorTemplates.average()(["Child Age in Years"]),
                 "Average Annual Income": () => pivotAggregatorTemplates.average()(["Family Annual Income"]),
             },
             hiddenFromDragDrop: ["Time of Response", "Child (unique identifier)", "Family (unique identifier)"],
@@ -183,12 +199,24 @@
                 RESPONSE_PIVOT_OPTS
             );
 
-        function reloadPivot() {
-            $responsePivotElement
-                .pivotUI(
-                    RESPONSE_PIVOT_DATA,
-                    RESPONSE_PIVOT_OPTS
-                );
+        function reloadPivot(event) {
+            let button;
+            if ((button = event.target) && button.tagName === "BUTTON") {
+                let data = button.dataset;
+                RESPONSE_PIVOT_OPTS["cols"] = data.cols.split(", ");
+                RESPONSE_PIVOT_OPTS["rows"] = data.rows ? data.rows.split(", ") : [];
+                RESPONSE_PIVOT_OPTS["aggregatorName"] = data.aggregator || "Total # Responses";
+                RESPONSE_PIVOT_OPTS["rendererName"] = data.renderer || "Table";
+                $responsePivotElement
+                    .pivotUI(
+                        RESPONSE_PIVOT_DATA,
+                        RESPONSE_PIVOT_OPTS,
+                        true
+                    );
+            }
+
         }
+
+        document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
     </script>
 {% endblock %}
