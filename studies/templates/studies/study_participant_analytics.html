@@ -58,8 +58,8 @@
             <article id="participation-graph"></article>
         </section>
         <section id="demographics-section" class="row">
-            <h3>Demographics</h3>
-            <article id="responses-pivot"></article>
+            <h3>Summary Statistics</h3>
+            <article id="responses-pivot" class="col-md-12"></article>
         </section>
     </div>
     {# Load all the graphs now that vega has been loaded #}
@@ -90,16 +90,20 @@
                     rows: ["Child Gender", "Child Gestational Age at Birth"],
                     renderers: pivotTableRenderers,
                     rendererName: "Table",
-                    // aggregatorName: "Count Unique Values",
+                    aggregatorName: "Total # Responses",
                     derivedAttributes: {
                         "Date of Response": pivotTableDerivers.dateFormat("Time of Response", "%y/%m/%d")
                     },
                     aggregators: {
                         "Unique Children": () => pivotAggregatorTemplates.countUnique()(["Child (unique identifier)"]),
+                        "Unique Families": () => pivotAggregatorTemplates.countUnique()(["Family (unique identifier)"]),
                         "Total # Responses": () => pivotAggregatorTemplates.count()(),
-                        "Average Child Age (days)": () => pivotAggregatorTemplates.average()(["Child Age in Days"])
+                        // TODO: This average will probably multiple-count children - we only want to include ages and
+                        //       incomes per child/family for a more accurate read. A custom aggregator is needed.
+                        "Average Child Age (days)": () => pivotAggregatorTemplates.average()(["Child Age in Days"]),
+                        "Average Annual Income": () => pivotAggregatorTemplates.average()(["Family Annual Income"]),
                     },
-                    hiddenFromDragDrop: ["Time of Response"],
+                    hiddenFromDragDrop: ["Time of Response", "Child (unique identifier)", "Family (unique identifier)"],
                     rendererOptions: {
                         gchart: {
                             width: 800,

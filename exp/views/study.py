@@ -1300,11 +1300,13 @@ class StudyParticipantAnalyticsView(
 
         children = unstack_children(children_queryset, studies_for_child)
 
-        flattened_responses = get_flattened_responses(annotated_responses)
+        flattened_responses = get_flattened_responses(
+            annotated_responses, studies_for_child
+        )
 
         ctx["response_pivot_data"] = json.dumps(flattened_responses, default=str)
 
-        ctx["children"] = json.dumps(children, default=str)
+        # ctx["children"] = json.dumps(children, default=str)
         return ctx
 
 
@@ -1321,7 +1323,7 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
         return super().dispatch(request, path)
 
 
-def get_flattened_responses(response_qs):
+def get_flattened_responses(response_qs, studies_for_child):
     response_data = []
     for resp in response_qs:
         response_data.append(
@@ -1330,9 +1332,23 @@ def get_flattened_responses(response_qs):
                 "Child Age in Days": (datetime.date.today() - resp.child.birthday).days,
                 "Child Gender": resp.child.gender,
                 "Child Gestational Age at Birth": resp.child.get_gestational_age_at_birth_display(),
+                "Child # Languages Spoken": bin(int(resp.child.languages_spoken)).count(
+                    "1"
+                ),
+                "Child # Studies Participated": len(studies_for_child[resp.child_id]),
                 "Study": resp.study.name,
+                "Family (unique identifier)": resp.child.user.uuid,
                 "Family # of Children": resp.demographic_snapshot.number_of_children,
                 "Family Race/Ethnicity": resp.demographic_snapshot.race_identification,
+                "Family # of Guardians": resp.demographic_snapshot.number_of_guardians,
+                "Family Annual Income": resp.demographic_snapshot.annual_income,
+                "Parent/Guardian Age": resp.demographic_snapshot.age,
+                "Parent/Guardian Education Level": resp.demographic_snapshot.education_level,
+                "Parent/Guardian Gender": resp.demographic_snapshot.gender,
+                "Living Density": resp.demographic_snapshot.density,
+                "Number of Books": resp.demographic_snapshot.number_of_books,
+                "Country": resp.demographic_snapshot.country,
+                "State": resp.demographic_snapshot.state,
                 "Time of Response": resp.date_created.isoformat(),
                 "Consent Ruling": resp.current_ruling,
             }
@@ -1342,7 +1358,7 @@ def get_flattened_responses(response_qs):
 
 
 def unstack_children(children_queryset, studies_for_child_map):
-    """Unstack spoken languages and characteristics/conditions"""
+    """Unstack spoken languages, characteristics/conditions, and parent races/ethnicities"""
     all_children = []
     for child in children_queryset:
         child_obj = {
