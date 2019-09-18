@@ -1240,12 +1240,12 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
 
 
 class StudyParticipantAnalyticsView(
-    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.TemplateView
 ):
     template_name = "studies/study_participant_analytics.html"
     model = Study
-    permission_required = "studies.can_edit_study"
-    context_object_name = "study"
+    permission_required = "accounts.can_view_experimenter"
+    # context_object_name = "study"
     raise_exception = True
 
     def get_context_data(self, **kwargs):
@@ -1276,7 +1276,7 @@ class StudyParticipantAnalyticsView(
             id__in=annotated_responses.values_list("child__user", flat=True).distinct()
         )
 
-        # Now populate actual graph specs with helpers.
+        # Now populate actual graph specs using helpers.
         ctx = super().get_context_data(**kwargs)
         ctx["participation_graph_spec"] = json.dumps(
             get_participation_graph(
@@ -1286,12 +1286,6 @@ class StudyParticipantAnalyticsView(
         )
         ctx["registration_graph_spec"] = json.dumps(
             get_registration_graph(parents).to_dict()
-        )
-
-        demographics = DemographicData.objects.filter(
-            id__in=annotated_responses.values_list(
-                "demographic_snapshot", flat=True
-            ).distinct()
         )
 
         children_queryset = Child.objects.filter(
@@ -1309,7 +1303,6 @@ class StudyParticipantAnalyticsView(
         ctx["studies"], ctx["languages"], ctx["characteristics"] = [
             dict(counter) for counter in children_pivot_data
         ]
-        print(ctx["characteristics"])
         return ctx
 
 

@@ -9,9 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.2.4/build/vega-embed.min.js" integrity="sha256-jS6iUok3H7bzAMWIQhal64FAcuO3/OILX5X5CghMmeA=" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+
+    {# PivotTable.js #}
+    <script src="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/pivot.min.js" integrity="sha256-/btBGbvOvx2h/NcXVS+JPFhnoUGbZXDX0O2v6AaABLU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css" integrity="sha256-nn3M6N8S2BjPirPhvCF61ZCcgcppdLtnaNOLhiwro7E=" crossorigin="anonymous" />
 
-    <script src="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/pivot.min.js" integrity="sha256-/btBGbvOvx2h/NcXVS+JPFhnoUGbZXDX0O2v6AaABLU=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/gchart_renderers.min.js" integrity="sha256-Ve5qXDsBeNuaKKg22jpTMlWThC0OWupW9JtFrXxdy1Q=" crossorigin="anonymous"></script>
     <script type="application/json" id="response-pivot-data">
@@ -24,7 +26,7 @@
     {{ form.media }}
 {% endblock %}
 
-{% block title %}Participant Analytics | {{ study.name }}{% endblock %}
+{% block title %}Participant Analytics{% endblock %}
 
 {% block flash %}
     {% if messages %}
@@ -44,23 +46,18 @@
             <section class="col-xs-12">
                 <ol class="breadcrumb">
                     <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-                    <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
                     <li class="active">Participant Analytics</li>
                 </ol>
             </section>
         </nav>
-        <section id="registration-section" class="row">
-            <h3>Registration</h3>
-            <article id="registration-graph"></article>
-        </section>
-        <section id="participation-section" class="row">
-            <h3>Participation</h3>
-            <article id="participation-graph"></article>
-        </section>
-        <section id="demographics-section" class="row">
+        <section id="summary-section" class="row">
             <h3>Summary Statistics</h3>
             <article id="responses-pivot" class="col-md-12"></article>
+        </section>
+        <section>
+            <h3>Multi-Value Field Breakdowns</h3>
             <article id="characteristics-table" class="col-md-4">
+                <h4>Characteristics</h4>
                 <table class="table small">
                     <thead>
                     <tr>
@@ -79,6 +76,7 @@
                 </table>
             </article>
             <article id="languages-table" class="col-md-4">
+                <h4>Languages</h4>
                 <table class="table small">
                     <thead>
                     <tr>
@@ -97,6 +95,7 @@
                 </table>
             </article>
             <article id="studies-table" class="col-md-4">
+                <h4>Studies</h4>
                 <table class="table small">
                     <thead>
                     <tr>
@@ -115,11 +114,18 @@
                 </table>
             </article>
         </section>
+        <section id="participation-section" class="row">
+            <h3>Cumulative Participation</h3>
+            <article id="participation-graph"></article>
+        </section>
+        <section id="registration-section" class="row">
+            <h3>Cumulative Registrations</h3>
+            <article id="registration-graph"></article>
+        </section>
     </div>
     {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
         const RESPONSE_PIVOT_DATA = JSON.parse(document.querySelector("#response-pivot-data").innerText);
-        {#const CHILDREN_PIVOT_DATA = JSON.parse(document.getElementById("children-pivot-data").innerText);#}
         // Need to actually have isoformatted dates as Date objects for PivotTable to bucket properly.
         RESPONSE_PIVOT_DATA.forEach(resp => resp["Date of Response"] = new Date(resp["Date of Response"]));
         // Vega Charts (timeseries)

@@ -60,6 +60,11 @@ urlpatterns = [
     ),
     url(r"renamevideo/$", csrf_exempt(RenameVideoView.as_view()), name="rename-video"),
     url(r"studies/$", StudyListView.as_view(), name="study-list"),
+    url(
+        r"studies/analytics/$",
+        StudyParticipantAnalyticsView.as_view(),
+        name="study-participant-analytics",
+    ),
     url(r"studies/create/$", StudyCreateView.as_view(), name="study-create"),
     url(r"studies/(?P<pk>\d+)/$", StudyDetailView.as_view(), name="study-detail"),
     url(
@@ -71,11 +76,6 @@ urlpatterns = [
         r"studies/(?P<pk>\d+)/contact/$",
         StudyParticipantContactView.as_view(),
         name="study-participant-contact",
-    ),
-    url(
-        r"studies/(?P<pk>\d+)/analytics/$",
-        StudyParticipantAnalyticsView.as_view(),
-        name="study-participant-analytics",
     ),
     url(r"studies/(?P<pk>\d+)/edit/$", StudyUpdateView.as_view(), name="study-edit"),
     url(

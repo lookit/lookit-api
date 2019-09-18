@@ -28,6 +28,9 @@
             {% if perms.accounts.can_view_experimenter %}
                 <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
             {% endif %}
+            {% if perms.accounts.can_view_organization %}
+                <li><a href="{% url 'exp:study-participant-analytics' %}">Manage Recruitment</a></li>
+            {% endif %}
             <li role="separator" class="divider"></li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
