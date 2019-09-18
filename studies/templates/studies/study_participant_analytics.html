@@ -60,14 +60,68 @@
         <section id="demographics-section" class="row">
             <h3>Summary Statistics</h3>
             <article id="responses-pivot" class="col-md-12"></article>
+            <article id="characteristics-table" class="col-md-4">
+                <table class="table small">
+                    <thead>
+                    <tr>
+                        <th>Characteristic</th>
+                        <th># Children</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for characteristic, child_count in characteristics.items %}
+                        <tr>
+                            <td>{{ characteristic }}</td>
+                            <td>{{ child_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+            <article id="languages-table" class="col-md-4">
+                <table class="table small">
+                    <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th># Children</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for language, child_count in languages.items %}
+                        <tr>
+                            <td>{{ language }}</td>
+                            <td>{{ child_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+            <article id="studies-table" class="col-md-4">
+                <table class="table small">
+                    <thead>
+                    <tr>
+                        <th>Study</th>
+                        <th># Children</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for study_name, child_count in studies.items %}
+                        <tr>
+                            <td>{{ study_name }}</td>
+                            <td>{{ child_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </article>
         </section>
     </div>
     {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
         const RESPONSE_PIVOT_DATA = JSON.parse(document.querySelector("#response-pivot-data").innerText);
+        {#const CHILDREN_PIVOT_DATA = JSON.parse(document.getElementById("children-pivot-data").innerText);#}
         // Need to actually have isoformatted dates as Date objects for PivotTable to bucket properly.
         RESPONSE_PIVOT_DATA.forEach(resp => resp["Date of Response"] = new Date(resp["Date of Response"]));
-        console.log(RESPONSE_PIVOT_DATA);
         // Vega Charts (timeseries)
         vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});
         vegaEmbed("#registration-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});

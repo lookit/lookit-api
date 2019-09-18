@@ -1,7 +1,7 @@
 import datetime
 import json
 import operator
-from collections import defaultdict
+from collections import Counter, defaultdict
 from functools import reduce
 from typing import NamedTuple
 
@@ -1298,7 +1298,7 @@ class StudyParticipantAnalyticsView(
             id__in=annotated_responses.values_list("child", flat=True).distinct()
         )
 
-        children = unstack_children(children_queryset, studies_for_child)
+        children_pivot_data = unstack_children(children_queryset, studies_for_child)
 
         flattened_responses = get_flattened_responses(
             annotated_responses, studies_for_child
@@ -1306,7 +1306,10 @@ class StudyParticipantAnalyticsView(
 
         ctx["response_pivot_data"] = json.dumps(flattened_responses, default=str)
 
-        # ctx["children"] = json.dumps(children, default=str)
+        ctx["studies"], ctx["languages"], ctx["characteristics"] = [
+            dict(counter) for counter in children_pivot_data
+        ]
+        print(ctx["characteristics"])
         return ctx
 
 
@@ -1359,30 +1362,20 @@ def get_flattened_responses(response_qs, studies_for_child):
 
 def unstack_children(children_queryset, studies_for_child_map):
     """Unstack spoken languages, characteristics/conditions, and parent races/ethnicities"""
-    all_children = []
+    languages = Counter()
+    characteristics = Counter()
+    studies = Counter()
     for child in children_queryset:
-        child_obj = {
-            "uuid": child.uuid,
-            "age_in_days": (datetime.date.today() - child.birthday).days,
-            "gender": child.gender,
-            "gestational_age_at_birth": child.get_gestational_age_at_birth_display(),
-        }
         for study_name in studies_for_child_map[child.id]:
-            child_obj[f"Participated in {study_name}"] = True
+            studies[study_name] += 1
         for lang in child.languages_spoken:
             if lang[1]:
-                child_obj[f"Speaks {LANGUAGES_MAP[lang[0]]}"] = True
-            else:
-                child_obj[f"Speaks {LANGUAGES_MAP[lang[0]]}"] = False
+                languages[LANGUAGES_MAP[lang[0]]] += 1
         for cond in child.existing_conditions:
             if cond[1]:
-                child_obj[f"{CONDITIONS_MAP[cond[0]]}"] = True
-            else:
-                child_obj[f"{CONDITIONS_MAP[cond[0]]}"] = False
+                characteristics[CONDITIONS_MAP[cond[0]]] += 1
 
-        all_children.append(child_obj)
-
-    return all_children
+    return studies, languages, characteristics
 
 
 # UTILITY FUNCTIONS
