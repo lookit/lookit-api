@@ -52,6 +52,13 @@
         </nav>
         <section id="summary-section" class="row">
             <h3>Summary Statistics</h3>
+            <h4>Pivot Presets</h4>
+            <div id="pivot-presets" class="btn-group btn-group-sm" role="group" aria-label="Preset Pivot Choices">
+              <button type="button" class="btn btn-default">Left</button>
+              <button type="button" class="btn btn-default">Middle</button>
+              <button type="button" class="btn btn-default">Right</button>
+            </div>
+            <h4>Pivot Table</h4>
             <article id="responses-pivot" class="col-md-12"></article>
         </section>
         <section>
@@ -125,12 +132,10 @@
     </div>
     {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
+        const $responsePivotElement = $("#responses-pivot");
         const RESPONSE_PIVOT_DATA = JSON.parse(document.querySelector("#response-pivot-data").innerText);
         // Need to actually have isoformatted dates as Date objects for PivotTable to bucket properly.
         RESPONSE_PIVOT_DATA.forEach(resp => resp["Date of Response"] = new Date(resp["Date of Response"]));
-        // Vega Charts (timeseries)
-        vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});
-        vegaEmbed("#registration-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});
 
         // Summary statistics
         google.load("visualization", "1", {packages:["corechart", "charteditor"]});
@@ -141,36 +146,49 @@
             $.pivotUtilities.renderers,
             $.pivotUtilities.gchart_renderers
         );
+        const RESPONSE_PIVOT_OPTS = {
+            cols: ["Study"],
+            rows: ["Child Gender", "Child Gestational Age at Birth"],
+            renderers: pivotTableRenderers,
+            rendererName: "Table",
+            aggregatorName: "Total # Responses",
+            derivedAttributes: {
+                "Date of Response": pivotTableDerivers.dateFormat("Time of Response", "%y/%m/%d")
+            },
+            aggregators: {
+                "Unique Children": () => pivotAggregatorTemplates.countUnique()(["Child (unique identifier)"]),
+                "Unique Families": () => pivotAggregatorTemplates.countUnique()(["Family (unique identifier)"]),
+                "Total # Responses": () => pivotAggregatorTemplates.count()(),
+                // TODO: This average will probably multiple-count children - we only want to include ages and
+                //       incomes per child/family for a more accurate read. A custom aggregator is needed.
+                "Average Child Age (days)": () => pivotAggregatorTemplates.average()(["Child Age in Days"]),
+                "Average Annual Income": () => pivotAggregatorTemplates.average()(["Family Annual Income"]),
+            },
+            hiddenFromDragDrop: ["Time of Response", "Child (unique identifier)", "Family (unique identifier)"],
+            rendererOptions: {
+                gchart: {
+                    width: 800,
+                    height: 600
+                }
+            }
+        };
 
-        $("#responses-pivot")
+        // Vega Charts (timeseries)
+        vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});
+        vegaEmbed("#registration-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});
+
+        $responsePivotElement
             .pivotUI(
                 RESPONSE_PIVOT_DATA,
-                {
-                    cols: ["Study"],
-                    rows: ["Child Gender", "Child Gestational Age at Birth"],
-                    renderers: pivotTableRenderers,
-                    rendererName: "Table",
-                    aggregatorName: "Total # Responses",
-                    derivedAttributes: {
-                        "Date of Response": pivotTableDerivers.dateFormat("Time of Response", "%y/%m/%d")
-                    },
-                    aggregators: {
-                        "Unique Children": () => pivotAggregatorTemplates.countUnique()(["Child (unique identifier)"]),
-                        "Unique Families": () => pivotAggregatorTemplates.countUnique()(["Family (unique identifier)"]),
-                        "Total # Responses": () => pivotAggregatorTemplates.count()(),
-                        // TODO: This average will probably multiple-count children - we only want to include ages and
-                        //       incomes per child/family for a more accurate read. A custom aggregator is needed.
-                        "Average Child Age (days)": () => pivotAggregatorTemplates.average()(["Child Age in Days"]),
-                        "Average Annual Income": () => pivotAggregatorTemplates.average()(["Family Annual Income"]),
-                    },
-                    hiddenFromDragDrop: ["Time of Response", "Child (unique identifier)", "Family (unique identifier)"],
-                    rendererOptions: {
-                        gchart: {
-                            width: 800,
-                            height: 600
-                        }
-                    }
-                }
+                RESPONSE_PIVOT_OPTS
             );
+
+        function reloadPivot() {
+            $responsePivotElement
+                .pivotUI(
+                    RESPONSE_PIVOT_DATA,
+                    RESPONSE_PIVOT_OPTS
+                );
+        }
     </script>
 {% endblock %}
