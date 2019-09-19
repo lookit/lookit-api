@@ -53,12 +53,12 @@
         <section id="summary-section" class="row">
             <h3>Summary Statistics</h3>
             <h4>Pivot Presets</h4>
-            <div id="pivot-presets" class="btn-group btn-group-lg" role="group" aria-label="Preset Pivot Choices">
+            <div id="pivot-presets" class="btn-group btn-group" role="group" aria-label="Preset Pivot Choices">
                 <button type="button"
                         class="btn btn-default"
                         data-cols="Parent/Guardian Age"
                         data-aggregator="Total # Responses"
-                        data-renderer="Table">Parent Age</button>
+                        data-renderer="Table"># Responses by Parent Age</button>
                 <button type="button"
                         class="btn btn-default"
                         data-cols="Study"
@@ -71,6 +71,11 @@
                         data-rows="Study"
                         data-aggregator="Unique Children"
                         data-renderer="Table">Unique Children per Study by Gender</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-cols="Parent/Guardian Education Level"
+                        data-aggregator="Unique Families"
+                        data-renderer="Bar Chart">Unique Families per Parent/Guardian Education Level</button>
             </div>
             <h4>Pivot Table</h4>
             <article id="responses-pivot" class="col-md-12"></article>
@@ -203,7 +208,7 @@
             let button;
             if ((button = event.target) && button.tagName === "BUTTON") {
                 let data = button.dataset;
-                RESPONSE_PIVOT_OPTS["cols"] = data.cols.split(", ");
+                RESPONSE_PIVOT_OPTS["cols"] = data.cols ? data.cols.split(", ") : [];
                 RESPONSE_PIVOT_OPTS["rows"] = data.rows ? data.rows.split(", ") : [];
                 RESPONSE_PIVOT_OPTS["aggregatorName"] = data.aggregator || "Total # Responses";
                 RESPONSE_PIVOT_OPTS["rendererName"] = data.renderer || "Table";
