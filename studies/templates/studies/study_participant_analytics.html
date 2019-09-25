@@ -32,12 +32,19 @@
         {% endcomment %}
         {{ response_pivot_data | safe }}
     </script>
-    <script type="application/json" id="response-timeseries-data">
+    <script type="application/json" id="cumulative-timeseries-data">
         {% comment %}
             When we upgrade to django 2.x, please convert to json_script. Please see:
             https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
         {% endcomment %}
-        {{ response_timeseries_data | safe }}
+        {{ cumulative_timeseries_data | safe }}
+    </script>
+    <script type="application/json" id="daily-timeseries-data">
+        {% comment %}
+            When we upgrade to django 2.x, please convert to json_script. Please see:
+            https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
+        {% endcomment %}
+        {{ daily_timeseries_data | safe }}
     </script>
     {{ form.media }}
 {% endblock %}
@@ -122,7 +129,7 @@
                             {% endfor %}
                         </select>
                     <h5>Legend</h5>
-                        <section id="plot-legend"></section>
+                        <section id="plot-legend" class="small"></section>
                     </div>
                 </div>
             </article>
@@ -231,14 +238,18 @@
         const $responsePivotElement = $("#responses-pivot"),
               $timeseriesFilter     = $("#timeseries-filter"),
               $timeseriesOptions    = $timeseriesFilter.find("option");
-        const RESPONSE_PIVOT_DATA      = JSON.parse(document.querySelector("#response-pivot-data").innerText),
-              RESPONSE_TIMESERIES_DATA = JSON.parse(document.querySelector("#response-timeseries-data").innerText);
 
-        const RESPONSE_TIMESERIES_CACHE = {},
-              LEGEND_LABEL_CACHE        = {};
+        const RESPONSE_PIVOT_DATA        = JSON.parse(document.querySelector("#response-pivot-data").innerText),
+              CUMULATIVE_TIMESERIES_DATA = JSON.parse(document.querySelector("#cumulative-timeseries-data").innerText),
+              DAILY_TIMESERIES_DATA      = JSON.parse(document.querySelector("#daily-timeseries-data").innerText);
+
+        const CUMULATIVE_TIMESERIES_CACHE = {},
+              BINNED_TIMESERIES_CACHE    = {},
+              LEGEND_LABEL_CACHE          = {};
+
         // Need to actually have isoformatted dates as Date objects for PivotTable to bucket properly.
-        RESPONSE_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
-
+        CUMULATIVE_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
+        DAILY_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
 
         const BASE_SELECT_SETTINGS = {
             width: '100%',
@@ -259,7 +270,7 @@
         const PARTICIPATION_DETAIL_PLOT = {
             title: "Participant Detail Plot",
             description: "Zoomable",
-            data: RESPONSE_TIMESERIES_DATA,
+            data: CUMULATIVE_TIMESERIES_DATA,
             top: 70,
             // width: 600,
             full_width: true,
@@ -279,7 +290,7 @@
         const PARTICIPATION_OVERVIEW_PLOT = {
             title: "Drag Range to Zoom",
             description: "Overview",
-            data: RESPONSE_TIMESERIES_DATA,
+            data: CUMULATIVE_TIMESERIES_DATA,
             top: 70,
             full_width: true,
             // width: 600,
@@ -339,11 +350,6 @@
             }
         };
 
-        // Vega Charts (timeseries)
-        {#vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});#}
-        {#vegaEmbed("#registration-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});#}
-
-
         /**
          * On selection, tries to see if the TS has already been generated.
          *
@@ -358,47 +364,75 @@
                 optGroupForStudy   = selectedRuling.parentNode,
                 legendLabels       = [];
 
-            let newTimeseriesSet = timeseriesHandles.reduce(
-                (timeseriesSet, handle) => {
-                    let seriesObj   = RESPONSE_TIMESERIES_CACHE[handle],
-                        legendLabel = LEGEND_LABEL_CACHE[handle],
-                        ruling      = selectedRuling.dataset.ruling;
-                    if (!seriesObj) {
-                        seriesObj = RESPONSE_TIMESERIES_CACHE[handle] =
-                            generateFilteredTimeSeries(
+            let [cumulativeSet, binnedSet] = getTimeseriesSets(
+                timeseriesHandles, selectedRuling, optGroupForStudy, legendLabels
+            );
+
+            // TODO: The first element check is kind of a hack right now, but I can't think of a better way to do it
+            //       at the moment.
+            drawTimeseriesPlots(cumulativeSet, binnedSet, legendLabels);
+        }
+
+
+        function getTimeseriesSets(timeseriesHandles, selectedRuling, optGroupForStudy, legendLabels) {
+            return timeseriesHandles.reduce(
+                ([cumulativeSet, binnedSet], handle) => {
+                    let cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle],
+                        binnedSeries     = BINNED_TIMESERIES_CACHE[handle],
+                        legendLabel      = LEGEND_LABEL_CACHE[handle],
+                        ruling           = selectedRuling.dataset.ruling;
+                    if (!legendLabel) {
+                        legendLabel = LEGEND_LABEL_CACHE[handle] = `${optGroupForStudy.label} - ${ruling}`;
+                    }
+                    if (!cumulativeSeries) {
+                        cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle] =
+                            generateCumulativeTimeSeries(
                                 optGroupForStudy.dataset.studyId,
                                 ruling
                             );
-                        legendLabel = LEGEND_LABEL_CACHE[handle] = `${optGroupForStudy.label} - ${ruling}`;
+
                     }
-                    timeseriesSet.push(seriesObj);
+                    if (!binnedSeries) {
+                        binnedSeries = BINNED_TIMESERIES_CACHE[handle] =
+                            generateBinnedTimeSeries(
+                                optGroupForStudy.dataset.studyId,
+                                ruling
+                            );
+                    }
+
+                    cumulativeSet.push(cumulativeSeries);
+                    binnedSet.push(binnedSeries);
                     // true if it's an "any ruling" for that study
                     legendLabels.push(legendLabel);
-                    return timeseriesSet;
+                    return [cumulativeSet, binnedSet];
                 },
-                [] // timeseriesSet initializer
+                [[], []] // timeseriesSet initializer
             );
+        }
 
-            if (newTimeseriesSet.length && newTimeseriesSet[0].length) {
+
+        function drawTimeseriesPlots(cumulativeSet, binnedSet, legendLabels) {
+            if (cumulativeSet.length && cumulativeSet[0].length) {
                 // Now fill with data, y_accessor, and legend, then draw.
                 let newPlotOptions = {
-                    data: newTimeseriesSet,
                     x_accessor: "date",
                     y_accessor: "value",
                 };
-
-                // Don't understand what this does, but apparently have to do it:
-                // https://metricsgraphicsjs.org/examples.htm#updating
 
                 let detailPlotOpts = $.extend(
                     {},
                     PARTICIPATION_DETAIL_PLOT,
                     newPlotOptions,
                     {
+                        data: binnedSet,
+                        binned: true,
+                        chart_type: "histogram",
                         legend: legendLabels
                     }
                 );
 
+                // Don't understand what this does, but apparently have to do it:
+                // https://metricsgraphicsjs.org/examples.htm#updating
                 delete detailPlotOpts.xax_format;
 
                 let overviewPlotOpts = $.extend(
@@ -406,6 +440,7 @@
                     PARTICIPATION_OVERVIEW_PLOT,
                     newPlotOptions,
                     {
+                        data: cumulativeSet,
                         zoom_target: detailPlotOpts
                     }
                 );
@@ -420,9 +455,35 @@
             }
         }
 
-
-        function generateFilteredTimeSeries(studyId, consentRuling) {
+        function generateCumulativeTimeSeries(studyId, consentRuling) {
             // Determine aggregation field to pick.
+            let aggField = getCumulativeAggregationField(studyId, consentRuling);
+            return CUMULATIVE_TIMESERIES_DATA.reduce(
+                (newSeries, responseDataPoint, currentIndex, sourceArray) => {
+                    if ((consentRuling === "any" || responseDataPoint["current_ruling"] === consentRuling)    &&
+                        (!studyId                || responseDataPoint["study__id"] === parseInt(studyId))) {
+                        newSeries.push({
+                            date: responseDataPoint["date_of_response"],
+                            value: responseDataPoint[aggField]
+                        });
+                    } else {
+                        // For continuity, we're adding a fake datapoint to the timeseries that is just the
+                        // same as whatever the last value was. This will only work for cumulative datasets!
+                        let previousPoint    = newSeries.slice(-1)[0],
+                            newValue         = previousPoint ? previousPoint["value"] : 0;
+
+                        newSeries.push({
+                            date: responseDataPoint["date_of_response"],
+                            value: newValue
+                        });
+                    }
+                    return newSeries;
+                },
+                []  // newSeries initializer
+            );
+        }
+
+        function getCumulativeAggregationField(studyId, consentRuling) {
             let aggField;
             if (studyId) {
                 if (consentRuling === "any") {
@@ -437,29 +498,39 @@
                     aggField = "cumulative_count_per_ruling";
                 }
             }
-            return RESPONSE_TIMESERIES_DATA.reduce(
+            return aggField;
+        }
+
+        function generateBinnedTimeSeries(studyId, consentRuling) {
+            return DAILY_TIMESERIES_DATA.reduce(
                 (newSeries, responseDataPoint, currentIndex, sourceArray) => {
                     if ((consentRuling === "any" || responseDataPoint["current_ruling"] === consentRuling)    &&
                         (!studyId                || responseDataPoint["study__id"] === parseInt(studyId))) {
-                        newSeries.push({
-                            date: responseDataPoint["date_of_response"],
-                            value: responseDataPoint[aggField]
-                        });
-                    } else {
-                        // For continuity, we're adding a fake datapoint to the timeseries that is just the
-                        // same as whatever the last value was. This will only work for cumulative datasets!
-                        let previousPoint = newSeries.slice(-1)[0],
-                            newValue         = previousPoint ? previousPoint["value"] : 0;
-
-                        newSeries.push({
-                            date: responseDataPoint["date_of_response"],
-                            value: newValue
-                        });
+                        // If it matches the criteria, we add to the count.
+                        let previousPoint = newSeries.slice(-1)[0];
+                        if (responsesHappenedOnSameDay(previousPoint, responseDataPoint)) {
+                            previousPoint["value"] += responseDataPoint["num_responses"];
+                        } else {
+                            newSeries.push({
+                                date: responseDataPoint["date_of_response"],
+                                value: responseDataPoint["num_responses"]
+                            });
+                        }
                     }
                     return newSeries;
                 },
-                []  // newSeries initializer
-            );
+                []
+            )
+        }
+
+        function responsesHappenedOnSameDay(lastInSeries, currentResponse) {
+            if (!lastInSeries || !currentResponse) return false;  // There's no first day to compare.
+            let firstDate = lastInSeries["date"];
+            let secondDate = currentResponse["date_of_response"];
+            return firstDate && secondDate &&
+                    firstDate.getFullYear() === secondDate.getFullYear() &&
+                    firstDate.getMonth() === secondDate.getMonth() &&
+                    firstDate.getDate() === secondDate.getDate();
         }
 
         function reloadPivot(event) {
@@ -477,7 +548,6 @@
                         true
                     );
             }
-
         }
 
         function initializeView() {

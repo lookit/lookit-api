@@ -1281,9 +1281,9 @@ class StudyParticipantAnalyticsView(
 
         ctx["all_studies"] = studies_for_orgs
 
-        ctx["response_timeseries_data"] = get_response_timeseries_data(
-            annotated_responses
-        )
+        cumulative, daily = get_response_timeseries_data(annotated_responses)
+        ctx["cumulative_timeseries_data"] = cumulative
+        ctx["daily_timeseries_data"] = daily
 
         ctx["registration_graph_spec"] = json.dumps(
             get_registration_graph(parents).to_dict()

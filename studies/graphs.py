@@ -54,15 +54,13 @@ def get_response_timeseries_data(responses_queryset):
     responses_per_date = (
         pandas.crosstab(
             index=base_dataframe["date_of_response"],
-            columns=[base_dataframe["current_ruling"], base_dataframe["study__name"]],
+            columns=[base_dataframe["current_ruling"], base_dataframe["study__id"]],
         )
         .stack()
         .stack()
         .reset_index()
         .rename(columns={0: "num_responses"})
     )
-
-    # print(responses_per_date.to_json(orient="records"))
 
     # Cumulative stats all broken down with groupby
     base_dataframe["total_cumulative_responses"] = range(1, len(base_dataframe) + 1)
@@ -76,7 +74,10 @@ def get_response_timeseries_data(responses_queryset):
         ["study__name", "current_ruling"]
     ).cumcount()
 
-    return base_dataframe.to_json(orient="records")
+    return (
+        base_dataframe.to_json(orient="records"),
+        responses_per_date.to_json(orient="records"),
+    )
 
 
 def get_registration_graph(users_queryset):
