@@ -10,6 +10,15 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js" integrity="sha256-+9Mf3cAVmxxudDsr1XwXUeRZFtvdWVYdq5/vcgiYyNU=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.css" integrity="sha256-H83YjkVzXEyHSdZ/5aVRoW2QfqeJ7gIWduA7aCy9tWY=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>
+
+
     {# PivotTable.js #}
     <script src="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/pivot.min.js" integrity="sha256-/btBGbvOvx2h/NcXVS+JPFhnoUGbZXDX0O2v6AaABLU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css" integrity="sha256-nn3M6N8S2BjPirPhvCF61ZCcgcppdLtnaNOLhiwro7E=" crossorigin="anonymous" />
@@ -22,6 +31,13 @@
             https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
         {% endcomment %}
         {{ response_pivot_data | safe }}
+    </script>
+    <script type="application/json" id="response-timeseries-data">
+        {% comment %}
+            When we upgrade to django 2.x, please convert to json_script. Please see:
+            https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
+        {% endcomment %}
+        {{ response_timeseries_data | safe }}
     </script>
     {{ form.media }}
 {% endblock %}
@@ -50,6 +66,74 @@
                 </ol>
             </section>
         </nav>
+        <section id="participation-section" class="row">
+            <h3>Cumulative Participation</h3>
+            <article class="col-xs-4">
+                <div id="participant-plot-filter-panel" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>Choose Plotlines</h4>
+                    </div>
+                    <div class="panel-body">
+                        <label class="control-label sr-only" for="timeseries-filter">Filter</label>
+                        <select id="timeseries-filter"
+                                class="selectpicker form-control"
+                                multiple>
+                            <optgroup id="all-studies-filter" label="ALL STUDIES">
+                                <option value="ALL:any"
+                                        data-ruling="any">
+                                    All Rulings
+                                </option>
+                                <option value="ALL:pending"
+                                        data-ruling="pending">
+                                    Pending
+                                </option>
+                                <option value="ALL:accepted"
+                                        data-ruling="accepted">
+                                    Accepted</option>
+                                <option value="ALL:rejected"
+                                        data-ruling="rejected">
+                                    Rejected
+                                </option>
+                            </optgroup>
+                            {% for study in all_studies %}
+                                <optgroup label="{{ study.name }}"
+                                          data-study-id="{{ study.id }}">
+                                    <option value="{{ study.id }}:any"
+                                            data-subtext="{{ study.name }}"
+                                            data-ruling="any">
+                                        All Rulings
+                                    </option>
+                                    <option value="{{ study.id }}:pending"
+                                            data-subtext="{{ study.name }}"
+                                            data-ruling="pending">
+                                        Pending
+                                    </option>
+                                    <option value="{{ study.id }}:accepted"
+                                            data-subtext="{{ study.name }}"
+                                            data-ruling="accepted">
+                                        Accepted
+                                    </option>
+                                    <option value="{{ study.id }}:rejected"
+                                            data-subtext="{{ study.name }}"
+                                            data-ruling="rejected">
+                                        Rejected
+                                    </option>
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    <h5>Legend</h5>
+                        <section id="plot-legend"></section>
+                    </div>
+                </div>
+            </article>
+            <article id="participation-detail-graph" class="col-xs-8"></article>
+            <article id="participation-overview-graph"></article>
+
+        </section>
+        <section id="registration-section" class="row">
+            <h3>Cumulative Registrations</h3>
+            <article id="registration-graph"></article>
+        </section>
         <section id="summary-section" class="row">
             <h3>Summary Statistics</h3>
             <h4>Pivot Presets</h4>
@@ -140,27 +224,86 @@
                 </table>
             </article>
         </section>
-        <section id="participation-section" class="row">
-            <h3>Cumulative Participation</h3>
-            <article id="participation-graph"></article>
-        </section>
-        <section id="registration-section" class="row">
-            <h3>Cumulative Registrations</h3>
-            <article id="registration-graph"></article>
-        </section>
+
     </div>
     {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
-        const $responsePivotElement = $("#responses-pivot");
-        const RESPONSE_PIVOT_DATA = JSON.parse(document.querySelector("#response-pivot-data").innerText);
+        const $responsePivotElement = $("#responses-pivot"),
+              $timeseriesFilter     = $("#timeseries-filter"),
+              $timeseriesOptions    = $timeseriesFilter.find("option");
+        const RESPONSE_PIVOT_DATA      = JSON.parse(document.querySelector("#response-pivot-data").innerText),
+              RESPONSE_TIMESERIES_DATA = JSON.parse(document.querySelector("#response-timeseries-data").innerText);
+
+        const RESPONSE_TIMESERIES_CACHE = {},
+              LEGEND_LABEL_CACHE        = {};
         // Need to actually have isoformatted dates as Date objects for PivotTable to bucket properly.
-        RESPONSE_PIVOT_DATA.forEach(resp => resp["Date of Response"] = new Date(resp["Date of Response"]));
+        RESPONSE_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
+
+
+        const BASE_SELECT_SETTINGS = {
+            width: '100%',
+            sanitize: true,
+            liveSearch: true,
+        };
+
+        const TIMESERIES_FILTER_SETTINGS = $.extend(
+            BASE_SELECT_SETTINGS,
+            {
+                selectedTextFormat: 'count',
+                title: 'Select Timeseries to Display',
+                liveSearchPlaceholder: 'Search by study name',
+            }
+        );
+
+        // Boot up plots with defaults.
+        const PARTICIPATION_DETAIL_PLOT = {
+            title: "Participant Detail Plot",
+            description: "Zoomable",
+            data: RESPONSE_TIMESERIES_DATA,
+            top: 70,
+            // width: 600,
+            full_width: true,
+            height: 400,
+            right: 40,
+            // missing_is_hidden: true,
+            interpolate: d3.curveStepAfter,
+            target: document.getElementById('participation-detail-graph'),
+            x_accessor: 'date_of_response',
+            y_accessor: ['total_cumulative_responses'],
+            y_label: "Cumulative Responses",
+            legend: ["Total Cumulative Responses"],
+            legend_target: "#plot-legend",
+            area: false
+        };
+
+        const PARTICIPATION_OVERVIEW_PLOT = {
+            title: "Drag Range to Zoom",
+            description: "Overview",
+            data: RESPONSE_TIMESERIES_DATA,
+            top: 70,
+            full_width: true,
+            // width: 600,
+            height: 160,
+            right: 40,
+            // missing_is_hidden: true,
+            interpolate: d3.curveStepAfter,
+            target: document.getElementById('participation-overview-graph'),
+            brush: 'x',
+            x_axis: false,
+            y_axis: false,
+            zoom_target: PARTICIPATION_DETAIL_PLOT,
+            x_accessor: 'date_of_response',
+            y_accessor: ['total_cumulative_responses'],
+            showActivePoint: false,
+            area: false
+        };
+
+        google.load("visualization", "1", {packages:["corechart", "charteditor"]});
 
         // Summary statistics
-        google.load("visualization", "1", {packages:["corechart", "charteditor"]});
-        let pivotTableDerivers = $.pivotUtilities.derivers;
-        let pivotAggregatorTemplates = $.pivotUtilities.aggregatorTemplates;
-        let pivotTableRenderers = $.extend(
+        const pivotTableDerivers = $.pivotUtilities.derivers;
+        const pivotAggregatorTemplates = $.pivotUtilities.aggregatorTemplates;
+        const pivotTableRenderers = $.extend(
             {},
             $.pivotUtilities.renderers,
             $.pivotUtilities.gchart_renderers
@@ -189,20 +332,135 @@
             rendererOptions: {
                 gchart: {
                     width: 800,
-                    height: 600
+                    height: 600,
+                    interpolateNulls: true,
+                    isStacked: false,
                 }
             }
         };
 
         // Vega Charts (timeseries)
-        vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});
-        vegaEmbed("#registration-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});
+        {#vegaEmbed("#participation-graph", {{ participation_graph_spec|safe }}, {mode: "vega-lite", actions: false});#}
+        {#vegaEmbed("#registration-graph", {{ registration_graph_spec|safe }}, {mode: "vega-lite", actions: false});#}
 
-        $responsePivotElement
-            .pivotUI(
-                RESPONSE_PIVOT_DATA,
-                RESPONSE_PIVOT_OPTS
+
+        /**
+         * On selection, tries to see if the TS has already been generated.
+         *
+         * @param $jqEvent
+         * @param clickedIndex
+         * @param isSelected
+         * @param previousValue
+         */
+        function handleTimeSeriesFilter($jqEvent, clickedIndex, isSelected, previousValue) {
+            let timeseriesHandles  = $(this).val() || [],
+                selectedRuling     = $timeseriesOptions[clickedIndex],
+                optGroupForStudy   = selectedRuling.parentNode,
+                legendLabels       = [];
+
+            let newTimeseriesSet = timeseriesHandles.reduce(
+                (timeseriesSet, handle) => {
+                    let seriesObj   = RESPONSE_TIMESERIES_CACHE[handle],
+                        legendLabel = LEGEND_LABEL_CACHE[handle],
+                        ruling      = selectedRuling.dataset.ruling;
+                    if (!seriesObj) {
+                        seriesObj = RESPONSE_TIMESERIES_CACHE[handle] =
+                            generateFilteredTimeSeries(
+                                optGroupForStudy.dataset.studyId,
+                                ruling
+                            );
+                        legendLabel = LEGEND_LABEL_CACHE[handle] = `${optGroupForStudy.label} - ${ruling}`;
+                    }
+                    timeseriesSet.push(seriesObj);
+                    // true if it's an "any ruling" for that study
+                    legendLabels.push(legendLabel);
+                    return timeseriesSet;
+                },
+                [] // timeseriesSet initializer
             );
+
+            if (newTimeseriesSet.length && newTimeseriesSet[0].length) {
+                // Now fill with data, y_accessor, and legend, then draw.
+                let newPlotOptions = {
+                    data: newTimeseriesSet,
+                    x_accessor: "date",
+                    y_accessor: "value",
+                };
+
+                // Don't understand what this does, but apparently have to do it:
+                // https://metricsgraphicsjs.org/examples.htm#updating
+
+                let detailPlotOpts = $.extend(
+                    {},
+                    PARTICIPATION_DETAIL_PLOT,
+                    newPlotOptions,
+                    {
+                        legend: legendLabels
+                    }
+                );
+
+                delete detailPlotOpts.xax_format;
+
+                let overviewPlotOpts = $.extend(
+                    {},
+                    PARTICIPATION_OVERVIEW_PLOT,
+                    newPlotOptions,
+                    {
+                        zoom_target: detailPlotOpts
+                    }
+                );
+
+                delete overviewPlotOpts.xax_format;
+
+                MG.data_graphic(detailPlotOpts);
+                MG.data_graphic(overviewPlotOpts);
+            } else {
+                MG.data_graphic(PARTICIPATION_DETAIL_PLOT);
+                MG.data_graphic(PARTICIPATION_OVERVIEW_PLOT);
+            }
+        }
+
+
+        function generateFilteredTimeSeries(studyId, consentRuling) {
+            // Determine aggregation field to pick.
+            let aggField;
+            if (studyId) {
+                if (consentRuling === "any") {
+                    aggField = "cumulative_count_per_study";
+                } else {
+                    aggField = "cumulative_count_per_study_by_ruling";
+                }
+            } else {
+                if (consentRuling === "any") {
+                    aggField = "total_cumulative_responses";
+                } else {
+                    aggField = "cumulative_count_per_ruling";
+                }
+            }
+            return RESPONSE_TIMESERIES_DATA.reduce(
+                (newSeries, responseDataPoint, currentIndex, sourceArray) => {
+                    if ((consentRuling === "any" || responseDataPoint["current_ruling"] === consentRuling)    &&
+                        (!studyId                || responseDataPoint["study__id"] === parseInt(studyId))) {
+                        newSeries.push({
+                            date: responseDataPoint["date_of_response"],
+                            value: responseDataPoint[aggField]
+                        });
+                    } else {
+                        // For continuity, we're adding a fake datapoint to the timeseries that is just the
+                        // same as whatever the last value was.
+                        let previousPoint = newSeries.slice(-1)[0],
+                            newValue         = previousPoint ? previousPoint["value"] : 0;
+
+                        newSeries.push({
+                            date: responseDataPoint["date_of_response"],
+                            value: newValue
+                        });
+                    }
+                    return newSeries;
+                },
+                []  // newSeries initializer
+            );
+        }
 
         function reloadPivot(event) {
             let button;
@@ -222,6 +480,25 @@
 
         }
 
-        document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
+        function initializeView() {
+            $responsePivotElement
+                .pivotUI(
+                    RESPONSE_PIVOT_DATA,
+                    RESPONSE_PIVOT_OPTS
+                );
+
+            MG.data_graphic(PARTICIPATION_DETAIL_PLOT);
+            MG.data_graphic(PARTICIPATION_OVERVIEW_PLOT);
+
+            $timeseriesFilter
+            .selectpicker(TIMESERIES_FILTER_SETTINGS)
+            .on('changed.bs.select', handleTimeSeriesFilter);
+
+            document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
+        }
+
+
+        // Initialize.
+        initializeView();
     </script>
 {% endblock %}

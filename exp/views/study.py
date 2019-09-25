@@ -10,27 +10,27 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import Q, Count, IntegerField, OuterRef, Prefetch, Subquery
+from django.db.models import Q, Prefetch
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
 from django.utils import timezone
 from django.views import generic
 from guardian.mixins import PermissionRequiredMixin
-from guardian.shortcuts import get_objects_for_user, get_perms
+from guardian.shortcuts import get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import Child, DemographicData, Message, Organization, User
+from accounts.models import Child, Message, Organization, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.fields import CONDITIONS, LANGUAGES
 from studies.forms import StudyEditForm, StudyForm
-from studies.graphs import get_participation_graph, get_registration_graph
+from studies.graphs import get_registration_graph, get_response_timeseries_data
 from studies.helpers import send_mail
-from studies.models import Feedback, Response, Study, StudyLog, StudyType
+from studies.models import Feedback, Study, StudyLog, StudyType
 from studies.queries import get_annotated_responses_qs, get_study_list_qs
 from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy
 from studies.workflow import (
@@ -1278,12 +1278,13 @@ class StudyParticipantAnalyticsView(
 
         # Now populate actual graph specs using helpers.
         ctx = super().get_context_data(**kwargs)
-        ctx["participation_graph_spec"] = json.dumps(
-            get_participation_graph(
-                annotated_responses,
-                list(studies_for_orgs.values_list("name", flat=True)),
-            ).to_dict()
+
+        ctx["all_studies"] = studies_for_orgs
+
+        ctx["response_timeseries_data"] = get_response_timeseries_data(
+            annotated_responses
         )
+
         ctx["registration_graph_spec"] = json.dumps(
             get_registration_graph(parents).to_dict()
         )
@@ -1329,8 +1330,11 @@ def get_flattened_responses(response_qs, studies_for_child):
                 "Child Age in Days": child_age_in_days,
                 "Child Age in Months": round(child_age_in_days / 30, 2),
                 "Child Age in Years": round(child_age_in_days / 365, 2),
+                "Child Birth Month": resp.child.birthday.strftime("%B"),
                 "Child Gender": resp.child.gender,
                 "Child Gestational Age at Birth": resp.child.get_gestational_age_at_birth_display(),
+                # TODO: This is literally the worst implementation of POPCNT ever, though I don't imagine it will
+                #       incur too much of a performance penalty.
                 "Child # Languages Spoken": bin(int(resp.child.languages_spoken)).count(
                     "1"
                 ),

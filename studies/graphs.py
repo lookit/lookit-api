@@ -1,93 +1,84 @@
 """Graph facilities for the Analytics study view."""
+import datetime
 from functools import reduce
 
 import altair
 import pandas
+import panel
 from django_pandas.io import read_frame
 
 
+altair.renderers.enable("default")
+panel.extension("vega")
 pandas.set_option("display.max_columns", None)
 pandas.set_option("display.max_rows", None)
-
-
-def get_participation_graph(responses_queryset, study_names):
-    base_dataframe = _get_base_responses_dataframe(responses_queryset)
-    # TODO: Extract unique child hits with groupby('id').nth(1)
-
-    cumulative_responses_dataframe = _get_cumulative_responses_dataframe(base_dataframe)
-
-    studies_with_responses = []
-    for name in study_names:
-        response_counts_for_study = cumulative_responses_dataframe[
-            cumulative_responses_dataframe.study__name == name
-        ]
-        if response_counts_for_study.cumulative_responses.sum() != 0:
-            studies_with_responses.append(name)
-        else:  # Trim the extraneous values that shouldn't be there.
-            cumulative_responses_dataframe = cumulative_responses_dataframe[
-                cumulative_responses_dataframe.study__name != name
-            ]
-
-    return _get_responses_graph(cumulative_responses_dataframe, studies_with_responses)
 
 
 def _get_base_responses_dataframe(responses_queryset):
     response_dataframe = read_frame(
         responses_queryset,
-        fieldnames=("date_created", "current_ruling", "study__name"),
+        fieldnames=("date_created", "current_ruling", "study__name", "study__id"),
         index_col="uuid",
     )
 
     return response_dataframe
 
 
-def _get_cumulative_responses_dataframe(response_dataframe):
-    # TODO: is there a way to do this in Altair rather than in pandas? That would allow
-    #       us to parameterize the creation of the graph a bit more cleanly, I think.
-    #       right now, we are resorting to this:
-    #       https://stackoverflow.com/questions/40933985/cumulative-count-with-altair
-    response_dataframe = (
+def get_response_timeseries_data(responses_queryset):
+    """This method has one job, and that's to package data for MetricsGraphics.JS.
+
+    Format:
+        [
+            {
+                "timestamp": [UTC timestamp],
+                "count_per_study": [The count for each study]
+                "count_per_ruling": [the count per ruling]
+                "count_per_study_by_ruling: [the count per study and ruling]
+            }
+        ]
+
+    The idea here is to have the grouped counts easily accessible to javascript, such that the
+    series-generating functions only have to filter to get the appropriate dataset rather than computing counts.
+
+    Args:
+        responses_queryset: The time series we're going to digest.
+        study_names: The names of the studies we want.
+    """
+    # Base dataframe must include data as datetime for proper sorting.
+    base_dataframe = _get_base_responses_dataframe(responses_queryset)
+    base_dataframe["date_created"] = pandas.to_datetime(base_dataframe["date_created"])
+
+    # Sort, date, and number, then add a date column for binning.
+    base_dataframe.sort_values(["date_created"], inplace=True)
+    base_dataframe["date_of_response"] = base_dataframe["date_created"].dt.date
+
+    # TODO: Now create the daily binned DF
+    responses_per_date = (
         pandas.crosstab(
-            response_dataframe.date_created,
-            columns=[response_dataframe.current_ruling, response_dataframe.study__name],
+            index=base_dataframe["date_of_response"],
+            columns=[base_dataframe["current_ruling"], base_dataframe["study__name"]],
         )
-        .cumsum()
-        .stack()  # stack study names
-        .stack(dropna=False)  # stack current rulings
+        .stack()
+        .stack()
         .reset_index()
-        .rename(columns={0: "cumulative_responses"})
-        .fillna(0)
-    )
-    return response_dataframe
-
-
-def _get_responses_graph(response_dataframe, study_names):
-    studies_dropdown = altair.binding_select(options=study_names)
-    studies_select = altair.selection_single(
-        fields=["study__name"],
-        bind=studies_dropdown,
-        name="Study",
-        init={"study__name": study_names[0]},
+        .rename(columns={0: "num_responses"})
     )
 
-    base_chart = (
-        altair.Chart(response_dataframe)
-        .mark_area(interpolate="step-after", line=True)
-        .properties(width=200, height=200)
-        .encode(
-            x=altair.X(
-                "date_created:T",
-                title="Date of Response",
-                axis=altair.Axis(format="%b. %d, %Y", labelAngle=-45),
-            ),
-            y=altair.Y(f"cumulative_responses:Q", title=f"Response Count"),
-            color=altair.Color("current_ruling:N", title="Current Ruling"),
-            tooltip="cumulative_responses",
-        )
-        .facet(column="current_ruling")
-    )
+    # print(responses_per_date.to_json(orient="records"))
 
-    return base_chart.add_selection(studies_select).transform_filter(studies_select)
+    # Cumulative stats all broken down with groupby
+    base_dataframe["total_cumulative_responses"] = range(1, len(base_dataframe) + 1)
+    base_dataframe["cumulative_count_per_study"] = base_dataframe.groupby(
+        ["study__name"]
+    ).cumcount()
+    base_dataframe["cumulative_count_per_ruling"] = base_dataframe.groupby(
+        ["current_ruling"]
+    ).cumcount()
+    base_dataframe["cumulative_count_per_study_by_ruling"] = base_dataframe.groupby(
+        ["study__name", "current_ruling"]
+    ).cumcount()
+
+    return base_dataframe.to_json(orient="records")
 
 
 def get_registration_graph(users_queryset):
