@@ -447,7 +447,7 @@
                         });
                     } else {
                         // For continuity, we're adding a fake datapoint to the timeseries that is just the
-                        // same as whatever the last value was.
+                        // same as whatever the last value was. This will only work for cumulative datasets!
                         let previousPoint = newSeries.slice(-1)[0],
                             newValue         = previousPoint ? previousPoint["value"] : 0;
 
@@ -496,7 +496,6 @@
 
             document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
         }
-
 
         // Initialize.
         initializeView();
