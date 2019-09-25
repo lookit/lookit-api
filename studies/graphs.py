@@ -4,12 +4,10 @@ from functools import reduce
 
 import altair
 import pandas
-import panel
 from django_pandas.io import read_frame
 
 
 altair.renderers.enable("default")
-panel.extension("vega")
 pandas.set_option("display.max_columns", None)
 pandas.set_option("display.max_rows", None)
 
