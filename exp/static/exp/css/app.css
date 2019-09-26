@@ -744,3 +744,8 @@ label[for="gestational-age-include-na"] {
     margin-top: 10px;
 }
 
+#participant-plot-filter-panel .panel-body .form-control {
+    margin-bottom: 8px;
+    margin-left: 2px;
+}
+

@@ -4,10 +4,6 @@
 
 {% block head %}
     {{ block.super }}
-    <script src="https://cdn.jsdelivr.net/npm/vega@5.4.0/build/vega.min.js" integrity="sha256-PrkRj4B3I5V9yHBLdO3jyyqNUwSKS1CXXIh3VrnFPEU=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@3.4.0/build/vega-lite.min.js" integrity="sha256-ro+FWr16NboXJ5rSwInNli1P16ObUXnWUJMgKc8KnHI=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-embed@4.2.4/build/vega-embed.min.js" integrity="sha256-jS6iUok3H7bzAMWIQhal64FAcuO3/OILX5X5CghMmeA=" crossorigin="anonymous"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
 
     <link rel="stylesheet"
@@ -17,14 +13,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js" integrity="sha256-+9Mf3cAVmxxudDsr1XwXUeRZFtvdWVYdq5/vcgiYyNU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.css" integrity="sha256-H83YjkVzXEyHSdZ/5aVRoW2QfqeJ7gIWduA7aCy9tWY=" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>
-
+    <!-- Moment -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
     {# PivotTable.js #}
     <script src="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/pivot.min.js" integrity="sha256-/btBGbvOvx2h/NcXVS+JPFhnoUGbZXDX0O2v6AaABLU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css" integrity="sha256-nn3M6N8S2BjPirPhvCF61ZCcgcppdLtnaNOLhiwro7E=" crossorigin="anonymous" />
 
+    {# Google Charts (for PivotTable js rendering) #}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/gchart_renderers.min.js" integrity="sha256-Ve5qXDsBeNuaKKg22jpTMlWThC0OWupW9JtFrXxdy1Q=" crossorigin="anonymous"></script>
+
+    <!-- Datepicker -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+
     <script type="application/json" id="response-pivot-data">
         {% comment %}
             When we upgrade to django 2.x, please convert to json_script. Please see:
@@ -78,10 +81,12 @@
             <article class="col-xs-4">
                 <div id="participant-plot-filter-panel" class="panel panel-default">
                     <div class="panel-heading">
-                        <h4>Choose Plotlines</h4>
+                        <h4>Plotting Options</h4>
                     </div>
                     <div class="panel-body">
-                        <label class="control-label sr-only" for="timeseries-filter">Filter</label>
+                        <label class="control-label" for="date-filter">Date Range</label>
+                        <input id="date-filter" class="form-control input-sm" type="text"/>
+                        <label class="control-label" for="timeseries-filter">Counted Series</label>
                         <select id="timeseries-filter"
                                 class="selectpicker form-control"
                                 multiple>
@@ -133,8 +138,10 @@
                     </div>
                 </div>
             </article>
-            <article id="participation-detail-graph" class="col-xs-8"></article>
-            <article id="participation-overview-graph"></article>
+            <section class="col-xs-8">
+                <article id="binned-participation-plot"></article>
+                <article id="cumulative-participation-plot"></article>
+            </section>
 
         </section>
         <section id="registration-section" class="row">
@@ -235,21 +242,46 @@
     </div>
     {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
+        /* ------------------------- *
+         * ---- ELEMENT HANDLES ---- *
+         * ------------------------- */
         const $responsePivotElement = $("#responses-pivot"),
               $timeseriesFilter     = $("#timeseries-filter"),
+              $dateFilter           = $('#date-filter'),
               $timeseriesOptions    = $timeseriesFilter.find("option");
 
+        /* ------------------------- *
+         * ---- DATA CONTAINERS ---- *
+         * ------------------------- */
         const RESPONSE_PIVOT_DATA        = JSON.parse(document.querySelector("#response-pivot-data").innerText),
               CUMULATIVE_TIMESERIES_DATA = JSON.parse(document.querySelector("#cumulative-timeseries-data").innerText),
               DAILY_TIMESERIES_DATA      = JSON.parse(document.querySelector("#daily-timeseries-data").innerText);
 
-        const CUMULATIVE_TIMESERIES_CACHE = {},
-              BINNED_TIMESERIES_CACHE    = {},
-              LEGEND_LABEL_CACHE          = {};
-
-        // Need to actually have isoformatted dates as Date objects for PivotTable to bucket properly.
+        // Need to actually have Date objects for PivotTable and MetricsGraphics to work.
         CUMULATIVE_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
         DAILY_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
+
+        const CUMULATIVE_TIMESERIES_CACHE = {},
+              BINNED_TIMESERIES_CACHE     = {},
+              LEGEND_LABEL_CACHE          = {};
+
+
+        /* ----------------------- *
+         * ---- PLOT SETTINGS ---- *
+         * ----------------------- */
+        const DATE_FILTER_SETTINGS = {
+            ranges: {
+                'Today': [moment().startOf('day'), moment()],
+                'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Last Year': [moment().subtract(1, 'year'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            },
+            startDate: moment().subtract(1, 'year'),
+            endDate: moment(),
+        };
 
         const BASE_SELECT_SETTINGS = {
             width: '100%',
@@ -267,51 +299,53 @@
         );
 
         // Boot up plots with defaults.
-        const PARTICIPATION_DETAIL_PLOT = {
-            title: "Participant Detail Plot",
-            description: "Zoomable",
+        const CUMULATIVE_PARTICIPATION_PLOT = {
+            title: "Cumulative Participation",
+            description: "Plots cumulative participation data.",
             data: CUMULATIVE_TIMESERIES_DATA,
             top: 70,
-            // width: 600,
             full_width: true,
-            height: 400,
+            height: 200,
             right: 40,
-            // missing_is_hidden: true,
             interpolate: d3.curveStepAfter,
-            target: document.getElementById('participation-detail-graph'),
+            target: document.getElementById('cumulative-participation-plot'),
             x_accessor: 'date_of_response',
             y_accessor: ['total_cumulative_responses'],
             y_label: "Cumulative Responses",
             legend: ["Total Cumulative Responses"],
             legend_target: "#plot-legend",
-            area: false
+            area: false,  // Area doesn't work with multiple lines :(
         };
 
-        const PARTICIPATION_OVERVIEW_PLOT = {
-            title: "Drag Range to Zoom",
-            description: "Overview",
-            data: CUMULATIVE_TIMESERIES_DATA,
+        const BINNED_PARTICIPATION_PLOT = {
+            title: "Binned Participation",
+            description: "Plots participation data by day/week/month granularities",
+            data: getBinnedTimeseries(["ALL:any"], DATE_FILTER_SETTINGS.startDate, DATE_FILTER_SETTINGS.endDate),
+            chart_type: "histogram",
+            binned: true,
             top: 70,
             full_width: true,
-            // width: 600,
-            height: 160,
+            height: 300,
             right: 40,
+            y_label: "Daily Responses",
             // missing_is_hidden: true,
-            interpolate: d3.curveStepAfter,
-            target: document.getElementById('participation-overview-graph'),
-            brush: 'x',
-            x_axis: false,
-            y_axis: false,
-            zoom_target: PARTICIPATION_DETAIL_PLOT,
-            x_accessor: 'date_of_response',
-            y_accessor: ['total_cumulative_responses'],
-            showActivePoint: false,
-            area: false
+            target: document.getElementById('binned-participation-plot'),
         };
 
-        google.load("visualization", "1", {packages:["corechart", "charteditor"]});
+        const GLOBAL_QUERY_STATE = {
+            after: DATE_FILTER_SETTINGS.startDate,
+            before: DATE_FILTER_SETTINGS.endDate,
+            timeseriesHandles: ["ALL:any"],
+            ruling: "any",
+            studyId: null,
+            studyName: null,
+            legendLabels: ["Total Cumulative Responses"],
+        };
 
-        // Summary statistics
+
+        /* --------------------- *
+         * ---- PIVOT TABLE ---- *
+         * --------------------- */
         const pivotTableDerivers = $.pivotUtilities.derivers;
         const pivotAggregatorTemplates = $.pivotUtilities.aggregatorTemplates;
         const pivotTableRenderers = $.extend(
@@ -350,6 +384,39 @@
             }
         };
 
+
+        /* ---------------------- *
+         * ---- VIEW METHODS ---- *
+         * ---------------------- */
+        function initializeView() {
+            google.load("visualization", "1", {packages:["corechart", "charteditor"]});
+
+            $responsePivotElement
+                .pivotUI(
+                    RESPONSE_PIVOT_DATA,
+                    RESPONSE_PIVOT_OPTS
+                );
+
+            $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
+
+            MG.data_graphic(CUMULATIVE_PARTICIPATION_PLOT);
+            MG.data_graphic(BINNED_PARTICIPATION_PLOT);
+
+            $timeseriesFilter
+                .selectpicker(TIMESERIES_FILTER_SETTINGS)
+                .on('changed.bs.select', handleTimeSeriesFilter);
+
+            document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
+        }
+
+        /**
+         * Datepicker event handling function.
+         */
+        function handleDateFiltering(after, before) {
+            $.extend(GLOBAL_QUERY_STATE, {after, before});
+            regeneratePlots();
+        }
+
         /**
          * On selection, tries to see if the TS has already been generated.
          *
@@ -359,99 +426,147 @@
          * @param previousValue
          */
         function handleTimeSeriesFilter($jqEvent, clickedIndex, isSelected, previousValue) {
-            let timeseriesHandles  = $(this).val() || [],
-                selectedRuling     = $timeseriesOptions[clickedIndex],
-                optGroupForStudy   = selectedRuling.parentNode,
-                legendLabels       = [];
 
-            let [cumulativeSet, binnedSet] = getTimeseriesSets(
-                timeseriesHandles, selectedRuling, optGroupForStudy, legendLabels
+            let selectedRuling   = $timeseriesOptions[clickedIndex],
+                optGroupForStudy = selectedRuling.parentNode;
+
+            GLOBAL_QUERY_STATE.timeseriesHandles = $(this).val() || [];
+            GLOBAL_QUERY_STATE.ruling            = selectedRuling.dataset.ruling;
+            GLOBAL_QUERY_STATE.studyName         = optGroupForStudy.label;
+            GLOBAL_QUERY_STATE.studyId           = optGroupForStudy.dataset.studyId;
+            GLOBAL_QUERY_STATE.legendLabels      = [];
+
+            regeneratePlots();
+        }
+
+        function regeneratePlots() {
+            let {
+                after,
+                before,
+                timeseriesHandles,
+                ruling,
+                studyId,
+                studyName,
+                legendLabels,
+            } = GLOBAL_QUERY_STATE;
+            
+            // Set of linear series.
+            let cumulativeSet = getCumulativeTimeseriesSet(
+                timeseriesHandles, ruling, studyId, studyName, legendLabels, after, before
             );
 
-            // TODO: The first element check is kind of a hack right now, but I can't think of a better way to do it
-            //       at the moment.
-            drawTimeseriesPlots(cumulativeSet, binnedSet, legendLabels);
+            // Singular histogram series.
+            let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before);
+
+            drawTimeseriesPlots(cumulativeSet, binnedSeries, legendLabels);
         }
 
 
-        function getTimeseriesSets(timeseriesHandles, selectedRuling, optGroupForStudy, legendLabels) {
+        function getBinnedTimeseries(timeseriesHandles, start, end) {
+            let handle           = timeseriesHandles.sort().join('-'),
+                binnedSeries     = BINNED_TIMESERIES_CACHE[handle];
+
+            if (!binnedSeries) {
+                let idRulingPairs = timeseriesHandles.map(handle => handle.split(":"));
+                binnedSeries = BINNED_TIMESERIES_CACHE[handle] =
+                   generateBinnedTimeSeries(idRulingPairs, start, end);
+            }
+
+            binnedSeries = binnedSeries.filter(
+                observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
+            );
+
+            return binnedSeries;
+        }
+
+
+        /**
+         * Creates a list of lists, each inner list containing the datapoints for a cumulative time series.
+         *
+         * The data format of each observation is in the {data: xxxxxx, value: xxxxx} format that
+         * MetricsGraphics.js expects.
+         *
+         * @param timeseriesHandles
+         * @param ruling
+         * @param studyId
+         * @param studyName
+         * @param legendLabels
+         * @param start
+         * @param end
+         * @returns {*}
+         */
+        function getCumulativeTimeseriesSet(timeseriesHandles, ruling, studyId, studyName, legendLabels, start, end) {
             return timeseriesHandles.reduce(
-                ([cumulativeSet, binnedSet], handle) => {
+                (cumulativeSet, handle) => {
                     let cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle],
-                        binnedSeries     = BINNED_TIMESERIES_CACHE[handle],
-                        legendLabel      = LEGEND_LABEL_CACHE[handle],
-                        ruling           = selectedRuling.dataset.ruling;
+                        legendLabel      = LEGEND_LABEL_CACHE[handle];
                     if (!legendLabel) {
-                        legendLabel = LEGEND_LABEL_CACHE[handle] = `${optGroupForStudy.label} - ${ruling}`;
+                        legendLabel = LEGEND_LABEL_CACHE[handle] = `${studyName} - ${ruling}`;
                     }
                     if (!cumulativeSeries) {
                         cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle] =
                             generateCumulativeTimeSeries(
-                                optGroupForStudy.dataset.studyId,
-                                ruling
+                                studyId,
+                                ruling,
+                                start,
+                                end,
                             );
+                    }
 
-                    }
-                    if (!binnedSeries) {
-                        binnedSeries = BINNED_TIMESERIES_CACHE[handle] =
-                            generateBinnedTimeSeries(
-                                optGroupForStudy.dataset.studyId,
-                                ruling
-                            );
-                    }
+                    // Now filter based on date.
+                    cumulativeSeries = cumulativeSeries.filter(
+                        observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
+                    );
 
                     cumulativeSet.push(cumulativeSeries);
-                    binnedSet.push(binnedSeries);
                     // true if it's an "any ruling" for that study
                     legendLabels.push(legendLabel);
-                    return [cumulativeSet, binnedSet];
+                    return cumulativeSet;
                 },
-                [[], []] // timeseriesSet initializer
+                [] // timeseriesSet initializer
             );
         }
 
 
-        function drawTimeseriesPlots(cumulativeSet, binnedSet, legendLabels) {
-            if (cumulativeSet.length && cumulativeSet[0].length) {
+        function drawTimeseriesPlots(cumulativeSet, binnedSeries, legendLabels) {
+            if (cumulativeSet.length && binnedSeries.length) {
                 // Now fill with data, y_accessor, and legend, then draw.
                 let newPlotOptions = {
                     x_accessor: "date",
                     y_accessor: "value",
                 };
 
-                let detailPlotOpts = $.extend(
+
+                let cumulativePlotOpts = $.extend(
                     {},
-                    PARTICIPATION_DETAIL_PLOT,
+                    CUMULATIVE_PARTICIPATION_PLOT,
                     newPlotOptions,
                     {
-                        data: binnedSet,
-                        binned: true,
-                        chart_type: "histogram",
-                        legend: legendLabels
+                        data: cumulativeSet,
+                        legend: legendLabels,
                     }
                 );
 
                 // Don't understand what this does, but apparently have to do it:
                 // https://metricsgraphicsjs.org/examples.htm#updating
-                delete detailPlotOpts.xax_format;
+                delete cumulativePlotOpts.xax_format;
 
-                let overviewPlotOpts = $.extend(
+                let binnedPlotOpts = $.extend(
                     {},
-                    PARTICIPATION_OVERVIEW_PLOT,
+                    BINNED_PARTICIPATION_PLOT,
                     newPlotOptions,
                     {
-                        data: cumulativeSet,
-                        zoom_target: detailPlotOpts
+                        data: binnedSeries,
                     }
                 );
 
-                delete overviewPlotOpts.xax_format;
+                delete binnedPlotOpts.xax_format;
 
-                MG.data_graphic(detailPlotOpts);
-                MG.data_graphic(overviewPlotOpts);
+                MG.data_graphic(cumulativePlotOpts);
+                MG.data_graphic(binnedPlotOpts);
             } else {
-                MG.data_graphic(PARTICIPATION_DETAIL_PLOT);
-                MG.data_graphic(PARTICIPATION_OVERVIEW_PLOT);
+                MG.data_graphic(CUMULATIVE_PARTICIPATION_PLOT);
+                MG.data_graphic(BINNED_PARTICIPATION_PLOT);
             }
         }
 
@@ -501,36 +616,63 @@
             return aggField;
         }
 
-        function generateBinnedTimeSeries(studyId, consentRuling) {
+        function generateBinnedTimeSeries(idRulingPairs, interval="daily") {
             return DAILY_TIMESERIES_DATA.reduce(
-                (newSeries, responseDataPoint, currentIndex, sourceArray) => {
-                    if ((consentRuling === "any" || responseDataPoint["current_ruling"] === consentRuling)    &&
-                        (!studyId                || responseDataPoint["study__id"] === parseInt(studyId))) {
+                (newSeries, responseDataPoint) => {
+
+                    // Make sure we match criteria for at least one of the pairs.
+                    let dataPointIsValid = idRulingPairs.some(([studyId, consentRuling]) => {
+                        return ((consentRuling === "any" || responseDataPoint["current_ruling"] === consentRuling)    &&
+                                (studyId       === "ALL" || responseDataPoint["study__id"] === parseInt(studyId)))
+                    });
+
+                    if (dataPointIsValid) {
                         // If it matches the criteria, we add to the count.
                         let previousPoint = newSeries.slice(-1)[0];
-                        if (responsesHappenedOnSameDay(previousPoint, responseDataPoint)) {
+                        if (responsesHappenedInSameBin(previousPoint, responseDataPoint)) {
                             previousPoint["value"] += responseDataPoint["num_responses"];
                         } else {
+                            // First, backpropagate any missing days.
+                            let binningOffset = (24 * 3600000); // eventually replace with some function
+
+                            if (previousPoint) {
+                                while (!responsesHappenedInSameBin(previousPoint, responseDataPoint)) {
+
+                                    newSeries.push({
+                                        date: new Date(previousPoint["date"].getTime() + binningOffset),
+                                        value: 0
+                                    });
+                                    previousPoint = newSeries.slice(-1)[0];
+                                }
+                            }
                             newSeries.push({
                                 date: responseDataPoint["date_of_response"],
                                 value: responseDataPoint["num_responses"]
                             });
                         }
                     }
+                    //else {
+                    //    console.log("Invalid data point: ", responseDataPoint["current_ruling"], responseDataPoint["study__id"]);
+                    //}
                     return newSeries;
                 },
-                []
+                []  // newSeries initializer.
             )
         }
 
-        function responsesHappenedOnSameDay(lastInSeries, currentResponse) {
+
+        function responsesHappenedInSameBin(lastInSeries, currentResponse) {
             if (!lastInSeries || !currentResponse) return false;  // There's no first day to compare.
             let firstDate = lastInSeries["date"];
             let secondDate = currentResponse["date_of_response"];
+            return sameDay(firstDate, secondDate);
+        }
+
+        function sameDay(firstDate, secondDate) {
             return firstDate && secondDate &&
-                    firstDate.getFullYear() === secondDate.getFullYear() &&
-                    firstDate.getMonth() === secondDate.getMonth() &&
-                    firstDate.getDate() === secondDate.getDate();
+                firstDate.getFullYear() === secondDate.getFullYear() &&
+                firstDate.getMonth() === secondDate.getMonth() &&
+                firstDate.getDate() === secondDate.getDate();
         }
 
         function reloadPivot(event) {
@@ -550,24 +692,9 @@
             }
         }
 
-        function initializeView() {
-            $responsePivotElement
-                .pivotUI(
-                    RESPONSE_PIVOT_DATA,
-                    RESPONSE_PIVOT_OPTS
-                );
-
-            MG.data_graphic(PARTICIPATION_DETAIL_PLOT);
-            MG.data_graphic(PARTICIPATION_OVERVIEW_PLOT);
-
-            $timeseriesFilter
-            .selectpicker(TIMESERIES_FILTER_SETTINGS)
-            .on('changed.bs.select', handleTimeSeriesFilter);
-
-            document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
-        }
-
-        // Initialize.
+        /* ------------------------ *
+         * ---- INITIALIZATION ---- *
+         * ------------------------ */
         initializeView();
     </script>
 {% endblock %}
