@@ -422,7 +422,7 @@
 
             $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
 
-            initializeRegistrationPlots();
+            regenerateRegistrationPlots();
             regenerateParticipationPlots();
 
             $timeseriesFilter
@@ -432,7 +432,7 @@
             document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
         }
 
-        function initializeRegistrationPlots() {
+        function regenerateRegistrationPlots() {
             [cumulativeSeries, binnedSeries] = generateRegistrationTimeseries(RAW_REGISTRATION_DATA);
 
             MG.data_graphic(
@@ -457,7 +457,10 @@
         /**
          * It's already in just plain old dates, we just need to create two series (cumulative and daily).
          *
-         * This function will only run once.
+         * XXX: This is a very rough and un-DRY implementation that should be refactored at a later point.
+         * Namely, we're doing timeseries processing three different ways with three different data sets.
+         * It makes sense to consolidate when we get user feedback and can hone in on an appropriate
+         * data-processing strategy.
          */
         function generateRegistrationTimeseries(registrationData) {
             let binningOffset = (24 * 3600000); // eventually replace with some function
@@ -488,6 +491,7 @@
                             // Same day, so just add.
                             previousBinnedObservation.value += 1;
                         } else { // because it's sorted, we must be before, so create a bunch of same-value dummies
+                            // Backpropagation similar to how we do with response timeseries data.
                             while (!sameDay(previousBinnedObservation.date, observedDate)) {
                                 binnedSeries.push({
                                     date: new Date(previousBinnedObservation.date.getTime() + binningOffset),
