@@ -28,25 +28,17 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
 
+    {% comment %}
+        When we upgrade to django 2.x, please convert to the following insertions to json_script.
+        Please see: https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
+    {% endcomment %}
     <script type="application/json" id="response-pivot-data">
-        {% comment %}
-            When we upgrade to django 2.x, please convert to json_script. Please see:
-            https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
-        {% endcomment %}
         {{ response_pivot_data | safe }}
     </script>
     <script type="application/json" id="cumulative-timeseries-data">
-        {% comment %}
-            When we upgrade to django 2.x, please convert to json_script. Please see:
-            https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
-        {% endcomment %}
         {{ cumulative_timeseries_data | safe }}
     </script>
     <script type="application/json" id="daily-timeseries-data">
-        {% comment %}
-            When we upgrade to django 2.x, please convert to json_script. Please see:
-            https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
-        {% endcomment %}
         {{ daily_timeseries_data | safe }}
     </script>
     {{ form.media }}
@@ -77,7 +69,7 @@
             </section>
         </nav>
         <section id="participation-section" class="row">
-            <h3>Cumulative Participation</h3>
+            <h3>Participation</h3>
             <article class="col-xs-4">
                 <div id="participant-plot-filter-panel" class="panel panel-default">
                     <div class="panel-heading">
@@ -142,10 +134,13 @@
                 <article id="binned-participation-plot"></article>
                 <article id="cumulative-participation-plot"></article>
             </section>
-
         </section>
         <section id="registration-section" class="row">
-            <h3>Cumulative Registrations</h3>
+            <h3>Registrations</h3>
+            <section class="col-xs-8">
+                <article id="binned-registration-plot"></article>
+                <article id="cumulative-registration-plot"></article>
+            </section>
             <article id="registration-graph"></article>
         </section>
         <section id="summary-section" class="row">
@@ -332,7 +327,7 @@
             target: document.getElementById('binned-participation-plot'),
         };
 
-        const GLOBAL_QUERY_STATE = {
+        const GLOBAL_PARTICIPATION_QUERY_STATE = {
             after: DATE_FILTER_SETTINGS.startDate,
             before: DATE_FILTER_SETTINGS.endDate,
             timeseriesHandles: ["ALL:any"],
@@ -412,7 +407,7 @@
          * Datepicker event handling function.
          */
         function handleDateFiltering(after, before) {
-            $.extend(GLOBAL_QUERY_STATE, {after, before});
+            $.extend(GLOBAL_PARTICIPATION_QUERY_STATE, {after, before});
             regeneratePlots();
         }
 
@@ -430,7 +425,7 @@
                 optGroupForStudy = selectedRuling.parentNode;
 
             $.extend(
-                GLOBAL_QUERY_STATE,
+                GLOBAL_PARTICIPATION_QUERY_STATE,
                 {
                     timeseriesHandles: $(this).val() || [],
                     ruling: selectedRuling.dataset.ruling,
@@ -461,7 +456,7 @@
                 studyId,
                 studyName,
                 legendLabels,
-            } = GLOBAL_QUERY_STATE;
+            } = GLOBAL_PARTICIPATION_QUERY_STATE;
 
             // Set of linear series.
             let cumulativeSet = getCumulativeTimeseriesSet(

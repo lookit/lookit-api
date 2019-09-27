@@ -24,7 +24,6 @@ werkzeug = "==0.15.5"
 
 [packages]
 # This should map on EXACTLY to defaults.txt!!!
-altair = "==3.2.0"
 bcrypt = "==3.0.0"
 boto3 = "==1.4.5"
 celery = "==4.3.0"

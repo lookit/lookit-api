@@ -1,13 +1,8 @@
 """Graph facilities for the Analytics study view."""
-import datetime
-from functools import reduce
-
-import altair
 import pandas
 from django_pandas.io import read_frame
 
 
-altair.renderers.enable("default")
 pandas.set_option("display.max_columns", None)
 pandas.set_option("display.max_rows", None)
 
@@ -41,6 +36,9 @@ def get_response_timeseries_data(responses_queryset):
     Args:
         responses_queryset: The time series we're going to digest.
         study_names: The names of the studies we want.
+
+    Returns:
+        A tuple of JSON-formatted strings.
     """
     # Base dataframe must include data as datetime for proper sorting.
     base_dataframe = _get_base_responses_dataframe(responses_queryset)
@@ -80,17 +78,22 @@ def get_response_timeseries_data(responses_queryset):
     )
 
 
-def get_registration_graph(users_queryset):
+def get_registration_data(users_queryset):
     """Graphing the children and users?
 
     Args:
         participant_queryset: the queryset for a bunch of children.
 
     Returns:
-        An Altair Graph.
+        A JSON string.
     """
     registration_dataframe = get_users_dataframe(users_queryset)
-    return _get_user_registration_graph(registration_dataframe)
+
+    registration_dataframe["date_of_registration"] = registration_dataframe[
+        "date_created"
+    ].dt.date
+
+    return registration_dataframe.to_json(orient="records")
 
 
 def get_users_dataframe(users_queryset):
@@ -100,7 +103,7 @@ def get_users_dataframe(users_queryset):
         users_queryset: the queryset for families.
 
     Returns:
-        An Altair Graph.
+        A dataframe
     """
     users_dataframe = read_frame(
         users_queryset, fieldnames=("date_created",), index_col="uuid"
@@ -109,38 +112,3 @@ def get_users_dataframe(users_queryset):
     users_dataframe["cumulative_count"] = range(1, len(users_dataframe) + 1)
 
     return users_dataframe
-
-
-def _get_user_registration_graph(users_dataframe):
-    base_chart = (
-        altair.Chart(users_dataframe)
-        .mark_area(interpolate="step-after", line=True)
-        .properties(width=600, height=200)
-        .encode(
-            x=altair.X(
-                "date_created:T",
-                title="Date of Response",
-                axis=altair.Axis(format="%b. %d, %Y", labelAngle=-45),
-            ),
-            y=altair.Y(f"cumulative_count:Q", title=f"User Count"),
-            tooltip="cumulative_count",
-        )
-    )
-
-    return base_chart
-
-
-def _get_children_dataframe(children_queryset):
-    """
-
-    Args:
-        families_queryset: the queryset for families.
-
-    Returns:
-        An Altair Graph.
-    """
-    return read_frame(
-        children_queryset,
-        fieldnames=("user__date_created", "gestational_age_at_birth"),
-        index_col="uuid",
-    )

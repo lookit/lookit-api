@@ -28,7 +28,7 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.fields import CONDITIONS, LANGUAGES
 from studies.forms import StudyEditForm, StudyForm
-from studies.graphs import get_registration_graph, get_response_timeseries_data
+from studies.graphs import get_registration_data, get_response_timeseries_data
 from studies.helpers import send_mail
 from studies.models import Feedback, Study, StudyLog, StudyType
 from studies.queries import get_annotated_responses_qs, get_study_list_qs
@@ -1285,9 +1285,7 @@ class StudyParticipantAnalyticsView(
         ctx["cumulative_timeseries_data"] = cumulative
         ctx["daily_timeseries_data"] = daily
 
-        ctx["registration_graph_spec"] = json.dumps(
-            get_registration_graph(parents).to_dict()
-        )
+        ctx["registration_graph_spec"] = get_registration_data(parents)
 
         children_queryset = Child.objects.filter(
             id__in=annotated_responses.values_list("child", flat=True).distinct()
