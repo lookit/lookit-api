@@ -41,6 +41,9 @@
     <script type="application/json" id="daily-timeseries-data">
         {{ daily_timeseries_data | safe }}
     </script>
+    <script type="application/json" id="registration-data">
+        {{ registration_data | safe }}
+    </script>
     {{ form.media }}
 {% endblock %}
 
@@ -137,11 +140,8 @@
         </section>
         <section id="registration-section" class="row">
             <h3>Registrations</h3>
-            <section class="col-xs-8">
-                <article id="binned-registration-plot"></article>
-                <article id="cumulative-registration-plot"></article>
-            </section>
-            <article id="registration-graph"></article>
+            <article id="binned-registration-plot"></article>
+            <article id="cumulative-registration-plot"></article>
         </section>
         <section id="summary-section" class="row">
             <h3>Summary Statistics</h3>
@@ -250,7 +250,8 @@
          * ------------------------- */
         const RESPONSE_PIVOT_DATA        = JSON.parse(document.querySelector("#response-pivot-data").innerText),
               CUMULATIVE_TIMESERIES_DATA = JSON.parse(document.querySelector("#cumulative-timeseries-data").innerText),
-              DAILY_TIMESERIES_DATA      = JSON.parse(document.querySelector("#daily-timeseries-data").innerText);
+              DAILY_TIMESERIES_DATA      = JSON.parse(document.querySelector("#daily-timeseries-data").innerText),
+              RAW_REGISTRATION_DATA      = JSON.parse(document.querySelector("#registration-data").innerText);
 
         // Need to actually have Date objects for PivotTable and MetricsGraphics to work.
         CUMULATIVE_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
@@ -259,7 +260,6 @@
         const CUMULATIVE_TIMESERIES_CACHE = {},
               BINNED_TIMESERIES_CACHE     = {},
               LEGEND_LABEL_CACHE          = {};
-
 
         /* ----------------------- *
          * ---- PLOT SETTINGS ---- *
@@ -325,6 +325,34 @@
             y_label: "Daily Responses",
             // missing_is_hidden: true,
             target: document.getElementById('binned-participation-plot'),
+        };
+
+        const CUMULATIVE_REGISTRATION_PLOT = {
+            title: "Cumulative Registration",
+            description: "Plots cumulative registration data.",
+            data: null,  // Initialize in view init
+            top: 70,
+            full_width: true,
+            height: 300,
+            interpolate: d3.curveStepAfter,
+            target: document.getElementById('cumulative-registration-plot'),
+            y_label: "Cumulative Registrations",
+            brush: "x",
+            area: true,
+        };
+
+        const BINNED_REGISTRATION_PLOT = {
+            title: "Binned Registration",
+            description: "Plots daily registrations.",
+            data: null,  // Initialize in view init
+            chart_type: "histogram",
+            binned: true,
+            top: 70,
+            full_width: true,
+            height: 300,
+            y_label: "Daily Registrations",
+            // missing_is_hidden: true,
+            target: document.getElementById('binned-registration-plot'),
         };
 
         const GLOBAL_PARTICIPATION_QUERY_STATE = {
@@ -394,7 +422,8 @@
 
             $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
 
-            regeneratePlots();
+            initializeRegistrationPlots();
+            regenerateParticipationPlots();
 
             $timeseriesFilter
                 .selectpicker(TIMESERIES_FILTER_SETTINGS)
@@ -403,12 +432,94 @@
             document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
         }
 
+        function initializeRegistrationPlots() {
+            [cumulativeSeries, binnedSeries] = generateRegistrationTimeseries(RAW_REGISTRATION_DATA);
+
+            MG.data_graphic(
+                $.extend(
+                    BINNED_REGISTRATION_PLOT,
+                    {
+                        data: binnedSeries,
+                    }
+                )
+            );
+
+            MG.data_graphic(
+                $.extend(
+                    CUMULATIVE_REGISTRATION_PLOT,
+                    {
+                        data: cumulativeSeries,
+                    }
+                )
+            );
+        }
+
+        /**
+         * It's already in just plain old dates, we just need to create two series (cumulative and daily).
+         *
+         * This function will only run once.
+         */
+        function generateRegistrationTimeseries(registrationData) {
+            let binningOffset = (24 * 3600000); // eventually replace with some function
+
+            return registrationData.reduce(
+                ([cumulativeSeries, binnedSeries], timestamp) => {
+                    // Round down for binning.
+                    let observedDate = moment(timestamp).startOf("day").toDate();
+
+                    let previousCumulativeObservation = cumulativeSeries.slice(-1)[0];
+
+                    if (!previousCumulativeObservation) {  // First observation.
+                        cumulativeSeries.push({
+                            date: observedDate,
+                            value: 1
+                        });
+                    } else {
+                        cumulativeSeries.push({
+                            date: observedDate,
+                            value: previousCumulativeObservation.value + 1
+                        });
+                    }
+
+                    let previousBinnedObservation = binnedSeries.slice(-1)[0];
+
+                    if (previousBinnedObservation) {
+                        if (sameDay(observedDate, previousBinnedObservation.date)) {
+                            // Same day, so just add.
+                            previousBinnedObservation.value += 1;
+                        } else { // because it's sorted, we must be before, so create a bunch of same-value dummies
+                            while (!sameDay(previousBinnedObservation.date, observedDate)) {
+                                binnedSeries.push({
+                                    date: new Date(previousBinnedObservation.date.getTime() + binningOffset),
+                                    value: 0
+                                });
+                                previousBinnedObservation = binnedSeries.slice(-1)[0];
+                            }
+                            binnedSeries.push({
+                                date: observedDate,
+                                value: 1,
+                            });
+                        }
+                    } else {
+                        binnedSeries.push({
+                            date: observedDate,
+                            value: 1,
+                        });
+                    }
+
+                    return [cumulativeSeries, binnedSeries];
+                },
+                [[],[]]
+            );
+        }
+
+
         /**
          * Datepicker event handling function.
          */
         function handleDateFiltering(after, before) {
             $.extend(GLOBAL_PARTICIPATION_QUERY_STATE, {after, before});
-            regeneratePlots();
+            regenerateParticipationPlots();
         }
 
         /**
@@ -435,7 +546,7 @@
                 }
             );
 
-            regeneratePlots();
+            regenerateParticipationPlots();
         }
 
         /**
@@ -447,7 +558,7 @@
          * function and reliance on module-wide state, while hard to test, is fairly easy to
          * understand and debug for such a small number of knobs to tweak.
          */
-        function regeneratePlots() {
+        function regenerateParticipationPlots() {
             let {
                 after,
                 before,

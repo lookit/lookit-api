@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Q, Prefetch
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -30,7 +31,7 @@ from studies.fields import CONDITIONS, LANGUAGES
 from studies.forms import StudyEditForm, StudyForm
 from studies.graphs import get_registration_data, get_response_timeseries_data
 from studies.helpers import send_mail
-from studies.models import Feedback, Study, StudyLog, StudyType
+from studies.models import Feedback, Response, Study, StudyLog, StudyType
 from studies.queries import get_annotated_responses_qs, get_study_list_qs
 from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy
 from studies.workflow import (
@@ -1271,10 +1272,12 @@ class StudyParticipantAnalyticsView(
         for resp in annotated_responses:
             studies_for_child[resp.child.id].add(resp.study.name)
 
-        # Use the responses to seed the rest of the querysets
-        parents = User.objects.filter(
-            id__in=annotated_responses.values_list("child__user", flat=True).distinct()
-        )
+        # Users for _any_ response associated with a study that we can see.
+        registrations = User.objects.filter(
+            id__in=Response.objects.filter(study__in=studies_for_orgs)
+            .values_list("child__user", flat=True)
+            .distinct()
+        ).values_list("date_created", flat=True)
 
         # Now populate actual graph specs using helpers.
         ctx = super().get_context_data(**kwargs)
@@ -1285,7 +1288,9 @@ class StudyParticipantAnalyticsView(
         ctx["cumulative_timeseries_data"] = cumulative
         ctx["daily_timeseries_data"] = daily
 
-        ctx["registration_graph_spec"] = get_registration_data(parents)
+        ctx["registration_data"] = json.dumps(
+            list(registrations), cls=DjangoJSONEncoder
+        )
 
         children_queryset = Child.objects.filter(
             id__in=annotated_responses.values_list("child", flat=True).distinct()

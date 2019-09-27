@@ -82,7 +82,7 @@ def get_registration_data(users_queryset):
     """Graphing the children and users?
 
     Args:
-        participant_queryset: the queryset for a bunch of children.
+        participant_queryset: the queryset for a bunch of parents.
 
     Returns:
         A JSON string.
