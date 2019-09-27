@@ -302,7 +302,7 @@
         const CUMULATIVE_PARTICIPATION_PLOT = {
             title: "Cumulative Participation",
             description: "Plots cumulative participation data.",
-            data: CUMULATIVE_TIMESERIES_DATA,
+            data: null,
             top: 70,
             full_width: true,
             height: 200,
@@ -320,7 +320,7 @@
         const BINNED_PARTICIPATION_PLOT = {
             title: "Binned Participation",
             description: "Plots participation data by day/week/month granularities",
-            data: getBinnedTimeseries(["ALL:any"], DATE_FILTER_SETTINGS.startDate, DATE_FILTER_SETTINGS.endDate),
+            data: null, //getBinnedTimeseries(["ALL:any"], DATE_FILTER_SETTINGS.startDate, DATE_FILTER_SETTINGS.endDate),
             chart_type: "histogram",
             binned: true,
             top: 70,
@@ -399,8 +399,7 @@
 
             $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
 
-            MG.data_graphic(CUMULATIVE_PARTICIPATION_PLOT);
-            MG.data_graphic(BINNED_PARTICIPATION_PLOT);
+            regeneratePlots();
 
             $timeseriesFilter
                 .selectpicker(TIMESERIES_FILTER_SETTINGS)
@@ -430,11 +429,16 @@
             let selectedRuling   = $timeseriesOptions[clickedIndex],
                 optGroupForStudy = selectedRuling.parentNode;
 
-            GLOBAL_QUERY_STATE.timeseriesHandles = $(this).val() || [];
-            GLOBAL_QUERY_STATE.ruling            = selectedRuling.dataset.ruling;
-            GLOBAL_QUERY_STATE.studyName         = optGroupForStudy.label;
-            GLOBAL_QUERY_STATE.studyId           = optGroupForStudy.dataset.studyId;
-            GLOBAL_QUERY_STATE.legendLabels      = [];
+            $.extend(
+                GLOBAL_QUERY_STATE,
+                {
+                    timeseriesHandles: $(this).val() || [],
+                    ruling: selectedRuling.dataset.ruling,
+                    studyName: optGroupForStudy.label,
+                    studyId: optGroupForStudy.dataset.studyId,
+                    legendLabels: []
+                }
+            );
 
             regeneratePlots();
         }
@@ -449,7 +453,7 @@
                 studyName,
                 legendLabels,
             } = GLOBAL_QUERY_STATE;
-            
+
             // Set of linear series.
             let cumulativeSet = getCumulativeTimeseriesSet(
                 timeseriesHandles, ruling, studyId, studyName, legendLabels, after, before
@@ -529,45 +533,42 @@
 
 
         function drawTimeseriesPlots(cumulativeSet, binnedSeries, legendLabels) {
-            if (cumulativeSet.length && binnedSeries.length) {
-                // Now fill with data, y_accessor, and legend, then draw.
-                let newPlotOptions = {
-                    x_accessor: "date",
-                    y_accessor: "value",
-                };
+            // Now fill with data, y_accessor, and legend, then draw.
+            let newPlotOptions = {
+                x_accessor: "date",
+                y_accessor: "value",
+            };
 
 
-                let cumulativePlotOpts = $.extend(
-                    {},
-                    CUMULATIVE_PARTICIPATION_PLOT,
-                    newPlotOptions,
-                    {
-                        data: cumulativeSet,
-                        legend: legendLabels,
-                    }
-                );
+            let cumulativePlotOpts = $.extend(
+                {},
+                CUMULATIVE_PARTICIPATION_PLOT,
+                newPlotOptions,
+                {
+                    data: cumulativeSet,
+                    legend: legendLabels,
+                    chart_type: cumulativeSet.length && cumulativeSet[0].length ? "line" : "missing-data"
+                }
+            );
 
-                // Don't understand what this does, but apparently have to do it:
-                // https://metricsgraphicsjs.org/examples.htm#updating
-                delete cumulativePlotOpts.xax_format;
+            // Don't understand what this does, but apparently have to do it:
+            // https://metricsgraphicsjs.org/examples.htm#updating
+            delete cumulativePlotOpts.xax_format;
 
-                let binnedPlotOpts = $.extend(
-                    {},
-                    BINNED_PARTICIPATION_PLOT,
-                    newPlotOptions,
-                    {
-                        data: binnedSeries,
-                    }
-                );
+            let binnedPlotOpts = $.extend(
+                {},
+                BINNED_PARTICIPATION_PLOT,
+                newPlotOptions,
+                {
+                    data: binnedSeries,
+                    chart_type: binnedSeries.length ? "histogram" : "missing-data"
+                }
+            );
 
-                delete binnedPlotOpts.xax_format;
+            delete binnedPlotOpts.xax_format;
 
-                MG.data_graphic(cumulativePlotOpts);
-                MG.data_graphic(binnedPlotOpts);
-            } else {
-                MG.data_graphic(CUMULATIVE_PARTICIPATION_PLOT);
-                MG.data_graphic(BINNED_PARTICIPATION_PLOT);
-            }
+            MG.data_graphic(cumulativePlotOpts);
+            MG.data_graphic(binnedPlotOpts);
         }
 
         function generateCumulativeTimeSeries(studyId, consentRuling) {
@@ -651,9 +652,6 @@
                             });
                         }
                     }
-                    //else {
-                    //    console.log("Invalid data point: ", responseDataPoint["current_ruling"], responseDataPoint["study__id"]);
-                    //}
                     return newSeries;
                 },
                 []  // newSeries initializer.
