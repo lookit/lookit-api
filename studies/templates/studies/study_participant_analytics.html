@@ -12,7 +12,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js" integrity="sha256-+9Mf3cAVmxxudDsr1XwXUeRZFtvdWVYdq5/vcgiYyNU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.css" integrity="sha256-H83YjkVzXEyHSdZ/5aVRoW2QfqeJ7gIWduA7aCy9tWY=" crossorigin="anonymous" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>#}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.js" integrity="sha256-XevW8oTz1EmE00mqCsOAyUv07/6MrJ0mEQtHH8V9UZ0=" crossorigin="anonymous"></script>
     <!-- Moment -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
@@ -81,6 +82,12 @@
                     <div class="panel-body">
                         <label class="control-label" for="date-filter">Date Range</label>
                         <input id="date-filter" class="form-control input-sm" type="text"/>
+                        <label class="control-label" for="granularity-specifier">Bin Granularity</label>
+                        <select id="granularity-specifier" class="selectpicker form-control">
+                            <option value="day">Day</option>
+                            <option value="week">Week</option>
+                            <option value="month">Month</option>
+                        </select>
                         <label class="control-label" for="timeseries-filter">Counted Series</label>
                         <select id="timeseries-filter"
                                 class="selectpicker form-control"
@@ -137,10 +144,7 @@
                 <article id="binned-participation-plot"></article>
                 <article id="cumulative-participation-plot"></article>
             </section>
-        </section>
-        <section id="registration-section" class="row">
-            <h3>Registrations</h3>
-            <article id="binned-registration-plot"></article>
+        <article id="binned-registration-plot"></article>
             <article id="cumulative-registration-plot"></article>
         </section>
         <section id="summary-section" class="row">
@@ -243,7 +247,8 @@
         const $responsePivotElement = $("#responses-pivot"),
               $timeseriesFilter     = $("#timeseries-filter"),
               $dateFilter           = $('#date-filter'),
-              $timeseriesOptions    = $timeseriesFilter.find("option");
+              $timeseriesOptions    = $timeseriesFilter.find("option"),
+              $granularitySpecifier = $("#granularity-specifier");
 
         /* ------------------------- *
          * ---- DATA CONTAINERS ---- *
@@ -337,13 +342,12 @@
             interpolate: d3.curveStepAfter,
             target: document.getElementById('cumulative-registration-plot'),
             y_label: "Cumulative Registrations",
-            brush: "x",
             area: true,
         };
 
         const BINNED_REGISTRATION_PLOT = {
             title: "Binned Registration",
-            description: "Plots daily registrations.",
+            description: "Plots registrations binned by day/month/week.",
             data: null,  // Initialize in view init
             chart_type: "histogram",
             binned: true,
@@ -363,6 +367,7 @@
             studyId: null,
             studyName: null,
             legendLabels: ["Total Cumulative Responses"],
+            interval: "day",
         };
 
 
@@ -429,26 +434,48 @@
                 .selectpicker(TIMESERIES_FILTER_SETTINGS)
                 .on('changed.bs.select', handleTimeSeriesFilter);
 
+            $granularitySpecifier
+                .selectpicker()
+                .on('changed.bs.select', handleGranularityChange);
+
             document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
         }
 
         function regenerateRegistrationPlots() {
-            [cumulativeSeries, binnedSeries] = generateRegistrationTimeseries(RAW_REGISTRATION_DATA);
+            let {after: start, before: end, interval} = GLOBAL_PARTICIPATION_QUERY_STATE;
 
+            let [cumulativeSeries, binnedSeries] = generateRegistrationTimeseries(interval);
+
+            // Capturing some of the get() behavior here since we're not
+            cumulativeSeries = cumulativeSeries.filter(
+                observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
+            );
+
+            binnedSeries = binnedSeries.filter(
+                observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
+            );
+
+            delete BINNED_REGISTRATION_PLOT.xax_format;
             MG.data_graphic(
                 $.extend(
                     BINNED_REGISTRATION_PLOT,
                     {
                         data: binnedSeries,
+                        chart_type: binnedSeries.length ? "histogram" : "missing-data",
+                        // TODO: figure out why x_accessor and y_accessor get overridden on 2nd render
+                        x_accessor: "date",
+                        y_accessor: "value"
                     }
                 )
             );
 
+            delete CUMULATIVE_REGISTRATION_PLOT.xax_format;
             MG.data_graphic(
                 $.extend(
                     CUMULATIVE_REGISTRATION_PLOT,
                     {
                         data: cumulativeSeries,
+                        chart_type: cumulativeSeries.length ? "line" : "missing-data"
                     }
                 )
             );
@@ -462,12 +489,12 @@
          * It makes sense to consolidate when we get user feedback and can hone in on an appropriate
          * data-processing strategy.
          */
-        function generateRegistrationTimeseries(registrationData) {
-            let binningOffset = (24 * 3600000); // eventually replace with some function
+        function generateRegistrationTimeseries(interval="day") {
+            // let binningOffset = (24 * 3600000); // eventually replace with some function
 
-            return registrationData.reduce(
+            return RAW_REGISTRATION_DATA.reduce(
                 ([cumulativeSeries, binnedSeries], timestamp) => {
-                    // Round down for binning.
+                    // We do not bin for cumulative timeseries.
                     let observedDate = moment(timestamp).startOf("day").toDate();
 
                     let previousCumulativeObservation = cumulativeSeries.slice(-1)[0];
@@ -487,14 +514,14 @@
                     let previousBinnedObservation = binnedSeries.slice(-1)[0];
 
                     if (previousBinnedObservation) {
-                        if (sameDay(observedDate, previousBinnedObservation.date)) {
+                        if (moment(observedDate).isSame(previousBinnedObservation.date, interval)) {
                             // Same day, so just add.
                             previousBinnedObservation.value += 1;
                         } else { // because it's sorted, we must be before, so create a bunch of same-value dummies
                             // Backpropagation similar to how we do with response timeseries data.
-                            while (!sameDay(previousBinnedObservation.date, observedDate)) {
+                            while (!moment(observedDate).isSame(previousBinnedObservation.date, interval)) {
                                 binnedSeries.push({
-                                    date: new Date(previousBinnedObservation.date.getTime() + binningOffset),
+                                    date: moment(previousBinnedObservation["date"]).add(1, interval).startOf(interval).toDate(),
                                     value: 0
                                 });
                                 previousBinnedObservation = binnedSeries.slice(-1)[0];
@@ -517,13 +544,27 @@
             );
         }
 
-
         /**
          * Datepicker event handling function.
          */
         function handleDateFiltering(after, before) {
             $.extend(GLOBAL_PARTICIPATION_QUERY_STATE, {after, before});
             regenerateParticipationPlots();
+            regenerateRegistrationPlots();
+        }
+
+        /**
+         * On selection, changes
+         *
+         * @param $jqEvent
+         * @param clickedIndex
+         * @param isSelected
+         * @param previousValue
+         */
+        function handleGranularityChange($jqEvent, clickedIndex, isSelected, previousValue) {
+            GLOBAL_PARTICIPATION_QUERY_STATE.interval = $(this).val();
+            regenerateParticipationPlots();
+            regenerateRegistrationPlots();
         }
 
         /**
@@ -571,6 +612,7 @@
                 studyId,
                 studyName,
                 legendLabels,
+                interval,
             } = GLOBAL_PARTICIPATION_QUERY_STATE;
 
             // Set of linear series.
@@ -579,20 +621,20 @@
             );
 
             // Singular histogram series.
-            let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before);
+            let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before, interval);
 
             drawTimeseriesPlots(cumulativeSet, binnedSeries, legendLabels);
         }
 
 
-        function getBinnedTimeseries(timeseriesHandles, start, end) {
-            let handle           = timeseriesHandles.sort().join('-'),
+        function getBinnedTimeseries(timeseriesHandles, start, end, interval) {
+            let handle           = timeseriesHandles.sort().join('-') + interval,
                 binnedSeries     = BINNED_TIMESERIES_CACHE[handle];
 
             if (!binnedSeries) {
                 let idRulingPairs = timeseriesHandles.map(handle => handle.split(":"));
                 binnedSeries = BINNED_TIMESERIES_CACHE[handle] =
-                   generateBinnedTimeSeries(idRulingPairs, start, end);
+                   generateBinnedTimeSeries(idRulingPairs, interval);
             }
 
             binnedSeries = binnedSeries.filter(
@@ -631,8 +673,6 @@
                             generateCumulativeTimeSeries(
                                 studyId,
                                 ruling,
-                                start,
-                                end,
                             );
                     }
 
@@ -736,7 +776,7 @@
             return aggField;
         }
 
-        function generateBinnedTimeSeries(idRulingPairs, interval="daily") {
+        function generateBinnedTimeSeries(idRulingPairs, interval="day") {
             return DAILY_TIMESERIES_DATA.reduce(
                 (newSeries, responseDataPoint) => {
 
@@ -749,24 +789,22 @@
                     if (dataPointIsValid) {
                         // If it matches the criteria, we add to the count.
                         let previousPoint = newSeries.slice(-1)[0];
-                        if (responsesHappenedInSameBin(previousPoint, responseDataPoint)) {
+                        if (responsesHappenedInSameBin(previousPoint, responseDataPoint, interval)) {
                             previousPoint["value"] += responseDataPoint["num_responses"];
                         } else {
                             // First, backpropagate any missing days.
-                            let binningOffset = (24 * 3600000); // eventually replace with some function
-
                             if (previousPoint) {
-                                while (!responsesHappenedInSameBin(previousPoint, responseDataPoint)) {
-
+                                while (!responsesHappenedInSameBin(previousPoint, responseDataPoint, interval)) {
+                                    // insert null point.
                                     newSeries.push({
-                                        date: new Date(previousPoint["date"].getTime() + binningOffset),
+                                        date: moment(previousPoint["date"]).add(1, interval).startOf(interval).toDate(),  // new Date(previousPoint["date"].getTime() + binningOffset)
                                         value: 0
                                     });
                                     previousPoint = newSeries.slice(-1)[0];
                                 }
-                            }
+                            } // insert brand new point
                             newSeries.push({
-                                date: responseDataPoint["date_of_response"],
+                                date: moment(responseDataPoint["date_of_response"]).startOf(interval).toDate(),
                                 value: responseDataPoint["num_responses"]
                             });
                         }
@@ -778,11 +816,11 @@
         }
 
 
-        function responsesHappenedInSameBin(lastInSeries, currentResponse) {
+        function responsesHappenedInSameBin(lastInSeries, currentResponse, bin) {
             if (!lastInSeries || !currentResponse) return false;  // There's no first day to compare.
             let firstDate = lastInSeries["date"];
             let secondDate = currentResponse["date_of_response"];
-            return sameDay(firstDate, secondDate);
+            return moment(firstDate).isSame(secondDate, bin);
         }
 
         function sameDay(firstDate, secondDate) {
