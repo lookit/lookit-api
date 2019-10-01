@@ -1284,18 +1284,14 @@ class StudyParticipantAnalyticsView(
 
         ctx["all_studies"] = studies_for_orgs
 
-        cumulative, daily = get_response_timeseries_data(annotated_responses)
-        ctx["cumulative_timeseries_data"] = cumulative
-        ctx["daily_timeseries_data"] = daily
-
         ctx["registration_data"] = json.dumps(
             list(registrations), cls=DjangoJSONEncoder
         )
 
+        # To get pivot data, we have to load the json object with requisite
         children_queryset = Child.objects.filter(
             id__in=annotated_responses.values_list("child", flat=True).distinct()
         )
-
         children_pivot_data = unstack_children(children_queryset, studies_for_child)
 
         flattened_responses = get_flattened_responses(
@@ -1329,6 +1325,7 @@ def get_flattened_responses(response_qs, studies_for_child):
         child_age_in_days = (datetime.date.today() - resp.child.birthday).days
         response_data.append(
             {
+                "Response (unique identifier)": resp.uuid,
                 "Child (unique identifier)": resp.child.uuid,
                 "Child Age in Days": child_age_in_days,
                 "Child Age in Months": round(child_age_in_days / 30, 2),
@@ -1343,6 +1340,7 @@ def get_flattened_responses(response_qs, studies_for_child):
                 ),
                 "Child # Studies Participated": len(studies_for_child[resp.child_id]),
                 "Study": resp.study.name,
+                "Study ID": resp.study.id,  # TODO: change this to use UUID
                 "Family (unique identifier)": resp.child.user.uuid,
                 "Family # of Children": resp.demographic_snapshot.number_of_children,
                 "Family Race/Ethnicity": resp.demographic_snapshot.race_identification,

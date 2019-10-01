@@ -12,8 +12,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js" integrity="sha256-+9Mf3cAVmxxudDsr1XwXUeRZFtvdWVYdq5/vcgiYyNU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.css" integrity="sha256-H83YjkVzXEyHSdZ/5aVRoW2QfqeJ7gIWduA7aCy9tWY=" crossorigin="anonymous" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>
-{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.js" integrity="sha256-XevW8oTz1EmE00mqCsOAyUv07/6MrJ0mEQtHH8V9UZ0=" crossorigin="anonymous"></script>#}
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>#}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.js" integrity="sha256-XevW8oTz1EmE00mqCsOAyUv07/6MrJ0mEQtHH8V9UZ0=" crossorigin="anonymous"></script>
     <!-- Moment -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
@@ -35,12 +35,6 @@
     {% endcomment %}
     <script type="application/json" id="response-pivot-data">
         {{ response_pivot_data | safe }}
-    </script>
-    <script type="application/json" id="cumulative-timeseries-data">
-        {{ cumulative_timeseries_data | safe }}
-    </script>
-    <script type="application/json" id="daily-timeseries-data">
-        {{ daily_timeseries_data | safe }}
     </script>
     <script type="application/json" id="registration-data">
         {{ registration_data | safe }}
@@ -73,7 +67,7 @@
             </section>
         </nav>
         <section id="participation-section" class="row">
-            <h3>Participation</h3>
+            <h3>Participation and Registration</h3>
             <article class="col-xs-4">
                 <div id="participant-plot-filter-panel" class="panel panel-default">
                     <div class="panel-heading">
@@ -82,6 +76,12 @@
                     <div class="panel-body">
                         <label class="control-label" for="date-filter">Date Range</label>
                         <input id="date-filter" class="form-control input-sm" type="text"/>
+                        <table id="total-counts" class="table table-condensed">
+                            <tr>
+                                <td>Total # Registrations</td>
+                                <td id="total-count-registrations"></td>
+                            </tr>
+                        </table>
                         <label class="control-label" for="granularity-specifier">Bin Granularity</label>
                         <select id="granularity-specifier" class="selectpicker form-control">
                             <option value="day">Day</option>
@@ -135,7 +135,8 @@
                                 </optgroup>
                             {% endfor %}
                         </select>
-                    <h5>Legend</h5>
+
+                        <h5>Legend</h5>
                         <section id="plot-legend" class="small"></section>
                     </div>
                 </div>
@@ -254,13 +255,8 @@
          * ---- DATA CONTAINERS ---- *
          * ------------------------- */
         const RESPONSE_PIVOT_DATA        = JSON.parse(document.querySelector("#response-pivot-data").innerText),
-              CUMULATIVE_TIMESERIES_DATA = JSON.parse(document.querySelector("#cumulative-timeseries-data").innerText),
-              DAILY_TIMESERIES_DATA      = JSON.parse(document.querySelector("#daily-timeseries-data").innerText),
               RAW_REGISTRATION_DATA      = JSON.parse(document.querySelector("#registration-data").innerText);
 
-        // Need to actually have Date objects for PivotTable and MetricsGraphics to work.
-        CUMULATIVE_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
-        DAILY_TIMESERIES_DATA.forEach(record => record['date_of_response'] = new Date(record["date_of_response"]));
 
         const CUMULATIVE_TIMESERIES_CACHE = {},
               BINNED_TIMESERIES_CACHE     = {},
@@ -309,10 +305,8 @@
             right: 40,
             interpolate: d3.curveStepAfter,
             target: document.getElementById('cumulative-participation-plot'),
-            x_accessor: 'date_of_response',
-            y_accessor: ['total_cumulative_responses'],
             y_label: "Cumulative Responses",
-            legend: ["Total Cumulative Responses"],
+            legend: [],
             legend_target: "#plot-legend",
             area: false,  // Area doesn't work with multiple lines :(
         };
@@ -366,7 +360,7 @@
             ruling: "any",
             studyId: null,
             studyName: null,
-            legendLabels: ["Total Cumulative Responses"],
+            legendLabels: [],
             interval: "day",
         };
 
@@ -401,7 +395,13 @@
                 "Average Child Age (years)": () => pivotAggregatorTemplates.average()(["Child Age in Years"]),
                 "Average Annual Income": () => pivotAggregatorTemplates.average()(["Family Annual Income"]),
             },
-            hiddenFromDragDrop: ["Time of Response", "Child (unique identifier)", "Family (unique identifier)"],
+            hiddenFromDragDrop: [
+                "Time of Response",
+                "Response (unique identifier)",
+                "Child (unique identifier)",
+                "Family (unique identifier)",
+                "Study ID"
+            ],
             rendererOptions: {
                 gchart: {
                     width: 800,
@@ -418,6 +418,9 @@
          * ---------------------- */
         function initializeView() {
             google.load("visualization", "1", {packages:["corechart", "charteditor"]});
+            // Need to actually have Date objects for PivotTable and MetricsGraphics to work.
+            RESPONSE_PIVOT_DATA.forEach(record => record["Time of Response"] = new Date(record["Time of Response"]));
+            RESPONSE_PIVOT_DATA.sort((a, b) => a["Time of Response"] - b["Time of Response"]);
 
             $responsePivotElement
                 .pivotUI(
@@ -455,6 +458,17 @@
                 observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
             );
 
+            // We can get actual registration count this way.
+            let last = cumulativeSeries.slice(-1)[0];
+            document.getElementById("total-count-registrations").innerText = last ? last["value"] : 0;
+
+            // TODO: this patches tight range "dx" bugs on binned registration histograms. This is a bug
+            //       with the MetricsGraphics library, but I'm sure there's some way to deal with it more
+            //       elegantly.
+            if (binnedSeries.length === 1) {
+                binnedSeries.push({date: end.toDate(), value: 0});
+            }
+
             delete BINNED_REGISTRATION_PLOT.xax_format;
             MG.data_graphic(
                 $.extend(
@@ -490,7 +504,6 @@
          * data-processing strategy.
          */
         function generateRegistrationTimeseries(interval="day") {
-            // let binningOffset = (24 * 3600000); // eventually replace with some function
 
             return RAW_REGISTRATION_DATA.reduce(
                 ([cumulativeSeries, binnedSeries], timestamp) => {
@@ -666,7 +679,8 @@
                     let cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle],
                         legendLabel      = LEGEND_LABEL_CACHE[handle];
                     if (!legendLabel) {
-                        legendLabel = LEGEND_LABEL_CACHE[handle] = `${studyName} - ${ruling}`;
+                        legendLabel = LEGEND_LABEL_CACHE[handle] =
+                            `${studyName || "All Studies" } - ${ruling}`;
                     }
                     if (!cumulativeSeries) {
                         cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle] =
@@ -683,7 +697,8 @@
 
                     cumulativeSet.push(cumulativeSeries);
                     // true if it's an "any ruling" for that study
-                    legendLabels.push(legendLabel);
+                    let finalDatapoint = cumulativeSeries.slice(-1)[0];
+                    legendLabels.push(`${legendLabel} - (${finalDatapoint ? finalDatapoint.value : 0} total)`);
                     return cumulativeSet;
                 },
                 [] // timeseriesSet initializer
@@ -732,24 +747,25 @@
 
         function generateCumulativeTimeSeries(studyId, consentRuling) {
             // Determine aggregation field to pick.
-            let aggField = getCumulativeAggregationField(studyId, consentRuling);
-            return CUMULATIVE_TIMESERIES_DATA.reduce(
+            return RESPONSE_PIVOT_DATA.reduce(
                 (newSeries, responseDataPoint, currentIndex, sourceArray) => {
-                    if ((consentRuling === "any" || responseDataPoint["current_ruling"] === consentRuling)    &&
-                        (!studyId                || responseDataPoint["study__id"] === parseInt(studyId))) {
+                    let previousPoint = newSeries.slice(-1)[0];
+                    if ((consentRuling === "any" || responseDataPoint["Consent Ruling"] === consentRuling)    &&
+                        (!studyId                || responseDataPoint["Study ID"] === parseInt(studyId))) {
                         newSeries.push({
-                            date: responseDataPoint["date_of_response"],
-                            value: responseDataPoint[aggField]
+                            date: responseDataPoint["Time of Response"],
+                            value: previousPoint ? previousPoint["value"] + 1 : 1,
+                            childId: responseDataPoint["Child (unique identifier)"],
+                            responseId: responseDataPoint["Response (unique identifier)"]
                         });
                     } else {
                         // For continuity, we're adding a fake datapoint to the timeseries that is just the
                         // same as whatever the last value was. This will only work for cumulative datasets!
-                        let previousPoint    = newSeries.slice(-1)[0],
-                            newValue         = previousPoint ? previousPoint["value"] : 0;
-
                         newSeries.push({
-                            date: responseDataPoint["date_of_response"],
-                            value: newValue
+                            date: responseDataPoint["Time of Response"],
+                            value: previousPoint ? previousPoint["value"] : 0,
+                            child_id: responseDataPoint["Child (unique identifier)"],
+                            responseId: responseDataPoint["Response (unique identifier)"]
                         });
                     }
                     return newSeries;
@@ -758,39 +774,21 @@
             );
         }
 
-        function getCumulativeAggregationField(studyId, consentRuling) {
-            let aggField;
-            if (studyId) {
-                if (consentRuling === "any") {
-                    aggField = "cumulative_count_per_study";
-                } else {
-                    aggField = "cumulative_count_per_study_by_ruling";
-                }
-            } else {
-                if (consentRuling === "any") {
-                    aggField = "total_cumulative_responses";
-                } else {
-                    aggField = "cumulative_count_per_ruling";
-                }
-            }
-            return aggField;
-        }
-
         function generateBinnedTimeSeries(idRulingPairs, interval="day") {
-            return DAILY_TIMESERIES_DATA.reduce(
+            return RESPONSE_PIVOT_DATA.reduce(
                 (newSeries, responseDataPoint) => {
 
                     // Make sure we match criteria for at least one of the pairs.
                     let dataPointIsValid = idRulingPairs.some(([studyId, consentRuling]) => {
-                        return ((consentRuling === "any" || responseDataPoint["current_ruling"] === consentRuling)    &&
-                                (studyId       === "ALL" || responseDataPoint["study__id"] === parseInt(studyId)))
+                        return ((consentRuling === "any" || responseDataPoint["Consent Ruling"] === consentRuling)    &&
+                                (studyId       === "ALL" || responseDataPoint["Study ID"] === parseInt(studyId)))
                     });
 
                     if (dataPointIsValid) {
                         // If it matches the criteria, we add to the count.
                         let previousPoint = newSeries.slice(-1)[0];
                         if (responsesHappenedInSameBin(previousPoint, responseDataPoint, interval)) {
-                            previousPoint["value"] += responseDataPoint["num_responses"];
+                            previousPoint["value"] += 1;
                         } else {
                             // First, backpropagate any missing days.
                             if (previousPoint) {
@@ -804,8 +802,8 @@
                                 }
                             } // insert brand new point
                             newSeries.push({
-                                date: moment(responseDataPoint["date_of_response"]).startOf(interval).toDate(),
-                                value: responseDataPoint["num_responses"]
+                                date: moment(responseDataPoint["Time of Response"]).startOf(interval).toDate(),
+                                value: 1
                             });
                         }
                     }
@@ -819,15 +817,8 @@
         function responsesHappenedInSameBin(lastInSeries, currentResponse, bin) {
             if (!lastInSeries || !currentResponse) return false;  // There's no first day to compare.
             let firstDate = lastInSeries["date"];
-            let secondDate = currentResponse["date_of_response"];
+            let secondDate = currentResponse["Time of Response"];
             return moment(firstDate).isSame(secondDate, bin);
-        }
-
-        function sameDay(firstDate, secondDate) {
-            return firstDate && secondDate &&
-                firstDate.getFullYear() === secondDate.getFullYear() &&
-                firstDate.getMonth() === secondDate.getMonth() &&
-                firstDate.getDate() === secondDate.getDate();
         }
 
         function reloadPivot(event) {
