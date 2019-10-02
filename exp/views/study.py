@@ -27,7 +27,7 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.fields import CONDITIONS, LANGUAGES
+from studies.fields import CONDITIONS, LANGUAGES, popcnt_bitfield
 from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import Feedback, Response, Study, StudyLog, StudyType
@@ -1322,6 +1322,9 @@ def get_flattened_responses(response_qs, studies_for_child):
     response_data = []
     for resp in response_qs:
         child_age_in_days = (datetime.date.today() - resp.child.birthday).days
+        languages_spoken = popcnt_bitfield(
+            int(resp.child.languages_spoken), "languages"
+        )
         response_data.append(
             {
                 "Response (unique identifier)": resp.uuid,
@@ -1332,11 +1335,7 @@ def get_flattened_responses(response_qs, studies_for_child):
                 "Child Birth Month": resp.child.birthday.strftime("%B"),
                 "Child Gender": resp.child.gender,
                 "Child Gestational Age at Birth": resp.child.get_gestational_age_at_birth_display(),
-                # TODO: This is literally the worst implementation of POPCNT ever, though I don't imagine it will
-                #       incur too much of a performance penalty.
-                "Child # Languages Spoken": bin(int(resp.child.languages_spoken)).count(
-                    "1"
-                ),
+                "Child # Languages Spoken": len(languages_spoken),
                 "Child # Studies Participated": len(studies_for_child[resp.child_id]),
                 "Study": resp.study.name,
                 "Study ID": resp.study.id,  # TODO: change this to use UUID
