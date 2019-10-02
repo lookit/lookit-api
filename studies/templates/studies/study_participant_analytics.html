@@ -78,6 +78,14 @@
                         <input id="date-filter" class="form-control input-sm" type="text"/>
                         <table id="total-counts" class="table table-condensed">
                             <tr>
+                                <td>Total # Unique Responses</td>
+                                <td id="total-count-responses"></td>
+                            </tr>
+                            <tr>
+                                <td>Total # Unique Children</td>
+                                <td id="total-count-children"></td>
+                            </tr>
+                            <tr>
                                 <td>Total # Registrations</td>
                                 <td id="total-count-registrations"></td>
                             </tr>
@@ -633,6 +641,12 @@
                 timeseriesHandles, ruling, studyId, studyName, legendLabels, after, before
             );
 
+            document.getElementById("total-count-responses").innerText =
+                new Set(cumulativeSet.flat().map(resp => resp.responseId).filter(id => id !== undefined)).size;
+
+            document.getElementById("total-count-children").innerText =
+                new Set(cumulativeSet.flat().map(resp => resp.childId).filter(id => id !== undefined)).size;
+
             // Singular histogram series.
             let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before, interval);
 
@@ -764,8 +778,8 @@
                         newSeries.push({
                             date: responseDataPoint["Time of Response"],
                             value: previousPoint ? previousPoint["value"] : 0,
-                            child_id: responseDataPoint["Child (unique identifier)"],
-                            responseId: responseDataPoint["Response (unique identifier)"]
+                            child_id: undefined,
+                            responseId: undefined
                         });
                     }
                     return newSeries;

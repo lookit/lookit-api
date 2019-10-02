@@ -207,7 +207,9 @@ class Study(models.Model):
         return (
             self.judgeable_responses.prefetch_related(
                 models.Prefetch(
-                    "videos", queryset=Video.objects.filter(is_consent_footage=True)
+                    "videos",
+                    queryset=Video.objects.filter(is_consent_footage=True),
+                    to_attr="consent_videos",
                 ),
                 "consent_rulings",
             )

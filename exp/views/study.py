@@ -29,7 +29,6 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
 from studies.fields import CONDITIONS, LANGUAGES
 from studies.forms import StudyEditForm, StudyForm
-from studies.graphs import get_registration_data, get_response_timeseries_data
 from studies.helpers import send_mail
 from studies.models import Feedback, Response, Study, StudyLog, StudyType
 from studies.queries import get_annotated_responses_qs, get_study_list_qs
@@ -908,7 +907,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
             response_data["videos"] = [
                 {"aws_url": video.download_url, "filename": video.filename}
-                for video in response.videos.all()  # we did a prefetch, so all() is really is_consent_footage=True
+                for video in response.consent_videos
             ]
 
             response_data["details"] = {
