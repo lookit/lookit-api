@@ -1353,6 +1353,8 @@ def get_flattened_responses(response_qs, studies_for_child):
                 "State": resp.demographic_snapshot.state,
                 "Time of Response": resp.date_created.isoformat(),
                 "Consent Ruling": resp.current_ruling,
+                "Lookit Referrer": resp.demographic_snapshot.lookit_referrer,
+                "Additional Comments": resp.demographic_snapshot.additional_comments,
             }
         )
 

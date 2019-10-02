@@ -67,11 +67,10 @@
             </section>
         </nav>
         <section id="participation-section" class="row">
-            <h3>Participation and Registration</h3>
             <article class="col-xs-4">
-                <div id="participant-plot-filter-panel" class="panel panel-default">
+                <div id="global-filter-panel" class="panel panel-default">
                     <div class="panel-heading">
-                        <h4>Plotting Options</h4>
+                        <h4>Global Data Filters</h4>
                     </div>
                     <div class="panel-body">
                         <label class="control-label" for="date-filter">Date Range</label>
@@ -162,11 +161,6 @@
             <div id="pivot-presets" class="btn-group btn-group" role="group" aria-label="Preset Pivot Choices">
                 <button type="button"
                         class="btn btn-default"
-                        data-cols="Parent/Guardian Age"
-                        data-aggregator="Total # Responses"
-                        data-renderer="Table"># Responses by Parent Age</button>
-                <button type="button"
-                        class="btn btn-default"
                         data-cols="Study"
                         data-rows="Consent Ruling"
                         data-aggregator="Total # Responses"
@@ -182,12 +176,22 @@
                         data-cols="Parent/Guardian Education Level"
                         data-aggregator="Unique Families"
                         data-renderer="Bar Chart">Unique Families per Parent/Guardian Education Level</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-rows="Study"
+                        data-aggregator="Referrers"
+                        data-renderer="Table">Referrers by Study</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-rows="Study"
+                        data-aggregator="Additional Comments"
+                        data-renderer="Table">Additional info by Study</button>
             </div>
             <h4>Pivot Table</h4>
             <article id="responses-pivot" class="col-md-12"></article>
         </section>
         <section>
-            <h3>Multi-Value Field Breakdowns</h3>
+            <h3>Child Data Summary</h3>
             <article id="characteristics-table" class="col-md-4">
                 <h4>Characteristics</h4>
                 <table class="table small">
@@ -395,6 +399,8 @@
             aggregators: {
                 "Unique Children": () => pivotAggregatorTemplates.countUnique()(["Child (unique identifier)"]),
                 "Unique Families": () => pivotAggregatorTemplates.countUnique()(["Family (unique identifier)"]),
+                "Referrers": () => pivotAggregatorTemplates.listUnique()(["Lookit Referrer"]),
+                "Additional Comments": () => pivotAggregatorTemplates.listUnique()(["Additional Comments"]),
                 "Total # Responses": () => pivotAggregatorTemplates.count()(),
                 // TODO: This average will probably multiple-count children - we only want to include ages and
                 //       incomes per child/family for a more accurate read. A custom aggregator is needed.
@@ -449,7 +455,7 @@
                 .selectpicker()
                 .on('changed.bs.select', handleGranularityChange);
 
-            document.getElementById("pivot-presets").addEventListener("click", reloadPivot);
+            document.getElementById("pivot-presets").addEventListener("click", loadPivotTableExample);
         }
 
         function regenerateRegistrationPlots() {
@@ -572,6 +578,7 @@
             $.extend(GLOBAL_PARTICIPATION_QUERY_STATE, {after, before});
             regenerateParticipationPlots();
             regenerateRegistrationPlots();
+            regeneratePivotTable();
         }
 
         /**
@@ -642,10 +649,10 @@
             );
 
             document.getElementById("total-count-responses").innerText =
-                new Set(cumulativeSet.flat().map(resp => resp.responseId).filter(id => id !== undefined)).size;
+                new Set(cumulativeSet.flat().map(resp => resp.responseId).filter(id => id !== undefined)).size + "";
 
-            document.getElementById("total-count-children").innerText =
-                new Set(cumulativeSet.flat().map(resp => resp.childId).filter(id => id !== undefined)).size;
+            let uniqueChildIds = new Set(cumulativeSet.flat().map(resp => resp.childId).filter(id => id !== undefined));
+            document.getElementById("total-count-children").innerText = uniqueChildIds.size + "";
 
             // Singular histogram series.
             let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before, interval);
@@ -835,7 +842,7 @@
             return moment(firstDate).isSame(secondDate, bin);
         }
 
-        function reloadPivot(event) {
+        function loadPivotTableExample(event) {
             let button;
             if ((button = event.target) && button.tagName === "BUTTON") {
                 let data = button.dataset;
@@ -843,13 +850,23 @@
                 RESPONSE_PIVOT_OPTS["rows"] = data.rows ? data.rows.split(", ") : [];
                 RESPONSE_PIVOT_OPTS["aggregatorName"] = data.aggregator || "Total # Responses";
                 RESPONSE_PIVOT_OPTS["rendererName"] = data.renderer || "Table";
-                $responsePivotElement
-                    .pivotUI(
-                        RESPONSE_PIVOT_DATA,
-                        RESPONSE_PIVOT_OPTS,
-                        true
-                    );
+                regeneratePivotTable();
             }
+        }
+
+        function regeneratePivotTable() {
+            // XXX: We could just pass in start and end from the caller (the date component handler),
+            //      but I've opted to load global state for the sake of consistency.
+            let {after: start, before: end} = GLOBAL_PARTICIPATION_QUERY_STATE;
+
+            $responsePivotElement
+                .pivotUI(
+                    RESPONSE_PIVOT_DATA.filter(
+                        observation => start.isBefore(observation["Time of Response"]) && end.isAfter(observation["Time of Response"])
+                    ),
+                    RESPONSE_PIVOT_OPTS,
+                    true
+                );
         }
 
         /* ------------------------ *
