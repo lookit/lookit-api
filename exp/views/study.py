@@ -1319,6 +1319,10 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
 
 
 def get_flattened_responses(response_qs, studies_for_child):
+    """Get derived attributes for children.
+
+    TODO: consider whether or not this work should be extracted out into a dataframe.
+    """
     response_data = []
     for resp in response_qs:
         child_age_in_days = (datetime.date.today() - resp.child.birthday).days
@@ -1333,6 +1337,8 @@ def get_flattened_responses(response_qs, studies_for_child):
                 "Child Age in Months": round(child_age_in_days / 30, 2),
                 "Child Age in Years": round(child_age_in_days / 365, 2),
                 "Child Birth Month": resp.child.birthday.strftime("%B"),
+                "Child Birth Year": int(resp.child.birthday.strftime("%Y")),
+                "Child Birth Day of Week": resp.child.birthday.strftime("%A"),
                 "Child Gender": resp.child.gender,
                 "Child Gestational Age at Birth": resp.child.get_gestational_age_at_birth_display(),
                 "Child # Languages Spoken": len(languages_spoken),
