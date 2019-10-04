@@ -56,7 +56,6 @@
 {% endblock %}
 
 {% block content %}
-
     <div class="container">
         <nav class='row'>
             <section class="col-xs-12">
@@ -66,7 +65,36 @@
                 </ol>
             </section>
         </nav>
+        <section class="row">
+            <h1>Participant Analytics</h1>
+            <div>
+                <p class="help-block">
+                    The information on this page is provided primarily for the purposes of evaluating your recruitment
+                    efforts: how well do various approaches work? What populations do they reach? You may also find
+                    it helpful for reporting aggregate characteristics of your participants.
+                </p>
+
+                <p class="help-block">
+                    The data that you see in this page corresponds to
+                    {% if user.is_superuser %}
+                        responses from studies that you have read access to
+                    {% else %}
+                        all responses
+                    {% endif %}
+                        where consent has been confirmed, along with children/accounts associated with those responses.
+                </p>
+
+                <p class="help-block">
+                    Please note that demographic survey data may never be published such that it could be linked to an individual
+                    participant's video (see <a href="https://lookit.mit.edu/termsofuse/">Terms of Use</a>). Before sharing any demographic data, consider whether it
+                    might be possible to link to individual participants: e.g., because a child's name is mentioned
+                    in a comment or because only one family speaks a particular language and that language is
+                    used in their video.
+                </p>
+            </div>
+        </section>
         <section id="participation-section" class="row">
+            <h3>Recruitment Data Plots</h3>
             <article class="col-xs-4">
                 <div id="global-filter-panel" class="panel panel-default">
                     <div class="panel-heading">
@@ -142,7 +170,6 @@
                                 </optgroup>
                             {% endfor %}
                         </select>
-
                         <h5>Legend</h5>
                         <section id="plot-legend" class="small"></section>
                     </div>
@@ -157,6 +184,16 @@
         </section>
         <section id="summary-section" class="row">
             <h3>Summary Statistics</h3>
+            <div>
+                <p class="help-block">The pivot table is a way for you to summarize data across (primarily) <em>qualitative</em> axes.</p>
+
+                <p class="help-block">
+                    The leftmost column contains the visualization options (Table, Area Chart, Bar Chart, etc.); below it
+                    are the fields that you can drag to the column to the right or the row at the top. Depending on the
+                    aggregation metric you use (specified by the dropdown menu on the right), you will see that summary
+                    statistic "spread" across the values of the fields that you dragged in.
+                </p>
+            </div>
             <h4>Pivot Table Examples</h4>
             <div id="pivot-presets" class="btn-group btn-group" role="group" aria-label="Preset Pivot Choices">
                 <button type="button"
