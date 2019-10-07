@@ -160,3 +160,18 @@ GESTATIONAL_AGE_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_OPTIONS)
 # No null values for filters - must explicitly include N/A in the query model itself since we are dealing with a
 # range of (enumerated) values.
 GESTATIONAL_AGE_FILTER_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_OPTIONS[1:])
+
+
+def popcnt_bitfield(integer, field_type):
+    selected = []
+    if field_type.lower() == "languages":
+        bitfield_items = LANGUAGES
+    elif field_type.lower() == "conditions":
+        bitfield_items = CONDITIONS
+    else:
+        raise RuntimeError(f"Unsupported fieldtype: {field_type}")
+    for bit_index in range(64):
+        if (2 ** bit_index) & integer:
+            selected.append(bitfield_items[bit_index])
+
+    return selected

@@ -32,6 +32,7 @@ from exp.views import (
     StudyDemographicsDownloadJSON,
     StudyDetailView,
     StudyListView,
+    StudyParticipantAnalyticsView,
     StudyParticipantContactView,
     StudyParticipantEmailView,
     StudyPreviewBuildView,
@@ -59,6 +60,11 @@ urlpatterns = [
     ),
     url(r"renamevideo/$", csrf_exempt(RenameVideoView.as_view()), name="rename-video"),
     url(r"studies/$", StudyListView.as_view(), name="study-list"),
+    url(
+        r"studies/analytics/$",
+        StudyParticipantAnalyticsView.as_view(),
+        name="study-participant-analytics",
+    ),
     url(r"studies/create/$", StudyCreateView.as_view(), name="study-create"),
     url(r"studies/(?P<pk>\d+)/$", StudyDetailView.as_view(), name="study-detail"),
     url(

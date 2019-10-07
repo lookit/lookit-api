@@ -1,6 +1,7 @@
 import datetime
 import json
 import operator
+from collections import Counter, defaultdict
 from functools import reduce
 from typing import NamedTuple
 
@@ -9,41 +10,28 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
 from django.core.mail import BadHeaderError
-from django.db.models import (
-    Q,
-    Case,
-    Count,
-    IntegerField,
-    OuterRef,
-    Prefetch,
-    Subquery,
-    When,
-)
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Q, Prefetch
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
 from django.utils import timezone
 from django.views import generic
 from guardian.mixins import PermissionRequiredMixin
-from guardian.shortcuts import get_objects_for_user, get_perms
+from guardian.shortcuts import get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import Message, User
+from accounts.models import Child, Message, Organization, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
+from studies.fields import CONDITIONS, LANGUAGES, popcnt_bitfield
 from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import (
-    Feedback,
-    Response,
-    Study,
-    StudyLog,
-    StudyType,
-    get_annotated_responses_qs,
-)
+from studies.models import Feedback, Response, Study, StudyLog, StudyType
+from studies.queries import get_annotated_responses_qs, get_study_list_qs
 from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -87,6 +75,10 @@ DISCOVERABILITY_HELP_TEXT = {
     ): "Private. Your study is not currently active, and is not public. When it is active, participants will be able to access it at your study link, "
     f"but it will not be listed in {STUDY_LISTING_A_TAG}. ",
 }
+
+
+LANGUAGES_MAP = {code: lang for code, lang in LANGUAGES}
+CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDITIONS}
 
 
 def get_discoverability_text(study):
@@ -185,73 +177,7 @@ class StudyListView(
         """
         request = self.request.GET
 
-        annotated_responses_qs = get_annotated_responses_qs()
-
-        queryset = (
-            get_objects_for_user(self.request.user, "studies.can_view_study")
-            .exclude(state="archived")
-            .select_related("creator")
-            .annotate(
-                completed_responses_count=Subquery(
-                    Response.objects.filter(
-                        study=OuterRef("pk"),
-                        completed_consent_frame=True,
-                        completed=True,
-                    )
-                    .values("completed")
-                    .order_by()
-                    .annotate(count=Count("completed"))
-                    .values("count")[:1],  # [:1] ensures that a queryset is returned
-                    output_field=IntegerField(),
-                ),
-                incomplete_responses_count=Subquery(
-                    Response.objects.filter(
-                        study=OuterRef("pk"),
-                        completed_consent_frame=True,
-                        completed=False,
-                    )
-                    .values("completed")
-                    .order_by()
-                    .annotate(count=Count("completed"))
-                    .values("count")[:1],  # [:1] ensures that a queryset is returned
-                    output_field=IntegerField(),
-                ),
-                valid_consent_count=Subquery(
-                    annotated_responses_qs.filter(
-                        study=OuterRef("pk"), current_ruling="accepted"
-                    )
-                    .values("current_ruling")
-                    .order_by(
-                        "current_ruling"
-                    )  # Need this for GROUP BY to work properly
-                    .annotate(count=Count("current_ruling"))
-                    .values("count")[:1],  # [:1] ensures that a queryset is returned
-                    output_field=IntegerField(),
-                ),
-                pending_consent_count=Subquery(
-                    annotated_responses_qs.filter(
-                        study=OuterRef("pk"), current_ruling="pending"
-                    )
-                    .values("current_ruling")
-                    .order_by("current_ruling")
-                    .annotate(count=Count("current_ruling"))
-                    .values("count")[:1],
-                    output_field=IntegerField(),
-                ),
-                starting_date=Subquery(
-                    StudyLog.objects.filter(study=OuterRef("pk"))
-                    .order_by("-created_at")
-                    .filter(action="active")
-                    .values("created_at")[:1]
-                ),
-                ending_date=Subquery(
-                    StudyLog.objects.filter(study=OuterRef("pk"))
-                    .order_by("-created_at")
-                    .filter(action="deactivated")
-                    .values("created_at")[:1]
-                ),
-            )
-        )
+        queryset = get_study_list_qs(self.request.user)
 
         # TODO: Starting date and ending date as subqueries, then delete the model methods.
 
@@ -981,7 +907,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
             response_data["videos"] = [
                 {"aws_url": video.download_url, "filename": video.filename}
-                for video in response.videos.all()  # we did a prefetch, so all() is really is_consent_footage=True
+                for video in response.consent_videos
             ]
 
             response_data["details"] = {
@@ -1313,6 +1239,72 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         return obj
 
 
+class StudyParticipantAnalyticsView(
+    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.TemplateView
+):
+    template_name = "studies/study_participant_analytics.html"
+    model = Study
+    permission_required = "accounts.can_view_experimenter"
+    # context_object_name = "study"
+    raise_exception = True
+
+    def get_context_data(self, **kwargs):
+        """Context getter override."""
+        if self.request.user.is_superuser:
+            organizations = Organization.objects.all()
+        else:
+            organizations = Organization.objects.filter(
+                id=self.request.user.organization_id
+            )
+
+        studies_for_orgs = Study.objects.filter(organization__in=organizations)
+
+        # Responses for studies
+        annotated_responses = (
+            get_annotated_responses_qs()
+            .filter(study__in=studies_for_orgs)
+            .select_related("child", "child__user", "study", "demographic_snapshot")
+        )
+
+        # now, map studies for each child, and gather demographic data as well.
+        studies_for_child = defaultdict(set)
+        for resp in annotated_responses:
+            studies_for_child[resp.child.id].add(resp.study.name)
+
+        # Users for _any_ response associated with a study that we can see.
+        registrations = User.objects.filter(
+            id__in=Response.objects.filter(study__in=studies_for_orgs)
+            .values_list("child__user", flat=True)
+            .distinct()
+        ).values_list("date_created", flat=True)
+
+        # Now populate actual graph specs using helpers.
+        ctx = super().get_context_data(**kwargs)
+
+        ctx["all_studies"] = studies_for_orgs
+
+        ctx["registration_data"] = json.dumps(
+            list(registrations), cls=DjangoJSONEncoder
+        )
+
+        # To get pivot data, we have to load the json object with requisite
+        children_queryset = Child.objects.filter(
+            id__in=annotated_responses.values_list("child", flat=True).distinct()
+        )
+        children_pivot_data = unstack_children(children_queryset, studies_for_child)
+
+        flattened_responses = get_flattened_responses(
+            annotated_responses, studies_for_child
+        )
+
+        ctx["response_pivot_data"] = json.dumps(flattened_responses, default=str)
+
+        ctx["studies"], ctx["languages"], ctx["characteristics"] = [
+            dict(counter) for counter in children_pivot_data
+        ]
+        return ctx
+
+
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
     """
     Proxy view to forward researcher to preview page in the Ember app
@@ -1324,6 +1316,73 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
         if request.path[-1] == "/":
             path = f"{path.split('/')[0]}/index.html"
         return super().dispatch(request, path)
+
+
+def get_flattened_responses(response_qs, studies_for_child):
+    """Get derived attributes for children.
+
+    TODO: consider whether or not this work should be extracted out into a dataframe.
+    """
+    response_data = []
+    for resp in response_qs:
+        child_age_in_days = (datetime.date.today() - resp.child.birthday).days
+        languages_spoken = popcnt_bitfield(
+            int(resp.child.languages_spoken), "languages"
+        )
+        response_data.append(
+            {
+                "Response (unique identifier)": resp.uuid,
+                "Child (unique identifier)": resp.child.uuid,
+                "Child Age in Days": child_age_in_days,
+                "Child Age in Months": round(child_age_in_days / 30, 2),
+                "Child Age in Years": round(child_age_in_days / 365, 2),
+                "Child Birth Month": resp.child.birthday.strftime("%B"),
+                "Child Birth Year": int(resp.child.birthday.strftime("%Y")),
+                "Child Birth Day of Week": resp.child.birthday.strftime("%A"),
+                "Child Gender": resp.child.gender,
+                "Child Gestational Age at Birth": resp.child.get_gestational_age_at_birth_display(),
+                "Child # Languages Spoken": len(languages_spoken),
+                "Child # Studies Participated": len(studies_for_child[resp.child_id]),
+                "Study": resp.study.name,
+                "Study ID": resp.study.id,  # TODO: change this to use UUID
+                "Family (unique identifier)": resp.child.user.uuid,
+                "Family # of Children": resp.demographic_snapshot.number_of_children,
+                "Family Race/Ethnicity": resp.demographic_snapshot.race_identification,
+                "Family # of Guardians": resp.demographic_snapshot.number_of_guardians,
+                "Family Annual Income": resp.demographic_snapshot.annual_income,
+                "Parent/Guardian Age": resp.demographic_snapshot.age,
+                "Parent/Guardian Education Level": resp.demographic_snapshot.education_level,
+                "Parent/Guardian Gender": resp.demographic_snapshot.gender,
+                "Living Density": resp.demographic_snapshot.density,
+                "Number of Books": resp.demographic_snapshot.number_of_books,
+                "Country": resp.demographic_snapshot.country,
+                "State": resp.demographic_snapshot.state,
+                "Time of Response": resp.date_created.isoformat(),
+                "Consent Ruling": resp.current_ruling,
+                "Lookit Referrer": resp.demographic_snapshot.lookit_referrer,
+                "Additional Comments": resp.demographic_snapshot.additional_comments,
+            }
+        )
+
+    return response_data
+
+
+def unstack_children(children_queryset, studies_for_child_map):
+    """Unstack spoken languages, characteristics/conditions, and parent races/ethnicities"""
+    languages = Counter()
+    characteristics = Counter()
+    studies = Counter()
+    for child in children_queryset:
+        for study_name in studies_for_child_map[child.id]:
+            studies[study_name] += 1
+        for lang in child.languages_spoken:
+            if lang[1]:
+                languages[LANGUAGES_MAP[lang[0]]] += 1
+        for cond in child.existing_conditions:
+            if cond[1]:
+                characteristics[CONDITIONS_MAP[cond[0]]] += 1
+
+    return studies, languages, characteristics
 
 
 # UTILITY FUNCTIONS

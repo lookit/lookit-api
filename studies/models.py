@@ -1,4 +1,3 @@
-import json
 import logging
 import uuid
 from datetime import datetime
@@ -7,13 +6,11 @@ import boto3
 import dateutil
 import fleep
 import pytz
-from bitfield import BitField
 from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models.functions import Coalesce
-from django.db.models.signals import post_save, pre_delete, pre_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_groups_with_perms
@@ -27,12 +24,6 @@ from attachment_helpers import get_download_url
 from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from studies import workflow
-from studies.fields import (
-    CONDITIONS,
-    GENDER_CHOICES,
-    GESTATIONAL_AGE_FILTER_CHOICES,
-    LANGUAGES,
-)
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
 
@@ -54,40 +45,6 @@ S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 
 dispatch_frame_action = FrameActionDispatcher()
-
-
-# Probably want a queries module for this...
-def get_annotated_responses_qs():
-    """Retrieve a queryset for the set of responses belonging to a set of studies."""
-    # Create the subquery where we get the action from the most recent ruling.
-    newest_ruling_subquery = models.Subquery(
-        ConsentRuling.objects.filter(response=models.OuterRef("pk"))
-        .order_by("-created_at")
-        .values("action")[:1]
-    )
-
-    # Annotate that value as "current ruling" on our response queryset.
-    return (
-        Response.objects.prefetch_related("consent_rulings")
-        .filter(completed_consent_frame=True)
-        .annotate(
-            current_ruling=Coalesce(newest_ruling_subquery, models.Value(PENDING))
-        )
-    )
-
-
-def get_consented_responses_qs():
-    """Retrieve a queryset for the set of consented responses belonging to a set of studies."""
-    # Create the subquery where we get the action from the most recent ruling.
-    return get_annotated_responses_qs().filter(current_ruling=ACCEPTED)
-
-
-def get_pending_responses_qs():
-    """Retrieve a queryset for the set of pending judgement responses belonging to a set of studies."""
-    # Create the subquery where we get the action from the most recent ruling.
-    return get_annotated_responses_qs().filter(
-        models.Q(current_ruling=PENDING) | models.Q(current_ruling=None)
-    )
 
 
 class StudyType(models.Model):
@@ -250,7 +207,9 @@ class Study(models.Model):
         return (
             self.judgeable_responses.prefetch_related(
                 models.Prefetch(
-                    "videos", queryset=Video.objects.filter(is_consent_footage=True)
+                    "videos",
+                    queryset=Video.objects.filter(is_consent_footage=True),
+                    to_attr="consent_videos",
                 ),
                 "consent_rulings",
             )
