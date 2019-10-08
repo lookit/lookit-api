@@ -702,7 +702,7 @@
             // Singular histogram series.
             let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before, interval);
 
-            drawTimeseriesPlots(cumulativeSet, binnedSeries, legendLabels);
+            drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels);
         }
 
 
@@ -779,12 +779,23 @@
         }
 
 
-        function drawTimeseriesPlots(cumulativeSet, binnedSeries, legendLabels) {
+        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels) {
             // Now fill with data, y_accessor, and legend, then draw.
             let newPlotOptions = {
                 x_accessor: "date",
                 y_accessor: "value",
             };
+
+            // Only add cumulative bounds if the binned series has bounds to begin with.
+            let cumulativeBounds;
+            if (binnedSeries.length) {
+                cumulativeBounds = {
+                  min_x: binnedSeries[0]["date"],
+                  max_x: binnedSeries.slice(-1)[0]["date"]
+                };
+            } else {
+                cumulativeBounds = {};
+            }
 
 
             let cumulativePlotOpts = $.extend(
@@ -795,7 +806,8 @@
                     data: cumulativeSet,
                     legend: legendLabels,
                     chart_type: cumulativeSet.length && cumulativeSet[0].length ? "line" : "missing-data"
-                }
+                },
+                cumulativeBounds
             );
 
             // Don't understand what this does, but apparently have to do it:
