@@ -645,13 +645,21 @@
             let selectedRuling   = $timeseriesOptions[clickedIndex],
                 optGroupForStudy = selectedRuling.parentNode;
 
+            // Because studyName and studyId are used in the creation and composition of cache keys,
+            // we must ensure that the deselection of all series will "erase" whatever's in the
+            // query state object. The behavior of $.extend actually preserves underlying values from
+            // one of the object arguments if the value for the same key in the next object is undefined,
+            // so we have to override this behavior with defaults in order to preserve downstream caching
+            // behavior.
+            let selectedHandles = $(this).val();
+
             $.extend(
                 GLOBAL_PARTICIPATION_QUERY_STATE,
                 {
-                    timeseriesHandles: $(this).val() || [],
-                    ruling: selectedRuling.dataset.ruling,
-                    studyName: optGroupForStudy.label,
-                    studyId: optGroupForStudy.dataset.studyId,
+                    timeseriesHandles: selectedHandles || [],
+                    ruling: selectedHandles ? selectedRuling.dataset.ruling : "any",
+                    studyName: selectedHandles ? optGroupForStudy.label : "ALL STUDIES",
+                    studyId: selectedHandles ? optGroupForStudy.dataset.studyId : null,
                     legendLabels: []
                 }
             );
@@ -694,7 +702,7 @@
             // Singular histogram series.
             let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before, interval);
 
-            drawTimeseriesPlots(cumulativeSet, binnedSeries, legendLabels);
+            drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels);
         }
 
 
@@ -741,6 +749,11 @@
                             `${studyName || "All Studies" } - ${ruling}`;
                     }
                     if (!cumulativeSeries) {
+                        // XXX: This code "does the job" but is perhaps confusing as such - after all,
+                        // studyId and ruling will each retain a single value across every iteration of
+                        // timeseriesHandles! However, we are only ever adding to the cache when we *haven't*
+                        // seen a specified series selected before, so we can exploit this fact to safely
+                        // generate the new timeseries.
                         cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle] =
                             generateCumulativeTimeSeries(
                                 studyId,
@@ -756,6 +769,8 @@
                     cumulativeSet.push(cumulativeSeries);
                     // true if it's an "any ruling" for that study
                     let finalDatapoint = cumulativeSeries.slice(-1)[0];
+                    // XXX: confusing implementation - mutating a global variable inside a reduce loop. Find
+                    //      a better way to do this.
                     legendLabels.push(`${legendLabel} - (${finalDatapoint ? finalDatapoint.value : 0} total)`);
                     return cumulativeSet;
                 },
@@ -764,12 +779,23 @@
         }
 
 
-        function drawTimeseriesPlots(cumulativeSet, binnedSeries, legendLabels) {
+        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels) {
             // Now fill with data, y_accessor, and legend, then draw.
             let newPlotOptions = {
                 x_accessor: "date",
                 y_accessor: "value",
             };
+
+            // Only add cumulative bounds if the binned series has bounds to begin with.
+            let cumulativeBounds;
+            if (binnedSeries.length) {
+                cumulativeBounds = {
+                  min_x: binnedSeries[0]["date"],
+                  max_x: binnedSeries.slice(-1)[0]["date"]
+                };
+            } else {
+                cumulativeBounds = {};
+            }
 
 
             let cumulativePlotOpts = $.extend(
@@ -780,7 +806,8 @@
                     data: cumulativeSet,
                     legend: legendLabels,
                     chart_type: cumulativeSet.length && cumulativeSet[0].length ? "line" : "missing-data"
-                }
+                },
+                cumulativeBounds
             );
 
             // Don't understand what this does, but apparently have to do it:
@@ -808,6 +835,7 @@
             return RESPONSE_PIVOT_DATA.reduce(
                 (newSeries, responseDataPoint, currentIndex, sourceArray) => {
                     let previousPoint = newSeries.slice(-1)[0];
+                    // console.log(studyId, consentRuling, new Date().getTime());
                     if ((consentRuling === "any" || responseDataPoint["Consent Ruling"] === consentRuling)    &&
                         (!studyId                || responseDataPoint["Study ID"] === parseInt(studyId))) {
                         newSeries.push({
