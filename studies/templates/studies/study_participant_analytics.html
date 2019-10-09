@@ -12,9 +12,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js" integrity="sha256-+9Mf3cAVmxxudDsr1XwXUeRZFtvdWVYdq5/vcgiYyNU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.css" integrity="sha256-H83YjkVzXEyHSdZ/5aVRoW2QfqeJ7gIWduA7aCy9tWY=" crossorigin="anonymous" />
-{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>#}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.js" integrity="sha256-XevW8oTz1EmE00mqCsOAyUv07/6MrJ0mEQtHH8V9UZ0=" crossorigin="anonymous"></script>
-    <!-- Moment -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.js" integrity="sha256-XevW8oTz1EmE00mqCsOAyUv07/6MrJ0mEQtHH8V9UZ0=" crossorigin="anonymous"></script>#}
+    {# Moment #}
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
     {# PivotTable.js #}
@@ -75,16 +75,6 @@
                 </p>
 
                 <p class="help-block">
-                    The data that you see in this page corresponds to
-                    {% if user.is_superuser %}
-                        responses from studies that you have read access to
-                    {% else %}
-                        all responses
-                    {% endif %}
-                        where consent has been confirmed, along with children/accounts associated with those responses.
-                </p>
-
-                <p class="help-block">
                     Please note that demographic survey data may never be published such that it could be linked to an individual
                     participant's video (see <a href="https://lookit.mit.edu/termsofuse/">Terms of Use</a>). Before sharing any demographic data, consider whether it
                     might be possible to link to individual participants: e.g., because a child's name is mentioned
@@ -95,6 +85,19 @@
         </section>
         <section id="participation-section" class="row">
             <h3>Recruitment Data Plots</h3>
+            <p class="help-block">
+                The data that you see in the <strong>participation</strong> plots correspond to
+                {% if user.is_superuser %}
+                    all responses
+                {% else %}
+                    responses from studies that you have read access to
+                {% endif %}
+                    along with children/accounts associated with those responses.
+            </p>
+            <p class="help-block">
+                The data that you see in the <strong>registration</strong> plots correspond to all registered Lookit users
+                (for the given timeframe).
+            </p>
             <article class="col-xs-4">
                 <div id="global-filter-panel" class="panel panel-default">
                     <div class="panel-heading">
@@ -102,7 +105,9 @@
                     </div>
                     <div class="panel-body">
                         <label class="control-label" for="date-filter">Date Range</label>
+                        <p class="help-block small">Controls both sets of plots (registration and participation) <strong>and</strong> the pivot table.</p>
                         <input id="date-filter" class="form-control input-sm" type="text"/>
+
                         <table id="total-counts" class="table table-condensed">
                             <tr>
                                 <td>Total # Unique Responses</td>
@@ -118,12 +123,21 @@
                             </tr>
                         </table>
                         <label class="control-label" for="granularity-specifier">Bin Granularity</label>
+                        <p class="help-block small">Change the sampling width of the binned graphs.</p>
                         <select id="granularity-specifier" class="selectpicker form-control">
                             <option value="day">Day</option>
                             <option value="week">Week</option>
                             <option value="month">Month</option>
                         </select>
                         <label class="control-label" for="timeseries-filter">Counted Series</label>
+                        <p class="help-block small">
+                            Determine the kinds of responses that are "counted" such that they:
+                        </p>
+                        <ul class="help-block small">
+                            <li>have their own line plotted in the cumulative participation graph,</li>
+                            and,
+                            <li>have their counts (per bin) summed in the binned participation graph.</li>
+                        </ul>
                         <select id="timeseries-filter"
                                 class="selectpicker form-control"
                                 multiple>
@@ -178,20 +192,38 @@
             <section class="col-xs-8">
                 <article id="binned-participation-plot"></article>
                 <article id="cumulative-participation-plot"></article>
+                <article id="binned-registration-plot"></article>
+                <article id="cumulative-registration-plot"></article>
             </section>
-        <article id="binned-registration-plot"></article>
-            <article id="cumulative-registration-plot"></article>
         </section>
         <section id="summary-section" class="row">
             <h3>Summary Statistics</h3>
             <div>
-                <p class="help-block">The pivot table is a way for you to summarize data across (primarily) <em>qualitative</em> axes.</p>
+                <p class="help-block">
+                    The data that you see in this section corresponds to
+                    {% if user.is_superuser %}
+                        all <strong class="text-success">consented</strong> responses
+                    {% else %}
+                        <strong class="text-success">consented</strong> responses from studies that you have read access to
+                    {% endif %}
+                        along with children/accounts associated with those responses.
+                </p>
+                <p class="help-block">The pivot table is a way for you to summarize data across (primarily) <em>qualitative</em> axes.
+                    The available fields (child age, study, etc.) are shown in the leftmost column. You can drag fields
+                    to the column to the right or the row at the top.
+                </p>
 
                 <p class="help-block">
-                    The leftmost column contains the visualization options (Table, Area Chart, Bar Chart, etc.); below it
-                    are the fields that you can drag to the column to the right or the row at the top. Depending on the
-                    aggregation metric you use (specified by the dropdown menu on the right), you will see that summary
-                    statistic "spread" across the values of the fields that you dragged in.
+                    The aggregation metric you choose (unique children, unique families, average income, etc.) from the
+                    dropdown at right will be broken down in a table. The table has a row for each combination of the
+                    field values at left, and a column for each combination of the field values at the top.
+                </p>
+
+                <p class="help-block">
+                    You can choose to display only certain values of a given field - for instance only some of your
+                    studies, or only some states - by clicking the arrow next to that field and unchecking some of the
+                    values. You can also choose a different visualization instead of a table (area chart, bar chart, etc.)
+                    from the dropdown at the left.
                 </p>
             </div>
             <h4>Pivot Table Examples</h4>
@@ -199,9 +231,9 @@
                 <button type="button"
                         class="btn btn-default"
                         data-cols="Study"
-                        data-rows="Consent Ruling"
+                        data-rows="Living Density"
                         data-aggregator="Total # Responses"
-                        data-renderer="Stacked Bar Chart">Rulings by Study</button>
+                        data-renderer="Stacked Bar Chart">Living Density by Study</button>
                 <button type="button"
                         class="btn btn-default"
                         data-cols="Child Gender"
@@ -215,8 +247,9 @@
                         data-renderer="Bar Chart">Unique Families per Parent/Guardian Education Level</button>
                 <button type="button"
                         class="btn btn-default"
-                        data-rows="Study"
-                        data-aggregator="Referrers"
+                        data-cols="Study"
+                        data-rows="Lookit Referrer"
+                        data-aggregator="Unique Families"
                         data-renderer="Table">Referrers by Study</button>
                 <button type="button"
                         class="btn btn-default"
@@ -289,7 +322,6 @@
         </section>
 
     </div>
-    {# Load all the graphs now that vega has been loaded #}
     <script type="text/javascript">
         /* ------------------------- *
          * ---- ELEMENT HANDLES ---- *
@@ -457,18 +489,15 @@
                 gchart: {
                     width: 800,
                     height: 600,
-                    interpolateNulls: true,
-                    isStacked: false,
                 }
             }
         };
-
 
         /* ---------------------- *
          * ---- VIEW METHODS ---- *
          * ---------------------- */
         function initializeView() {
-            google.load("visualization", "1", {packages:["corechart", "charteditor"]});
+            google.charts.load("45", {packages:["corechart", "charteditor"]});
             // Need to actually have Date objects for PivotTable and MetricsGraphics to work.
             RESPONSE_PIVOT_DATA.forEach(record => record["Time of Response"] = new Date(record["Time of Response"]));
             RESPONSE_PIVOT_DATA.sort((a, b) => a["Time of Response"] - b["Time of Response"]);
@@ -483,6 +512,7 @@
 
             regenerateRegistrationPlots();
             regenerateParticipationPlots();
+            regeneratePivotTable();
 
             $timeseriesFilter
                 .selectpicker(TIMESERIES_FILTER_SETTINGS)
@@ -927,7 +957,11 @@
             $responsePivotElement
                 .pivotUI(
                     RESPONSE_PIVOT_DATA.filter(
-                        observation => start.isBefore(observation["Time of Response"]) && end.isAfter(observation["Time of Response"])
+                        observation => {
+                            return start.isBefore(observation["Time of Response"]) &&
+                                   end.isAfter(observation["Time of Response"]) &&
+                                   observation["Consent Ruling"] === "accepted";
+                        }
                     ),
                     RESPONSE_PIVOT_OPTS,
                     true
