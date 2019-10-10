@@ -1271,8 +1271,10 @@ class StudyParticipantAnalyticsView(
         for resp in annotated_responses:
             studies_for_child[resp.child.id].add(resp.study.name)
 
-        # Users for _any_ response associated with a study that we can see.
-        registrations = User.objects.all().values_list("date_created", flat=True)
+        # Include _all_ non-researcher users on Lookit
+        registrations = User.objects.filter(is_researcher=False).values_list(
+            "date_created", flat=True
+        )
 
         # Now populate actual graph specs using helpers.
         ctx = super().get_context_data(**kwargs)
@@ -1284,12 +1286,12 @@ class StudyParticipantAnalyticsView(
         )
 
         # To get pivot data, we have to load the json object with requisite
-        # TODO: include all children if superuser
         if self.request.user.is_superuser:
-            children_queryset = Child.objects.all()
+            children_queryset = Child.objects.filter(user__is_researcher=False)
         else:
             children_queryset = Child.objects.filter(
-                id__in=annotated_responses.values_list("child", flat=True).distinct()
+                user__is_researcher=False,
+                id__in=annotated_responses.values_list("child", flat=True).distinct(),
             )
         children_pivot_data = unstack_children(children_queryset, studies_for_child)
 

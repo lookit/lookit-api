@@ -90,7 +90,7 @@
                 that you have read access to.
             </p>
             <p class="help-block">
-                The <strong>registration</strong> plots include all registered Lookit users, regardless of 
+                The <strong>registration</strong> plots include all registered Lookit users except researcher accounts, regardless of 
                 whether they have participated in a study you have read access to. 
             </p>
             <article class="col-xs-4">
@@ -259,7 +259,7 @@
             
             <div>
                 <p class="help-block">
-                    This section includes data from all children  
+                    This section includes data from all children (except children of researcher accounts) 
                     
                     {% if user.is_superuser %}
                     registered on Lookit, regardless of whether they have participated in any studies. (This is because you are a superuser - typically only participants are included.)
