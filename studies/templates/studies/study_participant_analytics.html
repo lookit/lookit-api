@@ -480,8 +480,6 @@
             },
             hiddenFromDragDrop: [
                 "Time of Response",
-                "Response (unique identifier)",
-                "Child (unique identifier)",
                 "Family (unique identifier)",
                 "Study ID"
             ],
@@ -870,18 +868,14 @@
                         (!studyId                || responseDataPoint["Study ID"] === parseInt(studyId))) {
                         newSeries.push({
                             date: responseDataPoint["Time of Response"],
-                            value: previousPoint ? previousPoint["value"] + 1 : 1,
-                            childId: responseDataPoint["Child (unique identifier)"],
-                            responseId: responseDataPoint["Response (unique identifier)"]
+                            value: previousPoint ? previousPoint["value"] + 1 : 1
                         });
                     } else {
                         // For continuity, we're adding a fake datapoint to the timeseries that is just the
                         // same as whatever the last value was. This will only work for cumulative datasets!
                         newSeries.push({
                             date: responseDataPoint["Time of Response"],
-                            value: previousPoint ? previousPoint["value"] : 0,
-                            child_id: undefined,
-                            responseId: undefined
+                            value: previousPoint ? previousPoint["value"] : 0
                         });
                     }
                     return newSeries;
