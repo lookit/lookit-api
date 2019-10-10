@@ -822,7 +822,6 @@
                     );
                     
                     // Add start/end values based on actual bounds
-                    console.log(cumulativeSeries);
                     let startAnchor = {
                             date: moment(start).startOf("day").toDate(),
                             value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
