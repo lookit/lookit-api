@@ -86,17 +86,12 @@
         <section id="participation-section" class="row">
             <h3>Recruitment Data Plots</h3>
             <p class="help-block">
-                The data that you see in the <strong>participation</strong> plots correspond to
-                {% if user.is_superuser %}
-                    all responses
-                {% else %}
-                    responses from studies that you have read access to
-                {% endif %}
-                    along with children/accounts associated with those responses.
+                The <strong>participation</strong> plots display the number of responses across studies 
+                that you have read access to.
             </p>
             <p class="help-block">
-                The data that you see in the <strong>registration</strong> plots correspond to all registered Lookit users
-                (for the given timeframe).
+                The <strong>registration</strong> plots include all registered Lookit users, regardless of 
+                whether they have participated in a study you have read access to. 
             </p>
             <article class="col-xs-4">
                 <div id="global-filter-panel" class="panel panel-default">
@@ -105,39 +100,43 @@
                     </div>
                     <div class="panel-body">
                         <label class="control-label" for="date-filter">Date Range</label>
-                        <p class="help-block small">Controls both sets of plots (registration and participation) <strong>and</strong> the pivot table.</p>
+                        <p class="help-block small">Number of responses and number of new registered participants 
+                        within this range will be displayed in the graphs. This also controls the <strong>pivot table</strong>:  
+                        only data from responses (and the associated children/families) within this time frame will be 
+                        included in the table.
                         <input id="date-filter" class="form-control input-sm" type="text"/>
 
                         <table id="total-counts" class="table table-condensed">
                             <tr>
-                                <td>Total # Unique Responses</td>
+                                <td># Unique Responses</td>
                                 <td id="total-count-responses"></td>
                             </tr>
                             <tr>
-                                <td>Total # Unique Children</td>
+                                <td># Unique Children</td>
                                 <td id="total-count-children"></td>
                             </tr>
                             <tr>
-                                <td>Total # Registrations</td>
+                                <td># Registrations in date range</td>
                                 <td id="total-count-registrations"></td>
+                            </tr>
+                            <tr>
+                                <td>Total # Registrations at range end</td>
+                                <td id="end-count-registrations"></td>
                             </tr>
                         </table>
                         <label class="control-label" for="granularity-specifier">Bin Granularity</label>
                         <p class="help-block small">Change the sampling width of the binned graphs.</p>
                         <select id="granularity-specifier" class="selectpicker form-control">
-                            <option value="day">Day</option>
+                            <option value="day" selected>Day</option>
                             <option value="week">Week</option>
                             <option value="month">Month</option>
                         </select>
-                        <label class="control-label" for="timeseries-filter">Counted Series</label>
+                        <label class="control-label" for="timeseries-filter">Included responses</label>
                         <p class="help-block small">
-                            Determine the kinds of responses that are "counted" such that they:
+                            Determine the kinds of responses that are counted in the binned participation graph 
+                            and have their own line plotted in the cumulative participation graph. (This does not
+                            affect the registration plots or pivot table.)
                         </p>
-                        <ul class="help-block small">
-                            <li>have their own line plotted in the cumulative participation graph,</li>
-                            and,
-                            <li>have their counts (per bin) summed in the binned participation graph.</li>
-                        </ul>
                         <select id="timeseries-filter"
                                 class="selectpicker form-control"
                                 multiple>
@@ -200,13 +199,8 @@
             <h3>Summary Statistics</h3>
             <div>
                 <p class="help-block">
-                    The data that you see in this section corresponds to
-                    {% if user.is_superuser %}
-                        all <strong class="text-success">consented</strong> responses
-                    {% else %}
-                        <strong class="text-success">consented</strong> responses from studies that you have read access to
-                    {% endif %}
-                        along with children/accounts associated with those responses.
+                    This section includes data from responses to your studies (a) within the time range specified above and (b) for which <strong class="text-success">consent has been confirmed</strong>,
+                    along with children/accounts associated with those responses.
                 </p>
                 <p class="help-block">The pivot table is a way for you to summarize data across (primarily) <em>qualitative</em> axes.
                     The available fields (child age, study, etc.) are shown in the leftmost column. You can drag fields
@@ -262,6 +256,13 @@
         </section>
         <section>
             <h3>Child Data Summary</h3>
+            
+            <div>
+                <p class="help-block">
+                    This section includes data from all children who submitted a response (with 
+                    consent confirmed) to at least one study you have read access to. 
+                </p>
+            </div>
             <article id="characteristics-table" class="col-md-4">
                 <h4>Characteristics</h4>
                 <table class="table small">
@@ -331,6 +332,7 @@
               $dateFilter           = $('#date-filter'),
               $timeseriesOptions    = $timeseriesFilter.find("option"),
               $granularitySpecifier = $("#granularity-specifier");
+        $('#granularity-specifier').selectpicker('val', 'day'); //align initial display with default
 
         /* ------------------------- *
          * ---- DATA CONTAINERS ---- *
@@ -350,9 +352,9 @@
             ranges: {
                 'Today': [moment().startOf('day'), moment()],
                 'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'Last Year': [moment().subtract(1, 'year'), moment()],
+                'Past 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Past 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Past Year': [moment().subtract(1, 'year'), moment()],
                 'This Month': [moment().startOf('month'), moment().endOf('month')],
                 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
             },
@@ -402,7 +404,7 @@
             full_width: true,
             height: 300,
             right: 40,
-            y_label: "Daily Responses",
+            y_label: "Responses",
             // missing_is_hidden: true,
             target: document.getElementById('binned-participation-plot'),
         };
@@ -429,7 +431,7 @@
             top: 70,
             full_width: true,
             height: 300,
-            y_label: "Daily Registrations",
+            y_label: "New Registrations",
             // missing_is_hidden: true,
             target: document.getElementById('binned-registration-plot'),
         };
@@ -473,15 +475,13 @@
                 "Total # Responses": () => pivotAggregatorTemplates.count()(),
                 // TODO: This average will probably multiple-count children - we only want to include ages and
                 //       incomes per child/family for a more accurate read. A custom aggregator is needed.
-                "Average Child Age (days)": () => pivotAggregatorTemplates.average()(["Child Age in Days"]),
-                "Average Child Age (months)": () => pivotAggregatorTemplates.average()(["Child Age in Months"]),
-                "Average Child Age (years)": () => pivotAggregatorTemplates.average()(["Child Age in Years"]),
+                "Average Child Age (months)": () => pivotAggregatorTemplates.average(function(x) { return (x / 30).toFixed(2); })(["Child Age in Days"]),
+                "Average Child Age (years)": () => pivotAggregatorTemplates.average(function(x) { return (x / 365).toFixed(2); })(["Child Age in Days"]),
                 "Average Annual Income": () => pivotAggregatorTemplates.average()(["Family Annual Income"]),
             },
             hiddenFromDragDrop: [
+                "Child Age in Days",
                 "Time of Response",
-                "Response (unique identifier)",
-                "Child (unique identifier)",
                 "Family (unique identifier)",
                 "Study ID"
             ],
@@ -528,26 +528,50 @@
         function regenerateRegistrationPlots() {
             let {after: start, before: end, interval} = GLOBAL_PARTICIPATION_QUERY_STATE;
 
-            let [cumulativeSeries, binnedSeries] = generateRegistrationTimeseries(interval);
+            let [cumulativeSeriesComplete, binnedSeries] = generateRegistrationTimeseries(interval);
 
             // Capturing some of the get() behavior here since we're not
-            cumulativeSeries = cumulativeSeries.filter(
+            let cumulativeSeriesPast = cumulativeSeriesComplete.filter(
+                observation => start.isAfter(observation["date"])
+            );
+            let cumulativeSeries = cumulativeSeriesComplete.filter(
                 observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
             );
+            
+            // Add start/end points to extend cumulative counts appropriately to edges of graph
+            let startAnchor = {
+                date: moment(start).startOf("day").toDate(),
+                value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 :  (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+            };
+            let endAnchor = {
+                date: moment(end).endOf("day").toDate(), // to make sure single-day ranges work, not same timestamp start/end
+                value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] :  (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+            }
+            cumulativeSeries.unshift(startAnchor);
+            cumulativeSeries.push(endAnchor);
 
             binnedSeries = binnedSeries.filter(
                 observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
             );
 
-            // We can get actual registration count this way.
+            // Get count of registrations during interval and total # registrations at end
             let last = cumulativeSeries.slice(-1)[0];
-            document.getElementById("total-count-registrations").innerText = last ? last["value"] : 0;
+            let prev = cumulativeSeriesPast.slice(-1)[0]; // get last value before start date, in case no registrations in this interval but some previously
+            let registrationsInInterval = binnedSeries.length ? binnedSeries.map(observation => observation["value"]).reduce((a,b) => a + b, 0) : 0;
+            let totalRegistrations = last ? last["value"] : (prev ? prev["value"] : 0);
+            document.getElementById("total-count-registrations").innerText = registrationsInInterval;
+            document.getElementById("end-count-registrations").innerText = totalRegistrations;
 
             // TODO: this patches tight range "dx" bugs on binned registration histograms. This is a bug
             //       with the MetricsGraphics library, but I'm sure there's some way to deal with it more
             //       elegantly.
             if (binnedSeries.length === 1) {
                 binnedSeries.push({date: end.toDate(), value: 0});
+            }
+            
+            let registrationBounds = {
+                min_x: start,
+                max_x: end
             }
 
             delete BINNED_REGISTRATION_PLOT.xax_format;
@@ -560,7 +584,8 @@
                         // TODO: figure out why x_accessor and y_accessor get overridden on 2nd render
                         x_accessor: "date",
                         y_accessor: "value"
-                    }
+                    },
+                    registrationBounds
                 )
             );
 
@@ -571,7 +596,8 @@
                     {
                         data: cumulativeSeries,
                         chart_type: cumulativeSeries.length ? "line" : "missing-data"
-                    }
+                    },
+                    registrationBounds
                 )
             );
         }
@@ -732,7 +758,7 @@
             // Singular histogram series.
             let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before, interval);
 
-            drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels);
+            drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels, [after, before]);
         }
 
 
@@ -786,11 +812,26 @@
                                 _ruling,
                             );
                     }
-
+                    
+                    let cumulativeSeriesPast = cumulativeSeries.filter(
+                        observation => start.isAfter(observation["date"])
+                    );
                     // Now filter based on date.
                     cumulativeSeries = cumulativeSeries.filter(
                         observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
                     );
+                    
+                    // Add start/end values based on actual bounds
+                    let startAnchor = {
+                            date: moment(start).startOf("day").toDate(),
+                            value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+                        };
+                    let endAnchor = {
+                            date: moment(end).endOf("day").toDate(),
+                            value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+                        }
+                    cumulativeSeries.unshift(startAnchor);
+                    cumulativeSeries.push(endAnchor);
 
                     cumulativeSet.push(cumulativeSeries);
                     // true if it's an "any ruling" for that study
@@ -802,27 +843,29 @@
                 },
                 [] // timeseriesSet initializer
             );
+            
+
+            
         }
 
 
-        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels) {
+        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels, bounds=[]) {
             // Now fill with data, y_accessor, and legend, then draw.
             let newPlotOptions = {
                 x_accessor: "date",
                 y_accessor: "value",
             };
 
-            // Only add cumulative bounds if the binned series has bounds to begin with.
-            let cumulativeBounds;
-            if (binnedSeries.length) {
+            // Set bounds of participation plots based on time range selected rather than data
+            let cumulativeBounds;          
+            if (bounds) {
                 cumulativeBounds = {
-                  min_x: binnedSeries[0]["date"],
-                  max_x: binnedSeries.slice(-1)[0]["date"]
-                };
+                    min_x: bounds[0],
+                    max_x: bounds[1]
+                }
             } else {
                 cumulativeBounds = {};
             }
-
 
             let cumulativePlotOpts = $.extend(
                 {},
@@ -847,7 +890,8 @@
                 {
                     data: binnedSeries,
                     chart_type: binnedSeries.length ? "histogram" : "missing-data"
-                }
+                },
+                cumulativeBounds
             );
 
             delete binnedPlotOpts.xax_format;
@@ -865,18 +909,14 @@
                         (!studyId                || responseDataPoint["Study ID"] === parseInt(studyId))) {
                         newSeries.push({
                             date: responseDataPoint["Time of Response"],
-                            value: previousPoint ? previousPoint["value"] + 1 : 1,
-                            childId: responseDataPoint["Child (unique identifier)"],
-                            responseId: responseDataPoint["Response (unique identifier)"]
+                            value: previousPoint ? previousPoint["value"] + 1 : 1
                         });
                     } else {
                         // For continuity, we're adding a fake datapoint to the timeseries that is just the
                         // same as whatever the last value was. This will only work for cumulative datasets!
                         newSeries.push({
                             date: responseDataPoint["Time of Response"],
-                            value: previousPoint ? previousPoint["value"] : 0,
-                            child_id: undefined,
-                            responseId: undefined
+                            value: previousPoint ? previousPoint["value"] : 0
                         });
                     }
                     return newSeries;
