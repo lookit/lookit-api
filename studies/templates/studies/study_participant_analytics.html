@@ -473,12 +473,12 @@
                 "Total # Responses": () => pivotAggregatorTemplates.count()(),
                 // TODO: This average will probably multiple-count children - we only want to include ages and
                 //       incomes per child/family for a more accurate read. A custom aggregator is needed.
-                "Average Child Age (days)": () => pivotAggregatorTemplates.average()(["Child Age in Days"]),
-                "Average Child Age (months)": () => pivotAggregatorTemplates.average()(["Child Age in Months"]),
-                "Average Child Age (years)": () => pivotAggregatorTemplates.average()(["Child Age in Years"]),
+                "Average Child Age (months)": () => pivotAggregatorTemplates.average(function(x) { return x / 30; })(["Child Age in Days"]),
+                "Average Child Age (years)": () => pivotAggregatorTemplates.average(function(x) { return x / 365; })(["Child Age in Days"]),
                 "Average Annual Income": () => pivotAggregatorTemplates.average()(["Family Annual Income"]),
             },
             hiddenFromDragDrop: [
+                "Child Age in Days",
                 "Time of Response",
                 "Family (unique identifier)",
                 "Study ID"
