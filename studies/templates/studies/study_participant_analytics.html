@@ -262,7 +262,7 @@
                     This section includes data from all children  
                     
                     {% if user.is_superuser %}
-                    registered on Lookit, regardless of whether they have participated in any studies.
+                    registered on Lookit, regardless of whether they have participated in any studies. (This is because you are a superuser - typically only participants are included.)
                     {% else %}
                     who submitted a response (with 
                     consent confirmed) to at least one study you have read access to.
@@ -332,7 +332,7 @@
                 <table class="table small">
                     <thead>
                     <tr>
-                        <th>Age in months</th>
+                        <th>Age</th>
                         <th># Children</th>
                     </tr>
                     </thead>
