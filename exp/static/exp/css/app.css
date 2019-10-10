@@ -1,3 +1,7 @@
+html {
+    font-size: 12px;
+}
+
 body {
     font-family: 'Lato', sans-serif;
     font-size: 15px;
@@ -726,3 +730,22 @@ label[for="gestational-age-include-na"] {
     bottom: 50%;
     left: 50%;
 }
+
+#plot-legend {
+    height: 400px;
+    overflow-y: auto;
+}
+
+#plot-legend span {
+    display: block;
+}
+
+#plot-legend span:nth-child(1) {
+    margin-top: 10px;
+}
+
+#global-filter-panel .panel-body .form-control {
+    margin-bottom: 8px;
+    margin-left: 2px;
+}
+

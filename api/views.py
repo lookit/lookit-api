@@ -15,7 +15,8 @@ from accounts.serializers import (
     OrganizationSerializer,
 )
 from api.permissions import FeedbackPermissions, ResponsePermissions
-from studies.models import Feedback, Response, Study, get_consented_responses_qs
+from studies.models import Feedback, Response, Study
+from studies.queries import get_consented_responses_qs
 from studies.serializers import (
     FeedbackSerializer,
     ResponseSerializer,

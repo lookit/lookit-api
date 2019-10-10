@@ -23,7 +23,8 @@ from exp.mixins.participant_mixin import ParticipantMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 from project.settings import EXPERIMENTER_LOGIN_URL as login_url
 from studies.helpers import send_mail
-from studies.models import Response, get_consented_responses_qs
+from studies.models import Response
+from studies.queries import get_consented_responses_qs
 
 
 class ParticipantListView(

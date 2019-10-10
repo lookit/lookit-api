@@ -1,0 +1,1035 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+{% load guardian_tags %}
+
+{% block head %}
+    {{ block.super }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js" integrity="sha256-+9Mf3cAVmxxudDsr1XwXUeRZFtvdWVYdq5/vcgiYyNU=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.css" integrity="sha256-H83YjkVzXEyHSdZ/5aVRoW2QfqeJ7gIWduA7aCy9tWY=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.js" integrity="sha256-XevW8oTz1EmE00mqCsOAyUv07/6MrJ0mEQtHH8V9UZ0=" crossorigin="anonymous"></script>#}
+    {# Moment #}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    {# PivotTable.js #}
+    <script src="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/pivot.min.js" integrity="sha256-/btBGbvOvx2h/NcXVS+JPFhnoUGbZXDX0O2v6AaABLU=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css" integrity="sha256-nn3M6N8S2BjPirPhvCF61ZCcgcppdLtnaNOLhiwro7E=" crossorigin="anonymous" />
+
+    {# Google Charts (for PivotTable js rendering) #}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/gchart_renderers.min.js" integrity="sha256-Ve5qXDsBeNuaKKg22jpTMlWThC0OWupW9JtFrXxdy1Q=" crossorigin="anonymous"></script>
+
+    <!-- Datepicker -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+
+    {% comment %}
+        When we upgrade to django 2.x, please convert to the following insertions to json_script.
+        Please see: https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
+    {% endcomment %}
+    <script type="application/json" id="response-pivot-data">
+        {{ response_pivot_data | safe }}
+    </script>
+    <script type="application/json" id="registration-data">
+        {{ registration_data | safe }}
+    </script>
+    {{ form.media }}
+{% endblock %}
+
+{% block title %}Participant Analytics{% endblock %}
+
+{% block flash %}
+    {% if messages %}
+        {% for message in messages %}
+            <div id="details" class="alert {{ message.tags }} alert-dismissable">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <nav class='row'>
+            <section class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+                    <li class="active">Participant Analytics</li>
+                </ol>
+            </section>
+        </nav>
+        <section class="row">
+            <h1>Participant Analytics</h1>
+            <div>
+                <p class="help-block">
+                    The information on this page is provided primarily for the purposes of evaluating your recruitment
+                    efforts: how well do various approaches work? What populations do they reach? You may also find
+                    it helpful for reporting aggregate characteristics of your participants.
+                </p>
+
+                <p class="help-block">
+                    Please note that demographic survey data may never be published such that it could be linked to an individual
+                    participant's video (see <a href="https://lookit.mit.edu/termsofuse/">Terms of Use</a>). Before sharing any demographic data, consider whether it
+                    might be possible to link to individual participants: e.g., because a child's name is mentioned
+                    in a comment or because only one family speaks a particular language and that language is
+                    used in their video.
+                </p>
+            </div>
+        </section>
+        <section id="participation-section" class="row">
+            <h3>Recruitment Data Plots</h3>
+            <p class="help-block">
+                The <strong>participation</strong> plots display the number of responses across studies 
+                that you have read access to.
+            </p>
+            <p class="help-block">
+                The <strong>registration</strong> plots include all registered Lookit users except researcher accounts, regardless of 
+                whether they have participated in a study you have read access to. 
+            </p>
+            <article class="col-xs-4">
+                <div id="global-filter-panel" class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>Global Data Filters</h4>
+                    </div>
+                    <div class="panel-body">
+                        <label class="control-label" for="date-filter">Date Range</label>
+                        <p class="help-block small">Number of responses and number of new registered participants 
+                        within this range will be displayed in the graphs. This also controls the <strong>pivot table</strong>:  
+                        only data from responses (and the associated children/families) within this time frame will be 
+                        included in the table.
+                        <input id="date-filter" class="form-control input-sm" type="text"/>
+
+                        <table id="total-counts" class="table table-condensed">
+                            <tr>
+                                <td># Unique Responses</td>
+                                <td id="total-count-responses"></td>
+                            </tr>
+                            <tr>
+                                <td># Unique Children</td>
+                                <td id="total-count-children"></td>
+                            </tr>
+                            <tr>
+                                <td># Registrations in date range</td>
+                                <td id="total-count-registrations"></td>
+                            </tr>
+                            <tr>
+                                <td>Total # Registrations at range end</td>
+                                <td id="end-count-registrations"></td>
+                            </tr>
+                        </table>
+                        <label class="control-label" for="granularity-specifier">Bin Granularity</label>
+                        <p class="help-block small">Change the sampling width of the binned graphs.</p>
+                        <select id="granularity-specifier" class="selectpicker form-control">
+                            <option value="day" selected>Day</option>
+                            <option value="week">Week</option>
+                            <option value="month">Month</option>
+                        </select>
+                        <label class="control-label" for="timeseries-filter">Included responses</label>
+                        <p class="help-block small">
+                            Determine the kinds of responses that are counted in the binned participation graph 
+                            and have their own line plotted in the cumulative participation graph. (This does not
+                            affect the registration plots or pivot table.)
+                        </p>
+                        <select id="timeseries-filter"
+                                class="selectpicker form-control"
+                                multiple>
+                            <optgroup id="all-studies-filter" label="ALL STUDIES">
+                                <option value="ALL:any"
+                                        data-ruling="any">
+                                    All Rulings
+                                </option>
+                                <option value="ALL:pending"
+                                        data-ruling="pending">
+                                    Pending
+                                </option>
+                                <option value="ALL:accepted"
+                                        data-ruling="accepted">
+                                    Accepted</option>
+                                <option value="ALL:rejected"
+                                        data-ruling="rejected">
+                                    Rejected
+                                </option>
+                            </optgroup>
+                            {% for study in all_studies %}
+                                <optgroup label="{{ study.name }}"
+                                          data-study-id="{{ study.id }}">
+                                    <option value="{{ study.id }}:any"
+                                            data-subtext="{{ study.name }}"
+                                            data-ruling="any">
+                                        All Rulings
+                                    </option>
+                                    <option value="{{ study.id }}:pending"
+                                            data-subtext="{{ study.name }}"
+                                            data-ruling="pending">
+                                        Pending
+                                    </option>
+                                    <option value="{{ study.id }}:accepted"
+                                            data-subtext="{{ study.name }}"
+                                            data-ruling="accepted">
+                                        Accepted
+                                    </option>
+                                    <option value="{{ study.id }}:rejected"
+                                            data-subtext="{{ study.name }}"
+                                            data-ruling="rejected">
+                                        Rejected
+                                    </option>
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                        <h5>Legend</h5>
+                        <section id="plot-legend" class="small"></section>
+                    </div>
+                </div>
+            </article>
+            <section class="col-xs-8">
+                <article id="binned-participation-plot"></article>
+                <article id="cumulative-participation-plot"></article>
+                <article id="binned-registration-plot"></article>
+                <article id="cumulative-registration-plot"></article>
+            </section>
+        </section>
+        <section id="summary-section" class="row">
+            <h3>Summary Statistics</h3>
+            <div>
+                <p class="help-block">
+                    This section includes data from responses to your studies (a) within the time range specified above and (b) for which <strong class="text-success">consent has been confirmed</strong>,
+                    along with children/accounts associated with those responses.
+                </p>
+                <p class="help-block">The pivot table is a way for you to summarize data across (primarily) <em>qualitative</em> axes.
+                    The available fields (child age, study, etc.) are shown in the leftmost column. You can drag fields
+                    to the column to the right or the row at the top.
+                </p>
+
+                <p class="help-block">
+                    The aggregation metric you choose (unique children, unique families, average income, etc.) from the
+                    dropdown at right will be broken down in a table. The table has a row for each combination of the
+                    field values at left, and a column for each combination of the field values at the top.
+                </p>
+
+                <p class="help-block">
+                    You can choose to display only certain values of a given field - for instance only some of your
+                    studies, or only some states - by clicking the arrow next to that field and unchecking some of the
+                    values. You can also choose a different visualization instead of a table (area chart, bar chart, etc.)
+                    from the dropdown at the left.
+                </p>
+            </div>
+            <h4>Pivot Table Examples</h4>
+            <div id="pivot-presets" class="btn-group btn-group" role="group" aria-label="Preset Pivot Choices">
+                <button type="button"
+                        class="btn btn-default"
+                        data-cols="Study"
+                        data-rows="Living Density"
+                        data-aggregator="Total # Responses"
+                        data-renderer="Stacked Bar Chart">Living Density by Study</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-cols="Child Gender"
+                        data-rows="Study"
+                        data-aggregator="Unique Children"
+                        data-renderer="Table">Unique Children per Study by Gender</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-cols="Parent/Guardian Education Level"
+                        data-aggregator="Unique Families"
+                        data-renderer="Bar Chart">Unique Families per Parent/Guardian Education Level</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-cols="Study"
+                        data-rows="Lookit Referrer"
+                        data-aggregator="Unique Families"
+                        data-renderer="Table">Referrers by Study</button>
+                <button type="button"
+                        class="btn btn-default"
+                        data-rows="Study"
+                        data-aggregator="Additional Comments"
+                        data-renderer="Table">Additional info by Study</button>
+            </div>
+            <h4>Pivot Table</h4>
+            <article id="responses-pivot" class="col-md-12"></article>
+        </section>
+        <section>
+            <h3>Child Data Summary</h3>
+            
+            <div>
+                <p class="help-block">
+                    This section includes data from all children (except children of researcher accounts) 
+                    
+                    {% if user.is_superuser %}
+                    registered on Lookit, regardless of whether they have participated in any studies. (This is because you are a superuser - typically only participants are included.)
+                    {% else %}
+                    who submitted a response (with 
+                    consent confirmed) to at least one study you have read access to.
+                    {% endif %}
+                </p>
+            </div>
+            <article id="characteristics-table" class="col-md-4">
+                <h4>Characteristics</h4>
+                <table class="table small">
+                    <thead>
+                    <tr>
+                        <th>Characteristic</th>
+                        <th># Children</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for characteristic, child_count in characteristics.items %}
+                        <tr>
+                            <td>{{ characteristic }}</td>
+                            <td>{{ child_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+            <article id="languages-table" class="col-md-4">
+                <h4>Languages</h4>
+                <table class="table small">
+                    <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th># Children</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for language, child_count in languages.items %}
+                        <tr>
+                            <td>{{ language }}</td>
+                            <td>{{ child_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+            <article id="studies-table" class="col-md-4">
+                <h4>Studies</h4>
+                <table class="table small">
+                    <thead>
+                    <tr>
+                        <th>Study</th>
+                        <th># Children</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for study_name, child_count in studies.items %}
+                        <tr>
+                            <td>{{ study_name }}</td>
+                            <td>{{ child_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+            {% if user.is_superuser %}
+            <article id="studies-table" class="col-md-4">
+                <h4>Ages</h4>
+                <table class="table small">
+                    <thead>
+                    <tr>
+                        <th>Age</th>
+                        <th># Children</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for age, child_count in ages.items %}
+                        <tr>
+                            <td>{{ age }}</td>
+                            <td>{{ child_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+            {% endif %}
+        </section>
+
+    </div>
+    <script type="text/javascript">
+        /* ------------------------- *
+         * ---- ELEMENT HANDLES ---- *
+         * ------------------------- */
+        const $responsePivotElement = $("#responses-pivot"),
+              $timeseriesFilter     = $("#timeseries-filter"),
+              $dateFilter           = $('#date-filter'),
+              $timeseriesOptions    = $timeseriesFilter.find("option"),
+              $granularitySpecifier = $("#granularity-specifier");
+        $('#granularity-specifier').selectpicker('val', 'day'); //align initial display with default
+
+        /* ------------------------- *
+         * ---- DATA CONTAINERS ---- *
+         * ------------------------- */
+        const RESPONSE_PIVOT_DATA        = JSON.parse(document.querySelector("#response-pivot-data").innerText),
+              RAW_REGISTRATION_DATA      = JSON.parse(document.querySelector("#registration-data").innerText);
+
+
+        const CUMULATIVE_TIMESERIES_CACHE = {},
+              BINNED_TIMESERIES_CACHE     = {},
+              LEGEND_LABEL_CACHE          = {};
+
+        /* ----------------------- *
+         * ---- PLOT SETTINGS ---- *
+         * ----------------------- */
+        const DATE_FILTER_SETTINGS = {
+            ranges: {
+                'Today': [moment().startOf('day'), moment()],
+                'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+                'Past 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Past 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Past Year': [moment().subtract(1, 'year'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            },
+            startDate: moment().subtract(1, 'year'),
+            endDate: moment(),
+        };
+
+        const BASE_SELECT_SETTINGS = {
+            width: '100%',
+            sanitize: true,
+            liveSearch: true,
+        };
+
+        const TIMESERIES_FILTER_SETTINGS = $.extend(
+            BASE_SELECT_SETTINGS,
+            {
+                selectedTextFormat: 'count',
+                title: 'Select Timeseries to Display',
+                liveSearchPlaceholder: 'Search by study name',
+            }
+        );
+
+        // Boot up plots with defaults.
+        const CUMULATIVE_PARTICIPATION_PLOT = {
+            title: "Cumulative Participation",
+            description: "Plots cumulative participation data.",
+            data: null,  // Initialize in view init
+            top: 70,
+            full_width: true,
+            height: 200,
+            right: 40,
+            interpolate: d3.curveStepAfter,
+            target: document.getElementById('cumulative-participation-plot'),
+            y_label: "Cumulative Responses",
+            legend: [],
+            legend_target: "#plot-legend",
+            area: false,  // Area doesn't work with multiple lines :(
+        };
+
+        const BINNED_PARTICIPATION_PLOT = {
+            title: "Binned Participation",
+            description: "Plots participation data by day/week/month granularities",
+            data: null,  // Initialize in view init
+            chart_type: "histogram",
+            binned: true,
+            top: 70,
+            full_width: true,
+            height: 300,
+            right: 40,
+            y_label: "Responses",
+            // missing_is_hidden: true,
+            target: document.getElementById('binned-participation-plot'),
+        };
+
+        const CUMULATIVE_REGISTRATION_PLOT = {
+            title: "Cumulative Registration",
+            description: "Plots cumulative registration data.",
+            data: null,  // Initialize in view init
+            top: 70,
+            full_width: true,
+            height: 300,
+            interpolate: d3.curveStepAfter,
+            target: document.getElementById('cumulative-registration-plot'),
+            y_label: "Cumulative Registrations",
+            area: true,
+        };
+
+        const BINNED_REGISTRATION_PLOT = {
+            title: "Binned Registration",
+            description: "Plots registrations binned by day/month/week.",
+            data: null,  // Initialize in view init
+            chart_type: "histogram",
+            binned: true,
+            top: 70,
+            full_width: true,
+            height: 300,
+            y_label: "New Registrations",
+            // missing_is_hidden: true,
+            target: document.getElementById('binned-registration-plot'),
+        };
+
+        const GLOBAL_PARTICIPATION_QUERY_STATE = {
+            after: DATE_FILTER_SETTINGS.startDate,
+            before: DATE_FILTER_SETTINGS.endDate,
+            timeseriesHandles: ["ALL:any"],
+            ruling: "any",
+            studyId: null,
+            studyName: null,
+            legendLabels: [],
+            interval: "day",
+        };
+
+
+        /* --------------------- *
+         * ---- PIVOT TABLE ---- *
+         * --------------------- */
+        const pivotTableDerivers = $.pivotUtilities.derivers;
+        const pivotAggregatorTemplates = $.pivotUtilities.aggregatorTemplates;
+        const pivotTableRenderers = $.extend(
+            {},
+            $.pivotUtilities.renderers,
+            $.pivotUtilities.gchart_renderers
+        );
+        const RESPONSE_PIVOT_OPTS = {
+            cols: ["Study"],
+            rows: ["Child Gender", "Child Gestational Age at Birth"],
+            renderers: pivotTableRenderers,
+            rendererName: "Table",
+            aggregatorName: "Total # Responses",
+            derivedAttributes: {
+                "Date of Response": pivotTableDerivers.dateFormat("Time of Response", "%y/%m/%d")
+            },
+            aggregators: {
+                "Unique Children": () => pivotAggregatorTemplates.countUnique()(["Child (unique identifier)"]),
+                "Unique Families": () => pivotAggregatorTemplates.countUnique()(["Family (unique identifier)"]),
+                "Referrers": () => pivotAggregatorTemplates.listUnique()(["Lookit Referrer"]),
+                "Additional Comments": () => pivotAggregatorTemplates.listUnique()(["Additional Comments"]),
+                "Total # Responses": () => pivotAggregatorTemplates.count()(),
+                // TODO: This average will probably multiple-count children - we only want to include ages and
+                //       incomes per child/family for a more accurate read. A custom aggregator is needed.
+                "Average Child Age (months)": () => pivotAggregatorTemplates.average(function(x) { return (x / 30).toFixed(2); })(["Child Age in Days"]),
+                "Average Child Age (years)": () => pivotAggregatorTemplates.average(function(x) { return (x / 365).toFixed(2); })(["Child Age in Days"]),
+                "Average Annual Income": () => pivotAggregatorTemplates.average()(["Family Annual Income"]),
+            },
+            hiddenFromDragDrop: [
+                "Response (unique identifier)",
+                "Child (unique identifier)",
+                "Child Age in Days",
+                "Time of Response",
+                "Family (unique identifier)",
+                "Study ID"
+            ],
+            rendererOptions: {
+                gchart: {
+                    width: 800,
+                    height: 600,
+                }
+            }
+        };
+
+        /* ---------------------- *
+         * ---- VIEW METHODS ---- *
+         * ---------------------- */
+        function initializeView() {
+            google.charts.load("45", {packages:["corechart", "charteditor"]});
+            // Need to actually have Date objects for PivotTable and MetricsGraphics to work.
+            RESPONSE_PIVOT_DATA.forEach(record => record["Time of Response"] = new Date(record["Time of Response"]));
+            RESPONSE_PIVOT_DATA.sort((a, b) => a["Time of Response"] - b["Time of Response"]);
+
+            $responsePivotElement
+                .pivotUI(
+                    RESPONSE_PIVOT_DATA,
+                    RESPONSE_PIVOT_OPTS
+                );
+
+            $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
+
+            regenerateRegistrationPlots();
+            regenerateParticipationPlots();
+            regeneratePivotTable();
+
+            $timeseriesFilter
+                .selectpicker(TIMESERIES_FILTER_SETTINGS)
+                .on('changed.bs.select', handleTimeSeriesFilter);
+
+            $granularitySpecifier
+                .selectpicker()
+                .on('changed.bs.select', handleGranularityChange);
+
+            document.getElementById("pivot-presets").addEventListener("click", loadPivotTableExample);
+        }
+
+        function regenerateRegistrationPlots() {
+            let {after: start, before: end, interval} = GLOBAL_PARTICIPATION_QUERY_STATE;
+
+            let [cumulativeSeriesComplete, binnedSeries] = generateRegistrationTimeseries(interval);
+
+            // Capturing some of the get() behavior here since we're not
+            let cumulativeSeriesPast = cumulativeSeriesComplete.filter(
+                observation => start.isAfter(observation["date"])
+            );
+            let cumulativeSeries = cumulativeSeriesComplete.filter(
+                observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
+            );
+            
+            // Add start/end points to extend cumulative counts appropriately to edges of graph
+            let startAnchor = {
+                date: moment(start).startOf("day").toDate(),
+                value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 :  (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+            };
+            let endAnchor = {
+                date: moment(end).endOf("day").toDate(), // to make sure single-day ranges work, not same timestamp start/end
+                value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] :  (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+            };
+            cumulativeSeries.unshift(startAnchor);
+            cumulativeSeries.push(endAnchor);
+
+            binnedSeries = binnedSeries.filter(
+                observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
+            );
+
+            // Get count of registrations during interval and total # registrations at end
+            let last = cumulativeSeries.slice(-1)[0];
+            let prev = cumulativeSeriesPast.slice(-1)[0]; // get last value before start date, in case no registrations in this interval but some previously
+            let registrationsInInterval = binnedSeries.length ? binnedSeries.map(observation => observation["value"]).reduce((a,b) => a + b, 0) : 0;
+            let totalRegistrations = last ? last["value"] : (prev ? prev["value"] : 0);
+            document.getElementById("total-count-registrations").innerText = registrationsInInterval + "";
+            document.getElementById("end-count-registrations").innerText = totalRegistrations + "";
+
+            // TODO: this patches tight range "dx" bugs on binned registration histograms. This is a bug
+            //       with the MetricsGraphics library, but I'm sure there's some way to deal with it more
+            //       elegantly.
+            if (binnedSeries.length === 1) {
+                binnedSeries.push({date: end.toDate(), value: 0});
+            }
+            
+            let registrationBounds = {
+                min_x: start,
+                max_x: end
+            };
+
+            delete BINNED_REGISTRATION_PLOT.xax_format;
+            MG.data_graphic(
+                $.extend(
+                    BINNED_REGISTRATION_PLOT,
+                    {
+                        data: binnedSeries,
+                        chart_type: binnedSeries.length ? "histogram" : "missing-data",
+                        // TODO: figure out why x_accessor and y_accessor get overridden on 2nd render
+                        x_accessor: "date",
+                        y_accessor: "value"
+                    },
+                    registrationBounds
+                )
+            );
+
+            delete CUMULATIVE_REGISTRATION_PLOT.xax_format;
+            MG.data_graphic(
+                $.extend(
+                    CUMULATIVE_REGISTRATION_PLOT,
+                    {
+                        data: cumulativeSeries,
+                        chart_type: cumulativeSeries.length ? "line" : "missing-data"
+                    },
+                    registrationBounds
+                )
+            );
+        }
+
+        /**
+         * It's already in just plain old dates, we just need to create two series (cumulative and daily).
+         *
+         * XXX: This is a very rough and un-DRY implementation that should be refactored at a later point.
+         * Namely, we're doing timeseries processing three different ways with three different data sets.
+         * It makes sense to consolidate when we get user feedback and can hone in on an appropriate
+         * data-processing strategy.
+         */
+        function generateRegistrationTimeseries(interval="day") {
+
+            return RAW_REGISTRATION_DATA.reduce(
+                ([cumulativeSeries, binnedSeries], timestamp) => {
+                    // We do not bin for cumulative timeseries.
+                    let observedDate = moment(timestamp).startOf("day").toDate();
+
+                    let previousCumulativeObservation = cumulativeSeries.slice(-1)[0];
+
+                    if (!previousCumulativeObservation) {  // First observation.
+                        cumulativeSeries.push({
+                            date: observedDate,
+                            value: 1
+                        });
+                    } else {
+                        cumulativeSeries.push({
+                            date: observedDate,
+                            value: previousCumulativeObservation.value + 1
+                        });
+                    }
+
+                    let previousBinnedObservation = binnedSeries.slice(-1)[0];
+
+                    if (previousBinnedObservation) {
+                        if (moment(observedDate).isSame(previousBinnedObservation.date, interval)) {
+                            // Same day, so just add.
+                            previousBinnedObservation.value += 1;
+                        } else { // because it's sorted, we must be before, so create a bunch of same-value dummies
+                            // Backpropagation similar to how we do with response timeseries data.
+                            while (!moment(observedDate).isSame(previousBinnedObservation.date, interval)) {
+                                binnedSeries.push({
+                                    date: moment(previousBinnedObservation["date"]).add(1, interval).startOf(interval).toDate(),
+                                    value: 0
+                                });
+                                previousBinnedObservation = binnedSeries.slice(-1)[0];
+                            }
+                            binnedSeries.push({
+                                date: observedDate,
+                                value: 1,
+                            });
+                        }
+                    } else {
+                        binnedSeries.push({
+                            date: observedDate,
+                            value: 1,
+                        });
+                    }
+
+                    return [cumulativeSeries, binnedSeries];
+                },
+                [[],[]]
+            );
+        }
+
+        /**
+         * Datepicker event handling function.
+         */
+        function handleDateFiltering(after, before) {
+            $.extend(GLOBAL_PARTICIPATION_QUERY_STATE, {after, before});
+            regenerateParticipationPlots();
+            regenerateRegistrationPlots();
+            regeneratePivotTable();
+        }
+
+        /**
+         * On selection, changes
+         *
+         * @param $jqEvent
+         * @param clickedIndex
+         * @param isSelected
+         * @param previousValue
+         */
+        function handleGranularityChange($jqEvent, clickedIndex, isSelected, previousValue) {
+            GLOBAL_PARTICIPATION_QUERY_STATE.interval = $(this).val();
+            regenerateParticipationPlots();
+            regenerateRegistrationPlots();
+        }
+
+        /**
+         * On selection, tries to see if the TS has already been generated.
+         *
+         * @param $jqEvent
+         * @param clickedIndex
+         * @param isSelected
+         * @param previousValue
+         */
+        function handleTimeSeriesFilter($jqEvent, clickedIndex, isSelected, previousValue) {
+
+            let selectedRuling   = $timeseriesOptions[clickedIndex],
+                optGroupForStudy = selectedRuling.parentNode;
+
+            // Because studyName and studyId are used in the creation and composition of cache keys,
+            // we must ensure that the deselection of all series will "erase" whatever's in the
+            // query state object. The behavior of $.extend actually preserves underlying values from
+            // one of the object arguments if the value for the same key in the next object is undefined,
+            // so we have to override this behavior with defaults in order to preserve downstream caching
+            // behavior.
+            let selectedHandles = $(this).val();
+
+            $.extend(
+                GLOBAL_PARTICIPATION_QUERY_STATE,
+                {
+                    timeseriesHandles: selectedHandles || [],
+                    ruling: selectedHandles ? selectedRuling.dataset.ruling : null,
+                    studyName: selectedHandles ? optGroupForStudy.label : null,
+                    studyId: selectedHandles ? optGroupForStudy.dataset.studyId : null,
+                    legendLabels: []
+                }
+            );
+
+            regenerateParticipationPlots();
+        }
+
+        /**
+         * The workhorse of the participation plots - generates both plots based on filters.
+         *
+         * Because we want to enable orthogonal date filtering and series selection/composition,
+         * we need to rely on some sort state that is modified by the component event listeners -
+         * that is the GLOBAL_QUERY_STATE object referenced below. The procedural nature of this
+         * function and reliance on module-wide state, while hard to test, is fairly easy to
+         * understand and debug for such a small number of knobs to tweak.
+         */
+        function regenerateParticipationPlots() {
+            let {
+                after,
+                before,
+                timeseriesHandles,
+                ruling,
+                studyId,
+                studyName,
+                legendLabels,
+                interval,
+            } = GLOBAL_PARTICIPATION_QUERY_STATE;
+
+            // Set of linear series.
+            let cumulativeSet = getCumulativeTimeseriesSet(
+                timeseriesHandles, ruling, studyId, studyName, legendLabels, after, before
+            );
+
+            document.getElementById("total-count-responses").innerText =
+                new Set(cumulativeSet.flat().map(resp => resp.responseId).filter(id => id !== undefined)).size + "";
+
+            let uniqueChildIds = new Set(cumulativeSet.flat().map(resp => resp.childId).filter(id => id !== undefined));
+            document.getElementById("total-count-children").innerText = uniqueChildIds.size + "";
+
+            // Singular histogram series.
+            let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before, interval);
+
+            drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels, [after, before]);
+        }
+
+
+        function getBinnedTimeseries(timeseriesHandles, start, end, interval) {
+            let handle           = timeseriesHandles.sort().join('-') + interval,
+                binnedSeries     = BINNED_TIMESERIES_CACHE[handle];
+
+            if (!binnedSeries) {
+                let idRulingPairs = timeseriesHandles.map(handle => handle.split(":"));
+                binnedSeries = BINNED_TIMESERIES_CACHE[handle] =
+                   generateBinnedTimeSeries(idRulingPairs, interval);
+            }
+
+            binnedSeries = binnedSeries.filter(
+                observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
+            );
+
+            return binnedSeries;
+        }
+
+
+        /**
+         * Creates a list of lists, each inner list containing the datapoints for a cumulative time series.
+         *
+         * The data format of each observation is in the {data: xxxxxx, value: xxxxx} format that
+         * MetricsGraphics.js expects.
+         *
+         * @param timeseriesHandles
+         * @param ruling
+         * @param studyId
+         * @param studyName
+         * @param legendLabels
+         * @param start
+         * @param end
+         * @returns {*}
+         */
+        function getCumulativeTimeseriesSet(timeseriesHandles, ruling, studyId, studyName, legendLabels, start, end) {
+            return timeseriesHandles.reduce(
+                (cumulativeSet, handle) => {
+                    let cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle],
+                        legendLabel      = LEGEND_LABEL_CACHE[handle];
+                    if (!legendLabel) {
+                        legendLabel = LEGEND_LABEL_CACHE[handle] =
+                            `${studyName || "All Studies" } - ${ruling}`;
+                    }
+                    if (!cumulativeSeries) {
+                        let [_id, _ruling] = handle.split(':');
+                        cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle] =
+                            generateCumulativeTimeSeries(
+                                _id === 'ALL' ? null : _id,
+                                _ruling,
+                            );
+                    }
+                    
+                    let cumulativeSeriesPast = cumulativeSeries.filter(
+                        observation => start.isAfter(observation["date"])
+                    );
+                    // Now filter based on date.
+                    cumulativeSeries = cumulativeSeries.filter(
+                        observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
+                    );
+                    
+                    // Add start/end values based on actual bounds
+                    let startAnchor = {
+                        date: moment(start).startOf("day").toDate(),
+                        value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+                    };
+                    let endAnchor = {
+                        date: moment(end).endOf("day").toDate(),
+                        value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+                    };
+                    cumulativeSeries.unshift(startAnchor);
+                    cumulativeSeries.push(endAnchor);
+
+                    cumulativeSet.push(cumulativeSeries);
+                    // true if it's an "any ruling" for that study
+                    let finalDatapoint = cumulativeSeries.slice(-1)[0];
+                    // XXX: confusing implementation - mutating a global variable inside a reduce loop. Find
+                    //      a better way to do this.
+                    legendLabels.push(`${legendLabel} - (${finalDatapoint ? finalDatapoint.value : 0} total)`);
+                    return cumulativeSet;
+                },
+                [] // timeseriesSet initializer
+            );
+            
+
+            
+        }
+
+
+        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels, bounds=[]) {
+            // Now fill with data, y_accessor, and legend, then draw.
+            let newPlotOptions = {
+                x_accessor: "date",
+                y_accessor: "value",
+            };
+
+            // Set bounds of participation plots based on time range selected rather than data
+            let globalPlotBounds;          
+            if (bounds) {
+                globalPlotBounds = {
+                    min_x: bounds[0],
+                    max_x: bounds[1]
+                }
+            } else {
+                globalPlotBounds = {};
+            }
+
+            let cumulativePlotOpts = $.extend(
+                {},
+                CUMULATIVE_PARTICIPATION_PLOT,
+                newPlotOptions,
+                {
+                    data: cumulativeSet,
+                    legend: legendLabels,
+                    chart_type: cumulativeSet.length && cumulativeSet[0].length ? "line" : "missing-data"
+                },
+                globalPlotBounds
+            );
+
+            // Don't understand what this does, but apparently have to do it:
+            // https://metricsgraphicsjs.org/examples.htm#updating
+            delete cumulativePlotOpts.xax_format;
+
+            let binnedPlotOpts = $.extend(
+                {},
+                BINNED_PARTICIPATION_PLOT,
+                newPlotOptions,
+                {
+                    data: binnedSeries,
+                    chart_type: binnedSeries.length ? "histogram" : "missing-data"
+                },
+                globalPlotBounds
+            );
+
+            delete binnedPlotOpts.xax_format;
+
+            MG.data_graphic(cumulativePlotOpts);
+            MG.data_graphic(binnedPlotOpts);
+        }
+
+        function generateCumulativeTimeSeries(studyId, consentRuling) {
+            // Determine aggregation field to pick.
+            return RESPONSE_PIVOT_DATA.reduce(
+                (newSeries, responseDataPoint, currentIndex, sourceArray) => {
+                    let previousPoint = newSeries.slice(-1)[0];
+                    if ((consentRuling === "any" || responseDataPoint["Consent Ruling"] === consentRuling)    &&
+                        (!studyId                || responseDataPoint["Study ID"] === parseInt(studyId))) {
+                        newSeries.push({
+                            date: responseDataPoint["Time of Response"],
+                            value: previousPoint ? previousPoint["value"] + 1 : 1,
+                            childId: responseDataPoint["Child (unique identifier)"],
+                            responseId: responseDataPoint["Response (unique identifier)"]
+                        });
+                    }
+                    return newSeries;
+                },
+                []  // newSeries initializer
+            );
+        }
+
+        function generateBinnedTimeSeries(idRulingPairs, interval="day") {
+            return RESPONSE_PIVOT_DATA.reduce(
+                (newSeries, responseDataPoint) => {
+
+                    // Make sure we match criteria for at least one of the pairs.
+                    let dataPointIsValid = idRulingPairs.some(([studyId, consentRuling]) => {
+                        return ((consentRuling === "any" || responseDataPoint["Consent Ruling"] === consentRuling)    &&
+                                (studyId       === "ALL" || responseDataPoint["Study ID"] === parseInt(studyId)))
+                    });
+
+                    if (dataPointIsValid) {
+                        // If it matches the criteria, we add to the count.
+                        let previousPoint = newSeries.slice(-1)[0];
+                        if (responsesHappenedInSameBin(previousPoint, responseDataPoint, interval)) {
+                            previousPoint["value"] += 1;
+                        } else {
+                            // First, backpropagate any missing days.
+                            if (previousPoint) {
+                                while (!responsesHappenedInSameBin(previousPoint, responseDataPoint, interval)) {
+                                    // insert null point.
+                                    newSeries.push({
+                                        date: moment(previousPoint["date"]).add(1, interval).startOf(interval).toDate(),  // new Date(previousPoint["date"].getTime() + binningOffset)
+                                        value: 0
+                                    });
+                                    previousPoint = newSeries.slice(-1)[0];
+                                }
+                            } // insert brand new point
+                            newSeries.push({
+                                date: moment(responseDataPoint["Time of Response"]).startOf(interval).toDate(),
+                                value: 1
+                            });
+                        }
+                    }
+                    return newSeries;
+                },
+                []  // newSeries initializer.
+            )
+        }
+
+
+        function responsesHappenedInSameBin(lastInSeries, currentResponse, bin) {
+            if (!lastInSeries || !currentResponse) return false;  // There's no first day to compare.
+            let firstDate = lastInSeries["date"];
+            let secondDate = currentResponse["Time of Response"];
+            return moment(firstDate).isSame(secondDate, bin);
+        }
+
+        function loadPivotTableExample(event) {
+            let button;
+            if ((button = event.target) && button.tagName === "BUTTON") {
+                let data = button.dataset;
+                RESPONSE_PIVOT_OPTS["cols"] = data.cols ? data.cols.split(", ") : [];
+                RESPONSE_PIVOT_OPTS["rows"] = data.rows ? data.rows.split(", ") : [];
+                RESPONSE_PIVOT_OPTS["aggregatorName"] = data.aggregator || "Total # Responses";
+                RESPONSE_PIVOT_OPTS["rendererName"] = data.renderer || "Table";
+                regeneratePivotTable();
+            }
+        }
+
+        function regeneratePivotTable() {
+            // XXX: We could just pass in start and end from the caller (the date component handler),
+            //      but I've opted to load global state for the sake of consistency.
+            let {after: start, before: end} = GLOBAL_PARTICIPATION_QUERY_STATE;
+
+            $responsePivotElement
+                .pivotUI(
+                    RESPONSE_PIVOT_DATA.filter(
+                        observation => {
+                            return start.isBefore(observation["Time of Response"]) &&
+                                   end.isAfter(observation["Time of Response"]) &&
+                                   observation["Consent Ruling"] === "accepted";
+                        }
+                    ),
+                    RESPONSE_PIVOT_OPTS,
+                    true
+                );
+        }
+
+        /* ------------------------ *
+         * ---- INITIALIZATION ---- *
+         * ------------------------ */
+        initializeView();
+    </script>
+{% endblock %}
