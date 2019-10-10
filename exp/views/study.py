@@ -1272,11 +1272,7 @@ class StudyParticipantAnalyticsView(
             studies_for_child[resp.child.id].add(resp.study.name)
 
         # Users for _any_ response associated with a study that we can see.
-        registrations = User.objects.filter(
-            id__in=Response.objects.filter(study__in=studies_for_orgs)
-            .values_list("child__user", flat=True)
-            .distinct()
-        ).values_list("date_created", flat=True)
+        registrations = User.objects.all().values_list("date_created", flat=True)
 
         # Now populate actual graph specs using helpers.
         ctx = super().get_context_data(**kwargs)
@@ -1330,7 +1326,7 @@ def get_flattened_responses(response_qs, studies_for_child):
             int(resp.child.languages_spoken), "languages"
         )
         response_data.append(
-            {                
+            {
                 "Response (unique identifier)": resp.uuid,
                 "Child (unique identifier)": resp.child.uuid,
                 "Child Age in Days": child_age_in_days,

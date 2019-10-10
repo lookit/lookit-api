@@ -548,7 +548,7 @@
             let endAnchor = {
                 date: moment(end).endOf("day").toDate(), // to make sure single-day ranges work, not same timestamp start/end
                 value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] :  (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
-            }
+            };
             cumulativeSeries.unshift(startAnchor);
             cumulativeSeries.push(endAnchor);
 
@@ -574,7 +574,7 @@
             let registrationBounds = {
                 min_x: start,
                 max_x: end
-            }
+            };
 
             delete BINNED_REGISTRATION_PLOT.xax_format;
             MG.data_graphic(
@@ -825,13 +825,13 @@
                     
                     // Add start/end values based on actual bounds
                     let startAnchor = {
-                            date: moment(start).startOf("day").toDate(),
-                            value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
-                        };
+                        date: moment(start).startOf("day").toDate(),
+                        value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+                    };
                     let endAnchor = {
-                            date: moment(end).endOf("day").toDate(),
-                            value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
-                        }
+                        date: moment(end).endOf("day").toDate(),
+                        value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+                    };
                     cumulativeSeries.unshift(startAnchor);
                     cumulativeSeries.push(endAnchor);
 
