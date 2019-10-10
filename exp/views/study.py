@@ -1271,12 +1271,10 @@ class StudyParticipantAnalyticsView(
         for resp in annotated_responses:
             studies_for_child[resp.child.id].add(resp.study.name)
 
-        # Users for _any_ response associated with a study that we can see.
-        registrations = User.objects.filter(
-            id__in=Response.objects.filter(study__in=studies_for_orgs)
-            .values_list("child__user", flat=True)
-            .distinct()
-        ).values_list("date_created", flat=True)
+        # Include _all_ non-researcher users on Lookit
+        registrations = User.objects.filter(is_researcher=False).values_list(
+            "date_created", flat=True
+        )
 
         # Now populate actual graph specs using helpers.
         ctx = super().get_context_data(**kwargs)
@@ -1288,9 +1286,13 @@ class StudyParticipantAnalyticsView(
         )
 
         # To get pivot data, we have to load the json object with requisite
-        children_queryset = Child.objects.filter(
-            id__in=annotated_responses.values_list("child", flat=True).distinct()
-        )
+        if self.request.user.is_superuser:
+            children_queryset = Child.objects.filter(user__is_researcher=False)
+        else:
+            children_queryset = Child.objects.filter(
+                user__is_researcher=False,
+                id__in=annotated_responses.values_list("child", flat=True).distinct(),
+            )
         children_pivot_data = unstack_children(children_queryset, studies_for_child)
 
         flattened_responses = get_flattened_responses(
@@ -1299,7 +1301,7 @@ class StudyParticipantAnalyticsView(
 
         ctx["response_pivot_data"] = json.dumps(flattened_responses, default=str)
 
-        ctx["studies"], ctx["languages"], ctx["characteristics"] = [
+        ctx["studies"], ctx["languages"], ctx["characteristics"], ctx["ages"] = [
             dict(counter) for counter in children_pivot_data
         ]
         return ctx
@@ -1370,6 +1372,7 @@ def unstack_children(children_queryset, studies_for_child_map):
     languages = Counter()
     characteristics = Counter()
     studies = Counter()
+    ages = Counter()
     for child in children_queryset:
         for study_name in studies_for_child_map[child.id]:
             studies[study_name] += 1
@@ -1379,8 +1382,19 @@ def unstack_children(children_queryset, studies_for_child_map):
         for cond in child.existing_conditions:
             if cond[1]:
                 characteristics[CONDITIONS_MAP[cond[0]]] += 1
+        child_age_days = (datetime.date.today() - child.birthday).days
+        child_age_months = child_age_days // 30
+        if child_age_months == 1:
+            child_age = "1 month"
+        elif child_age_months < 24:
+            child_age = str(child_age_months) + " months"
+        elif child_age_months == 24:
+            child_age = "2 years"
+        else:
+            child_age = str(child_age_days // 365) + " years"
+        ages[child_age] += 1
 
-    return studies, languages, characteristics
+    return studies, languages, characteristics, ages
 
 
 # UTILITY FUNCTIONS
