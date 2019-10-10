@@ -588,8 +588,8 @@
             let prev = cumulativeSeriesPast.slice(-1)[0]; // get last value before start date, in case no registrations in this interval but some previously
             let registrationsInInterval = binnedSeries.length ? binnedSeries.map(observation => observation["value"]).reduce((a,b) => a + b, 0) : 0;
             let totalRegistrations = last ? last["value"] : (prev ? prev["value"] : 0);
-            document.getElementById("total-count-registrations").innerText = registrationsInInterval;
-            document.getElementById("end-count-registrations").innerText = totalRegistrations;
+            document.getElementById("total-count-registrations").innerText = registrationsInInterval + "";
+            document.getElementById("end-count-registrations").innerText = totalRegistrations + "";
 
             // TODO: this patches tight range "dx" bugs on binned registration histograms. This is a bug
             //       with the MetricsGraphics library, but I'm sure there's some way to deal with it more
@@ -886,14 +886,14 @@
             };
 
             // Set bounds of participation plots based on time range selected rather than data
-            let cumulativeBounds;          
+            let globalPlotBounds;          
             if (bounds) {
-                cumulativeBounds = {
+                globalPlotBounds = {
                     min_x: bounds[0],
                     max_x: bounds[1]
                 }
             } else {
-                cumulativeBounds = {};
+                globalPlotBounds = {};
             }
 
             let cumulativePlotOpts = $.extend(
@@ -905,7 +905,7 @@
                     legend: legendLabels,
                     chart_type: cumulativeSet.length && cumulativeSet[0].length ? "line" : "missing-data"
                 },
-                cumulativeBounds
+                globalPlotBounds
             );
 
             // Don't understand what this does, but apparently have to do it:
@@ -920,7 +920,7 @@
                     data: binnedSeries,
                     chart_type: binnedSeries.length ? "histogram" : "missing-data"
                 },
-                cumulativeBounds
+                globalPlotBounds
             );
 
             delete binnedPlotOpts.xax_format;
