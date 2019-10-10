@@ -18,7 +18,7 @@ from django.shortcuts import redirect, reverse
 from django.utils import timezone
 from django.views import generic
 from guardian.mixins import PermissionRequiredMixin
-from guardian.shortcuts import get_perms, get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
@@ -1251,7 +1251,9 @@ class StudyParticipantAnalyticsView(
     def get_context_data(self, **kwargs):
         """Context getter override."""
 
-        studies_for_user = get_objects_for_user(self.request.user, "studies.can_view_study")
+        studies_for_user = get_objects_for_user(
+            self.request.user, "studies.can_view_study"
+        )
 
         # Responses for studies
         annotated_responses = (
