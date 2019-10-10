@@ -1330,7 +1330,9 @@ def get_flattened_responses(response_qs, studies_for_child):
             int(resp.child.languages_spoken), "languages"
         )
         response_data.append(
-            {
+            {                
+                "Response (unique identifier)": resp.uuid,
+                "Child (unique identifier)": resp.child.uuid,
                 "Child Age in Days": child_age_in_days,
                 "Child Age in Months": int(child_age_in_days // 30),
                 "Child Age in Years": int(child_age_in_days // 365),
