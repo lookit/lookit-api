@@ -687,8 +687,8 @@
                 GLOBAL_PARTICIPATION_QUERY_STATE,
                 {
                     timeseriesHandles: selectedHandles || [],
-                    ruling: selectedHandles ? selectedRuling.dataset.ruling : "any",
-                    studyName: selectedHandles ? optGroupForStudy.label : "ALL STUDIES",
+                    ruling: selectedHandles ? selectedRuling.dataset.ruling : null,
+                    studyName: selectedHandles ? optGroupForStudy.label : null,
                     studyId: selectedHandles ? optGroupForStudy.dataset.studyId : null,
                     legendLabels: []
                 }
@@ -779,15 +779,11 @@
                             `${studyName || "All Studies" } - ${ruling}`;
                     }
                     if (!cumulativeSeries) {
-                        // XXX: This code "does the job" but is perhaps confusing as such - after all,
-                        // studyId and ruling will each retain a single value across every iteration of
-                        // timeseriesHandles! However, we are only ever adding to the cache when we *haven't*
-                        // seen a specified series selected before, so we can exploit this fact to safely
-                        // generate the new timeseries.
+                        let [_id, _ruling] = handle.split(':');
                         cumulativeSeries = CUMULATIVE_TIMESERIES_CACHE[handle] =
                             generateCumulativeTimeSeries(
-                                studyId,
-                                ruling,
+                                _id === 'ALL' ? null : _id,
+                                _ruling,
                             );
                     }
 
@@ -865,7 +861,6 @@
             return RESPONSE_PIVOT_DATA.reduce(
                 (newSeries, responseDataPoint, currentIndex, sourceArray) => {
                     let previousPoint = newSeries.slice(-1)[0];
-                    // console.log(studyId, consentRuling, new Date().getTime());
                     if ((consentRuling === "any" || responseDataPoint["Consent Ruling"] === consentRuling)    &&
                         (!studyId                || responseDataPoint["Study ID"] === parseInt(studyId))) {
                         newSeries.push({
