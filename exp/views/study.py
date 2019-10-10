@@ -18,7 +18,7 @@ from django.shortcuts import redirect, reverse
 from django.utils import timezone
 from django.views import generic
 from guardian.mixins import PermissionRequiredMixin
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
@@ -1250,19 +1250,15 @@ class StudyParticipantAnalyticsView(
 
     def get_context_data(self, **kwargs):
         """Context getter override."""
-        if self.request.user.is_superuser:
-            organizations = Organization.objects.all()
-        else:
-            organizations = Organization.objects.filter(
-                id=self.request.user.organization_id
-            )
 
-        studies_for_orgs = Study.objects.filter(organization__in=organizations)
+        studies_for_user = get_objects_for_user(
+            self.request.user, "studies.can_view_study"
+        )
 
         # Responses for studies
         annotated_responses = (
             get_annotated_responses_qs()
-            .filter(study__in=studies_for_orgs)
+            .filter(study__in=studies_for_user)
             .select_related("child", "child__user", "study", "demographic_snapshot")
         )
 
@@ -1279,7 +1275,7 @@ class StudyParticipantAnalyticsView(
         # Now populate actual graph specs using helpers.
         ctx = super().get_context_data(**kwargs)
 
-        ctx["all_studies"] = studies_for_orgs
+        ctx["all_studies"] = studies_for_user
 
         ctx["registration_data"] = json.dumps(
             list(registrations), cls=DjangoJSONEncoder
