@@ -350,9 +350,9 @@
             ranges: {
                 'Today': [moment().startOf('day'), moment()],
                 'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'Last Year': [moment().subtract(1, 'year'), moment()],
+                'Past 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Past 30 Days': [moment().subtract(29, 'days'), moment()],
+                'Past Year': [moment().subtract(1, 'year'), moment()],
                 'This Month': [moment().startOf('month'), moment().endOf('month')],
                 'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
             },
@@ -402,7 +402,7 @@
             full_width: true,
             height: 300,
             right: 40,
-            y_label: "Daily Responses",
+            y_label: "Responses",
             // missing_is_hidden: true,
             target: document.getElementById('binned-participation-plot'),
         };
@@ -429,7 +429,7 @@
             top: 70,
             full_width: true,
             height: 300,
-            y_label: "Daily Registrations",
+            y_label: "New Registrations",
             // missing_is_hidden: true,
             target: document.getElementById('binned-registration-plot'),
         };
