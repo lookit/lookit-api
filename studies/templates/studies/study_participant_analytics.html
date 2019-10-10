@@ -590,6 +590,13 @@
             let totalRegistrations = last ? last["value"] : (prev ? prev["value"] : 0);
             document.getElementById("total-count-registrations").innerText = registrationsInInterval + "";
             document.getElementById("end-count-registrations").innerText = totalRegistrations + "";
+
+            // TODO: this patches tight range "dx" bugs on binned registration histograms. This is a bug
+            //       with the MetricsGraphics library, but I'm sure there's some way to deal with it more
+            //       elegantly.
+            if (binnedSeries.length === 1) {
+                binnedSeries.push({date: end.toDate(), value: 0});
+            }
             
             let registrationBounds = {
                 min_x: start,
