@@ -259,8 +259,14 @@
             
             <div>
                 <p class="help-block">
-                    This section includes data from all children who submitted a response (with 
-                    consent confirmed) to at least one study you have read access to. 
+                    This section includes data from all children  
+                    
+                    {% if user.is_superuser %}
+                    registered on Lookit, regardless of whether they have participated in any studies.
+                    {% else %}
+                    who submitted a response (with 
+                    consent confirmed) to at least one study you have read access to.
+                    {% endif %}
                 </p>
             </div>
             <article id="characteristics-table" class="col-md-4">
@@ -320,6 +326,27 @@
                     </tbody>
                 </table>
             </article>
+            {% if user.is_superuser %}
+            <article id="studies-table" class="col-md-4">
+                <h4>Ages</h4>
+                <table class="table small">
+                    <thead>
+                    <tr>
+                        <th>Age in months</th>
+                        <th># Children</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for age, child_count in ages.items %}
+                        <tr>
+                            <td>{{ age }}</td>
+                            <td>{{ child_count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+            {% endif %}
         </section>
 
     </div>
