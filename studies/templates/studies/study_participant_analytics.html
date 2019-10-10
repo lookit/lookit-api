@@ -526,26 +526,50 @@
         function regenerateRegistrationPlots() {
             let {after: start, before: end, interval} = GLOBAL_PARTICIPATION_QUERY_STATE;
 
-            let [cumulativeSeries, binnedSeries] = generateRegistrationTimeseries(interval);
+            let [cumulativeSeriesComplete, binnedSeries] = generateRegistrationTimeseries(interval);
 
             // Capturing some of the get() behavior here since we're not
-            cumulativeSeries = cumulativeSeries.filter(
+            let cumulativeSeriesPast = cumulativeSeriesComplete.filter(
+                observation => start.isAfter(observation["date"])
+            );
+            let cumulativeSeries = cumulativeSeriesComplete.filter(
                 observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
             );
+            
+            // Add start/end points to extend cumulative counts appropriately to edges of graph
+            let startAnchor = {
+                date: moment(start).startOf("day").toDate(),
+                value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 :  (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+            };
+            let endAnchor = {
+                date: moment(end).endOf("day").toDate(), // to make sure single-day ranges work, not same timestamp start/end
+                value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] :  (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+            }
+            cumulativeSeries.unshift(startAnchor);
+            cumulativeSeries.push(endAnchor);
 
             binnedSeries = binnedSeries.filter(
                 observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
             );
 
-            // We can get actual registration count this way.
+            // Get count of registrations during interval and total # registrations at end
             let last = cumulativeSeries.slice(-1)[0];
-            document.getElementById("total-count-registrations").innerText = last ? last["value"] : 0;
+            let prev = cumulativeSeriesPast.slice(-1)[0]; // get last value before start date, in case no registrations in this interval but some previously
+            let registrationsInInterval = binnedSeries.length ? binnedSeries.map(observation => observation["value"]).reduce((a,b) => a + b, 0) : 0;
+            let totalRegistrations = last ? last["value"] : (prev ? prev["value"] : 0);
+            document.getElementById("total-count-registrations").innerText = registrationsInInterval;
+            document.getElementById("end-count-registrations").innerText = totalRegistrations;
 
             // TODO: this patches tight range "dx" bugs on binned registration histograms. This is a bug
             //       with the MetricsGraphics library, but I'm sure there's some way to deal with it more
             //       elegantly.
             if (binnedSeries.length === 1) {
                 binnedSeries.push({date: end.toDate(), value: 0});
+            }
+            
+            let registrationBounds = {
+                min_x: start,
+                max_x: end
             }
 
             delete BINNED_REGISTRATION_PLOT.xax_format;
@@ -558,7 +582,8 @@
                         // TODO: figure out why x_accessor and y_accessor get overridden on 2nd render
                         x_accessor: "date",
                         y_accessor: "value"
-                    }
+                    },
+                    registrationBounds
                 )
             );
 
@@ -569,7 +594,8 @@
                     {
                         data: cumulativeSeries,
                         chart_type: cumulativeSeries.length ? "line" : "missing-data"
-                    }
+                    },
+                    registrationBounds
                 )
             );
         }
@@ -730,7 +756,7 @@
             // Singular histogram series.
             let binnedSeries = getBinnedTimeseries(timeseriesHandles, after, before, interval);
 
-            drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels);
+            drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels, [after, before]);
         }
 
 
@@ -788,11 +814,27 @@
                                 ruling,
                             );
                     }
-
+                    
+                    let cumulativeSeriesPast = cumulativeSeries.filter(
+                        observation => start.isAfter(observation["date"])
+                    );
                     // Now filter based on date.
                     cumulativeSeries = cumulativeSeries.filter(
                         observation => start.isBefore(observation["date"]) && end.isAfter(observation["date"])
                     );
+                    
+                    // Add start/end values based on actual bounds
+                    console.log(cumulativeSeries);
+                    let startAnchor = {
+                            date: moment(start).startOf("day").toDate(),
+                            value: cumulativeSeries.length ? cumulativeSeries[0]["value"] - 1 : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+                        };
+                    let endAnchor = {
+                            date: moment(end).endOf("day").toDate(),
+                            value: cumulativeSeries.length ? cumulativeSeries.slice(-1)[0]["value"] : (cumulativeSeriesPast.length ? cumulativeSeriesPast.slice(-1)[0]["value"] : 0)
+                        }
+                    cumulativeSeries.unshift(startAnchor);
+                    cumulativeSeries.push(endAnchor);
 
                     cumulativeSet.push(cumulativeSeries);
                     // true if it's an "any ruling" for that study
@@ -804,27 +846,29 @@
                 },
                 [] // timeseriesSet initializer
             );
+            
+
+            
         }
 
 
-        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels) {
+        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels, bounds=[]) {
             // Now fill with data, y_accessor, and legend, then draw.
             let newPlotOptions = {
                 x_accessor: "date",
                 y_accessor: "value",
             };
 
-            // Only add cumulative bounds if the binned series has bounds to begin with.
-            let cumulativeBounds;
-            if (binnedSeries.length) {
+            // Set bounds of participation plots based on time range selected rather than data
+            let cumulativeBounds;          
+            if (bounds) {
                 cumulativeBounds = {
-                  min_x: binnedSeries[0]["date"],
-                  max_x: binnedSeries.slice(-1)[0]["date"]
-                };
+                    min_x: bounds[0],
+                    max_x: bounds[1]
+                }
             } else {
                 cumulativeBounds = {};
             }
-
 
             let cumulativePlotOpts = $.extend(
                 {},
@@ -849,7 +893,8 @@
                 {
                     data: binnedSeries,
                     chart_type: binnedSeries.length ? "histogram" : "missing-data"
-                }
+                },
+                cumulativeBounds
             );
 
             delete binnedPlotOpts.xax_format;
