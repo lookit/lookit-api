@@ -86,17 +86,12 @@
         <section id="participation-section" class="row">
             <h3>Recruitment Data Plots</h3>
             <p class="help-block">
-                The data that you see in the <strong>participation</strong> plots correspond to
-                {% if user.is_superuser %}
-                    all responses
-                {% else %}
-                    responses from studies that you have read access to
-                {% endif %}
-                    along with children/accounts associated with those responses.
+                The <strong>participation</strong> plots display the number of responses across studies 
+                that you have read access to.
             </p>
             <p class="help-block">
-                The data that you see in the <strong>registration</strong> plots correspond to all registered Lookit users
-                (for the given timeframe).
+                The <strong>registration</strong> plots include all registered Lookit users, regardless of 
+                whether they have participated in a study you have read access to. 
             </p>
             <article class="col-xs-4">
                 <div id="global-filter-panel" class="panel panel-default">
@@ -105,39 +100,43 @@
                     </div>
                     <div class="panel-body">
                         <label class="control-label" for="date-filter">Date Range</label>
-                        <p class="help-block small">Controls both sets of plots (registration and participation) <strong>and</strong> the pivot table.</p>
+                        <p class="help-block small">Number of responses and number of new registered participants 
+                        within this range will be displayed in the graphs. This also controls the <strong>pivot table</strong>:  
+                        only data from responses (and the associated children/families) within this time frame will be 
+                        included in the table.
                         <input id="date-filter" class="form-control input-sm" type="text"/>
 
                         <table id="total-counts" class="table table-condensed">
                             <tr>
-                                <td>Total # Unique Responses</td>
+                                <td># Unique Responses</td>
                                 <td id="total-count-responses"></td>
                             </tr>
                             <tr>
-                                <td>Total # Unique Children</td>
+                                <td># Unique Children</td>
                                 <td id="total-count-children"></td>
                             </tr>
                             <tr>
-                                <td>Total # Registrations</td>
+                                <td># Registrations in date range</td>
                                 <td id="total-count-registrations"></td>
+                            </tr>
+                            <tr>
+                                <td>Total # Registrations at range end</td>
+                                <td id="end-count-registrations"></td>
                             </tr>
                         </table>
                         <label class="control-label" for="granularity-specifier">Bin Granularity</label>
                         <p class="help-block small">Change the sampling width of the binned graphs.</p>
                         <select id="granularity-specifier" class="selectpicker form-control">
-                            <option value="day">Day</option>
+                            <option value="day" selected>Day</option>
                             <option value="week">Week</option>
                             <option value="month">Month</option>
                         </select>
-                        <label class="control-label" for="timeseries-filter">Counted Series</label>
+                        <label class="control-label" for="timeseries-filter">Included responses</label>
                         <p class="help-block small">
-                            Determine the kinds of responses that are "counted" such that they:
+                            Determine the kinds of responses that are counted in the binned participation graph 
+                            and have their own line plotted in the cumulative participation graph. (This does not
+                            affect the registration plots or pivot table.)
                         </p>
-                        <ul class="help-block small">
-                            <li>have their own line plotted in the cumulative participation graph,</li>
-                            and,
-                            <li>have their counts (per bin) summed in the binned participation graph.</li>
-                        </ul>
                         <select id="timeseries-filter"
                                 class="selectpicker form-control"
                                 multiple>
@@ -200,13 +199,8 @@
             <h3>Summary Statistics</h3>
             <div>
                 <p class="help-block">
-                    The data that you see in this section corresponds to
-                    {% if user.is_superuser %}
-                        all <strong class="text-success">consented</strong> responses
-                    {% else %}
-                        <strong class="text-success">consented</strong> responses from studies that you have read access to
-                    {% endif %}
-                        along with children/accounts associated with those responses.
+                    This section includes data from responses to your studies (a) within the time range specified above and (b) for which <strong class="text-success">consent has been confirmed</strong>,
+                    along with children/accounts associated with those responses.
                 </p>
                 <p class="help-block">The pivot table is a way for you to summarize data across (primarily) <em>qualitative</em> axes.
                     The available fields (child age, study, etc.) are shown in the leftmost column. You can drag fields
@@ -262,6 +256,13 @@
         </section>
         <section>
             <h3>Child Data Summary</h3>
+            
+            <div>
+                <p class="help-block">
+                    This section includes data from all children who submitted a response (with 
+                    consent confirmed) to at least one study you have read access to. 
+                </p>
+            </div>
             <article id="characteristics-table" class="col-md-4">
                 <h4>Characteristics</h4>
                 <table class="table small">
@@ -331,6 +332,7 @@
               $dateFilter           = $('#date-filter'),
               $timeseriesOptions    = $timeseriesFilter.find("option"),
               $granularitySpecifier = $("#granularity-specifier");
+        $('#granularity-specifier').selectpicker('val', 'day'); //align initial display with default
 
         /* ------------------------- *
          * ---- DATA CONTAINERS ---- *
