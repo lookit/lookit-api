@@ -359,7 +359,6 @@
               $dateFilter           = $('#date-filter'),
               $timeseriesOptions    = $timeseriesFilter.find("option"),
               $granularitySpecifier = $("#granularity-specifier");
-        $('#granularity-specifier').selectpicker('val', 'day'); //align initial display with default
 
         /* ------------------------- *
          * ---- DATA CONTAINERS ---- *
@@ -531,12 +530,6 @@
             RESPONSE_TIMESERIES_DATA.forEach(record => record["Time of Response"] = new Date(record["Time of Response"]));
             RESPONSE_TIMESERIES_DATA.sort((a, b) => a["Time of Response"] - b["Time of Response"]);
 
-            $responsePivotElement
-                .pivotUI(
-                    RESPONSE_TIMESERIES_DATA,
-                    RESPONSE_PIVOT_OPTS
-                );
-
             $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
 
             regenerateRegistrationPlots();
@@ -551,10 +544,14 @@
                 .selectpicker()
                 .on('changed.bs.select', handleGranularityChange);
 
+            $granularitySpecifier.selectpicker('val', 'day'); // align initial display with default
+
             document.getElementById("pivot-presets").addEventListener("click", loadPivotTableExample);
         }
 
         function regenerateRegistrationPlots() {
+            $("#binned-registration-plot").empty();
+            $("#cumulative-registration-plot").empty();
             let {after: start, before: end, interval} = GLOBAL_PARTICIPATION_QUERY_STATE;
 
             let [cumulativeSeriesComplete, binnedSeries] = generateRegistrationTimeseries(interval);
@@ -762,6 +759,8 @@
          * understand and debug for such a small number of knobs to tweak.
          */
         function regenerateParticipationPlots() {
+            $("#binned-participation-plot").empty();
+            $("#cumulative-participation-plot").empty();
             let {
                 after,
                 before,
