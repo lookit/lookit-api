@@ -1428,16 +1428,24 @@ def unstack_children(children_queryset, studies_for_child_map):
         for cond in child.existing_conditions:
             if cond[1]:
                 characteristics[CONDITIONS_MAP[cond[0]]] += 1
-        child_age_days = (datetime.date.today() - child.birthday).days
-        child_age_months = child_age_days // 30
-        if child_age_months == 1:
-            child_age = "1 month"
-        elif child_age_months < 24:
-            child_age = str(child_age_months) + " months"
-        elif child_age_months == 24:
-            child_age = "2 years"
+
+        child_age_days = (
+            (datetime.date.today() - child.birthday).days if child.birthday else None
+        )
+
+        if child_age_days:
+            child_age_months = child_age_days // 30
+            if child_age_months == 1:
+                child_age = "1 month"
+            elif child_age_months < 24:
+                child_age = str(child_age_months) + " months"
+            elif child_age_months == 24:
+                child_age = "2 years"
+            else:
+                child_age = str(child_age_days // 365) + " years"
         else:
-            child_age = str(child_age_days // 365) + " years"
+            child_age = None
+
         ages[child_age] += 1
 
     return studies, languages, characteristics, ages
