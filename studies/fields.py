@@ -155,6 +155,8 @@ DEFAULT_GESTATIONAL_AGE_OPTIONS = (
     (17, "over_forty_weeks", _("40 or more weeks")),
 )
 
+GESTATIONAL_AGE_ENUM_MAP = {opt[0]: opt[2] for opt in DEFAULT_GESTATIONAL_AGE_OPTIONS}
+
 GESTATIONAL_AGE_CHOICES = Choices(*DEFAULT_GESTATIONAL_AGE_OPTIONS)
 
 # No null values for filters - must explicitly include N/A in the query model itself since we are dealing with a

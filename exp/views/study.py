@@ -27,7 +27,12 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
 from project import settings
-from studies.fields import CONDITIONS, LANGUAGES, popcnt_bitfield
+from studies.fields import (
+    CONDITIONS,
+    GESTATIONAL_AGE_ENUM_MAP,
+    LANGUAGES,
+    popcnt_bitfield,
+)
 from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import Feedback, Response, Study, StudyLog, StudyType
@@ -1260,12 +1265,39 @@ class StudyParticipantAnalyticsView(
             get_annotated_responses_qs()
             .filter(study__in=studies_for_user)
             .select_related("child", "child__user", "study", "demographic_snapshot")
+        ).values(
+            "uuid",
+            "date_created",
+            "current_ruling",
+            "child_id",
+            "child__uuid",
+            "child__birthday",
+            "child__gender",
+            "child__gestational_age_at_birth",
+            "child__languages_spoken",
+            "study__name",
+            "study_id",
+            "child__user__uuid",
+            "demographic_snapshot__number_of_children",
+            "demographic_snapshot__race_identification",
+            "demographic_snapshot__number_of_guardians",
+            "demographic_snapshot__annual_income",
+            "demographic_snapshot__age",
+            "demographic_snapshot__education_level",
+            "demographic_snapshot__gender",
+            "demographic_snapshot__spouse_education_level",
+            "demographic_snapshot__density",
+            "demographic_snapshot__number_of_books",
+            "demographic_snapshot__country",
+            "demographic_snapshot__state",
+            "demographic_snapshot__lookit_referrer",
+            "demographic_snapshot__additional_comments",
         )
 
         # now, map studies for each child, and gather demographic data as well.
         studies_for_child = defaultdict(set)
         for resp in annotated_responses:
-            studies_for_child[resp.child.id].add(resp.study.name)
+            studies_for_child[resp["child_id"]].add(resp["study__name"])
 
         # Include _all_ non-researcher users on Lookit
         registrations = User.objects.filter(is_researcher=False).values_list(
@@ -1287,7 +1319,9 @@ class StudyParticipantAnalyticsView(
         else:
             children_queryset = Child.objects.filter(
                 user__is_researcher=False,
-                id__in=annotated_responses.values_list("child", flat=True).distinct(),
+                id__in=annotated_responses.values_list(
+                    "child_id", flat=True
+                ).distinct(),
             )
         children_pivot_data = unstack_children(children_queryset, studies_for_child)
 
@@ -1295,7 +1329,7 @@ class StudyParticipantAnalyticsView(
             annotated_responses, studies_for_child
         )
 
-        ctx["response_pivot_data"] = json.dumps(flattened_responses, default=str)
+        ctx["response_timeseries_data"] = json.dumps(flattened_responses, default=str)
 
         ctx["studies"], ctx["languages"], ctx["characteristics"], ctx["ages"] = [
             dict(counter) for counter in children_pivot_data
@@ -1323,40 +1357,56 @@ def get_flattened_responses(response_qs, studies_for_child):
     """
     response_data = []
     for resp in response_qs:
-        child_age_in_days = (datetime.date.today() - resp.child.birthday).days
+        child_age_in_days = (datetime.date.today() - resp["child__birthday"]).days
         languages_spoken = popcnt_bitfield(
-            int(resp.child.languages_spoken), "languages"
+            int(resp["child__languages_spoken"]), "languages"
         )
         response_data.append(
             {
-                "Response (unique identifier)": resp.uuid,
-                "Child (unique identifier)": resp.child.uuid,
+                "Response (unique identifier)": resp["uuid"],
+                "Child (unique identifier)": resp["child__uuid"],
                 "Child Age in Days": child_age_in_days,
                 "Child Age in Months": int(child_age_in_days // 30),
                 "Child Age in Years": int(child_age_in_days // 365),
-                "Child Gender": resp.child.gender,
-                "Child Gestational Age at Birth": resp.child.get_gestational_age_at_birth_display(),
+                "Child Gender": resp["child__gender"],
+                "Child Gestational Age at Birth": GESTATIONAL_AGE_ENUM_MAP.get(
+                    resp["child__gestational_age_at_birth"], "Unknown"
+                ),
                 "Child # Languages Spoken": len(languages_spoken),
-                "Child # Studies Participated": len(studies_for_child[resp.child_id]),
-                "Study": resp.study.name,
-                "Study ID": resp.study.id,  # TODO: change this to use UUID
-                "Family (unique identifier)": resp.child.user.uuid,
-                "Family # of Children": resp.demographic_snapshot.number_of_children,
-                "Family Race/Ethnicity": resp.demographic_snapshot.race_identification,
-                "Family # of Guardians": resp.demographic_snapshot.number_of_guardians,
-                "Family Annual Income": resp.demographic_snapshot.annual_income,
-                "Parent/Guardian Age": resp.demographic_snapshot.age,
-                "Parent/Guardian Education Level": resp.demographic_snapshot.education_level,
-                "Parent/Guardian Gender": resp.demographic_snapshot.gender,
-                "Parent/Guardian Spouse Educational Level": resp.demographic_snapshot.spouse_education_level,
-                "Living Density": resp.demographic_snapshot.density,
-                "Number of Books": resp.demographic_snapshot.number_of_books,
-                "Country": resp.demographic_snapshot.country,
-                "State": resp.demographic_snapshot.state,
-                "Time of Response": resp.date_created.isoformat(),
-                "Consent Ruling": resp.current_ruling,
-                "Lookit Referrer": resp.demographic_snapshot.lookit_referrer,
-                "Additional Comments": resp.demographic_snapshot.additional_comments,
+                "Child # Studies Participated": len(
+                    studies_for_child[resp["child_id"]]
+                ),
+                "Study": resp["study__name"],
+                "Study ID": resp["study_id"],  # TODO: change this to use UUID
+                "Family (unique identifier)": resp["child__user__uuid"],
+                "Family # of Children": resp[
+                    "demographic_snapshot__number_of_children"
+                ],
+                "Family Race/Ethnicity": resp[
+                    "demographic_snapshot__race_identification"
+                ],
+                "Family # of Guardians": resp[
+                    "demographic_snapshot__number_of_guardians"
+                ],
+                "Family Annual Income": resp["demographic_snapshot__annual_income"],
+                "Parent/Guardian Age": resp["demographic_snapshot__age"],
+                "Parent/Guardian Education Level": resp[
+                    "demographic_snapshot__education_level"
+                ],
+                "Parent/Guardian Gender": resp["demographic_snapshot__gender"],
+                "Parent/Guardian Spouse Educational Level": resp[
+                    "demographic_snapshot__spouse_education_level"
+                ],
+                "Living Density": resp["demographic_snapshot__density"],
+                "Number of Books": resp["demographic_snapshot__number_of_books"],
+                "Country": resp["demographic_snapshot__country"],
+                "State": resp["demographic_snapshot__state"],
+                "Time of Response": resp["date_created"].isoformat(),
+                "Consent Ruling": resp["current_ruling"],
+                "Lookit Referrer": resp["demographic_snapshot__lookit_referrer"],
+                "Additional Comments": resp[
+                    "demographic_snapshot__additional_comments"
+                ],
             }
         )
 
