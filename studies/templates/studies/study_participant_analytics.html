@@ -663,15 +663,7 @@
                         if (moment(observedDate).isSame(previousBinnedObservation.date, interval)) {
                             // Same day, so just add.
                             previousBinnedObservation.value += 1;
-                        } else { // because it's sorted, we must be before, so create a bunch of same-value dummies
-                            // Backpropagation similar to how we do with response timeseries data.
-                            while (!moment(observedDate).isSame(previousBinnedObservation.date, interval)) {
-                                binnedSeries.push({
-                                    date: moment(previousBinnedObservation["date"]).add(1, interval).startOf(interval).toDate(),
-                                    value: 0
-                                });
-                                previousBinnedObservation = binnedSeries.slice(-1)[0];
-                            }
+                        } else {
                             binnedSeries.push({
                                 date: observedDate,
                                 value: 1,
