@@ -550,8 +550,6 @@
         }
 
         function regenerateRegistrationPlots() {
-            $("#binned-registration-plot").empty();
-            $("#cumulative-registration-plot").empty();
             let {after: start, before: end, interval} = GLOBAL_PARTICIPATION_QUERY_STATE;
 
             let [cumulativeSeriesComplete, binnedSeries] = generateRegistrationTimeseries(interval);
@@ -594,11 +592,15 @@
             if (binnedSeries.length === 1) {
                 binnedSeries.push({date: end.toDate(), value: 0});
             }
-            
+
             let registrationBounds = {
                 min_x: start,
                 max_x: end
             };
+
+            // Ensure no memory leaks.
+            $("#binned-registration-plot").empty();
+            $("#cumulative-registration-plot").empty();
 
             delete BINNED_REGISTRATION_PLOT.xax_format;
             MG.data_graphic(
@@ -609,7 +611,9 @@
                         chart_type: binnedSeries.length ? "histogram" : "missing-data",
                         // TODO: figure out why x_accessor and y_accessor get overridden on 2nd render
                         x_accessor: "date",
-                        y_accessor: "value"
+                        y_accessor: "value",
+                        binned: false,
+                        bins: end.diff(start, "days")
                     },
                     registrationBounds
                 )
@@ -660,10 +664,12 @@
                     let previousBinnedObservation = binnedSeries.slice(-1)[0];
 
                     if (previousBinnedObservation) {
-                        if (moment(observedDate).isSame(previousBinnedObservation.date, interval)) {
+                        let currentDateAsMoment = moment(observedDate);
+                        if (currentDateAsMoment.isSame(previousBinnedObservation.date, interval)) {
                             // Same day, so just add.
                             previousBinnedObservation.value += 1;
                         } else {
+                            // Add new data point.
                             binnedSeries.push({
                                 date: observedDate,
                                 value: 1,
@@ -863,9 +869,7 @@
                 },
                 [] // timeseriesSet initializer
             );
-            
 
-            
         }
 
 
