@@ -1433,7 +1433,7 @@ def unstack_children(children_queryset, studies_for_child_map):
             (datetime.date.today() - child.birthday).days if child.birthday else None
         )
 
-        if child_age_days:
+        if child_age_days:  # In the rare case that we don't have a child age
             child_age_months = child_age_days // 30
             if child_age_months == 1:
                 child_age = "1 month"
