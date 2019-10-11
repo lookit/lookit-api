@@ -1329,7 +1329,7 @@ class StudyParticipantAnalyticsView(
             annotated_responses, studies_for_child
         )
 
-        ctx["response_pivot_data"] = json.dumps(flattened_responses, default=str)
+        ctx["response_timeseries_data"] = json.dumps(flattened_responses, default=str)
 
         ctx["studies"], ctx["languages"], ctx["characteristics"], ctx["ages"] = [
             dict(counter) for counter in children_pivot_data
