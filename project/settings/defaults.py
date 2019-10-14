@@ -234,7 +234,7 @@ BASE_URL = os.environ.get(
     "BASE_URL", "https://localhost:8000"
 )  # default to ember base url
 OSF_URL = os.environ.get(
-    "OSF_URL", "https://staging.osf.io/"
+    "OSF_URL", "https://test.osf.io/"
 )  # default osf url used for oauth
 
 LOGIN_REDIRECT_URL = os.environ.get("LOGIN_REDIRECT_URL", "https://localhost:8000/exp/")
