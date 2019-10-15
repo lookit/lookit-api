@@ -774,6 +774,14 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         """Currently, handles feedback form."""
         form_data = self.request.POST
         user = self.request.user
+
+        # first, check the case for video download
+        # TODO: get rid of the mixin with this original POST behavior?
+        attachment_id = form_data.get("attachment")
+        if attachment_id:
+            download_url = self.get_object().videos.get(pk=attachment_id).download_url
+            return redirect(download_url)
+
         feedback_id = form_data.get("feedback_id", None)
         comment = form_data.get("comment", "")
 
