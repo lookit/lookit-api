@@ -553,7 +553,6 @@
             let {after: start, before: end, interval} = GLOBAL_PARTICIPATION_QUERY_STATE;
 
             let [cumulativeSeriesComplete, binnedSeries] = generateRegistrationTimeseries(interval);
-
             let cumulativeSeriesPast = cumulativeSeriesComplete.filter(
                 observation => start.isAfter(observation["date"])
             );
@@ -673,7 +672,17 @@
                             // Same day, so just add.
                             previousBinnedObservation.value += 1;
                         } else {
+                            // backpropagate, reset previousbinnedobservation
                             // Add new data point.
+                            while (currentDateAsMoment.isAfter(previousBinnedObservation.date, interval)) {
+                                binnedSeries.push(
+                                    {
+                                        date: moment(previousBinnedObservation.date).add(1, interval).startOf(interval).toDate(),
+                                        value: 0
+                                    }
+                                );
+                                previousBinnedObservation = binnedSeries.slice(-1)[0];
+                            }
                             binnedSeries.push({
                                 date: observedBin,
                                 value: 1,
