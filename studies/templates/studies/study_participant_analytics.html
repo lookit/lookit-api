@@ -554,7 +554,6 @@
 
             let [cumulativeSeriesComplete, binnedSeries] = generateRegistrationTimeseries(interval);
 
-            // Capturing some of the get() behavior here since we're not
             let cumulativeSeriesPast = cumulativeSeriesComplete.filter(
                 observation => start.isAfter(observation["date"])
             );
@@ -645,7 +644,9 @@
             return RAW_REGISTRATION_DATA.reduce(
                 ([cumulativeSeries, binnedSeries], timestamp) => {
                     // We do not bin for cumulative timeseries.
-                    let observedDate = moment(timestamp).startOf("day").toDate();
+                    let currentDateAsMoment = moment(timestamp);
+                    let observedDate = currentDateAsMoment.startOf("day").toDate();
+                    let observedBin = currentDateAsMoment.startOf(interval).toDate();
 
                     let previousCumulativeObservation = cumulativeSeries.slice(-1)[0];
 
@@ -664,20 +665,19 @@
                     let previousBinnedObservation = binnedSeries.slice(-1)[0];
 
                     if (previousBinnedObservation) {
-                        let currentDateAsMoment = moment(observedDate);
                         if (currentDateAsMoment.isSame(previousBinnedObservation.date, interval)) {
                             // Same day, so just add.
                             previousBinnedObservation.value += 1;
                         } else {
                             // Add new data point.
                             binnedSeries.push({
-                                date: observedDate,
+                                date: observedBin,
                                 value: 1,
                             });
                         }
                     } else {
                         binnedSeries.push({
-                            date: observedDate,
+                            date: observedBin,
                             value: 1,
                         });
                     }
