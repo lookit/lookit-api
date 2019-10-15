@@ -589,12 +589,17 @@
             //       with the MetricsGraphics library, but I'm sure there's some way to deal with it more
             //       elegantly.
             if (binnedSeries.length === 1) {
-                binnedSeries.push({date: end.toDate(), value: 0});
+                binnedSeries.push({date: end.startOf(interval).toDate(), value: 0});
             }
 
             let registrationBounds = {
                 min_x: start,
                 max_x: end
+            };
+
+            let accessorKeys = {
+                x_accessor: "date",
+                y_accessor: "value",
             };
 
             // Ensure no memory leaks.
@@ -604,15 +609,12 @@
             delete BINNED_REGISTRATION_PLOT.xax_format;
             MG.data_graphic(
                 $.extend(
+                    {},
                     BINNED_REGISTRATION_PLOT,
+                    accessorKeys,
                     {
                         data: binnedSeries,
                         chart_type: binnedSeries.length ? "histogram" : "missing-data",
-                        // TODO: figure out why x_accessor and y_accessor get overridden on 2nd render
-                        x_accessor: "date",
-                        y_accessor: "value",
-                        binned: false,
-                        bins: end.diff(start, interval)
                     },
                     registrationBounds
                 )
@@ -621,7 +623,9 @@
             delete CUMULATIVE_REGISTRATION_PLOT.xax_format;
             MG.data_graphic(
                 $.extend(
+                    {},
                     CUMULATIVE_REGISTRATION_PLOT,
+                    accessorKeys,
                     {
                         data: cumulativeSeries,
                         chart_type: cumulativeSeries.length ? "line" : "missing-data"
