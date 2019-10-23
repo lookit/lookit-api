@@ -69,6 +69,7 @@ class Organization(models.Model):
             ("can_create_organization", _("Can Create Organization")),
             ("can_remove_organization", _("Can Remove Organization")),
             ("can_view_experimenter", _("Can View Experimenter")),
+            ("can_view_analytics", _("Can View Analytics")),
         )
         ordering = ["name"]
 
@@ -267,6 +268,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ("can_edit_user_permissions", _("Can Edit User Permissions")),
             ("can_read_all_user_data", _("Can Read All User Data")),
             ("can_read_usernames", _("Can Read User Usernames")),
+            ("can_view_user_analytics_data", "Can View User Analytics Data"),
         )
         ordering = ["id"]
 
@@ -334,6 +336,9 @@ class Child(models.Model):
         return GESTATIONAL_AGE_CHOICES[self.gestational_age_at_birth]
 
     class Meta:
+        permissions = [
+            ("can_view_child_analytics_data", "Can View Child Analytics Data")
+        ]
         ordering = ["-birthday"]
 
     class JSONAPIMeta:
@@ -523,6 +528,12 @@ class DemographicData(models.Model):
     extra = DateTimeAwareJSONField(null=True)
 
     class Meta:
+        permissions = [
+            (
+                "can_view_demographics_analytics_data",
+                "Can View Demographics Analytics Data",
+            )
+        ]
         ordering = ["-created_at"]
 
     class JSONAPIMeta:
