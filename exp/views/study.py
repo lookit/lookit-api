@@ -1325,7 +1325,6 @@ class StudyParticipantAnalyticsView(
             list(registrations), cls=DjangoJSONEncoder
         )
 
-        # To get pivot data, we have to load the json object with requisite
         if self.request.user.has_perm("accounts.can_view_all_children_in_analytics"):
             children_queryset = Child.objects.filter(user__is_researcher=False)
             ctx["can_view_all_children"] = True
