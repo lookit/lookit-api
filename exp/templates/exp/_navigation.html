@@ -28,7 +28,7 @@
             {% if perms.accounts.can_view_experimenter %}
                 <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
             {% endif %}
-            {% if perms.accounts.can_view_organization %}
+            {% if perms.accounts.can_view_analytics %}
                 <li><a href="{% url 'exp:study-participant-analytics' %}">Manage Recruitment</a></li>
             {% endif %}
             <li role="separator" class="divider"></li>

@@ -1257,16 +1257,23 @@ class StudyParticipantAnalyticsView(
 ):
     template_name = "studies/study_participant_analytics.html"
     model = Study
-    permission_required = "accounts.can_view_experimenter"
-    # context_object_name = "study"
+    permission_required = "accounts.can_view_analytics"
     raise_exception = True
 
     def get_context_data(self, **kwargs):
         """Context getter override."""
+        ctx = super().get_context_data(**kwargs)
 
-        studies_for_user = get_objects_for_user(
-            self.request.user, "studies.can_view_study"
-        )
+        if self.request.user.has_perm("studies.view_all_response_data_in_analytics"):
+            # Recruitment manager
+            studies_for_user = Study.objects.all()
+            # Template tag needs a single object to check, so we need to flag based on queryset.
+            ctx["can_view_all_responses"] = True
+        else:
+            # Researcher or other
+            studies_for_user = get_objects_for_user(
+                self.request.user, "studies.can_view_study"
+            )
 
         # Responses for studies
         annotated_responses = (
@@ -1312,18 +1319,15 @@ class StudyParticipantAnalyticsView(
             "date_created", flat=True
         )
 
-        # Now populate actual graph specs using helpers.
-        ctx = super().get_context_data(**kwargs)
-
         ctx["all_studies"] = studies_for_user
 
         ctx["registration_data"] = json.dumps(
             list(registrations), cls=DjangoJSONEncoder
         )
 
-        # To get pivot data, we have to load the json object with requisite
-        if self.request.user.is_superuser:
+        if self.request.user.has_perm("accounts.can_view_all_children_in_analytics"):
             children_queryset = Child.objects.filter(user__is_researcher=False)
+            ctx["can_view_all_children"] = True
         else:
             children_queryset = Child.objects.filter(
                 user__is_researcher=False,

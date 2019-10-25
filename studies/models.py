@@ -628,7 +628,13 @@ class Response(models.Model):
         return self.display_name
 
     class Meta:
-        permissions = (("view_response", "View Response"),)
+        permissions = (
+            ("view_response", "View Response"),
+            (
+                "view_all_response_data_in_analytics",
+                "View all response data in analytics",
+            ),
+        )
         ordering = ["-demographic_snapshot__created_at"]
         base_manager_name = "related_manager"
 
