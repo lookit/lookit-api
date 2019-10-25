@@ -1264,7 +1264,7 @@ class StudyParticipantAnalyticsView(
         """Context getter override."""
         ctx = super().get_context_data(**kwargs)
 
-        if self.request.user.has_perm("studies.view_response_analytics_data"):
+        if self.request.user.has_perm("studies.view_all_response_data_in_analytics"):
             # Recruitment manager
             studies_for_user = Study.objects.all()
             # Template tag needs a single object to check, so we need to flag based on queryset.
@@ -1326,7 +1326,7 @@ class StudyParticipantAnalyticsView(
         )
 
         # To get pivot data, we have to load the json object with requisite
-        if self.request.user.has_perm("accounts.can_view_child_analytics_data"):
+        if self.request.user.has_perm("accounts.can_view_all_children_in_analytics"):
             children_queryset = Child.objects.filter(user__is_researcher=False)
             ctx["can_view_all_children"] = True
         else:

@@ -268,7 +268,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ("can_edit_user_permissions", _("Can Edit User Permissions")),
             ("can_read_all_user_data", _("Can Read All User Data")),
             ("can_read_usernames", _("Can Read User Usernames")),
-            ("can_view_user_analytics_data", "Can View User Analytics Data"),
         )
         ordering = ["id"]
 
@@ -337,7 +336,7 @@ class Child(models.Model):
 
     class Meta:
         permissions = [
-            ("can_view_child_analytics_data", "Can View Child Analytics Data")
+            ("can_view_all_children_in_analytics", "Can view all children in analytics")
         ]
         ordering = ["-birthday"]
 
@@ -528,12 +527,6 @@ class DemographicData(models.Model):
     extra = DateTimeAwareJSONField(null=True)
 
     class Meta:
-        permissions = [
-            (
-                "can_view_demographics_analytics_data",
-                "Can View Demographics Analytics Data",
-            )
-        ]
         ordering = ["-created_at"]
 
     class JSONAPIMeta:
