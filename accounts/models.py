@@ -69,6 +69,7 @@ class Organization(models.Model):
             ("can_create_organization", _("Can Create Organization")),
             ("can_remove_organization", _("Can Remove Organization")),
             ("can_view_experimenter", _("Can View Experimenter")),
+            ("can_view_analytics", _("Can View Analytics")),
         )
         ordering = ["name"]
 
@@ -334,6 +335,9 @@ class Child(models.Model):
         return GESTATIONAL_AGE_CHOICES[self.gestational_age_at_birth]
 
     class Meta:
+        permissions = [
+            ("can_view_all_children_in_analytics", "Can view all children in analytics")
+        ]
         ordering = ["-birthday"]
 
     class JSONAPIMeta:

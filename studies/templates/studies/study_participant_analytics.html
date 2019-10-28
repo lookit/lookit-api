@@ -261,8 +261,10 @@
                 <p class="help-block">
                     This section includes data from all children (except children of researcher accounts) 
                     
-                    {% if user.is_superuser %}
-                    registered on Lookit, regardless of whether they have participated in any studies. (This is because you are a superuser - typically only participants are included.)
+                    {% if can_view_all_children %}
+                        registered on Lookit, regardless of whether they have participated in any studies.
+                        (This is because you are either a recruitment manager or a superuser - typically only
+                        participants are included).
                     {% else %}
                     who submitted a response (with 
                     consent confirmed) to at least one study you have read access to.
@@ -326,7 +328,7 @@
                     </tbody>
                 </table>
             </article>
-            {% if user.is_superuser %}
+            {% if can_view_all_children %}
             <article id="studies-table" class="col-md-4">
                 <h4>Ages</h4>
                 <table class="table small">
