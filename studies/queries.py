@@ -90,8 +90,9 @@ def get_responses_with_current_rulings_and_videos(study_id):
     )
 
     # See: https://code.djangoproject.com/ticket/26565
-    #     The inability to use values() and prefetch in tandem without combinatorial
-    #     explosion of result set is precluding us from being efficient about this.
+    #     The inability to use values() and prefetch_related in tandem without
+    #     combinatorial explosion of result set is precluding us from relying on
+    #     django's join machinery. Instead, we need to manually join here.
     consent_videos = Video.objects.filter(study_id=study_id, is_consent_footage=True)
     videos_per_response = defaultdict(list)
     for video in consent_videos:
