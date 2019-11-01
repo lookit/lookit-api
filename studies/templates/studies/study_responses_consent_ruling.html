@@ -351,20 +351,20 @@
                     <ul id="list-of-responses" class="list-group">
                         {% for response in loaded_responses %}
                             <li id="response-option-{{ response.uuid }}"
-                                class="response-option list-group-item {{ response.most_recent_ruling }} {% if response.withdrawn %}withdrawn{% endif %}"
+                                class="response-option list-group-item {{ response.current_ruling }} {% if response.withdrawn %}withdrawn{% endif %}"
                                 data-id="{{ response.uuid }}"
-                                data-original-status="{{ response.most_recent_ruling }}">
+                                data-original-status="{{ response.current_ruling }}">
                                 <span>
                                     <strong>{{ response.date_created | date:"D F d, P e" }}</strong>
                                     <p>
-                                        <em class="small">{% if response.withdrawn %}Withdrawn. {% endif %}{{ response.comment_or_reason_for_absence }}</em>
+                                        <em class="small">{% if response.withdrawn %}Withdrawn. {% endif %}{{ response.ruling_comments }}</em>
                                     </p>
                                 </span>
                                 <div class="btn-group btn-group-sm pull-right" role="group">
                                     <button id="response-actor-{{ response.uuid }}" type="button"
                                             class="btn btn-default dropdown-toggle response-actor"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        {{ response.most_recent_ruling }}
+                                        {{ response.current_ruling }}
                                         <span class="caret"></span>
                                         <span class="sr-only">Toggle Dropdown</span>
                                     </button>
@@ -374,17 +374,17 @@
                                             <a class="consent-judgment" data-action="reset"
                                                style="display:none;">Undo</a>
                                         </li>
-                                        {% if not response.pending_consent_judgement %}
+                                        {% if response.current_ruling != 'pending' %}
                                             <li>
                                                 <a class="consent-judgment" data-action="pending">Revert to Pending</a>
                                             </li>
                                         {% endif %}
-                                        {% if not response.has_valid_consent %}
+                                        {% if response.current_ruling != 'accepted' %}
                                             <li>
                                                 <a class="consent-judgment" data-action="accepted">Accept</a>
                                             </li>
                                         {% endif %}
-                                        {% if not response.currently_rejected %}
+                                        {% if response.current_ruling != 'rejected' %}
                                             <li>
                                                 <a class="consent-judgment" data-action="rejected">Reject</a>
                                             </li>

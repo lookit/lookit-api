@@ -35,8 +35,12 @@ from studies.fields import (
 )
 from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import Feedback, Response, Study, StudyLog, StudyType
-from studies.queries import get_annotated_responses_qs, get_study_list_qs
+from studies.models import ACCEPTED, Feedback, Response, Study, StudyLog, StudyType
+from studies.queries import (
+    get_annotated_responses_qs,
+    get_responses_with_current_rulings_and_videos,
+    get_study_list_qs,
+)
 from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -892,7 +896,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         # Need to prefetch our responses with consent-footage videos.
         study = context["study"]
-        responses = study.responses_with_consent_videos
+        responses = get_responses_with_current_rulings_and_videos(study.id)
         context["loaded_responses"] = responses
         context["summary_statistics"] = statistics = {
             "accepted": {"responses": 0, "children": set()},
@@ -910,53 +914,60 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         # two jobs - generate statistics and populate k/v store.
         for response in responses:
 
-            stat_for_status = statistics.get(response.most_recent_ruling)
+            stat_for_status = statistics.get(response["current_ruling"])
             stat_for_status["responses"] += 1
-            stat_for_status["children"].add(response.child)
+            stat_for_status["children"].add(response["child_id"])
             total_stats["responses"] += 1
-            total_stats["children"].add(response.child)
+            total_stats["children"].add(response["child_id"])
 
-            response_data = response_key_value_store[str(response.uuid)] = {}
+            response_json = response_key_value_store[str(response["uuid"])] = {}
 
-            response_data["videos"] = [
+            response_json["videos"] = [
                 {"aws_url": video.download_url, "filename": video.filename}
-                for video in response.consent_videos
+                for video in response["videos"]
             ]
 
-            response_data["details"] = {
+            response["uuid"] = str(response.pop("uuid"))
+
+            response_json["details"] = {
                 "general": {
-                    "id": response.id,
-                    "uuid": str(response.uuid),
-                    "sequence": response.sequence,
-                    "conditions": json.dumps(response.conditions),
-                    "global_event_timings": json.dumps(response.global_event_timings),
-                    "completed": response.completed,
-                    "withdrawn": response.withdrawn,
+                    "id": response.pop("id"),
+                    "uuid": response["uuid"],
+                    "conditions": json.dumps(response.pop("conditions")),
+                    "global_event_timings": json.dumps(
+                        response.pop("global_event_timings")
+                    ),
+                    "sequence": json.dumps(response.pop("sequence")),
+                    "withdrawn": response_is_withdrawn(response["exp_data"]),
+                    "date_created": str(response["date_created"]),
                 },
                 "participant": {
-                    "id": response.child.user_id,
-                    "uuid": str(response.child.user.uuid),
-                    "nickname": response.child.user.nickname,
+                    "id": response.pop("child__user_id"),
+                    "uuid": str(response.pop("child__user__uuid")),
+                    "nickname": response.pop("child__user__nickname"),
                 },
                 "child": {
-                    "id": response.child.id,
-                    "uuid": str(response.child.uuid),
-                    "name": response.child.given_name,
-                    "birthday": response.child.birthday,
-                    "gender": response.child.gender,
-                    "age_at_birth": response.child.age_at_birth,
-                    "additional_information": response.child.additional_information,
+                    "id": response.pop("child_id"),
+                    "uuid": str(response.pop("child__uuid")),
+                    "name": response.pop("child__given_name"),
+                    "birthday": str(response.pop("child__birthday")),
+                    "gender": response.pop("child__gender"),
+                    "age_at_birth": response.pop("child__gestational_age_at_birth"),
+                    "additional_information": response.pop(
+                        "child__additional_information"
+                    ),
                 },
             }
 
-            if response.has_valid_consent:
-                response_data["details"]["exp_data"] = response.exp_data
+            exp_data = json.dumps(response.pop("exp_data"))
+            if response["current_ruling"] == ACCEPTED:
+                response_json["details"]["exp_data"] = exp_data
 
         # TODO: Upgrade to Django 2.x and use json_script.
-        context["response_key_value_store"] = json.dumps(
-            response_key_value_store,
-            default=lambda x: str(x) if isinstance(x, datetime.date) else x,
-        )
+        # context["response_key_value_store"] = json.dumps(
+        #     responses, default=lambda x: str(x) if isinstance(x, datetime.date) else x
+        # )
+        context["response_key_value_store"] = json.dumps(response_key_value_store)
 
         rejected = statistics["rejected"]
         rejected_child_set = rejected["children"]
@@ -1004,6 +1015,17 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                 kwargs=dict(pk=self.get_object().pk),
             )
         )
+
+
+def response_is_withdrawn(exp_data):
+    """Check if a response is withdrawn, using the experiment frame data.
+
+    XXX: This is copied over from the model methods in studies/models.py
+
+    TODO: See if we can delete the model method now that we're using .values() here.
+    """
+    exit_frames = [f for f in exp_data.values() if f.get("frameType", None) == "EXIT"]
+    return exit_frames[0].get("withdrawal", None) if exit_frames else None
 
 
 class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
