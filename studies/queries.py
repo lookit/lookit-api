@@ -41,7 +41,7 @@ def get_annotated_responses_qs(include_comments=False):
 
 
 def get_responses_with_current_rulings_and_videos(study_id):
-    """Gets all the responses for a given study, including the current ruling and videos.
+    """Gets all the responses for a given study, including the current ruling and consent videos.
 
     Args:
         study_id: The study ID related to the responses we want.
