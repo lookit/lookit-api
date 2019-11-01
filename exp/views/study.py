@@ -38,6 +38,7 @@ from studies.helpers import send_mail
 from studies.models import ACCEPTED, Feedback, Response, Study, StudyLog, StudyType
 from studies.queries import (
     get_annotated_responses_qs,
+    get_consent_statistics,
     get_responses_with_current_rulings_and_videos,
     get_study_list_qs,
 )
@@ -897,15 +898,9 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         # Need to prefetch our responses with consent-footage videos.
         study = context["study"]
         responses = get_responses_with_current_rulings_and_videos(study.id)
-        context["loaded_responses"] = responses
-        context["summary_statistics"] = statistics = {
-            "accepted": {"responses": 0, "children": set()},
-            "rejected": {"responses": 0, "children": set()},
-            "pending": {"responses": 0, "children": set()},
-            "total": {"responses": 0, "children": set()},
-        }
 
-        total_stats = statistics["total"]
+        context["loaded_responses"] = responses
+        context["summary_statistics"] = get_consent_statistics(study.id)
 
         # Using a map for arbitrarily structured data - lists and objects that we can't just trivially shove onto
         # data-* properties in HTML
@@ -914,20 +909,10 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
         # two jobs - generate statistics and populate k/v store.
         for response in responses:
 
-            stat_for_status = statistics.get(response["current_ruling"])
-            stat_for_status["responses"] += 1
-            stat_for_status["children"].add(response["child_id"])
-            total_stats["responses"] += 1
-            total_stats["children"].add(response["child_id"])
-
             response_json = response_key_value_store[str(response["uuid"])] = {}
 
-            response_json["videos"] = [
-                {"aws_url": video.download_url, "filename": video.filename}
-                for video in response["videos"]
-            ]
-
             response["uuid"] = str(response.pop("uuid"))
+            response_json["videos"] = response.pop("videos")
 
             response_json["details"] = {
                 "general": {
@@ -959,25 +944,12 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                 },
             }
 
-            exp_data = json.dumps(response.pop("exp_data"))
+            exp_data = response.pop("exp_data")
             if response["current_ruling"] == ACCEPTED:
                 response_json["details"]["exp_data"] = exp_data
 
         # TODO: Upgrade to Django 2.x and use json_script.
-        # context["response_key_value_store"] = json.dumps(
-        #     responses, default=lambda x: str(x) if isinstance(x, datetime.date) else x
-        # )
         context["response_key_value_store"] = json.dumps(response_key_value_store)
-
-        rejected = statistics["rejected"]
-        rejected_child_set = rejected["children"]
-        accepted_child_set = statistics["accepted"]["children"]
-        rejected["count_without_accepted"] = len(
-            rejected_child_set - accepted_child_set
-        )
-
-        for category, counts in statistics.items():
-            counts["children"] = len(counts["children"])
 
         return context
 
