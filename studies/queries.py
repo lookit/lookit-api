@@ -1,13 +1,15 @@
+from collections import defaultdict
+
 from django.db import models
 from django.db.models import Q, Count, IntegerField, OuterRef, Subquery
 from django.db.models.functions import Coalesce
 from guardian.shortcuts import get_objects_for_user
 
 from accounts.models import Child, User
-from studies.models import ACCEPTED, PENDING, ConsentRuling, Response, StudyLog
+from studies.models import ACCEPTED, PENDING, ConsentRuling, Response, StudyLog, Video
 
 
-def get_annotated_responses_qs():
+def get_annotated_responses_qs(include_comments=False):
     """Retrieve a queryset for the set of responses belonging to a set of studies."""
     # Create the subquery where we get the action from the most recent ruling.
     newest_ruling_subquery = models.Subquery(
@@ -17,13 +19,88 @@ def get_annotated_responses_qs():
     )
 
     # Annotate that value as "current ruling" on our response queryset.
-    return (
+    annotated_query = (
         Response.objects.prefetch_related("consent_rulings")
         .filter(completed_consent_frame=True)
         .annotate(
             current_ruling=Coalesce(newest_ruling_subquery, models.Value(PENDING))
         )
     )
+
+    if include_comments:
+        comment_subquery = models.Subquery(
+            ConsentRuling.objects.filter(response=models.OuterRef("pk"))
+            .order_by("-created_at")
+            .values("comments")[:1]
+        )
+        annotated_query = annotated_query.annotate(
+            ruling_comments=Coalesce(comment_subquery, models.Value("N/A"))
+        )
+
+    return annotated_query
+
+
+def get_responses_with_current_rulings_and_videos(study_id):
+    """Gets all the responses for a given study, including the current ruling and videos.
+
+    Args:
+        study_id: The study ID related to the responses we want.
+
+    Returns:
+        A queryset of responses with prefetched videos.
+    """
+    responses_for_study = (
+        get_annotated_responses_qs(include_comments=True)
+        .filter(study_id=study_id)
+        # .prefetch_related(
+        #     models.Prefetch(
+        #         "videos",
+        #         queryset=Video.objects.filter(is_consent_footage=True).only(
+        #             "full_name"
+        #         ),
+        #         to_attr="consent_videos",
+        #     )
+        # )
+        .select_related("child", "child__user")
+        .order_by("-date_created")
+        .values(
+            "id",
+            "uuid",
+            "sequence",
+            "conditions",
+            "global_event_timings",
+            "current_ruling",
+            "ruling_comments",
+            "completed",
+            "date_created",
+            "exp_data",
+            "child_id",
+            "child__uuid",
+            "child__birthday",
+            "child__gender",
+            "child__gestational_age_at_birth",
+            "child__additional_information",
+            "child__given_name",
+            "study__name",
+            "study_id",
+            "child__user_id",
+            "child__user__uuid",
+            "child__user__nickname",
+        )
+    )
+
+    # See: https://code.djangoproject.com/ticket/26565
+    #     The inability to use values() and prefetch in tandem without combinatorial
+    #     explosion of result set is precluding us from being efficient about this.
+    consent_videos = Video.objects.filter(study_id=study_id, is_consent_footage=True)
+    videos_per_response = defaultdict(list)
+    for video in consent_videos:
+        videos_per_response[video.response_id].append(video)
+
+    for response in responses_for_study:
+        response["videos"] = videos_per_response.get(response["id"], [])
+
+    return responses_for_study
 
 
 def get_consented_responses_qs():
