@@ -1008,6 +1008,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
     """
 
     template_name = "studies/study_responses_all.html"
+    queryset = Study.objects.all()
 
     def get_context_data(self, **kwargs):
         """
@@ -1015,7 +1016,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        context["n_responses"] = len(context["study"].consented_responses.all())
+        context["n_responses"] = context["study"].consented_responses.count()
         return context
 
     def build_all_csv(self, responses):
