@@ -346,7 +346,13 @@
                             <option id="filter-rejected" value="rejected">
                                 Rejected
                             </option>
-                        </select> Responses
+                        </select> Responses*
+                        <br>
+                        <p class="help small">
+                            <em>
+                            *Responses with approvals older than 3 weeks are not shown.
+                            </em>
+                        </p>
                     </div>
                     <ul id="list-of-responses" class="list-group">
                         {% for response in loaded_responses %}
@@ -454,31 +460,31 @@
                         <ul class="list-group">
                             <li class="list-group-item list-group-item-warning">
                                 Pending Responses
-                                <span class="badge">{{ summary_statistics.pending.responses }}</span>
+                                <span class="badge">{{ summary_statistics.responses.pending }}</span>
                             </li>
                             <li class="list-group-item list-group-item-success">
                                 Accepted Responses
-                                <span class="badge">{{ summary_statistics.accepted.responses }}</span>
+                                <span class="badge">{{ summary_statistics.responses.accepted }}</span>
                             </li>
                             <li class="list-group-item child-count">
                                 <em class="bg-success">Unique Children</em>
-                                <span class="badge">{{ summary_statistics.accepted.children }}</span>
+                                <span class="badge">{{ summary_statistics.children.with_accepted_responses }}</span>
                             </li>
                             <li class="list-group-item list-group-item-danger">
                                 Rejected Responses
-                                <span class="badge">{{ summary_statistics.rejected.responses }}</span>
+                                <span class="badge">{{ summary_statistics.responses.rejected }}</span>
                             </li>
                             <li class="list-group-item child-count">
                                 <em class="bg-danger">Children with no accepted responses</em>
-                                <span class="badge">{{ summary_statistics.rejected.count_without_accepted }}</span>
+                                <span class="badge">{{ summary_statistics.children.without_accepted_responses }}</span>
                             </li>
                             <li class="list-group-item totals">
                                 <strong>Total # Responses</strong>
-                                <span class="badge">{{ summary_statistics.total.responses }}</span>
+                                <span class="badge">{{ summary_statistics.responses.total }}</span>
                             </li>
                             <li class="list-group-item totals">
                                 <strong>Total # Children</strong>
-                                <span class="badge">{{ summary_statistics.total.children }}</span>
+                                <span class="badge">{{ summary_statistics.children.total }}</span>
                             </li>
                         </ul>
                     </div>
