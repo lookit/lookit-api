@@ -774,6 +774,7 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
     """
 
     template_name = "studies/study_responses.html"
+    queryset = Study.objects.all()
 
     def post(self, request, *args, **kwargs):
         """Currently, handles feedback form."""
