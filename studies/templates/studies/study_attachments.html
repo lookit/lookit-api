@@ -3,7 +3,7 @@
 {% load exp_extras %}
 {% load tz %}
 
-{% block title %}Attachments | {{ study.name }}{% endblock %}
+{% block title %}Videos | {{ study.name }}{% endblock %}
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
@@ -32,13 +32,13 @@
                 <ol class="breadcrumb">
                     <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
                     <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
-                    <li class="active"> Attachments</li>
+                    <li class="active"> Videos</li>
                 </ol>
             </div>
         </div>
         <div class='row'>
             <div class="col-xs-12">
-                <h1>Attachments</h1>
+                <h1>Videos</h1>
             </div>
         </div>
         <div class="row">
@@ -51,7 +51,7 @@
                  <span class="pull-right">
                      <form method="POST"> {% csrf_token %}
                          <button name="all-attachments" type="submit" value="all" class="mt-md btn btn-primary">
-                             Download all attachments
+                             Download all videos
                          </button>
                          <button name="all-consent-videos" type="submit" value="all" class="mt-md btn btn-primary">
                              Download all consent videos
@@ -64,7 +64,7 @@
             <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
                 <form method="GET">
                     <input id="search-attachments" class="form-control" name="match"
-                           placeholder="Filter attachment name" size="50" type="text">
+                           placeholder="Filter video name" size="50" type="text">
                     <input type="hidden" name="sort" value={{ sort }}>
                 </form>
             </div>
@@ -111,7 +111,7 @@
                             </tr>
                         {% empty %}
                             <tr>
-                                <td><em> No attachments available for download.</em></td>
+                                <td><em> No videos available for download.</em></td>
                             </tr>
                         {% endfor %}
                         </tbody>
