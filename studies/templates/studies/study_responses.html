@@ -222,7 +222,7 @@
                 {% endfor %}
 
                 <div class="pb-md">
-                    <h2> Attachments </h2>
+                    <h2> Videos </h2>
                     {% for response in responses %}
                         <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
                             {% for video in response.videos.all %}
@@ -237,7 +237,7 @@
                                     </form>
                                 </div>
                             {% empty %}
-                                <p><em> Expect a delay of a few minutes for video attachments to be available for download. </em></p>
+                                <p><em> Expect a delay of a few minutes for videos to be available for download. </em></p>
                             {% endfor %}
                         </div>
                     {% endfor %}
