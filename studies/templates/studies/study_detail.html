@@ -157,7 +157,7 @@
                         </a>
                     {% endif %}
                     <a type="button" class="btn btn-default"
-                       href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_modified' %}">
+                       href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_created' %}">
                         <i aria-hidden="true" class="fa fas fa-envelope"></i> View Responses
                     </a>
                     <a type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"

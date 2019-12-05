@@ -106,9 +106,9 @@ class ParticipantDetailView(
             .filter(child__user=self.get_object())
             .select_related("child__user")
         )
-        orderby = self.request.GET.get("sort", None)
+        orderby = self.request.GET.get("sort", "-date_created")
         if orderby:
-            if "date_modified" in orderby:
+            if "date_created" in orderby:
                 resps = resps.order_by(orderby)
             elif "completed" in orderby:
                 resps = resps.order_by(
@@ -117,6 +117,7 @@ class ParticipantDetailView(
         studies = [
             {
                 "modified": resp.date_modified,
+                "created": resp.date_created,
                 "study": resp.study,
                 "name": resp.study.name,
                 "completed": resp.completed,
