@@ -136,8 +136,8 @@
                                 </th>
                                 <th>
                                     Date
-                                    <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                    <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                    <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_created' %}"><i class="fa fa-chevron-up" role="button"></i></a>
+                                    <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}"><i class="fa fa-chevron-down" role="button"></i></a>
                                 </th>
                             </tr>
                         </thead>
@@ -147,7 +147,7 @@
                             <td>{{ response.child.user.id }}</td>
                             <td>{{ response.id }} </td>
                             <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
-                            <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
+                            <td>{{ response.date_created|date:"n/d/Y"|default:"N/A" }}</td>
                           </tr>
                         {% endfor %}
                         </tbody>

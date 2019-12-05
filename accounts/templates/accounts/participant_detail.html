@@ -239,9 +239,9 @@
                     <a aria-label="Reverse sort user studies by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
                 </div>
                 <div class="col-md-3 col-xs-12">
-                    Date Modified
-                    <a aria-label="Sort user studies by date modified" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_modified' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                    <a aria-label="Reverse sort user studies by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_modified' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+                    Date of Response
+                    <a aria-label="Sort user studies by date created" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
                 </div>
                 <hr>
             </div>
@@ -268,11 +268,11 @@
                       </div>
                       <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            Modified <span class="caret"></span>
+                            Date <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                          <li><a aria-label="Sort ascending by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_modified' %}#studies">Sort Asc</a></li>
-                          <li><a aria-label="Sort descending by date modified" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_modified' %}#studies">Sort Desc</a></li>
+                          <li><a aria-label="Sort ascending by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies">Sort Asc</a></li>
+                          <li><a aria-label="Sort descending by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies">Sort Desc</a></li>
                         </ul>
                       </div>
                    </div>
@@ -302,8 +302,8 @@
                     {% endif %}
                 </div>
                 <div class="col-md-3 col-xs-12">
-                    <span class="visible-xs visible-sm">Date Modified: {{ study_dict.modified |date:"n/d/Y"|default:"N/A" }} </span>
-                    <span class="hidden-xs hidden-sm">{{ study_dict.modified |date:"n/d/Y"|default:"N/A" }} </span>
+                    <span class="visible-xs visible-sm">Date: {{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
                 </div>
             </div>
           {% endfor %}
