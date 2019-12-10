@@ -42,6 +42,7 @@
                 $commentsHiddenInput = $consentRulingForm.find("input[name='comments']"),
                 $resetChoicesButton = $consentRulingForm.find("#reset-choices"),
                 $responseDataSection = $("#response-info-container"),
+                $generalHeader = $responseDataSection.find("table#general thead tr"),
                 $generalRow = $responseDataSection.find("table#general tbody tr"),
                 $participantRow = $responseDataSection.find("table#participant tbody tr"),
                 $childRow = $responseDataSection.find("table#child tbody tr");
@@ -182,8 +183,16 @@
                 let details = responseData["details"];
                 let expData = details["exp_data"];
                 $responseDataSection.find("#exp-data").html(JSON.stringify(expData, undefined, 2) || "No data");
+                $responseDataSection.toggleClass('withdrawn', !!details["general"]["withdrawn"]);
+                if (details["general"]["withdrawn"]) {
+                    $('#general-info-header').html('General Information (session video withdrawn)');
+                } else {
+                    $('#general-info-header').html('General Information');
+                }
 
+                $generalHeader.empty();
                 $generalRow.empty();
+                $generalHeader.append(Array.from(Object.keys(details["general"]), val => $(`<th>${val.split('_').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')}</th>`)));
                 $generalRow.append(Array.from(Object.values(details["general"]), val => $(`<td>${val}</td>`)));
 
                 $participantRow.empty();
@@ -357,13 +366,13 @@
                     <ul id="list-of-responses" class="list-group">
                         {% for response in loaded_responses %}
                             <li id="response-option-{{ response.uuid }}"
-                                class="response-option list-group-item {{ response.current_ruling }} {% if response.withdrawn %}withdrawn{% endif %}"
+                                class="response-option list-group-item {{ response.current_ruling }}"
                                 data-id="{{ response.uuid }}"
                                 data-original-status="{{ response.current_ruling }}">
                                 <span>
                                     <strong>{{ response.date_created | date:"D F d, P e" }}</strong>
                                     <p>
-                                        <em class="small">{% if response.withdrawn %}Withdrawn. {% endif %}{{ response.ruling_comments }}</em>
+                                        <em class="small">{{ response.ruling_comments }}</em>
                                     </p>
                                 </span>
                                 <div class="btn-group btn-group-sm pull-right" role="group">
@@ -494,17 +503,18 @@
         </div>
         <div id="response-info-container" class="row pt-md well">
             <h2>Session Data</h2>
-            <h3>General Information</h3>
+            <h3 id="general-info-header">General Information</h3>
             <table id="general" class="table">
                 <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>UUID</th>
-                    <th>Sequence</th>
+                    <th>Id</th>
+                    <th>Uuid</th>
                     <th>Conditions</th>
-                    <th>Global Event Timing</th>
+                    <th>Global Event Timings</th>
+                    <th>Sequence</th>
                     <th>Completed</th>
                     <th>Withdrawn</th>
+                    <th>Date Created</th>
                 </tr>
                 </thead>
                 <tbody>

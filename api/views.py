@@ -344,6 +344,10 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
                         child__in=children_belonging_to_user
                     )
 
+            # Order by date created even though in some edge cases the current session will
+            # not be the most recently created (e.g., same user made an additional attempt to
+            # participate after starting this session) - updating
+            # consent status will change date_modified
             return nested_responses.order_by("-date_modified")
 
         else:  # NON-NESTED ROUTE

@@ -924,6 +924,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                         response.pop("global_event_timings")
                     ),
                     "sequence": json.dumps(response.pop("sequence")),
+                    "completed": json.dumps(response.pop("completed")),
                     "withdrawn": response_is_withdrawn(response["exp_data"]),
                     "date_created": str(response["date_created"]),
                 },

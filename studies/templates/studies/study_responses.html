@@ -136,8 +136,8 @@
                                 </th>
                                 <th>
                                     Date
-                                    <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_modified' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                    <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                    <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_created' %}"><i class="fa fa-chevron-up" role="button"></i></a>
+                                    <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}"><i class="fa fa-chevron-down" role="button"></i></a>
                                 </th>
                             </tr>
                         </thead>
@@ -147,7 +147,7 @@
                             <td>{{ response.child.user.id }}</td>
                             <td>{{ response.id }} </td>
                             <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
-                            <td>{{ response.date_modified|date:"n/d/Y"|default:"N/A" }}</td>
+                            <td>{{ response.date_created|date:"n/d/Y"|default:"N/A" }}</td>
                           </tr>
                         {% endfor %}
                         </tbody>
@@ -222,7 +222,7 @@
                 {% endfor %}
 
                 <div class="pb-md">
-                    <h2> Attachments </h2>
+                    <h2> Videos </h2>
                     {% for response in responses %}
                         <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
                             {% for video in response.videos.all %}
@@ -237,7 +237,7 @@
                                     </form>
                                 </div>
                             {% empty %}
-                                <p><em> Expect a delay of a few minutes for video attachments to be available for download. </em></p>
+                                <p><em> Expect a delay of a few minutes for videos to be available for download. </em></p>
                             {% endfor %}
                         </div>
                     {% endfor %}

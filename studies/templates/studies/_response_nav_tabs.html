@@ -7,7 +7,7 @@
         </a>
     </li>
     <li {% if active == 'individual' %} class="active" {% endif %}>
-        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_modified' %}">
+        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}">
             Individual <span class="hidden-xs"> Responses </span>
         </a>
     </li>
@@ -23,7 +23,7 @@
     </li>
     <li {% if active == 'attachments' %} class="active" {% endif %}>
         <a href="{% url 'exp:study-attachments' study.id %}">
-            Attachments
+            Videos
         </a>
     </li>
 </ul>

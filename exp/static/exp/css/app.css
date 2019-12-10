@@ -341,6 +341,11 @@ h3.study-logs-label {
     color: lightgray;
 }
 
+#response-info-container.withdrawn {
+    color: gray;
+    font-style: italic;
+}
+
 .response-actor {
     text-transform: capitalize;
 }
