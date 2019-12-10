@@ -169,8 +169,10 @@ def get_consent_statistics(study_id):
         response_stats[count_obj["current_ruling"]] = count_for_ruling
         response_stats["total"] += count_for_ruling
 
-    children_with_rulings = get_annotated_responses_qs().values(
-        "child_id", "current_ruling"
+    children_with_rulings = (
+        get_annotated_responses_qs()
+        .filter(study_id=study_id)
+        .values("child_id", "current_ruling")
     )
 
     unique_accepted_children = set(
