@@ -22,7 +22,7 @@ WITH_PREFETCHED_RESPONSES = Study.objects.prefetch_related("responses", "videos"
 
 
 def flatten_dict(d):
-	'''Flatten a dictionary where values may be other dictionaries
+    """Flatten a dictionary where values may be other dictionaries
 
 	The dictionary returned will have keys created by joining higher- to lower-level keys with dots. e.g. if the original dict d is
 	{'a': {'x':3, 'y':4}, 'b':{'z':5}, 'c':{} }
@@ -32,272 +32,452 @@ def flatten_dict(d):
 	Note that if a key is mapped to an empty dict or list, NO key in the returned dict is created for this key.
 
 	Also note that values may be overwritten if there is conflicting dot notation in the input dictionary, e.g. {'a': {'x': 3}, 'a.x': 4}.
-	'''
-	# http://codereview.stackexchange.com/a/21035
+	"""
+    # http://codereview.stackexchange.com/a/21035
 
-	def expand(key, value):
-		if isinstance(value, list):
-			value = {i: v for (i, v) in enumerate(value)}
-		if isinstance(value, dict):
-			return [ (str(key) + '.' + str(k), v) for k, v in flatten_dict(value).items() ]
-		else:
-			return [ (key, value) ]
+    def expand(key, value):
+        if isinstance(value, list):
+            value = {i: v for (i, v) in enumerate(value)}
+        if isinstance(value, dict):
+            return [
+                (str(key) + "." + str(k), v) for k, v in flatten_dict(value).items()
+            ]
+        else:
+            return [(key, value)]
 
-	items = [ item for k, v in d.items() for item in expand(k, v) ]
+    items = [item for k, v in d.items() for item in expand(k, v)]
 
-	return dict(items)
-	
+    return dict(items)
+
+
 def merge_dicts(d1, d2):
-	d1_copy = d1.copy()
-	d1_copy.update(d2)
-	return d1_copy
+    d1_copy = d1.copy()
+    d1_copy.update(d2)
+    return d1_copy
+
 
 class StudyResponsesMixin(
-	SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin
+    SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin
 ):
-	"""
+    """
 	Mixin with shared items for StudyResponsesList, StudyResponsesAll, and StudyAttachments Views.
 
 	TODO: deprecate this beast
 	"""
 
-	queryset = WITH_PREFETCHED_RESPONSES
-	permission_required = "studies.can_view_study_responses"
-	raise_exception = True
+    queryset = WITH_PREFETCHED_RESPONSES
+    permission_required = "studies.can_view_study_responses"
+    raise_exception = True
 
-	def convert_to_string(self, object):
-		if isinstance(object, datetime.date):
-			return object.__str__()
-		return object
+    def convert_to_string(self, object):
+        if isinstance(object, datetime.date):
+            return object.__str__()
+        return object
 
-	def build_participant_data(self, responses):
-		json_responses = []
-		for resp in responses:
-			latest_dem = resp.demographic_snapshot
-			json_responses.append(
-				json.dumps(
-					{
-						"response": {"id": resp.id, "uuid": str(resp.uuid)},
-						"participant": {
-							"id": resp.child.user_id,
-							"uuid": str(resp.child.user.uuid),
-							"nickname": resp.child.user.nickname,
-						},
-						"demographic_snapshot": {
-							"demographic_id": latest_dem.id,
-							"uuid": str(latest_dem.uuid),
-							"number_of_children": latest_dem.number_of_children,
-							"child_birthdays": latest_dem.child_birthdays,
-							"languages_spoken_at_home": latest_dem.languages_spoken_at_home,
-							"number_of_guardians": latest_dem.number_of_guardians,
-							"number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
-							"race_identification": latest_dem.race_identification,
-							"age": latest_dem.age,
-							"gender": latest_dem.gender,
-							"education_level": latest_dem.gender,
-							"spouse_education_level": latest_dem.spouse_education_level,
-							"annual_income": latest_dem.annual_income,
-							"number_of_books": latest_dem.number_of_books,
-							"additional_comments": latest_dem.additional_comments,
-							"country": latest_dem.country.name,
-							"state": latest_dem.state,
-							"density": latest_dem.density,
-							"lookit_referrer": latest_dem.lookit_referrer,
-							"extra": latest_dem.extra,
-						},
-					},
-					indent=4,
-					default=self.convert_to_string,
-				)
-			)
-		return json_responses
+    def build_participant_data(self, responses):
+        json_responses = []
+        for resp in responses:
+            latest_dem = resp.demographic_snapshot
+            json_responses.append(
+                json.dumps(
+                    {
+                        "response": {"id": resp.id, "uuid": str(resp.uuid)},
+                        "participant": {
+                            "id": resp.child.user_id,
+                            "uuid": str(resp.child.user.uuid),
+                            "nickname": resp.child.user.nickname,
+                        },
+                        "demographic_snapshot": {
+                            "demographic_id": latest_dem.id,
+                            "uuid": str(latest_dem.uuid),
+                            "number_of_children": latest_dem.number_of_children,
+                            "child_birthdays": latest_dem.child_birthdays,
+                            "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
+                            "number_of_guardians": latest_dem.number_of_guardians,
+                            "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
+                            "race_identification": latest_dem.race_identification,
+                            "age": latest_dem.age,
+                            "gender": latest_dem.gender,
+                            "education_level": latest_dem.gender,
+                            "spouse_education_level": latest_dem.spouse_education_level,
+                            "annual_income": latest_dem.annual_income,
+                            "number_of_books": latest_dem.number_of_books,
+                            "additional_comments": latest_dem.additional_comments,
+                            "country": latest_dem.country.name,
+                            "state": latest_dem.state,
+                            "density": latest_dem.density,
+                            "lookit_referrer": latest_dem.lookit_referrer,
+                            "extra": latest_dem.extra,
+                        },
+                    },
+                    indent=4,
+                    default=self.convert_to_string,
+                )
+            )
+        return json_responses
 
-	def build_csv_participant_row_data(self, resp):
-		"""
+    def build_csv_participant_row_data(self, resp):
+        """
 		Returns row of csv participant data
 		"""
-		latest_dem = resp.demographic_snapshot
+        latest_dem = resp.demographic_snapshot
 
-		return [
-			resp.id,
-			str(resp.uuid),
-			resp.child.user_id,
-			str(resp.child.user.uuid),
-			resp.child.user.nickname,
-			latest_dem.id,
-			str(latest_dem.uuid),
-			latest_dem.number_of_children,
-			[
-				self.convert_to_string(birthday)
-				for birthday in latest_dem.child_birthdays
-			],
-			latest_dem.languages_spoken_at_home,
-			latest_dem.number_of_guardians,
-			latest_dem.number_of_guardians_explanation,
-			latest_dem.race_identification,
-			latest_dem.age,
-			latest_dem.gender,
-			latest_dem.education_level,
-			latest_dem.spouse_education_level,
-			latest_dem.annual_income,
-			latest_dem.number_of_books,
-			latest_dem.additional_comments,
-			latest_dem.country.name,
-			latest_dem.state,
-			latest_dem.density,
-			latest_dem.lookit_referrer,
-			latest_dem.extra,
-		]
+        return [
+            resp.id,
+            str(resp.uuid),
+            resp.child.user_id,
+            str(resp.child.user.uuid),
+            resp.child.user.nickname,
+            latest_dem.id,
+            str(latest_dem.uuid),
+            latest_dem.number_of_children,
+            [
+                self.convert_to_string(birthday)
+                for birthday in latest_dem.child_birthdays
+            ],
+            latest_dem.languages_spoken_at_home,
+            latest_dem.number_of_guardians,
+            latest_dem.number_of_guardians_explanation,
+            latest_dem.race_identification,
+            latest_dem.age,
+            latest_dem.gender,
+            latest_dem.education_level,
+            latest_dem.spouse_education_level,
+            latest_dem.annual_income,
+            latest_dem.number_of_books,
+            latest_dem.additional_comments,
+            latest_dem.country.name,
+            latest_dem.state,
+            latest_dem.density,
+            latest_dem.lookit_referrer,
+            latest_dem.extra,
+        ]
 
-	def get_csv_participant_headers(self):
-		"""
+    def get_csv_participant_headers(self):
+        """
 		Returns header row for csv participant data
 		"""
-		return [
-			"response_id",
-			"response_uuid",
-			"participant_id",
-			"participant_uuid",
-			"participant_nickname",
-			"demographic_id",
-			"latest_dem_uuid",
-			"demographic_number_of_children",
-			"demographic_child_birthdays",
-			"demographic_languages_spoken_at_home",
-			"demographic_number_of_guardians",
-			"demographic_number_of_guardians_explanation",
-			"demographic_race_identification",
-			"demographic_age",
-			"demographic_gender",
-			"demographic_education_level",
-			"demographic_spouse_education_level",
-			"demographic_annual_income",
-			"demographic_number_of_books",
-			"demographic_additional_comments",
-			"demographic_country",
-			"demographic_state",
-			"demographic_density",
-			"demographic_lookit_referrer",
-			"demographic_extra",
-		]
+        return [
+            "response_id",
+            "response_uuid",
+            "participant_id",
+            "participant_uuid",
+            "participant_nickname",
+            "demographic_id",
+            "latest_dem_uuid",
+            "demographic_number_of_children",
+            "demographic_child_birthdays",
+            "demographic_languages_spoken_at_home",
+            "demographic_number_of_guardians",
+            "demographic_number_of_guardians_explanation",
+            "demographic_race_identification",
+            "demographic_age",
+            "demographic_gender",
+            "demographic_education_level",
+            "demographic_spouse_education_level",
+            "demographic_annual_income",
+            "demographic_number_of_books",
+            "demographic_additional_comments",
+            "demographic_country",
+            "demographic_state",
+            "demographic_density",
+            "demographic_lookit_referrer",
+            "demographic_extra",
+        ]
 
-	def build_responses(self, responses):
-		"""
+    def build_responses(self, responses):
+        """
 		Builds the JSON response data for the researcher to download
 		"""
-		json_responses = []
-		for resp in responses:
-			json_responses.append(
-				{
-					"response": {
-						"id": resp.id,
-						"uuid": str(resp.uuid),
-						"sequence": resp.sequence,
-						"conditions": resp.conditions,
-						"exp_data": resp.exp_data,
-						"global_event_timings": resp.global_event_timings,
-						"completed": resp.completed,
-						"withdrawn": resp.withdrawn,
-					},
-					"study": {"id": resp.study.id, "uuid": str(resp.study.uuid)},
-					"participant": {
-						"id": resp.child.user_id,
-						"uuid": str(resp.child.user.uuid),
-						"nickname": resp.child.user.nickname,
-					},
-					"child": {
-						"id": resp.child.id,
-						"uuid": str(resp.child.uuid),
-						"name": resp.child.given_name,
-						"birthday": resp.child.birthday,
-						"gender": resp.child.gender,
-						"age_at_birth": resp.child.age_at_birth,
-						"additional_information": resp.child.additional_information,
-					},
-					"consent_information": resp.current_consent_details,
-				}
-			)
-		return json_responses
+        json_responses = []
+        for resp in responses:
+            json_responses.append(
+                {
+                    "response": {
+                        "id": resp.id,
+                        "uuid": str(resp.uuid),
+                        "sequence": resp.sequence,
+                        "conditions": resp.conditions,
+                        "exp_data": resp.exp_data,
+                        "global_event_timings": resp.global_event_timings,
+                        "completed": resp.completed,
+                        "date_created": str(resp.date_created),
+                        "withdrawn": resp.withdrawn,
+                    },
+                    "study": {"id": resp.study.id, "uuid": str(resp.study.uuid)},
+                    "participant": {
+                        "id": resp.child.user_id,
+                        "uuid": str(resp.child.user.uuid),
+                        "nickname": resp.child.user.nickname,
+                    },
+                    "child": {
+                        "id": resp.child.id,
+                        "uuid": str(resp.child.uuid),
+                        "name": resp.child.given_name,
+                        "birthday": resp.child.birthday,
+                        "gender": resp.child.gender,
+                        "languages": resp.child.language_list,
+                        "characteristics": resp.child.condition_list,
+                        "age_at_birth": resp.child.age_at_birth,
+                        "additional_information": resp.child.additional_information,
+                    },
+                    "consent_information": resp.current_consent_details,
+                }
+            )
+        return json_responses
 
-	def csv_output_and_writer(self):
-		output = io.StringIO()
-		return output, csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-		
-	def csv_dict_output_and_writer(self, headerList):
-		output = io.StringIO()
-		writer = csv.DictWriter(output, quoting=csv.QUOTE_NONNUMERIC, fieldnames=headerList, restval='', extrasaction='ignore')
-		writer.writeheader()
-		return output, writer
-		
-	def get_ordered_csv_headers_for_row_data(self):
-		''' Returns the CSV headers to display first in the individual/all responses CSVs.
-		These can be freely rearranged per preference, but should be a subset of the keys 
-		returned by get_csv_headers_and_row_data.'''
-		
-		return [
-			"response_id",
-			"response_uuid",
-			"response_completed", 
-			"response_withdrawn",
-			"response_consent_ruling", 
-			"response_consent_arbiter", 
-			"response_consent_time", 
-			"response_consent_comment", 
-			"study_id", 
-			"study_uuid", 
-			"participant_id", 
-			"participant_uuid", 
-			"participant_nickname", 
-			"child_id", 
-			"child_uuid", 
-			"child_name", 
-			"child_birthday", 
-			"child_gender", 
-			"child_age_at_birth", 
-			"child_additional_information", 
-		]
+    def csv_output_and_writer(self):
+        output = io.StringIO()
+        return output, csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
 
-	def get_csv_headers_and_row_data(self, resp={}):
+    def csv_dict_output_and_writer(self, headerList):
+        output = io.StringIO()
+        writer = csv.DictWriter(
+            output,
+            quoting=csv.QUOTE_NONNUMERIC,
+            fieldnames=headerList,
+            restval="",
+            extrasaction="ignore",
+        )
+        writer.writeheader()
+        return output, writer
 
-		row_data_with_headers = {
-			"response_id": resp.id if resp else '',
-			"response_uuid": str(resp.uuid) if resp else '',
-			"response_completed": resp.completed if resp else '', 
-			"response_withdrawn": resp.withdrawn if resp else '',
-			"response_sequence": resp.sequence if resp else [],
-			"response_conditions": [merge_dicts({'frameName': condFrame}, conds) for (condFrame, conds) in resp.conditions.items()] if resp else [],
-			"response_consent_ruling": resp.most_recent_ruling if resp else '', 
-			"response_consent_arbiter": resp.most_recent_ruling_arbiter if resp else '', 
-			"response_consent_time": resp.most_recent_ruling_date if resp else '', 
-			"response_consent_comment": resp.most_recent_ruling_comment if resp else '', 
-			"study_id": resp.study.id if resp else '', 
-			"study_uuid": str(resp.study.uuid) if resp else '', 
-			"participant_id": resp.child.user_id if resp else '', 
-			"participant_uuid": str(resp.child.user.uuid) if resp else '', 
-			"participant_nickname": resp.child.user.nickname if resp else '', 
-			"child_id": resp.child.id if resp else '', 
-			"child_uuid": str(resp.child.uuid) if resp else '', 
-			"child_name": resp.child.given_name if resp else '', 
-			"child_birthday": resp.child.birthday if resp else '', 
-			"child_gender": resp.child.gender if resp else '', 
-			"child_age_at_birth": resp.child.age_at_birth if resp else '', 
-			"child_additional_information": resp.child.additional_information if resp else '', 
-		}
-		
-		return flatten_dict(row_data_with_headers)
-		
-		   #(resp.exp_data, ## remove
-			#(resp.global_event_timings
+    def get_csv_headers_and_row_data(self, resp={}):
 
-	def post(self, request, *args, **kwargs):
-		"""
+        all_row_data = [
+            ("response_id", resp.id if resp else "", "Short ID for this response"),
+            (
+                "response_uuid",
+                str(resp.uuid) if resp else "",
+                "Primary unique identifier for response, can be used to match to video filenames",
+            ),
+            (
+                "response_date",
+                str(resp.date_created) if resp else "",
+                "Timestamp for when participant began session, in format e.g. 2019-11-07 17:13:38.702958+00:00",
+            ),
+            (
+                "response_completed",
+                resp.completed if resp else "",
+                "Whether the participant submitted the exit survey; depending on study criteria, this may not align with whether the session is considered complete. E.g., participant may have left early but submitted exit survey, or may have completed all test trials but not exit survey.",
+            ),
+            (
+                "response_withdrawn",
+                resp.withdrawn if resp else "",
+                "Whether the participant withdrew permission for viewing/use of study video beyond consent video. If true, video will not be available and must not be used.",
+            ),
+            (
+                "response_consent_ruling",
+                resp.most_recent_ruling if resp else "",
+                "Most recent consent video ruling: one of 'accepted' (consent has been reviewed and judged to indidate informed consent), 'rejected' (consent has been reviewed and judged not to indicate informed consent -- e.g., video missing or parent did not read statement), or 'pending' (no current judgement, e.g. has not been reviewed yet or waiting on parent email response')",
+            ),
+            (
+                "response_consent_arbiter",
+                resp.most_recent_ruling_arbiter if resp else "",
+                "Name associated with researcher account that made the most recent consent ruling",
+            ),
+            (
+                "response_consent_time",
+                resp.most_recent_ruling_date if resp else "",
+                "Timestamp of most recent consent ruling, format e.g. 2019-12-09 20:40",
+            ),
+            (
+                "response_consent_comment",
+                resp.most_recent_ruling_comment if resp else "",
+                "Comment associated with most recent consent ruling (may be used to track e.g. any cases where consent was confirmed by email)",
+            ),
+            (
+                "study_id",
+                resp.study.id if resp else "",
+                "Short ID of study associated with this response. Same for all responses to a given Lookit study.",
+            ),
+            (
+                "study_uuid",
+                str(resp.study.uuid) if resp else "",
+                "Primary unique identifier of study associated with this response. Same for all responses to a given Lookit study.",
+            ),
+            (
+                "participant_id",
+                resp.child.user_id if resp else "",
+                "Short ID for the family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
+            ),
+            (
+                "participant_uuid",
+                str(resp.child.user.uuid) if resp else "",
+                "Primary unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
+            ),
+            (
+                "participant_nickname",
+                resp.child.user.nickname if resp else "",
+                "Nickname associated with the family account for this response - generally the mom or dad's name",
+            ),
+            (
+                "child_id",
+                resp.child.id if resp else "",
+                "Short ID for the child associated with this response. Will be the same for multiple responses from one child.",
+            ),
+            (
+                "child_uuid",
+                str(resp.child.uuid) if resp else "",
+                "Primary unique identifier for the child associated with this response. Will be the same for multiple responses from one child.",
+            ),
+            (
+                "child_name",
+                resp.child.given_name if resp else "",
+                "Nickname for the child associated with this response. Not necessarily a real name (we encourage initials, nicknames, etc. if parents aren't comfortable providing a name) but should be redacted for publication of data.",
+            ),
+            (
+                "child_birthday",
+                resp.child.birthday if resp else "",
+                "Birthdate of child associated with this response. Must be redacted for publication of data (switch to age at time of participation, and either round/jitter or redact timestamps of participation).",
+            ),
+            (
+                "child_gender",
+                resp.child.gender if resp else "",
+                "Parent-identified gender of child, one of 'm' (male), 'f' (female), 'o' (other), or 'na' (prefer not to answer)",
+            ),
+            (
+                "child_age_at_birth",
+                resp.child.age_at_birth if resp else "",
+                "Gestational age at birth in weeks. One of '40 or more weeks', '39 weeks' through '24 weeks', 'Under 24 weeks', or 'Not sure or prefer not to answer'",
+            ),
+            (
+                "child_languages",
+                resp.child.language_list if resp else "",
+                "List of languages spoken (using language codes in Lookit docs), separated by spaces",
+            ),
+            (
+                "child_characteristics",
+                resp.child.condition_list if resp else "",
+                "List of child characteristics (using condition/characteristic codes in Lookit docs), separated by spaces",
+            ),
+            (
+                "child_additional_information",
+                resp.child.additional_information if resp else "",
+                "Free response 'anything else you'd like us to know' field on child registration form for child associated with this response",
+            ),
+            (
+                "response_sequence",
+                resp.sequence if resp else [],
+                "Each response_sequence.N field (response_sequence.0, response_sequence.1, etc.) gives the ID of the Nth frame displayed during the session associated with this response. Responses may have different sequences due to randomization or if a participant leaves early.",
+            ),
+            (
+                "response_conditions",
+                [
+                    merge_dicts({"frameName": condFrame}, conds)
+                    for (condFrame, conds) in resp.conditions.items()
+                ]
+                if resp
+                else [],
+                "RESEARCHERS: EXPAND THIS SECTION BASED ON YOUR INDIVIDUAL STUDY. Each set of response_conditions.N.(...) fields give information about condition assignment during a particular frame of this study. response_conditions.0.frameName is the frame ID (corresponding to a value in response_sequence) where the randomization occured. Additional fields such as response_conditions.0.conditionNum depend on the specific randomizer frames used in this study.",
+            ),
+        ]
+
+        headers_ordered = [name for (name, val, desc) in all_row_data][0:-2]
+
+        field_descriptions = {name: desc for (name, val, desc) in all_row_data}
+
+        row_data_with_headers = flatten_dict(
+            {name: val for (name, val, desc) in all_row_data}
+        )
+
+        return {
+            "headers": headers_ordered,
+            "descriptions": field_descriptions,
+            "dict": row_data_with_headers,
+        }
+
+    def get_frame_data(self, resp):
+
+        frame_data_dicts = []
+
+        for (iEvent, event) in enumerate(resp.global_event_timings):
+            for (key, value) in event.items():
+                frame_data_dicts.append(
+                    {
+                        "child_uuid": str(resp.child.uuid),
+                        "response_uuid": str(resp.uuid),
+                        "frame_id": "global",
+                        "key": key,
+                        "event_number": str(iEvent),
+                        "value": value,
+                    }
+                )
+
+        event_prefix = "eventTimings."
+
+        for (frame_id, frame_data) in resp.exp_data.items():
+            for (key, value) in flatten_dict(frame_data).items():
+                if key.startswith("eventTimings."):
+                    key_pieces = key.split(".")
+                    frame_data_dicts.append(
+                        {
+                            "child_uuid": str(resp.child.uuid),
+                            "response_uuid": str(resp.uuid),
+                            "frame_id": frame_id,
+                            "key": ".".join(key_pieces[2:]),
+                            "event_number": str(key_pieces[1]),
+                            "value": value,
+                        }
+                    )
+                elif key == "frameType":
+                    continue
+                elif key == "generatedProperties" and not (value):
+                    continue
+                else:
+                    frame_data_dicts.append(
+                        {
+                            "child_uuid": str(resp.child.uuid),
+                            "response_uuid": str(resp.uuid),
+                            "frame_id": frame_id,
+                            "key": key,
+                            "event_number": "",
+                            "value": value,
+                        }
+                    )
+
+        headers = [
+            (
+                "response_uuid",
+                "Unique identifier for this response; can be matched to summary data and video filenames",
+            ),
+            (
+                "child_uuid",
+                "Unique identifier for the child associated with this response; can be matched to summary data",
+            ),
+            (
+                "frame_id",
+                "Identifier for the particular frame responsible for this data; matches up to an element in the response_sequence in the summary data file",
+            ),
+            (
+                "event_number",
+                "Index of the event responsible for this data, if this is an event. Indexes start from 0 within each frame (and within global data) within each response.",
+            ),
+            (
+                "key",
+                "Label for a piece of data collected during this frame - for example, 'child_favorite_animal'",
+            ),
+            (
+                "value",
+                "Value of the data associated with this key (of the indexed event if applicable) - for example, 'giraffe'",
+            ),
+        ]
+
+        return {
+            "data": frame_data_dicts,
+            "data_headers": [header for (header, description) in headers],
+            "header_descriptions": headers,
+        }
+
+    def post(self, request, *args, **kwargs):
+        """
 		Downloads a single study video.
 		"""
-		attachment_id = self.request.POST.get("attachment")
-		if attachment_id:
-			download_url = self.get_object().videos.get(pk=attachment_id).download_url
-			return redirect(download_url)
+        attachment_id = self.request.POST.get("attachment")
+        if attachment_id:
+            download_url = self.get_object().videos.get(pk=attachment_id).download_url
+            return redirect(download_url)
 
-		return HttpResponseRedirect(
-			reverse("exp:study-responses-list", kwargs=dict(pk=self.get_object().pk))
-		)
+        return HttpResponseRedirect(
+            reverse("exp:study-responses-list", kwargs=dict(pk=self.get_object().pk))
+        )

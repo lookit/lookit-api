@@ -311,6 +311,17 @@ h3.study-logs-label {
     color: gray;
 }
 
+/* All responses download page */
+
+div.download-button {
+    margin-bottom: 5%;
+    clear: both;
+}
+
+div.download-button .btn {
+    margin-left: 0.5em;
+    min-width: 7em;
+}
 
 /* Consent Manager */
 #list-of-responses {

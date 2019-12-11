@@ -5,22 +5,6 @@
 {% block title %}All Responses | {{ study.name }}{% endblock %}
 {% block head %}
     {{ block.super }}
-    <script type="application/javascript">
-        $(document).ready(function(){
-            $('#download-all-data-csv').addClass('hidden');
-            $('#data-type-selector-all').on('change', function(){
-                // Toggles responses between CSV and JSON format
-                var selected = $(this).find("option:selected").val();
-                if (selected === 'CSV'){
-                    $('#download-all-data-csv').removeClass('hidden');
-                    $('#download-all-data-json').addClass('hidden');
-                } else {
-                    $('#download-all-data-json').removeClass('hidden');
-                    $('#download-all-data-csv').addClass('hidden');
-                }
-            });
-        });
-    </script>
     {{ form.media }}
 {% endblock %}
 
@@ -56,22 +40,70 @@
     </div>
 	{% if n_responses %}
         <div class='row pt-xl'>
-            <div class="col-sm-3">
-                <div class="form-group">
-                  <select class="form-control" id="data-type-selector-all">
-                    <option>JSON</option>
-                    <option>CSV</option>
-                  </select>
-                </div>
-            </div>
-            <div class="col-sm-3">
+            
+            <div class="col-xs-12 col-md-8">
                 {% if active == 'all' %}
-                    <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-responses-download-json' pk=study.id %}">
-                        Download all {{ n_responses }} response{{ n_responses|pluralize }} as JSON</span>
-                    </a>
-                    <a id='download-all-data-csv' class='hidden btn btn-primary' href="{% url 'exp:study-responses-download-csv' pk=study.id %}">
-                        Download all {{ n_responses }} response{{ n_responses|pluralize }} as CSV</span>
-                    </a>
+                    <p> Download data about {{ n_responses }} response{{ n_responses|pluralize}}: </p>
+                    
+                    <hr>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            All response data 
+                        </div>
+                        <div class="col-xs-6">
+                            <div class='pull-right download-button'> 
+                                Data 
+                                <a id='download-all-data-json' class ='btn btn-primary pull-right' href="{% url 'exp:study-responses-download-json' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (JSON) </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-xs-6">
+                            Response overview
+                        </div>
+                        <div class="col-xs-6">
+                            <div class='pull-right download-button'> 
+                                Data  
+                                <a id='download-all-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-csv' pk=study.id %}">
+                                    <span><i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data dictionary 
+                                <a id='download-data-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-summary-dict-csv' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-xs-6">
+                            Frame data
+                        </div>
+                        <div class="col-xs-6">
+                            <div class='pull-right download-button'> 
+                                Data  
+                                <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-csv' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data dictionary 
+                                <a id='download-frame-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-dict-csv' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
                 {% endif %}
                 {% if active == 'demographics' %}
                     <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
