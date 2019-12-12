@@ -73,7 +73,7 @@ class StudyResponsesMixin(
         if isinstance(object, datetime.date):
             return object.__str__()
         return object
-        
+
     def build_participant_data(self, responses):
         json_responses = []
         for resp in responses:
@@ -241,9 +241,9 @@ class StudyResponsesMixin(
         )
         writer.writeheader()
         return output, writer
-        
+
     def study_name_for_files(self, studyname):
-        return ''.join([c if c.isalnum() else '-' for c in studyname])
+        return "".join([c if c.isalnum() else "-" for c in studyname])
 
     def get_csv_headers_and_row_data(self, resp={}):
 
@@ -471,7 +471,7 @@ class StudyResponsesMixin(
             "data_headers": [header for (header, description) in headers],
             "header_descriptions": headers,
         }
-        
+
     def build_framedata_csv(self, responses):
         """
 		Builds CSV file contents for frame-level data from all responses

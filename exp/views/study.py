@@ -846,7 +846,9 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         )
         context["response_data"] = self.build_responses(paginated_responses)
         context["csv_data"] = self.build_individual_csv(paginated_responses)
-        context["frame_data"] = [self.build_framedata_csv([resp]) for resp in paginated_responses]
+        context["frame_data"] = [
+            self.build_framedata_csv([resp]) for resp in paginated_responses
+        ]
         return context
 
     def build_individual_csv(self, responses):
@@ -1068,6 +1070,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         writer.writerows(all_descriptions)
         return output.getvalue()
 
+
 class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
     """
 	Hitting this URL downloads all study responses in JSON format.
@@ -1079,7 +1082,9 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
         cleaned_data = json.dumps(
             self.build_responses(responses), indent=4, default=str
         )
-        filename = "{}_{}.json".format(self.study_name_for_files(study.name), "all-responses")
+        filename = "{}_{}.json".format(
+            self.study_name_for_files(study.name), "all-responses"
+        )
         response = HttpResponse(cleaned_data, content_type="text/json")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1094,7 +1099,9 @@ class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_summary_csv(responses)
-        filename = "{}_{}.csv".format(self.study_name_for_files(study.name), "all-responses")
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-responses"
+        )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1109,7 +1116,9 @@ class StudyResponsesSummaryDictCSV(StudyResponsesAll):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_summary_dict_csv(responses)
-        filename = "{}_{}.csv".format(self.study_name_for_files(study.name), "all-responses-dict")
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-responses-dict"
+        )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1124,7 +1133,9 @@ class StudyResponsesFrameDataCSV(StudyResponsesMixin, generic.DetailView):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_framedata_csv(responses)
-        filename = "{}_{}.csv".format(self.study_name_for_files(study.name), "all-frames")
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-frames"
+        )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1144,14 +1155,18 @@ class StudyResponsesFrameDataIndividualCSV(StudyResponsesMixin, generic.DetailVi
 
             for resp in responses:
                 data = self.build_framedata_csv([resp])
-                filename = "{}_{}_{}.csv".format(self.study_name_for_files(study.name), resp.uuid, "frames")
+                filename = "{}_{}_{}.csv".format(
+                    self.study_name_for_files(study.name), resp.uuid, "frames"
+                )
                 zipped.writestr(filename, data)
 
         zipped_file.seek(0)
         response = HttpResponse(zipped_file, content_type="application/octet-stream")
         response[
             "Content-Disposition"
-        ] = 'attachment; filename="{}_framedata_per_session.zip"'.format(self.study_name_for_files(study.name))
+        ] = 'attachment; filename="{}_framedata_per_session.zip"'.format(
+            self.study_name_for_files(study.name)
+        )
         return response
 
 
@@ -1164,7 +1179,9 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesMixin, generic.DetailView):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_framedata_dict_csv(responses)
-        filename = "{}_{}.csv".format(self.study_name_for_files(study.name), "all-frames-dict")
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-frames-dict"
+        )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1209,7 +1226,9 @@ class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
         cleaned_data = ", ".join(self.build_participant_data(responses))
-        filename = "{}_{}.json".format(self.study_name_for_files(study.name), "all-demographic-snapshots")
+        filename = "{}_{}.json".format(
+            self.study_name_for_files(study.name), "all-demographic-snapshots"
+        )
         response = HttpResponse(cleaned_data, content_type="text/json")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1224,7 +1243,9 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_all_participant_csv(responses)
-        filename = "{}_{}.csv".format(self.study_name_for_files(study.name), "all-demographic-snapshots")
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-demographic-snapshots"
+        )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
