@@ -323,6 +323,11 @@ div.download-button .btn {
     min-width: 7em;
 }
 
+.all-responses .help-text {
+    color: gray;
+    font-style: italic;
+}
+
 /* Consent Manager */
 #list-of-responses {
     max-height: 300px; /* same height as video */

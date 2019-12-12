@@ -73,7 +73,7 @@ class StudyResponsesMixin(
         if isinstance(object, datetime.date):
             return object.__str__()
         return object
-
+        
     def build_participant_data(self, responses):
         json_responses = []
         for resp in responses:
@@ -241,6 +241,9 @@ class StudyResponsesMixin(
         )
         writer.writeheader()
         return output, writer
+        
+    def study_name_for_files(self, studyname):
+        return ''.join([c if c.isalnum() else '-' for c in studyname])
 
     def get_csv_headers_and_row_data(self, resp={}):
 
@@ -468,6 +471,118 @@ class StudyResponsesMixin(
             "data_headers": [header for (header, description) in headers],
             "header_descriptions": headers,
         }
+        
+    def build_framedata_csv(self, responses):
+        """
+		Builds CSV file contents for frame-level data from all responses
+		"""
+
+        all_frame_data = []
+
+        for resp in responses:
+            this_resp_data = self.get_frame_data(resp)
+            headers = this_resp_data["data_headers"]
+            all_frame_data.extend(this_resp_data["data"])
+
+        output, writer = self.csv_dict_output_and_writer(headers)
+        writer.writerows(all_frame_data)
+        return output.getvalue()
+
+    def build_framedata_dict_csv(self, responses):
+
+        all_frame_data = []
+
+        for resp in responses:
+            this_resp_data = self.get_frame_data(resp)
+            all_frame_data.extend(this_resp_data["data"])
+
+        # Start with general descriptions of high-level headers (child_id, response_id, etc.)
+        header_descriptions = this_resp_data["header_descriptions"]
+        frame_data_dict_entries = [
+            {"column": header, "description": description}
+            for (header, description) in header_descriptions
+        ]
+
+        frame_data_dict_entries.append(
+            {
+                "possible_frame_id": "global",
+                "frame_description": "Data not associated with a particular frame",
+            }
+        )
+
+        # Add placeholders to describe each frame type
+        unique_frame_ids = sorted(
+            list(
+                set(
+                    d["frame_id"].partition("-")[2]
+                    for d in all_frame_data
+                    if not (d["frame_id"] == "global")
+                )
+            )
+        )
+        for frame_id in unique_frame_ids:
+            frame_data_dict_entries.append(
+                {
+                    "possible_frame_id": "*-" + frame_id,
+                    "frame_description": "RESEARCHER: INSERT FRAME DESCRIPTION",
+                }
+            )
+            unique_frame_keys = sorted(
+                list(
+                    set(
+                        [
+                            d["key"]
+                            for d in all_frame_data
+                            if d["frame_id"].partition("-")[2] == frame_id
+                            and d["event_number"] == ""
+                        ]
+                    )
+                )
+            )
+            for k in unique_frame_keys:
+                frame_data_dict_entries.append(
+                    {
+                        "possible_frame_id": "*-" + frame_id,
+                        "possible_key": k,
+                        "key_description": "RESEARCHER: INSERT DESCRIPTION OF WHAT THIS KEY MEANS IN THIS FRAME",
+                    }
+                )
+
+        event_keys = sorted(
+            list(set([d["key"] for d in all_frame_data if d["event_number"] != ""]))
+        )
+        event_key_stock_descriptions = {
+            "eventType": "Descriptor for this event; determines what other data is available. Global event 'exitEarly' records cases where the participant attempted to exit the study early by closing the tab/window or pressing F1 or ctrl-X. RESEARCHER: INSERT DESCRIPTIONS OF PARTICULAR EVENTTYPES USED IN YOUR STUDY. (Note: you can find a list of events recorded by each frame in the frame documentation at https://lookit.github.io/ember-lookit-frameplayer, under the Events header.)",
+            "exitType": "Used in the global event exitEarly. Only value stored at this point is 'browserNavigationAttempt'",
+            "lastPageSeen": "Used in the global event exitEarly. Index of the frame the participant was on before exit attempt.",
+            "pipeId": "Recorded by any event in a video-capture-equipped frame. Internal video ID used by Pipe service; only useful for troubleshooting in rare cases.",
+            "streamTime": "Recorded by any event in a video-capture-equipped frame. Indicates time within webcam video (videoId) to nearest 0.1 second. If recording has not started yet, may be 0 or null.",
+            "timestamp": "Recorded by all events. Timestamp of event in format e.g. 2019-11-07T17:14:43.626Z",
+            "videoId": "Recorded by any event in a video-capture-equipped frame. Filename (without .mp4 extension) of video currently being recorded.",
+        }
+        for k in event_keys:
+            frame_data_dict_entries.append(
+                {
+                    "possible_frame_id": "any (event data)",
+                    "possible_key": k,
+                    "key_description": event_key_stock_descriptions.get(
+                        k, "RESEARCHER: INSERT DESCRIPTION OF WHAT THIS EVENT KEY MEANS"
+                    ),
+                }
+            )
+
+        output, writer = self.csv_dict_output_and_writer(
+            [
+                "column",
+                "description",
+                "possible_frame_id",
+                "frame_description",
+                "possible_key",
+                "key_description",
+            ]
+        )
+        writer.writerows(frame_data_dict_entries)
+        return output.getvalue()
 
     def post(self, request, *args, **kwargs):
         """
