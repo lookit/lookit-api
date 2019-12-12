@@ -6,6 +6,7 @@ from functools import reduce
 from typing import NamedTuple
 import csv
 import io
+import zipfile
 
 from django.contrib import messages
 from django.contrib.auth.mixins import (
@@ -1083,7 +1084,6 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         return output.getvalue()
 
     def build_framedata_dict_csv(self, responses):
-        # TODO: combine with above to avoid multiple calls to get_frame_data
 
         all_frame_data = []
 
@@ -1091,8 +1091,8 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
             this_resp_data = self.get_frame_data(resp)
             all_frame_data.extend(this_resp_data["data"])
 
-            # Start with general descriptions of high-level headers (child_id, response_id, etc.)
-        header_descriptions = this_resp_data["header_descriptions"]  # TODO
+        # Start with general descriptions of high-level headers (child_id, response_id, etc.)
+        header_descriptions = this_resp_data["header_descriptions"]
         frame_data_dict_entries = [
             {"column": header, "description": description}
             for (header, description) in header_descriptions
@@ -1109,12 +1109,12 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         unique_frame_ids = sorted(
             list(
                 set(
-                    "-".join(d["frame_id"].split("-")[1:])
+                    d["frame_id"].partition("-")[2]
                     for d in all_frame_data
                     if not (d["frame_id"] == "global")
                 )
             )
-        )  # TODO compress that expression
+        )
         for frame_id in unique_frame_ids:
             frame_data_dict_entries.append(
                 {
@@ -1128,7 +1128,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
                         [
                             d["key"]
                             for d in all_frame_data
-                            if "-".join(d["frame_id"].split("-")[1:]) == frame_id
+                            if d["frame_id"].partition("-")[2] == frame_id
                             and d["event_number"] == ""
                         ]
                     )
@@ -1242,9 +1242,37 @@ class StudyResponsesFrameDataCSV(StudyResponsesAll):
         return response
 
 
+class StudyResponsesFrameDataIndividualCSV(StudyResponsesAll):
+    """Hitting this URL downloads a ZIP file with frame data from one response per file in CSV format"""
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.consented_responses.order_by("id")
+        for resp in responses:
+            data = self.build_framedata_csv([resp])
+            filename = "{}-{}.csv".format(resp.uuid, "frames")
+
+        zipped_file = io.BytesIO()  # import io
+        with zipfile.ZipFile(
+            zipped_file, "w", zipfile.ZIP_DEFLATED
+        ) as zipped:  # import zipfile
+
+            for resp in responses:
+                data = self.build_framedata_csv([resp])
+                filename = "{}-{}.csv".format(resp.uuid, "frames")
+                zipped.writestr(filename, data)
+
+        zipped_file.seek(0)
+        response = HttpResponse(zipped_file, content_type="application/octet-stream")
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="{}_framedata_per_session.zip"'.format(study.uuid)
+        return response
+
+
 class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
     """
-	TODO Hitting this URL downloads frame-level data from all study responses in CSV format
+	Hitting this URL downloads a template data dictionary for frame-level data in CSV format
 	"""
 
     def get(self, request, *args, **kwargs):

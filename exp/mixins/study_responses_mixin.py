@@ -216,8 +216,8 @@ class StudyResponsesMixin(
                         "name": resp.child.given_name,
                         "birthday": resp.child.birthday,
                         "gender": resp.child.gender,
-                        "languages": resp.child.language_list,
-                        "characteristics": resp.child.condition_list,
+                        "language_list": resp.child.language_list,
+                        "condition_list": resp.child.condition_list,
                         "age_at_birth": resp.child.age_at_birth,
                         "additional_information": resp.child.additional_information,
                     },
@@ -455,7 +455,7 @@ class StudyResponsesMixin(
             ),
             (
                 "key",
-                "Label for a piece of data collected during this frame - for example, 'child_favorite_animal'",
+                "Label for a piece of data collected during this frame - for example, 'formData.child_favorite_animal'",
             ),
             (
                 "value",

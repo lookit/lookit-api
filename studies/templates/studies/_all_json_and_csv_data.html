@@ -90,8 +90,14 @@
                         </div>
                         <div class="col-xs-6">
                             <div class='pull-right download-button'> 
-                                Data  
+                                Data (all responses)
                                 <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-csv' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data (one file per response)
+                                <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id %}">
                                     <span> <i class="fa fa-download"></i> (CSV)</span>
                                 </a>
                             </div>
