@@ -334,6 +334,22 @@ class Child(models.Model):
     def age_at_birth(self):
         return GESTATIONAL_AGE_CHOICES[self.gestational_age_at_birth]
 
+    @property
+    def language_list(self):
+        return " ".join(
+            [langcode for langcode, boolean in self.languages_spoken.items() if boolean]
+        )
+
+    @property
+    def condition_list(self):
+        return " ".join(
+            [
+                condition
+                for condition, boolean in self.existing_conditions.items()
+                if boolean
+            ]
+        )
+
     class Meta:
         permissions = [
             ("can_view_all_children_in_analytics", "Can view all children in analytics")

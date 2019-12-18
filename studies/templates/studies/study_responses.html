@@ -8,9 +8,11 @@
     <script type="application/javascript">
         $(document).ready(function(){
             hideResponses();
-            prepareDataForDownload('#json-data-1', 'download-individual-data', 'json');
             $( ".selectable-participant").first().addClass('selected');
             let currentResponseId = $(".selectable-participant.selected").data("response-id");
+            let currentResponseUuid = $(".selectable-participant.selected").data("response-uuid");
+            showResponse('JSON', 1)
+            console.log($(".selectable-participant.selected"));
             showFeedbackList(currentResponseId);
             $( ".response-data").first().show();
             $( ".response-attachments").first().show();
@@ -33,17 +35,18 @@
                 var selected = $(this).find("option:selected").val();
                 var index = extractIdNumber($('.selectable-participant.selected')[0].id);
                 hideResponses();
-                showResponse(selected, index);
+                showResponse(selected, index); // TODO
                 $('#download-data-label').text(selected);
             });
 
-            function prepareDataForDownload(dataClassOrId, buttonId, ext) {
+            function prepareDataForDownload(dataClassOrId, buttonId, label, ext) {
                 // Preps Download All button to download either all JSON or all CSV responses
                 var data = "data:text/json;charset=utf-8," + encodeURIComponent($(dataClassOrId).html());
                 var elem = $('#' + 'download-individual-data')[0];
                 if (data && elem) {
                     elem.href = data;
-                    elem.download = '{{study.name}}-' + 'individual-data' + '.' + ext;
+                    let study_name_safe = '{{study.name}}'.replace(/[^a-z0-9]/gi, '-');
+                    elem.download = study_name_safe + '_' + label + '.' + ext;
                 }
             }
             function showAttachments(index) {
@@ -65,11 +68,13 @@
                 // Shows individual response
                 if (dataType === 'JSON') {
                     $('#response-data-' + index).show();
-                    prepareDataForDownload('#json-data-' + index, 'download-individual-data', 'json');
-
-                } else if (dataType === 'CSV') {
+                    prepareDataForDownload('#json-data-' + index, 'download-individual-data', currentResponseUuid + '_data', 'json');
+                } else if (dataType === 'CSV summary') {
                     $('#csv-response-data-' + index).show();
-                    prepareDataForDownload('#csv-data-' + index, 'download-individual-data', 'csv');
+                    prepareDataForDownload('#csv-data-' + index, 'download-individual-data', currentResponseUuid + '_summary-data', 'csv');
+                } else if (dataType === 'CSV frame data') {
+                    $('#frame-response-data-' + index).show();
+                    prepareDataForDownload('#frame-data-' + index, 'download-individual-data', currentResponseUuid + '_frame-data', 'csv');
                 }
             }
 
@@ -77,6 +82,7 @@
                 // Hides all responses
                 $('.response-data').hide();
                 $('.csv-response-data').hide();
+                $('.frame-response-data').hide();
             };
         });
 
@@ -143,7 +149,7 @@
                         </thead>
                         <tbody>
                         {% for response in responses %}
-                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.id }}">
+                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.id }}" data-response-uuid="{{ response.uuid }}">
                             <td>{{ response.child.user.id }}</td>
                             <td>{{ response.id }} </td>
                             <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
@@ -204,7 +210,8 @@
                     <label for="data-type-selector">Data Type</label>
                     <select class="form-control" id="data-type-selector">
                         <option>JSON</option>
-                        <option>CSV</option>
+                        <option>CSV summary</option>
+                        <option>CSV frame data</option>
                     </select>
                 </div>
                 <a id='download-individual-data' class='btn mb-sm btn-primary'>
@@ -218,6 +225,11 @@
                 {% for csv in csv_data %}
                     <div class='csv-response-data' id='csv-response-data-{{ forloop.counter }}' style="display:none">
                         <pre class='csv-data individual-block' id='csv-data-{{ forloop.counter }}'>{{ csv }}</pre>
+                    </div>
+                {% endfor %}
+                {% for csv in frame_data %}
+                    <div class='frame-response-data' id='frame-response-data-{{ forloop.counter }}' style="display:none">
+                        <pre class='frame-data individual-block' id='frame-data-{{ forloop.counter }}'>{{ csv }}</pre>
                     </div>
                 {% endfor %}
 
