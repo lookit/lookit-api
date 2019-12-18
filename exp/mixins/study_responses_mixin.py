@@ -55,6 +55,11 @@ def merge_dicts(d1, d2):
     d1_copy.update(d2)
     return d1_copy
 
+def round_age(age_in_days):
+    if age_in_days <= 360:
+        return round(age_in_days/10) * 10
+    else:
+        return round(age_in_days/30) * 30
 
 class StudyResponsesMixin(
     SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin
@@ -246,6 +251,8 @@ class StudyResponsesMixin(
         return "".join([c if c.isalnum() else "-" for c in studyname])
 
     def get_csv_headers_and_row_data(self, resp={}):
+    
+        age_in_days = (resp.date_created.date() - resp.child.birthday).days if resp else ""
 
         all_row_data = [
             ("response_id", resp.id if resp else "", "Short ID for this response"),
@@ -333,6 +340,16 @@ class StudyResponsesMixin(
                 "child_birthday",
                 resp.child.birthday if resp else "",
                 "Birthdate of child associated with this response. Must be redacted for publication of data (switch to age at time of participation, and either round/jitter or redact timestamps of participation).",
+            ),
+            (
+                "child_age_in_days",
+                age_in_days,
+                "Age in days at time of response of child associated with this response, exact. TODO",
+            ),
+            (
+                "child_age_rounded",
+                str(round_age(int(age_in_days))) if age_in_days else "",
+                "Age in days at time of response of child associated with this response, rounded. TODO",
             ),
             (
                 "child_gender",
