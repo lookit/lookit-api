@@ -1515,7 +1515,7 @@ def get_flattened_responses(response_qs, studies_for_child):
 	"""
     response_data = []
     for resp in response_qs:
-        child_age_in_days = (datetime.date.today() - resp["child__birthday"]).days
+        child_age_in_days = (resp["date_created"] - resp["child__birthday"]).days
         languages_spoken = popcnt_bitfield(
             int(resp["child__languages_spoken"]), "languages"
         )
