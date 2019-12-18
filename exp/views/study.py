@@ -1100,8 +1100,9 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
+        header_options = self.request.GET.getlist('ageoptions') + self.request.GET.getlist('childoptions')
         cleaned_data = json.dumps(
-            self.build_responses(responses), indent=4, default=str
+            self.build_responses(responses, header_options), indent=4, default=str
         )
         filename = "{}_{}.json".format(
             self.study_name_for_files(study.name), "all-responses"

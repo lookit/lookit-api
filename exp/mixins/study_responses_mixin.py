@@ -190,12 +190,13 @@ class StudyResponsesMixin(
             "demographic_extra",
         ]
 
-    def build_responses(self, responses):
+    def build_responses(self, responses, optional_headers=[]):
         """
 		Builds the JSON response data for the researcher to download
 		"""
         json_responses = []
         for resp in responses:
+            age_in_days = (resp.date_created.date() - resp.child.birthday).days
             json_responses.append(
                 {
                     "response": {
@@ -213,20 +214,22 @@ class StudyResponsesMixin(
                     "participant": {
                         "id": resp.child.user_id,
                         "uuid": str(resp.child.user.uuid),
-                        "nickname": resp.child.user.nickname,
+                        "nickname": resp.child.user.nickname if "parent" in optional_headers else "",
                     },
                     "child": {
                         "id": resp.child.id,
                         "uuid": str(resp.child.uuid),
-                        "name": resp.child.given_name,
-                        "birthday": resp.child.birthday,
-                        "gender": resp.child.gender,
-                        "language_list": resp.child.language_list,
-                        "condition_list": resp.child.condition_list,
-                        "age_at_birth": resp.child.age_at_birth,
-                        "additional_information": resp.child.additional_information,
+                        "name": resp.child.given_name if "name" in optional_headers else "",
+                        "birthday": resp.child.birthday if "birthday" in optional_headers else "",
+                        "age_in_days": age_in_days if "exact" in optional_headers else "",
+                        "age_rounded": str(round_age(int(age_in_days))) if "rounded" in optional_headers else "",
+                        "gender": resp.child.gender if "gender" in optional_headers else "",
+                        "language_list": resp.child.language_list if "languages" in optional_headers else "",
+                        "condition_list": resp.child.condition_list if "conditions" in optional_headers else "",
+                        "age_at_birth": resp.child.age_at_birth if "gestage" in optional_headers else "",
+                        "additional_information": resp.child.additional_information if "addl" in optional_headers else "",
                     },
-                    "consent_information": resp.current_consent_details,
+                    "consent": resp.current_consent_details,
                 }
             )
         return json_responses
@@ -262,7 +265,7 @@ class StudyResponsesMixin(
                 "Primary unique identifier for response, can be used to match to video filenames",
             ),
             (
-                "response_date",
+                "response_date_created",
                 str(resp.date_created) if resp else "",
                 "Timestamp for when participant began session, in format e.g. 2019-11-07 17:13:38.702958+00:00",
             ),
@@ -362,12 +365,12 @@ class StudyResponsesMixin(
                 "Gestational age at birth in weeks. One of '40 or more weeks', '39 weeks' through '24 weeks', 'Under 24 weeks', or 'Not sure or prefer not to answer'",
             ),
             (
-                "child_languages",
+                "child_language_list",
                 resp.child.language_list if resp else "",
                 "List of languages spoken (using language codes in Lookit docs), separated by spaces",
             ),
             (
-                "child_characteristics",
+                "child_condition_list",
                 resp.child.condition_list if resp else "",
                 "List of child characteristics (using condition/characteristic codes in Lookit docs), separated by spaces",
             ),

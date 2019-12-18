@@ -95,9 +95,10 @@
                             <div class="col-md-5 col-sm-6">
                                 <div class='pull-right download-button'> 
                                     Data 
-                                    <a id='download-all-data-json' class ='btn btn-primary pull-right' href="{% url 'exp:study-responses-download-json' pk=study.id %}">
+                                    <button id='download-all-data-json' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-json' pk=study.id %}">
                                         <span> <i class="fa fa-download"></i> (JSON) </span>
-                                    </a>
+                                    </button>
+                                    
                                 </div>
                             </div>
                         </div>
