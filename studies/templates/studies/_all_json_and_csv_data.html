@@ -59,7 +59,7 @@
                                             value="{{option.id}}"
                                             {% if option.default %} checked {% endif %}
                                             >
-                                    <label for="include-age-{{option.id}">
+                                    <label for="include-age-{{option.id}}">
                                         {{option.name}}
                                     </label>
                                 </div>
@@ -75,7 +75,7 @@
                                             value="{{option.id}}"
                                             {% if option.default %} checked {% endif %}
                                             >
-                                    <label for="include-child-{{option.id}">
+                                    <label for="include-child-{{option.id}}">
                                         {{option.name}}
                                     </label>
                                 </div>
@@ -118,9 +118,9 @@
                                 </div>
                                 <div class='pull-right download-button'> 
                                     Data dictionary 
-                                    <a id='download-data-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-summary-dict-csv' pk=study.id %}">
+                                    <button id='download-data-dict-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-summary-dict-csv' pk=study.id %}">
                                         <span> <i class="fa fa-download"></i> (CSV)</span>
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
