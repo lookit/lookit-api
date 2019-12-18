@@ -1020,6 +1020,21 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
+    
+    age_data_options = [
+        {"id": "rounded", "name": "Rounded age", "default": True}, 
+        {"id": "exact", "name": "Age in days"}, 
+        {"id": "birthdate", "name": "Birthdate"},
+    ]
+    child_data_options = [
+        {"id": "name", "name": "Child name"}, 
+        {"id": "gender", "name": "Child gender", "default": True}, 
+        {"id": "gestage", "name": "Child gestational age in days"}, 
+        {"id": "conditions", "name": "Child conditions", "default": True}, 
+        {"id": "languages", "name": "Child languages", "default": True}, 
+        {"id": "addl", "name": "Child additional info"}, 
+        {"id": "parent", "name": "Parent name"}, 
+    ]
 
     def get_context_data(self, **kwargs):
         """
@@ -1028,6 +1043,8 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 		"""
         context = super().get_context_data(**kwargs)
         context["n_responses"] = context["study"].consented_responses.count()
+        context["childoptions"] = self.child_data_options
+        context["ageoptions"] = self.age_data_options
         return context
 
     def build_summary_csv(self, responses):
@@ -1097,6 +1114,8 @@ class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
+        print(self.request.GET.getlist('ageoptions'))
+        print(self.request.GET.getlist('childoptions'))
         responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_summary_csv(responses)
         filename = "{}_{}.csv".format(

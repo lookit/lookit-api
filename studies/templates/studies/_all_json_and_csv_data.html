@@ -43,76 +43,118 @@
             
             <div class="col-xs-12 col-lg-10">
                 {% if active == 'all' %}
-                    <p> Download data about {{ n_responses }} response{{ n_responses|pluralize}}: </p>
+                    <form id="data-options" method="GET">
+                        <p> Data about {{ n_responses }} response{{ n_responses|pluralize}} is available. </p>
+                        <div class="row">
                     
-                    <hr>
-                    <div class="row">
-                        <div class="col-md-7 col-sm-6">
-                            All response data 
-                            <p class="help-text"> The true "raw" data is most naturally represented in JSON format, a structured format that allows nesting (for instance, you might see a question1 field inside formData inside parent-survey). This file contains a list of all responses to your study; each response has basic information about the participant, account, and consent coding as well as what happened during the study.</p>
-                        </div>
-                        <div class="col-md-5 col-sm-6">
-                            <div class='pull-right download-button'> 
-                                Data 
-                                <a id='download-all-data-json' class ='btn btn-primary pull-right' href="{% url 'exp:study-responses-download-json' pk=study.id %}">
-                                    <span> <i class="fa fa-download"></i> (JSON) </span>
-                                </a>
+                            <div class="col-xs-6">
+                            
+                                <p>Participant age data options:</p>
+ 
+                                {% for option in ageoptions %}
+                                <div>
+                                    <input id="include-age-{{option.id}}"
+                                            name="ageoptions"
+                                            type="checkbox"
+                                            value="{{option.id}}"
+                                            {% if option.default %} checked {% endif %}
+                                            >
+                                    <label for="include-age-{{option.id}">
+                                        {{option.name}}
+                                    </label>
+                                </div>
+                                {% endfor %} 
+                            </div>
+                            <div class="col-xs-6">
+                                <p>Other participant data options:</p>
+                                {% for option in childoptions %}
+                                <div>
+                                    <input id="include-child-{{option.id}}"
+                                            name="childoptions"
+                                            type="checkbox"
+                                            value="{{option.id}}"
+                                            {% if option.default %} checked {% endif %}
+                                            >
+                                    <label for="include-child-{{option.id}">
+                                        {{option.name}}
+                                    </label>
+                                </div>
+                                {% endfor %}
                             </div>
                         </div>
-                    </div>
                     
-                    <hr>
+                        
+
                     
-                    <div class="row">
-                        <div class="col-md-7 col-sm-6">
-                            Response overview
-                            <p class="help-text"> The response overview file gives high-level information about each response - the account and child IDs, consent approval information, condition assignment, and information about the child such as gender and languages spoken. There is one row per response. This can be used in conjunction with frame data (below) to avoid having to parse JSON in your analysis.</p>
-                        </div>
-                        <div class="col-md-5 col-sm-6">
-                            <div class='pull-right download-button'> 
-                                Data  
-                                <a id='download-all-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-csv' pk=study.id %}">
-                                    <span><i class="fa fa-download"></i> (CSV)</span>
-                                </a>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-7 col-sm-6">
+                                All response data 
+                                <p class="help-text"> The true "raw" data is most naturally represented in JSON format, a structured format that allows nesting (for instance, you might see a question1 field inside formData inside parent-survey). This file contains a list of all responses to your study; each response has basic information about the participant, account, and consent coding as well as what happened during the study.</p>
                             </div>
-                            <div class='pull-right download-button'> 
-                                Data dictionary 
-                                <a id='download-data-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-summary-dict-csv' pk=study.id %}">
-                                    <span> <i class="fa fa-download"></i> (CSV)</span>
-                                </a>
+                            <div class="col-md-5 col-sm-6">
+                                <div class='pull-right download-button'> 
+                                    Data 
+                                    <a id='download-all-data-json' class ='btn btn-primary pull-right' href="{% url 'exp:study-responses-download-json' pk=study.id %}">
+                                        <span> <i class="fa fa-download"></i> (JSON) </span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     
-                    <hr>
+                        <hr>
                     
-                    <div class="row">
-                        <div class="col-md-7 col-sm-6">
-                            Frame data
-                            <p class="help-text"> The frame data files include all of the information captured by the individual frames of your experiment: for instance, text and selections on forms, which option a participant clicked during a forced-choice trial, and events such as entering or leaving fullscreen, pausing the study, or pressing buttons. These data are shown in a "long" format, with one row per datum and columns for the key and value.</p>
-                        </div>
-                        <div class="col-md-5 col-sm-6">
-                            <div class='pull-right download-button'> 
-                                Data (all responses)
-                                <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-csv' pk=study.id %}">
-                                    <span> <i class="fa fa-download"></i> (CSV)</span>
-                                </a>
+                        <div class="row">
+                            <div class="col-md-7 col-sm-6">
+                                Response overview
+                                <p class="help-text"> The response overview file gives high-level information about each response - the account and child IDs, consent approval information, condition assignment, and information about the child such as gender and languages spoken. There is one row per response. This can be used in conjunction with frame data (below) to avoid having to parse JSON in your analysis.</p>
                             </div>
-                            <div class='pull-right download-button'> 
-                                Data (one file per response)
-                                <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id %}">
-                                    <span> <i class="fa fa-download"></i> (ZIP, CSVs)</span>
-                                </a>
-                            </div>
-                            <div class='pull-right download-button'> 
-                                Data dictionary 
-                                <a id='download-frame-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-dict-csv' pk=study.id %}">
-                                    <span> <i class="fa fa-download"></i> (CSV)</span>
-                                </a>
+                            <div class="col-md-5 col-sm-6">
+                                <div class='pull-right download-button'>
+                                    Data  
+                                    <button id='download-all-data-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-csv' pk=study.id %}">
+                                        <span><i class="fa fa-download"></i> (CSV)</span>
+                                    </button>
+                                </div>
+                                <div class='pull-right download-button'> 
+                                    Data dictionary 
+                                    <a id='download-data-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-summary-dict-csv' pk=study.id %}">
+                                        <span> <i class="fa fa-download"></i> (CSV)</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     
+                        <hr>
+                    
+                        <div class="row">
+                            <div class="col-md-7 col-sm-6">
+                                Frame data
+                                <p class="help-text"> The frame data files include all of the information captured by the individual frames of your experiment: for instance, text and selections on forms, which option a participant clicked during a forced-choice trial, and events such as entering or leaving fullscreen, pausing the study, or pressing buttons. These data are shown in a "long" format, with one row per datum and columns for the key and value.</p>
+                            </div>
+                            <div class="col-md-5 col-sm-6">
+                                <div class='pull-right download-button'> 
+                                    Data (all responses)
+                                    <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-csv' pk=study.id %}">
+                                        <span> <i class="fa fa-download"></i> (CSV)</span>
+                                    </a>
+                                </div>
+                                <div class='pull-right download-button'> 
+                                    Data (one file per response)
+                                    <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id %}">
+                                        <span> <i class="fa fa-download"></i> (ZIP, CSVs)</span>
+                                    </a>
+                                </div>
+                                <div class='pull-right download-button'> 
+                                    Data dictionary 
+                                    <a id='download-frame-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-dict-csv' pk=study.id %}">
+                                        <span> <i class="fa fa-download"></i> (CSV)</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    </form>
                 {% endif %}
                 {% if active == 'demographics' %}
                     <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
