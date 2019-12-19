@@ -1014,8 +1014,6 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
     
-
-
     def get_context_data(self, **kwargs):
         """
 		In addition to the study, adds several items to the context dictionary.	 Study results
@@ -1037,6 +1035,40 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         all_descriptions = [
             {"column": header, "description": descriptions[header]}
             for header in headerList
+        ]
+        output, writer = self.csv_dict_output_and_writer(["column", "description"])
+        writer.writerows(all_descriptions)
+        return output.getvalue()
+        
+    child_csv_headers = ["child_id", "child_uuid", "child_name", "child_birthday", "child_gender", "child_age_at_birth", "child_language_list", "child_condition_list", "child_additional_information","participant_id", "participant_uuid", "participant_nickname", ]
+        
+    def build_child_csv(self, responses):
+        """
+		Builds CSV file contents for overview of all child participants
+		"""
+
+        child_list = []
+        session_list = []
+
+        for resp in responses:
+            row_data = self.get_csv_headers_and_row_data(resp)["dict"]
+            if row_data["child_uuid"] not in child_list:
+                child_list.append(row_data["child_uuid"])
+                session_list.append(row_data)
+
+        output, writer = self.csv_dict_output_and_writer(self.child_csv_headers)
+        writer.writerows(session_list)
+        return output.getvalue()   
+        
+    def build_child_dict_csv(self):
+        """
+		Builds CSV file contents for data dictionary for overview of all child participants
+		"""
+        
+        descriptions = self.get_csv_headers_and_row_data()["descriptions"]
+        all_descriptions = [
+            {"column": header, "description": descriptions[header]}
+            for header in self.child_csv_headers
         ]
         output, writer = self.csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
@@ -1093,6 +1125,37 @@ class StudyResponsesSummaryDictCSV(StudyResponsesAll):
         cleaned_data = self.build_summary_dict_csv(responses, header_options)
         filename = "{}_{}.csv".format(
             self.study_name_for_files(study.name), "all-responses-dict"
+        )
+        response = HttpResponse(cleaned_data, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+        
+class StudyChildrenSummaryCSV(StudyResponsesAll):
+    """
+	Hitting this URL downloads a summary of all children who participated in CSV format.
+	"""
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.consented_responses.order_by("id")
+        cleaned_data = self.build_child_csv(responses)
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-children-identifiable"
+        )
+        response = HttpResponse(cleaned_data, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+        
+class StudyChildrenSummaryDictCSV(StudyResponsesAll):
+    """
+	Hitting this URL downloads a summary of all children who participated in CSV format.
+	"""
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        cleaned_data = self.build_child_dict_csv()
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-children-dict"
         )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)

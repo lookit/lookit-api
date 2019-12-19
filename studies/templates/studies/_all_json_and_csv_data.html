@@ -158,6 +158,29 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <hr>
+                        
+                        <div class="row">
+                            <div class="col-md-7 col-sm-6">
+                                Child data
+                                <p class="help-text"> The child data files contain one row per unique participant. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time). All child data will be included in this file, regardless of selections above; you can use it to store this identifiable data separately from the response data.</p>
+                            </div>
+                            <div class="col-md-5 col-sm-6">
+                                <div class='pull-right download-button'> 
+                                    Data 
+                                    <a id='download-child-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-children-summary-csv' pk=study.id %}">
+                                        <span> <i class="fa fa-download"></i> (CSV)</span>
+                                    </a>
+                                </div>
+                                <div class='pull-right download-button'> 
+                                    Data dictionary
+                                    <a id='download-child-data-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-children-summary-dict-csv' pk=study.id %}">
+                                        <span> <i class="fa fa-download"></i> (CSV)</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     
                     </form>
                 {% endif %}

@@ -40,6 +40,8 @@ from exp.views import (
     StudyResponsesAll,
     StudyResponsesSummaryDownloadCSV,
     StudyResponsesSummaryDictCSV,
+    StudyChildrenSummaryCSV,
+    StudyChildrenSummaryDictCSV,
     StudyResponsesFrameDataCSV,
     StudyResponsesFrameDataIndividualCSV,
     StudyResponsesFrameDataDictCSV,
@@ -112,6 +114,16 @@ urlpatterns = [
         r"studies/(?P<pk>\d+)/responses/all/download_summary_dict_csv/$",
         StudyResponsesSummaryDictCSV.as_view(),
         name="study-responses-download-summary-dict-csv",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/responses/all/download_summary_children_csv/$",
+        StudyChildrenSummaryCSV.as_view(),
+        name="study-responses-children-summary-csv",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/responses/all/download_summary_children_dict_csv/$",
+        StudyChildrenSummaryDictCSV.as_view(),
+        name="study-responses-children-summary-dict-csv",
     ),
     url(
         r"studies/(?P<pk>\d+)/responses/all/download_frame_csv/$",
