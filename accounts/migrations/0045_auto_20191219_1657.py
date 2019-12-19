@@ -7,14 +7,28 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0044_new-analytics-permissions'),
-    ]
+    dependencies = [("accounts", "0044_new-analytics-permissions")]
 
     operations = [
         migrations.AlterField(
-            model_name='demographicdata',
-            name='age',
-            field=models.CharField(blank=True, choices=[('<18', 'under 18'), ('18-21', '18-21'), ('22-24', '22-24'), ('25-29', '25-29'), ('30-34', '30-34'), ('35-39', '35-39'), ('40-44', '40-44'), ('45-49', '45-49'), ('50s', '50-59'), ('60s', '60-69'), ('>70', '70 or over')], max_length=5),
-        ),
+            model_name="demographicdata",
+            name="age",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("<18", "under 18"),
+                    ("18-21", "18-21"),
+                    ("22-24", "22-24"),
+                    ("25-29", "25-29"),
+                    ("30-34", "30-34"),
+                    ("35-39", "35-39"),
+                    ("40-44", "40-44"),
+                    ("45-49", "45-49"),
+                    ("50s", "50-59"),
+                    ("60s", "60-69"),
+                    (">70", "70 or over"),
+                ],
+                max_length=5,
+            ),
+        )
     ]

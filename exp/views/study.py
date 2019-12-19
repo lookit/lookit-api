@@ -844,19 +844,31 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         paginated_responses = context["responses"] = self.paginated_queryset(
             responses, page, 10
         )
-        
-        minimal_optional_headers = ["rounded", "gender", "languages", "conditions", "gestage"]
-        context["response_data"] = self.build_responses(paginated_responses, minimal_optional_headers)
+
+        minimal_optional_headers = [
+            "rounded",
+            "gender",
+            "languages",
+            "conditions",
+            "gestage",
+        ]
+        context["response_data"] = self.build_responses(
+            paginated_responses, minimal_optional_headers
+        )
         context["csv_data"] = [
-            self.build_summary_csv([resp], minimal_optional_headers) for resp in paginated_responses
+            self.build_summary_csv([resp], minimal_optional_headers)
+            for resp in paginated_responses
         ]
         context["frame_data"] = [
             self.build_framedata_csv([resp]) for resp in paginated_responses
         ]
         print(self.all_optional_header_keys)
-        context["response_data_full"] = self.build_responses(paginated_responses, self.all_optional_header_keys)
+        context["response_data_full"] = self.build_responses(
+            paginated_responses, self.all_optional_header_keys
+        )
         context["csv_data_full"] = [
-            self.build_summary_csv([resp], self.all_optional_header_keys) for resp in paginated_responses
+            self.build_summary_csv([resp], self.all_optional_header_keys)
+            for resp in paginated_responses
         ]
         return context
 
@@ -1013,7 +1025,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
-    
+
     def get_context_data(self, **kwargs):
         """
 		In addition to the study, adds several items to the context dictionary.	 Study results
@@ -1031,7 +1043,9 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 		"""
 
         descriptions = self.get_csv_headers_and_row_data()["descriptions"]
-        headerList = self.get_headers(optional_headers_selected_ids, descriptions.keys())
+        headerList = self.get_headers(
+            optional_headers_selected_ids, descriptions.keys()
+        )
         all_descriptions = [
             {"column": header, "description": descriptions[header]}
             for header in headerList
@@ -1039,9 +1053,22 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         output, writer = self.csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
         return output.getvalue()
-        
-    child_csv_headers = ["child_id", "child_uuid", "child_name", "child_birthday", "child_gender", "child_age_at_birth", "child_language_list", "child_condition_list", "child_additional_information","participant_id", "participant_uuid", "participant_nickname", ]
-        
+
+    child_csv_headers = [
+        "child_id",
+        "child_uuid",
+        "child_name",
+        "child_birthday",
+        "child_gender",
+        "child_age_at_birth",
+        "child_language_list",
+        "child_condition_list",
+        "child_additional_information",
+        "participant_id",
+        "participant_uuid",
+        "participant_nickname",
+    ]
+
     def build_child_csv(self, responses):
         """
 		Builds CSV file contents for overview of all child participants
@@ -1058,13 +1085,13 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 
         output, writer = self.csv_dict_output_and_writer(self.child_csv_headers)
         writer.writerows(session_list)
-        return output.getvalue()   
-        
+        return output.getvalue()
+
     def build_child_dict_csv(self):
         """
 		Builds CSV file contents for data dictionary for overview of all child participants
 		"""
-        
+
         descriptions = self.get_csv_headers_and_row_data()["descriptions"]
         all_descriptions = [
             {"column": header, "description": descriptions[header]}
@@ -1083,7 +1110,9 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
-        header_options = self.request.GET.getlist('ageoptions') + self.request.GET.getlist('childoptions')
+        header_options = self.request.GET.getlist(
+            "ageoptions"
+        ) + self.request.GET.getlist("childoptions")
         cleaned_data = json.dumps(
             self.build_responses(responses, header_options), indent=4, default=str
         )
@@ -1102,11 +1131,24 @@ class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
-        header_options = self.request.GET.getlist('ageoptions') + self.request.GET.getlist('childoptions')
+        header_options = self.request.GET.getlist(
+            "ageoptions"
+        ) + self.request.GET.getlist("childoptions")
         responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_summary_csv(responses, header_options)
         filename = "{}_{}.csv".format(
-            self.study_name_for_files(study.name), "all-responses" + ("-identifiable" if any([option in self.identifiable_data_options for option in header_options]) else "")
+            self.study_name_for_files(study.name),
+            "all-responses"
+            + (
+                "-identifiable"
+                if any(
+                    [
+                        option in self.identifiable_data_options
+                        for option in header_options
+                    ]
+                )
+                else ""
+            ),
         )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
@@ -1121,7 +1163,9 @@ class StudyResponsesSummaryDictCSV(StudyResponsesAll):
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
-        header_options = self.request.GET.getlist('ageoptions') + self.request.GET.getlist('childoptions')
+        header_options = self.request.GET.getlist(
+            "ageoptions"
+        ) + self.request.GET.getlist("childoptions")
         cleaned_data = self.build_summary_dict_csv(responses, header_options)
         filename = "{}_{}.csv".format(
             self.study_name_for_files(study.name), "all-responses-dict"
@@ -1129,7 +1173,8 @@ class StudyResponsesSummaryDictCSV(StudyResponsesAll):
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
-        
+
+
 class StudyChildrenSummaryCSV(StudyResponsesAll):
     """
 	Hitting this URL downloads a summary of all children who participated in CSV format.
@@ -1145,7 +1190,8 @@ class StudyChildrenSummaryCSV(StudyResponsesAll):
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
-        
+
+
 class StudyChildrenSummaryDictCSV(StudyResponsesAll):
     """
 	Hitting this URL downloads a summary of all children who participated in CSV format.
@@ -1247,18 +1293,20 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         """
 		Builds CSV file contents for all participant data
 		"""
-        
+
         participant_list = []
-        
+
         for resp in responses:
             row_data = self.get_csv_participant_row_and_headers(resp)["dict"]
             # Add any new headers from this session
             participant_list.append(row_data)
 
-        output, writer = self.csv_dict_output_and_writer(self.get_csv_participant_row_and_headers()["headers"])
+        output, writer = self.csv_dict_output_and_writer(
+            self.get_csv_participant_row_and_headers()["headers"]
+        )
         writer.writerows(participant_list)
-        return output.getvalue() 
-        
+        return output.getvalue()
+
     def build_all_participant_dict_csv(self, responses):
         """
 		Builds CSV file contents for all participant data dictionary
@@ -1266,8 +1314,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
 
         descriptions = self.get_csv_participant_row_and_headers()["descriptions"]
         all_descriptions = [
-            {"column": key, "description": val}
-            for (key, val) in descriptions.items()
+            {"column": key, "description": val} for (key, val) in descriptions.items()
         ]
         output, writer = self.csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
@@ -1307,6 +1354,7 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
 
+
 class StudyDemographicsDownloadDictCSV(StudyDemographics):
     """
 	Hitting this URL downloads a data dictionary for participant demographics in in CSV format.
@@ -1322,6 +1370,7 @@ class StudyDemographicsDownloadDictCSV(StudyDemographics):
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
+
 
 class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """

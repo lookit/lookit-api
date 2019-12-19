@@ -55,11 +55,13 @@ def merge_dicts(d1, d2):
     d1_copy.update(d2)
     return d1_copy
 
+
 def round_age(age_in_days):
     if age_in_days <= 360:
-        return round(age_in_days/10) * 10
+        return round(age_in_days / 10) * 10
     else:
-        return round(age_in_days/30) * 30
+        return round(age_in_days / 30) * 30
+
 
 class StudyResponsesMixin(
     SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin
@@ -78,9 +80,12 @@ class StudyResponsesMixin(
         if isinstance(object, datetime.date):
             return object.__str__()
         return object
-        
+
     def round_ages_from_birthdays(self, child_birthdays, date_created):
-        return [round_age((date_created.date() - birthdate).days) for birthdate in child_birthdays]
+        return [
+            round_age((date_created.date() - birthdate).days)
+            for birthdate in child_birthdays
+        ]
 
     def build_participant_data(self, responses):
         """
@@ -103,7 +108,9 @@ class StudyResponsesMixin(
                             "uuid": str(latest_dem.uuid),
                             "date_created": str(latest_dem.created_at),
                             "number_of_children": latest_dem.number_of_children,
-                            "child_rounded_ages": self.round_ages_from_birthdays(latest_dem.child_birthdays, latest_dem.created_at),
+                            "child_rounded_ages": self.round_ages_from_birthdays(
+                                latest_dem.child_birthdays, latest_dem.created_at
+                            ),
                             "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
                             "number_of_guardians": latest_dem.number_of_guardians,
                             "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
@@ -132,9 +139,9 @@ class StudyResponsesMixin(
         """
 		Returns dict with headers, row data dict, and description dict for csv participant data associated with a response
 		"""
-    
+
         latest_dem = resp.demographic_snapshot if resp else ""
-    
+
         all_row_data = [
             ("response_id", resp.id if resp else "", "Short ID for this response"),
             (
@@ -179,7 +186,11 @@ class StudyResponsesMixin(
             ),
             (
                 "demographic_child_rounded_ages",
-                self.round_ages_from_birthdays(latest_dem.child_birthdays, latest_dem.created_at) if latest_dem else "",
+                self.round_ages_from_birthdays(
+                    latest_dem.child_birthdays, latest_dem.created_at
+                )
+                if latest_dem
+                else "",
                 "List of rounded ages based on child birthdays entered in demographic form (not based on children registered). Ages are in days, rounded to nearest 10 for ages under 1 year and nearest 30 otherwise. In format e.g. [60, 390]",
             ),
             (
@@ -225,12 +236,12 @@ class StudyResponsesMixin(
             (
                 "demographic_annual_income",
                 latest_dem.annual_income if latest_dem else "",
-                "Parent's response to question 'What is your approximate family yearly income (in US dollars)?'; options are 0, 5000, 10000, 15000, 20000-19000 in increments of 10000, >200000, or na [prefer not to answer]"
+                "Parent's response to question 'What is your approximate family yearly income (in US dollars)?'; options are 0, 5000, 10000, 15000, 20000-19000 in increments of 10000, >200000, or na [prefer not to answer]",
             ),
             (
                 "demographic_number_of_books",
                 latest_dem.number_of_books if latest_dem else "",
-                "Parent's response to question 'About how many children's books are there in your home?'; integer"
+                "Parent's response to question 'About how many children's books are there in your home?'; integer",
             ),
             (
                 "demographic_additional_comments",
@@ -240,12 +251,12 @@ class StudyResponsesMixin(
             (
                 "demographic_country",
                 latest_dem.country.name if latest_dem else "",
-                "Parent's response to question 'What country do you live in?'; 2-letter country code"
+                "Parent's response to question 'What country do you live in?'; 2-letter country code",
             ),
             (
                 "demographic_state",
                 latest_dem.state if latest_dem else "",
-                "Parent's response to question 'What state do you live in?' if country is US; 2-letter state abbreviation"
+                "Parent's response to question 'What state do you live in?' if country is US; 2-letter state abbreviation",
             ),
             (
                 "demographic_density",
@@ -258,7 +269,7 @@ class StudyResponsesMixin(
                 "Parent's freeform response to question 'How did you hear about Lookit?'",
             ),
         ]
-        
+
         headers = [name for (name, val, desc) in all_row_data]
         row_data_with_headers = {name: val for (name, val, desc) in all_row_data}
         field_descriptions = {name: desc for (name, val, desc) in all_row_data}
@@ -293,20 +304,40 @@ class StudyResponsesMixin(
                     "participant": {
                         "id": resp.child.user_id,
                         "uuid": str(resp.child.user.uuid),
-                        "nickname": resp.child.user.nickname if "parent" in optional_headers else "",
+                        "nickname": resp.child.user.nickname
+                        if "parent" in optional_headers
+                        else "",
                     },
                     "child": {
                         "id": resp.child.id,
                         "uuid": str(resp.child.uuid),
-                        "name": resp.child.given_name if "name" in optional_headers else "",
-                        "birthday": resp.child.birthday if "birthday" in optional_headers else "",
-                        "age_in_days": age_in_days if "exact" in optional_headers else "",
-                        "age_rounded": str(round_age(int(age_in_days))) if "rounded" in optional_headers else "",
-                        "gender": resp.child.gender if "gender" in optional_headers else "",
-                        "language_list": resp.child.language_list if "languages" in optional_headers else "",
-                        "condition_list": resp.child.condition_list if "conditions" in optional_headers else "",
-                        "age_at_birth": resp.child.age_at_birth if "gestage" in optional_headers else "",
-                        "additional_information": resp.child.additional_information if "addl" in optional_headers else "",
+                        "name": resp.child.given_name
+                        if "name" in optional_headers
+                        else "",
+                        "birthday": resp.child.birthday
+                        if "birthday" in optional_headers
+                        else "",
+                        "age_in_days": age_in_days
+                        if "exact" in optional_headers
+                        else "",
+                        "age_rounded": str(round_age(int(age_in_days)))
+                        if "rounded" in optional_headers
+                        else "",
+                        "gender": resp.child.gender
+                        if "gender" in optional_headers
+                        else "",
+                        "language_list": resp.child.language_list
+                        if "languages" in optional_headers
+                        else "",
+                        "condition_list": resp.child.condition_list
+                        if "conditions" in optional_headers
+                        else "",
+                        "age_at_birth": resp.child.age_at_birth
+                        if "gestage" in optional_headers
+                        else "",
+                        "additional_information": resp.child.additional_information
+                        if "addl" in optional_headers
+                        else "",
                     },
                     "consent": resp.current_consent_details,
                 }
@@ -333,8 +364,10 @@ class StudyResponsesMixin(
         return "".join([c if c.isalnum() else "-" for c in studyname])
 
     def get_csv_headers_and_row_data(self, resp={}):
-    
-        age_in_days = (resp.date_created.date() - resp.child.birthday).days if resp else ""
+
+        age_in_days = (
+            (resp.date_created.date() - resp.child.birthday).days if resp else ""
+        )
 
         all_row_data = [
             ("response_id", resp.id if resp else "", "Short ID for this response"),
@@ -525,7 +558,7 @@ class StudyResponsesMixin(
                         }
                     )
                 # omit frameType values from CSV
-                elif key == "frameType": 
+                elif key == "frameType":
                     continue
                 # Omit empty generatedProperties values from CSV
                 elif key == "generatedProperties" and not (value):
@@ -575,35 +608,77 @@ class StudyResponsesMixin(
             "data_headers": [header for (header, description) in headers],
             "header_descriptions": headers,
         }
-    
+
     age_data_options = [
-        {"id": "rounded", "name": "Rounded age", "column": "child_age_rounded", "default": True}, 
-        {"id": "exact", "name": "Age in days", "column": "child_age_in_days"}, 
+        {
+            "id": "rounded",
+            "name": "Rounded age",
+            "column": "child_age_rounded",
+            "default": True,
+        },
+        {"id": "exact", "name": "Age in days", "column": "child_age_in_days"},
         {"id": "birthday", "name": "Birthdate", "column": "child_birthday"},
     ]
     child_data_options = [
-        {"id": "name", "name": "Child name", "column": "child_name"}, 
-        {"id": "gender", "name": "Child gender", "column": "child_gender", "default": True}, 
-        {"id": "gestage", "name": "Child gestational age", "column": "child_age_at_birth"}, 
-        {"id": "conditions", "name": "Child conditions", "column": "child_characteristics", "default": True}, 
-        {"id": "languages", "name": "Child languages", "column": "child_languages", "default": True}, 
-        {"id": "addl", "name": "Child additional info", "column": "child_additional_information"}, 
-        {"id": "parent", "name": "Parent name", "column": "participant_nickname"}, 
+        {"id": "name", "name": "Child name", "column": "child_name"},
+        {
+            "id": "gender",
+            "name": "Child gender",
+            "column": "child_gender",
+            "default": True,
+        },
+        {
+            "id": "gestage",
+            "name": "Child gestational age",
+            "column": "child_age_at_birth",
+        },
+        {
+            "id": "conditions",
+            "name": "Child conditions",
+            "column": "child_characteristics",
+            "default": True,
+        },
+        {
+            "id": "languages",
+            "name": "Child languages",
+            "column": "child_languages",
+            "default": True,
+        },
+        {
+            "id": "addl",
+            "name": "Child additional info",
+            "column": "child_additional_information",
+        },
+        {"id": "parent", "name": "Parent name", "column": "participant_nickname"},
     ]
-    
+
     identifiable_data_options = ["exact", "birthday", "name", "addl", "parent"]
-    
-    all_optional_header_keys = [option["id"] for option in age_data_options + child_data_options]
-    
+
+    all_optional_header_keys = [
+        option["id"] for option in age_data_options + child_data_options
+    ]
+
     def get_headers(self, optional_headers_selected_ids, all_headers_available):
         standard_headers = self.get_csv_headers_and_row_data()["headers"]
-        optional_headers = [option["column"] for option in self.age_data_options + self.child_data_options]
-        selected_headers = [option["column"] for option in self.age_data_options + self.child_data_options if option["id"] in optional_headers_selected_ids]
-        standard_headers_selected_only = [header for header in standard_headers if header not in optional_headers or header in selected_headers]
-        ordered_headers = standard_headers_selected_only + sorted(list(all_headers_available - set(standard_headers)))
+        optional_headers = [
+            option["column"]
+            for option in self.age_data_options + self.child_data_options
+        ]
+        selected_headers = [
+            option["column"]
+            for option in self.age_data_options + self.child_data_options
+            if option["id"] in optional_headers_selected_ids
+        ]
+        standard_headers_selected_only = [
+            header
+            for header in standard_headers
+            if header not in optional_headers or header in selected_headers
+        ]
+        ordered_headers = standard_headers_selected_only + sorted(
+            list(all_headers_available - set(standard_headers))
+        )
         return ordered_headers
 
-        
     def build_summary_csv(self, responses, optional_headers_selected_ids):
         """
 		Builds CSV file contents for overview of all responses
@@ -621,7 +696,7 @@ class StudyResponsesMixin(
         headerList = self.get_headers(optional_headers_selected_ids, headers)
         output, writer = self.csv_dict_output_and_writer(headerList)
         writer.writerows(session_list)
-        return output.getvalue()    
+        return output.getvalue()
 
     def build_framedata_csv(self, responses):
         """

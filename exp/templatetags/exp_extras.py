@@ -9,13 +9,13 @@ register = template.Library()
 @register.simple_tag
 def query_transform(request, **kwargs):
     updated = request.GET.copy()
-    
+
     acceptable_keys = ["state", "page", "match", "sort", "ageoptions", "childoptions"]
-    
+
     for key in acceptable_keys:
         if kwargs.get(key):
             updated[key] = kwargs.get(key)
-    
+
     # Assume it was not implemented like this (or as oneliner) for some sort of security reasons...
     # for (key, val) in kwargs.items():
     #    if val:
