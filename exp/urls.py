@@ -29,6 +29,7 @@ from exp.views import (
     StudyCreateView,
     StudyDemographics,
     StudyDemographicsDownloadCSV,
+    StudyDemographicsDownloadDictCSV,
     StudyDemographicsDownloadJSON,
     StudyDetailView,
     StudyListView,
@@ -141,6 +142,11 @@ urlpatterns = [
         r"studies/(?P<pk>\d+)/responses/demographics/download_csv/$",
         StudyDemographicsDownloadCSV.as_view(),
         name="study-demographics-download-csv",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/responses/demographics/download_csv_dict/$",
+        StudyDemographicsDownloadDictCSV.as_view(),
+        name="study-demographics-download-dict-csv",
     ),
     url(
         r"studies/(?P<pk>\d+)/responses/attachments/$",

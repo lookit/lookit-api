@@ -83,6 +83,9 @@ class StudyResponsesMixin(
         return [round_age((date_created.date() - birthdate).days) for birthdate in child_birthdays]
 
     def build_participant_data(self, responses):
+        """
+        Builds a JSON representation of demographic snapshots for download
+        """
         json_responses = []
         for resp in responses:
             latest_dem = resp.demographic_snapshot
@@ -125,73 +128,146 @@ class StudyResponsesMixin(
             )
         return json_responses
 
-    def build_csv_participant_row_data(self, resp):
+    def get_csv_participant_row_and_headers(self, resp=[]):
         """
-		Returns row of csv participant data
+		Returns dict with headers, row data dict, and description dict for csv participant data associated with a response
 		"""
-        latest_dem = resp.demographic_snapshot
-
-        return [
-            resp.id,
-            str(resp.uuid),
-            resp.child.user_id,
-            str(resp.child.user.uuid),
-            resp.child.user.nickname,
-            latest_dem.id,
-            str(latest_dem.uuid),
-            str(latest_dem.created_at),
-            latest_dem.number_of_children,
-            self.round_ages_from_birthdays(latest_dem.child_birthdays, latest_dem.created_at),
-            latest_dem.languages_spoken_at_home,
-            latest_dem.number_of_guardians,
-            latest_dem.number_of_guardians_explanation,
-            latest_dem.race_identification,
-            latest_dem.age,
-            latest_dem.gender,
-            latest_dem.education_level,
-            latest_dem.spouse_education_level,
-            latest_dem.annual_income,
-            latest_dem.number_of_books,
-            latest_dem.additional_comments,
-            latest_dem.country.name,
-            latest_dem.state,
-            latest_dem.density,
-            latest_dem.lookit_referrer,
-            latest_dem.extra,
+    
+        latest_dem = resp.demographic_snapshot if resp else ""
+    
+        all_row_data = [
+            ("response_id", resp.id if resp else "", "Short ID for this response"),
+            (
+                "response_uuid",
+                str(resp.uuid) if resp else "",
+                "Primary unique identifier for response, can be used to match to video filenames",
+            ),
+            (
+                "participant_id",
+                resp.child.user_id if resp else "",
+                "Short ID for the family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
+            ),
+            (
+                "participant_uuid",
+                str(resp.child.user.uuid) if resp else "",
+                "Primary unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
+            ),
+            (
+                "participant_nickname",
+                resp.child.user.nickname if resp else "",
+                "Nickname associated with the family account for this response - generally the mom or dad's name",
+            ),
+            (
+                "demographic_id",
+                latest_dem.id if latest_dem else "",
+                "Short ID for the demographic snapshot associated with this response",
+            ),
+            (
+                "demographic_uuid",
+                str(latest_dem.uuid) if latest_dem else "",
+                "Primary unique identifier for the demographic snapshot associated with this response",
+            ),
+            (
+                "demographic_date_created",
+                str(latest_dem.created_at) if latest_dem else "",
+                "Timestamp of creation of the demographic snapshot associated with this response, in format e.g. 2019-10-02 21:39:03.713283+00:00",
+            ),
+            (
+                "demographic_number_of_children",
+                latest_dem.number_of_children if latest_dem else "",
+                "Response to 'How many children do you have?'; options 0-10 or >10 (More than 10)",
+            ),
+            (
+                "demographic_child_rounded_ages",
+                self.round_ages_from_birthdays(latest_dem.child_birthdays, latest_dem.created_at) if latest_dem else "",
+                "List of rounded ages based on child birthdays entered in demographic form (not based on children registered). Ages are in days, rounded to nearest 10 for ages under 1 year and nearest 30 otherwise. In format e.g. [60, 390]",
+            ),
+            (
+                "demographic_languages_spoken_at_home",
+                latest_dem.languages_spoken_at_home if latest_dem else "",
+                "Freeform response to 'What language(s) does your family speak at home?'",
+            ),
+            (
+                "demographic_number_of_guardians",
+                latest_dem.number_of_guardians if latest_dem else "",
+                "Response to 'How many parents/guardians do your children live with?' - 1, 2, 3> [3 or more], varies",
+            ),
+            (
+                "demographic_number_of_guardians_explanation",
+                latest_dem.number_of_guardians_explanation if latest_dem else "",
+                "Freeform response to 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain.'",
+            ),
+            (
+                "demographic_race_identification",
+                latest_dem.race_identification if latest_dem else "",
+                "Comma-separated list of all values checked for question 'What category(ies) does your family identify as?', from list:  White; Hispanic, Latino, or Spanish origin; Black or African American; Asian; American Indian or Alaska Native; Middle Eastern or North African; Native Hawaiian or Other Pacific Islander; Another race, ethnicity, or origin",
+            ),
+            (
+                "demographic_age",
+                latest_dem.age if latest_dem else "",
+                "Parent's response to question 'What is your age?'; options are <18, 18-21, 22-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50s, 60s, >70",
+            ),
+            (
+                "demographic_gender",
+                latest_dem.gender if latest_dem else "",
+                "Parent's response to question 'What is your gender?'; options are m [male], f [female], o [other], na [prefer not to answer]",
+            ),
+            (
+                "demographic_education_level",
+                latest_dem.education_level if latest_dem else "",
+                "Parent's response to question 'What is the highest level of education you've completed?'; options are some [some or attending high school], hs [high school diploma or GED], col [some or attending college], assoc [2-year college degree], bach [4-year college degree], grad [some or attending graduate or professional school], prof [graduate or professional degree]",
+            ),
+            (
+                "demographic_spouse_education_level",
+                latest_dem.spouse_education_level if latest_dem else "",
+                "Parent's response to question 'What is the highest level of education your spouse has completed?'; options are some [some or attending high school], hs [high school diploma or GED], col [some or attending college], assoc [2-year college degree], bach [4-year college degree], grad [some or attending graduate or professional school], prof [graduate or professional degree], na [not applicable - no spouse or partner]",
+            ),
+            (
+                "demographic_annual_income",
+                latest_dem.annual_income if latest_dem else "",
+                "Parent's response to question 'What is your approximate family yearly income (in US dollars)?'; options are 0, 5000, 10000, 15000, 20000-19000 in increments of 10000, >200000, or na [prefer not to answer]"
+            ),
+            (
+                "demographic_number_of_books",
+                latest_dem.number_of_books if latest_dem else "",
+                "Parent's response to question 'About how many children's books are there in your home?'; integer"
+            ),
+            (
+                "demographic_additional_comments",
+                latest_dem.additional_comments if latest_dem else "",
+                "Parent's freeform response to question 'Anything else you'd like us to know?'",
+            ),
+            (
+                "demographic_country",
+                latest_dem.country.name if latest_dem else "",
+                "Parent's response to question 'What country do you live in?'; 2-letter country code"
+            ),
+            (
+                "demographic_state",
+                latest_dem.state if latest_dem else "",
+                "Parent's response to question 'What state do you live in?' if country is US; 2-letter state abbreviation"
+            ),
+            (
+                "demographic_density",
+                latest_dem.density if latest_dem else "",
+                "Parent's response to question 'How would you describe the area where you live?'; options are urban, suburban, rural",
+            ),
+            (
+                "demographic_lookit_referrer",
+                latest_dem.lookit_referrer if latest_dem else "",
+                "Parent's freeform response to question 'How did you hear about Lookit?'",
+            ),
         ]
+        
+        headers = [name for (name, val, desc) in all_row_data]
+        row_data_with_headers = {name: val for (name, val, desc) in all_row_data}
+        field_descriptions = {name: desc for (name, val, desc) in all_row_data}
 
-    def get_csv_participant_headers(self):
-        """
-		Returns header row for csv participant data
-		"""
-        return [
-            "response_id",
-            "response_uuid",
-            "participant_id",
-            "participant_uuid",
-            "participant_nickname",
-            "demographic_id",
-            "demographic_uuid",
-            "demographic_date_created",
-            "demographic_number_of_children",
-            "demographic_child_rounded_ages",
-            "demographic_languages_spoken_at_home",
-            "demographic_number_of_guardians",
-            "demographic_number_of_guardians_explanation",
-            "demographic_race_identification",
-            "demographic_age",
-            "demographic_gender",
-            "demographic_education_level",
-            "demographic_spouse_education_level",
-            "demographic_annual_income",
-            "demographic_number_of_books",
-            "demographic_additional_comments",
-            "demographic_country",
-            "demographic_state",
-            "demographic_density",
-            "demographic_lookit_referrer",
-            "demographic_extra",
-        ]
+        return {
+            "headers": headers,
+            "descriptions": field_descriptions,
+            "dict": row_data_with_headers,
+        }
 
     def build_responses(self, responses, optional_headers=[]):
         """

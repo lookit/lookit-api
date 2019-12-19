@@ -1184,11 +1184,30 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         """
 		Builds CSV file contents for all participant data
 		"""
-
-        output, writer = self.csv_output_and_writer()
-        writer.writerow(self.get_csv_participant_headers())
+        
+        participant_list = []
+        
         for resp in responses:
-            writer.writerow(self.build_csv_participant_row_data(resp))
+            row_data = self.get_csv_participant_row_and_headers(resp)["dict"]
+            # Add any new headers from this session
+            participant_list.append(row_data)
+
+        output, writer = self.csv_dict_output_and_writer(self.get_csv_participant_row_and_headers()["headers"])
+        writer.writerows(participant_list)
+        return output.getvalue() 
+        
+    def build_all_participant_dict_csv(self, responses):
+        """
+		Builds CSV file contents for all participant data dictionary
+		"""
+
+        descriptions = self.get_csv_participant_row_and_headers()["descriptions"]
+        all_descriptions = [
+            {"column": key, "description": val}
+            for (key, val) in descriptions.items()
+        ]
+        output, writer = self.csv_dict_output_and_writer(["column", "description"])
+        writer.writerows(all_descriptions)
         return output.getvalue()
 
 
@@ -1225,6 +1244,21 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
 
+class StudyDemographicsDownloadDictCSV(StudyDemographics):
+    """
+	Hitting this URL downloads a data dictionary for participant demographics in in CSV format.
+	"""
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.consented_responses.order_by("id")
+        cleaned_data = self.build_all_participant_dict_csv(responses)
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-demographic-snapshots-dict"
+        )
+        response = HttpResponse(cleaned_data, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
 
 class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
