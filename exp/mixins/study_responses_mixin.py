@@ -78,6 +78,9 @@ class StudyResponsesMixin(
         if isinstance(object, datetime.date):
             return object.__str__()
         return object
+        
+    def round_ages_from_birthdays(self, child_birthdays, date_created):
+        return [round_age((date_created.date() - birthdate).days) for birthdate in child_birthdays]
 
     def build_participant_data(self, responses):
         json_responses = []
@@ -95,8 +98,9 @@ class StudyResponsesMixin(
                         "demographic_snapshot": {
                             "demographic_id": latest_dem.id,
                             "uuid": str(latest_dem.uuid),
+                            "date_created": str(latest_dem.created_at),
                             "number_of_children": latest_dem.number_of_children,
-                            "child_birthdays": latest_dem.child_birthdays,
+                            "child_rounded_ages": self.round_ages_from_birthdays(latest_dem.child_birthdays, latest_dem.created_at),
                             "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
                             "number_of_guardians": latest_dem.number_of_guardians,
                             "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
@@ -135,11 +139,9 @@ class StudyResponsesMixin(
             resp.child.user.nickname,
             latest_dem.id,
             str(latest_dem.uuid),
+            str(latest_dem.created_at),
             latest_dem.number_of_children,
-            [
-                self.convert_to_string(birthday)
-                for birthday in latest_dem.child_birthdays
-            ],
+            self.round_ages_from_birthdays(latest_dem.child_birthdays, latest_dem.created_at),
             latest_dem.languages_spoken_at_home,
             latest_dem.number_of_guardians,
             latest_dem.number_of_guardians_explanation,
@@ -169,9 +171,10 @@ class StudyResponsesMixin(
             "participant_uuid",
             "participant_nickname",
             "demographic_id",
-            "latest_dem_uuid",
+            "demographic_uuid",
+            "demographic_date_created",
             "demographic_number_of_children",
-            "demographic_child_birthdays",
+            "demographic_child_rounded_ages",
             "demographic_languages_spoken_at_home",
             "demographic_number_of_guardians",
             "demographic_number_of_guardians_explanation",

@@ -7,22 +7,7 @@
     {{ block.super }}
     {{ form.media }}
     
-    <script type="application/javascript">
-        $(document).ready(function(){
-            $('#download-all-demo-csv').addClass('hidden');
-            $('#data-type-selector-all').on('change', function(){
-                // Toggles responses between CSV and JSON format
-                var selected = $(this).find("option:selected").val();
-                if (selected === 'CSV'){
-                    $('#download-all-demo-csv').removeClass('hidden');
-                    $('#download-all-demo-json').addClass('hidden');
-                } else {
-                    $('#download-all-demo-json').removeClass('hidden');
-                    $('#download-all-demo-csv').addClass('hidden');
-                }
-            });
-        });
-    </script>
+    
 
 {% endblock %}
 
@@ -177,22 +162,32 @@
                 {% endif %}
                 {% if active == 'demographics' %}
                 
-                    <div class="col-sm-3">
-                        <div class="form-group">
-                          <select class="form-control" id="data-type-selector-all">
-                            <option>JSON</option>
-                            <option>CSV</option>
-                          </select>
+                    <hr>
+                
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}})
+                            <p class="help-text"> Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate. Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting the response IDs from the downloaded demographic file; however, depending on your sample you may need to take additional measures.</p>
+                        </div>
+                        <div class="col-md-5 col-sm-6">
+                            <div class='pull-right download-button'> 
+                                Data
+                                <a id='download-all-demo-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (JSON) </span>
+                                </a>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data
+                                <a id='download-all-demo-csv' class='btn btn-primary' href="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (CSV) </span>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-sm-3">
+                
+                
+                
 
-                    <a id='download-all-demo-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
-                        Download all {{ n_responses }} demographic snapshot{{ n_responses|pluralize }} as JSON</span>
-                    </a>
-                    <a id='download-all-demo-csv' class='hidden btn btn-primary' href="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
-                        Download all {{ n_responses }} demographic snapshot{{ n_responses|pluralize }} as CSV</span>
-                    </a>
                 {% endif %}
             </div>
         </div>
