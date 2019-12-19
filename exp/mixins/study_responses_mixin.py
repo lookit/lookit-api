@@ -496,6 +496,53 @@ class StudyResponsesMixin(
             "data_headers": [header for (header, description) in headers],
             "header_descriptions": headers,
         }
+    
+    age_data_options = [
+        {"id": "rounded", "name": "Rounded age", "column": "child_age_rounded", "default": True}, 
+        {"id": "exact", "name": "Age in days", "column": "child_age_in_days"}, 
+        {"id": "birthday", "name": "Birthdate", "column": "child_birthday"},
+    ]
+    child_data_options = [
+        {"id": "name", "name": "Child name", "column": "child_name"}, 
+        {"id": "gender", "name": "Child gender", "column": "child_gender", "default": True}, 
+        {"id": "gestage", "name": "Child gestational age", "column": "child_age_at_birth"}, 
+        {"id": "conditions", "name": "Child conditions", "column": "child_characteristics", "default": True}, 
+        {"id": "languages", "name": "Child languages", "column": "child_languages", "default": True}, 
+        {"id": "addl", "name": "Child additional info", "column": "child_additional_information"}, 
+        {"id": "parent", "name": "Parent name", "column": "participant_nickname"}, 
+    ]
+    
+    identifiable_data_options = ["exact", "birthday", "name", "addl", "parent"]
+    
+    all_optional_header_keys = [option["id"] for option in age_data_options + child_data_options]
+    
+    def get_headers(self, optional_headers_selected_ids, all_headers_available):
+        standard_headers = self.get_csv_headers_and_row_data()["headers"]
+        optional_headers = [option["column"] for option in self.age_data_options + self.child_data_options]
+        selected_headers = [option["column"] for option in self.age_data_options + self.child_data_options if option["id"] in optional_headers_selected_ids]
+        standard_headers_selected_only = [header for header in standard_headers if header not in optional_headers or header in selected_headers]
+        ordered_headers = standard_headers_selected_only + sorted(list(all_headers_available - set(standard_headers)))
+        return ordered_headers
+
+        
+    def build_summary_csv(self, responses, optional_headers_selected_ids):
+        """
+		Builds CSV file contents for overview of all responses
+		"""
+
+        headers = set()
+        session_list = []
+
+        for resp in responses:
+            row_data = self.get_csv_headers_and_row_data(resp)["dict"]
+            # Add any new headers from this session
+            headers = headers | set(row_data.keys())
+            session_list.append(row_data)
+
+        headerList = self.get_headers(optional_headers_selected_ids, headers)
+        output, writer = self.csv_dict_output_and_writer(headerList)
+        writer.writerows(session_list)
+        return output.getvalue()    
 
     def build_framedata_csv(self, responses):
         """

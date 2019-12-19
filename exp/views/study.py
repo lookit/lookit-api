@@ -844,28 +844,21 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         paginated_responses = context["responses"] = self.paginated_queryset(
             responses, page, 10
         )
-        context["response_data"] = self.build_responses(paginated_responses)
-        context["csv_data"] = self.build_individual_csv(paginated_responses)
+        
+        minimal_optional_headers = ["rounded", "gender", "languages", "conditions", "gestage"]
+        context["response_data"] = self.build_responses(paginated_responses, minimal_optional_headers)
+        context["csv_data"] = [
+            self.build_summary_csv([resp], minimal_optional_headers) for resp in paginated_responses
+        ]
         context["frame_data"] = [
             self.build_framedata_csv([resp]) for resp in paginated_responses
         ]
+        print(self.all_optional_header_keys)
+        context["response_data_full"] = self.build_responses(paginated_responses, self.all_optional_header_keys)
+        context["csv_data_full"] = [
+            self.build_summary_csv([resp], self.all_optional_header_keys) for resp in paginated_responses
+        ]
         return context
-
-    def build_individual_csv(self, responses):
-        """
-		Builds CSV for individual responses and puts them in array
-		"""
-        csv_responses = []
-        standard_headers = self.get_csv_headers_and_row_data()["headers"]
-        for resp in responses:
-            row_data = self.get_csv_headers_and_row_data(resp)["dict"]
-            headerList = standard_headers + sorted(
-                list(set(row_data.keys()) - set(standard_headers))
-            )
-            output, writer = self.csv_dict_output_and_writer(headerList)
-            writer.writerow(row_data)
-            csv_responses.append(output.getvalue())
-        return csv_responses
 
     def sort_attachments_by_response(self, responses):
         """
@@ -1021,22 +1014,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
     
-    age_data_options = [
-        {"id": "rounded", "name": "Rounded age", "column": "child_age_rounded", "default": True}, 
-        {"id": "exact", "name": "Age in days", "column": "child_age_in_days"}, 
-        {"id": "birthdate", "name": "Birthdate", "column": "child_birthday"},
-    ]
-    child_data_options = [
-        {"id": "name", "name": "Child name", "column": "child_name"}, 
-        {"id": "gender", "name": "Child gender", "column": "child_gender", "default": True}, 
-        {"id": "gestage", "name": "Child gestational age", "column": "child_age_at_birth"}, 
-        {"id": "conditions", "name": "Child conditions", "column": "child_characteristics", "default": True}, 
-        {"id": "languages", "name": "Child languages", "column": "child_languages", "default": True}, 
-        {"id": "addl", "name": "Child additional info", "column": "child_additional_information"}, 
-        {"id": "parent", "name": "Parent name", "column": "participant_nickname"}, 
-    ]
-    
-    identifiable_data_options = ["exact", "birthdate", "name", "addl", "parent"]
+
 
     def get_context_data(self, **kwargs):
         """
@@ -1048,33 +1026,6 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         context["childoptions"] = self.child_data_options
         context["ageoptions"] = self.age_data_options
         return context
-        
-    def get_headers(self, optional_headers_selected_ids, all_headers_available):
-        standard_headers = self.get_csv_headers_and_row_data()["headers"]
-        optional_headers = [option["column"] for option in self.age_data_options + self.child_data_options]
-        selected_headers = [option["column"] for option in self.age_data_options + self.child_data_options if option["id"] in optional_headers_selected_ids]
-        standard_headers_selected_only = [header for header in standard_headers if header not in optional_headers or header in selected_headers]
-        ordered_headers = standard_headers_selected_only + sorted(list(all_headers_available - set(standard_headers)))
-        return ordered_headers
-
-    def build_summary_csv(self, responses, optional_headers_selected_ids):
-        """
-		Builds CSV file contents for overview of all responses
-		"""
-
-        headers = set()
-        session_list = []
-
-        for resp in responses:
-            row_data = self.get_csv_headers_and_row_data(resp)["dict"]
-            # Add any new headers from this session
-            headers = headers | set(row_data.keys())
-            session_list.append(row_data)
-
-        headerList = self.get_headers(optional_headers_selected_ids, headers)
-        output, writer = self.csv_dict_output_and_writer(headerList)
-        writer.writerows(session_list)
-        return output.getvalue()
 
     def build_summary_dict_csv(self, responses, optional_headers_selected_ids):
         """

@@ -75,6 +75,12 @@
                 } else if (dataType === 'CSV frame data') {
                     $('#frame-response-data-' + index).show();
                     prepareDataForDownload('#frame-data-' + index, 'download-individual-data', currentResponseUuid + '_frame-data', 'csv');
+                } else if (dataType === 'JSON with identifiable data') {
+                    $('#response-data-full-' + index).show();
+                    prepareDataForDownload('#json-data-full-' + index, 'download-individual-data', currentResponseUuid + '_data-identifiable', 'json');
+                } else if (dataType === 'CSV summary with identifiable data') {
+                    $('#csv-response-data-full-' + index).show();
+                    prepareDataForDownload('#csv-data-full-' + index, 'download-individual-data', currentResponseUuid + '_summary-data-identifiable', 'csv');
                 }
             }
 
@@ -83,6 +89,8 @@
                 $('.response-data').hide();
                 $('.csv-response-data').hide();
                 $('.frame-response-data').hide();
+                $('.response-data-full').hide();
+                $('.csv-response-data-full').hide();
             };
         });
 
@@ -210,12 +218,14 @@
                     <label for="data-type-selector">Data Type</label>
                     <select class="form-control" id="data-type-selector">
                         <option>JSON</option>
+                        <option>JSON with identifiable data</option>
                         <option>CSV summary</option>
+                        <option>CSV summary with identifiable data</option>
                         <option>CSV frame data</option>
                     </select>
                 </div>
                 <a id='download-individual-data' class='btn mb-sm btn-primary'>
-                    Download Individual Response <span id="download-data-label">JSON </span>
+                    Download individual response <span id="download-data-label">JSON </span>
                 </a>
                 {% for response in response_data %}
                     <div class='response-data' id='response-data-{{ forloop.counter }}' style="display:none">
@@ -230,6 +240,16 @@
                 {% for csv in frame_data %}
                     <div class='frame-response-data' id='frame-response-data-{{ forloop.counter }}' style="display:none">
                         <pre class='frame-data individual-block' id='frame-data-{{ forloop.counter }}'>{{ csv }}</pre>
+                    </div>
+                {% endfor %}
+                {% for csv in csv_data_full %}
+                    <div class='csv-response-data-full' id='csv-response-data-full-{{ forloop.counter }}' style="display:none">
+                        <pre class='csv-data-full individual-block' id='csv-data-full-{{ forloop.counter }}'>{{ csv }}</pre>
+                    </div>
+                {% endfor %}
+                {% for response in response_data_full %}
+                    <div class='response-data-full' id='response-data-full-{{ forloop.counter }}' style="display:none">
+                        <pre class='json-data-full individual-block' id='json-data-full-{{ forloop.counter }}'>{{ response | pretty_json }}</pre>
                     </div>
                 {% endfor %}
 
