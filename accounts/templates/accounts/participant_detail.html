@@ -122,10 +122,10 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b>  Children Birthdays: </b>
+                    <b>  Children current ages: </b>
                 </div>
                 <div class="col-xs-7">
-                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday|date:"n/d/Y"|default:"N/A"}}{% if not forloop.last %}, {% endif %}{% empty %} No Response{% endfor %}
+                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday | timesince|default:"N/A"}}{% if not forloop.last %}; {% endif %}{% empty %}No Response{% endfor %}
                 </div>
             </div>
             <div class="row">
