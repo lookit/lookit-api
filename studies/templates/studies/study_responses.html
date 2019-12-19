@@ -35,7 +35,7 @@
                 var selected = $(this).find("option:selected").val();
                 var index = extractIdNumber($('.selectable-participant.selected')[0].id);
                 hideResponses();
-                showResponse(selected, index); // TODO
+                showResponse(selected, index);
                 $('#download-data-label').text(selected);
             });
 

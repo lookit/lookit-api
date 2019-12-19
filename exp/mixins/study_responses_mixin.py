@@ -347,12 +347,12 @@ class StudyResponsesMixin(
             (
                 "child_age_in_days",
                 age_in_days,
-                "Age in days at time of response of child associated with this response, exact. TODO",
+                "Age in days at time of response of child associated with this response, exact. This can be used in conjunction with timestamps to calculate the child's birthdate, so should be redacted prior to publication unless no timestamp information is shared.",
             ),
             (
                 "child_age_rounded",
                 str(round_age(int(age_in_days))) if age_in_days else "",
-                "Age in days at time of response of child associated with this response, rounded. TODO",
+                "Age in days at time of response of child associated with this response, rounded to the nearest 10 days if under 1 year old and to the nearest 30 days if over 1 year old. May be published; however, if you have more than a few sessions per participant it would be possible to infer the exact age in days (and therefore birthdate) with some effort. In this case you might consider directly jittering birthdates.",
             ),
             (
                 "child_gender",
@@ -377,7 +377,7 @@ class StudyResponsesMixin(
             (
                 "child_additional_information",
                 resp.child.additional_information if resp else "",
-                "Free response 'anything else you'd like us to know' field on child registration form for child associated with this response",
+                "Free response 'anything else you'd like us to know' field on child registration form for child associated with this response. Should be redacted or reviewed prior to publication as it may include names or other identifying information.",
             ),
             (
                 "response_sequence",
@@ -414,6 +414,7 @@ class StudyResponsesMixin(
 
         frame_data_dicts = []
 
+        # First add all of the global event timings as events with frame_id "global"
         for (iEvent, event) in enumerate(resp.global_event_timings):
             for (key, value) in event.items():
                 frame_data_dicts.append(
@@ -427,11 +428,12 @@ class StudyResponsesMixin(
                     }
                 )
 
+        # Next add all data in exp_data
         event_prefix = "eventTimings."
-
         for (frame_id, frame_data) in resp.exp_data.items():
             for (key, value) in flatten_dict(frame_data).items():
-                if key.startswith("eventTimings."):
+                # Process event data separately and include event_number within frame
+                if key.startswith(event_prefix):
                     key_pieces = key.split(".")
                     frame_data_dicts.append(
                         {
@@ -443,10 +445,13 @@ class StudyResponsesMixin(
                             "value": value,
                         }
                     )
-                elif key == "frameType":
+                # omit frameType values from CSV
+                elif key == "frameType": 
                     continue
+                # Omit empty generatedProperties values from CSV
                 elif key == "generatedProperties" and not (value):
                     continue
+                # For all other data, create a regular entry with frame_id and no event #
                 else:
                     frame_data_dicts.append(
                         {
