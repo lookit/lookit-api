@@ -6,6 +6,24 @@
 {% block head %}
     {{ block.super }}
     {{ form.media }}
+    
+    <script type="application/javascript">
+        $(document).ready(function(){
+            $('#download-all-demo-csv').addClass('hidden');
+            $('#data-type-selector-all').on('change', function(){
+                // Toggles responses between CSV and JSON format
+                var selected = $(this).find("option:selected").val();
+                if (selected === 'CSV'){
+                    $('#download-all-demo-csv').removeClass('hidden');
+                    $('#download-all-demo-json').addClass('hidden');
+                } else {
+                    $('#download-all-demo-json').removeClass('hidden');
+                    $('#download-all-demo-csv').addClass('hidden');
+                }
+            });
+        });
+    </script>
+
 {% endblock %}
 
 {% block flash %}
@@ -158,10 +176,21 @@
                     </form>
                 {% endif %}
                 {% if active == 'demographics' %}
-                    <a id='download-all-data-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
+                
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                          <select class="form-control" id="data-type-selector-all">
+                            <option>JSON</option>
+                            <option>CSV</option>
+                          </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+
+                    <a id='download-all-demo-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
                         Download all {{ n_responses }} demographic snapshot{{ n_responses|pluralize }} as JSON</span>
                     </a>
-                    <a id='download-all-data-csv' class='hidden btn btn-primary' href="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
+                    <a id='download-all-demo-csv' class='hidden btn btn-primary' href="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
                         Download all {{ n_responses }} demographic snapshot{{ n_responses|pluralize }} as CSV</span>
                     </a>
                 {% endif %}
