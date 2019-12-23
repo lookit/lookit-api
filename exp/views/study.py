@@ -852,7 +852,7 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
             "conditions",
             "gestage",
         ]
-        context["response_data"] = self.build_responses(
+        context["response_data"] = self.build_responses_json(
             paginated_responses, minimal_optional_headers
         )
         context["csv_data"] = [
@@ -863,7 +863,7 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
             self.build_framedata_csv([resp]) for resp in paginated_responses
         ]
         print(self.all_optional_header_keys)
-        context["response_data_full"] = self.build_responses(
+        context["response_data_full"] = self.build_responses_json(
             paginated_responses, self.all_optional_header_keys
         )
         context["csv_data_full"] = [
@@ -1042,8 +1042,8 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 		Builds CSV file contents for data dictionary corresponding to the overview CSV
 		"""
 
-        descriptions = self.get_csv_headers_and_row_data()["descriptions"]
-        headerList = self.get_headers(
+        descriptions = self.get_response_headers_and_row_data()["descriptions"]
+        headerList = self.get_response_headers(
             optional_headers_selected_ids, descriptions.keys()
         )
         all_descriptions = [
@@ -1055,8 +1055,8 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         return output.getvalue()
 
     child_csv_headers = [
-        "child_id",
-        "child_uuid",
+        "child_hashed_id",
+        "child_global_id",
         "child_name",
         "child_birthday",
         "child_gender",
@@ -1064,8 +1064,8 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         "child_language_list",
         "child_condition_list",
         "child_additional_information",
-        "participant_id",
-        "participant_uuid",
+        "participant_hashed_id",
+        "participant_global_id",
         "participant_nickname",
     ]
 
@@ -1078,9 +1078,9 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
         session_list = []
 
         for resp in responses:
-            row_data = self.get_csv_headers_and_row_data(resp)["dict"]
-            if row_data["child_uuid"] not in child_list:
-                child_list.append(row_data["child_uuid"])
+            row_data = self.get_response_headers_and_row_data(resp)["dict"]
+            if row_data["child_global_id"] not in child_list:
+                child_list.append(row_data["child_global_id"])
                 session_list.append(row_data)
 
         output, writer = self.csv_dict_output_and_writer(self.child_csv_headers)
@@ -1092,7 +1092,7 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 		Builds CSV file contents for data dictionary for overview of all child participants
 		"""
 
-        descriptions = self.get_csv_headers_and_row_data()["descriptions"]
+        descriptions = self.get_response_headers_and_row_data()["descriptions"]
         all_descriptions = [
             {"column": header, "description": descriptions[header]}
             for header in self.child_csv_headers
@@ -1114,7 +1114,7 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
             "ageoptions"
         ) + self.request.GET.getlist("childoptions")
         cleaned_data = json.dumps(
-            self.build_responses(responses, header_options), indent=4, default=str
+            self.build_responses_json(responses, header_options), indent=4, default=str
         )
         filename = "{}_{}.json".format(
             self.study_name_for_files(study.name), "all-responses"
@@ -1288,40 +1288,228 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         context["n_responses"] = context["study"].consented_responses.count()
         return context
+        
+    def get_demographic_headers(self, optional_header_ids=[]):
+        optional_header_ids_to_columns = {"globalparent": "participant_uuid"}
+        allHeaders = self.get_csv_demographic_row_and_headers()["headers"]
+        selectedHeaders = [optional_header_ids_to_columns[id] for id in optional_header_ids if id in optional_header_ids_to_columns]
+        optionalHeaders = optional_header_ids_to_columns.values()
+        return [h for h in allHeaders if h not in optionalHeaders or h in selectedHeaders]
 
-    def build_all_participant_csv(self, responses):
+
+    def build_demographic_json(self, responses, optional_headers=[]):
+        """
+        Builds a JSON representation of demographic snapshots for download
+        """
+        json_responses = []
+        for resp in responses:
+            latest_dem = resp.demographic_snapshot
+            json_responses.append(
+                json.dumps(
+                    {
+                        "response": {"uuid": str(resp.uuid)},
+                        "participant": {
+                            "uuid": str(resp.child.user.uuid) if "globalparent" in optional_headers else "",
+                            "hashed_id": self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
+                        },
+                        "demographic_snapshot": {
+                            "hashed_id": self.hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt),
+                            "date_created": str(latest_dem.created_at),
+                            "number_of_children": latest_dem.number_of_children,
+                            "child_rounded_ages": self.round_ages_from_birthdays(
+                                latest_dem.child_birthdays, latest_dem.created_at
+                            ),
+                            "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
+                            "number_of_guardians": latest_dem.number_of_guardians,
+                            "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
+                            "race_identification": latest_dem.race_identification,
+                            "age": latest_dem.age,
+                            "gender": latest_dem.gender,
+                            "education_level": latest_dem.gender,
+                            "spouse_education_level": latest_dem.spouse_education_level,
+                            "annual_income": latest_dem.annual_income,
+                            "number_of_books": latest_dem.number_of_books,
+                            "additional_comments": latest_dem.additional_comments,
+                            "country": latest_dem.country.name,
+                            "state": latest_dem.state,
+                            "density": latest_dem.density,
+                            "lookit_referrer": latest_dem.lookit_referrer,
+                            "extra": latest_dem.extra,
+                        },
+                    },
+                    indent=4,
+                    default=self.convert_to_string,
+                )
+            )
+        return json_responses
+
+    def get_csv_demographic_row_and_headers(self, resp=[]):
+        """
+		Returns dict with headers, row data dict, and description dict for csv participant data associated with a response
+		"""
+
+        latest_dem = resp.demographic_snapshot if resp else ""
+
+        all_row_data = [
+            (
+                "response_uuid",
+                str(resp.uuid) if resp else "",
+                "Primary unique identifier for response, can be used to match to video filenames",
+            ),
+            (
+                "participant_uuid",
+                str(resp.child.user.uuid) if resp else "",
+                "Primary unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
+            ),
+            (
+                "participant_hashed_id",
+                self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                "Family account identifier. TODO",
+            ),
+            (
+                "demographic_hashed_id",
+                self.hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                "Demographic ID. TODO",
+            ),
+            (
+                "demographic_date_created",
+                str(latest_dem.created_at) if latest_dem else "",
+                "Timestamp of creation of the demographic snapshot associated with this response, in format e.g. 2019-10-02 21:39:03.713283+00:00",
+            ),
+            (
+                "demographic_number_of_children",
+                latest_dem.number_of_children if latest_dem else "",
+                "Response to 'How many children do you have?'; options 0-10 or >10 (More than 10)",
+            ),
+            (
+                "demographic_child_rounded_ages",
+                self.round_ages_from_birthdays(
+                    latest_dem.child_birthdays, latest_dem.created_at
+                )
+                if latest_dem
+                else "",
+                "List of rounded ages based on child birthdays entered in demographic form (not based on children registered). Ages are in days, rounded to nearest 10 for ages under 1 year and nearest 30 otherwise. In format e.g. [60, 390]",
+            ),
+            (
+                "demographic_languages_spoken_at_home",
+                latest_dem.languages_spoken_at_home if latest_dem else "",
+                "Freeform response to 'What language(s) does your family speak at home?'",
+            ),
+            (
+                "demographic_number_of_guardians",
+                latest_dem.number_of_guardians if latest_dem else "",
+                "Response to 'How many parents/guardians do your children live with?' - 1, 2, 3> [3 or more], varies",
+            ),
+            (
+                "demographic_number_of_guardians_explanation",
+                latest_dem.number_of_guardians_explanation if latest_dem else "",
+                "Freeform response to 'If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain.'",
+            ),
+            (
+                "demographic_race_identification",
+                latest_dem.race_identification if latest_dem else "",
+                "Comma-separated list of all values checked for question 'What category(ies) does your family identify as?', from list:  White; Hispanic, Latino, or Spanish origin; Black or African American; Asian; American Indian or Alaska Native; Middle Eastern or North African; Native Hawaiian or Other Pacific Islander; Another race, ethnicity, or origin",
+            ),
+            (
+                "demographic_age",
+                latest_dem.age if latest_dem else "",
+                "Parent's response to question 'What is your age?'; options are <18, 18-21, 22-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50s, 60s, >70",
+            ),
+            (
+                "demographic_gender",
+                latest_dem.gender if latest_dem else "",
+                "Parent's response to question 'What is your gender?'; options are m [male], f [female], o [other], na [prefer not to answer]",
+            ),
+            (
+                "demographic_education_level",
+                latest_dem.education_level if latest_dem else "",
+                "Parent's response to question 'What is the highest level of education you've completed?'; options are some [some or attending high school], hs [high school diploma or GED], col [some or attending college], assoc [2-year college degree], bach [4-year college degree], grad [some or attending graduate or professional school], prof [graduate or professional degree]",
+            ),
+            (
+                "demographic_spouse_education_level",
+                latest_dem.spouse_education_level if latest_dem else "",
+                "Parent's response to question 'What is the highest level of education your spouse has completed?'; options are some [some or attending high school], hs [high school diploma or GED], col [some or attending college], assoc [2-year college degree], bach [4-year college degree], grad [some or attending graduate or professional school], prof [graduate or professional degree], na [not applicable - no spouse or partner]",
+            ),
+            (
+                "demographic_annual_income",
+                latest_dem.annual_income if latest_dem else "",
+                "Parent's response to question 'What is your approximate family yearly income (in US dollars)?'; options are 0, 5000, 10000, 15000, 20000-19000 in increments of 10000, >200000, or na [prefer not to answer]",
+            ),
+            (
+                "demographic_number_of_books",
+                latest_dem.number_of_books if latest_dem else "",
+                "Parent's response to question 'About how many children's books are there in your home?'; integer",
+            ),
+            (
+                "demographic_additional_comments",
+                latest_dem.additional_comments if latest_dem else "",
+                "Parent's freeform response to question 'Anything else you'd like us to know?'",
+            ),
+            (
+                "demographic_country",
+                latest_dem.country.name if latest_dem else "",
+                "Parent's response to question 'What country do you live in?'; 2-letter country code",
+            ),
+            (
+                "demographic_state",
+                latest_dem.state if latest_dem else "",
+                "Parent's response to question 'What state do you live in?' if country is US; 2-letter state abbreviation",
+            ),
+            (
+                "demographic_density",
+                latest_dem.density if latest_dem else "",
+                "Parent's response to question 'How would you describe the area where you live?'; options are urban, suburban, rural",
+            ),
+            (
+                "demographic_lookit_referrer",
+                latest_dem.lookit_referrer if latest_dem else "",
+                "Parent's freeform response to question 'How did you hear about Lookit?'",
+            ),
+        ]
+
+        headers = [name for (name, val, desc) in all_row_data]
+        row_data_with_headers = {name: val for (name, val, desc) in all_row_data}
+        field_descriptions = {name: desc for (name, val, desc) in all_row_data}
+
+        return {
+            "headers": headers,
+            "descriptions": field_descriptions,
+            "dict": row_data_with_headers,
+        }
+
+    def build_all_demographic_csv(self, responses, optional_header_ids=[]):
         """
 		Builds CSV file contents for all participant data
 		"""
 
         participant_list = []
-
+        theseHeaders = self.get_demographic_headers(optional_header_ids)
+        
         for resp in responses:
-            row_data = self.get_csv_participant_row_and_headers(resp)["dict"]
+            row_data = self.get_csv_demographic_row_and_headers(resp)["dict"]
             # Add any new headers from this session
             participant_list.append(row_data)
 
-        output, writer = self.csv_dict_output_and_writer(
-            self.get_csv_participant_row_and_headers()["headers"]
-        )
+        output, writer = self.csv_dict_output_and_writer(theseHeaders)
         writer.writerows(participant_list)
         return output.getvalue()
 
-    def build_all_participant_dict_csv(self, responses):
+    def build_all_demographic_dict_csv(self, responses, optional_header_ids=[]):
         """
 		Builds CSV file contents for all participant data dictionary
 		"""
 
-        descriptions = self.get_csv_participant_row_and_headers()["descriptions"]
+        descriptions = self.get_csv_demographic_row_and_headers()["descriptions"]
+        theseHeaders = self.get_demographic_headers(optional_header_ids)
         all_descriptions = [
-            {"column": key, "description": val} for (key, val) in descriptions.items()
+            {"column": key, "description": val} for (key, val) in descriptions.items() if key in theseHeaders
         ]
         output, writer = self.csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
         return output.getvalue()
 
 
-class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
+class StudyDemographicsDownloadJSON(StudyDemographics, generic.DetailView):
     """
 	Hitting this URL downloads all participant demographics in JSON format.
 	"""
@@ -1329,7 +1517,8 @@ class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
-        cleaned_data = ", ".join(self.build_participant_data(responses))
+        header_options = self.request.GET.getlist("demooptions")
+        cleaned_data = ", ".join(self.build_demographic_json(responses, header_options))
         filename = "{}_{}.json".format(
             self.study_name_for_files(study.name), "all-demographic-snapshots"
         )
@@ -1346,7 +1535,8 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
-        cleaned_data = self.build_all_participant_csv(responses)
+        header_options = self.request.GET.getlist("demooptions")
+        cleaned_data = self.build_all_demographic_csv(responses, header_options)
         filename = "{}_{}.csv".format(
             self.study_name_for_files(study.name), "all-demographic-snapshots"
         )
@@ -1363,7 +1553,8 @@ class StudyDemographicsDownloadDictCSV(StudyDemographics):
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
-        cleaned_data = self.build_all_participant_dict_csv(responses)
+        header_options = self.request.GET.getlist("demooptions")
+        cleaned_data = self.build_all_demographic_dict_csv(responses, header_options)
         filename = "{}_{}.csv".format(
             self.study_name_for_files(study.name), "all-demographic-snapshots-dict"
         )

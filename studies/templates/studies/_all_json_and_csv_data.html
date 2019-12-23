@@ -48,7 +48,7 @@
                 {% if active == 'all' %}
                     <form id="data-options" method="GET">
                         <p> Data about {{ n_responses }} response{{ n_responses|pluralize}} is available. </p>
-                        <p> The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdays are available for download as needed, but would need to be redacted prior to publication.</p>
+                        <p> The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdates are available for download as needed, but must be redacted prior to publication. Files with names, global IDs, birthdates, exact ages at participation, or "additional info" fields are marked as identifiable in the filename.</p>
                         <div class="row">
                     
                             <div class="col-xs-6">
@@ -86,10 +86,6 @@
                                 {% endfor %}
                             </div>
                         </div>
-                    
-                        
-
-                    
                         <hr>
                         <div class="row">
                             <div class="col-md-7 col-sm-6">
@@ -164,7 +160,7 @@
                         <div class="row">
                             <div class="col-md-7 col-sm-6">
                                 Child data
-                                <p class="help-text"> The child data files contain one row per unique participant. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time). All child data will be included in this file, regardless of selections above; you can use it to store this identifiable data separately from the response data.</p>
+                                <p class="help-text"> The child data files contain one row per unique child. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time). All child data will be included in this file, regardless of selections above; you can use it to store this identifiable data separately from the response data.</p>
                             </div>
                             <div class="col-md-5 col-sm-6">
                                 <div class='pull-right download-button'> 
@@ -186,37 +182,52 @@
                 {% endif %}
                 {% if active == 'demographics' %}
                 
-                    <hr>
-                
-                    <div class="row">
-                        <div class="col-md-7 col-sm-6">
-                            Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}})
-                            <p class="help-text"> Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate. Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting the response IDs from the downloaded demographic file; however, depending on your sample you may need to take additional measures.</p>
+                    <form id="data-options-demo" method="GET">
+                        <p> Data download options: </p>
+
+                        <div>
+                            <input id="include-participant-global"
+                                    name="demooptions"
+                                    type="checkbox"
+                                    value="globalparent"
+                                    >
+                            <label for="include-participant-global">
+                                Include participant global IDs
+                            </label>
                         </div>
-                        <div class="col-md-5 col-sm-6">
-                            <div class='pull-right download-button'> 
-                                Data
-                                <a id='download-all-demo-json' class ='btn btn-primary' href="{% url 'exp:study-demographics-download-json' pk=study.id %}">
-                                    <span> <i class="fa fa-download"></i> (JSON) </span>
-                                </a>
+                            
+                        <hr>
+                
+                        <div class="row">
+                            <div class="col-md-7 col-sm-6">
+                                Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}})
+                                <p class="help-text"> Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate. 
+                                </p>
+                                <p class="help-text">Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file.</p>
                             </div>
-                            <div class='pull-right download-button'> 
-                                Data
-                                <a id='download-all-demo-csv' class='btn btn-primary' href="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
-                                    <span> <i class="fa fa-download"></i> (CSV) </span>
-                                </a>
-                            </div>
-                            <div class='pull-right download-button'> 
-                                Data dictionary
-                                <a id='download-all-demo-dict-csv' class='btn btn-primary' href="{% url 'exp:study-demographics-download-dict-csv' pk=study.id %}">
-                                    <span> <i class="fa fa-download"></i> (CSV) </span>
-                                </a>
+                            <div class="col-md-5 col-sm-6">
+                                <div class='pull-right download-button'> 
+                                    Data
+                                    <button id='download-all-demo-json' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-json' pk=study.id %}">
+                                        <span><i class="fa fa-download"></i> (JSON)</span>
+                                    </button>
+                                </div>
+                                <div class='pull-right download-button'> 
+                                    Data
+                                    <button id='download-all-demo-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
+                                        <span><i class="fa fa-download"></i> (CSV)</span>
+                                    </button>
+                                </div>
+                                <div class='pull-right download-button'> 
+                                    Data dictionary
+                                    <button id='download-all-demo-dict-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-dict-csv' pk=study.id %}">
+                                        <span><i class="fa fa-download"></i> (CSV)</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                
-                
-                
+                    
+                    </form>
 
                 {% endif %}
             </div>
