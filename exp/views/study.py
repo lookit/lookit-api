@@ -1309,7 +1309,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
                     {
                         "response": {"uuid": str(resp.uuid)},
                         "participant": {
-                            "uuid": str(resp.child.user.uuid) if "globalparent" in optional_headers else "",
+                            "global_id": str(resp.child.user.uuid) if "globalparent" in optional_headers else "",
                             "hashed_id": self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
                         },
                         "demographic_snapshot": {
@@ -1354,22 +1354,21 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
             (
                 "response_uuid",
                 str(resp.uuid) if resp else "",
-                "Primary unique identifier for response, can be used to match to video filenames",
+                "Primary unique identifier for response. Can be used to match demographic data to response data and video filenames; must be redacted prior to publication if videos are also published.",
             ),
             (
-                "participant_uuid",
+                "participant_global_id",
                 str(resp.child.user.uuid) if resp else "",
-                "Primary unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
-            ),
+                "Unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, and across different studies. MUST BE REDACTED FOR PUBLICATION because this allows identification of families across different published studies, which may have unintended privacy consequences. Researchers can use this ID to match participants across studies (subject to their own IRB review), but would need to generate their own random participant IDs for publication in that case. Use participant_hashed_id as a publication-safe alternative if only analyzing data from one Lookit study."),
             (
                 "participant_hashed_id",
                 self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
-                "Family account identifier. TODO",
+                "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
                 "demographic_hashed_id",
                 self.hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt) if resp else "",
-                "Demographic ID. TODO",
+                "Identifier for this demographic snapshot. Changes upon updates to the demographic form, so may vary within the same participant across responses.",
             ),
             (
                 "demographic_date_created",

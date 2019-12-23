@@ -252,7 +252,7 @@ class StudyResponsesMixin(
             (
                 "response_uuid",
                 str(resp.uuid) if resp else "",
-                "Primary unique identifier for response, can be used to match to video filenames",
+                "Unique identifier for response. Can be used to match data to video filenames.",
             ),
             (
                 "response_date_created",
@@ -292,47 +292,47 @@ class StudyResponsesMixin(
             (
                 "study_uuid",
                 str(resp.study.uuid) if resp else "",
-                "Primary unique identifier of study associated with this response. Same for all responses to a given Lookit study.",
+                "Unique identifier of study associated with this response. Same for all responses to a given Lookit study.",
             ),
             (
                 "participant_global_id",
                 str(resp.child.user.uuid) if resp else "",
-                "Primary unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
+                "Unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, and across different studies. MUST BE REDACTED FOR PUBLICATION because this allows identification of families across different published studies, which may have unintended privacy consequences. Researchers can use this ID to match participants across studies (subject to their own IRB review), but would need to generate their own random participant IDs for publication in that case. Use participant_hashed_id as a publication-safe alternative if only analyzing data from one Lookit study.",
             ),
             (
                 "participant_hashed_id",
                 self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
-                "Family account identifier. TODO",
+                "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
                 "participant_nickname",
                 resp.child.user.nickname if resp else "",
-                "Nickname associated with the family account for this response - generally the mom or dad's name",
+                "Nickname associated with the family account for this response - generally the mom or dad's name. Must be redacted for publication.",
             ),
             (
                 "child_global_id",
                 str(resp.child.uuid) if resp else "",
-                "Primary unique identifier for the child associated with this response. Will be the same for multiple responses from one child.",
+                "Primary unique identifier for the child associated with this response. Will be the same for multiple responses from one child, even across different Lookit studies. MUST BE REDACTED FOR PUBLICATION because this allows identification of children across different published studies, which may have unintended privacy consequences. Researchers can use this ID to match participants across studies (subject to their own IRB review), but would need to generate their own random participant IDs for publication in that case. Use child_hashed_id as a publication-safe alternative if only analyzing data from one Lookit study.",
             ),
             (
                 "child_hashed_id",
                 self.hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt) if resp else "",
-                "Child identifier. TODO",
+                "Identifier for child associated with this response. Will be the same for multiple responses from a child, but is unique to this study. This may be published directly.",
             ),
             (
                 "child_name",
                 resp.child.given_name if resp else "",
-                "Nickname for the child associated with this response. Not necessarily a real name (we encourage initials, nicknames, etc. if parents aren't comfortable providing a name) but should be redacted for publication of data.",
+                "Nickname for the child associated with this response. Not necessarily a real name (we encourage initials, nicknames, etc. if parents aren't comfortable providing a name) but must be redacted for publication of data.",
             ),
             (
                 "child_birthday",
                 resp.child.birthday if resp else "",
-                "Birthdate of child associated with this response. Must be redacted for publication of data (switch to age at time of participation, and either round/jitter or redact timestamps of participation).",
+                "Birthdate of child associated with this response. Must be redacted for publication of data (switch to age at time of participation; either use rounded age, jitter the age, or redact timestamps of participation).",
             ),
             (
                 "child_age_in_days",
                 age_in_days,
-                "Age in days at time of response of child associated with this response, exact. This can be used in conjunction with timestamps to calculate the child's birthdate, so should be redacted prior to publication unless no timestamp information is shared.",
+                "Age in days at time of response of child associated with this response, exact. This can be used in conjunction with timestamps to calculate the child's birthdate, so must be jittered or redacted prior to publication unless no timestamp information is shared.",
             ),
             (
                 "child_age_rounded",
