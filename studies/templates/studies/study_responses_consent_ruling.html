@@ -58,6 +58,8 @@
             */
             applyFilterParametersToResponseList(CONSENT_PENDING);
             $('[data-toggle="tooltip"]').tooltip();
+            
+            applyFilterParametersToResponseList($responseStatusFilter.val());
 
             /*
              "Controller methods" - using closures to mimic class-like behavior.
@@ -370,7 +372,7 @@
                                 data-id="{{ response.uuid }}"
                                 data-original-status="{{ response.current_ruling }}">
                                 <span>
-                                    <strong>{{ response.date_created | date:"D F d, P e" }}</strong>
+                                    <strong>{{ response.date_created | date:"D M d, P e" }}</strong>
                                     <p>
                                         <em class="small">{{ response.ruling_comments }}</em>
                                     </p>

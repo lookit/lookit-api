@@ -194,7 +194,7 @@ class StudyResponsesMixin(
                         "exp_data": resp.exp_data,
                         "global_event_timings": resp.global_event_timings,
                         "completed": resp.completed,
-                        "date_created": str(resp.date_created),
+                        "date_created": resp.date_created,
                         "withdrawn": resp.withdrawn,
                     },
                     "study": {"uuid": str(resp.study.uuid)},

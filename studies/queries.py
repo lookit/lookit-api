@@ -106,6 +106,8 @@ def get_responses_with_current_rulings_and_videos(study_id):
             "child__given_name",
             "study__name",
             "study_id",
+            "study__uuid",
+            "study__salt",
             "child__user_id",
             "child__user__uuid",
             "child__user__nickname",

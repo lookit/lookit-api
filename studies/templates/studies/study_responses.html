@@ -136,12 +136,10 @@
                         <thead>
                             <tr>
                                 <th>
-                                    User ID
-                                    <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                    <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                    Child ID
                                 </th>
                                 <th>
-                                    Response ID
+                                    Response UUID
                                 </th>
                                 <th>
                                     Status
@@ -156,12 +154,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {% for response in responses %}
-                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.id }}" data-response-uuid="{{ response.uuid }}">
-                            <td>{{ response.child.user.id }}</td>
-                            <td>{{ response.id }} </td>
-                            <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
-                            <td>{{ response.date_created|date:"n/d/Y"|default:"N/A" }}</td>
+                        {% for response in response_data %}
+                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.response.id }}" data-response-uuid="{{ response.response.uuid }}">
+                            <td>{{ response.child.hashed_id }}</td>
+                            <td>{{ response.response.uuid|truncatechars:11 }} </td>
+                            <td>{% if response.response.completed %} Complete {% else %} Incomplete {% endif %} </td>
+                            <td>{{ response.response.date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                           </tr>
                         {% endfor %}
                         </tbody>

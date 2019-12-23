@@ -815,7 +815,7 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         orderby = self.request.GET.get("sort", "id")
         reverse = "-" in orderby
         if "id" in orderby:
-            orderby = "-child__user__id" if reverse else "child__user__id"
+            orderby = "-child__id" if reverse else "child__id"
         if "status" in orderby:
             orderby = "completed" if reverse else "-completed"
         return orderby
@@ -944,12 +944,12 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "date_created": str(response["date_created"]),
                 },
                 "participant": {
-                    "id": response.pop("child__user_id"),
+                    "hashed_id": self.hash_id(response["child__user__uuid"], response["study__uuid"], response["study__salt"]),
                     "uuid": str(response.pop("child__user__uuid")),
                     "nickname": response.pop("child__user__nickname"),
                 },
                 "child": {
-                    "id": response.pop("child_id"),
+                    "hashed_id": self.hash_id(response["child__uuid"], response["study__uuid"], response["study__salt"]),
                     "uuid": str(response.pop("child__uuid")),
                     "name": response.pop("child__given_name"),
                     "birthday": str(response.pop("child__birthday")),
