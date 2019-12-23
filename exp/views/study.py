@@ -932,9 +932,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 
             response_json["details"] = {
                 "general": {
-                    "id": response.pop("id"),
                     "uuid": response["uuid"],
-                    "conditions": json.dumps(response.pop("conditions")),
                     "global_event_timings": json.dumps(
                         response.pop("global_event_timings")
                     ),
@@ -954,7 +952,6 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "name": response.pop("child__given_name"),
                     "birthday": str(response.pop("child__birthday")),
                     "gender": response.pop("child__gender"),
-                    "age_at_birth": response.pop("child__gestational_age_at_birth"),
                     "additional_information": response.pop(
                         "child__additional_information"
                     ),
