@@ -1,6 +1,7 @@
-from django.utils.text import slugify
-import hashlib
 import base64
+import hashlib
+
+from django.utils.text import slugify
 
 
 def build_org_group_name(org_name, group):

@@ -26,6 +26,8 @@ from exp.views import (
     ResearcherDetailView,
     ResearcherListView,
     StudyAttachments,
+    StudyChildrenSummaryCSV,
+    StudyChildrenSummaryDictCSV,
     StudyCreateView,
     StudyDemographics,
     StudyDemographicsDownloadCSV,
@@ -38,19 +40,16 @@ from exp.views import (
     StudyParticipantEmailView,
     StudyPreviewBuildView,
     StudyResponsesAll,
-    StudyResponsesSummaryDownloadCSV,
-    StudyResponsesSummaryDictCSV,
-    StudyChildrenSummaryCSV,
-    StudyChildrenSummaryDictCSV,
-    StudyResponsesFrameDataCSV,
-    StudyResponsesFrameDataIndividualCSV,
-    StudyResponsesFrameDataDictCSV,
     StudyResponsesAllDownloadJSON,
     StudyResponsesConsentManager,
+    StudyResponsesFrameDataCSV,
+    StudyResponsesFrameDataDictCSV,
+    StudyResponsesFrameDataIndividualCSV,
     StudyResponsesList,
+    StudyResponsesSummaryDictCSV,
+    StudyResponsesSummaryDownloadCSV,
     StudyUpdateView,
 )
-
 
 urlpatterns = [
     url(r"researchers/$", ResearcherListView.as_view(), name="researcher-list"),
