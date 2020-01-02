@@ -66,6 +66,7 @@
                                 <th>Sender</th>
                                 <th>Subject</th>
                                 <th>Recipients</th>
+                                <th>Recipient UUIDs</th>
                                 <th>Date Sent</th>
                                 <th>Body</th>
                             </tr>
@@ -75,11 +76,14 @@
                                 <tr class="small">
                                     <td style="display: none;">{{ message.uuid }}</td>
                                     <td data-col-key="sender"
-                                        data-col-value="{{ message.sender.uuid }}">{{ message.sender.get_full_name }}</td>
+                                        data-col-value="{{ message.sender.uuid }}">{{ message.sender.full_name }}</td>
                                     <td>{{ message.subject }}</td>
-                                    <td data-col-key="recipients"
-                                        data-col-value="{% values_list_as_json message.recipients.all "slug" %}">
+                                    <td data-col-key="recipients" 
+                                        data-col-value="{% values_list_as_json message.recipients 'slug' %}">
                                     </td>
+                                    <td data-col-key="recipient_uuid" 
+                                        data-col-value="{% values_list_as_json message.recipients 'uuid' %}">
+                                    </td>                                    
                                     <td>
                                         {{ message.date_created|localtime|date:"r" }}
                                     </td>
@@ -115,7 +119,7 @@
                                                 class="selectpicker form-control"
                                                 multiple>
                                             {% for person in participants %}
-                                                <option value="{{ person.slug }}">
+                                                <option value="{{ person.slug }}" data-subtext="{{ person.uuid }}">
                                                     {{ person.slug }}
                                                 </option>
                                             {% endfor %}
@@ -193,8 +197,8 @@
                                 <optgroup class="opted-in" label="Opted into email">
                                     {% for person in participants %}
                                         <option value="{{ person.uuid }}"
-                                                data-subtext="{{ person.nickname|default:"Anonymous" }}"
-                                                data-tokens="{{ person.nickname }} {{ person.uuid }}"
+                                                data-subtext="{{ person.uuid }}"
+                                                data-tokens="{{ person.nickname }} {{ person.uuid }} {{ person.hashed_id }}"
                                                 {% if person.email_next_session %}data-next-session{% endif %}
                                                 {% if person.email_new_studies %}data-new-studies{% endif %}
                                                 {% if person.email_study_updates %}data-study-updates{% endif %}
@@ -228,8 +232,8 @@
     <script type="text/javascript">
 
         const EXPORT_OPTIONS = {
-            columns: ['sender:name', 'subject:name', 'recipients:name', 'sentDate:name', 'body:name'],
-            orthogonal: 'display',
+            columns: ['sender:name', 'subject:name', 'recipients:name', 'recipient_uuid:name', 'sentDate:name', 'body:name'],
+            orthogonal: 'display'
         };
 
         const DATATABLE_SETTINGS = {
@@ -283,6 +287,13 @@
                     width: '20%',
                 },
                 {
+                    name: 'recipient_uuid',
+                    data: deserializeRecipientUUIDs,
+                    visible: false,
+                    searchable: false,
+                    width: '0',
+                },
+                {
                     name: 'sentDate',
                     data: deserializeSentDateData,
                     type: 'date',
@@ -329,7 +340,7 @@
             {
                 selectedTextFormat: 'count > 3',
                 title: 'Search and add recipients',
-                liveSearchPlaceholder: 'Search by name or UUID!',
+                liveSearchPlaceholder: 'Search by name, hashed ID, or global ID',
             }
         );
 
@@ -567,15 +578,47 @@
                     if (!row.$jqRow) {
                         row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
                     }
-                    row.recipientUuidArray = row.recipientUuidArray ||
+                    row.recipientSlugArray = row.recipientSlugArray ||
                         row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
+                    return row.recipientSlugArray.join(', ');
+                case 'filter':
+                    if (!row.$jqRow) {
+                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
+                    }
+                    row.recipientSlugArray = row.recipientSlugArray ||
+                        row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
+                    return row.recipientSlugArray.join(" "); // Regex will successfully execute against this!
+                case 'sort':
+                    return row.recipients;
+                case 'type':
+                    return row.recipients;
+                default:
+                    return row.recipients;
+            }
+        }
+        
+        /**
+         * Return proper data object with filters.
+         */
+        function deserializeRecipientUUIDs(row, type, value, meta) {
+            switch (type) {
+                case 'set':
+                    row.recipients = value;
+                    row.recipientsDisplay = value;
+                    return;
+                case 'display':
+                    if (!row.$jqRow) {
+                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
+                    }
+                    row.recipientUuidArray = row.recipientUuidArray ||
+                        row.$jqRow.find("td[data-col-key='recipient_uuid']").data()['colValue'];
                     return row.recipientUuidArray.join(', ');
                 case 'filter':
                     if (!row.$jqRow) {
                         row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
                     }
                     row.recipientUuidArray = row.recipientUuidArray ||
-                        row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
+                        row.$jqRow.find("td[data-col-key='recipient_uuid']").data()['colValue'];
                     return row.recipientUuidArray.join(" "); // Regex will successfully execute against this!
                 case 'sort':
                     return row.recipients;

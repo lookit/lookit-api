@@ -184,7 +184,7 @@
             function updateResponseDataSection(responseData) {
                 let details = responseData["details"];
                 let expData = details["exp_data"];
-                $responseDataSection.find("#exp-data").html(JSON.stringify(expData, undefined, 2) || "No data");
+                $responseDataSection.find("#exp-data").html(JSON.stringify(expData, undefined, 2) || "No data available unless consent approved");
                 $responseDataSection.toggleClass('withdrawn', !!details["general"]["withdrawn"]);
                 if (details["general"]["withdrawn"]) {
                     $('#general-info-header').html('Response Information (response video withdrawn)');

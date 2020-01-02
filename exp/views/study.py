@@ -19,6 +19,7 @@ from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, reverse
 from django.utils import timezone
+from django.utils.text import slugify
 from django.views import generic
 from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
@@ -507,8 +508,9 @@ class StudyParticipantEmailView(
     ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
 ):
     """
-	StudyParticipantEmailView allows user to send a custom email to a participant.
-	"""
+    StudyParticipantEmailView allows user to send a custom email to a participant. 
+    Deprecated - using StudyParticipantContactView only.
+    """
 
     model = Study
     permission_required = "studies.can_edit_study"
@@ -595,11 +597,11 @@ class StudyParticipantEmailView(
 
 
 class StudyParticipantContactView(
-    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
-):
+    StudyResponsesMixin, generic.DetailView
+): # TODO: separate out hasher mixin
     """
-	StudyParticipantContactView lets you contact study participants.
-	"""
+    StudyParticipantContactView lets you contact study participants.
+    """
 
     model = Study
     permission_required = "studies.can_edit_study"
@@ -610,18 +612,48 @@ class StudyParticipantContactView(
         """Gets the required data for emailing participants."""
         ctx = super().get_context_data(**kwargs)
         study = ctx["study"]
-        ctx["participants"] = (
-            study.participants.select_related("organization")
+        participants = (study.participants.select_related("organization")
             .order_by(
                 "-email_next_session"
             )  # Just to get the grouping in the right order
             .all()
+            .values(
+                "email_next_session", 
+                "uuid", 
+                "username",
+                "nickname",
+                "password",
+                "email_new_studies",
+                "email_study_updates",
+                "email_response_questions"
+            )
         )
-        ctx["previous_messages"] = (
+        for par in participants:
+            par["hashed_id"] = self.hash_id(par["uuid"], study.uuid, study.salt)
+            par["slug"] = par["hashed_id"] + "-" + slugify(par["nickname"] or "anonymous")
+        ctx["participants"] = participants
+        
+        previous_messages = (
             study.message_set.prefetch_related("recipients")
             .select_related("sender")
             .all()
         )
+        
+        # Since we only need a few values for display/sorting, but they include both properties of related fields and an annotated recipient list, just create explicitly
+        ctx["previous_messages"] = [
+            {
+                "sender": {
+                    "uuid": message.sender.uuid,
+                    "full_name": message.sender.get_full_name
+                 },
+                "subject": message.subject,
+                "recipients": [{**recipient, "slug": self.hash_id(recipient["uuid"], study.uuid, study.salt) + "-" + slugify(recipient["nickname"] or "anonymous")} for recipient in message.recipients.values()],
+                "date_created": message.date_created,
+                "body": message.body
+            }
+            for message in previous_messages
+        ]
+        
         ctx["researchers"] = self.get_researchers()
         return ctx
 
@@ -653,9 +685,13 @@ class StudyParticipantContactView(
         )
 
     def get_researchers(self):
-        """Pulls researchers that belong to Study Admin and Study Read groups"""
+        """Pulls researchers that belong to Study Admin and Study Read groups.
+        Currently same as StudyDetailView.get_study_researchers"""
         study = self.get_object()
-        return User.objects.filter(organization=study.organization)
+        return User.objects.filter(
+                Q(groups__name=study.study_admin_group.name)
+                | Q(groups__name=study.study_read_group.name)
+            )
 
 
 class StudyUpdateView(
