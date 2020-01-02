@@ -608,61 +608,69 @@ class StudyParticipantContactView(
     permission_required = "studies.can_edit_study"
     raise_exception = True
     template_name = "studies/study_participant_contact.html"
-        
+
     def participant_hash(self, participant):
-        study = self.get_object();
+        study = self.get_object()
         return hash_id(participant["uuid"], study.uuid, study.salt)
-        
+
     def participant_slug(self, participant):
-        study = self.get_object();
-        return self.participant_hash(participant) + "-" + slugify(participant["nickname"] or "anonymous")
+        study = self.get_object()
+        return (
+            self.participant_hash(participant)
+            + "-"
+            + slugify(participant["nickname"] or "anonymous")
+        )
 
     def get_context_data(self, **kwargs):
         """Gets the required data for emailing participants."""
         ctx = super().get_context_data(**kwargs)
         study = ctx["study"]
-        participants = (study.participants.select_related("organization")
+        participants = (
+            study.participants.select_related("organization")
             .order_by(
                 "-email_next_session"
             )  # Just to get the grouping in the right order
             .all()
             .values(
-                "email_next_session", 
-                "uuid", 
+                "email_next_session",
+                "uuid",
                 "username",
                 "nickname",
                 "password",
                 "email_new_studies",
                 "email_study_updates",
-                "email_response_questions"
+                "email_response_questions",
             )
         )
         for par in participants:
             par["hashed_id"] = self.participant_hash(par)
             par["slug"] = self.participant_slug(par)
         ctx["participants"] = participants
-        
+
         previous_messages = (
             study.message_set.prefetch_related("recipients")
             .select_related("sender")
             .all()
         )
-        
+
         # Since we only need a few values for display/sorting, but they include both properties of related fields and an annotated recipient list, just create explicitly
         ctx["previous_messages"] = [
             {
                 "sender": {
                     "uuid": message.sender.uuid,
-                    "full_name": message.sender.get_full_name
-                 },
+                    "full_name": message.sender.get_full_name,
+                },
                 "subject": message.subject,
-                "recipients": [{**recipient, "slug": self.participant_slug(recipient)} for recipient in message.recipients.values()],
+                "recipients": [
+                    {**recipient, "slug": self.participant_slug(recipient)}
+                    for recipient in message.recipients.values()
+                ],
                 "date_created": message.date_created,
-                "body": message.body
+                "body": message.body,
             }
             for message in previous_messages
         ]
-        
+
         ctx["researchers"] = self.get_researchers()
         return ctx
 
@@ -698,9 +706,9 @@ class StudyParticipantContactView(
         Currently same as StudyDetailView.get_study_researchers"""
         study = self.get_object()
         return User.objects.filter(
-                Q(groups__name=study.study_admin_group.name)
-                | Q(groups__name=study.study_read_group.name)
-            )
+            Q(groups__name=study.study_admin_group.name)
+            | Q(groups__name=study.study_read_group.name)
+        )
 
 
 class StudyUpdateView(
@@ -987,12 +995,20 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "date_created": str(response["date_created"]),
                 },
                 "participant": {
-                    "hashed_id": hash_id(response["child__user__uuid"], response["study__uuid"], response["study__salt"]),
+                    "hashed_id": hash_id(
+                        response["child__user__uuid"],
+                        response["study__uuid"],
+                        response["study__salt"],
+                    ),
                     "uuid": str(response.pop("child__user__uuid")),
                     "nickname": response.pop("child__user__nickname"),
                 },
                 "child": {
-                    "hashed_id": hash_id(response["child__uuid"], response["study__uuid"], response["study__salt"]),
+                    "hashed_id": hash_id(
+                        response["child__uuid"],
+                        response["study__uuid"],
+                        response["study__salt"],
+                    ),
                     "uuid": str(response.pop("child__uuid")),
                     "name": response.pop("child__given_name"),
                     "birthday": str(response.pop("child__birthday")),
@@ -1330,14 +1346,19 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         context["n_responses"] = context["study"].consented_responses.count()
         return context
-        
+
     def get_demographic_headers(self, optional_header_ids=[]):
         optional_header_ids_to_columns = {"globalparent": "participant_uuid"}
         allHeaders = self.get_csv_demographic_row_and_headers()["headers"]
-        selectedHeaders = [optional_header_ids_to_columns[id] for id in optional_header_ids if id in optional_header_ids_to_columns]
+        selectedHeaders = [
+            optional_header_ids_to_columns[id]
+            for id in optional_header_ids
+            if id in optional_header_ids_to_columns
+        ]
         optionalHeaders = optional_header_ids_to_columns.values()
-        return [h for h in allHeaders if h not in optionalHeaders or h in selectedHeaders]
-
+        return [
+            h for h in allHeaders if h not in optionalHeaders or h in selectedHeaders
+        ]
 
     def build_demographic_json(self, responses, optional_headers=[]):
         """
@@ -1351,11 +1372,17 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
                     {
                         "response": {"uuid": str(resp.uuid)},
                         "participant": {
-                            "global_id": str(resp.child.user.uuid) if "globalparent" in optional_headers else "",
-                            "hashed_id": hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
+                            "global_id": str(resp.child.user.uuid)
+                            if "globalparent" in optional_headers
+                            else "",
+                            "hashed_id": hash_id(
+                                resp.child.user.uuid, resp.study.uuid, resp.study.salt
+                            ),
                         },
                         "demographic_snapshot": {
-                            "hashed_id": hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt),
+                            "hashed_id": hash_id(
+                                latest_dem.uuid, resp.study.uuid, resp.study.salt
+                            ),
                             "date_created": str(latest_dem.created_at),
                             "number_of_children": latest_dem.number_of_children,
                             "child_rounded_ages": self.round_ages_from_birthdays(
@@ -1401,15 +1428,20 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
             (
                 "participant_global_id",
                 str(resp.child.user.uuid) if resp else "",
-                "Unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, and across different studies. MUST BE REDACTED FOR PUBLICATION because this allows identification of families across different published studies, which may have unintended privacy consequences. Researchers can use this ID to match participants across studies (subject to their own IRB review), but would need to generate their own random participant IDs for publication in that case. Use participant_hashed_id as a publication-safe alternative if only analyzing data from one Lookit study."),
+                "Unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, and across different studies. MUST BE REDACTED FOR PUBLICATION because this allows identification of families across different published studies, which may have unintended privacy consequences. Researchers can use this ID to match participants across studies (subject to their own IRB review), but would need to generate their own random participant IDs for publication in that case. Use participant_hashed_id as a publication-safe alternative if only analyzing data from one Lookit study.",
+            ),
             (
                 "participant_hashed_id",
-                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
+                if resp
+                else "",
                 "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
                 "demographic_hashed_id",
-                hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt)
+                if resp
+                else "",
                 "Identifier for this demographic snapshot. Changes upon updates to the demographic form, so may vary within the same participant across responses.",
             ),
             (
@@ -1525,7 +1557,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
 
         participant_list = []
         theseHeaders = self.get_demographic_headers(optional_header_ids)
-        
+
         for resp in responses:
             row_data = self.get_csv_demographic_row_and_headers(resp)["dict"]
             # Add any new headers from this session
@@ -1543,7 +1575,9 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         descriptions = self.get_csv_demographic_row_and_headers()["descriptions"]
         theseHeaders = self.get_demographic_headers(optional_header_ids)
         all_descriptions = [
-            {"column": key, "description": val} for (key, val) in descriptions.items() if key in theseHeaders
+            {"column": key, "description": val}
+            for (key, val) in descriptions.items()
+            if key in theseHeaders
         ]
         output, writer = self.csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)

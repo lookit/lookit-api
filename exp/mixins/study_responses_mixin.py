@@ -77,7 +77,7 @@ class StudyResponsesMixin(
     queryset = WITH_PREFETCHED_RESPONSES
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
-    
+
     age_data_options = [
         {
             "id": "rounded",
@@ -133,12 +133,20 @@ class StudyResponsesMixin(
         },
     ]
 
-    identifiable_data_options = ["exact", "birthday", "name", "addl", "parent", "globalchild", "globalparent"]
+    identifiable_data_options = [
+        "exact",
+        "birthday",
+        "name",
+        "addl",
+        "parent",
+        "globalchild",
+        "globalparent",
+    ]
 
     all_optional_header_keys = [
         option["id"] for option in age_data_options + child_data_options
     ]
-    
+
     def csv_output_and_writer(self):
         output = io.StringIO()
         return output, csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
@@ -169,7 +177,6 @@ class StudyResponsesMixin(
             for birthdate in child_birthdays
         ]
 
-
     def build_responses_json(self, responses, optional_headers=[]):
         """
 		Builds the JSON response data for the researcher to download
@@ -192,15 +199,23 @@ class StudyResponsesMixin(
                     },
                     "study": {"uuid": str(resp.study.uuid)},
                     "participant": {
-                        "global_id": str(resp.child.user.uuid) if "globalparent" in optional_headers else "",
-                        "hashed_id": hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt),
+                        "global_id": str(resp.child.user.uuid)
+                        if "globalparent" in optional_headers
+                        else "",
+                        "hashed_id": hash_id(
+                            resp.child.user.uuid, resp.study.uuid, resp.study.salt
+                        ),
                         "nickname": resp.child.user.nickname
                         if "parent" in optional_headers
                         else "",
                     },
                     "child": {
-                        "global_id": str(resp.child.uuid) if "globalchild" in optional_headers else "",
-                        "hashed_id": hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt),
+                        "global_id": str(resp.child.uuid)
+                        if "globalchild" in optional_headers
+                        else "",
+                        "hashed_id": hash_id(
+                            resp.child.uuid, resp.study.uuid, resp.study.salt
+                        ),
                         "name": resp.child.given_name
                         if "name" in optional_headers
                         else "",
@@ -294,7 +309,9 @@ class StudyResponsesMixin(
             ),
             (
                 "participant_hashed_id",
-                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
+                if resp
+                else "",
                 "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
@@ -309,7 +326,9 @@ class StudyResponsesMixin(
             ),
             (
                 "child_hashed_id",
-                hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt)
+                if resp
+                else "",
                 "Identifier for child associated with this response. Will be the same for multiple responses from a child, but is unique to this study. This may be published directly.",
             ),
             (
@@ -476,7 +495,9 @@ class StudyResponsesMixin(
             "header_descriptions": headers,
         }
 
-    def get_response_headers(self, optional_headers_selected_ids, all_headers_available):
+    def get_response_headers(
+        self, optional_headers_selected_ids, all_headers_available
+    ):
         standard_headers = self.get_response_headers_and_row_data()["headers"]
         optional_headers = [
             option["column"]

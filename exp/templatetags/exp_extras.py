@@ -33,9 +33,9 @@ def get_key(dictionary, key):
 def values_list_as_json(queryset, attribute):
     return json.dumps(
         list(
-            obj[attribute] if type(obj) is dict
-            else
-            getattr(obj, attribute)()
+            obj[attribute]
+            if type(obj) is dict
+            else getattr(obj, attribute)()
             if callable(attribute)
             else getattr(obj, attribute)
             for obj in queryset

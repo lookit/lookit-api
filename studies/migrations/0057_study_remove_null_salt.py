@@ -8,14 +8,12 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0056_populate_salt_values'),
-    ]
+    dependencies = [("studies", "0056_populate_salt_values")]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='salt',
+            model_name="study",
+            name="salt",
             field=models.UUIDField(default=uuid.uuid4, unique=True),
-        ),
+        )
     ]

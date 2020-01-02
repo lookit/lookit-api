@@ -22,5 +22,5 @@ def build_study_group_name(org_name, study_name, study_pk, group):
 def hash_id(id1, id2, salt, length=5):
     concat = bytes([a ^ b ^ c for (a, b, c) in zip(id1.bytes, id2.bytes, salt.bytes)])
     hashed = base64.b32encode(hashlib.sha256(concat).digest()).decode("utf-8")
-    hashed = hashed.translate("".maketrans('10IO', 'abcd'))
+    hashed = hashed.translate("".maketrans("10IO", "abcd"))
     return hashed[:length]

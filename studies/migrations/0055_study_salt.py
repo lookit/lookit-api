@@ -8,14 +8,12 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0054_new-analytics-permissions'),
-    ]
+    dependencies = [("studies", "0054_new-analytics-permissions")]
 
     operations = [
         migrations.AddField(
-            model_name='study',
-            name='salt',
+            model_name="study",
+            name="salt",
             field=models.UUIDField(default=uuid.uuid4, null=True),
-        ),
+        )
     ]

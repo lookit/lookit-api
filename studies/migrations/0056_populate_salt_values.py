@@ -5,17 +5,18 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import uuid
 
+
 def gen_salt(apps, schema_editor):
-    MyModel = apps.get_model('studies', 'Study')
+    MyModel = apps.get_model("studies", "Study")
 
     field = None
     try:
-        field = MyModel._meta.get_field('salt')
+        field = MyModel._meta.get_field("salt")
     except:
         pass
 
-    if field: # Condition on field existing because otherwise Django checks this query
-    # will work before the migration is run and gets worried
+    if field:  # Condition on field existing because otherwise Django checks this query
+        # will work before the migration is run and gets worried
         for row in MyModel.objects.all():
             row.salt = uuid.uuid4()
             row.save()
@@ -23,10 +24,8 @@ def gen_salt(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0055_study_salt'),
-    ]
+    dependencies = [("studies", "0055_study_salt")]
 
     operations = [
-        migrations.RunPython(gen_salt, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(gen_salt, reverse_code=migrations.RunPython.noop)
     ]
