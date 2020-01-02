@@ -27,6 +27,7 @@ from revproxy.views import ProxyView
 
 import attachment_helpers
 from accounts.models import Child, Message, Organization, User
+from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.study_responses_mixin import StudyResponsesMixin
 from exp.views.mixins import ExperimenterLoginRequiredMixin, StudyTypeMixin
@@ -597,8 +598,8 @@ class StudyParticipantEmailView(
 
 
 class StudyParticipantContactView(
-    StudyResponsesMixin, generic.DetailView
-): # TODO: separate out hasher mixin
+    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
+):
     """
     StudyParticipantContactView lets you contact study participants.
     """
@@ -607,6 +608,14 @@ class StudyParticipantContactView(
     permission_required = "studies.can_edit_study"
     raise_exception = True
     template_name = "studies/study_participant_contact.html"
+        
+    def participant_hash(self, participant):
+        study = self.get_object();
+        return hash_id(participant["uuid"], study.uuid, study.salt)
+        
+    def participant_slug(self, participant):
+        study = self.get_object();
+        return self.participant_hash(participant) + "-" + slugify(participant["nickname"] or "anonymous")
 
     def get_context_data(self, **kwargs):
         """Gets the required data for emailing participants."""
@@ -629,8 +638,8 @@ class StudyParticipantContactView(
             )
         )
         for par in participants:
-            par["hashed_id"] = self.hash_id(par["uuid"], study.uuid, study.salt)
-            par["slug"] = par["hashed_id"] + "-" + slugify(par["nickname"] or "anonymous")
+            par["hashed_id"] = self.participant_hash(par)
+            par["slug"] = self.participant_slug(par)
         ctx["participants"] = participants
         
         previous_messages = (
@@ -647,7 +656,7 @@ class StudyParticipantContactView(
                     "full_name": message.sender.get_full_name
                  },
                 "subject": message.subject,
-                "recipients": [{**recipient, "slug": self.hash_id(recipient["uuid"], study.uuid, study.salt) + "-" + slugify(recipient["nickname"] or "anonymous")} for recipient in message.recipients.values()],
+                "recipients": [{**recipient, "slug": self.participant_slug(recipient)} for recipient in message.recipients.values()],
                 "date_created": message.date_created,
                 "body": message.body
             }
@@ -978,12 +987,12 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                     "date_created": str(response["date_created"]),
                 },
                 "participant": {
-                    "hashed_id": self.hash_id(response["child__user__uuid"], response["study__uuid"], response["study__salt"]),
+                    "hashed_id": hash_id(response["child__user__uuid"], response["study__uuid"], response["study__salt"]),
                     "uuid": str(response.pop("child__user__uuid")),
                     "nickname": response.pop("child__user__nickname"),
                 },
                 "child": {
-                    "hashed_id": self.hash_id(response["child__uuid"], response["study__uuid"], response["study__salt"]),
+                    "hashed_id": hash_id(response["child__uuid"], response["study__uuid"], response["study__salt"]),
                     "uuid": str(response.pop("child__uuid")),
                     "name": response.pop("child__given_name"),
                     "birthday": str(response.pop("child__birthday")),
@@ -1343,10 +1352,10 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
                         "response": {"uuid": str(resp.uuid)},
                         "participant": {
                             "global_id": str(resp.child.user.uuid) if "globalparent" in optional_headers else "",
-                            "hashed_id": self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
+                            "hashed_id": hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
                         },
                         "demographic_snapshot": {
-                            "hashed_id": self.hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt),
+                            "hashed_id": hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt),
                             "date_created": str(latest_dem.created_at),
                             "number_of_children": latest_dem.number_of_children,
                             "child_rounded_ages": self.round_ages_from_birthdays(
@@ -1395,12 +1404,12 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
                 "Unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, and across different studies. MUST BE REDACTED FOR PUBLICATION because this allows identification of families across different published studies, which may have unintended privacy consequences. Researchers can use this ID to match participants across studies (subject to their own IRB review), but would need to generate their own random participant IDs for publication in that case. Use participant_hashed_id as a publication-safe alternative if only analyzing data from one Lookit study."),
             (
                 "participant_hashed_id",
-                self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
                 "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
                 "demographic_hashed_id",
-                self.hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt) if resp else "",
                 "Identifier for this demographic snapshot. Changes upon updates to the demographic form, so may vary within the same participant across responses.",
             ),
             (

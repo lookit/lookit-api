@@ -2,8 +2,6 @@ import csv
 import datetime
 import io
 import json
-import hashlib
-import base64
 import string
 
 from django.db.models import Prefetch, QuerySet
@@ -15,6 +13,7 @@ from guardian.shortcuts import get_objects_for_user
 
 import attachment_helpers
 from accounts.models import Child, User
+from accounts.utils import hash_id
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 from studies.models import Response, Study
 
@@ -158,12 +157,6 @@ class StudyResponsesMixin(
 
     def study_name_for_files(self, studyname):
         return "".join([c if c.isalnum() else "-" for c in studyname])
-        
-    def hash_id(self, id1, id2, salt, length=5):
-        concat = bytes([a ^ b ^ c for (a, b, c) in zip(id1.bytes, id2.bytes, salt.bytes)])
-        hashed = base64.b32encode(hashlib.sha256(concat).digest()).decode("utf-8")
-        hashed = hashed.translate("".maketrans('10IO', 'abcd'))
-        return hashed[:length]
 
     def convert_to_string(self, object):
         if isinstance(object, datetime.date):
@@ -200,14 +193,14 @@ class StudyResponsesMixin(
                     "study": {"uuid": str(resp.study.uuid)},
                     "participant": {
                         "global_id": str(resp.child.user.uuid) if "globalparent" in optional_headers else "",
-                        "hashed_id": self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt),
+                        "hashed_id": hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt),
                         "nickname": resp.child.user.nickname
                         if "parent" in optional_headers
                         else "",
                     },
                     "child": {
                         "global_id": str(resp.child.uuid) if "globalchild" in optional_headers else "",
-                        "hashed_id": self.hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt),
+                        "hashed_id": hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt),
                         "name": resp.child.given_name
                         if "name" in optional_headers
                         else "",
@@ -301,7 +294,7 @@ class StudyResponsesMixin(
             ),
             (
                 "participant_hashed_id",
-                self.hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt) if resp else "",
                 "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
@@ -316,7 +309,7 @@ class StudyResponsesMixin(
             ),
             (
                 "child_hashed_id",
-                self.hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt) if resp else "",
+                hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt) if resp else "",
                 "Identifier for child associated with this response. Will be the same for multiple responses from a child, but is unique to this study. This may be published directly.",
             ),
             (
@@ -398,7 +391,7 @@ class StudyResponsesMixin(
     def get_frame_data(self, resp):
 
         frame_data_dicts = []
-        child_hashed_id = self.hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt)
+        child_hashed_id = hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt)
 
         # First add all of the global event timings as events with frame_id "global"
         for (iEvent, event) in enumerate(resp.global_event_timings):
