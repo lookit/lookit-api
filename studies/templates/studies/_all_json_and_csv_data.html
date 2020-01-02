@@ -41,203 +41,204 @@
         	{% include 'studies/_response_nav_tabs.html' with active=active %}
         </div>
     </div>
-	{% if n_responses %}
-        <div class='row pt-xl all-responses'>
+	
+    <div class='row pt-xl all-responses'>
+        
+        <div class="col-xs-12 col-lg-10">
+            {% if active == 'all' %}
+                <form id="data-options" method="GET">
+                {% if n_responses %}
+                    <p> Data about {{ n_responses }} response{{ n_responses|pluralize}} is available. </p>
+                {% else %}
+                    <p> There are no responses with confirmed consent yet. Once there are responses with confirmed consent, data will be available for download. Data dictionaries for the overview and child data files are available for planning analyses.</p>
+                {% endif %}
+                    <p> The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdates are available for download as needed, but must be redacted prior to publication. Files with names, global IDs, birthdates, exact ages at participation, or "additional info" fields are marked as identifiable in the filename.</p>
+                    <div class="row">
+                
+                        <div class="col-xs-6">
+                        
+                            <p>Participant age data to include with responses:</p>
+
+                            {% for option in ageoptions %}
+                            <div>
+                                <input id="include-age-{{option.id}}"
+                                        name="ageoptions"
+                                        type="checkbox"
+                                        value="{{option.id}}"
+                                        {% if option.default %} checked {% endif %}
+                                        >
+                                <label for="include-age-{{option.id}}">
+                                    {{option.name}}
+                                </label>
+                            </div>
+                            {% endfor %} 
+                        </div>
+                        <div class="col-xs-6">
+                            <p>Other participant data to include with responses:</p>
+                            {% for option in childoptions %}
+                            <div>
+                                <input id="include-child-{{option.id}}"
+                                        name="childoptions"
+                                        type="checkbox"
+                                        value="{{option.id}}"
+                                        {% if option.default %} checked {% endif %}
+                                        >
+                                <label for="include-child-{{option.id}}">
+                                    {{option.name}}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            All response data 
+                            <p class="help-text"> The true "raw" data is most naturally represented in JSON format, a structured format that allows nesting (for instance, you might see a question1 field inside formData inside parent-survey). This file contains a list of all responses to your study; each response has basic information about the participant, account, and consent coding as well as what happened during the study.</p>
+                        </div>
+                        <div class="col-md-5 col-sm-6">
+                            <div class='pull-right download-button'> 
+                                Data 
+                                <button id='download-all-data-json' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-json' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
+                                    <span> <i class="fa fa-download"></i> (JSON) </span>
+                                </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <hr>
+                
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            Response overview
+                            <p class="help-text"> The response overview file gives high-level information about each response - the account and child IDs, consent approval information, condition assignment, and information about the child such as gender and languages spoken. There is one row per response. This can be used in conjunction with frame data (below) to avoid having to parse JSON in your analysis.</p>
+                        </div>
+                        <div class="col-md-5 col-sm-6">
+                            <div class='pull-right download-button'>
+                                Data  
+                                <button id='download-all-data-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
+                                    <span><i class="fa fa-download"></i> (CSV)</span>
+                                </button>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data dictionary 
+                                <button id='download-data-dict-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-summary-dict-csv' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <hr>
+                
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            Frame data
+                            <p class="help-text"> The frame data files include all of the information captured by the individual frames of your experiment: for instance, text and selections on forms, which option a participant clicked during a forced-choice trial, and events such as entering or leaving fullscreen, pausing the study, or pressing buttons. These data are shown in a "long" format, with one row per datum and columns for the key and value.</p>
+                        </div>
+                        <div class="col-md-5 col-sm-6">
+                            <div class='pull-right download-button'> 
+                                Data (all responses)
+                                <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data (one file per response)
+                                <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
+                                    <span> <i class="fa fa-download"></i> (ZIP, CSVs)</span>
+                                </a>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data dictionary 
+                                <a id='download-frame-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-dict-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            Child data
+                            <p class="help-text"> The child data files contain one row per unique child. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time). All child data will be included in this file, regardless of selections above; you can use it to store this identifiable data separately from the response data.</p>
+                        </div>
+                        <div class="col-md-5 col-sm-6">
+                            <div class='pull-right download-button'> 
+                                Data 
+                                <a id='download-child-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-children-summary-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data dictionary
+                                <a id='download-child-data-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-children-summary-dict-csv' pk=study.id %}">
+                                    <span> <i class="fa fa-download"></i> (CSV)</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                
+                </form>
+            {% endif %}
+            {% if active == 'demographics' %}
             
-            <div class="col-xs-12 col-lg-10">
-                {% if active == 'all' %}
-                    <form id="data-options" method="GET">
-                        <p> Data about {{ n_responses }} response{{ n_responses|pluralize}} is available. </p>
-                        <p> The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdates are available for download as needed, but must be redacted prior to publication. Files with names, global IDs, birthdates, exact ages at participation, or "additional info" fields are marked as identifiable in the filename.</p>
-                        <div class="row">
-                    
-                            <div class="col-xs-6">
-                            
-                                <p>Participant age data options:</p>
- 
-                                {% for option in ageoptions %}
-                                <div>
-                                    <input id="include-age-{{option.id}}"
-                                            name="ageoptions"
-                                            type="checkbox"
-                                            value="{{option.id}}"
-                                            {% if option.default %} checked {% endif %}
-                                            >
-                                    <label for="include-age-{{option.id}}">
-                                        {{option.name}}
-                                    </label>
-                                </div>
-                                {% endfor %} 
-                            </div>
-                            <div class="col-xs-6">
-                                <p>Other participant data options:</p>
-                                {% for option in childoptions %}
-                                <div>
-                                    <input id="include-child-{{option.id}}"
-                                            name="childoptions"
-                                            type="checkbox"
-                                            value="{{option.id}}"
-                                            {% if option.default %} checked {% endif %}
-                                            >
-                                    <label for="include-child-{{option.id}}">
-                                        {{option.name}}
-                                    </label>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-7 col-sm-6">
-                                All response data 
-                                <p class="help-text"> The true "raw" data is most naturally represented in JSON format, a structured format that allows nesting (for instance, you might see a question1 field inside formData inside parent-survey). This file contains a list of all responses to your study; each response has basic information about the participant, account, and consent coding as well as what happened during the study.</p>
-                            </div>
-                            <div class="col-md-5 col-sm-6">
-                                <div class='pull-right download-button'> 
-                                    Data 
-                                    <button id='download-all-data-json' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-json' pk=study.id %}">
-                                        <span> <i class="fa fa-download"></i> (JSON) </span>
-                                    </button>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <hr>
-                    
-                        <div class="row">
-                            <div class="col-md-7 col-sm-6">
-                                Response overview
-                                <p class="help-text"> The response overview file gives high-level information about each response - the account and child IDs, consent approval information, condition assignment, and information about the child such as gender and languages spoken. There is one row per response. This can be used in conjunction with frame data (below) to avoid having to parse JSON in your analysis.</p>
-                            </div>
-                            <div class="col-md-5 col-sm-6">
-                                <div class='pull-right download-button'>
-                                    Data  
-                                    <button id='download-all-data-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-csv' pk=study.id %}">
-                                        <span><i class="fa fa-download"></i> (CSV)</span>
-                                    </button>
-                                </div>
-                                <div class='pull-right download-button'> 
-                                    Data dictionary 
-                                    <button id='download-data-dict-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-responses-download-summary-dict-csv' pk=study.id %}">
-                                        <span> <i class="fa fa-download"></i> (CSV)</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <hr>
-                    
-                        <div class="row">
-                            <div class="col-md-7 col-sm-6">
-                                Frame data
-                                <p class="help-text"> The frame data files include all of the information captured by the individual frames of your experiment: for instance, text and selections on forms, which option a participant clicked during a forced-choice trial, and events such as entering or leaving fullscreen, pausing the study, or pressing buttons. These data are shown in a "long" format, with one row per datum and columns for the key and value.</p>
-                            </div>
-                            <div class="col-md-5 col-sm-6">
-                                <div class='pull-right download-button'> 
-                                    Data (all responses)
-                                    <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-csv' pk=study.id %}">
-                                        <span> <i class="fa fa-download"></i> (CSV)</span>
-                                    </a>
-                                </div>
-                                <div class='pull-right download-button'> 
-                                    Data (one file per response)
-                                    <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id %}">
-                                        <span> <i class="fa fa-download"></i> (ZIP, CSVs)</span>
-                                    </a>
-                                </div>
-                                <div class='pull-right download-button'> 
-                                    Data dictionary 
-                                    <a id='download-frame-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-dict-csv' pk=study.id %}">
-                                        <span> <i class="fa fa-download"></i> (CSV)</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <hr>
-                        
-                        <div class="row">
-                            <div class="col-md-7 col-sm-6">
-                                Child data
-                                <p class="help-text"> The child data files contain one row per unique child. The data available about each child is the same as is available in the response summary CSV (with the exception of age at time of participation, which depends on the response time). All child data will be included in this file, regardless of selections above; you can use it to store this identifiable data separately from the response data.</p>
-                            </div>
-                            <div class="col-md-5 col-sm-6">
-                                <div class='pull-right download-button'> 
-                                    Data 
-                                    <a id='download-child-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-children-summary-csv' pk=study.id %}">
-                                        <span> <i class="fa fa-download"></i> (CSV)</span>
-                                    </a>
-                                </div>
-                                <div class='pull-right download-button'> 
-                                    Data dictionary
-                                    <a id='download-child-data-dict-csv' class='btn btn-primary' href="{% url 'exp:study-responses-children-summary-dict-csv' pk=study.id %}">
-                                        <span> <i class="fa fa-download"></i> (CSV)</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    
-                    </form>
-                {% endif %}
-                {% if active == 'demographics' %}
-                
-                    <form id="data-options-demo" method="GET">
-                        <p> Data download options: </p>
+                <form id="data-options-demo" method="GET">
+                    <p> Data download options: </p>
 
-                        <div>
-                            <input id="include-participant-global"
-                                    name="demooptions"
-                                    type="checkbox"
-                                    value="globalparent"
-                                    >
-                            <label for="include-participant-global">
-                                Include participant global IDs
-                            </label>
+                    <div>
+                        <input id="include-participant-global"
+                                name="demooptions"
+                                type="checkbox"
+                                value="globalparent"
+                                >
+                        <label for="include-participant-global">
+                            Include participant global IDs
+                        </label>
+                    </div>
+                        
+                    <hr>
+            
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            {% if n_responses %}
+                                <p> Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}}) </p>
+                            {% else %}
+                                <p> There are no responses with confirmed consent yet. Once there are responses with confirmed consent, associated demographic data will be available for download. A data dictionary is available for planning analyses.</p>
+                            {% endif %}
+                            <p class="help-text"> Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate. 
+                            </p>
+                            <p class="help-text">Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file if publishing raw data.</p>
                         </div>
-                            
-                        <hr>
+                        <div class="col-md-5 col-sm-6">
+                            <div class='pull-right download-button'> 
+                                Data
+                                <button id='download-all-demo-json' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-json' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
+                                    <span><i class="fa fa-download"></i> (JSON)</span>
+                                </button>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data
+                                <button id='download-all-demo-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
+                                    <span><i class="fa fa-download"></i> (CSV)</span>
+                                </button>
+                            </div>
+                            <div class='pull-right download-button'> 
+                                Data dictionary
+                                <button id='download-all-demo-dict-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-dict-csv' pk=study.id %}">
+                                    <span><i class="fa fa-download"></i> (CSV)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 
-                        <div class="row">
-                            <div class="col-md-7 col-sm-6">
-                                Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}})
-                                <p class="help-text"> Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate. 
-                                </p>
-                                <p class="help-text">Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file.</p>
-                            </div>
-                            <div class="col-md-5 col-sm-6">
-                                <div class='pull-right download-button'> 
-                                    Data
-                                    <button id='download-all-demo-json' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-json' pk=study.id %}">
-                                        <span><i class="fa fa-download"></i> (JSON)</span>
-                                    </button>
-                                </div>
-                                <div class='pull-right download-button'> 
-                                    Data
-                                    <button id='download-all-demo-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-csv' pk=study.id %}">
-                                        <span><i class="fa fa-download"></i> (CSV)</span>
-                                    </button>
-                                </div>
-                                <div class='pull-right download-button'> 
-                                    Data dictionary
-                                    <button id='download-all-demo-dict-csv' class='btn btn-primary' type="submit" formaction="{% url 'exp:study-demographics-download-dict-csv' pk=study.id %}">
-                                        <span><i class="fa fa-download"></i> (CSV)</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    
-                    </form>
+                </form>
 
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
-    {% else %}
-    	<div class="row">
-    		<div class="col-xs-12">
-    			<p class="pt-md"><em>No responses with confirmed consent.</em></p>
-    		</div>
-    	</div>
-    {% endif %}
+    </div>
 </div>
 {% endblock %}
