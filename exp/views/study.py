@@ -1348,7 +1348,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         return context
 
     def get_demographic_headers(self, optional_header_ids=[]):
-        optional_header_ids_to_columns = {"globalparent": "participant_uuid"}
+        optional_header_ids_to_columns = {"globalparent": "participant_global_id"}
         allHeaders = self.get_csv_demographic_row_and_headers()["headers"]
         selectedHeaders = [
             optional_header_ids_to_columns[id]
