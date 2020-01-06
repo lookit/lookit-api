@@ -1,12 +1,12 @@
+import csv
 import datetime
+import io
 import json
 import operator
+import zipfile
 from collections import Counter, defaultdict
 from functools import reduce
 from typing import NamedTuple
-import csv
-import io
-import zipfile
 
 from django.contrib import messages
 from django.contrib.auth.mixins import (
@@ -65,7 +65,6 @@ STUDY_LISTING_A_TAG = (
     f'<a href="{settings.BASE_URL}/studies/">the study listing page</a>'
 )
 
-
 DISCOVERABILITY_HELP_TEXT = {
     (
         True,
@@ -89,7 +88,6 @@ DISCOVERABILITY_HELP_TEXT = {
     f"but it will not be listed in {STUDY_LISTING_A_TAG}. ",
 }
 
-
 LANGUAGES_MAP = {code: lang for code, lang in LANGUAGES}
 CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDITIONS}
 
@@ -109,9 +107,9 @@ class StudyCreateView(
     StudyTypeMixin,
 ):
     """
-	StudyCreateView allows a user to create a study and then redirects
-	them to the detail view for that study.
-	"""
+    StudyCreateView allows a user to create a study and then redirects
+    them to the detail view for that study.
+    """
 
     model = Study
     permission_required = "studies.can_create_study"
@@ -120,10 +118,10 @@ class StudyCreateView(
 
     def form_valid(self, form):
         """
-		Add the logged-in user as the study creator and the user's organization as the
-		study's organization. If the form is valid, save the associated study and
-		redirect to the supplied URL
-		"""
+        Add the logged-in user as the study creator and the user's organization as the
+        study's organization. If the form is valid, save the associated study and
+        redirect to the supplied URL
+        """
         user = self.request.user
         form.instance.metadata = self.extract_type_metadata()
         form.instance.creator = user
@@ -136,8 +134,8 @@ class StudyCreateView(
 
     def add_creator_to_study_admin_group(self):
         """
-		Add the study's creator to the study admin group.
-		"""
+        Add the study's creator to the study admin group.
+        """
         study_admin_group = self.object.study_admin_group
         study_admin_group.user_set.add(self.request.user)
         return study_admin_group
@@ -147,8 +145,8 @@ class StudyCreateView(
 
     def get_context_data(self, **kwargs):
         """
-		Adds study types to get_context_data
-		"""
+        Adds study types to get_context_data
+        """
         context = super().get_context_data(**kwargs)
         context["types"] = [
             study_type["metadata"]["fields"]
@@ -160,9 +158,9 @@ class StudyCreateView(
 
     def get_initial(self):
         """
-		Returns initial data to use for the create study form - make default
-		structure field data an empty dict
-		"""
+        Returns initial data to use for the create study form - make default
+        structure field data an empty dict
+        """
         initial = super().get_initial()
         initial["structure"] = json.dumps(Study._meta.get_field("structure").default)
         return initial
@@ -175,8 +173,8 @@ class StudyListView(
     PaginatorMixin,
 ):
     """
-	StudyListView shows a list of studies that a user has permission to.
-	"""
+    StudyListView shows a list of studies that a user has permission to.
+    """
 
     model = Study
     permission_required = "accounts.can_view_experimenter"
@@ -185,9 +183,9 @@ class StudyListView(
 
     def get_queryset(self, *args, **kwargs):
         """
-		Returns paginated list of items for the StudyListView - handles filtering on state, match,
-		and sort.
-		"""
+        Returns paginated list of items for the StudyListView - handles filtering on state, match,
+        and sort.
+        """
         request = self.request.GET
 
         queryset = get_study_list_qs(self.request.user)
@@ -239,8 +237,8 @@ class StudyListView(
 
     def get_context_data(self, **kwargs):
         """
-		Gets the context for the StudyListView and supplements with the state, match, and sort query params.
-		"""
+        Gets the context for the StudyListView and supplements with the state, match, and sort query params.
+        """
         context = super().get_context_data(**kwargs)
         context["state"] = self.request.GET.get("state", "all")
         context["match"] = self.request.GET.get("match", "")
@@ -259,9 +257,9 @@ class StudyDetailView(
     PaginatorMixin,
 ):
     """
-	StudyDetailView shows information about a study. Can view basic metadata about a study, can view
-	study logs, and can change a study's state.
-	"""
+    StudyDetailView shows information about a study. Can view basic metadata about a study, can view
+    study logs, and can change a study's state.
+    """
 
     template_name = "studies/study_detail.html"
     model = Study
@@ -270,9 +268,9 @@ class StudyDetailView(
 
     def post(self, *args, **kwargs):
         """
-		Post method can update the trigger if the state of the study has changed.  If "clone" study
-		button is pressed, clones study and redirects to the clone.
-		"""
+        Post method can update the trigger if the state of the study has changed.  If "clone" study
+        button is pressed, clones study and redirects to the clone.
+        """
         self.manage_researcher_permissions()
 
         if "trigger" in self.request.POST:
@@ -314,9 +312,9 @@ class StudyDetailView(
 
     def manage_researcher_permissions(self):
         """
-		Handles adding, updating, and deleting researcher from study. Users are
-		added to study read group by default.
-		"""
+        Handles adding, updating, and deleting researcher from study. Users are
+        added to study read group by default.
+        """
         study = self.get_object()
         study_read_group = study.study_read_group
         study_admin_group = study.study_admin_group
@@ -396,8 +394,8 @@ class StudyDetailView(
 
     def add_creator_to_study_admin_group(self, clone):
         """
-		Add the study's creator to the clone's study admin group.
-		"""
+        Add the study's creator to the clone's study admin group.
+        """
         study_admin_group = clone.study_admin_group
         study_admin_group.user_set.add(self.request.user)
         return study_admin_group
@@ -411,9 +409,9 @@ class StudyDetailView(
 
     def get_context_data(self, **kwargs):
         """
-		Adds several items to the context dictionary - the study, applicable triggers for the study,
-		paginated study logs, and a tooltip that is dependent on the study's current state
-		"""
+        Adds several items to the context dictionary - the study, applicable triggers for the study,
+        paginated study logs, and a tooltip that is dependent on the study's current state
+        """
         context = super(StudyDetailView, self).get_context_data(**kwargs)
 
         study = context["study"]
@@ -447,8 +445,10 @@ class StudyDetailView(
         return context
 
     def get_study_researchers(self):
-        """	 Pulls researchers that belong to Study Admin and Study Read groups - Not showing Org Admin and Org Read in this list (even though they technically
-		can view the project.) """
+        """Pulls researchers that belong to Study Admin and Study Read groups.
+
+        Not showing Org Admin and Org Read in this list (even though they technically can view the project)
+        """
         study = self.object
         return (
             User.objects.filter(
@@ -460,7 +460,9 @@ class StudyDetailView(
         )
 
     def search_researchers(self):
-        """ Searches user first, last, and middle names for search query. Does not display researchers that are already on project """
+        """Searches user first, last, and middle names for search query.
+        Does not display researchers that are already on project.
+        """
         search_query = self.request.GET.get("match", None)
         researchers_result = None
         if search_query:
@@ -496,9 +498,7 @@ class StudyDetailView(
         return len(admins) - (researcher in admins) > 0
 
     def build_researchers_paginator(self, researchers_result):
-        """
-		Builds paginated search results for researchers
-		"""
+        """Builds paginated search results for researchers."""
         page = self.request.GET.get("page")
         return self.paginated_queryset(researchers_result, page, 5)
 
@@ -507,8 +507,8 @@ class StudyParticipantEmailView(
     ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
 ):
     """
-	StudyParticipantEmailView allows user to send a custom email to a participant.
-	"""
+    StudyParticipantEmailView allows user to send a custom email to a participant.
+    """
 
     model = Study
     permission_required = "studies.can_edit_study"
@@ -517,8 +517,8 @@ class StudyParticipantEmailView(
 
     def get_context_data(self, **kwargs):
         """
-		Adds email to the context_data dictionary
-		"""
+        Adds email to the context_data dictionary
+        """
         context = super().get_context_data(**kwargs)
         context["sender"] = settings.EMAIL_FROM_ADDRESS
         context["email_next_session"] = self.get_study_participants(
@@ -535,9 +535,9 @@ class StudyParticipantEmailView(
 
     def get_study_participants(self, email_field):
         """
-		Restricts list to participants that have responded to this study as well as participants
-		that have given their permission to be emailed personally
-		"""
+        Restricts list to participants that have responded to this study as well as participants
+        that have given their permission to be emailed personally
+        """
         return User.objects.filter(
             Q(children__response__study=self.get_object())
             & Q(**{f"{email_field}": True})
@@ -545,8 +545,8 @@ class StudyParticipantEmailView(
 
     def post(self, request, *args, **kwargs):
         """
-		Post form for emailing participants.
-		"""
+        Post form for emailing participants.
+        """
         retval = super().get(request, *args, **kwargs)
         email_form = self.request.POST
 
@@ -598,8 +598,8 @@ class StudyParticipantContactView(
     ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
 ):
     """
-	StudyParticipantContactView lets you contact study participants.
-	"""
+    StudyParticipantContactView lets you contact study participants.
+    """
 
     model = Study
     permission_required = "studies.can_edit_study"
@@ -628,8 +628,8 @@ class StudyParticipantContactView(
     def post(self, request, *args, **kwargs):
         """Handles saving message and sending email.
 
-		TODO: enable mail merge with tokens.
-		"""
+        TODO: enable mail merge with tokens.
+        """
         study = self.get_object()
 
         participant_uuids = request.POST.getlist("recipients")
@@ -666,9 +666,9 @@ class StudyUpdateView(
     StudyTypeMixin,
 ):
     """
-	StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
-	Also allows you to update the study status.
-	"""
+    StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
+    Also allows you to update the study status.
+    """
 
     template_name = "studies/study_edit.html"
     form_class = StudyEditForm
@@ -678,8 +678,8 @@ class StudyUpdateView(
 
     def get_initial(self):
         """
-		Returns the initial data to use for forms on this view.
-		"""
+        Returns the initial data to use for forms on this view.
+        """
         initial = super().get_initial()
         structure = self.object.structure
         if structure:
@@ -690,13 +690,13 @@ class StudyUpdateView(
 
     def post(self, request, *args, **kwargs):
         """
-		Handles all post forms on page:
-			1) study metadata like name, short_description, etc.
-			2) researcher add
-			3) researcher update
-			4) researcher delete
-			5) Changing study status / adding rejection comments
-		"""
+        Handles all post forms on page:
+            1) study metadata like name, short_description, etc.
+            2) researcher add
+            3) researcher update
+            4) researcher delete
+            5) Changing study status / adding rejection comments
+        """
         study = self.get_object()
 
         if "trigger" in self.request.POST:
@@ -726,16 +726,16 @@ class StudyUpdateView(
 
     def form_valid(self, form):
         """
-		Add success message that edits to study have been saved.
-		"""
+        Add success message that edits to study have been saved.
+        """
         ret = super().form_valid(form)
         messages.success(self.request, f"{self.get_object().name} study details saved.")
         return ret
 
     def get_context_data(self, **kwargs):
         """
-		In addition to the study, adds several items to the context dictionary.
-		"""
+        In addition to the study, adds several items to the context dictionary.
+        """
         context = super().get_context_data(**kwargs)
         study = context["study"]
         state = study.state
@@ -773,8 +773,8 @@ class StudyUpdateView(
 
 class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
-	View to acquire a list of study responses.
-	"""
+    View to acquire a list of study responses.
+    """
 
     template_name = "studies/study_responses.html"
     queryset = Study.objects.all()
@@ -808,10 +808,10 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     def get_responses_orderby(self):
         """
-		Determine sort field and order. Sorting on id actually sorts on user id, not response id.
-		Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
-		"in progress" and "completed"
-		"""
+        Determine sort field and order. Sorting on id actually sorts on user id, not response id.
+        Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
+        "in progress" and "completed"
+        """
         orderby = self.request.GET.get("sort", "id")
         reverse = "-" in orderby
         if "id" in orderby:
@@ -822,9 +822,9 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     def get_context_data(self, **kwargs):
         """
-		In addition to the study, adds several items to the context dictionary.	 Study results
-		are paginated.
-		"""
+        In addition to the study, adds several items to the context dictionary.	 Study results
+        are paginated.
+        """
         context = super().get_context_data(**kwargs)
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
@@ -853,8 +853,8 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     def build_individual_csv(self, responses):
         """
-		Builds CSV for individual responses and puts them in array
-		"""
+        Builds CSV for individual responses and puts them in array
+        """
         csv_responses = []
         standard_headers = self.get_csv_headers_and_row_data()["headers"]
         for resp in responses:
@@ -869,8 +869,8 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     def sort_attachments_by_response(self, responses):
         """
-		Build a list of list of videos for each response
-		"""
+        Build a list of list of videos for each response
+        """
         study = self.get_object()
         attachments = attachment_helpers.get_study_attachments(study)
         all_attachments = []
@@ -892,8 +892,8 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     def build_video_display_name(self, study_uuid, response_uuid, vid_name):
         """
-		Strips study_uuid and response_uuid out of video responses titles for better display.
-		"""
+        Strips study_uuid and response_uuid out of video responses titles for better display.
+        """
         return ". . ." + ". . .".join(
             vid_name.split(study_uuid + "_")[1].split("_" + response_uuid + "_")
         )
@@ -1004,36 +1004,36 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
 def response_is_withdrawn(exp_data):
     """Check if a response is withdrawn, using the experiment frame data.
 
-	XXX: This is copied over from the model methods in studies/models.py
+    XXX: This is copied over from the model methods in studies/models.py
 
-	TODO: See if we can delete the model method now that we're using .values() here.
-	"""
+    TODO: See if we can delete the model method now that we're using .values() here.
+    """
     exit_frames = [f for f in exp_data.values() if f.get("frameType", None) == "EXIT"]
     return exit_frames[0].get("withdrawal", None) if exit_frames else None
 
 
 class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
     """
-	StudyResponsesAll shows all study responses in JSON and CSV format.
-	Either format can be downloaded
-	"""
+    StudyResponsesAll shows all study responses in JSON and CSV format.
+    Either format can be downloaded
+    """
 
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
 
     def get_context_data(self, **kwargs):
         """
-		In addition to the study, adds several items to the context dictionary.	 Study results
-		are paginated.
-		"""
+        In addition to the study, adds several items to the context dictionary.	 Study results
+        are paginated.
+        """
         context = super().get_context_data(**kwargs)
         context["n_responses"] = context["study"].consented_responses.count()
         return context
 
     def build_summary_csv(self, responses):
         """
-		Builds CSV file contents for overview of all responses
-		"""
+        Builds CSV file contents for overview of all responses
+        """
 
         headers = set()
         session_list = []
@@ -1052,8 +1052,8 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 
     def build_summary_dict_csv(self, responses):
         """
-		Builds CSV file contents for data dictionary corresponding to the overview CSV
-		"""
+        Builds CSV file contents for data dictionary corresponding to the overview CSV
+        """
 
         csv_headers_dict = self.get_csv_headers_and_row_data()
 
@@ -1073,8 +1073,8 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 
 class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
     """
-	Hitting this URL downloads all study responses in JSON format.
-	"""
+    Hitting this URL downloads all study responses in JSON format.
+    """
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
@@ -1092,8 +1092,8 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
 
 class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
     """
-	Hitting this URL downloads a summary of all study responses in CSV format.
-	"""
+    Hitting this URL downloads a summary of all study responses in CSV format.
+    """
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
@@ -1109,8 +1109,8 @@ class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
 
 class StudyResponsesSummaryDictCSV(StudyResponsesAll):
     """
-	Hitting this URL downloads a data dictionary for the study response summary in CSV format.
-	"""
+    Hitting this URL downloads a data dictionary for the study response summary in CSV format.
+    """
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
@@ -1126,8 +1126,8 @@ class StudyResponsesSummaryDictCSV(StudyResponsesAll):
 
 class StudyResponsesFrameDataCSV(StudyResponsesMixin, generic.DetailView):
     """
-	Hitting this URL downloads frame-level data from all study responses in CSV format
-	"""
+    Hitting this URL downloads frame-level data from all study responses in CSV format
+    """
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
@@ -1172,8 +1172,8 @@ class StudyResponsesFrameDataIndividualCSV(StudyResponsesMixin, generic.DetailVi
 
 class StudyResponsesFrameDataDictCSV(StudyResponsesMixin, generic.DetailView):
     """
-	Hitting this URL downloads a template data dictionary for frame-level data in CSV format
-	"""
+    Hitting this URL downloads a template data dictionary for frame-level data in CSV format
+    """
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
@@ -1189,26 +1189,26 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesMixin, generic.DetailView):
 
 class StudyDemographics(StudyResponsesMixin, generic.DetailView):
     """
-	StudyParticiapnts view shows participant demographic snapshots associated
-	with each response to the study
-	"""
+    StudyParticiapnts view shows participant demographic snapshots associated
+    with each response to the study
+    """
 
     template_name = "studies/study_demographics.html"
     queryset = Study.objects.all()
 
     def get_context_data(self, **kwargs):
         """
-		In addition to the study, adds several items to the context dictionary.	 Study results
-		are paginated.
-		"""
+        In addition to the study, adds several items to the context dictionary.	 Study results
+        are paginated.
+        """
         context = super().get_context_data(**kwargs)
         context["n_responses"] = context["study"].consented_responses.count()
         return context
 
     def build_all_participant_csv(self, responses):
         """
-		Builds CSV file contents for all participant data
-		"""
+        Builds CSV file contents for all participant data
+        """
 
         output, writer = self.csv_output_and_writer()
         writer.writerow(self.get_csv_participant_headers())
@@ -1219,8 +1219,8 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
 
 class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
     """
-	Hitting this URL downloads all participant demographics in JSON format.
-	"""
+    Hitting this URL downloads all participant demographics in JSON format.
+    """
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
@@ -1236,8 +1236,8 @@ class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
 
 class StudyDemographicsDownloadCSV(StudyDemographics):
     """
-	Hitting this URL downloads all participant demographics in CSV format.
-	"""
+    Hitting this URL downloads all participant demographics in CSV format.
+    """
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
@@ -1253,16 +1253,16 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
 
 class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
     """
-	StudyAttachments View shows video attachments for the study
-	"""
+    StudyAttachments View shows video attachments for the study
+    """
 
     template_name = "studies/study_attachments.html"
 
     def get_context_data(self, **kwargs):
         """
-		In addition to the study, adds several items to the context dictionary.	 Study results
-		are paginated.
-		"""
+        In addition to the study, adds several items to the context dictionary.	 Study results
+        are paginated.
+        """
         context = super().get_context_data(**kwargs)
         orderby = self.request.GET.get("sort", "full_name")
         match = self.request.GET.get("match", "")
@@ -1277,8 +1277,8 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
 
     def post(self, request, *args, **kwargs):
         """
-		Downloads study video
-		"""
+        Downloads study video
+        """
         attachment_url = self.request.POST.get("attachment")
         match = self.request.GET.get("match", "")
         orderby = self.request.GET.get("sort", "id") or "id"
@@ -1320,9 +1320,9 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
 
 class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
     """
-	Checks to make sure an existing build isn't running, that the user has permissions
-	to preview, and then triggers a preview build.
-	"""
+    Checks to make sure an existing build isn't running, that the user has permissions
+    to preview, and then triggers a preview build.
+    """
 
     http_method_names = ["post"]
     model = Study
@@ -1352,10 +1352,10 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
 
     def get_object(self, queryset=None):
         """
-		Returns the object the view is displaying.
-		By default this requires `self.queryset` and a `pk` or `slug` argument
-		in the URLconf, but subclasses can override this to return any object.
-		"""
+        Returns the object the view is displaying.
+        By default this requires `self.queryset` and a `pk` or `slug` argument
+        in the URLconf, but subclasses can override this to return any object.
+        """
         # Use a custom queryset if provided; this is required for subclasses
         # like DateDetailView
         if queryset is None:
@@ -1478,8 +1478,8 @@ class StudyParticipantAnalyticsView(
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
     """
-	Proxy view to forward researcher to preview page in the Ember app
-	"""
+    Proxy view to forward researcher to preview page in the Ember app
+    """
 
     upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
 
@@ -1492,8 +1492,8 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
 def get_flattened_responses(response_qs, studies_for_child):
     """Get derived attributes for children.
 
-	TODO: consider whether or not this work should be extracted out into a dataframe.
-	"""
+    TODO: consider whether or not this work should be extracted out into a dataframe.
+    """
     response_data = []
     for resp in response_qs:
         child_age_in_days = (datetime.date.today() - resp["child__birthday"]).days
@@ -1593,9 +1593,9 @@ def unstack_children(children_queryset, studies_for_child_map):
 # UTILITY FUNCTIONS
 def get_permitted_triggers(view_instance, triggers):
     """Takes in the available triggers (next possible states) for a study and restricts that list
-	based on the current user's permissions.
-	The view_instance is the StudyDetailView or the StudyUpdateView.
-	"""
+    based on the current user's permissions.
+    The view_instance is the StudyDetailView or the StudyUpdateView.
+    """
     permitted_triggers = []
     user = view_instance.request.user
     study = view_instance.object
@@ -1624,12 +1624,12 @@ def get_permitted_triggers(view_instance, triggers):
 def update_trigger(view_instance):
     """Transition to next state in study workflow.
 
-	TODO: Comments text is a bit silly to have here - let's move it to the proper Edit
-	View to be in the appropriate functional location once we do a refactor.
+    TODO: Comments text is a bit silly to have here - let's move it to the proper Edit
+    View to be in the appropriate functional location once we do a refactor.
 
-	:param view_instance: An instance of the django view.
-	:type view_instance: StudyDetailView or StudyUpdateView
-	"""
+    :param view_instance: An instance of the django view.
+    :type view_instance: StudyDetailView or StudyUpdateView
+    """
     trigger = view_instance.request.POST.get("trigger")
     object = view_instance.get_object()
     if trigger:
