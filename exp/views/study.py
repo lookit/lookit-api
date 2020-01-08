@@ -1,6 +1,9 @@
+import csv
 import datetime
+import io
 import json
 import operator
+import zipfile
 from collections import Counter, defaultdict
 from functools import reduce
 from typing import NamedTuple
@@ -62,7 +65,6 @@ STUDY_LISTING_A_TAG = (
     f'<a href="{settings.BASE_URL}/studies/">the study listing page</a>'
 )
 
-
 DISCOVERABILITY_HELP_TEXT = {
     (
         True,
@@ -85,7 +87,6 @@ DISCOVERABILITY_HELP_TEXT = {
     ): "Private. Your study is not currently active, and is not public. When it is active, participants will be able to access it at your study link, "
     f"but it will not be listed in {STUDY_LISTING_A_TAG}. ",
 }
-
 
 LANGUAGES_MAP = {code: lang for code, lang in LANGUAGES}
 CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDITIONS}
@@ -444,8 +445,10 @@ class StudyDetailView(
         return context
 
     def get_study_researchers(self):
-        """  Pulls researchers that belong to Study Admin and Study Read groups - Not showing Org Admin and Org Read in this list (even though they technically
-        can view the project.) """
+        """Pulls researchers that belong to Study Admin and Study Read groups.
+
+        Not showing Org Admin and Org Read in this list (even though they technically can view the project)
+        """
         study = self.object
         return (
             User.objects.filter(
@@ -457,7 +460,9 @@ class StudyDetailView(
         )
 
     def search_researchers(self):
-        """ Searches user first, last, and middle names for search query. Does not display researchers that are already on project """
+        """Searches user first, last, and middle names for search query.
+        Does not display researchers that are already on project.
+        """
         search_query = self.request.GET.get("match", None)
         researchers_result = None
         if search_query:
@@ -493,9 +498,7 @@ class StudyDetailView(
         return len(admins) - (researcher in admins) > 0
 
     def build_researchers_paginator(self, researchers_result):
-        """
-        Builds paginated search results for researchers
-        """
+        """Builds paginated search results for researchers."""
         page = self.request.GET.get("page")
         return self.paginated_queryset(researchers_result, page, 5)
 
@@ -819,7 +822,7 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
 
     def get_context_data(self, **kwargs):
         """
-        In addition to the study, adds several items to the context dictionary.  Study results
+        In addition to the study, adds several items to the context dictionary.	 Study results
         are paginated.
         """
         context = super().get_context_data(**kwargs)
@@ -843,6 +846,9 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         )
         context["response_data"] = self.build_responses(paginated_responses)
         context["csv_data"] = self.build_individual_csv(paginated_responses)
+        context["frame_data"] = [
+            self.build_framedata_csv([resp]) for resp in paginated_responses
+        ]
         return context
 
     def build_individual_csv(self, responses):
@@ -850,10 +856,14 @@ class StudyResponsesList(StudyResponsesMixin, generic.DetailView, PaginatorMixin
         Builds CSV for individual responses and puts them in array
         """
         csv_responses = []
+        standard_headers = self.get_csv_headers_and_row_data()["headers"]
         for resp in responses:
-            output, writer = self.csv_output_and_writer()
-            writer.writerow(self.get_csv_headers())
-            writer.writerow(self.csv_row_data(resp))
+            row_data = self.get_csv_headers_and_row_data(resp)["dict"]
+            headerList = standard_headers + sorted(
+                list(set(row_data.keys()) - set(standard_headers))
+            )
+            output, writer = self.csv_dict_output_and_writer(headerList)
+            writer.writerow(row_data)
             csv_responses.append(output.getvalue())
         return csv_responses
 
@@ -950,7 +960,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
             if response["current_ruling"] == ACCEPTED:
                 response_json["details"]["exp_data"] = exp_data
 
-        # TODO: Upgrade to Django 2.x and use json_script.
+                # TODO: Upgrade to Django 2.x and use json_script.
         context["response_key_value_store"] = json.dumps(response_key_value_store)
 
         return context
@@ -975,7 +985,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                 )
                 response.save()
 
-        # if there are any comments left over, these will count as new rulings that are the same as the last.
+                # if there are any comments left over, these will count as new rulings that are the same as the last.
         if comments:
             for resp_uuid, comment in comments.items():
                 response = responses.get(uuid=resp_uuid)
@@ -1013,21 +1023,51 @@ class StudyResponsesAll(StudyResponsesMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         """
-        In addition to the study, adds several items to the context dictionary.  Study results
+        In addition to the study, adds several items to the context dictionary.	 Study results
         are paginated.
         """
         context = super().get_context_data(**kwargs)
         context["n_responses"] = context["study"].consented_responses.count()
         return context
 
-    def build_all_csv(self, responses):
+    def build_summary_csv(self, responses):
         """
-        Builds CSV file contents for all responses
+        Builds CSV file contents for overview of all responses
         """
-        output, writer = self.csv_output_and_writer()
-        writer.writerow(self.get_csv_headers())
+
+        headers = set()
+        session_list = []
+
         for resp in responses:
-            writer.writerow(self.csv_row_data(resp))
+            row_data = self.get_csv_headers_and_row_data(resp)["dict"]
+            # Add any new headers from this session
+            headers = headers | set(row_data.keys())
+            session_list.append(row_data)
+
+        standard_headers = self.get_csv_headers_and_row_data()["headers"]
+        headerList = standard_headers + sorted(list(headers - set(standard_headers)))
+        output, writer = self.csv_dict_output_and_writer(headerList)
+        writer.writerows(session_list)
+        return output.getvalue()
+
+    def build_summary_dict_csv(self, responses):
+        """
+        Builds CSV file contents for data dictionary corresponding to the overview CSV
+        """
+
+        csv_headers_dict = self.get_csv_headers_and_row_data()
+
+        descriptions = csv_headers_dict["descriptions"]
+        standard_headers = csv_headers_dict["headers"]
+        headerList = standard_headers + sorted(
+            list(descriptions.keys() - set(standard_headers))
+        )
+        all_descriptions = [
+            {"column": header, "description": descriptions[header]}
+            for header in headerList
+        ]
+        output, writer = self.csv_dict_output_and_writer(["column", "description"])
+        writer.writerows(all_descriptions)
         return output.getvalue()
 
 
@@ -1042,22 +1082,106 @@ class StudyResponsesAllDownloadJSON(StudyResponsesMixin, generic.DetailView):
         cleaned_data = json.dumps(
             self.build_responses(responses), indent=4, default=str
         )
-        filename = "{}-{}.json".format(study.name, "all_responses")
+        filename = "{}_{}.json".format(
+            self.study_name_for_files(study.name), "all-responses"
+        )
         response = HttpResponse(cleaned_data, content_type="text/json")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
 
 
-class StudyResponsesAllDownloadCSV(StudyResponsesAll):
+class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
     """
-    Hitting this URL downloads all study responses in CSV format.
+    Hitting this URL downloads a summary of all study responses in CSV format.
     """
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
-        cleaned_data = self.build_all_csv(responses)
-        filename = "{}-{}.csv".format(study.name, "all_responses")
+        cleaned_data = self.build_summary_csv(responses)
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-responses"
+        )
+        response = HttpResponse(cleaned_data, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+
+
+class StudyResponsesSummaryDictCSV(StudyResponsesAll):
+    """
+    Hitting this URL downloads a data dictionary for the study response summary in CSV format.
+    """
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.consented_responses.order_by("id")
+        cleaned_data = self.build_summary_dict_csv(responses)
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-responses-dict"
+        )
+        response = HttpResponse(cleaned_data, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+
+
+class StudyResponsesFrameDataCSV(StudyResponsesMixin, generic.DetailView):
+    """
+    Hitting this URL downloads frame-level data from all study responses in CSV format
+    """
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.consented_responses.order_by("id")
+        cleaned_data = self.build_framedata_csv(responses)
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-frames"
+        )
+        response = HttpResponse(cleaned_data, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+
+
+class StudyResponsesFrameDataIndividualCSV(StudyResponsesMixin, generic.DetailView):
+    """Hitting this URL downloads a ZIP file with frame data from one response per file in CSV format"""
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.consented_responses.order_by("id")
+
+        zipped_file = io.BytesIO()  # import io
+        with zipfile.ZipFile(
+            zipped_file, "w", zipfile.ZIP_DEFLATED
+        ) as zipped:  # import zipfile
+
+            for resp in responses:
+                data = self.build_framedata_csv([resp])
+                filename = "{}_{}_{}.csv".format(
+                    self.study_name_for_files(study.name), resp.uuid, "frames"
+                )
+                zipped.writestr(filename, data)
+
+        zipped_file.seek(0)
+        response = HttpResponse(zipped_file, content_type="application/octet-stream")
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="{}_framedata_per_session.zip"'.format(
+            self.study_name_for_files(study.name)
+        )
+        return response
+
+
+class StudyResponsesFrameDataDictCSV(StudyResponsesMixin, generic.DetailView):
+    """
+    Hitting this URL downloads a template data dictionary for frame-level data in CSV format
+    """
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.consented_responses.order_by("id")
+        cleaned_data = self.build_framedata_dict_csv(responses)
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-frames-dict"
+        )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1074,7 +1198,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         """
-        In addition to the study, adds several items to the context dictionary.  Study results
+        In addition to the study, adds several items to the context dictionary.	 Study results
         are paginated.
         """
         context = super().get_context_data(**kwargs)
@@ -1085,6 +1209,7 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
         """
         Builds CSV file contents for all participant data
         """
+
         output, writer = self.csv_output_and_writer()
         writer.writerow(self.get_csv_participant_headers())
         for resp in responses:
@@ -1101,7 +1226,9 @@ class StudyDemographicsDownloadJSON(StudyResponsesMixin, generic.DetailView):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
         cleaned_data = ", ".join(self.build_participant_data(responses))
-        filename = "{}-{}.json".format(study.name, "all_demographic_snapshots")
+        filename = "{}_{}.json".format(
+            self.study_name_for_files(study.name), "all-demographic-snapshots"
+        )
         response = HttpResponse(cleaned_data, content_type="text/json")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1116,7 +1243,9 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
         study = self.get_object()
         responses = study.consented_responses.order_by("id")
         cleaned_data = self.build_all_participant_csv(responses)
-        filename = "{}-{}.csv".format(study.name, "all_demographic_snapshots")
+        filename = "{}_{}.csv".format(
+            self.study_name_for_files(study.name), "all-demographic-snapshots"
+        )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1131,7 +1260,7 @@ class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):
 
     def get_context_data(self, **kwargs):
         """
-        In addition to the study, adds several items to the context dictionary.  Study results
+        In addition to the study, adds several items to the context dictionary.	 Study results
         are paginated.
         """
         context = super().get_context_data(**kwargs)
@@ -1273,7 +1402,7 @@ class StudyParticipantAnalyticsView(
                 self.request.user, "studies.can_view_study"
             )
 
-        # Responses for studies
+            # Responses for studies
         annotated_responses = (
             get_annotated_responses_qs()
             .filter(study__in=studies_for_user)
@@ -1312,7 +1441,7 @@ class StudyParticipantAnalyticsView(
         for resp in annotated_responses:
             studies_for_child[resp["child_id"]].add(resp["study__name"])
 
-        # Include _all_ non-researcher users on Lookit
+            # Include _all_ non-researcher users on Lookit
         registrations = User.objects.filter(is_researcher=False).values_list(
             "date_created", flat=True
         )
@@ -1478,8 +1607,8 @@ def get_permitted_triggers(view_instance, triggers):
         if trigger.startswith("to_"):
             continue
 
-        # Trigger valid if 1) superuser 2) trigger is admin trigger and user is org admin
-        # 3) trigger is found in user's study permissions
+            # Trigger valid if 1) superuser 2) trigger is admin trigger and user is org admin
+            # 3) trigger is found in user's study permissions
         if not user.is_superuser:
             if trigger in admin_triggers:
                 if not (user.organization == study.organization and user.is_org_admin):
