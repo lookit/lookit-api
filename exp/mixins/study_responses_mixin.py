@@ -203,7 +203,10 @@ class StudyResponsesMixin(
                         if "globalparent" in optional_headers
                         else "",
                         "hashed_id": hash_id(
-                            resp.child.user.uuid, resp.study.uuid, resp.study.salt
+                            resp.child.user.uuid,
+                            resp.study.uuid,
+                            resp.study.salt,
+                            resp.study.hash_digits,
                         ),
                         "nickname": resp.child.user.nickname
                         if "parent" in optional_headers
@@ -214,7 +217,10 @@ class StudyResponsesMixin(
                         if "globalchild" in optional_headers
                         else "",
                         "hashed_id": hash_id(
-                            resp.child.uuid, resp.study.uuid, resp.study.salt
+                            resp.child.uuid,
+                            resp.study.uuid,
+                            resp.study.salt,
+                            resp.study.hash_digits,
                         ),
                         "name": resp.child.given_name
                         if "name" in optional_headers
@@ -309,7 +315,12 @@ class StudyResponsesMixin(
             ),
             (
                 "participant_hashed_id",
-                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
+                hash_id(
+                    resp.child.user.uuid,
+                    resp.study.uuid,
+                    resp.study.salt,
+                    resp.study.hash_digits,
+                )
                 if resp
                 else "",
                 "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
@@ -326,7 +337,12 @@ class StudyResponsesMixin(
             ),
             (
                 "child_hashed_id",
-                hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt)
+                hash_id(
+                    resp.child.uuid,
+                    resp.study.uuid,
+                    resp.study.salt,
+                    resp.study.hash_digits,
+                )
                 if resp
                 else "",
                 "Identifier for child associated with this response. Will be the same for multiple responses from a child, but is unique to this study. This may be published directly.",
@@ -410,7 +426,9 @@ class StudyResponsesMixin(
     def get_frame_data(self, resp):
 
         frame_data_dicts = []
-        child_hashed_id = hash_id(resp.child.uuid, resp.study.uuid, resp.study.salt)
+        child_hashed_id = hash_id(
+            resp.child.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
+        )
 
         # First add all of the global event timings as events with frame_id "global"
         for (iEvent, event) in enumerate(resp.global_event_timings):

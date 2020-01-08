@@ -96,6 +96,7 @@ class Study(models.Model):
     MONTH_CHOICES = [(i, i) for i in range(0, 12)]
     YEAR_CHOICES = [(i, i) for i in range(0, 19)]
     salt = models.UUIDField(default=uuid.uuid4, unique=True)
+    hash_digits = models.IntegerField(default=6)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)

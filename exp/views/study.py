@@ -999,6 +999,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                         response["child__user__uuid"],
                         response["study__uuid"],
                         response["study__salt"],
+                        study.hash_digits,
                     ),
                     "uuid": str(response.pop("child__user__uuid")),
                     "nickname": response.pop("child__user__nickname"),
@@ -1008,6 +1009,7 @@ class StudyResponsesConsentManager(StudyResponsesMixin, generic.DetailView):
                         response["child__uuid"],
                         response["study__uuid"],
                         response["study__salt"],
+                        study.hash_digits,
                     ),
                     "uuid": str(response.pop("child__uuid")),
                     "name": response.pop("child__given_name"),
@@ -1376,12 +1378,12 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
                             if "globalparent" in optional_headers
                             else "",
                             "hashed_id": hash_id(
-                                resp.child.user.uuid, resp.study.uuid, resp.study.salt
+                                resp.child.user.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
                             ),
                         },
                         "demographic_snapshot": {
                             "hashed_id": hash_id(
-                                latest_dem.uuid, resp.study.uuid, resp.study.salt
+                                latest_dem.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
                             ),
                             "date_created": str(latest_dem.created_at),
                             "number_of_children": latest_dem.number_of_children,
@@ -1432,14 +1434,14 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
             ),
             (
                 "participant_hashed_id",
-                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt)
+                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits)
                 if resp
                 else "",
                 "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
                 "demographic_hashed_id",
-                hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt)
+                hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits)
                 if resp
                 else "",
                 "Identifier for this demographic snapshot. Changes upon updates to the demographic form, so may vary within the same participant across responses.",
