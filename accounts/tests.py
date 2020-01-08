@@ -26,6 +26,10 @@ class CriteriaExpressionTestCase(TestCase):
             "gestational_age_in_weeks <= 28 AND gestational_age_in_weeks > 24"
         )
 
+        self.unspecified_gestational_age_range_condition = (
+            "gestational_age_in_weeks = na"
+        )
+
         self.gender_specific_condition = "gender = male OR gender = OTHER"
 
         self.number_of_languages_condition = "num_languages < 6 AND n_languages > 1"
@@ -72,6 +76,12 @@ class CriteriaExpressionTestCase(TestCase):
         self.born_at_35_weeks = G(
             Child,
             gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.thirty_five_weeks,
+            birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
+        )
+
+        self.child_with_unspecified_gestational_age = G(
+            Child,
+            gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.no_answer,
             birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
         )
 
@@ -171,5 +181,20 @@ class CriteriaExpressionTestCase(TestCase):
         self.assertFalse(
             get_child_eligibility(
                 self.french_female_twin, self.number_of_languages_condition
+            )
+        )
+
+    def test_unspecified_gestational_age(self):
+        self.assertTrue(
+            get_child_eligibility(
+                self.child_with_unspecified_gestational_age,
+                self.unspecified_gestational_age_range_condition,
+            )
+        )
+
+        self.assertFalse(
+            get_child_eligibility(
+                self.child_with_unspecified_gestational_age,
+                self.gestational_age_range_condition,
             )
         )

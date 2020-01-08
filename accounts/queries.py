@@ -49,7 +49,7 @@ language_count_comparison: ("n_languages" | "num_languages") comparator INT
 
 comparator: EQ | NE | LT | LTE | GT | GTE
 
-gender_target: MALE | FEMALE | OTHER_GENDER | UNSPECIFIED_GENDER
+gender_target: MALE | FEMALE | OTHER_GENDER | UNSPECIFIED
 
 language_comparison: LANGUAGE_TARGET
 
@@ -60,7 +60,7 @@ condition_comparison: CONDITION_TARGET
 LANGUAGE_TARGET: {language_targets}
 CONDITION_TARGET: {condition_targets}
 
-GESTATIONAL_AGE_AS_WEEKS: /(2[4-9]|3[0-9]|40)/
+GESTATIONAL_AGE_AS_WEEKS: /(2[4-9]|3[0-9]|40)/i | UNSPECIFIED
 
 EQ: "="
 NE: "!="
@@ -76,7 +76,7 @@ NULL: "null"i
 MALE: "male"i | "m"i
 FEMALE: "female"i | "f"i
 OTHER_GENDER: "other"i | "o"i
-UNSPECIFIED_GENDER: "na"i
+UNSPECIFIED: "na"i | "n/a"i
 
 %import common.INT
 %import common.WS
@@ -213,7 +213,16 @@ class FunctionTransformer(Transformer):
         return f"child_obj.get('gender') {'==' if comparator == '=' else comparator} {target_gender}"
 
     def gestational_age_comparison(self, comparator, num_weeks):
-        return f"child_obj.get('gestational_age_in_weeks') {comparator} {num_weeks}"
+        """False if no_answer is provided."""
+        if num_weeks.lower() in ("na", "n/a"):
+            # TODO: enhance validation layer so that a non-equals comparator will provide a sensible
+            #     error message.
+            return f"child_obj.get('gestational_age_in_weeks') {comparator} None"
+        else:
+            return (
+                f"child_obj.get('gestational_age_in_weeks') {comparator} {num_weeks} "
+                "if child_obj.get('gestational_age_in_weeks') else False"
+            )
 
     def age_in_days_comparison(self, comparator, num_days):
         return f"child_obj.get('age_in_days') {comparator} {num_days}"
