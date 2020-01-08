@@ -95,6 +95,8 @@ class Study(models.Model):
     DAY_CHOICES = [(i, i) for i in range(0, 32)]
     MONTH_CHOICES = [(i, i) for i in range(0, 12)]
     YEAR_CHOICES = [(i, i) for i in range(0, 19)]
+    salt = models.UUIDField(default=uuid.uuid4, unique=True)
+    hash_digits = models.IntegerField(default=6)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -301,6 +303,7 @@ class Study(models.Model):
         """ Create a new, unsaved copy of the study. """
         copy = self.__class__.objects.get(pk=self.pk)
         copy.id = None
+        copy.salt = uuid.uuid4()
         copy.public = False
         copy.state = "created"
         copy.name = "Copy of " + copy.name

@@ -1,3 +1,6 @@
+import base64
+import hashlib
+
 from django.utils.text import slugify
 
 
@@ -15,3 +18,10 @@ def build_study_group_name(org_name, study_name, study_pk, group):
     Study portion of group name is truncated to 20 characters
     """
     return f"{slugify({org_name})}_{slugify({study_name[:20]})}_{study_pk}_STUDY_{group}".upper()
+
+
+def hash_id(id1, id2, salt, length=6):
+    concat = bytes([a ^ b ^ c for (a, b, c) in zip(id1.bytes, id2.bytes, salt.bytes)])
+    hashed = base64.b32encode(hashlib.sha256(concat).digest()).decode("utf-8")
+    hashed = hashed.translate("".maketrans("10IO", "abcd"))
+    return hashed[:length]

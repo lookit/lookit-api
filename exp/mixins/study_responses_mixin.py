@@ -2,6 +2,7 @@ import csv
 import datetime
 import io
 import json
+import string
 
 from django.db.models import Prefetch, QuerySet
 from django.http import HttpResponseRedirect
@@ -12,6 +13,7 @@ from guardian.shortcuts import get_objects_for_user
 
 import attachment_helpers
 from accounts.models import Child, User
+from accounts.utils import hash_id
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 from studies.models import Response, Study
 
@@ -56,6 +58,13 @@ def merge_dicts(d1, d2):
     return d1_copy
 
 
+def round_age(age_in_days):
+    if age_in_days <= 360:
+        return round(age_in_days / 10) * 10
+    else:
+        return round(age_in_days / 30) * 30
+
+
 class StudyResponsesMixin(
     SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin
 ):
@@ -69,162 +78,74 @@ class StudyResponsesMixin(
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
-    def convert_to_string(self, object):
-        if isinstance(object, datetime.date):
-            return object.__str__()
-        return object
+    age_data_options = [
+        {
+            "id": "rounded",
+            "name": "Rounded age",
+            "column": "child_age_rounded",
+            "default": True,
+        },
+        {"id": "exact", "name": "Age in days", "column": "child_age_in_days"},
+        {"id": "birthday", "name": "Birthdate", "column": "child_birthday"},
+    ]
+    child_data_options = [
+        {"id": "name", "name": "Child name", "column": "child_name"},
+        {
+            "id": "globalchild",
+            "name": "Child global ID",
+            "column": "child_global_id",
+            "default": False,
+        },
+        {
+            "id": "gender",
+            "name": "Child gender",
+            "column": "child_gender",
+            "default": True,
+        },
+        {
+            "id": "gestage",
+            "name": "Child gestational age",
+            "column": "child_age_at_birth",
+        },
+        {
+            "id": "conditions",
+            "name": "Child conditions",
+            "column": "child_characteristics",
+            "default": True,
+        },
+        {
+            "id": "languages",
+            "name": "Child languages",
+            "column": "child_languages",
+            "default": True,
+        },
+        {
+            "id": "addl",
+            "name": "Child additional info",
+            "column": "child_additional_information",
+        },
+        {"id": "parent", "name": "Parent name", "column": "participant_nickname"},
+        {
+            "id": "globalparent",
+            "name": "Parent global ID",
+            "column": "participant_global_id",
+            "default": False,
+        },
+    ]
 
-    def build_participant_data(self, responses):
-        json_responses = []
-        for resp in responses:
-            latest_dem = resp.demographic_snapshot
-            json_responses.append(
-                json.dumps(
-                    {
-                        "response": {"id": resp.id, "uuid": str(resp.uuid)},
-                        "participant": {
-                            "id": resp.child.user_id,
-                            "uuid": str(resp.child.user.uuid),
-                            "nickname": resp.child.user.nickname,
-                        },
-                        "demographic_snapshot": {
-                            "demographic_id": latest_dem.id,
-                            "uuid": str(latest_dem.uuid),
-                            "number_of_children": latest_dem.number_of_children,
-                            "child_birthdays": latest_dem.child_birthdays,
-                            "languages_spoken_at_home": latest_dem.languages_spoken_at_home,
-                            "number_of_guardians": latest_dem.number_of_guardians,
-                            "number_of_guardians_explanation": latest_dem.number_of_guardians_explanation,
-                            "race_identification": latest_dem.race_identification,
-                            "age": latest_dem.age,
-                            "gender": latest_dem.gender,
-                            "education_level": latest_dem.gender,
-                            "spouse_education_level": latest_dem.spouse_education_level,
-                            "annual_income": latest_dem.annual_income,
-                            "number_of_books": latest_dem.number_of_books,
-                            "additional_comments": latest_dem.additional_comments,
-                            "country": latest_dem.country.name,
-                            "state": latest_dem.state,
-                            "density": latest_dem.density,
-                            "lookit_referrer": latest_dem.lookit_referrer,
-                            "extra": latest_dem.extra,
-                        },
-                    },
-                    indent=4,
-                    default=self.convert_to_string,
-                )
-            )
-        return json_responses
+    identifiable_data_options = [
+        "exact",
+        "birthday",
+        "name",
+        "addl",
+        "parent",
+        "globalchild",
+        "globalparent",
+    ]
 
-    def build_csv_participant_row_data(self, resp):
-        """
-		Returns row of csv participant data
-		"""
-        latest_dem = resp.demographic_snapshot
-
-        return [
-            resp.id,
-            str(resp.uuid),
-            resp.child.user_id,
-            str(resp.child.user.uuid),
-            resp.child.user.nickname,
-            latest_dem.id,
-            str(latest_dem.uuid),
-            latest_dem.number_of_children,
-            [
-                self.convert_to_string(birthday)
-                for birthday in latest_dem.child_birthdays
-            ],
-            latest_dem.languages_spoken_at_home,
-            latest_dem.number_of_guardians,
-            latest_dem.number_of_guardians_explanation,
-            latest_dem.race_identification,
-            latest_dem.age,
-            latest_dem.gender,
-            latest_dem.education_level,
-            latest_dem.spouse_education_level,
-            latest_dem.annual_income,
-            latest_dem.number_of_books,
-            latest_dem.additional_comments,
-            latest_dem.country.name,
-            latest_dem.state,
-            latest_dem.density,
-            latest_dem.lookit_referrer,
-            latest_dem.extra,
-        ]
-
-    def get_csv_participant_headers(self):
-        """
-		Returns header row for csv participant data
-		"""
-        return [
-            "response_id",
-            "response_uuid",
-            "participant_id",
-            "participant_uuid",
-            "participant_nickname",
-            "demographic_id",
-            "latest_dem_uuid",
-            "demographic_number_of_children",
-            "demographic_child_birthdays",
-            "demographic_languages_spoken_at_home",
-            "demographic_number_of_guardians",
-            "demographic_number_of_guardians_explanation",
-            "demographic_race_identification",
-            "demographic_age",
-            "demographic_gender",
-            "demographic_education_level",
-            "demographic_spouse_education_level",
-            "demographic_annual_income",
-            "demographic_number_of_books",
-            "demographic_additional_comments",
-            "demographic_country",
-            "demographic_state",
-            "demographic_density",
-            "demographic_lookit_referrer",
-            "demographic_extra",
-        ]
-
-    def build_responses(self, responses):
-        """
-		Builds the JSON response data for the researcher to download
-		"""
-        json_responses = []
-        for resp in responses:
-            json_responses.append(
-                {
-                    "response": {
-                        "id": resp.id,
-                        "uuid": str(resp.uuid),
-                        "sequence": resp.sequence,
-                        "conditions": resp.conditions,
-                        "exp_data": resp.exp_data,
-                        "global_event_timings": resp.global_event_timings,
-                        "completed": resp.completed,
-                        "date_created": str(resp.date_created),
-                        "withdrawn": resp.withdrawn,
-                    },
-                    "study": {"id": resp.study.id, "uuid": str(resp.study.uuid)},
-                    "participant": {
-                        "id": resp.child.user_id,
-                        "uuid": str(resp.child.user.uuid),
-                        "nickname": resp.child.user.nickname,
-                    },
-                    "child": {
-                        "id": resp.child.id,
-                        "uuid": str(resp.child.uuid),
-                        "name": resp.child.given_name,
-                        "birthday": resp.child.birthday,
-                        "gender": resp.child.gender,
-                        "language_list": resp.child.language_list,
-                        "condition_list": resp.child.condition_list,
-                        "age_at_birth": resp.child.age_at_birth,
-                        "additional_information": resp.child.additional_information,
-                    },
-                    "consent_information": resp.current_consent_details,
-                }
-            )
-        return json_responses
+    all_optional_header_keys = [
+        option["id"] for option in age_data_options + child_data_options
+    ]
 
     def csv_output_and_writer(self):
         output = io.StringIO()
@@ -245,17 +166,110 @@ class StudyResponsesMixin(
     def study_name_for_files(self, studyname):
         return "".join([c if c.isalnum() else "-" for c in studyname])
 
-    def get_csv_headers_and_row_data(self, resp={}):
+    def convert_to_string(self, object):
+        if isinstance(object, datetime.date):
+            return object.__str__()
+        return object
+
+    def round_ages_from_birthdays(self, child_birthdays, date_created):
+        return [
+            round_age((date_created.date() - birthdate).days)
+            for birthdate in child_birthdays
+        ]
+
+    def build_responses_json(self, responses, optional_headers=[]):
+        """
+		Builds the JSON response data for the researcher to download
+		"""
+        json_responses = []
+        for resp in responses:
+            age_in_days = (resp.date_created.date() - resp.child.birthday).days
+            json_responses.append(
+                {
+                    "response": {
+                        "id": resp.id,
+                        "uuid": str(resp.uuid),
+                        "sequence": resp.sequence,
+                        "conditions": resp.conditions,
+                        "exp_data": resp.exp_data,
+                        "global_event_timings": resp.global_event_timings,
+                        "completed": resp.completed,
+                        "date_created": resp.date_created,
+                        "withdrawn": resp.withdrawn,
+                    },
+                    "study": {"uuid": str(resp.study.uuid)},
+                    "participant": {
+                        "global_id": str(resp.child.user.uuid)
+                        if "globalparent" in optional_headers
+                        else "",
+                        "hashed_id": hash_id(
+                            resp.child.user.uuid,
+                            resp.study.uuid,
+                            resp.study.salt,
+                            resp.study.hash_digits,
+                        ),
+                        "nickname": resp.child.user.nickname
+                        if "parent" in optional_headers
+                        else "",
+                    },
+                    "child": {
+                        "global_id": str(resp.child.uuid)
+                        if "globalchild" in optional_headers
+                        else "",
+                        "hashed_id": hash_id(
+                            resp.child.uuid,
+                            resp.study.uuid,
+                            resp.study.salt,
+                            resp.study.hash_digits,
+                        ),
+                        "name": resp.child.given_name
+                        if "name" in optional_headers
+                        else "",
+                        "birthday": resp.child.birthday
+                        if "birthday" in optional_headers
+                        else "",
+                        "age_in_days": age_in_days
+                        if "exact" in optional_headers
+                        else "",
+                        "age_rounded": str(round_age(int(age_in_days)))
+                        if "rounded" in optional_headers
+                        else "",
+                        "gender": resp.child.gender
+                        if "gender" in optional_headers
+                        else "",
+                        "language_list": resp.child.language_list
+                        if "languages" in optional_headers
+                        else "",
+                        "condition_list": resp.child.condition_list
+                        if "conditions" in optional_headers
+                        else "",
+                        "age_at_birth": resp.child.age_at_birth
+                        if "gestage" in optional_headers
+                        else "",
+                        "additional_information": resp.child.additional_information
+                        if "addl" in optional_headers
+                        else "",
+                    },
+                    "consent": resp.current_consent_details,
+                }
+            )
+        return json_responses
+
+    def get_response_headers_and_row_data(self, resp={}):
+
+        age_in_days = (
+            (resp.date_created.date() - resp.child.birthday).days if resp else ""
+        )
 
         all_row_data = [
             ("response_id", resp.id if resp else "", "Short ID for this response"),
             (
                 "response_uuid",
                 str(resp.uuid) if resp else "",
-                "Primary unique identifier for response, can be used to match to video filenames",
+                "Unique identifier for response. Can be used to match data to video filenames.",
             ),
             (
-                "response_date",
+                "response_date_created",
                 str(resp.date_created) if resp else "",
                 "Timestamp for when participant began session, in format e.g. 2019-11-07 17:13:38.702958+00:00",
             ),
@@ -290,49 +304,68 @@ class StudyResponsesMixin(
                 "Comment associated with most recent consent ruling (may be used to track e.g. any cases where consent was confirmed by email)",
             ),
             (
-                "study_id",
-                resp.study.id if resp else "",
-                "Short ID of study associated with this response. Same for all responses to a given Lookit study.",
-            ),
-            (
                 "study_uuid",
                 str(resp.study.uuid) if resp else "",
-                "Primary unique identifier of study associated with this response. Same for all responses to a given Lookit study.",
+                "Unique identifier of study associated with this response. Same for all responses to a given Lookit study.",
             ),
             (
-                "participant_id",
-                resp.child.user_id if resp else "",
-                "Short ID for the family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
-            ),
-            (
-                "participant_uuid",
+                "participant_global_id",
                 str(resp.child.user.uuid) if resp else "",
-                "Primary unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings.",
+                "Unique identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, and across different studies. MUST BE REDACTED FOR PUBLICATION because this allows identification of families across different published studies, which may have unintended privacy consequences. Researchers can use this ID to match participants across studies (subject to their own IRB review), but would need to generate their own random participant IDs for publication in that case. Use participant_hashed_id as a publication-safe alternative if only analyzing data from one Lookit study.",
+            ),
+            (
+                "participant_hashed_id",
+                hash_id(
+                    resp.child.user.uuid,
+                    resp.study.uuid,
+                    resp.study.salt,
+                    resp.study.hash_digits,
+                )
+                if resp
+                else "",
+                "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
                 "participant_nickname",
                 resp.child.user.nickname if resp else "",
-                "Nickname associated with the family account for this response - generally the mom or dad's name",
+                "Nickname associated with the family account for this response - generally the mom or dad's name. Must be redacted for publication.",
             ),
             (
-                "child_id",
-                resp.child.id if resp else "",
-                "Short ID for the child associated with this response. Will be the same for multiple responses from one child.",
-            ),
-            (
-                "child_uuid",
+                "child_global_id",
                 str(resp.child.uuid) if resp else "",
-                "Primary unique identifier for the child associated with this response. Will be the same for multiple responses from one child.",
+                "Primary unique identifier for the child associated with this response. Will be the same for multiple responses from one child, even across different Lookit studies. MUST BE REDACTED FOR PUBLICATION because this allows identification of children across different published studies, which may have unintended privacy consequences. Researchers can use this ID to match participants across studies (subject to their own IRB review), but would need to generate their own random participant IDs for publication in that case. Use child_hashed_id as a publication-safe alternative if only analyzing data from one Lookit study.",
+            ),
+            (
+                "child_hashed_id",
+                hash_id(
+                    resp.child.uuid,
+                    resp.study.uuid,
+                    resp.study.salt,
+                    resp.study.hash_digits,
+                )
+                if resp
+                else "",
+                "Identifier for child associated with this response. Will be the same for multiple responses from a child, but is unique to this study. This may be published directly.",
             ),
             (
                 "child_name",
                 resp.child.given_name if resp else "",
-                "Nickname for the child associated with this response. Not necessarily a real name (we encourage initials, nicknames, etc. if parents aren't comfortable providing a name) but should be redacted for publication of data.",
+                "Nickname for the child associated with this response. Not necessarily a real name (we encourage initials, nicknames, etc. if parents aren't comfortable providing a name) but must be redacted for publication of data.",
             ),
             (
                 "child_birthday",
                 resp.child.birthday if resp else "",
-                "Birthdate of child associated with this response. Must be redacted for publication of data (switch to age at time of participation, and either round/jitter or redact timestamps of participation).",
+                "Birthdate of child associated with this response. Must be redacted for publication of data (switch to age at time of participation; either use rounded age, jitter the age, or redact timestamps of participation).",
+            ),
+            (
+                "child_age_in_days",
+                age_in_days,
+                "Age in days at time of response of child associated with this response, exact. This can be used in conjunction with timestamps to calculate the child's birthdate, so must be jittered or redacted prior to publication unless no timestamp information is shared.",
+            ),
+            (
+                "child_age_rounded",
+                str(round_age(int(age_in_days))) if age_in_days else "",
+                "Age in days at time of response of child associated with this response, rounded to the nearest 10 days if under 1 year old and to the nearest 30 days if over 1 year old. May be published; however, if you have more than a few sessions per participant it would be possible to infer the exact age in days (and therefore birthdate) with some effort. In this case you might consider directly jittering birthdates.",
             ),
             (
                 "child_gender",
@@ -345,19 +378,19 @@ class StudyResponsesMixin(
                 "Gestational age at birth in weeks. One of '40 or more weeks', '39 weeks' through '24 weeks', 'Under 24 weeks', or 'Not sure or prefer not to answer'",
             ),
             (
-                "child_languages",
+                "child_language_list",
                 resp.child.language_list if resp else "",
                 "List of languages spoken (using language codes in Lookit docs), separated by spaces",
             ),
             (
-                "child_characteristics",
+                "child_condition_list",
                 resp.child.condition_list if resp else "",
                 "List of child characteristics (using condition/characteristic codes in Lookit docs), separated by spaces",
             ),
             (
                 "child_additional_information",
                 resp.child.additional_information if resp else "",
-                "Free response 'anything else you'd like us to know' field on child registration form for child associated with this response",
+                "Free response 'anything else you'd like us to know' field on child registration form for child associated with this response. Should be redacted or reviewed prior to publication as it may include names or other identifying information.",
             ),
             (
                 "response_sequence",
@@ -393,12 +426,16 @@ class StudyResponsesMixin(
     def get_frame_data(self, resp):
 
         frame_data_dicts = []
+        child_hashed_id = hash_id(
+            resp.child.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
+        )
 
+        # First add all of the global event timings as events with frame_id "global"
         for (iEvent, event) in enumerate(resp.global_event_timings):
             for (key, value) in event.items():
                 frame_data_dicts.append(
                     {
-                        "child_uuid": str(resp.child.uuid),
+                        "child_hashed_id": child_hashed_id,
                         "response_uuid": str(resp.uuid),
                         "frame_id": "global",
                         "key": key,
@@ -407,15 +444,16 @@ class StudyResponsesMixin(
                     }
                 )
 
+        # Next add all data in exp_data
         event_prefix = "eventTimings."
-
         for (frame_id, frame_data) in resp.exp_data.items():
             for (key, value) in flatten_dict(frame_data).items():
-                if key.startswith("eventTimings."):
+                # Process event data separately and include event_number within frame
+                if key.startswith(event_prefix):
                     key_pieces = key.split(".")
                     frame_data_dicts.append(
                         {
-                            "child_uuid": str(resp.child.uuid),
+                            "child_hashed_id": child_hashed_id,
                             "response_uuid": str(resp.uuid),
                             "frame_id": frame_id,
                             "key": ".".join(key_pieces[2:]),
@@ -423,14 +461,17 @@ class StudyResponsesMixin(
                             "value": value,
                         }
                     )
+                # omit frameType values from CSV
                 elif key == "frameType":
                     continue
+                # Omit empty generatedProperties values from CSV
                 elif key == "generatedProperties" and not (value):
                     continue
+                # For all other data, create a regular entry with frame_id and no event #
                 else:
                     frame_data_dicts.append(
                         {
-                            "child_uuid": str(resp.child.uuid),
+                            "child_hashed_id": child_hashed_id,
                             "response_uuid": str(resp.uuid),
                             "frame_id": frame_id,
                             "key": key,
@@ -445,8 +486,8 @@ class StudyResponsesMixin(
                 "Unique identifier for this response; can be matched to summary data and video filenames",
             ),
             (
-                "child_uuid",
-                "Unique identifier for the child associated with this response; can be matched to summary data",
+                "child_hashed_id",
+                "Hashed identifier for the child associated with this response; can be matched to summary data child_hashed_id. This random ID may be published directly; it is specific to this study. If you need to match children across multiple studies, use the child_global_id.",
             ),
             (
                 "frame_id",
@@ -471,6 +512,48 @@ class StudyResponsesMixin(
             "data_headers": [header for (header, description) in headers],
             "header_descriptions": headers,
         }
+
+    def get_response_headers(
+        self, optional_headers_selected_ids, all_headers_available
+    ):
+        standard_headers = self.get_response_headers_and_row_data()["headers"]
+        optional_headers = [
+            option["column"]
+            for option in self.age_data_options + self.child_data_options
+        ]
+        selected_headers = [
+            option["column"]
+            for option in self.age_data_options + self.child_data_options
+            if option["id"] in optional_headers_selected_ids
+        ]
+        standard_headers_selected_only = [
+            header
+            for header in standard_headers
+            if header not in optional_headers or header in selected_headers
+        ]
+        ordered_headers = standard_headers_selected_only + sorted(
+            list(all_headers_available - set(standard_headers))
+        )
+        return ordered_headers
+
+    def build_summary_csv(self, responses, optional_headers_selected_ids):
+        """
+		Builds CSV file contents for overview of all responses
+		"""
+
+        headers = set()
+        session_list = []
+
+        for resp in responses:
+            row_data = self.get_response_headers_and_row_data(resp)["dict"]
+            # Add any new headers from this session
+            headers = headers | set(row_data.keys())
+            session_list.append(row_data)
+
+        headerList = self.get_response_headers(optional_headers_selected_ids, headers)
+        output, writer = self.csv_dict_output_and_writer(headerList)
+        writer.writerows(session_list)
+        return output.getvalue()
 
     def build_framedata_csv(self, responses):
         """
