@@ -16,11 +16,12 @@ from django.core.mail import BadHeaderError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Prefetch, Q
 from django.db.models.functions import Lower
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.views import generic
+
 from guardian.mixins import PermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
@@ -1378,12 +1379,18 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
                             if "globalparent" in optional_headers
                             else "",
                             "hashed_id": hash_id(
-                                resp.child.user.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
+                                resp.child.user.uuid,
+                                resp.study.uuid,
+                                resp.study.salt,
+                                resp.study.hash_digits,
                             ),
                         },
                         "demographic_snapshot": {
                             "hashed_id": hash_id(
-                                latest_dem.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
+                                latest_dem.uuid,
+                                resp.study.uuid,
+                                resp.study.salt,
+                                resp.study.hash_digits,
                             ),
                             "date_created": str(latest_dem.created_at),
                             "number_of_children": latest_dem.number_of_children,
@@ -1434,14 +1441,24 @@ class StudyDemographics(StudyResponsesMixin, generic.DetailView):
             ),
             (
                 "participant_hashed_id",
-                hash_id(resp.child.user.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits)
+                hash_id(
+                    resp.child.user.uuid,
+                    resp.study.uuid,
+                    resp.study.salt,
+                    resp.study.hash_digits,
+                )
                 if resp
                 else "",
                 "Identifier for family account associated with this response. Will be the same for multiple responses from a child and for siblings, but is unique to this study. This may be published directly.",
             ),
             (
                 "demographic_hashed_id",
-                hash_id(latest_dem.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits)
+                hash_id(
+                    latest_dem.uuid,
+                    resp.study.uuid,
+                    resp.study.salt,
+                    resp.study.hash_digits,
+                )
                 if resp
                 else "",
                 "Identifier for this demographic snapshot. Changes upon updates to the demographic form, so may vary within the same participant across responses.",
@@ -1638,6 +1655,51 @@ class StudyDemographicsDownloadDictCSV(StudyDemographics):
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
+
+
+class StudyCollisionCheck(StudyDemographics, StudyResponsesAll):
+    """
+	Hitting this URL checks for collisions among all child and account hashed IDs, and returns a string describing any collisions (empty string if none).
+	"""
+
+    def get(self, request, *args, **kwargs):
+        study = self.get_object()
+        responses = study.consented_responses.order_by("id")
+        child_dict = {}
+        account_dict = {}
+        collision_text = ""
+        # Note: could also just check number of unique global vs. hashed IDs in full dataset; only checking one-by-one for more informative output.
+
+        for resp in responses:
+            row_data = self.get_response_headers_and_row_data(resp)["dict"]
+            if row_data["participant_hashed_id"] in account_dict:
+                if (
+                    row_data["participant_global_id"]
+                    != account_dict[row_data["participant_hashed_id"]]
+                ):
+                    collision_text += "Participant hashed ID {} ({}, {})\n".format(
+                        row_data["participant_hashed_id"],
+                        account_dict[row_data["participant_hashed_id"]],
+                        row_data["participant_global_id"],
+                    )
+            else:
+                account_dict[row_data["participant_hashed_id"]] = row_data[
+                    "participant_global_id"
+                ]
+
+            if row_data["child_hashed_id"] in child_dict:
+                if (
+                    row_data["child_global_id"]
+                    != child_dict[row_data["child_hashed_id"]]
+                ):
+                    collision_text += "Child hashed ID {} ({}, {})<br>".format(
+                        row_data["child_hashed_id"],
+                        child_dict[row_data["child_hashed_id"]],
+                        row_data["child_global_id"],
+                    )
+            else:
+                child_dict[row_data["child_hashed_id"]] = row_data["child_global_id"]
+        return JsonResponse({"collisions": collision_text})
 
 
 class StudyAttachments(StudyResponsesMixin, generic.DetailView, PaginatorMixin):

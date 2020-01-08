@@ -5,11 +5,36 @@
 {% block title %}All Responses | {{ study.name }}{% endblock %}
 {% block head %}
     {{ block.super }}
+    <script type="application/javascript">
+        $(document).ready(function(){
+            $('#check-for-collisions').click(function (e) {
+                e.preventDefault(); // prevent page reload!
+                $('#collision-indicator').html('Checking for collisions...');
+                $.ajax({
+                    url: $('#check-for-collisions').attr('url'),
+                    type: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+                      if (data.collisions.length) {
+                          $('#collision-indicator').html('WARNING: collision(s) detected for the following IDs. ' + data.collisions);
+                      } else {
+                          $('#collision-indicator').html('No collisions detected.');
+                      }
+                    },
+                    failure: function(data) { 
+                        $('#collision-indicator').html('Error detecting collisions.');
+
+                    }
+                }); 
+            });
+        });
+
+    </script>
     {{ form.media }}
     
-    
-
 {% endblock %}
+
+
 
 {% block flash %}
   {% bootstrap_messages %}
@@ -181,6 +206,25 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            Tool: Check for collisions 
+                            <p class="help-text"> The hashed child and account IDs are extremely likely to be unique, but not guaranteed (about a 0.1% chance of a collision after 1500 participants). Use this tool to check whether there are any duplicate hashed IDs being used. (If so, let us know - we can fix that!)</p>
+                        </div>
+                        <div class="col-md-5 col-sm-6">
+                            <div class='pull-right download-button'> 
+                                <button id='check-for-collisions' class='btn btn-primary' url="{% url 'exp:study-hashed-id-collision-check' pk=study.id %}">
+                                    <span> Check now </span>
+                                </button>
+                            </div>
+                            <div class='pull-right' style="clear:both;">
+                                <p id="collision-indicator"></p>
+                            </div>
+                        </div>
+                    </div>
                 
                 </form>
             {% endif %}
@@ -234,6 +278,7 @@
                             </div>
                         </div>
                     </div>
+                    
                 
                 </form>
 

@@ -28,6 +28,7 @@ from exp.views import (
     StudyAttachments,
     StudyChildrenSummaryCSV,
     StudyChildrenSummaryDictCSV,
+    StudyCollisionCheck,
     StudyCreateView,
     StudyDemographics,
     StudyDemographicsDownloadCSV,
@@ -123,6 +124,11 @@ urlpatterns = [
         r"studies/(?P<pk>\d+)/responses/all/download_summary_children_dict_csv/$",
         StudyChildrenSummaryDictCSV.as_view(),
         name="study-responses-children-summary-dict-csv",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/responses/all/collision_check/$",
+        StudyCollisionCheck.as_view(),
+        name="study-hashed-id-collision-check",
     ),
     url(
         r"studies/(?P<pk>\d+)/responses/all/download_frame_csv/$",
