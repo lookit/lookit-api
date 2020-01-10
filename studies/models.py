@@ -27,13 +27,8 @@ from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
 
-
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
-
-VALID_CONSENT_FRAMES = ("1-video-consent",)
-VALID_EXIT_FRAME_POSTFIXES = ("exit-survey",)
-STOPPED_CAPTURE_EVENT_TYPE = "exp-video-consent:stoppingCapture"
 
 # Consent ruling stuff
 PENDING = "pending"
@@ -772,7 +767,8 @@ class Response(models.Model):
                                 full_name=f"{video_id}.{file_info.extension[0]}",
                                 study=self.study,
                                 response=self,
-                                is_consent_footage=frame_id in VALID_CONSENT_FRAMES,
+                                is_consent_footage=event_data.get("frameType", None)
+                                == "CONSENT",
                             )
                         )
                         seen_ids.add(video_id)
@@ -960,7 +956,7 @@ class Video(models.Model):
                 full_name=new_full_name,
                 study=study,
                 response=response,
-                is_consent_footage=frame_id in VALID_CONSENT_FRAMES,
+                is_consent_footage=False,
             )
 
     @cached_property
