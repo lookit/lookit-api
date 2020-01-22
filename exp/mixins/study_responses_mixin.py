@@ -461,13 +461,13 @@ class StudyResponsesMixin(
                             "value": value,
                         }
                     )
-                # omit frameType values from CSV
+                    # omit frameType values from CSV
                 elif key == "frameType":
                     continue
-                # Omit empty generatedProperties values from CSV
+                    # Omit empty generatedProperties values from CSV
                 elif key == "generatedProperties" and not (value):
                     continue
-                # For all other data, create a regular entry with frame_id and no event #
+                    # For all other data, create a regular entry with frame_id and no event #
                 else:
                     frame_data_dicts.append(
                         {
@@ -560,27 +560,50 @@ class StudyResponsesMixin(
 		Builds CSV file contents for frame-level data from all responses
 		"""
 
-        all_frame_data = []
+        headers = self.get_frame_data(responses[0])["data_headers"]
+        output, writer = self.csv_dict_output_and_writer(headers)
 
         for resp in responses:
             this_resp_data = self.get_frame_data(resp)
-            headers = this_resp_data["data_headers"]
-            all_frame_data.extend(this_resp_data["data"])
+            writer.writerows(this_resp_data["data"])
 
-        output, writer = self.csv_dict_output_and_writer(headers)
-        writer.writerows(all_frame_data)
         return output.getvalue()
 
     def build_framedata_dict_csv(self, responses):
 
-        all_frame_data = []
+        unique_frame_ids = set()
+        event_keys = set()
+        unique_frame_keys_dict = {}
 
         for resp in responses:
-            this_resp_data = self.get_frame_data(resp)
-            all_frame_data.extend(this_resp_data["data"])
+            this_resp_data = self.get_frame_data(resp)["data"]
+            these_ids = [
+                d["frame_id"].partition("-")[2]
+                for d in this_resp_data
+                if not d["frame_id"] == "global"
+            ]
+            event_keys = event_keys | set(
+                [d["key"] for d in this_resp_data if d["event_number"] != ""]
+            )
+            unique_frame_ids = unique_frame_ids | set(these_ids)
+            for frame_id in these_ids:
+                these_keys = set(
+                    [
+                        d["key"]
+                        for d in this_resp_data
+                        if d["frame_id"].partition("-")[2] == frame_id
+                        and d["event_number"] == ""
+                    ]
+                )
+                if frame_id in unique_frame_keys_dict:
+                    unique_frame_keys_dict[frame_id] = (
+                        unique_frame_keys_dict[frame_id] | these_keys
+                    )
+                else:
+                    unique_frame_keys_dict[frame_id] = these_keys
 
         # Start with general descriptions of high-level headers (child_id, response_id, etc.)
-        header_descriptions = this_resp_data["header_descriptions"]
+        header_descriptions = self.get_frame_data(responses[0])["header_descriptions"]
         frame_data_dict_entries = [
             {"column": header, "description": description}
             for (header, description) in header_descriptions
@@ -594,15 +617,7 @@ class StudyResponsesMixin(
         )
 
         # Add placeholders to describe each frame type
-        unique_frame_ids = sorted(
-            list(
-                set(
-                    d["frame_id"].partition("-")[2]
-                    for d in all_frame_data
-                    if not (d["frame_id"] == "global")
-                )
-            )
-        )
+        unique_frame_ids = sorted(list(unique_frame_ids))
         for frame_id in unique_frame_ids:
             frame_data_dict_entries.append(
                 {
@@ -610,18 +625,7 @@ class StudyResponsesMixin(
                     "frame_description": "RESEARCHER: INSERT FRAME DESCRIPTION",
                 }
             )
-            unique_frame_keys = sorted(
-                list(
-                    set(
-                        [
-                            d["key"]
-                            for d in all_frame_data
-                            if d["frame_id"].partition("-")[2] == frame_id
-                            and d["event_number"] == ""
-                        ]
-                    )
-                )
-            )
+            unique_frame_keys = sorted(list(unique_frame_keys_dict[frame_id]))
             for k in unique_frame_keys:
                 frame_data_dict_entries.append(
                     {
@@ -631,9 +635,7 @@ class StudyResponsesMixin(
                     }
                 )
 
-        event_keys = sorted(
-            list(set([d["key"] for d in all_frame_data if d["event_number"] != ""]))
-        )
+        event_keys = sorted(list(event_keys))
         event_key_stock_descriptions = {
             "eventType": "Descriptor for this event; determines what other data is available. Global event 'exitEarly' records cases where the participant attempted to exit the study early by closing the tab/window or pressing F1 or ctrl-X. RESEARCHER: INSERT DESCRIPTIONS OF PARTICULAR EVENTTYPES USED IN YOUR STUDY. (Note: you can find a list of events recorded by each frame in the frame documentation at https://lookit.github.io/ember-lookit-frameplayer, under the Events header.)",
             "exitType": "Used in the global event exitEarly. Only value stored at this point is 'browserNavigationAttempt'",
