@@ -14,67 +14,18 @@ from guardian.shortcuts import get_objects_for_user
 import attachment_helpers
 from accounts.models import Child, User
 from accounts.utils import hash_id
+from exp.utils import csv_dict_output_and_writer, flatten_dict, round_age
 from exp.views.mixins import ExperimenterLoginRequiredMixin
 from studies.models import Response, Study
-
-
-# PREFETCH = Response.objects.filter(completed_consent_frame=True)
-# CHILDREN_WITH_USERS = Child.objects.select_related("user")
-WITH_PREFETCHED_RESPONSES = Study.objects.prefetch_related("responses", "videos")
-
-
-def flatten_dict(d):
-    """Flatten a dictionary where values may be other dictionaries
-
-	The dictionary returned will have keys created by joining higher- to lower-level keys with dots. e.g. if the original dict d is
-	{'a': {'x':3, 'y':4}, 'b':{'z':5}, 'c':{} }
-	then the dict returned will be
-	{'a.x':3, 'a.y': 4, 'b.z':5}
-
-	Note that if a key is mapped to an empty dict or list, NO key in the returned dict is created for this key.
-
-	Also note that values may be overwritten if there is conflicting dot notation in the input dictionary, e.g. {'a': {'x': 3}, 'a.x': 4}.
-	"""
-    # http://codereview.stackexchange.com/a/21035
-
-    def expand(key, value):
-        if isinstance(value, list):
-            value = {i: v for (i, v) in enumerate(value)}
-        if isinstance(value, dict):
-            return [
-                (str(key) + "." + str(k), v) for k, v in flatten_dict(value).items()
-            ]
-        else:
-            return [(key, value)]
-
-    items = [item for k, v in d.items() for item in expand(k, v)]
-
-    return dict(items)
-
-
-def merge_dicts(d1, d2):
-    d1_copy = d1.copy()
-    d1_copy.update(d2)
-    return d1_copy
-
-
-def round_age(age_in_days):
-    if age_in_days <= 360:
-        return round(age_in_days / 10) * 10
-    else:
-        return round(age_in_days / 30) * 30
 
 
 class StudyResponsesMixin(
     SingleObjectMixin, ExperimenterLoginRequiredMixin, PermissionRequiredMixin
 ):
     """
-	Mixin with shared items for StudyResponsesList, StudyResponsesAll, and StudyAttachments Views.
-
-	TODO: deprecate this beast
+	Mixin with shared items for StudyResponsesList and StudyResponsesAll views
 	"""
 
-    queryset = WITH_PREFETCHED_RESPONSES
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
@@ -132,7 +83,6 @@ class StudyResponsesMixin(
             "default": False,
         },
     ]
-
     identifiable_data_options = [
         "exact",
         "birthday",
@@ -142,46 +92,40 @@ class StudyResponsesMixin(
         "globalchild",
         "globalparent",
     ]
-
     all_optional_header_keys = [
         option["id"] for option in age_data_options + child_data_options
     ]
 
-    def csv_output_and_writer(self):
-        output = io.StringIO()
-        return output, csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-
-    def csv_dict_output_and_writer(self, headerList):
-        output = io.StringIO()
-        writer = csv.DictWriter(
-            output,
-            quoting=csv.QUOTE_NONNUMERIC,
-            fieldnames=headerList,
-            restval="",
-            extrasaction="ignore",
-        )
-        writer.writeheader()
-        return output, writer
-
-    def study_name_for_files(self, studyname):
-        return "".join([c if c.isalnum() else "-" for c in studyname])
-
-    def convert_to_string(self, object):
-        if isinstance(object, datetime.date):
-            return object.__str__()
-        return object
-
-    def round_ages_from_birthdays(self, child_birthdays, date_created):
-        return [
-            round_age((date_created.date() - birthdate).days)
-            for birthdate in child_birthdays
+    def get_response_headers(
+        self, optional_headers_selected_ids, all_headers_available
+    ):
+        standard_headers = self.get_response_headers_and_row_data()["headers"]
+        optional_headers = [
+            option["column"]
+            for option in self.age_data_options + self.child_data_options
         ]
+        selected_headers = [
+            option["column"]
+            for option in self.age_data_options + self.child_data_options
+            if option["id"] in optional_headers_selected_ids
+        ]
+        standard_headers_selected_only = [
+            header
+            for header in standard_headers
+            if header not in optional_headers or header in selected_headers
+        ]
+        ordered_headers = standard_headers_selected_only + sorted(
+            list(all_headers_available - set(standard_headers))
+        )
+        return ordered_headers
 
-    def build_responses_json(self, responses, optional_headers=[]):
+    def build_responses_json(self, responses, optional_headers=None):
         """
 		Builds the JSON response data for the researcher to download
 		"""
         json_responses = []
+        if optional_headers == None:
+            optional_headers = []
         for resp in responses:
             age_in_days = (resp.date_created.date() - resp.child.birthday).days
             json_responses.append(
@@ -255,7 +199,7 @@ class StudyResponsesMixin(
             )
         return json_responses
 
-    def get_response_headers_and_row_data(self, resp={}):
+    def get_response_headers_and_row_data(self, resp=None):
 
         age_in_days = (
             (resp.date_created.date() - resp.child.birthday).days if resp else ""
@@ -400,7 +344,7 @@ class StudyResponsesMixin(
             (
                 "response_conditions",
                 [
-                    merge_dicts({"frameName": condFrame}, conds)
+                    {**{"frameName": condFrame}, **conds}
                     for (condFrame, conds) in resp.conditions.items()
                 ]
                 if resp
@@ -425,18 +369,32 @@ class StudyResponsesMixin(
 
     def get_frame_data(self, resp):
 
+        if type(resp) is not dict:
+            resp = {
+                "child__uuid": resp.child.uuid,
+                "study__uuid": resp.study.uuid,
+                "study__salt": resp.study.salt,
+                "study__hash_digits": resp.study.hash_digits,
+                "uuid": resp.uuid,
+                "exp_data": resp.exp_data,
+                "global_event_timings": resp.global_event_timings,
+            }
+
         frame_data_dicts = []
         child_hashed_id = hash_id(
-            resp.child.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
+            resp["child__uuid"],
+            resp["study__uuid"],
+            resp["study__salt"],
+            resp["study__hash_digits"],
         )
 
         # First add all of the global event timings as events with frame_id "global"
-        for (iEvent, event) in enumerate(resp.global_event_timings):
+        for (iEvent, event) in enumerate(resp["global_event_timings"]):
             for (key, value) in event.items():
                 frame_data_dicts.append(
                     {
                         "child_hashed_id": child_hashed_id,
-                        "response_uuid": str(resp.uuid),
+                        "response_uuid": str(resp["uuid"]),
                         "frame_id": "global",
                         "key": key,
                         "event_number": str(iEvent),
@@ -444,9 +402,9 @@ class StudyResponsesMixin(
                     }
                 )
 
-        # Next add all data in exp_data
+                # Next add all data in exp_data
         event_prefix = "eventTimings."
-        for (frame_id, frame_data) in resp.exp_data.items():
+        for (frame_id, frame_data) in resp["exp_data"].items():
             for (key, value) in flatten_dict(frame_data).items():
                 # Process event data separately and include event_number within frame
                 if key.startswith(event_prefix):
@@ -454,7 +412,7 @@ class StudyResponsesMixin(
                     frame_data_dicts.append(
                         {
                             "child_hashed_id": child_hashed_id,
-                            "response_uuid": str(resp.uuid),
+                            "response_uuid": str(resp["uuid"]),
                             "frame_id": frame_id,
                             "key": ".".join(key_pieces[2:]),
                             "event_number": str(key_pieces[1]),
@@ -472,7 +430,7 @@ class StudyResponsesMixin(
                     frame_data_dicts.append(
                         {
                             "child_hashed_id": child_hashed_id,
-                            "response_uuid": str(resp.uuid),
+                            "response_uuid": str(resp["uuid"]),
                             "frame_id": frame_id,
                             "key": key,
                             "event_number": "",
@@ -513,29 +471,6 @@ class StudyResponsesMixin(
             "header_descriptions": headers,
         }
 
-    def get_response_headers(
-        self, optional_headers_selected_ids, all_headers_available
-    ):
-        standard_headers = self.get_response_headers_and_row_data()["headers"]
-        optional_headers = [
-            option["column"]
-            for option in self.age_data_options + self.child_data_options
-        ]
-        selected_headers = [
-            option["column"]
-            for option in self.age_data_options + self.child_data_options
-            if option["id"] in optional_headers_selected_ids
-        ]
-        standard_headers_selected_only = [
-            header
-            for header in standard_headers
-            if header not in optional_headers or header in selected_headers
-        ]
-        ordered_headers = standard_headers_selected_only + sorted(
-            list(all_headers_available - set(standard_headers))
-        )
-        return ordered_headers
-
     def build_summary_csv(self, responses, optional_headers_selected_ids):
         """
 		Builds CSV file contents for overview of all responses
@@ -551,7 +486,7 @@ class StudyResponsesMixin(
             session_list.append(row_data)
 
         headerList = self.get_response_headers(optional_headers_selected_ids, headers)
-        output, writer = self.csv_dict_output_and_writer(headerList)
+        output, writer = csv_dict_output_and_writer(headerList)
         writer.writerows(session_list)
         return output.getvalue()
 
@@ -561,123 +496,10 @@ class StudyResponsesMixin(
 		"""
 
         headers = self.get_frame_data(responses[0])["data_headers"]
-        output, writer = self.csv_dict_output_and_writer(headers)
+        output, writer = csv_dict_output_and_writer(headers)
 
         for resp in responses:
             this_resp_data = self.get_frame_data(resp)
             writer.writerows(this_resp_data["data"])
 
         return output.getvalue()
-
-    def build_framedata_dict_csv(self, responses):
-
-        unique_frame_ids = set()
-        event_keys = set()
-        unique_frame_keys_dict = {}
-
-        for resp in responses:
-            this_resp_data = self.get_frame_data(resp)["data"]
-            these_ids = [
-                d["frame_id"].partition("-")[2]
-                for d in this_resp_data
-                if not d["frame_id"] == "global"
-            ]
-            event_keys = event_keys | set(
-                [d["key"] for d in this_resp_data if d["event_number"] != ""]
-            )
-            unique_frame_ids = unique_frame_ids | set(these_ids)
-            for frame_id in these_ids:
-                these_keys = set(
-                    [
-                        d["key"]
-                        for d in this_resp_data
-                        if d["frame_id"].partition("-")[2] == frame_id
-                        and d["event_number"] == ""
-                    ]
-                )
-                if frame_id in unique_frame_keys_dict:
-                    unique_frame_keys_dict[frame_id] = (
-                        unique_frame_keys_dict[frame_id] | these_keys
-                    )
-                else:
-                    unique_frame_keys_dict[frame_id] = these_keys
-
-        # Start with general descriptions of high-level headers (child_id, response_id, etc.)
-        header_descriptions = self.get_frame_data(responses[0])["header_descriptions"]
-        frame_data_dict_entries = [
-            {"column": header, "description": description}
-            for (header, description) in header_descriptions
-        ]
-
-        frame_data_dict_entries.append(
-            {
-                "possible_frame_id": "global",
-                "frame_description": "Data not associated with a particular frame",
-            }
-        )
-
-        # Add placeholders to describe each frame type
-        unique_frame_ids = sorted(list(unique_frame_ids))
-        for frame_id in unique_frame_ids:
-            frame_data_dict_entries.append(
-                {
-                    "possible_frame_id": "*-" + frame_id,
-                    "frame_description": "RESEARCHER: INSERT FRAME DESCRIPTION",
-                }
-            )
-            unique_frame_keys = sorted(list(unique_frame_keys_dict[frame_id]))
-            for k in unique_frame_keys:
-                frame_data_dict_entries.append(
-                    {
-                        "possible_frame_id": "*-" + frame_id,
-                        "possible_key": k,
-                        "key_description": "RESEARCHER: INSERT DESCRIPTION OF WHAT THIS KEY MEANS IN THIS FRAME",
-                    }
-                )
-
-        event_keys = sorted(list(event_keys))
-        event_key_stock_descriptions = {
-            "eventType": "Descriptor for this event; determines what other data is available. Global event 'exitEarly' records cases where the participant attempted to exit the study early by closing the tab/window or pressing F1 or ctrl-X. RESEARCHER: INSERT DESCRIPTIONS OF PARTICULAR EVENTTYPES USED IN YOUR STUDY. (Note: you can find a list of events recorded by each frame in the frame documentation at https://lookit.github.io/ember-lookit-frameplayer, under the Events header.)",
-            "exitType": "Used in the global event exitEarly. Only value stored at this point is 'browserNavigationAttempt'",
-            "lastPageSeen": "Used in the global event exitEarly. Index of the frame the participant was on before exit attempt.",
-            "pipeId": "Recorded by any event in a video-capture-equipped frame. Internal video ID used by Pipe service; only useful for troubleshooting in rare cases.",
-            "streamTime": "Recorded by any event in a video-capture-equipped frame. Indicates time within webcam video (videoId) to nearest 0.1 second. If recording has not started yet, may be 0 or null.",
-            "timestamp": "Recorded by all events. Timestamp of event in format e.g. 2019-11-07T17:14:43.626Z",
-            "videoId": "Recorded by any event in a video-capture-equipped frame. Filename (without .mp4 extension) of video currently being recorded.",
-        }
-        for k in event_keys:
-            frame_data_dict_entries.append(
-                {
-                    "possible_frame_id": "any (event data)",
-                    "possible_key": k,
-                    "key_description": event_key_stock_descriptions.get(
-                        k, "RESEARCHER: INSERT DESCRIPTION OF WHAT THIS EVENT KEY MEANS"
-                    ),
-                }
-            )
-
-        output, writer = self.csv_dict_output_and_writer(
-            [
-                "column",
-                "description",
-                "possible_frame_id",
-                "frame_description",
-                "possible_key",
-                "key_description",
-            ]
-        )
-        writer.writerows(frame_data_dict_entries)
-        return output.getvalue()
-
-    def post(self, request, *args, **kwargs):
-        """
-		Downloads a single study video.
-		"""
-        attachment_id = self.request.POST.get("attachment")
-        if attachment_id:
-            download_url = self.get_object().videos.get(pk=attachment_id).download_url
-            return redirect(download_url)
-
-        return HttpResponseRedirect(
-            reverse("exp:study-responses-list", kwargs=dict(pk=self.get_object().pk))
-        )
