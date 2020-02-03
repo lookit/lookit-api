@@ -10,18 +10,16 @@ register = template.Library()
 def query_transform(request, **kwargs):
     updated = request.GET.copy()
 
-    state = kwargs.get("state")
-    if state:
-        updated["state"] = state
+    acceptable_keys = ["state", "page", "match", "sort", "ageoptions", "childoptions"]
 
-    if kwargs.get("page"):
-        updated["page"] = kwargs.get("page")
+    for key in acceptable_keys:
+        if kwargs.get(key):
+            updated[key] = kwargs.get(key)
 
-    if kwargs.get("match"):
-        updated["match"] = kwargs.get("match")
-
-    if kwargs.get("sort"):
-        updated["sort"] = kwargs.get("sort")
+    # Assume it was not implemented like this (or as oneliner) for some sort of security reasons...
+    # for (key, val) in kwargs.items():
+    #    if val:
+    #        updated[key] = val
 
     return updated.urlencode()
 
@@ -35,7 +33,9 @@ def get_key(dictionary, key):
 def values_list_as_json(queryset, attribute):
     return json.dumps(
         list(
-            getattr(obj, attribute)()
+            obj[attribute]
+            if type(obj) is dict
+            else getattr(obj, attribute)()
             if callable(attribute)
             else getattr(obj, attribute)
             for obj in queryset

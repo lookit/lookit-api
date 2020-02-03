@@ -35,7 +35,7 @@
                 var selected = $(this).find("option:selected").val();
                 var index = extractIdNumber($('.selectable-participant.selected')[0].id);
                 hideResponses();
-                showResponse(selected, index); // TODO
+                showResponse(selected, index);
                 $('#download-data-label').text(selected);
             });
 
@@ -74,7 +74,13 @@
                     prepareDataForDownload('#csv-data-' + index, 'download-individual-data', currentResponseUuid + '_summary-data', 'csv');
                 } else if (dataType === 'CSV frame data') {
                     $('#frame-response-data-' + index).show();
-                    prepareDataForDownload('#frame-data-' + index, 'download-individual-data', currentResponseUuid + '_frame-data', 'csv');
+                    prepareDataForDownload('#frame-data-' + index, 'download-individual-data', currentResponseUuid + '_frames', 'csv');
+                } else if (dataType === 'JSON with identifiable data') {
+                    $('#response-data-full-' + index).show();
+                    prepareDataForDownload('#json-data-full-' + index, 'download-individual-data', currentResponseUuid + '_data-identifiable', 'json');
+                } else if (dataType === 'CSV summary with identifiable data') {
+                    $('#csv-response-data-full-' + index).show();
+                    prepareDataForDownload('#csv-data-full-' + index, 'download-individual-data', currentResponseUuid + '_summary-data-identifiable', 'csv');
                 }
             }
 
@@ -83,6 +89,8 @@
                 $('.response-data').hide();
                 $('.csv-response-data').hide();
                 $('.frame-response-data').hide();
+                $('.response-data-full').hide();
+                $('.csv-response-data-full').hide();
             };
         });
 
@@ -128,12 +136,10 @@
                         <thead>
                             <tr>
                                 <th>
-                                    User ID
-                                    <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='id' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                    <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-id' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                    Child ID
                                 </th>
                                 <th>
-                                    Response ID
+                                    Response UUID
                                 </th>
                                 <th>
                                     Status
@@ -148,12 +154,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {% for response in responses %}
-                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.id }}" data-response-uuid="{{ response.uuid }}">
-                            <td>{{ response.child.user.id }}</td>
-                            <td>{{ response.id }} </td>
-                            <td>{% if response.completed %} Complete {% else %} In Progress {% endif %} </td>
-                            <td>{{ response.date_created|date:"n/d/Y"|default:"N/A" }}</td>
+                        {% for response in response_data %}
+                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.response.id }}" data-response-uuid="{{ response.response.uuid }}">
+                            <td>{{ response.child.hashed_id }}</td>
+                            <td>{{ response.response.uuid|truncatechars:11 }} </td>
+                            <td>{% if response.response.completed %} Complete {% else %} Incomplete {% endif %} </td>
+                            <td>{{ response.response.date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                           </tr>
                         {% endfor %}
                         </tbody>
@@ -210,12 +216,14 @@
                     <label for="data-type-selector">Data Type</label>
                     <select class="form-control" id="data-type-selector">
                         <option>JSON</option>
+                        <option>JSON with identifiable data</option>
                         <option>CSV summary</option>
+                        <option>CSV summary with identifiable data</option>
                         <option>CSV frame data</option>
                     </select>
                 </div>
                 <a id='download-individual-data' class='btn mb-sm btn-primary'>
-                    Download Individual Response <span id="download-data-label">JSON </span>
+                    Download individual response <span id="download-data-label">JSON </span>
                 </a>
                 {% for response in response_data %}
                     <div class='response-data' id='response-data-{{ forloop.counter }}' style="display:none">
@@ -230,6 +238,16 @@
                 {% for csv in frame_data %}
                     <div class='frame-response-data' id='frame-response-data-{{ forloop.counter }}' style="display:none">
                         <pre class='frame-data individual-block' id='frame-data-{{ forloop.counter }}'>{{ csv }}</pre>
+                    </div>
+                {% endfor %}
+                {% for csv in csv_data_full %}
+                    <div class='csv-response-data-full' id='csv-response-data-full-{{ forloop.counter }}' style="display:none">
+                        <pre class='csv-data-full individual-block' id='csv-data-full-{{ forloop.counter }}'>{{ csv }}</pre>
+                    </div>
+                {% endfor %}
+                {% for response in response_data_full %}
+                    <div class='response-data-full' id='response-data-full-{{ forloop.counter }}' style="display:none">
+                        <pre class='json-data-full individual-block' id='json-data-full-{{ forloop.counter }}'>{{ response | pretty_json }}</pre>
                     </div>
                 {% endfor %}
 

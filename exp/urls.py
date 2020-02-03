@@ -26,9 +26,13 @@ from exp.views import (
     ResearcherDetailView,
     ResearcherListView,
     StudyAttachments,
+    StudyChildrenSummaryCSV,
+    StudyChildrenSummaryDictCSV,
+    StudyCollisionCheck,
     StudyCreateView,
     StudyDemographics,
     StudyDemographicsDownloadCSV,
+    StudyDemographicsDownloadDictCSV,
     StudyDemographicsDownloadJSON,
     StudyDetailView,
     StudyListView,
@@ -47,7 +51,6 @@ from exp.views import (
     StudyResponsesSummaryDownloadCSV,
     StudyUpdateView,
 )
-
 
 urlpatterns = [
     url(r"researchers/$", ResearcherListView.as_view(), name="researcher-list"),
@@ -113,6 +116,21 @@ urlpatterns = [
         name="study-responses-download-summary-dict-csv",
     ),
     url(
+        r"studies/(?P<pk>\d+)/responses/all/download_summary_children_csv/$",
+        StudyChildrenSummaryCSV.as_view(),
+        name="study-responses-children-summary-csv",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/responses/all/download_summary_children_dict_csv/$",
+        StudyChildrenSummaryDictCSV.as_view(),
+        name="study-responses-children-summary-dict-csv",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/responses/all/collision_check/$",
+        StudyCollisionCheck.as_view(),
+        name="study-hashed-id-collision-check",
+    ),
+    url(
         r"studies/(?P<pk>\d+)/responses/all/download_frame_csv/$",
         StudyResponsesFrameDataCSV.as_view(),
         name="study-responses-download-frame-data-csv",
@@ -141,6 +159,11 @@ urlpatterns = [
         r"studies/(?P<pk>\d+)/responses/demographics/download_csv/$",
         StudyDemographicsDownloadCSV.as_view(),
         name="study-demographics-download-csv",
+    ),
+    url(
+        r"studies/(?P<pk>\d+)/responses/demographics/download_csv_dict/$",
+        StudyDemographicsDownloadDictCSV.as_view(),
+        name="study-demographics-download-dict-csv",
     ),
     url(
         r"studies/(?P<pk>\d+)/responses/attachments/$",

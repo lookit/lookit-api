@@ -45,11 +45,11 @@ def send_mail(
 
 
 class FrameActionDispatcher(object):
-    """Dispatches an action based on the latest frame ID of a given response.
+    """Dispatches an action based on the latest frame type of a given response.
 
     The idea with this class is that it's easy to extend - you just add a method with the lower-case
-    name matching the frame type you want to act on, and make sure to include the response and frame_data as
-    named arguments, plus optional args/kwargs that can be passed in at call time.
+    name matching the frame type you want to act on, and make sure to include the response, frame_data,
+    and current_frame_id as named arguments, plus optional args/kwargs that can be passed in at call time.
     """
 
     def __call__(self, response, *args, **kwargs):
@@ -65,17 +65,18 @@ class FrameActionDispatcher(object):
 
         try:
             return getattr(self, frame_type.lower())(
-                response, frame_data, *args, **kwargs
+                response, frame_data, current_frame_id, *args, **kwargs
             )
         except AttributeError as e:
             logger.warning(f"{e.args} is not registered for frame-specific action.")
 
-    def default(self, response, frame_data: dict, *args, **kwargs):
+    def default(self, response, frame_data: dict, current_frame_id, *args, **kwargs):
         """Default frame hook.
 
         Args:
             response: Response Model.
             frame_data: dictionary of frame data.
+            current_frame_id: ID of the current frame (e.g. 1-my-video-consent)
         """
         pass
 
@@ -85,6 +86,7 @@ class FrameActionDispatcher(object):
         Args:
             response: Response Model.
             frame_data: dictionary of frame data.
+            current_frame_id: ID of the current frame (e.g. 1-my-video-consent)
         """
         withdrawal = frame_data.get("withdrawal", None)
         if withdrawal:
@@ -97,6 +99,23 @@ class FrameActionDispatcher(object):
         else:  # Withdrawal is false, do nothing.
             pass
 
-    def consent(self, response, frame_data: dict, *args, **kwargs):
-        """This will eventually take over the functionality that's currently covered in the frontend."""
-        pass
+    def consent(self, response, frame_data: dict, current_frame_id, *args, **kwargs):
+        """Upon saving data from a consent frame, mark the video collected as consent footage.
+        This means the participant will have to proceed from the consent frame before 
+        consent footage is accessible to researchers.
+        
+        Args:
+            response: Response Model.
+            frame_data: dictionary of frame data.
+            current_frame_id: ID of the current frame (e.g. 1-my-video-consent)
+        """
+        for video in response.videos.filter(frame_id=current_frame_id):
+            video.is_consent_footage = True
+            video.save()
+        # Using frame_id as likely to be most robust, even with slightly convoluted generation
+        # of frame IDs during randomizer-generated frames (there should at least never be
+        # duplicate frame IDs because of the incrementing frame number at the start of the
+        # ID). Alternative in case needed in future is to use video filenames -
+        # video.full_name includes extension (.mp4), videoList is filename w/o extension.
+        #
+        # if any([consentFilename in video.full_name for consentFilename in frame_data.get("videoList", [])]):
