@@ -888,7 +888,8 @@
         }
 
 
-        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels, bounds=[]) {
+        function drawParticipationPlots(cumulativeSet, binnedSeries, legendLabels, bounds=None) {
+      
             // Now fill with data, y_accessor, and legend, then draw.
             let newPlotOptions = {
                 x_accessor: "date",
