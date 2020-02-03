@@ -31,12 +31,12 @@ def flatten_dict(d):
     return dict(items)
 
 
-def csv_dict_output_and_writer(headerList):
+def csv_dict_output_and_writer(header_list):
     output = io.StringIO()
     writer = csv.DictWriter(
         output,
         quoting=csv.QUOTE_NONNUMERIC,
-        fieldnames=headerList,
+        fieldnames=header_list,
         restval="",
         extrasaction="ignore",
     )
@@ -44,8 +44,8 @@ def csv_dict_output_and_writer(headerList):
     return output, writer
 
 
-def study_name_for_files(studyname):
-    return "".join([c if c.isalnum() else "-" for c in studyname])
+def study_name_for_files(study_name):
+    return "".join([c if c.isalnum() else "-" for c in study_name])
 
 
 def round_age(age_in_days):
