@@ -4,6 +4,7 @@ import io
 import json
 import string
 
+from django.core.paginator import Paginator
 from django.db.models import Prefetch, QuerySet
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, reverse
@@ -29,6 +30,7 @@ class StudyResponsesMixin(
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
+    response_page_size = 50  # for pagination of responses when processing for download
     age_data_options = [
         {
             "id": "rounded",
@@ -123,83 +125,89 @@ class StudyResponsesMixin(
         """
 		Builds the JSON response data for the researcher to download
 		"""
+        # TODO: could also use values() instead of response objects here.
         json_responses = []
         if optional_headers == None:
             optional_headers = []
-        for resp in responses:
-            age_in_days = (resp.date_created.date() - resp.child.birthday).days
-            json_responses.append(
-                {
-                    "response": {
-                        "id": resp.id,
-                        "uuid": str(resp.uuid),
-                        "sequence": resp.sequence,
-                        "conditions": resp.conditions,
-                        "exp_data": resp.exp_data,
-                        "global_event_timings": resp.global_event_timings,
-                        "completed": resp.completed,
-                        "date_created": resp.date_created,
-                        "withdrawn": resp.withdrawn,
-                    },
-                    "study": {"uuid": str(resp.study.uuid)},
-                    "participant": {
-                        "global_id": str(resp.child.user.uuid)
-                        if "globalparent" in optional_headers
-                        else "",
-                        "hashed_id": hash_id(
-                            resp.child.user.uuid,
-                            resp.study.uuid,
-                            resp.study.salt,
-                            resp.study.hash_digits,
-                        ),
-                        "nickname": resp.child.user.nickname
-                        if "parent" in optional_headers
-                        else "",
-                    },
-                    "child": {
-                        "global_id": str(resp.child.uuid)
-                        if "globalchild" in optional_headers
-                        else "",
-                        "hashed_id": hash_id(
-                            resp.child.uuid,
-                            resp.study.uuid,
-                            resp.study.salt,
-                            resp.study.hash_digits,
-                        ),
-                        "name": resp.child.given_name
-                        if "name" in optional_headers
-                        else "",
-                        "birthday": resp.child.birthday
-                        if "birthday" in optional_headers
-                        else "",
-                        "age_in_days": age_in_days
-                        if "exact" in optional_headers
-                        else "",
-                        "age_rounded": str(round_age(int(age_in_days)))
-                        if "rounded" in optional_headers
-                        else "",
-                        "gender": resp.child.gender
-                        if "gender" in optional_headers
-                        else "",
-                        "language_list": resp.child.language_list
-                        if "languages" in optional_headers
-                        else "",
-                        "condition_list": resp.child.condition_list
-                        if "conditions" in optional_headers
-                        else "",
-                        "age_at_birth": resp.child.age_at_birth
-                        if "gestage" in optional_headers
-                        else "",
-                        "additional_information": resp.child.additional_information
-                        if "addl" in optional_headers
-                        else "",
-                    },
-                    "consent": resp.current_consent_details,
-                }
-            )
+        paginator = Paginator(responses, self.response_page_size)
+        for page_num in paginator.page_range:
+            page_of_responses = paginator.page(page_num)
+            for resp in page_of_responses:
+                age_in_days = (resp.date_created.date() - resp.child.birthday).days
+                json_responses.append(
+                    {
+                        "response": {
+                            "id": resp.id,
+                            "uuid": str(resp.uuid),
+                            "sequence": resp.sequence,
+                            "conditions": resp.conditions,
+                            "exp_data": resp.exp_data,
+                            "global_event_timings": resp.global_event_timings,
+                            "completed": resp.completed,
+                            "date_created": resp.date_created,
+                            "withdrawn": resp.withdrawn,
+                        },
+                        "study": {"uuid": str(resp.study.uuid)},
+                        "participant": {
+                            "global_id": str(resp.child.user.uuid)
+                            if "globalparent" in optional_headers
+                            else "",
+                            "hashed_id": hash_id(
+                                resp.child.user.uuid,
+                                resp.study.uuid,
+                                resp.study.salt,
+                                resp.study.hash_digits,
+                            ),
+                            "nickname": resp.child.user.nickname
+                            if "parent" in optional_headers
+                            else "",
+                        },
+                        "child": {
+                            "global_id": str(resp.child.uuid)
+                            if "globalchild" in optional_headers
+                            else "",
+                            "hashed_id": hash_id(
+                                resp.child.uuid,
+                                resp.study.uuid,
+                                resp.study.salt,
+                                resp.study.hash_digits,
+                            ),
+                            "name": resp.child.given_name
+                            if "name" in optional_headers
+                            else "",
+                            "birthday": resp.child.birthday
+                            if "birthday" in optional_headers
+                            else "",
+                            "age_in_days": age_in_days
+                            if "exact" in optional_headers
+                            else "",
+                            "age_rounded": str(round_age(int(age_in_days)))
+                            if "rounded" in optional_headers
+                            else "",
+                            "gender": resp.child.gender
+                            if "gender" in optional_headers
+                            else "",
+                            "language_list": resp.child.language_list
+                            if "languages" in optional_headers
+                            else "",
+                            "condition_list": resp.child.condition_list
+                            if "conditions" in optional_headers
+                            else "",
+                            "age_at_birth": resp.child.age_at_birth
+                            if "gestage" in optional_headers
+                            else "",
+                            "additional_information": resp.child.additional_information
+                            if "addl" in optional_headers
+                            else "",
+                        },
+                        "consent": resp.current_consent_details,
+                    }
+                )
         return json_responses
 
     def get_response_headers_and_row_data(self, resp=None):
+
+        # TODO: use values dict instead of response object
 
         age_in_days = (
             (resp.date_created.date() - resp.child.birthday).days if resp else ""
@@ -479,11 +487,14 @@ class StudyResponsesMixin(
         headers = set()
         session_list = []
 
-        for resp in responses:
-            row_data = self.get_response_headers_and_row_data(resp)["dict"]
-            # Add any new headers from this session
-            headers = headers | set(row_data.keys())
-            session_list.append(row_data)
+        paginator = Paginator(responses, self.response_page_size)
+        for page_num in paginator.page_range:
+            page_of_responses = paginator.page(page_num)
+            for resp in page_of_responses:
+                row_data = self.get_response_headers_and_row_data(resp)["dict"]
+                # Add any new headers from this session
+                headers = headers | set(row_data.keys())
+                session_list.append(row_data)
 
         headerList = self.get_response_headers(optional_headers_selected_ids, headers)
         output, writer = csv_dict_output_and_writer(headerList)
@@ -492,8 +503,9 @@ class StudyResponsesMixin(
 
     def build_framedata_csv(self, responses):
         """
-		Builds CSV file contents for frame-level data from all responses
+		Builds CSV file contents for combined frame-level data from responses. Not paginated - only for small collections of responses.
 		"""
+        # TODO: combine
 
         headers = self.get_frame_data(responses[0])["data_headers"]
         output, writer = csv_dict_output_and_writer(headers)
