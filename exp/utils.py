@@ -1,7 +1,7 @@
 import csv
 import io
 
-RESPONSE_PAGE_SIZE = 50  # for pagination of responses when processing for download
+RESPONSE_PAGE_SIZE = 250  # for pagination of responses when processing for download
 
 
 def flatten_dict(d):
