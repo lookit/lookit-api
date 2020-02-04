@@ -180,14 +180,13 @@ def build_zipfile_of_videos(
         from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )
-    
+
+
 @app.task(bind=True, max_retries=10, retry_backoff=10)
-def build_framedata_dict(
-    self, filename, study_uuid, requesting_user_uuid
-):
+def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     from studies.models import Study
     from accounts.models import User
-    
+
     def build_framedata_dict_csv(writer, responses):
 
         response_paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
@@ -299,8 +298,8 @@ def build_framedata_dict(
 
     # make filename for this request unique by adding timestamp
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    csv_filename = f"{filename}_{timestamp}.zip" # TODO
-    
+    csv_filename = f"{filename}_{timestamp}.zip"  # TODO
+
     # get the gc client
     gs_client = gc_storage.client.Client(project=settings.GS_PROJECT_ID)
     # get the bucket
@@ -309,7 +308,7 @@ def build_framedata_dict(
     gs_blob = gc_storage.blob.Blob(
         csv_filename, gs_private_bucket, chunk_size=256 * 1024 * 1024
     )  # 256mb
-    
+
     header_list = [
         "column",
         "description",
@@ -318,7 +317,7 @@ def build_framedata_dict(
         "possible_key",
         "key_description",
     ]
-    
+
     # if the file exists short circuit and send the email
     if not gs_blob.exists():
         # if it doesn't exist build the file
@@ -344,9 +343,7 @@ def build_framedata_dict(
     )
     # send an email with the signed url and return
     email_context = dict(
-        signed_url=signed_url,
-        user=requesting_user,
-        csv_filename=csv_filename,
+        signed_url=signed_url, user=requesting_user, csv_filename=csv_filename
     )
     send_mail(
         "download_framedata_dict",
