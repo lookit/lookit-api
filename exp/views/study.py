@@ -1808,14 +1808,25 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
                     else:
                         unique_frame_keys_dict[frame_id] = these_keys
 
-                    # Start with general descriptions of high-level headers (child_id, response_id, etc.)
+        # Start with general descriptions of high-level headers (child_id, response_id, etc.)
+        output, writer = csv_dict_output_and_writer(
+            [
+                "column",
+                "description",
+                "possible_frame_id",
+                "frame_description",
+                "possible_key",
+                "key_description",
+            ]
+        )
         header_descriptions = get_frame_data(resp)["header_descriptions"]
-        frame_data_dict_entries = [
-            {"column": header, "description": description}
-            for (header, description) in header_descriptions
-        ]
-
-        frame_data_dict_entries.append(
+        writer.writerows(
+            [
+                {"column": header, "description": description}
+                for (header, description) in header_descriptions
+            ]
+        )
+        writer.writerow(
             {
                 "possible_frame_id": "global",
                 "frame_description": "Data not associated with a particular frame",
@@ -1825,7 +1836,7 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
         # Add placeholders to describe each frame type
         unique_frame_ids = sorted(list(unique_frame_ids))
         for frame_id in unique_frame_ids:
-            frame_data_dict_entries.append(
+            writer.writerow(
                 {
                     "possible_frame_id": "*-" + frame_id,
                     "frame_description": "RESEARCHER: INSERT FRAME DESCRIPTION",
@@ -1833,7 +1844,7 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
             )
             unique_frame_keys = sorted(list(unique_frame_keys_dict[frame_id]))
             for k in unique_frame_keys:
-                frame_data_dict_entries.append(
+                writer.writerow(
                     {
                         "possible_frame_id": "*-" + frame_id,
                         "possible_key": k,
@@ -1852,7 +1863,7 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
             "videoId": "Recorded by any event in a video-capture-equipped frame. Filename (without .mp4 extension) of video currently being recorded.",
         }
         for k in event_keys:
-            frame_data_dict_entries.append(
+            writer.writerow(
                 {
                     "possible_frame_id": "any (event data)",
                     "possible_key": k,
@@ -1862,17 +1873,6 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
                 }
             )
 
-        output, writer = csv_dict_output_and_writer(
-            [
-                "column",
-                "description",
-                "possible_frame_id",
-                "frame_description",
-                "possible_key",
-                "key_description",
-            ]
-        )
-        writer.writerows(frame_data_dict_entries)
         return output.getvalue()
 
     def get(self, request, *args, **kwargs):
