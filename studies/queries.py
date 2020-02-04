@@ -108,6 +108,7 @@ def get_responses_with_current_rulings_and_videos(study_id):
             "study_id",
             "study__uuid",
             "study__salt",
+            "study__hash_digits",
             "child__user_id",
             "child__user__uuid",
             "child__user__nickname",
@@ -196,7 +197,7 @@ def get_consent_statistics(study_id):
     )
 
     child_stats["without_accepted_responses"] = len(
-        unique_accepted_children - unique_rejected_children
+        unique_rejected_children - unique_accepted_children
     )
 
     child_stats["total"] = len(

@@ -25,3 +25,30 @@ def hash_id(id1, id2, salt, length=6):
     hashed = base64.b32encode(hashlib.sha256(concat).digest()).decode("utf-8")
     hashed = hashed.translate("".maketrans("10IO", "abcd"))
     return hashed[:length]
+
+
+def hash_child_id(resp):
+    return hash_id(
+        resp["child__uuid"],
+        resp["study__uuid"],
+        resp["study__salt"],
+        resp["study__hash_digits"],
+    )
+
+
+def hash_participant_id(resp):
+    return hash_id(
+        resp["child__user__uuid"],
+        resp["study__uuid"],
+        resp["study__salt"],
+        resp["study__hash_digits"],
+    )
+
+
+def hash_demographic_id(resp):
+    return hash_id(
+        resp["demographic_snapshot__uuid"],
+        resp["study__uuid"],
+        resp["study__salt"],
+        resp["study__hash_digits"],
+    )
