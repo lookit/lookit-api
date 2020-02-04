@@ -60,7 +60,11 @@ from studies.queries import (
     get_responses_with_current_rulings_and_videos,
     get_study_list_qs,
 )
-from studies.tasks import build_zipfile_of_videos, ember_build_and_gcp_deploy, build_framedata_dict
+from studies.tasks import (
+    build_zipfile_of_videos,
+    ember_build_and_gcp_deploy,
+    build_framedata_dict,
+)
 from studies.workflow import (
     STATE_UI_SIGNALS,
     STATUS_HELP_TEXT,
@@ -1773,16 +1777,14 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
     Hitting this URL downloads a template data dictionary for frame-level data in CSV format
     """
 
-
-
     def get(self, request, *args, **kwargs):
         study = self.get_object()
         responses = self.get_response_values_for_framedata(study)
-        
+
         filename = "{}_{}_{}".format(
             study_name_for_files(study.name), study.uuid, "all-frames-dict"
         )
-        
+
         build_framedata_dict.delay(
             f"{self.get_object().uuid}_all_attachments",
             study.uuid,
