@@ -196,7 +196,7 @@ def get_consent_statistics(study_id):
     )
 
     child_stats["without_accepted_responses"] = len(
-        unique_accepted_children - unique_rejected_children
+        unique_rejected_children - unique_accepted_children
     )
 
     child_stats["total"] = len(
