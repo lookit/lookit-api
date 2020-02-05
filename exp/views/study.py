@@ -1453,7 +1453,8 @@ def get_frame_data(resp):
         "data_headers": [header for (header, description) in headers],
         "header_descriptions": headers,
     }
-    
+
+
 def build_framedata_dict_csv(writer, responses):
 
     response_paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
@@ -1461,9 +1462,7 @@ def build_framedata_dict_csv(writer, responses):
     event_keys = set()
     unique_frame_keys_dict = {}
 
-    print("Starting frame data dict creation")
     for page_num in response_paginator.page_range:
-        print("Processing page of responses")
         page_of_responses = response_paginator.page(page_num)
         for resp in page_of_responses:
             this_resp_data = get_frame_data(resp)["data"]
@@ -1507,7 +1506,6 @@ def build_framedata_dict_csv(writer, responses):
         }
     )
 
-    print("Writing frame ids and keys")
     # Add placeholders to describe each frame type
     unique_frame_ids = sorted(list(unique_frame_ids))
     for frame_id in unique_frame_ids:
@@ -1547,7 +1545,7 @@ def build_framedata_dict_csv(writer, responses):
                 ),
             }
         )
-    print("Finished creating frame data dict")
+
 
 def build_summary_csv(responses, optional_headers_selected_ids):
     """
@@ -1872,18 +1870,14 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
     """
 
     def get(self, request, *args, **kwargs):
-        
+
         study = self.get_object()
         responses = self.get_response_values_for_framedata(study)
         filename = "{}_{}_{}".format(
             study_name_for_files(study.name), study.uuid, "all-frames-dict"
         )
 
-        build_framedata_dict.delay(
-            filename,
-            study.uuid,
-            self.request.user.uuid,
-        )
+        build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
         messages.success(
             request,
             f"A frame data dictionary for {self.get_object().name} is being generated. You will be emailed a link when it's completed.",
