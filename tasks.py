@@ -123,13 +123,15 @@ def system_setup(c, verbose=False):
             run('echo "===>brew {}"'.format(MESSAGE_FAILED))
 
     if PLATFORM == "Darwin":
-        if run("brew tap caskroom/cask", hide=not verbose, warm=True).ok:
+        if run("brew tap homebrew/cask", hide=not verbose).ok:
             run('echo "===>homebrew/cask is installed"')
         else:
             run('echo "===>homebrew/cask is not working."')
 
     # creating a local setting file
-    if run('cd project/settings && touch local.py && echo "DEBUG=True" > local.py').ok:
+    if run(
+        'touch project/settings/local.py && echo "DEBUG=True" > project/settings/local.py'
+    ).ok:
         run('echo "===>Successfully configured settings for local development"')
 
 
@@ -159,7 +161,7 @@ def install_dependencies(c, verbose=False):
 
     run("echo '***INSTALLING ALL DEPENDENCIES***'")
 
-    if run("pipenv install ", hide=not verbose, warn=True).ok:
+    if run("pipenv install --dev", hide=not verbose, warn=True).ok:
         run('echo "===>all dependencies {}"'.format(MESSAGE_OK))
     else:
         run('echo "===>some dependencies {}"'.format(MESSAGE_FAILED))
@@ -371,6 +373,7 @@ def rabbitmq(c, verbose=False):
                 run('echo "===>rabbitmq {}"'.format(MESSAGE_OK))
             else:
                 run('echo "===>rabbitmq {}"'.format(MESSAGE_FAILED))
+        run("sudo rabbitmq server", warn=True, hide=not verbose)
         run("sudo rabbitmqctl add_user lookit-admin admin", warn=True, hide=not verbose)
         run(
             "sudo rabbitmqctl set_user_tags lookit-admin administrator",

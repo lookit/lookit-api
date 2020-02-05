@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "rest_framework_json_api",
     "storages",
     "django_celery_beat",
+    "sslserver",
     # our stuff
     "osf_oauth2_adapter",
     "api",
@@ -339,9 +340,9 @@ EMBER_ADDONS_REPO = os.environ.get(
 )  # leave for compatibility with previous migrations
 EMBER_ADDONS_BRANCH = os.environ.get("EMBER_ADDONS_BRANCH", "master")
 
-RABBITMQ_USERNAME = os.environ.get("RABBITMQ_USERNAME", "guest")
-RABBITMQ_PASSWORD = os.environ.get("RABBITMQ_PASSWORD", "guest")
 RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "localhost")
+RABBITMQ_USERNAME = os.environ.get("RABBITMQ_USERNAME", "lookit-admin")
+RABBITMQ_PASSWORD = os.environ.get("RABBITMQ_PASSWORD", "admin")
 RABBITMQ_PORT = os.environ.get("RABBITMQ_PORT", "5672")
 RABBITMQ_VHOST = os.environ.get("RABBITMQ_VHOST", "/")
 
