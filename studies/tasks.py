@@ -230,14 +230,13 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     ]
 
     # if the file exists short circuit and send the email
-    print("Putting on GCP")
     if not gs_blob.exists():
         # if it doesn't exist build the file
-        with tempfile.TemporaryDirectory() as temp_directory: # TODO
+        with tempfile.TemporaryDirectory() as temp_directory:  # TODO
             file_path = os.path.join(temp_directory, csv_filename)
             with open(file_path, "w") as csv_file:
                 writer = csv.DictWriter(
-                    io.StringIO(),
+                    csv_file,
                     quoting=csv.QUOTE_NONNUMERIC,
                     fieldnames=header_list,
                     restval="",
@@ -250,9 +249,7 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
             gs_blob.upload_from_filename(file_path)
 
     # then send the email with a 24h link
-    signed_url = gs_blob.generate_signed_url(
-        datetime.timedelta(hours=24)
-    )
+    signed_url = gs_blob.generate_signed_url(datetime.timedelta(hours=24))
     # send an email with the signed url and return
     email_context = dict(
         signed_url=signed_url, user=requesting_user, csv_filename=csv_filename
