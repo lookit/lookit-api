@@ -187,99 +187,11 @@ def build_zipfile_of_videos(
 def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     from studies.models import Study
     from accounts.models import User
-
-    def build_framedata_dict_csv(writer, responses):
-
-        response_paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
-        unique_frame_ids = set()
-        event_keys = set()
-        unique_frame_keys_dict = {}
-
-        for page_num in response_paginator.page_range:
-            page_of_responses = response_paginator.page(page_num)
-            for resp in page_of_responses:
-                this_resp_data = get_frame_data(resp)["data"]
-                these_ids = [
-                    d["frame_id"].partition("-")[2]
-                    for d in this_resp_data
-                    if not d["frame_id"] == "global"
-                ]
-                event_keys = event_keys | set(
-                    [d["key"] for d in this_resp_data if d["event_number"] != ""]
-                )
-                unique_frame_ids = unique_frame_ids | set(these_ids)
-                for frame_id in these_ids:
-                    these_keys = set(
-                        [
-                            d["key"]
-                            for d in this_resp_data
-                            if d["frame_id"].partition("-")[2] == frame_id
-                            and d["event_number"] == ""
-                        ]
-                    )
-                    if frame_id in unique_frame_keys_dict:
-                        unique_frame_keys_dict[frame_id] = (
-                            unique_frame_keys_dict[frame_id] | these_keys
-                        )
-                    else:
-                        unique_frame_keys_dict[frame_id] = these_keys
-
-        # Start with general descriptions of high-level headers (child_id, response_id, etc.)
-        header_descriptions = get_frame_data(resp)["header_descriptions"]
-        writer.writerows(
-            [
-                {"column": header, "description": description}
-                for (header, description) in header_descriptions
-            ]
-        )
-        writer.writerow(
-            {
-                "possible_frame_id": "global",
-                "frame_description": "Data not associated with a particular frame",
-            }
-        )
-
-        # Add placeholders to describe each frame type
-        unique_frame_ids = sorted(list(unique_frame_ids))
-        for frame_id in unique_frame_ids:
-            writer.writerow(
-                {
-                    "possible_frame_id": "*-" + frame_id,
-                    "frame_description": "RESEARCHER: INSERT FRAME DESCRIPTION",
-                }
-            )
-            unique_frame_keys = sorted(list(unique_frame_keys_dict[frame_id]))
-            for k in unique_frame_keys:
-                writer.writerow(
-                    {
-                        "possible_frame_id": "*-" + frame_id,
-                        "possible_key": k,
-                        "key_description": "RESEARCHER: INSERT DESCRIPTION OF WHAT THIS KEY MEANS IN THIS FRAME",
-                    }
-                )
-
-        event_keys = sorted(list(event_keys))
-        event_key_stock_descriptions = {
-            "eventType": "Descriptor for this event; determines what other data is available. Global event 'exitEarly' records cases where the participant attempted to exit the study early by closing the tab/window or pressing F1 or ctrl-X. RESEARCHER: INSERT DESCRIPTIONS OF PARTICULAR EVENTTYPES USED IN YOUR STUDY. (Note: you can find a list of events recorded by each frame in the frame documentation at https://lookit.github.io/ember-lookit-frameplayer, under the Events header.)",
-            "exitType": "Used in the global event exitEarly. Only value stored at this point is 'browserNavigationAttempt'",
-            "lastPageSeen": "Used in the global event exitEarly. Index of the frame the participant was on before exit attempt.",
-            "pipeId": "Recorded by any event in a video-capture-equipped frame. Internal video ID used by Pipe service; only useful for troubleshooting in rare cases.",
-            "streamTime": "Recorded by any event in a video-capture-equipped frame. Indicates time within webcam video (videoId) to nearest 0.1 second. If recording has not started yet, may be 0 or null.",
-            "timestamp": "Recorded by all events. Timestamp of event in format e.g. 2019-11-07T17:14:43.626Z",
-            "videoId": "Recorded by any event in a video-capture-equipped frame. Filename (without .mp4 extension) of video currently being recorded.",
-        }
-        for k in event_keys:
-            writer.writerow(
-                {
-                    "possible_frame_id": "any (event data)",
-                    "possible_key": k,
-                    "key_description": event_key_stock_descriptions.get(
-                        k, "RESEARCHER: INSERT DESCRIPTION OF WHAT THIS EVENT KEY MEANS"
-                    ),
-                }
-            )
-
-        return output.getvalue()
+    from exp.utils import RESPONSE_PAGE_SIZE
+    from exp.views.study import build_framedata_dict_csv
+    import io
+    
+    print('in the task')
 
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
     study = Study.objects.get(uuid=study_uuid)
@@ -299,7 +211,7 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
 
     # make filename for this request unique by adding timestamp
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    csv_filename = f"{filename}_{timestamp}.zip"  # TODO
+    csv_filename = f"{filename}_{timestamp}.zip"
 
     # get the gc client
     gs_client = gc_storage.client.Client(project=settings.GS_PROJECT_ID)
@@ -322,11 +234,11 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     # if the file exists short circuit and send the email
     if not gs_blob.exists():
         # if it doesn't exist build the file
-        with tempfile.TemporaryDirectory() as temp_directory:
+        with tempfile.TemporaryDirectory() as temp_directory: # TODO
             file_path = os.path.join(temp_directory, csv_filename)
             with open(file_path, "w") as csv_file:
                 writer = csv.DictWriter(
-                    csv_file,
+                    io.StringIO(),
                     quoting=csv.QUOTE_NONNUMERIC,
                     fieldnames=header_list,
                     restval="",
