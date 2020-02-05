@@ -1866,7 +1866,7 @@ class StudyResponsesFrameDataIndividualCSV(StudyResponsesAll):
 
 class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
     """
-    Hitting this URL downloads a template data dictionary for frame-level data in CSV format
+    Hitting this URL queues creation of a template data dictionary for frame-level data in CSV format. The file is put on GCP and a link is emailed to the user.
     """
 
     def get(self, request, *args, **kwargs):
