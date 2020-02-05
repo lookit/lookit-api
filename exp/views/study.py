@@ -1461,7 +1461,9 @@ def build_framedata_dict_csv(writer, responses):
     event_keys = set()
     unique_frame_keys_dict = {}
 
+    print("Starting frame data dict creation")
     for page_num in response_paginator.page_range:
+        print("Processing page of responses")
         page_of_responses = response_paginator.page(page_num)
         for resp in page_of_responses:
             this_resp_data = get_frame_data(resp)["data"]
@@ -1505,6 +1507,7 @@ def build_framedata_dict_csv(writer, responses):
         }
     )
 
+    print("Writing frame ids and keys")
     # Add placeholders to describe each frame type
     unique_frame_ids = sorted(list(unique_frame_ids))
     for frame_id in unique_frame_ids:
@@ -1544,6 +1547,7 @@ def build_framedata_dict_csv(writer, responses):
                 ),
             }
         )
+    print("Finished creating frame data dict")
 
 def build_summary_csv(responses, optional_headers_selected_ids):
     """
@@ -1876,7 +1880,7 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
         )
 
         build_framedata_dict.delay(
-            f"{self.get_object().uuid}_all_attachments",
+            filename,
             study.uuid,
             self.request.user.uuid,
         )
