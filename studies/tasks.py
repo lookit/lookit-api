@@ -190,8 +190,6 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     from exp.utils import RESPONSE_PAGE_SIZE
     from exp.views.study import build_framedata_dict_csv
     import io
-    
-    print('in the task')
 
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
     study = Study.objects.get(uuid=study_uuid)
@@ -211,7 +209,7 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
 
     # make filename for this request unique by adding timestamp
     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    csv_filename = f"{filename}_{timestamp}.zip"
+    csv_filename = f"{filename}_{timestamp}.csv"
 
     # get the gc client
     gs_client = gc_storage.client.Client(project=settings.GS_PROJECT_ID)
@@ -232,6 +230,7 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     ]
 
     # if the file exists short circuit and send the email
+    print("Putting on GCP")
     if not gs_blob.exists():
         # if it doesn't exist build the file
         with tempfile.TemporaryDirectory() as temp_directory: # TODO
@@ -252,7 +251,7 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
 
     # then send the email with a 24h link
     signed_url = gs_blob.generate_signed_url(
-        int(time.time() + datetime.timedelta(hours=24).seconds)
+        datetime.timedelta(hours=24)
     )
     # send an email with the signed url and return
     email_context = dict(
