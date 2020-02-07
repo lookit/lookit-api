@@ -189,7 +189,6 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     from accounts.models import User
     from exp.utils import RESPONSE_PAGE_SIZE
     from exp.views.study import build_framedata_dict_csv
-    import io
 
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
     study = Study.objects.get(uuid=study_uuid)
