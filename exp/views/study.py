@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import (
 from django.core.mail import BadHeaderError
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Prefetch, Q
+from django.db.models import Q, Prefetch
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, reverse
@@ -29,16 +29,16 @@ from revproxy.views import ProxyView
 import attachment_helpers
 from accounts.models import Child, Message, Organization, User
 from accounts.utils import (
-    hash_id,
     hash_child_id,
-    hash_participant_id,
     hash_demographic_id,
+    hash_id,
+    hash_participant_id,
 )
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.utils import (
+    RESPONSE_PAGE_SIZE,
     csv_dict_output_and_writer,
     flatten_dict,
-    RESPONSE_PAGE_SIZE,
     round_age,
     round_ages_from_birthdays,
     study_name_for_files,
@@ -61,9 +61,9 @@ from studies.queries import (
     get_study_list_qs,
 )
 from studies.tasks import (
+    build_framedata_dict,
     build_zipfile_of_videos,
     ember_build_and_gcp_deploy,
-    build_framedata_dict,
 )
 from studies.workflow import (
     STATE_UI_SIGNALS,
@@ -578,7 +578,9 @@ class StudyParticipantContactView(
             .all()
         )
 
-        # Since we only need a few values for display/sorting, but they include both properties of related fields and an annotated recipient list, just create explicitly
+        # Since we only need a few values for display/sorting, but they include both
+        # properties of related fields and an annotated recipient list, just create
+        # explicitly
         ctx["previous_messages"] = [
             {
                 "sender": {
