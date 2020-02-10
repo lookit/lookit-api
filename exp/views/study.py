@@ -544,6 +544,13 @@ class StudyParticipantContactView(
             + slugify(participant["nickname"] or "anonymous")
         )
 
+    def participant_slug_from_model(self, participant):
+        return (
+            hash_id(participant.uuid, self.object.uuid, self.object.salt)
+            + "-"
+            + slugify(participant.nickname or "anonymous")
+        )
+
     def get_context_data(self, **kwargs):
         """Gets the required data for emailing participants."""
         ctx = super().get_context_data(**kwargs)
@@ -570,12 +577,16 @@ class StudyParticipantContactView(
             par["slug"] = self.participant_slug(par)
         ctx["participants"] = participants
 
+        # previous_messages = (
+        #     study.message_set.prefetch_related("recipients")
+        #     .select_related("sender")
+        #     .all()
+        # )
         previous_messages = (
-            study.message_set.prefetch_related("recipients")
+            Message.objects.filter(related_study=self.object)
             .select_related("sender")
-            .all()
+            .prefetch_related("recipients")
         )
-
         # Since we only need a few values for display/sorting, but they include both
         # properties of related fields and an annotated recipient list, just create
         # explicitly
@@ -583,12 +594,15 @@ class StudyParticipantContactView(
             {
                 "sender": {
                     "uuid": message.sender.uuid,
-                    "full_name": message.sender.get_full_name,
+                    "full_name": message.sender.get_full_name(),
                 },
                 "subject": message.subject,
                 "recipients": [
-                    {**recipient, "slug": self.participant_slug(recipient)}
-                    for recipient in message.recipients.values()
+                    {
+                        **recipient.__dict__,  # This is terrible. I know :(
+                        "slug": self.participant_slug_from_model(recipient),
+                    }
+                    for recipient in message.recipients.all()
                 ],
                 "date_created": message.date_created,
                 "body": message.body,
