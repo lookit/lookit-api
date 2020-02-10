@@ -909,7 +909,7 @@ class StudyResponsesConsentManager(
     """Manage videos from here."""
 
     template_name = "studies/study_responses_consent_ruling.html"
-    queryset = Study.objects.prefetch_related("responses", "videos")
+    queryset = Study.objects.all()
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
