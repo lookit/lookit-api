@@ -535,11 +535,9 @@ class StudyParticipantContactView(
     template_name = "studies/study_participant_contact.html"
 
     def participant_hash(self, participant):
-        study = self.get_object()
-        return hash_id(participant["uuid"], study.uuid, study.salt)
+        return hash_id(participant["uuid"], self.object.uuid, self.object.salt)
 
     def participant_slug(self, participant):
-        study = self.get_object()
         return (
             self.participant_hash(participant)
             + "-"
