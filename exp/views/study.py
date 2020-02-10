@@ -931,7 +931,6 @@ class StudyResponsesConsentManager(
                         ),
                         "sequence": json.dumps(response.pop("sequence")),
                         "completed": json.dumps(response.pop("completed")),
-                        "withdrawn": response_is_withdrawn(response["exp_data"]),
                         "date_created": str(response["date_created"]),
                     },
                     "participant": {
@@ -950,10 +949,6 @@ class StudyResponsesConsentManager(
                         ),
                     },
                 }
-
-                exp_data = response.pop("exp_data")
-                if response["current_ruling"] == ACCEPTED:
-                    response_json["details"]["exp_data"] = exp_data
 
                 # TODO: Upgrade to Django 2.x and use json_script.
         context["response_key_value_store"] = json.dumps(response_key_value_store)
