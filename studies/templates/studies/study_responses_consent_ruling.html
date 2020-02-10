@@ -183,14 +183,6 @@
 
             function updateResponseDataSection(responseData) {
                 let details = responseData["details"];
-                let expData = details["exp_data"];
-                $responseDataSection.find("#exp-data").html(JSON.stringify(expData, undefined, 2) || "No data available unless consent approved");
-                $responseDataSection.toggleClass('withdrawn', !!details["general"]["withdrawn"]);
-                if (details["general"]["withdrawn"]) {
-                    $('#general-info-header').html('Response Information (response video withdrawn)');
-                } else {
-                    $('#general-info-header').html('Response Information');
-                }
 
                 $generalHeader.empty();
                 $generalRow.empty();
@@ -546,7 +538,6 @@
                     <th>Global Event Timings</th>
                     <th>Sequence</th>
                     <th>Completed</th>
-                    <th>Withdrawn</th>
                     <th>Date Created</th>
                 </tr>
                 </thead>
@@ -556,10 +547,6 @@
                 </tr>
                 </tbody>
             </table>
-            <h3>Full Response Data</h3>
-            <pre class="center-block" id="exp-data">
-                {# Experiment data appended here #}
-            </pre>
         </div>
     </div>
 {% endblock %}
