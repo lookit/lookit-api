@@ -318,7 +318,7 @@
                                         <form id="buildForm" method="POST" style="display:none">{% csrf_token %}
                                             <input type="hidden" name="build" value="{{ study.id }}"/>
                                         </form>
-                                        <a class="btn btn-default btn-sm" onclick="buildStudy()">
+                                        <a class="btn btn-default btn-sm" onclick="buildStudy()" {% if study.built %}disabled{% endif %}>
                                             Build experiment runner
                                             <i aria-hidden="true">
                                                 <div class="fas fa-hammer"></div>
@@ -335,7 +335,7 @@
                                     <form class="col-xs-4" action="{% url 'exp:study-preview-build' study.uuid %}"
                                           method="POST">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-default btn-sm">
+                                        <button type="submit" class="btn btn-default btn-sm" {% if study.previewed %}disabled{% endif %}>
                                             Build preview runner
                                             <div class="fas fa-eye"><i aria-hidden="true"></i></div>
                                         </button>
