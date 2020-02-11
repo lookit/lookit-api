@@ -741,7 +741,10 @@ class StudyUpdateView(
 
         context["study_types"] = StudyType.objects.all()
         context["study_metadata"] = self.object.metadata
-        # TODO: add friendly names for some types
+        context["key_display_names"] = {
+            "player_repo_url": "Experiment runner code URL",
+            "last_known_player_sha": "Experiment runner version ID (commit SHA)",
+        }
         context["types"] = [
             exp_type.configuration["metadata"]["fields"]
             for exp_type in context["study_types"]

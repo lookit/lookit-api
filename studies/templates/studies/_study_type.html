@@ -34,7 +34,7 @@
                 <div class='type-fields' id='type-metadata-{{ forloop.counter }}'>
                     {% for key, value in type.items %}
                         <div class="form-group metadata-key" data-previous='{{study.metadata|get_key:key|default:""}}'>
-                            <label>{{ key }} </label>
+                            <label>{{key_display_names|get_key:key|default:key}} </label>
                             <input name="{{key}}" type="text" value="{% if forloop.parentloop.counter == currentType and not create %}{{study.metadata|get_key:key|default:""}}{% else %}{{value | default:""}}{% endif %}" class="form-control">
                         </div>
                     {% endfor %}
