@@ -100,22 +100,16 @@ class FrameActionDispatcher(object):
             pass
 
     def consent(self, response, frame_data: dict, current_frame_id, *args, **kwargs):
-        """Upon saving data from a consent frame, mark the video collected as consent footage.
-        This means the participant will have to proceed from the consent frame before 
-        consent footage is accessible to researchers.
+        """What do do upon saving data from a consent frame. Could eventually set
+        completed_consent_frame on the response here, rather than relying on ember-lookit-
+        frameplayer to provide that. Note that we can't mark the consent VIDEOS as 
+        is_consent_footage here, because the Video object doesn't exist yet - it will take
+        a second or two before Pipe sends it to S3, so that's handled upon Video creation
+        in from_pipe_payload. 
         
         Args:
             response: Response Model.
             frame_data: dictionary of frame data.
             current_frame_id: ID of the current frame (e.g. 1-my-video-consent)
         """
-        for video in response.videos.filter(frame_id=current_frame_id):
-            video.is_consent_footage = True
-            video.save()
-        # Using frame_id as likely to be most robust, even with slightly convoluted generation
-        # of frame IDs during randomizer-generated frames (there should at least never be
-        # duplicate frame IDs because of the incrementing frame number at the start of the
-        # ID). Alternative in case needed in future is to use video filenames -
-        # video.full_name includes extension (.mp4), videoList is filename w/o extension.
-        #
-        # if any([consentFilename in video.full_name for consentFilename in frame_data.get("videoList", [])]):
+        pass
