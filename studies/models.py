@@ -948,6 +948,8 @@ class Video(models.Model):
                 logger.error(f"Response with uuid {response_uuid} does not exist. {ex}")
                 raise
 
+            frame_type = response.exp_data.get(frame_id, {}).get("frameType", "")
+
             return cls.objects.create(
                 pipe_name=old_pipe_name,
                 pipe_numeric_id=data["id"],
@@ -957,7 +959,7 @@ class Video(models.Model):
                 full_name=new_full_name,
                 study=study,
                 response=response,
-                is_consent_footage=False,
+                is_consent_footage=(frame_type == "CONSENT"),
             )
 
     @cached_property
