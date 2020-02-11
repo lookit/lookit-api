@@ -544,13 +544,6 @@ class StudyParticipantContactView(
             + slugify(participant["nickname"] or "anonymous")
         )
 
-    def participant_slug_from_model(self, participant):
-        return (
-            hash_id(participant.uuid, self.object.uuid, self.object.salt)
-            + "-"
-            + slugify(participant.nickname or "anonymous")
-        )
-
     def get_context_data(self, **kwargs):
         """Gets the required data for emailing participants."""
         ctx = super().get_context_data(**kwargs)
@@ -598,11 +591,8 @@ class StudyParticipantContactView(
                 },
                 "subject": message.subject,
                 "recipients": [
-                    {
-                        **recipient.__dict__,  # This is terrible. I know :(
-                        "slug": self.participant_slug_from_model(recipient),
-                    }
-                    for recipient in message.recipients.all()
+                    {**recipient, "slug": self.participant_slug(recipient)}
+                    for recipient in message.recipients.all().values("uuid", "nickname")
                 ],
                 "date_created": message.date_created,
                 "body": message.body,
