@@ -459,6 +459,14 @@ a:hover.build-study-link {
     padding-top: 100px;
 }
 
+#study-details-form .ace-overlay {
+    width: 100%;
+}
+
+#study-details-form .code-container {
+    max-height: 10em;
+}
+
 /* Participant Detail */
 .child-name {
     background-color: #F5F5F5;

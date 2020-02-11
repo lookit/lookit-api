@@ -17,19 +17,12 @@
     </script>
     <script>
         $(document).ready(function () {
-            $('#invalidate_build_warning').hide();
+            $('#invalidate-build-warning').hide();
             $('#save-button').click(function() {
                 var runner_type_changed = ($('#id_study_type').data('previous') != $('#id_study_type').val());
-                console.log('Previous value: ' + $('#id_study_type').data('previous'));
-                console.log('Current value: ' + $('#id_study_type').val());
-                
                 $('#study-type-metadata div.metadata-key').each(function( index, element) {
-                    console.log('Previous value: ' + $(element).data('previous'));
-                    console.log('Current value: ' + $('input', element).val());
                     runner_type_changed = runner_type_changed || ($(element).data('previous') != $('input', element).val());
                 })
-                
-                console.log(runner_type_changed);
                 if (runner_type_changed) {
                     $('#invalidate-build-warning').show();
                 }
