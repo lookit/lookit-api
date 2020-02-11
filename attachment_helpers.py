@@ -19,21 +19,6 @@ def get_all_study_attachments(study_uuid):
     return bucket.objects.filter(Prefix=f"videoStream_{study_uuid}")
 
 
-def get_consent_videos(study_uuid):
-    """
-    Get all consent videos for a particular study
-    """
-    s3 = boto3.resource("s3")
-    bucket = s3.Bucket(settings.BUCKET_NAME)
-    return [
-        att
-        for att in bucket.objects.filter(
-            Prefix=f"videoStream_{study_uuid}_1-video-consent"
-        )
-        if "PREVIEW_DATA_DISREGARD" not in att.key
-    ]
-
-
 def get_download_url(video_key):
     """
     Generate a presigned url for the video that expires in 60 seconds.
