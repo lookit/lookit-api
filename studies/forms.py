@@ -64,11 +64,7 @@ STUDY_HELP_TEXT_EDIT = (
 
 
 class StudyEditForm(BaseStudyForm):
-    """Form for editing an existing or creating a new study.
-
-    Study type is NOT included in this form as that submission is handled separately during edit, although metadata
-    about the field is stored here for consistency.
-    """
+    """Form for editing an existing or creating a new study."""
 
     structure = forms.CharField(
         label="Protocol configuration",
@@ -91,7 +87,7 @@ class StudyEditForm(BaseStudyForm):
             json_data = json.loads(structure)  # loads string as json
         except:
             raise forms.ValidationError(
-                "Saving protocol file failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
+                "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
 
         return json_data
@@ -126,6 +122,7 @@ class StudyEditForm(BaseStudyForm):
             "public",
             "structure",
             "criteria_expression",
+            "study_type",
         ]
         labels = {
             "short_description": "Short Description",
@@ -174,38 +171,11 @@ class StudyEditForm(BaseStudyForm):
         }
 
 
-# Form for creating a new study. Study type is included as part of this form.
+# Form for creating a new study.
 class StudyForm(StudyEditForm):
+    # structure = self.structure
+    # structure.help_text = "Configure frames to use in your study and specify their order. (This can be added after creating your study.)"
+
     class Meta(StudyEditForm.Meta):
         help_texts = StudyEditForm.Meta.help_texts.copy()
         help_texts["study_type"] = STUDY_HELP_TEXT_INITIAL
-
-        fields = StudyEditForm.Meta.fields + ["study_type"]
-
-
-class StudyBuildForm(forms.ModelForm):
-    structure = forms.CharField(
-        label="Build Study - Add JSON",
-        widget=AceOverlayWidget(
-            mode="json",
-            wordwrap=True,
-            theme="textmate",
-            width="100%",
-            height="100%",
-            showprintmargin=False,
-        ),
-        required=False,
-        help_text="Add the frames of your study as well as the sequence of those frames.",
-    )
-
-    def clean_structure(self):
-        structure = self.cleaned_data["structure"]
-        try:
-            json_data = json.loads(structure)  # loads string as json
-        except:
-            raise forms.ValidationError("Invalid JSON")
-        return json_data
-
-    class Meta:
-        model = Study
-        fields = ["structure"]

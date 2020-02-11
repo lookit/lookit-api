@@ -1,6 +1,7 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 {% load guardian_tags %}
+{% load exp_extras %}
 
 {% block head %}
     {{ block.super }}
@@ -16,11 +17,22 @@
     </script>
     <script>
         $(document).ready(function () {
-            $('form').submit(function () {
-                $('#save_study_details').prop("disabled", "disabled");
-                $('#save_study_details_confirm').prop("disabled", "disabled");
-                $('#save-study-type').prop("disabled", "disabled");
-                $('#save-study-type-confirm').prop("disabled", "disabled");
+            $('#invalidate_build_warning').hide();
+            $('#save-button').click(function() {
+                var runner_type_changed = ($('#id_study_type').data('previous') != $('#id_study_type').val());
+                console.log('Previous value: ' + $('#id_study_type').data('previous'));
+                console.log('Current value: ' + $('#id_study_type').val());
+                
+                $('#study-type-metadata div.metadata-key').each(function( index, element) {
+                    console.log('Previous value: ' + $(element).data('previous'));
+                    console.log('Current value: ' + $('input', element).val());
+                    runner_type_changed = runner_type_changed || ($(element).data('previous') != $('input', element).val());
+                })
+                
+                console.log(runner_type_changed);
+                if (runner_type_changed) {
+                    $('#invalidate-build-warning').show();
+                }
             });
         });
     </script>
@@ -57,6 +69,36 @@
             <div class="col-lg-10 col-lg-offset-1">
                 <div class="panel panel-default mt-xl">
                     <div class="panel-heading">
+                        <h1 class="panel-title">Study Preview </h1>
+                    </div>
+                    <div class="panel-body">
+                        <p>Here you can preview what your study will look like for participants. </p>
+                        
+                        <p>This preview reflects the last saved protocol configuration. To try out changes, save them below first.</p>
+                        <form action="{% url 'exp:preview-proxy' path=study.uuid %}" method="GET"
+                              target="_blank">{% csrf_token %}
+                            
+                            <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
+                                <button class="btn btn-primary pull-left" type="submit" {% if study.previewed %}disabled{% endif %}>{% bootstrap_icon "wrench" %} Build preview runner
+                                </button>
+                            </form>
+                            
+                            <button class="btn btn-primary pull-right" type="submit"
+                                    {% if study.previewed is False %}disabled{% endif %}>{% bootstrap_icon "eye-open" %}
+                                See Preview
+                            </button>
+                            {% if study.previewed is False %}
+                                <p class="help-block pull-right" style="clear:both;"><em>You need to build a preview runner first.</em></p>{% endif %}
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1">
+                <div class="panel panel-default mt-xl">
+                    <div class="panel-heading">
                         <h1 class="panel-title">Study Editor </h1>
                     </div>
                     <div class="panel-body">
@@ -64,75 +106,10 @@
                               method="post">{% csrf_token %}
                             {% include "studies/_study_fields.html" with form=form study=study %}
                             {% bootstrap_field form.structure %}
-                            <div class="pull-right">
-                                {% buttons %}
-                                    <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
-                                        Cancel </a>
-                                    {% if save_confirmation %}
-                                        <a data-toggle="modal" class="btn btn-danger" href="#saveStudyConfirmation">Save
-                                            Changes</a>
-                                    {% else %}
-                                        <button type="submit" id="save_study_details" class="btn btn-success">
-                                            Save Changes
-                                        </button>
-                                    {% endif %}
-                                {% endbuttons %}
-                                <div class="modal fade" id="saveStudyConfirmation">
-                                    <form class="well" method="post">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal">×</button>
-                                                <h3> Are you sure you want to modify {{ study.name }}? </h3>
-                                            </div>
-                                            <div class="modal-body">
-                                                {% csrf_token %}
-                                                <p>
-                                                    This study has already been <strong><em>approved</em></strong>. If
-                                                    you edit this study, the system will
-                                                    automatically give it a rejected status. You will have to resubmit
-                                                    the study so your changes can
-                                                    be reviewed.
-                                                </p>
-                                                <p>(If your only changes are <strong>toggling the study between private/public</strong> or <strong>changing the eligibility criteria</strong>,
-                                                    your study will stay in its {{ study.state }} state.) </p>
-                                            </div>
-                                            <div class="modal-footer"> {% csrf_token %}
-                                                <a class="btn btn-default"
-                                                   href="{% url 'exp:study-edit' pk=study.id %}"> Discard Changes </a>
-                                                <button id="save_study_details_confirm" type="submit"
-                                                        class="btn btn-danger">
-                                                    Save
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </form>
-                        <form action="{% url 'exp:preview-proxy' path=study.uuid %}" method="GET"
-                              target="_blank">{% csrf_token %}
-                            <button class="btn btn-primary" type="submit"
-                                    {% if study.previewed is False %}disabled{% endif %}>{% bootstrap_icon "eye-open" %}
-                                See Preview
-                            </button>
-                            {% if study.previewed is False %}
-                                <p class="help-block"><em>You need to build a preview runner first. Please see "Change
-                                    Experiment Runner Type and Version" section below.</em></p>{% endif %}
-                        </form>
-                    </div>
-                </div>
-
-                <div class="panel panel-default mt-md">
-                    <div class="panel-heading">
-                        <h1 class="panel-title">Change
-                                    Experiment Runner Type and Version</h1>
-                    </div>
-                    <div class="panel-body">
-                        <form id="study-type-form" method="POST">{% csrf_token %}
-
+                            
                             <div class="form-group">
                                 <label class="control-label" for="id_study_type">Experiment runner type</label>
-                                <select name="study_type" class="form-control" title="" required="" id="id_study_type">
+                                <select name="study_type" class="form-control" title="" required="" id="id_study_type" data-previous="{{study.study_type.id}}">
                                     <option value="">---------</option>
                                     {% for option in study_types %}
                                         <option {% if option.name == study.study_type.name %} selected {% endif %}
@@ -147,64 +124,62 @@
                                 </div>
                             </div>
                             
-                            {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
+                            {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}                            
+                            
                             <div class="pull-right">
-                                <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}"> Discard
-                                    changes </a>
-                                {% if save_confirmation %}
-                                    <a data-toggle="modal" class="btn btn-danger" href="#saveTypeConfirmation">Save</a>
-                                {% else %}
-                                    <button id="save-study-type" type="submit" class="btn btn-success">
-                                        Save
-                                    </button>
-                                {% endif %}
-                            </div>
-                            <div class="modal fade" id="saveTypeConfirmation">
-                                <form class="well" method="post">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">×</button>
-                                            <h3> Are you sure you want to modify the experiment runner type and/or version in
-                                                {{ study.name }}? </h3>
+                                {% buttons %}
+                                    <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
+                                        Cancel </a>
+                                    <a id="save-button" data-toggle="modal" class="btn btn-success" href="#saveStudyConfirmation">Save
+                                        Changes</a>
+                                {% endbuttons %}
+                                <div class="modal fade" id="saveStudyConfirmation">
+                                    <form class="well" method="post">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                                <h3> Are you sure you want to modify {{ study.name }}? </h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                {% csrf_token %}
+                                                <p id="invalidate-build-warning">
+                                                {% if study.previewed or study.built%}
+                                                    You have already built a preview runner and/or an experiment runner!
+                                                    Because you are changing the runner version, you will need to rebuild these
+                                                    before you can preview or start your study.
+                                                {% endif %}
+                                                </p>
+                                                {% if save_confirmation %}
+                                                <p>
+                                                    This study has already been <strong><em>approved</em></strong>. If
+                                                    you edit this study, the system will
+                                                    automatically give it a rejected status. You will have to resubmit
+                                                    the study so your changes can
+                                                    be reviewed.
+                                                </p>
+                                                <p>(If your only changes are <strong>toggling the study between private/public</strong> or <strong>changing the eligibility criteria</strong>,
+                                                    your study will stay in its {{ study.state }} state.) </p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="modal-footer"> {% csrf_token %}
+                                                <a class="btn btn-default"
+                                                   href="{% url 'exp:study-edit' pk=study.id %}"> Discard Changes </a>
+                                                <button id="save_study_details_confirm" type="submit"
+                                                        class="btn btn-danger">
+                                                    Save
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="modal-body">
-                                            {% csrf_token %}
-                                            <p>
-                                                This study has already been <strong><em>approved</em></strong>. If you
-                                                edit
-                                                this study's experiment runner type or version, the system will
-                                                automatically give it a rejected status. You will have to resubmit the
-                                                study
-                                                so your changes can
-                                                be reviewed.
-                                            </p>
-                                        </div>
-                                        <div class="modal-footer"> {% csrf_token %}
-                                            <a class="btn btn-default" href="{% url 'exp:study-edit' study.id %}">
-                                                Discard
-                                                Changes </a>
-                                            <button type="submit" class="save-study-type-confirm btn btn-danger">
-                                                Save
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </form>
-                        <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
-                            <button class="btn btn-primary" type="submit">{% bootstrap_icon "wrench" %} Build preview runner
-                            </button>
-                        </form>
-                        <p class="help-block">
-                            {% if study.previewed is True %}
-                                {% bootstrap_icon "ok" %} <em>Your preview is ready!</em>
-                            {% else %}
-                                <em>You do not yet have a preview runner built. Click above to build a preview runner!</em>
-                            {% endif %}
-                        </p>
                     </div>
                 </div>
-            </div>
+
+            </div>    
         </div>
+                        
+
     </div>
 {% endblock %}

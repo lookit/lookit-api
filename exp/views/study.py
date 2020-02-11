@@ -695,24 +695,30 @@ class StudyUpdateView(
             update_trigger(self)
 
         if "short_description" in self.request.POST:  # Study metadata is being edited.
-            return super().post(request, *args, **kwargs)
 
-        if (
-            "study_type" in self.request.POST
-        ):  # Study type and metadata are being edited...
-            # ... which means we must invalidate the build.
-            study.built = False
-            study.previewed = False
             metadata, meta_errors = self.validate_and_fetch_metadata()
+
+            study_type = StudyType.objects.get(id=self.request.POST.get("study_type"))
+
             if meta_errors:
-                messages.error(self.request, f"METADATA NOT SAVED: {meta_errors}")
+                messages.error(
+                    self.request,
+                    f"WARNING: Experiment runner version not saved: {meta_errors}",
+                )
             else:
-                study.metadata = metadata
-                study.study_type_id = StudyType.objects.filter(
+                new_study_id = StudyType.objects.filter(
                     id=self.request.POST.get("study_type")
                 ).values_list("id", flat=True)[0]
+                if not (
+                    study.study_type_id == new_study_id and metadata == study.metadata
+                ):
+                    study.built = False
+                    study.previewed = False
+                study.metadata = metadata
+                study.study_type_id = new_study_id
                 study.save()
-                messages.success(self.request, f"{study.name} type and metadata saved.")
+
+            return super().post(request, *args, **kwargs)
 
         return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=study.pk)))
 
@@ -735,6 +741,7 @@ class StudyUpdateView(
 
         context["study_types"] = StudyType.objects.all()
         context["study_metadata"] = self.object.metadata
+        # TODO: add friendly names for some types
         context["types"] = [
             exp_type.configuration["metadata"]["fields"]
             for exp_type in context["study_types"]
