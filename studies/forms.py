@@ -9,6 +9,7 @@ from studies.models import Response, Study
 
 
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
+STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
 
 
 class ResponseForm(ModelForm):
@@ -47,33 +48,30 @@ class BaseStudyForm(ModelForm):
         return cleaned_data
 
 
-STUDY_HELP_TEXT_INITIAL = """<p>After selecting a study type above, you'll be asked
-    to fill out some study type metadata as well. This metadata is unique to the 
-    study type, and provides important configurations for building your study.</p>
-    <p>If you're not sure what to enter here, just leave the defaults (you can change this later).</p>
-    <p>For more information on study types and their metadata, please
-    <a href="https://lookit.readthedocs.io/en/develop/experimenter.html#editing-study-type">see the documentation.</a></p>"""
+STUDY_HELP_TEXT_INITIAL = """<p>After selecting an experiment runner type above, you'll be asked
+    to provide some additional configuration information.</p>
+    <p>If you're not sure what to enter here, just leave the defaults (you can change this later).
+    For more information on experiment runner types, please
+    <a href={STUDY_TYPE_HELP_LINK}>see the documentation.</a></p>"""
 
 STUDY_HELP_TEXT_EDIT = (
     STUDY_HELP_TEXT_INITIAL
-    + """<p> Once you've filled in the 
-    required metadata, you'll have to build the dependencies for your experiment in order 
-    to deploy it, which you can do from the detail page. However, you'll probably want 
+    + """<p> You'll have to build an experiment runner to run your experiment to run in before you can start collecting data. The experiment runner has all the code that makes the frames you are using work. You'll probably also want 
     to see what your experiment looks like before you actually deploy it and start 
-    collecting data! You can do that by clicking the "Build Preview Dependencies" button and 
+    collecting data! You can do that by clicking the "Build preview runner" button and 
     then clicking on "See Preview" above after the build finishes.</p>"""
 )
 
 
 class StudyEditForm(BaseStudyForm):
-    """Form for editing an existing a new study.
+    """Form for editing an existing or creating a new study.
 
     Study type is NOT included in this form as that submission is handled separately during edit, although metadata
     about the field is stored here for consistency.
     """
 
     structure = forms.CharField(
-        label="Build Study - Add JSON",
+        label="Protocol configuration",
         widget=AceOverlayWidget(
             mode="json",
             wordwrap=True,
@@ -83,7 +81,7 @@ class StudyEditForm(BaseStudyForm):
             showprintmargin=False,
         ),
         required=False,
-        help_text="Add the frames of your study as well as the sequence of those frames.  This can be added later.",
+        help_text="Configure frames to use in your study and specify their order. (This can be added after creating your study.)",
     )
 
     def clean_structure(self):
@@ -93,7 +91,7 @@ class StudyEditForm(BaseStudyForm):
             json_data = json.loads(structure)  # loads string as json
         except:
             raise forms.ValidationError(
-                "Save failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
+                "Saving protocol file failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
 
         return json_data

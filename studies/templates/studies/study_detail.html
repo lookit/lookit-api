@@ -319,14 +319,14 @@
                                             <input type="hidden" name="build" value="{{ study.id }}"/>
                                         </form>
                                         <a class="btn btn-default btn-sm" onclick="buildStudy()">
-                                            Build Dependencies
+                                            Build experiment runner
                                             <i aria-hidden="true">
                                                 <div class="fas fa-hammer"></div>
                                             </i>
                                         </a>
                                     </div>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
-                                        Study dependencies {% if not study.built %} not {% endif %}built.
+                                        Experiment runner {% if not study.built %} not {% endif %}built.
                                     </div>
                                 </div>
                             </li>
@@ -336,12 +336,12 @@
                                           method="POST">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-default btn-sm">
-                                            Build Preview Dependencies
+                                            Build preview runner
                                             <div class="fas fa-eye"><i aria-hidden="true"></i></div>
                                         </button>
                                     </form>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
-                                        Preview dependencies {% if not study.previewed %} not {% endif %}built.
+                                        Preview runner {% if not study.previewed %} not {% endif %}built.
                                     </div>
                                 </div>
                             </li>
@@ -513,8 +513,8 @@
                                     <div class="col-sm-8">
                                         {{ log.study.name }} study
                                         {% if log.action == "active" %} activated
-                                        {% elif log.action == "deploy" %} dependencies built
-                                        {% elif log.action == "preview" %} preview dependencies built
+                                        {% elif log.action == "deploy" %} experiment runner built
+                                        {% elif log.action == "preview" %} preview runner built
                                         {% else %}
                                             {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
                                     </div>

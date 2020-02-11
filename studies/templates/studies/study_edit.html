@@ -116,21 +116,22 @@
                                 See Preview
                             </button>
                             {% if study.previewed is False %}
-                                <p class="help-block"><em>You need to build your dependencies first. Please see "Change
-                                    Study type and Dependencies" section below.</em></p>{% endif %}
+                                <p class="help-block"><em>You need to build a preview runner first. Please see "Change
+                                    Experiment Runner Type and Version" section below.</em></p>{% endif %}
                         </form>
                     </div>
                 </div>
 
                 <div class="panel panel-default mt-md">
                     <div class="panel-heading">
-                        <h1 class="panel-title">Change Study Type and Dependencies</h1>
+                        <h1 class="panel-title">Change
+                                    Experiment Runner Type and Version</h1>
                     </div>
                     <div class="panel-body">
                         <form id="study-type-form" method="POST">{% csrf_token %}
 
                             <div class="form-group">
-                                <label class="control-label" for="id_study_type">Study Type</label>
+                                <label class="control-label" for="id_study_type">Experiment runner type</label>
                                 <select name="study_type" class="form-control" title="" required="" id="id_study_type">
                                     <option value="">---------</option>
                                     {% for option in study_types %}
@@ -163,7 +164,7 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
-                                            <h3> Are you sure you want to modify the study type and/or study metadata in
+                                            <h3> Are you sure you want to modify the experiment runner type and/or version in
                                                 {{ study.name }}? </h3>
                                         </div>
                                         <div class="modal-body">
@@ -171,7 +172,7 @@
                                             <p>
                                                 This study has already been <strong><em>approved</em></strong>. If you
                                                 edit
-                                                this study's type and/or metadata, the system will
+                                                this study's experiment runner type or version, the system will
                                                 automatically give it a rejected status. You will have to resubmit the
                                                 study
                                                 so your changes can
@@ -191,15 +192,14 @@
                             </div>
                         </form>
                         <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
-                            <button class="btn btn-primary" type="submit">{% bootstrap_icon "wrench" %} Build Preview
-                                Dependencies
+                            <button class="btn btn-primary" type="submit">{% bootstrap_icon "wrench" %} Build preview runner
                             </button>
                         </form>
                         <p class="help-block">
                             {% if study.previewed is True %}
                                 {% bootstrap_icon "ok" %} <em>Your preview is ready!</em>
                             {% else %}
-                                <em>Your preview has not been built yet. Click above to build your preview dependencies!</em>
+                                <em>You do not yet have a preview runner built. Click above to build a preview runner!</em>
                             {% endif %}
                         </p>
                     </div>
