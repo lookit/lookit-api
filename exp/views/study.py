@@ -302,13 +302,22 @@ class StudyDetailView(
                 )
 
         if "build" in self.request.POST:
-            ember_build_and_gcp_deploy.delay(
-                self.get_object().uuid, self.request.user.uuid, preview=False
-            )
-            messages.success(
-                self.request,
-                f"Scheduled Study {self.get_object().name} for build. You will be emailed when it's completed.",
-            )
+            study = self.get_object()
+            if not study.is_building:
+                study.is_building = True
+                study.save()
+                ember_build_and_gcp_deploy.delay(
+                    study.uuid, self.request.user.uuid, preview=False
+                )
+                messages.success(
+                    self.request,
+                    f"Scheduled experiment runner build for {self.get_object().name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+                )
+            else:
+                messages.warning(
+                    self.request,
+                    f"Experiment runner for study {self.get_object().name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
+                )
 
         if self.request.POST.get("clone_study"):
             clone = self.get_object().clone()
@@ -712,8 +721,12 @@ class StudyUpdateView(
                 if not (
                     study.study_type_id == new_study_id and metadata == study.metadata
                 ):
+                    # Invalidate the previous build
                     study.built = False
                     study.previewed = False
+                    # May still be building/previewing, but we're now good to allow another build
+                    study.is_building = False
+                    study.is_previewing = False
                 study.metadata = metadata
                 study.study_type_id = new_study_id
                 study.save()
@@ -2430,13 +2443,23 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         study_permissions = get_perms(request.user, self.object)
 
         if study_permissions and "can_edit_study" in study_permissions:
-            ember_build_and_gcp_deploy.delay(
-                self.object.uuid, request.user.uuid, preview=True
-            )
-            messages.success(
-                request,
-                f"Scheduled Study {self.object.name} for preview. You will be emailed when it's completed.",
-            )
+
+            study = self.object
+            if not study.is_previewing:
+                study.is_previewing = True
+                study.save()
+                ember_build_and_gcp_deploy.delay(
+                    study.uuid, request.user.uuid, preview=True
+                )
+                messages.success(
+                    request,
+                    f"Scheduled preview runner build for {self.object.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+                )
+            else:
+                messages.warning(
+                    request,
+                    f"Preview runner for {self.object.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
+                )
         return super().post(request, *args, **kwargs)
 
     def get_object(self, queryset=None):

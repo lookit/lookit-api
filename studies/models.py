@@ -131,6 +131,8 @@ class Study(models.Model):
     metadata = DateTimeAwareJSONField(default={})
     previewed = models.BooleanField(default=False)
     built = models.BooleanField(default=False)
+    is_previewing = models.BooleanField(default=False)
+    is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True)
 
@@ -433,11 +435,6 @@ class Study(models.Model):
                 )
             ),
             **context,
-        )
-
-    def deploy_study(self, ev):
-        ember_build_and_gcp_deploy.delay(
-            self.uuid, ev.kwargs.get("user").uuid, preview=False
         )
 
     def notify_administrators_of_pause(self, ev):
