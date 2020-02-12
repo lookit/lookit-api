@@ -467,14 +467,39 @@ a:hover.build-study-link {
     max-height: 10em;
 }
 
-#study-details-form #commit-description, #study-create-form #commit-description{
+#study-type-metadata #commit-description {
     margin-left: 3em;
 }
 
-#study-details-form #commit-description th, #study-create-form #commit-description th{
+#study-type-metadata #commit-description th {
+    min-width: 10em;
+    vertical-align: top;
+}
+
+#commit-update-info th {
     min-width: 10em;
 }
 
+#commit-update-info td {
+    padding-right: 1em;
+    border-top: thin solid gray;
+}
+
+#commit-update-info th, #commit-update-info td {
+    vertical-align: top;
+}
+
+#study-type-metadata div.input-container {
+    display: block;
+}
+
+#study-type-metadata div.input-container * {
+    display: inline-block;
+}
+
+#study-type-metadata div.metadata-key input[name="last_known_player_sha"] {
+    width: 75%;
+}
 
 /* Participant Detail */
 .child-name {
