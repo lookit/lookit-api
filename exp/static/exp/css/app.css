@@ -467,6 +467,15 @@ a:hover.build-study-link {
     max-height: 10em;
 }
 
+#study-details-form #commit-description, #study-create-form #commit-description{
+    margin-left: 3em;
+}
+
+#study-details-form #commit-description th, #study-create-form #commit-description th{
+    min-width: 10em;
+}
+
+
 /* Participant Detail */
 .child-name {
     background-color: #F5F5F5;

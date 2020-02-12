@@ -2,6 +2,7 @@
 
 <script>
     $(document).ready(function(){
+    
         if (parseInt("{{ create }}")) {
             document.getElementById("id_study_type").value = '';
             $('#study-type-metadata').hide();
@@ -25,7 +26,48 @@
             $(`#type-metadata-${id}> .form-group > input`).prop("disabled", false);
             $(`#type-metadata-${id}`).show();
         }
+        
+        function updateCommitInfo() {
+            var current_repo = $('#study-type-metadata input[name="player_repo_url"]').val().trim();
+            $('#study-type-metadata input[name="player_repo_url"]').val(current_repo);
+            var current_sha = $('#study-type-metadata input[name="last_known_player_sha"]').val().trim();
+            $('#study-type-metadata input[name="last_known_player_sha"]').val(current_sha);
+            current_repo = current_repo.replace('/\/$/', ''); //remove any trailing slash
+            console.log(current_repo);
+            console.log(current_sha);
+            var commit_display_url = current_repo + '/commit/' + current_sha
+            var commit_api_url = current_repo.replace('https://github.com/', 'https://api.github.com/repos/') + '/commits/' + current_sha
+            $('#commit-description').html('Loading...');
+            
+            if (current_sha == "") {
+                $('#commit-description').html(`Leave the version ID blank to build the experiment runner using the <a target="_blank" href="${current_repo}/commits">latest commit to the master branch</a> of ${current_repo}. This will be automatically filled in when the experiment runner is built.`);
+            } else {
+                $.ajax({
+                    url: commit_api_url,
+                    dataType: 'json'
+                }).done(function(data) {
+                    console.log(data);
+                    var files_changed = $.map(data.files, function(f) {return f.status + ': ' + f.filename}).join('<br>');
+                    console.log(data.files);
+                    var commit_description = `<p>Your study will use commit <a target="_blank" href="${data.html_url}">${data.sha}</a>:</p>` + 
+                        `<table><tr><th scope="row">Date</th><td>${data.commit.author.date}</td></tr>` + 
+                        `<tr><th scope="row">Author</th><td>${data.commit.author.name}</td></tr>` + 
+                        `<tr><th scope="row">Message</th><td>${data.commit.message}</td></tr>` +
+                        `<tr><th scope="row">Lines changed</th><td>${data.stats.total}</td></tr>` +
+                        `<tr><th scope="row">Files changed</th><td>${files_changed}</td></tr></table>`
+                   $('#commit-description').html(commit_description);
+                }).fail(function() {
+                    var error_message = `<p> Commit ${current_sha} not found in this repo! </p>` + 
+                        `<p>View a <a target="_blank" href="${current_repo}/commits/">list of available commits</a> and copy the 40-character SHA using the copy button.`;
+                    $('#commit-description').html(error_message);
+                });
+            }
+        }
+        
+        $('#study-type-metadata div.metadata-key input').on('change', updateCommitInfo);
+        updateCommitInfo();
     });
+    
 </script>
 <div id="study-type-metadata" style="display:none">
     <div class="row">
@@ -40,6 +82,7 @@
                     {% endfor %}
                 </div>
             {% endfor %}
+            <div id="commit-description"></div>
         </div>
     </div>
 </div>

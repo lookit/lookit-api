@@ -131,7 +131,7 @@ class StudyEditForm(BaseStudyForm):
             "exit_url": "Exit URL",
             "criteria": "Participant Eligibility Description",
             "contact_info": "Researcher Contact Information",
-            "public": "Discoverable - Do you want this study to be listed on the Lookit 'Studies' page once you start it?",
+            "public": "Discoverable - List this study on the 'Studies' page once you start it?",
             "study_type": "Experiment Runner Type",
             "compensation_description": "Compensation",
         }
