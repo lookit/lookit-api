@@ -459,7 +459,7 @@ a:hover.build-study-link {
     padding-top: 100px;
 }
 
-#study-details-form .ace-overlay {
+#study-details-form .ace-overlay, #study-create-form .ace-overlay {
     width: 100%;
 }
 
