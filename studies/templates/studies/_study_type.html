@@ -120,7 +120,7 @@
         $('#update-button').prop('disabled', true);
         $('#update-button').on('click', checkForUpdates);
         // Only run update upon changes to the relevant keys, not other inputs for other player types
-        $('#study-type-metadata div.metadata-key input[name="last_known_player_sha"], #study-type-metadata div.metadata-key input[name="player_repo_url"]').on('change', updateCommitInfo);
+        $('#study-type-metadata div.metadata-key input[name="last_known_player_sha"], #study-type-metadata div.metadata-key input[name="player_repo_url"]').on('change paste', updateCommitInfo);
         updateCommitInfo();
     });
     
