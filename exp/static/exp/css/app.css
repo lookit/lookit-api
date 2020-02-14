@@ -467,10 +467,6 @@ a:hover.build-study-link {
     max-height: 10em;
 }
 
-#study-type-metadata #commit-description {
-    margin-left: 3em;
-}
-
 #study-type-metadata #commit-description th {
     min-width: 10em;
     vertical-align: top;
@@ -489,16 +485,20 @@ a:hover.build-study-link {
     vertical-align: top;
 }
 
-#study-type-metadata div.input-container {
+#commit-update-info h3 {
+    vertical-align: middle;
+}
+
+#commit-description .panel-heading {
     display: block;
 }
 
-#study-type-metadata div.input-container * {
+#commit-description .panel-heading * {
     display: inline-block;
 }
 
-#study-type-metadata div.metadata-key input[name="last_known_player_sha"] {
-    width: 75%;
+#commit-description .panel-title {
+    width: 100%;
 }
 
 /* Participant Detail */

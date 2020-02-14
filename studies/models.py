@@ -413,7 +413,7 @@ class Study(models.Model):
         """
         if not self.built:
             raise RuntimeError(
-                f'Cannot activate study - "{self.name}" ({self.id}) has not been built!'
+                f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
             )
 
     def notify_administrators_of_activation(self, ev):

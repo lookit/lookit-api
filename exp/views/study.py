@@ -118,10 +118,12 @@ def get_discoverability_text(study):
     )
     return DISCOVERABILITY_HELP_TEXT.get(discoverability_key)
 
+
 KEY_DISPLAY_NAMES = {
     "player_repo_url": "Experiment runner code URL",
-    "last_known_player_sha": "Experiment runner version ID (commit SHA)",
+    "last_known_player_sha": "Experiment runner version (commit SHA)",
 }
+
 
 class StudyCreateView(
     ExperimenterLoginRequiredMixin,
@@ -189,6 +191,7 @@ class StudyCreateView(
         initial["structure"] = json.dumps(Study._meta.get_field("structure").default)
         return initial
 
+
 class StudyUpdateView(
     ExperimenterLoginRequiredMixin,
     PermissionRequiredMixin,
@@ -238,9 +241,7 @@ class StudyUpdateView(
             new_study_id = StudyType.objects.filter(
                 id=self.request.POST.get("study_type")
             ).values_list("id", flat=True)[0]
-            if not (
-                study.study_type_id == new_study_id and metadata == study.metadata
-            ):
+            if not (study.study_type_id == new_study_id and metadata == study.metadata):
                 # Invalidate the previous build
                 study.built = False
                 study.previewed = False
@@ -286,6 +287,7 @@ class StudyUpdateView(
 
     def get_success_url(self):
         return reverse("exp:study-edit", kwargs={"pk": self.object.id})
+
 
 class StudyListView(
     ExperimenterLoginRequiredMixin,
@@ -759,9 +761,6 @@ class StudyParticipantContactView(
             Q(groups__name=study.study_admin_group.name)
             | Q(groups__name=study.study_read_group.name)
         )
-
-
-
 
 
 class StudyResponsesList(

@@ -67,15 +67,18 @@
                     <div class="panel-body">
                         <p>Here you can preview what your study will look like for participants. </p>
                         
-                        <p>This preview reflects the last saved protocol configuration. To try out changes, save them below first.</p>
-                        <form action="{% url 'exp:preview-proxy' path=study.uuid %}" method="GET"
+                        <p>This preview reflects the last saved protocol. To try out new changes, save them below first.</p>
+                        
+                        <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
+                            <button type="submit" class="btn btn-primary pull-left" {% if study.previewed %}disabled{% endif %}>
+                                {% bootstrap_icon "wrench" %} {% if study.previewed %}Preview runner is ready{% else %}Build preview runner{% endif %}
+                            </button>
+                            
+                        </form>
+                        
+                       <form action="{% url 'exp:preview-proxy' path=study.uuid %}" method="GET"
                               target="_blank">{% csrf_token %}
-                            
-                            <form action="{% url 'exp:study-preview-build' study.uuid %}" method="POST">{% csrf_token %}
-                                <button class="btn btn-primary pull-left" type="submit" {% if study.previewed %}disabled{% endif %}>{% bootstrap_icon "wrench" %} Build preview runner
-                                </button>
-                            </form>
-                            
+                              
                             <button class="btn btn-primary pull-right" type="submit"
                                     {% if study.previewed is False %}disabled{% endif %}>{% bootstrap_icon "eye-open" %}
                                 See Preview
@@ -115,9 +118,8 @@
                                     {{form.Meta.help_texts.study_type}}
                                     {% endautoescape %}
                                 </div>
+                                {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}   
                             </div>
-                            
-                            {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}                            
                             
                             <div class="pull-right">
                                 {% buttons %}

@@ -274,7 +274,7 @@
                                     </span>
                                     </div>
                                 {% else %}
-                                    <span>Your study link will show up here when you have built it.</span>
+                                    <span>Your study link will show up here when you have built the experiment runner.</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -326,7 +326,7 @@
                                         </a>
                                     </div>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
-                                        Experiment runner {% if not study.built %} not {% endif %}built.
+                                        Experiment runner {% if not study.built %} {% if study.is_building %} building now{% else %} not built{% endif %}{% else %}built{% endif %}.
                                     </div>
                                 </div>
                             </li>
@@ -341,7 +341,7 @@
                                         </button>
                                     </form>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
-                                        Preview runner {% if not study.previewed %} not {% endif %}built.
+                                        Preview runner {% if not study.previewed %} {% if study.is_previewing %} building now{% else %} not built{% endif %}{% else %}built{% endif %}.
                                     </div>
                                 </div>
                             </li>

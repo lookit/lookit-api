@@ -10,7 +10,9 @@ from studies.models import Response, Study
 
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
 STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
-PROTOCOL_CONFIG_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-create-experiment.html"
+PROTOCOL_CONFIG_HELP_LINK = (
+    "https://lookit.readthedocs.io/en/develop/researchers-create-experiment.html"
+)
 
 
 class ResponseForm(ModelForm):
@@ -55,18 +57,21 @@ STUDY_TYPE_HELP_TEXT_INITIAL = """<p>After selecting an experiment runner type a
     For more information on experiment runner types, please
     <a href={STUDY_TYPE_HELP_LINK}>see the documentation.</a></p>"""
 
-STUDY_HELP_TEXT_EDIT = STUDY_TYPE_HELP_TEXT_INITIAL # Leave the same for now but may change in the future
+STUDY_HELP_TEXT_EDIT = (
+    STUDY_TYPE_HELP_TEXT_INITIAL
+)  # Leave the same for now but may change in the future
 
 PROTOCOL_HELP_TEXT_EDIT = "Configure frames to use in your study and specify their order. For information on how to set up your protocol, please <a href={PROTOCOL_CONFIG_HELP_LINK}>see the documentation.</a>"
 
-PROTOCOL_HELP_TEXT_INITIAL = (PROTOCOL_HELP_TEXT_EDIT 
+PROTOCOL_HELP_TEXT_INITIAL = (
+    PROTOCOL_HELP_TEXT_EDIT
     + " You can leave the default for now and come back to this later."
 )
+
 
 class StudyEditForm(BaseStudyForm):
     """Form for editing an existing or creating a new study."""
 
-    
     structure = forms.CharField(
         label="Protocol configuration",
         widget=AceOverlayWidget(
@@ -140,14 +145,15 @@ class StudyEditForm(BaseStudyForm):
             "long_description": Textarea(attrs={"rows": 2}),
             "compensation_description": Textarea(attrs={"rows": 2}),
             "exit_url": Textarea(attrs={"rows": 1}),
-            "criteria": Textarea(attrs={"rows": 1,
-                "placeholder": "For 4-year-olds who love dinosaurs",}
+            "criteria": Textarea(
+                attrs={"rows": 1, "placeholder": "For 4-year-olds who love dinosaurs"}
             ),
-            "duration": Textarea(attrs={"rows": 1,
-                "placeholder": "15 minutes",}
-            ),
-            "contact_info": Textarea(attrs={"rows": 1,
-                "placeholder": "Jane Smith (contact: jsmith@science.edu)",}
+            "duration": Textarea(attrs={"rows": 1, "placeholder": "15 minutes"}),
+            "contact_info": Textarea(
+                attrs={
+                    "rows": 1,
+                    "placeholder": "Jane Smith (contact: jsmith@science.edu)",
+                }
             ),
             "criteria_expression": Textarea(
                 attrs={

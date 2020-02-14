@@ -7,19 +7,17 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('studies', '0058_study_hash_digits'),
-    ]
+    dependencies = [("studies", "0058_study_hash_digits")]
 
     operations = [
         migrations.AddField(
-            model_name='study',
-            name='is_building',
+            model_name="study",
+            name="is_building",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='study',
-            name='is_previewing',
+            model_name="study",
+            name="is_previewing",
             field=models.BooleanField(default=False),
         ),
     ]
