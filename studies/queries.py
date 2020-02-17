@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import timedelta
 
 from django.db import models
-from django.db.models import Q, Count, IntegerField, OuterRef, Subquery
+from django.db.models import Count, IntegerField, OuterRef, Q, Subquery
 from django.db.models.functions import Coalesce
 from django.utils.timezone import now
 from guardian.shortcuts import get_objects_for_user

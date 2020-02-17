@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals, update_session_auth_hash
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q, Prefetch
+from django.db.models import Prefetch, Q
 from django.dispatch import receiver
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse

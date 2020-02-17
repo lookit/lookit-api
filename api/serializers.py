@@ -1,17 +1,16 @@
-from rest_framework import serializers
 from collections import OrderedDict
 from operator import attrgetter
 
+from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
-
 from rest_framework_json_api.relations import (
-    ResourceRelatedField,
-    HyperlinkedRelatedField,
     HyperlinkedMixin,
+    HyperlinkedRelatedField,
+    ResourceRelatedField,
 )
 from rest_framework_json_api.serializers import (
-    ModelSerializer,
     HyperlinkedModelSerializer,
+    ModelSerializer,
 )
 
 

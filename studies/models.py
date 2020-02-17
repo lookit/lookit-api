@@ -27,7 +27,6 @@ from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
 
-
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
 

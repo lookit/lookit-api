@@ -7,7 +7,6 @@ from django.forms import ModelForm, Textarea
 from accounts.queries import compile_expression
 from studies.models import Response, Study
 
-
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
 STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
 PROTOCOL_CONFIG_HELP_LINK = (

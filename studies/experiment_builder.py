@@ -1,19 +1,19 @@
-from django.conf import settings
-from django.core.files import File
-from typing import NamedTuple
+import inspect
+import json
 import os
 import re
-import requests
 import zipfile
-import json
-import docker
-import inspect
-from typing import Sequence
-from operator import itemgetter, attrgetter
 from io import BytesIO
+from operator import attrgetter, itemgetter
+from typing import NamedTuple, Sequence
+
+import docker
+import requests
+from django.conf import settings
+from django.core.files import File
+
 from project import storages
 from studies.helpers import send_mail
-
 
 DOCKER_CLIENT = docker.from_env()
 

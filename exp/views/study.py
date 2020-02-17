@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import (
 from django.core.mail import BadHeaderError
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Q, Prefetch
+from django.db.models import Prefetch, Q
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, reverse

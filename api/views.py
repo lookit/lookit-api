@@ -24,7 +24,6 @@ from studies.serializers import (
     StudySerializer,
 )
 
-
 CONVERSION_TYPES = {
     "child": Child,
     "study": Study,
