@@ -1,5 +1,3 @@
-from unittest import skip
-
 from django.conf import settings
 from django.test import TestCase
 from django_dynamic_fixture import G
@@ -128,9 +126,6 @@ class ResponseSaveHandlingTestCase(TestCase):
         )
 
     # Test labeling of current consent type frame video(s) as consent
-    @skip(
-        "Should now test this in a new test of from_pipe_payload, as is_consent_footage isn't set upon response save"
-    )
     def testMarkConsentTypeVideoAsConsent(self):
         self.response_after_consent_frame.save()  # to run post-save hook
         consent_video = Video.objects.get(pk=self.consent_video.pk)
