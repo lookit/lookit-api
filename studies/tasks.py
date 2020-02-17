@@ -22,14 +22,13 @@ from django.conf import settings
 from django.core.files import File
 from django.core.paginator import Paginator
 from django.utils import timezone
+from google.cloud import storage as gc_storage
 
 from exp.utils import csv_dict_output_and_writer
-from google.cloud import storage as gc_storage
 from project import storages
 from project.celery import app
 from studies.experiment_builder import EmberFrameplayerBuilder
 from studies.helpers import send_mail
-
 
 logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)

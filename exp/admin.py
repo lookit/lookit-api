@@ -2,6 +2,7 @@ from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 
 from studies.models import (
+    ConsentRuling,
     Feedback,
     Response,
     ResponseLog,
@@ -9,7 +10,6 @@ from studies.models import (
     StudyLog,
     StudyType,
     Video,
-    ConsentRuling,
 )
 
 

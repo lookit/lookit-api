@@ -274,7 +274,7 @@
                                     </span>
                                     </div>
                                 {% else %}
-                                    <span>Your study link will show up here when you have built it.</span>
+                                    <span>Your study link will show up here when you have built the experiment runner.</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -318,15 +318,15 @@
                                         <form id="buildForm" method="POST" style="display:none">{% csrf_token %}
                                             <input type="hidden" name="build" value="{{ study.id }}"/>
                                         </form>
-                                        <a class="btn btn-default btn-sm" onclick="buildStudy()">
-                                            Build Dependencies
+                                        <a class="btn btn-default btn-sm" onclick="buildStudy()" {% if study.built %}disabled{% endif %}>
+                                            Build experiment runner
                                             <i aria-hidden="true">
                                                 <div class="fas fa-hammer"></div>
                                             </i>
                                         </a>
                                     </div>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
-                                        Study dependencies {% if not study.built %} not {% endif %}built.
+                                        Experiment runner {% if not study.built %} {% if study.is_building %} building now{% else %} not built{% endif %}{% else %}built{% endif %}.
                                     </div>
                                 </div>
                             </li>
@@ -335,13 +335,13 @@
                                     <form class="col-xs-4" action="{% url 'exp:study-preview-build' study.uuid %}"
                                           method="POST">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-default btn-sm">
-                                            Build Preview Dependencies
+                                        <button type="submit" class="btn btn-default btn-sm" {% if study.previewed %}disabled{% endif %}>
+                                            Build preview runner
                                             <div class="fas fa-eye"><i aria-hidden="true"></i></div>
                                         </button>
                                     </form>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
-                                        Preview dependencies {% if not study.previewed %} not {% endif %}built.
+                                        Preview runner {% if not study.previewed %} {% if study.is_previewing %} building now{% else %} not built{% endif %}{% else %}built{% endif %}.
                                     </div>
                                 </div>
                             </li>
@@ -513,8 +513,8 @@
                                     <div class="col-sm-8">
                                         {{ log.study.name }} study
                                         {% if log.action == "active" %} activated
-                                        {% elif log.action == "deploy" %} dependencies built
-                                        {% elif log.action == "preview" %} preview dependencies built
+                                        {% elif log.action == "deploy" %} experiment runner built
+                                        {% elif log.action == "preview" %} preview runner built
                                         {% else %}
                                             {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
                                     </div>

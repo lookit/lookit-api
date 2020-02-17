@@ -51,7 +51,6 @@ from exp.views import (
     StudyUpdateView,
 )
 
-
 urlpatterns = [
     url(r"researchers/$", ResearcherListView.as_view(), name="researcher-list"),
     url(
