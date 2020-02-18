@@ -27,7 +27,7 @@ addons:
   postgresql: "9.6.16"
 
 before_script:
-  - sudo service postgresql start
+#  - sudo service postgresql start
   - bash -c 'until pg_isready; do sleep 1; done'
   # We don't need the line to create the new database, apparently
   #  - psql -c 'create database travis_ci_test;' -U postgres
