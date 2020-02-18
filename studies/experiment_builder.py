@@ -15,7 +15,6 @@ from django.core.files import File
 from project import storages
 from studies.helpers import send_mail
 
-
 DOCKER_CLIENT = docker.from_env()
 
 
@@ -257,10 +256,12 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         # Only update field for particular build, in case we have parallel builds running
         if is_preview:
             study.previewed = True
+            study.is_previewing = False
             study.save(update_fields=update_fields + ["previewed"])
             self.build_context["action"] = "previewed"
         else:
             study.built = True
+            study.is_building = False
             study.save(update_fields=update_fields + ["built"])
             self.build_context["action"] = "deployed"
 

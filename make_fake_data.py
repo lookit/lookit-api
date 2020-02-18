@@ -6,7 +6,6 @@ from django_dynamic_fixture import G
 from accounts.models import Organization, User
 from studies.models import Response, Study
 
-
 os.environ["DJANGO_SETTINGS_MODULE"] = "project.settings"
 
 django.setup()  # noqa

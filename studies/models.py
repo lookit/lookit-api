@@ -27,7 +27,6 @@ from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
 
-
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
 
@@ -75,12 +74,6 @@ class Study(models.Model):
         "criteria",
         "duration",
         "contact_info",
-        "max_age_years",
-        "min_age_years",
-        "max_age_months",
-        "min_age_months",
-        "max_age_days",
-        "min_age_days",
         "image",
         "exit_url",
         "metadata",
@@ -137,6 +130,8 @@ class Study(models.Model):
     metadata = DateTimeAwareJSONField(default={})
     previewed = models.BooleanField(default=False)
     built = models.BooleanField(default=False)
+    is_previewing = models.BooleanField(default=False)
+    is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True)
 
@@ -417,7 +412,7 @@ class Study(models.Model):
         """
         if not self.built:
             raise RuntimeError(
-                f'Cannot activate study - "{self.name}" ({self.id}) has not been built!'
+                f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
             )
 
     def notify_administrators_of_activation(self, ev):
@@ -439,11 +434,6 @@ class Study(models.Model):
                 )
             ),
             **context,
-        )
-
-    def deploy_study(self, ev):
-        ember_build_and_gcp_deploy.delay(
-            self.uuid, ev.kwargs.get("user").uuid, preview=False
         )
 
     def notify_administrators_of_pause(self, ev):

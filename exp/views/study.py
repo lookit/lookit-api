@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import (
 from django.core.mail import BadHeaderError
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Q, Prefetch
+from django.db.models import Prefetch, Q
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, reverse
@@ -119,6 +119,12 @@ def get_discoverability_text(study):
     return DISCOVERABILITY_HELP_TEXT.get(discoverability_key)
 
 
+KEY_DISPLAY_NAMES = {
+    "player_repo_url": "Experiment runner code URL",
+    "last_known_player_sha": "Experiment runner version (commit SHA)",
+}
+
+
 class StudyCreateView(
     ExperimenterLoginRequiredMixin,
     DjangoPermissionRequiredMixin,
@@ -173,6 +179,7 @@ class StudyCreateView(
                 "configuration", flat=True
             )
         ]
+        context["key_display_names"] = KEY_DISPLAY_NAMES
         return context
 
     def get_initial(self):
@@ -183,6 +190,103 @@ class StudyCreateView(
         initial = super().get_initial()
         initial["structure"] = json.dumps(Study._meta.get_field("structure").default)
         return initial
+
+
+class StudyUpdateView(
+    ExperimenterLoginRequiredMixin,
+    PermissionRequiredMixin,
+    generic.UpdateView,
+    PaginatorMixin,
+    StudyTypeMixin,
+):
+    """
+    StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
+    Also allows you to update the study status.
+    """
+
+    template_name = "studies/study_edit.html"
+    form_class = StudyEditForm
+    model = Study
+    permission_required = "studies.can_edit_study"
+    raise_exception = True
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super().get_initial()
+        structure = self.object.structure
+        if structure:
+            # Ensures that json displayed in edit form is valid json w/ double quotes,
+            # so incorrect json is not saved back into the db
+            initial["structure"] = json.dumps(structure)
+        return initial
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles updating study metadata like name, short_description, etc.
+        """
+        study = self.get_object()
+
+        metadata, meta_errors = self.validate_and_fetch_metadata()
+
+        study_type = StudyType.objects.get(id=self.request.POST.get("study_type"))
+
+        if meta_errors:
+            messages.error(
+                self.request,
+                f"WARNING: Experiment runner version not saved: {meta_errors}",
+            )
+        else:
+            new_study_id = StudyType.objects.filter(
+                id=self.request.POST.get("study_type")
+            ).values_list("id", flat=True)[0]
+            if not (study.study_type_id == new_study_id and metadata == study.metadata):
+                # Invalidate the previous build
+                study.built = False
+                study.previewed = False
+                # May still be building/previewing, but we're now good to allow another build
+                study.is_building = False
+                study.is_previewing = False
+            study.metadata = metadata
+            study.study_type_id = new_study_id
+            study.save()
+
+            return super().post(request, *args, **kwargs)
+
+        return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=study.pk)))
+
+    def form_valid(self, form):
+        """
+        Add success message that edits to study have been saved.
+        """
+        ret = super().form_valid(form)
+        messages.success(self.request, f"{self.get_object().name} study details saved.")
+        return ret
+
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.
+        """
+        context = super().get_context_data(**kwargs)
+
+        context["study_types"] = StudyType.objects.all()
+        context["study_metadata"] = self.object.metadata
+        context["key_display_names"] = KEY_DISPLAY_NAMES
+        context["types"] = [
+            exp_type.configuration["metadata"]["fields"]
+            for exp_type in context["study_types"]
+        ]
+        context["save_confirmation"] = self.object.state in [
+            "approved",
+            "active",
+            "paused",
+            "deactivated",
+        ]
+        return context
+
+    def get_success_url(self):
+        return reverse("exp:study-edit", kwargs={"pk": self.object.id})
 
 
 class StudyListView(
@@ -302,13 +406,22 @@ class StudyDetailView(
                 )
 
         if "build" in self.request.POST:
-            ember_build_and_gcp_deploy.delay(
-                self.get_object().uuid, self.request.user.uuid, preview=False
-            )
-            messages.success(
-                self.request,
-                f"Scheduled Study {self.get_object().name} for build. You will be emailed when it's completed.",
-            )
+            study = self.get_object()
+            if not study.is_building:
+                study.is_building = True
+                study.save()
+                ember_build_and_gcp_deploy.delay(
+                    study.uuid, self.request.user.uuid, preview=False
+                )
+                messages.success(
+                    self.request,
+                    f"Scheduled experiment runner build for {self.get_object().name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+                )
+            else:
+                messages.warning(
+                    self.request,
+                    f"Experiment runner for study {self.get_object().name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
+                )
 
         if self.request.POST.get("clone_study"):
             clone = self.get_object().clone()
@@ -643,119 +756,6 @@ class StudyParticipantContactView(
             Q(groups__name=study.study_admin_group.name)
             | Q(groups__name=study.study_read_group.name)
         )
-
-
-class StudyUpdateView(
-    ExperimenterLoginRequiredMixin,
-    PermissionRequiredMixin,
-    generic.UpdateView,
-    PaginatorMixin,
-    StudyTypeMixin,
-):
-    """
-    StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
-    Also allows you to update the study status.
-    """
-
-    template_name = "studies/study_edit.html"
-    form_class = StudyEditForm
-    model = Study
-    permission_required = "studies.can_edit_study"
-    raise_exception = True
-
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        initial = super().get_initial()
-        structure = self.object.structure
-        if structure:
-            # Ensures that json displayed in edit form is valid json w/ double quotes,
-            # so incorrect json is not saved back into the db
-            initial["structure"] = json.dumps(structure)
-        return initial
-
-    def post(self, request, *args, **kwargs):
-        """
-        Handles all post forms on page:
-            1) study metadata like name, short_description, etc.
-            2) researcher add
-            3) researcher update
-            4) researcher delete
-            5) Changing study status / adding rejection comments
-        """
-        study = self.get_object()
-
-        if "trigger" in self.request.POST:
-            update_trigger(self)
-
-        if "short_description" in self.request.POST:  # Study metadata is being edited.
-            return super().post(request, *args, **kwargs)
-
-        if (
-            "study_type" in self.request.POST
-        ):  # Study type and metadata are being edited...
-            # ... which means we must invalidate the build.
-            study.built = False
-            study.previewed = False
-            metadata, meta_errors = self.validate_and_fetch_metadata()
-            if meta_errors:
-                messages.error(self.request, f"METADATA NOT SAVED: {meta_errors}")
-            else:
-                study.metadata = metadata
-                study.study_type_id = StudyType.objects.filter(
-                    id=self.request.POST.get("study_type")
-                ).values_list("id", flat=True)[0]
-                study.save()
-                messages.success(self.request, f"{study.name} type and metadata saved.")
-
-        return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=study.pk)))
-
-    def form_valid(self, form):
-        """
-        Add success message that edits to study have been saved.
-        """
-        ret = super().form_valid(form)
-        messages.success(self.request, f"{self.get_object().name} study details saved.")
-        return ret
-
-    def get_context_data(self, **kwargs):
-        """
-        In addition to the study, adds several items to the context dictionary.
-        """
-        context = super().get_context_data(**kwargs)
-        study = context["study"]
-        state = study.state
-        admin_group = study.study_admin_group
-
-        context["study_types"] = StudyType.objects.all()
-        context["study_metadata"] = self.object.metadata
-        context["types"] = [
-            exp_type.configuration["metadata"]["fields"]
-            for exp_type in context["study_types"]
-        ]
-        context["search_query"] = self.request.GET.get("match")
-        context["status_tooltip"] = STATUS_HELP_TEXT.get(state, state)
-        context["triggers"] = get_permitted_triggers(
-            self, self.object.machine.get_triggers(state)
-        )
-        context["name"] = self.request.GET.get("match", None)
-        context["save_confirmation"] = state in [
-            "approved",
-            "active",
-            "paused",
-            "deactivated",
-        ]
-        context["multiple_admins"] = (
-            len(User.objects.filter(groups__name=admin_group.name)) > 1
-        )
-        context["study_admins"] = User.objects.filter(
-            groups__name=admin_group.name
-        ).values_list("id", flat=True)
-        return context
-
-    def get_success_url(self):
-        return reverse("exp:study-edit", kwargs={"pk": self.object.id})
 
 
 class StudyResponsesList(
@@ -2415,13 +2415,23 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         study_permissions = get_perms(request.user, self.object)
 
         if study_permissions and "can_edit_study" in study_permissions:
-            ember_build_and_gcp_deploy.delay(
-                self.object.uuid, request.user.uuid, preview=True
-            )
-            messages.success(
-                request,
-                f"Scheduled Study {self.object.name} for preview. You will be emailed when it's completed.",
-            )
+
+            study = self.object
+            if not study.is_previewing:
+                study.is_previewing = True
+                study.save()
+                ember_build_and_gcp_deploy.delay(
+                    study.uuid, request.user.uuid, preview=True
+                )
+                messages.success(
+                    request,
+                    f"Scheduled preview runner build for {self.object.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+                )
+            else:
+                messages.warning(
+                    request,
+                    f"Preview runner for {self.object.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
+                )
         return super().post(request, *args, **kwargs)
 
     def get_object(self, queryset=None):

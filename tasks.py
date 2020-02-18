@@ -32,7 +32,6 @@ import platform
 
 from invoke import run, task
 
-
 PLATFORM = platform.system()
 MESSAGE_FAILED = 'failed to install. Please, use "invoke task_name --verbose" to check out the stderr and stdout responses.'
 MESSAGE_OK = "successfully installed"

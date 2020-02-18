@@ -2,7 +2,6 @@ from django import template
 
 from accounts.queries import get_child_eligibility_for_study
 
-
 register = template.Library()
 
 

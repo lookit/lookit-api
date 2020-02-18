@@ -12,7 +12,6 @@ from lark import Lark, Transformer, v_args
 
 from studies.fields import CONDITIONS, LANGUAGES
 
-
 CONST_MAPPING = {"true": True, "false": False, "null": None}
 
 GENDER_MAPPING = {"male": "m", "female": "f", "other": "o"}

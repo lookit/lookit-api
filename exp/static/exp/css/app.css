@@ -459,6 +459,48 @@ a:hover.build-study-link {
     padding-top: 100px;
 }
 
+#study-details-form .ace-overlay, #study-create-form .ace-overlay {
+    width: 100%;
+}
+
+#study-details-form .code-container {
+    max-height: 10em;
+}
+
+#study-type-metadata #commit-description th {
+    min-width: 10em;
+    vertical-align: top;
+}
+
+#commit-update-info th {
+    min-width: 10em;
+}
+
+#commit-update-info td {
+    padding-right: 1em;
+    border-top: thin solid gray;
+}
+
+#commit-update-info th, #commit-update-info td {
+    vertical-align: top;
+}
+
+#commit-update-info h3 {
+    vertical-align: middle;
+}
+
+#commit-description .panel-heading {
+    display: block;
+}
+
+#commit-description .panel-heading * {
+    display: inline-block;
+}
+
+#commit-description .panel-title {
+    width: 100%;
+}
+
 /* Participant Detail */
 .child-name {
     background-color: #F5F5F5;

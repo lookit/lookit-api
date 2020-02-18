@@ -2,7 +2,6 @@
 from django.utils.translation import ugettext as _
 from model_utils import Choices
 
-
 # Conditions and Multiple birth are bitfield, NOT choices!
 CONDITIONS = (
     ("autism_spectrum_disorder", "Autism Spectrum Disorder"),
