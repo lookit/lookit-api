@@ -26,9 +26,9 @@ notifications:
 addons:
   postgresql: "9.6.16"
 
-before_script:
+#before_script:
 #  - sudo service postgresql start
-  - bash -c 'until pg_isready; do sleep 1; done'
+
   # We don't need the line to create the new database, apparently
   #  - psql -c 'create database travis_ci_test;' -U postgres
 
@@ -37,6 +37,7 @@ jobs:
   include:
     - stage: Build & Test
       script:
+        - bash -c 'until pg_isready; do sleep 1; done'
         - docker pull $DOCKER_IMAGE_URL:$TRAVIS_COMMIT || docker pull $DOCKER_IMAGE_URL:$DOCKER_BRANCH || true
         - docker build
             --cache-from $DOCKER_IMAGE_URL:$TRAVIS_COMMIT --cache-from $DOCKER_IMAGE_URL:$DOCKER_BRANCH
