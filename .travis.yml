@@ -22,6 +22,12 @@ cache:
 notifications:
   slack: lookit-mit:Sc6ZVxrtb0vIiXtft93BtXNI
 
+addons:
+  postgresql: "9.6.16"
+
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+
 jobs:
   include:
     - stage: Build & Test
@@ -31,6 +37,4 @@ jobs:
             --cache-from $DOCKER_IMAGE_URL:$TRAVIS_COMMIT --cache-from $DOCKER_IMAGE_URL:$DOCKER_BRANCH
             --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_TAG=$TRAVIS_TAG
             --pull -t $DOCKER_IMAGE_URL:$TRAVIS_COMMIT .
-        - docker run -d --name pg postgres:9.6.16
-        - docker exec -i pg /bin/bash -c 'until pg_isready; do sleep 1; done'
-        - docker run --rm -it --link pg --env DB_HOST=pg $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
+        - docker run --rm -it -p 5432:5432 $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
