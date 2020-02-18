@@ -6,6 +6,7 @@ dist: trusty
 
 services:
   - docker
+  - postgresql
 
 env:
   global:
