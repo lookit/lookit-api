@@ -44,5 +44,5 @@ jobs:
             --cache-from $DOCKER_IMAGE_URL:$TRAVIS_COMMIT --cache-from $DOCKER_IMAGE_URL:$DOCKER_BRANCH
             --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_TAG=$TRAVIS_TAG
             --pull -t $DOCKER_IMAGE_URL:$TRAVIS_COMMIT .
-        - docker run --rm -t --publish docker0:5432:5432 $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
+        - docker run --rm -t --publish 127.0.0.1:5432:5432 $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
 #        - docker run --rm -it --network="host" $DOCKER_IMAGE_URL:$TRAVIS_COMMIT python manage.py test
