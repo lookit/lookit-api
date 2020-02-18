@@ -68,7 +68,7 @@ class RenameVideoView(View):
                 return HttpResponse(
                     (d["data"]["videoName"] + " --> " + video_obj.filename)
                     if video_obj
-                    else "Preview not saved"
+                    else "Preview video not saved"
                 )
             except ClientError as e:
                 return HttpResponseNotFound(e)

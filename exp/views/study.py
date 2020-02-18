@@ -244,10 +244,8 @@ class StudyUpdateView(
             if not (study.study_type_id == new_study_id and metadata == study.metadata):
                 # Invalidate the previous build
                 study.built = False
-                study.previewed = False
-                # May still be building/previewing, but we're now good to allow another build
+                # May still be building, but we're now good to allow another build
                 study.is_building = False
-                study.is_previewing = False
             study.metadata = metadata
             study.study_type_id = new_study_id
             study.save()
@@ -405,31 +403,13 @@ class StudyDetailView(
                     reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
                 )
 
-        if "build" in self.request.POST:
-            study = self.get_object()
-            if not study.is_building:
-                study.is_building = True
-                study.save()
-                ember_build_and_gcp_deploy.delay(
-                    study.uuid, self.request.user.uuid, preview=False
-                )
-                messages.success(
-                    self.request,
-                    f"Scheduled experiment runner build for {self.get_object().name}. You will be emailed when it's completed. This may take up to 30 minutes.",
-                )
-            else:
-                messages.warning(
-                    self.request,
-                    f"Experiment runner for study {self.get_object().name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
-                )
-
         if self.request.POST.get("clone_study"):
             clone = self.get_object().clone()
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.study_type = self.get_object().study_type
             clone.built = False
-            clone.previewed = False
+            clone.is_building = False
             clone.save()
             # Adds success message when study is cloned
             messages.success(self.request, f"{self.get_object().name} copied.")
@@ -558,7 +538,6 @@ class StudyDetailView(
         context["current_researchers"] = self.get_study_researchers()
         context["users_result"] = self.search_researchers()
         context["build_ui_tag"] = "success" if study.built else "warning"
-        context["preview_ui_tag"] = "success" if study.previewed else "warning"
         context["state_ui_tag"] = STATE_UI_SIGNALS.get(study.state, "info")
         context["search_query"] = self.request.GET.get("match")
         context["name"] = self.request.GET.get("match", None)
@@ -2397,10 +2376,10 @@ class StudyAttachments(
         )
 
 
-class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
+class StudyBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
     """
     Checks to make sure an existing build isn't running, that the user has permissions
-    to preview, and then triggers a preview build.
+    to build, and then triggers a build.
     """
 
     http_method_names = ["post"]
@@ -2414,7 +2393,8 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         return self._object
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse("exp:study-edit", kwargs={"pk": str(self.object.pk)})
+        return_path = self.request.POST.get("return", "exp:study-edit")
+        return reverse(return_path, kwargs={"pk": str(self.object.pk)})
 
     def post(self, request, *args, **kwargs):
         study_permissions = get_perms(request.user, self.object)
@@ -2422,20 +2402,18 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         if study_permissions and "can_edit_study" in study_permissions:
 
             study = self.object
-            if not study.is_previewing:
-                study.is_previewing = True
-                study.save()
-                ember_build_and_gcp_deploy.delay(
-                    study.uuid, request.user.uuid, preview=True
-                )
+            if not study.is_building:
+                study.is_building = True
+                study.save(update_fields=["is_building"])
+                ember_build_and_gcp_deploy.delay(study.uuid, request.user.uuid)
                 messages.success(
                     request,
-                    f"Scheduled preview runner build for {self.object.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+                    f"Scheduled experiment runner build for {self.object.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
                 )
             else:
                 messages.warning(
                     request,
-                    f"Preview runner for {self.object.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
+                    f"Experiment runner for {self.object.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
                 )
         return super().post(request, *args, **kwargs)
 
@@ -2573,7 +2551,7 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
     Proxy view to forward researcher to preview page in the Ember app
     """
 
-    upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
+    upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
         if request.path[-1] == "/":

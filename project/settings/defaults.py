@@ -224,10 +224,6 @@ EXPERIMENT_BASE_URL = os.environ.get(
     "EXPERIMENT_BASE_URL",
     "https://storage.googleapis.com/io-osf-lookit-staging2/experiments/",
 )  # default to ember base url
-PREVIEW_EXPERIMENT_BASE_URL = os.environ.get(
-    "PREVIEW_EXPERIMENT_BASE_URL",
-    "https://storage.googleapis.com/io-osf-lookit-staging2/preview_experiments/",
-)  # default to ember base url
 
 BASE_URL = os.environ.get(
     "BASE_URL", "https://localhost:8000"
@@ -283,7 +279,6 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
 
     EXPERIMENT_LOCATION = "experiments"
-    PREVIEW_EXPERIMENT_LOCATION = "preview_experiments"
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")

@@ -38,7 +38,7 @@ from exp.views import (
     StudyListView,
     StudyParticipantAnalyticsView,
     StudyParticipantContactView,
-    StudyPreviewBuildView,
+    StudyBuildView,
     StudyResponsesAll,
     StudyResponsesAllDownloadJSON,
     StudyResponsesConsentManager,
@@ -165,9 +165,9 @@ urlpatterns = [
         name="study-attachments",
     ),
     url(
-        r"studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/preview_build/$",
-        StudyPreviewBuildView.as_view(),
-        name="study-preview-build",
+        r"studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/build/$",
+        StudyBuildView.as_view(),
+        name="study-build",
     ),
     url(
         r"studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/preview/$",

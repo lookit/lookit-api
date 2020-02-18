@@ -47,8 +47,7 @@ class StudyType(models.Model):
     configuration = DateTimeAwareJSONField(
         default={
             # task module should have a build_experiment method decorated as a
-            # celery task that takes a study uuid and a preview kwarg which
-            # defaults to true
+            # celery task that takes a study uuid
             "task_module": "studies.tasks",
             "metadata": {
                 # defines the default metadata fields for that type of study
@@ -128,9 +127,7 @@ class Study(models.Model):
     creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     metadata = DateTimeAwareJSONField(default={})
-    previewed = models.BooleanField(default=False)
     built = models.BooleanField(default=False)
-    is_previewing = models.BooleanField(default=False)
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True)

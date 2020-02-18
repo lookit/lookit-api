@@ -24,10 +24,6 @@
             document.getElementById('cloneForm').submit()
         }
 
-        function buildStudy() {
-            document.getElementById('buildForm').submit()
-        }
-
         function onStateSelect(stateListItem) {
             let trigger = $(stateListItem).data()['trigger'],
                 stateChangeForm = $('#study-state-modal'),
@@ -314,34 +310,15 @@
                             <li class="list-group-item list-group-item-{{ build_ui_tag }}">
                                 <div class="row">
                                     <div class="col-xs-4">
-                                        {# TODO - get rid of this hidden form pattern #}
-                                        <form id="buildForm" method="POST" style="display:none">{% csrf_token %}
-                                            <input type="hidden" name="build" value="{{ study.id }}"/>
+                                        <form action="{% url 'exp:study-build' study.uuid %}" method="POST">{% csrf_token %}
+                                            <input type="hidden" name="return" value="exp:study-detail"/>
+                                            <button type="submit" class="btn btn-default btn-sm" {% if study.built or study.is_building %}disabled{% endif %}>
+                                                {% bootstrap_icon "wrench" %} Build experiment runner
+                                            </button>
                                         </form>
-                                        <a class="btn btn-default btn-sm" onclick="buildStudy()" {% if study.built %}disabled{% endif %}>
-                                            Build experiment runner
-                                            <i aria-hidden="true">
-                                                <div class="fas fa-hammer"></div>
-                                            </i>
-                                        </a>
                                     </div>
                                     <div class="col-xs-5 col-xs-offset-3 text-right">
                                         Experiment runner {% if not study.built %} {% if study.is_building %} building now{% else %} not built{% endif %}{% else %}built{% endif %}.
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="list-group-item list-group-item-{{ preview_ui_tag }}">
-                                <div class="row">
-                                    <form class="col-xs-4" action="{% url 'exp:study-preview-build' study.uuid %}"
-                                          method="POST">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-default btn-sm" {% if study.previewed %}disabled{% endif %}>
-                                            Build preview runner
-                                            <div class="fas fa-eye"><i aria-hidden="true"></i></div>
-                                        </button>
-                                    </form>
-                                    <div class="col-xs-5 col-xs-offset-3 text-right">
-                                        Preview runner {% if not study.previewed %} {% if study.is_previewing %} building now{% else %} not built{% endif %}{% else %}built{% endif %}.
                                     </div>
                                 </div>
                             </li>
@@ -514,7 +491,6 @@
                                         {{ log.study.name }} study
                                         {% if log.action == "active" %} activated
                                         {% elif log.action == "deploy" %} experiment runner built
-                                        {% elif log.action == "preview" %} preview runner built
                                         {% else %}
                                             {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
                                     </div>
