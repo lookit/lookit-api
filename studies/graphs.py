@@ -2,7 +2,6 @@
 import pandas
 from django_pandas.io import read_frame
 
-
 pandas.set_option("display.max_columns", None)
 pandas.set_option("display.max_rows", None)
 

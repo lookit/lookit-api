@@ -5,7 +5,6 @@ import botocore
 from botocore.exceptions import ClientError
 from django.conf import settings
 
-
 S3_CLIENT = boto3.client("s3")
 
 

@@ -7,7 +7,6 @@ from django.db import migrations, models
 from django.utils.translation import ugettext as _
 from model_utils import Choices
 
-
 # Deprecating
 AGE_AT_BIRTH_CHOICES = Choices(
     ("na", _("Not sure or prefer not to answer")),

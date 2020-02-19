@@ -7,7 +7,6 @@ from django.template.loader import get_template
 from project.celery import app
 from project.settings import BASE_URL, EMAIL_FROM_ADDRESS, OSF_URL
 
-
 logger = logging.getLogger(__name__)
 
 
