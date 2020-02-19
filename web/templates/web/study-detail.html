@@ -61,6 +61,7 @@
             }
         }
 
+        // TODO: actually use experiment-proxy instead of relying on the study-detail url being the start of the experiment-proxy url
         function portToParticipate(selected) {
             window.location.href = '{% url 'web:study-detail' study.uuid %}' + selected.value.split('|')[0] + '/';
         }

@@ -1,10 +1,16 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 {% load exp_extras %}
+{% load static %}
 
 {% block title %}Responses | {{ study.name }}{% endblock %}
 {% block head %}
     {{ block.super }}
+    <style>
+          tr.preview-row {
+              background: url('{% static 'exp/img/preview.svg' %}') repeat transparent;
+          }
+        </style>
     <script type="application/javascript">
         $(document).ready(function(){
             hideResponses();
@@ -136,6 +142,9 @@
                         <thead>
                             <tr>
                                 <th>
+                                    
+                                </th>
+                                <th>
                                     Child ID
                                 </th>
                                 <th>
@@ -155,7 +164,8 @@
                         </thead>
                         <tbody>
                         {% for response in response_data %}
-                          <tr class='selectable-participant' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.response.id }}" data-response-uuid="{{ response.response.uuid }}">
+                          <tr class='selectable-participant {% if response.response.is_preview %} preview-row {% endif %}' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.response.id }}" data-response-uuid="{{ response.response.uuid }}">
+                            <td>{% if response.response.is_preview %}P{% endif %}</td>
                             <td>{{ response.child.hashed_id }}</td>
                             <td>{{ response.response.uuid|truncatechars:11 }} </td>
                             <td>{% if response.response.completed %} Complete {% else %} Incomplete {% endif %} </td>

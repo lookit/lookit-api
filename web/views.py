@@ -382,9 +382,6 @@ class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
 
     def dispatch(self, request, path, *args, **kwargs):
         referer = request.META.get("HTTP_REFERER", None)
-        if referer and "preview" in referer:
-            # if they're trying to preview use the preview base_url
-            self.upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
         uuid = kwargs.pop("uuid", None)
         filename = kwargs.pop("filename", None)
         # if it's one of the hdfv files

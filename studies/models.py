@@ -604,6 +604,7 @@ class Response(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     global_event_timings = DateTimeAwareJSONField(default=dict)
     child = models.ForeignKey(Child, on_delete=models.DO_NOTHING)
+    is_preview = models.BooleanField(default=False)
     demographic_snapshot = models.ForeignKey(
         DemographicData, on_delete=models.DO_NOTHING
     )

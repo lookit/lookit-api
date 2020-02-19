@@ -29,6 +29,7 @@ class ResponseAdmin(GuardedModelAdmin):
         "completed",
         "completed_consent_frame",
         "withdrawn",
+        "is_preview",
     )
     empty_value_display = "None"
     list_filter = ("study",)
