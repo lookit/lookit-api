@@ -334,6 +334,10 @@ div.download-button .btn {
     overflow-y: scroll;
 }
 
+#list-of-responses li.preview-row {
+    color: gray;
+}
+
 
 #video-manager nav {
     /* centering the inline-block ul*/
