@@ -124,6 +124,7 @@ class Study(models.Model):
         db_index=True,
     )
     public = models.BooleanField(default=False)
+    shared_preview = models.BooleanField(default=False)
     creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     metadata = DateTimeAwareJSONField(default={})

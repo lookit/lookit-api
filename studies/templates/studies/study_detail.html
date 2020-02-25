@@ -46,8 +46,12 @@
 
             var origin = window.location.origin;
             var privateLink = document.getElementById('private-study-link');
-            if (privateLink) {
-                privateLink.value = origin + "/studies/" + "{{ study.uuid }}" + '/';
+            var previewLink = document.getElementById('study-preview-link');
+            if (privateLink && !privateLink.value.startsWith(origin)) {
+                privateLink.value = origin + privateLink.value;
+            }
+            if (previewLink && !previewLink.value.startsWith(origin)) {
+                previewLink.value = origin + previewLink.value;
             }
 
             if ("{{ match }}" !== '') {
@@ -114,7 +118,7 @@
             });
 
             new Clipboard('#copy-link-button');
-            $('#private-study-link').attr('readonly', 'readonly');
+            $('#private-study-link, #study-preview-link').attr('readonly', 'readonly');
             $('#copy-link-button').tooltip({
                 title: "Copied!",
                 trigger: "click",
@@ -221,6 +225,29 @@
                         </div>
                         <div class="row pb-lg">
                             <div class="col-xs-12">
+                                {% if study.shared_preview %}
+                                    <span><label>Preview link: </label></span>
+                                    <span>Share with other researchers to get feedback on your study.</span>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="study-preview-link"
+                                               value="{% url 'exp:preview-detail' path=study.uuid %}"
+                                               aria-describedby="copy-link-button">
+                                        <span onmouseout="removeTooltip(this)" data-toggle="tooltip"
+                                              class="input-group-addon btn" id="copy-link-button"
+                                              data-clipboard-target="#study-preview-link">
+                                            <img src="{% static 'exp/img/clippy.svg' %}" width="13"/>
+                                        </span>
+                                    </div>
+                                    {% else %}
+                                    <span class="pr-md"><label class='pr-xs'> Preview sharing: </label>
+                                    <span>
+                                            Other researchers cannot access your study preview.
+                                     </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row pb-lg">
+                            <div class="col-xs-12">
                                 <p>
                                  <span class="pr-md"><label class='pr-xs'> Discoverability: </label>
                                      <span>{{ discoverability_text | safe }}</span>
@@ -237,14 +264,15 @@
                                         <span onmouseout="removeTooltip(this)" data-toggle="tooltip"
                                               class="input-group-addon btn" id="copy-link-button"
                                               data-clipboard-target="#private-study-link">
-                                        <img src="{% static 'exp/img/clippy.svg' %}" width="13"/>
-                                    </span>
+                                            <img src="{% static 'exp/img/clippy.svg' %}" width="13"/>
+                                        </span>
                                     </div>
                                 {% else %}
                                     <span>Your study link will show up here when you have built the experiment runner.</span>
                                 {% endif %}
                             </div>
                         </div>
+                        
                     </div>
                     <div class="col-xs-3"> 
                         <div class="pull-right btn-group-vertical study-action-buttons">

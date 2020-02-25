@@ -2560,7 +2560,7 @@ class StudyPreviewDetailView(
 
     queryset = Study.objects.all()
     http_method_names = ["get", "post"]
-    permission_required = "studies.can_view_study_responses"
+    permission_required = "accounts.can_view_experimenter"
     raise_exception = True
     template_name = "../../web/templates/web/study-detail.html"
 
@@ -2574,16 +2574,21 @@ class StudyPreviewDetailView(
 
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
-        if request.method == "POST":
-            if study.built:
-                return redirect(
-                    "exp:preview-proxy", study.uuid, request.POST["child_id"]
-                )
-            else:
-                return HttpResponseForbidden(
-                    f'Unable to preview: no experiment runner for study "{study.name}" is available. Please return to the study edit page to build the experiment runner.'
-                )
-        return super(generic.DetailView, self).dispatch(request)
+        if study.shared_preview or self.request.user.has_perm(
+            "studies.can_view_study_responses"
+        ):
+            if request.method == "POST":
+                if study.built:
+                    return redirect(
+                        "exp:preview-proxy", study.uuid, request.POST["child_id"]
+                    )
+                else:
+                    return HttpResponseForbidden(
+                        f'Unable to preview: no experiment runner for study "{study.name}" is available. Please return to the study edit page to build the experiment runner.'
+                    )
+            return super(generic.DetailView, self).dispatch(request)
+        else:
+            return HttpResponseForbidden(f"Not authorized to view study preview.")
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
@@ -2594,9 +2599,29 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
-        if request.path[-1] == "/":
-            path = f"{path.split('/')[0]}/index.html"
-        return super().dispatch(request, path)
+        print(kwargs)
+        try:
+            child = Child.objects.get(uuid=kwargs.get("child_id", None))
+        except Child.DoesNotExist:
+            raise Http404(f"Child not found")
+
+        try:
+            study = Study.objects.get(uuid=kwargs.get("uuid", None))
+        except Study.DoesNotExist:
+            raise Http404(f"Study not found")
+
+        if child.user != request.user:
+            # requesting user doesn't belong to that child
+            raise PermissionDenied()
+
+        if study.shared_preview or self.request.user.has_perm(
+            "studies.can_view_study_responses"
+        ):
+            if request.path[-1] == "/":
+                path = f"{path.split('/')[0]}/index.html"
+            return super().dispatch(request, path)
+        else:
+            return HttpResponseForbidden(f"Not authorized to view study preview.")
 
 
 def get_flattened_responses(response_qs, studies_for_child):
