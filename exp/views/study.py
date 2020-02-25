@@ -2566,11 +2566,10 @@ class StudyPreviewDetailView(
 
     def get_context_data(self, **kwargs):
         """
-        If authenticated, add demographic presence, and children to context data dict
+        Just add preview mode to slightly modify template
         """
         context = super().get_context_data(**kwargs)
         context["preview_mode"] = True
-        context["study"] = self.get_object()  # TODO: or just study.built
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -2582,7 +2581,7 @@ class StudyPreviewDetailView(
                 )
             else:
                 return HttpResponseForbidden(
-                    f'The experiment runner for study "{study.name}" is not built yet. '
+                    f'Unable to preview: no experiment runner for study "{study.name}" is available. Please return to the study edit page to build the experiment runner.'
                 )
         return super(generic.DetailView, self).dispatch(request)
 

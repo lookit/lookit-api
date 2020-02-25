@@ -62,40 +62,11 @@
             <div class="col-lg-10 col-lg-offset-1">
                 <div class="panel panel-default mt-xl">
                     <div class="panel-heading">
-                        <h1 class="panel-title">Study Preview </h1>
-                    </div>
-                    <div class="panel-body">
-                        <p>Here you can preview what your study will look like for participants. </p>
+                        <h1 class="panel-title">Study Editor <a class="btn btn-default btn-sm pull-right" href="{% url 'exp:preview-detail' path=study.uuid %}" target="_blank"
+                                id="preview-button" >
+                            {% bootstrap_icon "play-circle" %} Preview Study
+                        </a></h1>
                         
-                        <p>This preview reflects the last saved protocol. To try out new changes, save them below first.</p>
-                        
-                        <form action="{% url 'exp:study-build' study.uuid %}" method="POST">{% csrf_token %}
-                            <button type="submit" class="btn btn-primary pull-left" {% if study.built or study.is_building %}disabled{% endif %}>
-                                <input type="hidden" name="return" value="exp:study-edit"/>
-                                {% bootstrap_icon "wrench" %} {% if not study.built and study.is_building %} Experiment runner building now {% else %} Build experiment runner{% endif %}
-                            </button>
-                        </form>
-                        
-                       <form action="{% url 'exp:preview-detail' path=study.uuid %}" method="GET"
-                              target="_blank">{% csrf_token %}
-                              
-                            <button class="btn btn-primary pull-right" type="submit"
-                                    {% if study.built is False %}disabled{% endif %}>{% bootstrap_icon "eye-open" %}
-                                See Preview
-                            </button>
-                            {% if study.built is False %}
-                                <p class="help-block pull-right" style="clear:both;"><em>You need to build an experiment runner first.</em></p>{% endif %}
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-10 col-lg-offset-1">
-                <div class="panel panel-default mt-xl">
-                    <div class="panel-heading">
-                        <h1 class="panel-title">Study Editor </h1>
                     </div>
                     <div class="panel-body">
                         <form id="study-details-form" action="" enctype="multipart/form-data"
