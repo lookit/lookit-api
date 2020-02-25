@@ -755,10 +755,10 @@ class StudyParticipantContactView(
 
 
 class StudyResponsesList(
-    generic.DetailView,
-    SingleObjectMixin,
     ExperimenterLoginRequiredMixin,
     PermissionRequiredMixin,
+    generic.DetailView,
+    SingleObjectMixin,
     PaginatorMixin,
 ):
     """
@@ -1592,10 +1592,10 @@ def build_single_response_framedata_csv(response):
 
 
 class StudyResponsesAll(
-    generic.DetailView,
-    SingleObjectMixin,
     ExperimenterLoginRequiredMixin,
     PermissionRequiredMixin,
+    generic.DetailView,
+    SingleObjectMixin,
 ):
     """
     StudyResponsesAll shows a variety of download options for response and child data.
