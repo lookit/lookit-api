@@ -369,6 +369,10 @@ class StudyDetailView(generic.DetailView):
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
         if study.state == "active":
+            if request.method == "POST":
+                return redirect(
+                    "web:experiment-proxy", study.uuid, request.POST["child_id"]
+                )
             return super().dispatch(request)
         else:
             return HttpResponseForbidden(

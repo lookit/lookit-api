@@ -16,8 +16,14 @@ from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Prefetch, Q
 from django.db.models.functions import Lower
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect, reverse
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+    JsonResponse,
+)
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.views import generic
@@ -71,6 +77,7 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
+from web.views import StudyDetailView as ParticipantStudyDetailView
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -2545,6 +2552,39 @@ class StudyParticipantAnalyticsView(
             dict(counter) for counter in children_pivot_data
         ]
         return ctx
+
+
+class StudyPreviewDetailView(
+    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ParticipantStudyDetailView
+):
+
+    queryset = Study.objects.all()
+    http_method_names = ["get", "post"]
+    permission_required = "studies.can_view_study_responses"
+    raise_exception = True
+    template_name = "../../web/templates/web/study-detail.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        If authenticated, add demographic presence, and children to context data dict
+        """
+        context = super().get_context_data(**kwargs)
+        context["preview_mode"] = True
+        context["study"] = self.get_object()  # TODO: or just study.built
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        study = self.get_object()
+        if request.method == "POST":
+            if study.built:
+                return redirect(
+                    "exp:preview-proxy", study.uuid, request.POST["child_id"]
+                )
+            else:
+                return HttpResponseForbidden(
+                    f'The experiment runner for study "{study.name}" is not built yet. '
+                )
+        return super(generic.DetailView, self).dispatch(request)
 
 
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):

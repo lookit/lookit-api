@@ -44,7 +44,7 @@
             document.getElementById('too-old').style.display = 'none';
             document.getElementById('too-young').style.display = 'none';
             document.getElementById('criteria-not-met').style.display = 'none';
-            let birthday                  = selectElement.value.split('|')[1],
+            let birthday                  = selectElement.data('birthdate'),
                 age                       = calculateAgeInDays(birthday),
                 ineligibleBasedOnAge      = ageCheck(age),
                 ineligibleBasedOnCriteria = selectElement.selectedOptions[0].dataset["eligible"] === "False";
@@ -59,11 +59,6 @@
             } else if (ineligibleBasedOnCriteria) {
                 document.getElementById('criteria-not-met').style.display = 'inline-block';
             }
-        }
-
-        // TODO: actually use experiment-proxy instead of relying on the study-detail url being the start of the experiment-proxy url
-        function portToParticipate(selected) {
-            window.location.href = '{% url 'web:study-detail' study.uuid %}' + selected.value.split('|')[0] + '/';
         }
 
         function calculateAgeInDays(birthday) {
@@ -153,13 +148,15 @@
                             <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">Complete demographic survey to participate</a>
                         {% else %}
                         <div class="form-group">
+                        <form method="POST">{% csrf_token %}
                             <label for="child-dropdown">Select a child:</label>
-                            <select id="child-dropdown" class="childDropdown" onchange="childSelected(this)">
+                            <select id="child-dropdown" name="child_id" class="childDropdown" onchange="childSelected(this)">
                                 <option value=none >None Selected</option>
                                 {% for child in children %}
                                     {% child_is_valid_for_study child object as child_is_eligible %}
                                     <option onemptied=""
-                                            value="{{child.uuid}}|{{child.birthday|date:'c'}}"
+                                            value="{{child.uuid}}"
+                                            data-birthdate="{{child.birthday|date:'c'}}"
                                             data-eligible="{{ child_is_eligible }}">
                                         {{child.given_name}}
                                     </option>
@@ -168,7 +165,8 @@
                             <p class="text-warning" style="display:none" id='too-young'>Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research! </p>
             	            <p class="text-warning" style="display:none" id='too-old'>Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research.</p>
                             <p class="text-warning" style="display:none" id='criteria-not-met'>Your child is in the age range for this study, but does not meet the other eligibility criteria listed. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ study.contact_info }} if you feel this is in error.</p>
-                            <button type="button" onclick="portToParticipate(this)" disabled class="btn-lg btn-primary" id="participate-button"> Participate now! </button>
+                            <button type="submit" disabled class="btn-lg btn-primary" id="participate-button"> {% if preview_mode %} Preview {% else %} Participate {% endif %} now! </button>
+                        </form>
                         </div>
                         {% endif %}
                     </div>
