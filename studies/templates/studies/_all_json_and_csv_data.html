@@ -227,6 +227,25 @@
                     </div>
                 
                 </form>
+                <hr>
+                <form method="POST"> {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-7 col-sm-6">
+                            Tool: Delete preview data
+                            <p class="help-text"> This utility will delete all preview data, including video, that you have collected for this study. You may find it helpful to clear out preview data to simplify analysis. </p>
+                        </div>
+                        <div class="col-md-5 col-sm-6">
+                            <div class='pull-right download-button'> 
+                                <button id='delete-preview-data' class='btn btn-primary' type="submit" action="">
+                                    <span> Delete all preview data </span>
+                                </button>
+                            </div>
+                            <div class='pull-right' style="clear:both;">
+                                <p id="delete-preview-indicator"></p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             {% endif %}
             {% if active == 'demographics' %}
             

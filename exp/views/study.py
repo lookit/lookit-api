@@ -59,7 +59,17 @@ from studies.fields import (
 )
 from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import ACCEPTED, Feedback, Response, Study, StudyLog, StudyType
+from studies.models import (
+    ACCEPTED,
+    Feedback,
+    Response,
+    Study,
+    StudyLog,
+    StudyType,
+    ResponseLog,
+    Video,
+    ConsentRuling,
+)
 from studies.queries import (
     get_annotated_responses_qs,
     get_consent_statistics,
@@ -1595,6 +1605,7 @@ class StudyResponsesAll(
     queryset = Study.objects.all()
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
+    http_method_names = ["get", "post"]
 
     # Which headers from the response data summary should go in the child data downloads
     child_csv_headers = [
@@ -1636,6 +1647,19 @@ class StudyResponsesAll(
         context["childoptions"] = CHILD_DATA_OPTIONS
         context["ageoptions"] = AGE_DATA_OPTIONS
         return context
+
+    def post(self, request, *args, **kwargs):
+        study = self.get_object()
+        preview_responses = study.responses.filter(is_preview=True).prefetch_related(
+            "videos", "responselog_set", "consent_rulings"
+        )
+        for resp in preview_responses:
+            resp.responselog_set.all().delete()
+            resp.consent_rulings.all().delete()
+            for vid in resp.videos.all():
+                vid.delete(delete_in_s3=True)
+            resp.delete()
+        return super().get(request, *args, **kwargs)
 
 
 class StudyResponsesAllDownloadJSON(StudyResponsesAll):
