@@ -61,14 +61,14 @@ from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
 from studies.models import (
     ACCEPTED,
+    ConsentRuling,
     Feedback,
     Response,
+    ResponseLog,
     Study,
     StudyLog,
     StudyType,
-    ResponseLog,
     Video,
-    ConsentRuling,
 )
 from studies.queries import (
     get_annotated_responses_qs,
@@ -1649,16 +1649,26 @@ class StudyResponsesAll(
         return context
 
     def post(self, request, *args, **kwargs):
+        """
+        Post method on all responses view handles the  'delete all preview data' button.
+        """
         study = self.get_object()
         preview_responses = study.responses.filter(is_preview=True).prefetch_related(
-            "videos", "responselog_set", "consent_rulings"
+            "videos", "responselog_set", "consent_rulings", "feedback"
         )
-        for resp in preview_responses:
-            resp.responselog_set.all().delete()
-            resp.consent_rulings.all().delete()
-            for vid in resp.videos.all():
-                vid.delete(delete_in_s3=True)
-            resp.delete()
+        paginator = Paginator(preview_responses, RESPONSE_PAGE_SIZE)
+        for page_num in paginator.page_range:
+            page_of_responses = paginator.page(page_num)
+            for resp in page_of_responses:
+                # First delete the things that point to the response to avoid db integrity
+                # errors
+                resp.responselog_set.all().delete()
+                resp.consent_rulings.all().delete()
+                resp.feedback.all().delete()
+                for vid in resp.videos.all():
+                    vid.delete(delete_in_s3=True)  # actually delete video
+                resp.delete()
+        print("deleted responses")
         return super().get(request, *args, **kwargs)
 
 
