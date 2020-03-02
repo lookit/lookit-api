@@ -898,7 +898,7 @@ class Video(models.Model):
         data = pipe_response_dict["data"]
         old_pipe_name = f"{data['videoName']}.{data['type'].lower()}"
         new_full_name = f"{data['payload']}.{data['type'].lower()}"
-        throwaway_jpg_name = f"{data['payload']}.jpg"
+        throwaway_jpg_name = f"{data['videoName']}.jpg"
 
         # No way to directly rename in boto3, so copy and delete original (this is dumb, but let's get it working)
         try:  # Create a copy with the correct new name, if the original exists. Could also
