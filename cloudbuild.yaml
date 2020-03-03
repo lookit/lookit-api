@@ -2,13 +2,13 @@ steps:
 
 - id: boot-postgres
   name: gcr.io/cloud-builders/docker
-  args: ['run', '-d', '-p=5432:5432', '--name=postgres', '--network=cloudbuild', 'postgres']
+  args: ['run', '-d', '-p=5432:5432', '--name=lookit-postgres', '--network=cloudbuild', 'postgres']
 
 # Use dockerize per suggestion here:
 # https://github.com/GoogleCloudPlatform/cloud-builders/issues/376#issuecomment-498624099
-#- id: wait-for-postgres
-#  name: jwilder/dockerize:latest
-#  args: ['dockerize', '-timeout=60s', '-wait=tcp://postgres:5432']
+- id: wait-for-postgres
+  name: jwilder/dockerize:latest
+  args: ['dockerize', '-timeout=60s', '-wait=tcp://lookit-postgres:5432']
 
 - id: build-image
   name: gcr.io/cloud-builders/docker
@@ -17,6 +17,8 @@ steps:
 - id: run-tests
   name: gcr.io/cloud-builders/docker
   args: [ 'run', '--rm', '--network=cloudbuild', 'lookit', 'python', 'manage.py', 'test']
+  env:
+    - 'DB_HOST=lookit-postgres'
 
 - id: tag-image
   name: gcr.io/cloud-builders/docker
