@@ -2,25 +2,33 @@ steps:
 
 - id: boot-postgres
   name: gcr.io/cloud-builders/docker
-  args: ['run', '-d', '--publish=5432:5432', '--name=postgres', 'postgres']
+  args: [
+    'run',
+    '-d',
+    '--name=lookitdb',
+    '--network=cloudbuild',
+    '-e',
+    'POSTGRES_PASSWORD=password',
+    'postgres:9.6',
+  ]
 
 # Use dockerize per suggestion here:
 # https://github.com/GoogleCloudPlatform/cloud-builders/issues/376#issuecomment-498624099
 - id: wait-for-postgres
-  name: jwilder/dockerize:latest
-  args: ['dockerize', '-timeout=60s', '-wait=tcp://postgres:5432']
+  name: jwilder/dockerize:0.6.1
+  args: ['dockerize', '-timeout=60s', '-wait=tcp://lookitdb:5432']
 
 - id: build-image
   name: gcr.io/cloud-builders/docker
-  args: [ 'build', '-t', 'lookit', '.' ]
-#  env:
-#    - 'DB_HOST=postgres'
+  args: [ 'build', '-t', 'lookit', '--network=cloudbuild' , '.' ]
+
 
 - id: run-tests
-  name: gcr.io/cloud-builders/docker
-  args: [ 'run', '--rm', '--network=cloudbuild', 'lookit', 'python', 'manage.py', 'test']
-#  env:
-#    - 'DB_HOST=postgres'
+  name: lookit
+  args: ['python', 'manage.py', 'test']
+  env:
+    - 'DB_HOST=lookitdb'
+    - 'DB_PASSWORD=password'
 
 - id: tag-image
   name: gcr.io/cloud-builders/docker
@@ -43,7 +51,7 @@ steps:
 # cloud-build-local won't clean `docker run -d`-ed container so we have to do it here.
 - id: cloud-build-local-cleanup
   name: gcr.io/cloud-builders/docker
-  args: ['rm', '--force', 'postgres']
+  args: ['rm', '--force', 'lookitdb']
 
 
 images:
