@@ -39,15 +39,43 @@ steps:
   args: [ 'push', 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA']
 
 # Pull orchestrator image and build.
-- name: gcr.io/mit-lookit/lookit-orchestrator
-  args: ['bash', 'deploy.sh']
-  env:
-  - 'BUILD_ID=$BUILD_ID'
-  - 'REPO_NAME=$REPO_NAME'
-  - 'COMMIT_SHA=$COMMIT_SHA'
-  - 'SHORT_SHA=$SHORT_SHA'
-  - 'BRANCH_NAME=$BRANCH_NAME'
-  - 'TAG_NAME=$TAG_NAME'
+#- id: deploy-to-cluster
+#  name: gcr.io/mit-lookit/lookit-orchestrator
+#  args: ['ls']
+#  env:
+#  - 'BUILD_ID=$BUILD_ID'
+#  - 'REPO_NAME=$REPO_NAME'
+#  - 'COMMIT_SHA=$COMMIT_SHA'
+#  - 'SHORT_SHA=$SHORT_SHA'
+#  - 'BRANCH_NAME=$BRANCH_NAME'
+#  - 'TAG_NAME=$TAG_NAME'
+
+- id: deploy-to-cluster
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'run',
+    'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA',
+    '--env',
+    'BUILD_ID=$BUILD_ID',
+    '--env',
+    'REPO_NAME=$REPO_NAME',
+    '--env',
+    'COMMIT_SHA=$COMMIT_SHA',
+    '--env',
+    'SHORT_SHA=$SHORT_SHA',
+    '--env',
+    'BRANCH_NAME=$BRANCH_NAME',
+    '--env',
+    'TAG_NAME=$TAG_NAME',
+  ]
+#  env:
+#  - 'BUILD_ID=$BUILD_ID'
+#  - 'REPO_NAME=$REPO_NAME'
+#  - 'COMMIT_SHA=$COMMIT_SHA'
+#  - 'SHORT_SHA=$SHORT_SHA'
+#  - 'BRANCH_NAME=$BRANCH_NAME'
+#  - 'TAG_NAME=$TAG_NAME'
+
 
 # cloud-build-local won't clean `docker run -d`-ed container so we have to do it here.
 - id: cloud-build-local-cleanup
