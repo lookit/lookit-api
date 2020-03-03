@@ -2,12 +2,7 @@ steps:
 
 - id: boot-postgres
   name: gcr.io/cloud-builders/docker
-  args: ['run', '-d', '--publish=5432:5432', '--name=postgres', '--network=cloudbuild', 'postgres']
-
-# Test postgres
-- id: test-postgres
-  name: postgres
-  args: ['psql', '--host=postgres', '--user=postgres', '--command', 'SELECT * FROM INFORMATION_SCHEMA.Tables']
+  args: ['run', '-d', '--publish=5432:5432', '--name=postgres', 'postgres']
 
 # Use dockerize per suggestion here:
 # https://github.com/GoogleCloudPlatform/cloud-builders/issues/376#issuecomment-498624099
@@ -18,14 +13,14 @@ steps:
 - id: build-image
   name: gcr.io/cloud-builders/docker
   args: [ 'build', '-t', 'lookit', '.' ]
-  env:
-    - 'DB_HOST=postgres'
+#  env:
+#    - 'DB_HOST=postgres'
 
 - id: run-tests
   name: gcr.io/cloud-builders/docker
   args: [ 'run', '--rm', '--network=cloudbuild', 'lookit', 'python', 'manage.py', 'test']
-  env:
-    - 'DB_HOST=postgres'
+#  env:
+#    - 'DB_HOST=postgres'
 
 - id: tag-image
   name: gcr.io/cloud-builders/docker
