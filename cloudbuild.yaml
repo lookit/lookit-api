@@ -54,7 +54,6 @@ steps:
   name: gcr.io/cloud-builders/docker
   args: [
     'run',
-    'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA',
     '--env',
     'BUILD_ID=$BUILD_ID',
     '--env',
@@ -67,6 +66,7 @@ steps:
     'BRANCH_NAME=$BRANCH_NAME',
     '--env',
     'TAG_NAME=$TAG_NAME',
+    'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA',
   ]
 #  env:
 #  - 'BUILD_ID=$BUILD_ID'
