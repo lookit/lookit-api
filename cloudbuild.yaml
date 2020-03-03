@@ -1,27 +1,28 @@
 steps:
+- id: build-image
+  name: gcr.io/cloud-builders/docker
+  args: [ 'build', '-t', 'lookit', '.' ]
 
-- name: gcr.io/cloud-builders/docker
-  args: ['run', '-d', '--name=postgres', '--network=cloudbuild', 'postgres']
+- id: boot-postgres
+  name: gcr.io/cloud-builders/docker
+  args: ['run', '-d', '-p=5432:5432', '--name=postgres', '--network=cloudbuild', 'postgres']
 
 # Use dockerize per suggestion here:
 # https://github.com/GoogleCloudPlatform/cloud-builders/issues/376#issuecomment-498624099
-#- name: jwilder/dockerize:latest
-#  args: ['dockerize', '-timeout=60s', '-wait=tcp://postgres:5432']
+- id: wait-for-postgres
+  name: jwilder/dockerize:latest
+  args: ['dockerize', '-timeout=60s', '-wait=tcp://postgres:5432']
 
-
-- name: gcr.io/cloud-builders/docker
-  args: [ 'build', '-t', 'lookit', '.' ]
-
-
-- name: gcr.io/cloud-builders/docker
+- id: run-tests
+  name: gcr.io/cloud-builders/docker
   args: [ 'run', '--rm', '--network=cloudbuild', 'lookit', 'python', 'manage.py', 'test']
 
-
-- name: gcr.io/cloud-builders/docker
+- id: tag-image
+  name: gcr.io/cloud-builders/docker
   args: [ 'tag', 'lookit', 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA']
 
-
-- name: gcr.io/cloud-builders/docker
+- id: push-image-to-gcr
+  name: gcr.io/cloud-builders/docker
   args: [ 'push', 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA']
 
 # Pull orchestrator image and build.
@@ -35,7 +36,8 @@ steps:
 #    - 'TAG_NAME=$TAG_NAME'
 
 # cloud-build-local won't clean `docker run -d`-ed container so we have to do it here.
-- name: gcr.io/cloud-builders/docker
+- id: cloud-build-local-cleanup
+  name: gcr.io/cloud-builders/docker
   args: ['rm', '--force', 'postgres']
 
 
