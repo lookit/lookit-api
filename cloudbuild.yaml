@@ -6,9 +6,9 @@ steps:
 
 # Use dockerize per suggestion here:
 # https://github.com/GoogleCloudPlatform/cloud-builders/issues/376#issuecomment-498624099
-- id: wait-for-postgres
-  name: jwilder/dockerize:latest
-  args: ['dockerize', '-timeout=60s', '-wait=tcp://lookit-postgres:5432']
+#- id: wait-for-postgres
+#  name: jwilder/dockerize:latest
+#  args: ['dockerize', '-timeout=60s', '-wait=tcp://lookit-postgres:5432']
 
 - id: build-image
   name: gcr.io/cloud-builders/docker
