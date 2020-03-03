@@ -40,6 +40,7 @@ steps:
 
 # Pull orchestrator image and build.
 - name: gcr.io/mit-lookit/lookit-orchestrator
+  args: ['bash', 'deploy.sh']
   env:
   - 'BUILD_ID=$BUILD_ID'
   - 'REPO_NAME=$REPO_NAME'
