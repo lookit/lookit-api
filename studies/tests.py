@@ -39,13 +39,12 @@ class ResponseViewsTestCase(TestCase):
         self.demo_snapshots_for_participants = []
         self.responses = []
         self.preview_responses = []
-        for (iPart, part) in enumerate(self.participants):
-            self.children_for_participants.append(
-                [
-                    G(Child, user=part, given_name="Child" + str(i))
-                    for i in range(children_per_participant)
-                ]
-            )
+        for part in self.participants:
+            these_children = [
+                G(Child, user=part, given_name="Child" + str(i))
+                for i in range(children_per_participant)
+            ]
+            self.children_for_participants.append(these_children)
             self.demo_snapshots_for_participants.append(
                 G(DemographicData, user=part, density="urban")
             )
@@ -63,7 +62,7 @@ class ResponseViewsTestCase(TestCase):
                         "2-my-consent-frame": {"frameType": "CONSENT"},
                     },
                 )
-                for child in self.children_for_participants[iPart]
+                for child in these_children
             ]
             self.preview_responses += [
                 G(
@@ -80,7 +79,7 @@ class ResponseViewsTestCase(TestCase):
                         "2-my-consent-frame": {"frameType": "CONSENT"},
                     },
                 )
-                for child in self.children_for_participants[iPart]
+                for child in these_children
             ]
 
         # Confirm consent for all responses
