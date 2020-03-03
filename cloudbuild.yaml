@@ -66,7 +66,7 @@ steps:
     'BRANCH_NAME=$BRANCH_NAME',
     '--env',
     'TAG_NAME=$TAG_NAME',
-    'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA',
+    'gcr.io/$PROJECT_ID/lookit-orchestrator',
   ]
 #  env:
 #  - 'BUILD_ID=$BUILD_ID'
