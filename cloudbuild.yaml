@@ -54,6 +54,7 @@ steps:
   name: gcr.io/cloud-builders/docker
   args: [
     'run',
+    '--network=cloudbuild',
     '--env',
     'BUILD_ID=$BUILD_ID',
     '--env',
