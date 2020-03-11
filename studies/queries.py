@@ -95,6 +95,7 @@ def get_responses_with_current_rulings_and_videos(study_id):
             "ruling_comments",
             "completed",
             "date_created",
+            "is_preview",
             "child_id",
             "child__uuid",
             "child__birthday",

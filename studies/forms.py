@@ -125,6 +125,7 @@ class StudyEditForm(BaseStudyForm):
             "duration",
             "contact_info",
             "public",
+            "shared_preview",
             "structure",
             "criteria_expression",
             "study_type",
@@ -136,6 +137,7 @@ class StudyEditForm(BaseStudyForm):
             "criteria": "Participant Eligibility Description",
             "contact_info": "Researcher Contact Information",
             "public": "Discoverable - List this study on the 'Studies' page once you start it?",
+            "shared_preview": "Share preview - Allow other Lookit researchers to preview your study and give feedback?",
             "study_type": "Experiment Runner Type",
             "compensation_description": "Compensation",
         }

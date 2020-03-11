@@ -47,8 +47,7 @@ class StudyType(models.Model):
     configuration = DateTimeAwareJSONField(
         default={
             # task module should have a build_experiment method decorated as a
-            # celery task that takes a study uuid and a preview kwarg which
-            # defaults to true
+            # celery task that takes a study uuid
             "task_module": "studies.tasks",
             "metadata": {
                 # defines the default metadata fields for that type of study
@@ -125,12 +124,11 @@ class Study(models.Model):
         db_index=True,
     )
     public = models.BooleanField(default=False)
+    shared_preview = models.BooleanField(default=False)
     creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     metadata = DateTimeAwareJSONField(default={})
-    previewed = models.BooleanField(default=False)
     built = models.BooleanField(default=False)
-    is_previewing = models.BooleanField(default=False)
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True)
@@ -607,6 +605,7 @@ class Response(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     global_event_timings = DateTimeAwareJSONField(default=dict)
     child = models.ForeignKey(Child, on_delete=models.DO_NOTHING)
+    is_preview = models.BooleanField(default=False)
     demographic_snapshot = models.ForeignKey(
         DemographicData, on_delete=models.DO_NOTHING
     )
@@ -899,7 +898,7 @@ class Video(models.Model):
         data = pipe_response_dict["data"]
         old_pipe_name = f"{data['videoName']}.{data['type'].lower()}"
         new_full_name = f"{data['payload']}.{data['type'].lower()}"
-        throwaway_jpg_name = f"{data['payload']}.jpg"
+        throwaway_jpg_name = f"{data['videoName']}.jpg"
 
         # No way to directly rename in boto3, so copy and delete original (this is dumb, but let's get it working)
         try:  # Create a copy with the correct new name, if the original exists. Could also

@@ -16,8 +16,14 @@ from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Prefetch, Q
 from django.db.models.functions import Lower
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect, reverse
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+    JsonResponse,
+)
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.views import generic
@@ -53,7 +59,17 @@ from studies.fields import (
 )
 from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import ACCEPTED, Feedback, Response, Study, StudyLog, StudyType
+from studies.models import (
+    ACCEPTED,
+    ConsentRuling,
+    Feedback,
+    Response,
+    ResponseLog,
+    Study,
+    StudyLog,
+    StudyType,
+    Video,
+)
 from studies.queries import (
     get_annotated_responses_qs,
     get_consent_statistics,
@@ -71,6 +87,7 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
+from web.views import StudyDetailView as ParticipantStudyDetailView
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -244,10 +261,8 @@ class StudyUpdateView(
             if not (study.study_type_id == new_study_id and metadata == study.metadata):
                 # Invalidate the previous build
                 study.built = False
-                study.previewed = False
-                # May still be building/previewing, but we're now good to allow another build
+                # May still be building, but we're now good to allow another build
                 study.is_building = False
-                study.is_previewing = False
             study.metadata = metadata
             study.study_type_id = new_study_id
             study.save()
@@ -405,31 +420,13 @@ class StudyDetailView(
                     reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
                 )
 
-        if "build" in self.request.POST:
-            study = self.get_object()
-            if not study.is_building:
-                study.is_building = True
-                study.save()
-                ember_build_and_gcp_deploy.delay(
-                    study.uuid, self.request.user.uuid, preview=False
-                )
-                messages.success(
-                    self.request,
-                    f"Scheduled experiment runner build for {self.get_object().name}. You will be emailed when it's completed. This may take up to 30 minutes.",
-                )
-            else:
-                messages.warning(
-                    self.request,
-                    f"Experiment runner for study {self.get_object().name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
-                )
-
         if self.request.POST.get("clone_study"):
             clone = self.get_object().clone()
             clone.creator = self.request.user
             clone.organization = self.request.user.organization
             clone.study_type = self.get_object().study_type
             clone.built = False
-            clone.previewed = False
+            clone.is_building = False
             clone.save()
             # Adds success message when study is cloned
             messages.success(self.request, f"{self.get_object().name} copied.")
@@ -558,7 +555,6 @@ class StudyDetailView(
         context["current_researchers"] = self.get_study_researchers()
         context["users_result"] = self.search_researchers()
         context["build_ui_tag"] = "success" if study.built else "warning"
-        context["preview_ui_tag"] = "success" if study.previewed else "warning"
         context["state_ui_tag"] = STATE_UI_SIGNALS.get(study.state, "info")
         context["search_query"] = self.request.GET.get("match")
         context["name"] = self.request.GET.get("match", None)
@@ -1113,6 +1109,7 @@ def build_responses_json(responses, optional_headers=None):
                         "completed": resp.completed,
                         "date_created": resp.date_created,
                         "withdrawn": resp.withdrawn,
+                        "is_preview": resp.is_preview,
                     },
                     "study": {"uuid": str(resp.study.uuid)},
                     "participant": {
@@ -1212,6 +1209,11 @@ def get_response_headers_and_row_data(resp=None):
             "response_withdrawn",
             resp.withdrawn if resp else "",
             "Whether the participant withdrew permission for viewing/use of study video beyond consent video. If true, video will not be available and must not be used.",
+        ),
+        (
+            "response_is_preview",
+            resp.is_preview if resp else "",
+            "Whether this response was generated by a researcher previewing the experiment. Preview data should not be used in any actual analyses.",
         ),
         (
             "response_consent_ruling",
@@ -1603,6 +1605,7 @@ class StudyResponsesAll(
     queryset = Study.objects.all()
     permission_required = "studies.can_view_study_responses"
     raise_exception = True
+    http_method_names = ["get", "post"]
 
     # Which headers from the response data summary should go in the child data downloads
     child_csv_headers = [
@@ -1644,6 +1647,29 @@ class StudyResponsesAll(
         context["childoptions"] = CHILD_DATA_OPTIONS
         context["ageoptions"] = AGE_DATA_OPTIONS
         return context
+
+    def post(self, request, *args, **kwargs):
+        """
+        Post method on all responses view handles the  'delete all preview data' button.
+        """
+        study = self.get_object()
+        preview_responses = study.responses.filter(is_preview=True).prefetch_related(
+            "videos", "responselog_set", "consent_rulings", "feedback"
+        )
+        paginator = Paginator(preview_responses, RESPONSE_PAGE_SIZE)
+        for page_num in paginator.page_range:
+            page_of_responses = paginator.page(page_num)
+            for resp in page_of_responses:
+                # First delete the things that point to the response to avoid db integrity
+                # errors
+                resp.responselog_set.all().delete()
+                resp.consent_rulings.all().delete()
+                resp.feedback.all().delete()
+                for vid in resp.videos.all():
+                    vid.delete(delete_in_s3=True)  # actually delete video
+                resp.delete()
+        print("deleted responses")
+        return super().get(request, *args, **kwargs)
 
 
 class StudyResponsesAllDownloadJSON(StudyResponsesAll):
@@ -2392,10 +2418,10 @@ class StudyAttachments(
         )
 
 
-class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
+class StudyBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
     """
     Checks to make sure an existing build isn't running, that the user has permissions
-    to preview, and then triggers a preview build.
+    to build, and then triggers a build.
     """
 
     http_method_names = ["post"]
@@ -2409,7 +2435,8 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         return self._object
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse("exp:study-edit", kwargs={"pk": str(self.object.pk)})
+        return_path = self.request.POST.get("return", "exp:study-edit")
+        return reverse(return_path, kwargs={"pk": str(self.object.pk)})
 
     def post(self, request, *args, **kwargs):
         study_permissions = get_perms(request.user, self.object)
@@ -2417,20 +2444,18 @@ class StudyPreviewBuildView(generic.detail.SingleObjectMixin, generic.RedirectVi
         if study_permissions and "can_edit_study" in study_permissions:
 
             study = self.object
-            if not study.is_previewing:
-                study.is_previewing = True
-                study.save()
-                ember_build_and_gcp_deploy.delay(
-                    study.uuid, request.user.uuid, preview=True
-                )
+            if not study.is_building:
+                study.is_building = True
+                study.save(update_fields=["is_building"])
+                ember_build_and_gcp_deploy.delay(study.uuid, request.user.uuid)
                 messages.success(
                     request,
-                    f"Scheduled preview runner build for {self.object.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+                    f"Scheduled experiment runner build for {self.object.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
                 )
             else:
                 messages.warning(
                     request,
-                    f"Preview runner for {self.object.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
+                    f"Experiment runner for {self.object.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
                 )
         return super().post(request, *args, **kwargs)
 
@@ -2563,17 +2588,74 @@ class StudyParticipantAnalyticsView(
         return ctx
 
 
+class StudyPreviewDetailView(
+    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ParticipantStudyDetailView
+):
+
+    queryset = Study.objects.all()
+    http_method_names = ["get", "post"]
+    permission_required = "accounts.can_view_experimenter"
+    raise_exception = True
+    template_name = "../../web/templates/web/study-detail.html"
+
+    def get_context_data(self, **kwargs):
+        """
+        Just add preview mode to slightly modify template
+        """
+        context = super().get_context_data(**kwargs)
+        context["preview_mode"] = True
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        study = self.get_object()
+        if study.shared_preview or self.request.user.has_perm(
+            "studies.can_view_study_responses"
+        ):
+            if request.method == "POST":
+                if study.built:
+                    return redirect(
+                        "exp:preview-proxy", study.uuid, request.POST["child_id"]
+                    )
+                else:
+                    return HttpResponseForbidden(
+                        f'Unable to preview: no experiment runner for study "{study.name}" is available. Please return to the study edit page to build the experiment runner.'
+                    )
+            return super(generic.DetailView, self).dispatch(request)
+        else:
+            return HttpResponseForbidden(f"Not authorized to view study preview.")
+
+
 class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
     """
     Proxy view to forward researcher to preview page in the Ember app
     """
 
-    upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
+    upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
-        if request.path[-1] == "/":
-            path = f"{path.split('/')[0]}/index.html"
-        return super().dispatch(request, path)
+        print(kwargs)
+        try:
+            child = Child.objects.get(uuid=kwargs.get("child_id", None))
+        except Child.DoesNotExist:
+            raise Http404(f"Child not found")
+
+        try:
+            study = Study.objects.get(uuid=kwargs.get("uuid", None))
+        except Study.DoesNotExist:
+            raise Http404(f"Study not found")
+
+        if child.user != request.user:
+            # requesting user doesn't belong to that child
+            raise PermissionDenied()
+
+        if study.shared_preview or self.request.user.has_perm(
+            "studies.can_view_study_responses"
+        ):
+            if request.path[-1] == "/":
+                path = f"{path.split('/')[0]}/index.html"
+            return super().dispatch(request, path)
+        else:
+            return HttpResponseForbidden(f"Not authorized to view study preview.")
 
 
 def get_flattened_responses(response_qs, studies_for_child):

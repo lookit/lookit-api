@@ -14,7 +14,7 @@ from studies.models import (
 
 
 class StudyAdmin(GuardedModelAdmin):
-    list_display = ("uuid", "name", "state", "public", "creator", "previewed", "built")
+    list_display = ("uuid", "name", "state", "public", "creator", "built")
     list_filter = ("state", "creator")
     search_fields = ["name"]
     pass
@@ -29,6 +29,7 @@ class ResponseAdmin(GuardedModelAdmin):
         "completed",
         "completed_consent_frame",
         "withdrawn",
+        "is_preview",
     )
     empty_value_display = "None"
     list_filter = ("study",)

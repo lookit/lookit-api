@@ -172,7 +172,12 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
     def get_study(self, study_uuid):
         from studies.models import Study
 
-        self.build_context["study"] = Study.objects.get(uuid=study_uuid)
+        study = Study.objects.get(uuid=study_uuid)
+        study.is_building = (
+            True
+        )  # Set this here (in addition to in view) in case re-trying
+        study.save(update_fields=["is_building"])
+        self.build_context["study"] = study
 
     def get_researcher(self, researcher_uuid):
         from accounts.models import User
@@ -239,12 +244,8 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
 
         return {"success": True, "logs": stdout_and_stderr.decode("utf-8")}
 
-    def deploy_study(self, is_preview, local_paths, destination_directory):
-        storage = (
-            storages.LookitPreviewExperimentStorage()
-            if is_preview
-            else storages.LookitExperimentStorage()
-        )
+    def deploy_study(self, local_paths, destination_directory):
+        storage = storages.LookitExperimentStorage()
 
         cloud_deployment_directory = os.path.join(
             local_paths.deployments, destination_directory
@@ -252,30 +253,25 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
 
         deploy_to_remote(cloud_deployment_directory, storage)
 
-    def save_study_and_log_results(self, study, is_preview, update_fields):
+    def save_study_and_log_results(self, study, update_fields):
         # Only update field for particular build, in case we have parallel builds running
-        if is_preview:
-            study.previewed = True
-            study.is_previewing = False
-            study.save(update_fields=update_fields + ["previewed"])
-            self.build_context["action"] = "previewed"
-        else:
-            study.built = True
-            study.is_building = False
-            study.save(update_fields=update_fields + ["built"])
-            self.build_context["action"] = "deployed"
+        study.built = True
+        study.is_building = False
+        study.save(update_fields=update_fields + ["built", "is_building"])
+        self.build_context["action"] = "deployed"
 
     def finalize_build_log(self, failure_stage=None):
         from studies.models import StudyLog
 
         study = self.build_context["study"]
+        study.is_building = False
+        study.save(update_fields=["is_building"])
         action = self.build_context.get("action", "failed to build")
         researcher = self.build_context["researcher"]
-        is_preview = self.build_context["is_preview"]
         logs = json.dumps(self.build_logs, indent=4, default=str)
 
         notify_involved_parties_of_build_status(
-            study, is_preview, failure_stage=failure_stage, log_output=logs
+            study, failure_stage=failure_stage, log_output=logs
         )
 
         StudyLog.objects.create(study=study, action=action, user=researcher, extra=logs)
@@ -358,9 +354,7 @@ def download_repos(player_repo_url, player_sha=None):
     return repo_destination_folder, player_sha
 
 
-def notify_involved_parties_of_build_status(
-    study, is_preview, failure_stage=None, log_output=None
-):
+def notify_involved_parties_of_build_status(study, failure_stage=None, log_output=None):
     email_context = {
         "org_name": study.organization.name,
         "study_name": study.name,
@@ -371,11 +365,11 @@ def notify_involved_parties_of_build_status(
     success = failure_stage is None
 
     if success:
-        email_context["action"] = "previewed" if is_preview else "deployed"
+        email_context["action"] = "deployed"
 
         send_mail.delay(
             "notify_admins_of_study_action",
-            "Study Previewed" if is_preview else "Study Deployed",
+            "Study Deployed",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
                 study.study_organization_admin_group.user_set.values_list(
@@ -384,13 +378,12 @@ def notify_involved_parties_of_build_status(
             ),
             **email_context,
         )
-        subject_line = f"Study {'preview ' if is_preview else ''}built"
+        subject_line = f"Experiment runner built"
         researcher_notification_template = "notify_researchers_of_deployment"
     else:
-        email_context["is_preview"] = is_preview
         email_context["failure_stage"] = failure_stage
         email_context["log_output"] = log_output
-        subject_line = f"Study {'preview ' if is_preview else ''}failed to build."
+        subject_line = f"Experiment runner failed to build."
         researcher_notification_template = "notify_researchers_of_build_failure"
 
     send_mail.delay(

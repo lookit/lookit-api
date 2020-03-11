@@ -3,7 +3,7 @@
 </p>
 <p>
     Your study, <a href="{{ base_url }}{% url 'exp:study-detail' pk=study_id %}">{{ study_name }}</a>,
-    has failed to build its {% if is_preview %}preview {% else %}experiment {% endif %} runner.
+    has failed to build its experiment runner.
 </p>
 <p>
     It failed during the {{ failure_stage }} stage. Logs are provided below to help with troubleshooting.
