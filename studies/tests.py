@@ -30,10 +30,28 @@ class ResponseViewsTestCase(TestCase):
         self.participants = [
             G(User, is_active=True, given_name="Mom") for i in range(n_participants)
         ]
-        self.study = G(Study, creator=self.study_admin)
+        self.study = G(Study, creator=self.study_admin, shared_preview=False)
+        self.study_shared_preview = G(
+            Study, creator=self.study_admin, shared_preview=True
+        )
 
         self.study.study_admin_group.user_set.add(self.study_admin)
         self.study.study_read_group.user_set.add(self.study_reader)
+        [
+            assign_perm("accounts.can_view_experimenter", researcher)
+            for researcher in [
+                self.study_admin,
+                self.study_reader,
+                self.other_researcher,
+            ]
+        ]
+
+        self.study_reader_child = G(
+            Child, user=self.study_reader, given_name="Study reader child"
+        )
+        self.other_researcher_child = G(
+            Child, user=self.other_researcher, given_name="Other researcher child"
+        )
 
         self.children_for_participants = []
         self.demo_snapshots_for_participants = []
@@ -171,6 +189,49 @@ class ResponseViewsTestCase(TestCase):
             self.assertIn(
                 page.status_code, [200, 302], "Unexpected status code for " + url
             )
+
+    def testCanSeeStudyPreviewAsStudyRead(self):
+        self.client.force_login(self.study_reader)
+        url = reverse("exp:preview-detail", kwargs={"path": self.study.uuid})
+        page = self.client.get(url)
+        self.assertEqual(
+            page.status_code,
+            200,
+            "Researcher with study read access cannot access: " + url,
+        )
+
+    def testCanSeeStudyPreviewAsOtherResearcherIfShared(self):
+        self.client.force_login(self.other_researcher)
+        url = reverse(
+            "exp:preview-detail", kwargs={"path": self.study_shared_preview.uuid}
+        )
+        page = self.client.get(url)
+        self.assertEqual(
+            page.status_code,
+            200,
+            "Study preview is shared but unassociated researcher cannot access: " + url,
+        )
+
+    def testCannotSeeStudyPreviewAsParticipant(self):
+        self.client.force_login(self.participants[0])
+        url = reverse(
+            "exp:preview-detail", kwargs={"path": self.study_shared_preview.uuid}
+        )
+        page = self.client.get(url)
+        self.assertEqual(
+            page.status_code, 403, "Study preview is accessible by participant: " + url
+        )
+
+    def testCannotSeeStudyPreviewAsOtherResearcherIfNotShared(self):
+        self.client.force_login(self.other_researcher)
+        url = reverse("exp:preview-detail", kwargs={"path": self.study.uuid})
+        page = self.client.get(url)
+        self.assertEqual(
+            page.status_code,
+            403,
+            "Study preview is not shared but unassociated researcher can access: "
+            + url,
+        )
 
     def testCannotDeletePreviewDataAsUnassociatedResearcher(self):
         self.client.force_login(self.other_researcher)

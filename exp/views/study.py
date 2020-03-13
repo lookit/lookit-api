@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
+from django.core.exceptions import PermissionDenied
 from django.core.mail import BadHeaderError
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
@@ -1668,7 +1669,6 @@ class StudyResponsesAll(
                 for vid in resp.videos.all():
                     vid.delete(delete_in_s3=True)  # actually delete video
                 resp.delete()
-        print("deleted responses")
         return super().get(request, *args, **kwargs)
 
 
@@ -2608,9 +2608,11 @@ class StudyPreviewDetailView(
 
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
-        if study.shared_preview or self.request.user.has_perm(
-            "studies.can_view_study_responses"
-        ):
+
+        if (
+            study.shared_preview
+            and self.request.user.has_perm("accounts.can_view_experimenter")
+        ) or self.request.user.has_perm("studies.can_view_study_responses", study):
             if request.method == "POST":
                 if study.built:
                     return redirect(
@@ -2633,7 +2635,6 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
-        print(kwargs)
         try:
             child = Child.objects.get(uuid=kwargs.get("child_id", None))
         except Child.DoesNotExist:
@@ -2649,7 +2650,7 @@ class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
             raise PermissionDenied()
 
         if study.shared_preview or self.request.user.has_perm(
-            "studies.can_view_study_responses"
+            "studies.can_view_study_responses", study
         ):
             if request.path[-1] == "/":
                 path = f"{path.split('/')[0]}/index.html"
