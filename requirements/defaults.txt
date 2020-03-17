@@ -6,7 +6,7 @@ django-ace-overlay==0.8.0
 django-allauth==0.32.0
 django-bitfield==1.9.3
 django-bootstrap3==11.0.0
-django-celery-beat==1.4.0
+django-celery-beat==1.1.23
 django-cors-headers==2.1.0
 django-countries==4.4
 django-debug-toolbar==1.11
@@ -21,7 +21,7 @@ django-pandas==0.6.0
 django-prettyjson==0.2.2
 django-revproxy==0.9.15
 django-storages==1.7.1
-Django==1.11.23
+Django==1.11.27
 djangorestframework-jsonapi==2.7.0
 djangorestframework==3.9.2
 docker==3.7.2
