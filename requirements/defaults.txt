@@ -6,7 +6,7 @@ django-ace-overlay==0.8.0
 django-allauth==0.32.0
 django-bitfield==1.9.3
 django-bootstrap3==11.0.0
-django-celery-beat==1.1.23
+django-celery-beat==1.1.1
 django-cors-headers==2.1.0
 django-countries==4.4
 django-debug-toolbar==1.11
