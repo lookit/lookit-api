@@ -151,7 +151,8 @@ class DemographicDataForm(forms.ModelForm):
         )
 
         help_texts = {
-            "child_birthdays": "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
+            "child_birthdays": "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ...",
+            "number_of_books": "Numerical answers only - a rough guess is fine!",
         }
 
         labels = {
