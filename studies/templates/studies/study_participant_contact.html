@@ -175,10 +175,7 @@
                                 <div id="transaction-warning" class="collapsed help-block small text-center">
                                     <p class="label label-warning">WARNING</p>
                                     <p class="text-warning">
-                                        Transactional emails are only for one-off purposes only; it's the only way to
-                                        contact
-                                        recipients who have opted out of all email.
-                                        <strong>Please use sparingly!</strong>
+                                        Transactional emails can be sent to any recipient, even those who opted out of email. They are <strong>ONLY</strong> for completing a "transaction" initiated by the recipient - e.g., sending a gift card or requested information.
                                     </p>
                                 </div>
                                 <div id="other-message-type" class="collapsed help-block small">
@@ -512,11 +509,15 @@
             // Redraw select after sorting
             $(optedIn).appendTo($emailFriendlyGroup);
             $(optedOut).appendTo($doNotEmailGroup);
+            var currentlySelected = $recipientSelector.selectpicker('val');
+            var optedInValues = optedIn.map(opt => opt.value);
+            
+            // Update people it's possible to email; leave people selected if they've still opted in to the current type of email
             $recipientSelector
                 .removeAttr('disabled')
                 .selectpicker('refresh')
-                .selectpicker('deselectAll')
-                .selectpicker('val', transactional ? null : optedIn.map(opt => opt.value));
+                .selectpicker('deselectAll') 
+                .selectpicker('val', currentlySelected.filter(val => optedInValues.includes(val)));
         }
 
         function handleDateFiltering(after, before) {
