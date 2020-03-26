@@ -26,10 +26,10 @@ from osf_oauth2_adapter import views as osf_oauth2_adapter_views
 from project import settings
 from web import urls as web_urls
 
-favicon_view = RedirectView.as_view(url="/static/favicon.png", permanent=True)
+favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
 urlpatterns = [
-    url(r"^favicon\.png$", favicon_view),
+    url(r"^favicon\.ico$", favicon_view),
     url(r"^admin/", admin.site.urls),
     url(r"^api/", include(api_urls)),
     url(
