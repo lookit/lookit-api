@@ -43,9 +43,6 @@
                     url: commit_options_api_url,
                     dataType: 'json'
                 }).done(function(data) {
-                    console.log(data);
-                    console.log(commit_options_api_url);
-                    
                     if (data.length > 0) {
                         // Commits returned are inclusive of the reference commit, 
                         // which will be last (most recent first) if it's in master - 
