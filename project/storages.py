@@ -28,7 +28,3 @@ class LookitMediaStorage(LookitGoogleCloudStorage):
 
 class LookitExperimentStorage(LookitGoogleCloudStorage):
     location = settings.EXPERIMENT_LOCATION
-
-
-class LookitPreviewExperimentStorage(LookitGoogleCloudStorage):
-    location = settings.PREVIEW_EXPERIMENT_LOCATION

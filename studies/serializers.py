@@ -137,6 +137,7 @@ class ResponseSerializer(UuidHyperlinkedModelSerializer):
             "completed_consent_frame",
             "demographic_snapshot",
             "created_on",
+            "is_preview",
             "pk",
             "withdrawn",
         )
@@ -182,6 +183,7 @@ class ResponseWriteableSerializer(UuidResourceModelSerializer):
             "child",
             "study",
             "completed_consent_frame",
+            "is_preview",
             "pk",
             "withdrawn",
         )

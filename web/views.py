@@ -369,6 +369,10 @@ class StudyDetailView(generic.DetailView):
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
         if study.state == "active":
+            if request.method == "POST":
+                return redirect(
+                    "web:experiment-proxy", study.uuid, request.POST["child_id"]
+                )
             return super().dispatch(request)
         else:
             return HttpResponseForbidden(
@@ -382,9 +386,6 @@ class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
 
     def dispatch(self, request, path, *args, **kwargs):
         referer = request.META.get("HTTP_REFERER", None)
-        if referer and "preview" in referer:
-            # if they're trying to preview use the preview base_url
-            self.upstream = settings.PREVIEW_EXPERIMENT_BASE_URL
         uuid = kwargs.pop("uuid", None)
         filename = kwargs.pop("filename", None)
         # if it's one of the hdfv files

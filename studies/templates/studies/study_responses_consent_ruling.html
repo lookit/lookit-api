@@ -1,6 +1,7 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 {% load exp_extras %}
+{% load static %}
 
 {% block title %}Responses | {{ study.name }}{% endblock %}
 
@@ -360,11 +361,15 @@
                     <ul id="list-of-responses" class="list-group">
                         {% for response in loaded_responses %}
                             <li id="response-option-{{ response.uuid }}"
-                                class="response-option list-group-item {{ response.current_ruling }}"
+                                class="response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %} preview-row {% endif %}"
                                 data-id="{{ response.uuid }}"
                                 data-original-status="{{ response.current_ruling }}">
                                 <span>
                                     <strong>{{ response.date_created | date:"D M d, P e" }}</strong>
+                                    {% if response.is_preview %} 
+                                    <p>
+                                        <strong>[Preview]</strong>
+                                    </p>{% endif %}
                                     <p>
                                         <em class="small">{{ response.ruling_comments }}</em>
                                     </p>

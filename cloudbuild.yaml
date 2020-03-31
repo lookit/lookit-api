@@ -1,0 +1,88 @@
+steps:
+
+- id: boot-postgres
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'run',
+    '-d',
+    '--name=lookitdb',
+    '--network=cloudbuild',
+    '-e',
+    'POSTGRES_PASSWORD=password',
+    'postgres:9.6',
+  ]
+
+# Use dockerize per suggestion here:
+# https://github.com/GoogleCloudPlatform/cloud-builders/issues/376#issuecomment-498624099
+- id: wait-for-postgres
+  name: jwilder/dockerize:0.6.1
+  args: ['dockerize', '-timeout=60s', '-wait=tcp://lookitdb:5432']
+
+- id: build-image
+  name: gcr.io/cloud-builders/docker
+  args: [ 'build', '-t', 'lookit', '--network=cloudbuild' , '.' ]
+
+
+- id: run-tests
+  name: lookit
+  args: ['python', 'manage.py', 'test']
+  env:
+    - 'DB_HOST=lookitdb'
+    - 'DB_PASSWORD=password'
+
+- id: tag-image
+  name: gcr.io/cloud-builders/docker
+  args: [ 'tag', 'lookit', 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA']
+
+- id: push-image-to-gcr
+  name: gcr.io/cloud-builders/docker
+  args: [ 'push', 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA']
+
+# Pull orchestrator image and build.
+#- id: deploy-to-cluster
+#  name: gcr.io/mit-lookit/lookit-orchestrator
+#  args: ['ls']
+#  env:
+#  - 'BUILD_ID=$BUILD_ID'
+#  - 'REPO_NAME=$REPO_NAME'
+#  - 'COMMIT_SHA=$COMMIT_SHA'
+#  - 'SHORT_SHA=$SHORT_SHA'
+#  - 'BRANCH_NAME=$BRANCH_NAME'
+#  - 'TAG_NAME=$TAG_NAME'
+
+- id: deploy-to-cluster
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'run',
+    '--network=cloudbuild',
+    '--env',
+    'BUILD_ID=$BUILD_ID',
+    '--env',
+    'REPO_NAME=$REPO_NAME',
+    '--env',
+    'COMMIT_SHA=$COMMIT_SHA',
+    '--env',
+    'SHORT_SHA=$SHORT_SHA',
+    '--env',
+    'BRANCH_NAME=$BRANCH_NAME',
+    '--env',
+    'TAG_NAME=$TAG_NAME',
+    'gcr.io/$PROJECT_ID/lookit-orchestrator',
+  ]
+#  env:
+#  - 'BUILD_ID=$BUILD_ID'
+#  - 'REPO_NAME=$REPO_NAME'
+#  - 'COMMIT_SHA=$COMMIT_SHA'
+#  - 'SHORT_SHA=$SHORT_SHA'
+#  - 'BRANCH_NAME=$BRANCH_NAME'
+#  - 'TAG_NAME=$TAG_NAME'
+
+
+# cloud-build-local won't clean `docker run -d`-ed container so we have to do it here.
+- id: cloud-build-local-cleanup
+  name: gcr.io/cloud-builders/docker
+  args: ['rm', '--force', 'lookitdb']
+
+
+images:
+- 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA'

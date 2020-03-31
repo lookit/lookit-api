@@ -48,7 +48,7 @@ logger.addHandler(handler)
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
-def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
+def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid):
     """Celery task to build experiments.
 
     Build an experiment with docker, and persist the built results in the
@@ -57,14 +57,10 @@ def ember_build_and_gcp_deploy(self, study_uuid, researcher_uuid, preview=True):
     :param self: Task. This is a celery/kombu convention.
     :param study_uuid: String.
     :param researcher_uuid: String.
-    :param preview: Boolean. Is this study build a preview?
     """
 
     fp_builder = EmberFrameplayerBuilder(
-        study_uuid=study_uuid,
-        researcher_uuid=researcher_uuid,
-        is_preview=preview,
-        logger=logger,
+        study_uuid=study_uuid, researcher_uuid=researcher_uuid, logger=logger
     )
 
     build_successful = fp_builder.build()

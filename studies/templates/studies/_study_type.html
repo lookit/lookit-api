@@ -31,30 +31,31 @@
         var $commit_description = $('#commit-description div.panel-body');
         var $update_info = $('#commit-update-info div.panel-body');
         
-        function get_repo_urls() {
-        }
-        
         function checkForUpdates(e) {
         
             e.preventDefault();
             var current_repo = $('#study-type-metadata input[name="player_repo_url"]').val().trim();
             var current_sha = $('#study-type-metadata input[name="last_known_player_sha"]').val().trim();
             current_repo = current_repo.replace('/\/$/', ''); //remove any trailing slash
-            var commit_api_url = current_repo.replace('https://github.com/', 'https://api.github.com/repos/') + '/commits/' + current_sha;
             var commit_options_api_url = current_repo.replace('https://github.com/', 'https://api.github.com/repos/') + `/commits?since=${current_commit_date}`;
             
             $.ajax({
                     url: commit_options_api_url,
                     dataType: 'json'
                 }).done(function(data) {
-                    // Note commits returned are inclusive of the reference commit, which will be last (most recent first) - don't list or count this one
-                    var commits_since = $.map(data.slice(0,-1), function(c) {return `<tr><td>${c.commit.author.date.split('T')[0]}</td><td>${c.commit.message}</td><td>${c.sha}</td></tr>`}).join('');
-                    if (data.length > 1) {
+                    if (data.length > 0) {
+                        // Commits returned are inclusive of the reference commit, 
+                        // which will be last (most recent first) if it's in master - 
+                        // don't list or count this one if so
+                        if (data[data.length-1].sha == current_sha) {
+                            data = data.slice(0,-1);
+                        }
+                        var commits_since = $.map(data, function(c) {return `<tr><td>${c.commit.author.date.split('T')[0]}</td><td>${c.commit.message}</td><td>${c.sha}</td></tr>`}).join('');
                         var commit_description = `<p>Since the version you are using, there have been updates to the master branch of ${current_repo}. Most recent commits:` + 
                         `<table><thead><tr><th>Date</th><th>Description</th><th>Commit SHA</th></tr></thead><tbody>${commits_since}</tbody></table>` 
                         $update_info.html(commit_description);
                     } else {
-                       $update_info.html(`<p>Up to date!</p> <p>This is the most recent version of the master branch of ${current_repo}.</p>`);
+                        $update_info.html(`<p>Up to date!</p> <p>This is the most recent version of the master branch of ${current_repo}.</p>`);
                     }
                     $('#commit-update-info').show();
                 }).fail(function() {

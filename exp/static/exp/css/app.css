@@ -202,6 +202,19 @@ a:hover.view-responses-link {
     color: gray;
 }
 
+.study-action-buttons * {
+    text-align: left;
+}
+
+.panel-heading {
+    background-color: #f5f5f5;
+}
+
+#preview-button {
+    padding:0.4em;
+    margin-top:-0.5em !important;
+}
+
 .study-detail-block {
     display: block;
     width: 100%;
@@ -332,6 +345,10 @@ div.download-button .btn {
 #list-of-responses {
     max-height: 300px; /* same height as video */
     overflow-y: scroll;
+}
+
+#list-of-responses li.preview-row {
+    color: gray;
 }
 
 
