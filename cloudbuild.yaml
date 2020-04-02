@@ -46,14 +46,9 @@ steps:
   name: gcr.io/cloud-builders/docker
   args: [ 'push', 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA']
 
-# SENTRY_AUTH_TOKEN is decrypted before this step runs.
-# Note: Need a shell to resolve environment variables with $$
 - id: deploy-to-cluster
   name: gcr.io/cloud-builders/docker
-  entrypoint: bash
   args: [
-    '-c',
-    'docker',
     'run',
     '--network=cloudbuild',
     '--env',
@@ -68,18 +63,40 @@ steps:
     'BRANCH_NAME=$BRANCH_NAME',
     '--env',
     'TAG_NAME=$TAG_NAME',
-    '--env',
-    'SENTRY_AUTH_TOKEN=$$SENTRY_AUTH_TOKEN',
     'gcr.io/$PROJECT_ID/lookit-orchestrator',
   ]
-  secretEnv: [ 'SENTRY_AUTH_TOKEN' ]
 
+# Create a Sentry release
+# SENTRY_AUTH_TOKEN is decrypted before this step runs.
+# Note: Need a shell to resolve environment variables with $$
+# Since sentry-cli image is based on alpine, we use `ash`
+- id: create-sentry-release
+  name: getsentry/sentry-cli
+  entrypoint: ash
+  args:
+  - '-c'
+  - |
+    if [[ "$BRANCH_NAME" == "master" ]]; then
+        export SENTRY_PROJECT=lookit-backend
+    elif [[ "$BRANCH_NAME" == "develop" ]]; then
+        export SENTRY_PROJECT=lookit-backend-w1
+    else
+        echo "Branch $BRANCH_NAME not mapped to sentry environment"
+        exit 0
+    fi
+    export VERSION=$(sentry-cli releases propose-version)
+    sentry-cli releases new -p "$SENTRY_PROJECT" "$VERSION"
+    sentry-cli releases set-commits "$VERSION" --auto
+    sentry-cli releases finalize "$VERSION"
+  secretEnv: [ 'SENTRY_AUTH_TOKEN' ]
+  env: [
+    'SENTRY_ORG=massachusetts-institute-of-technology'
+  ]
 
 # cloud-build-local won't clean `docker run -d`-ed container so we have to do it here.
 - id: cloud-build-local-cleanup
   name: gcr.io/cloud-builders/docker
   args: ['rm', '--force', 'lookitdb']
-
 
 images:
 - 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA'
