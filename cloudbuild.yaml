@@ -77,6 +77,7 @@ steps:
   args:
   - '-c'
   - |
+    cd /workspace
     if [[ "$BRANCH_NAME" == "master" ]]; then
         export SENTRY_PROJECT=lookit-backend
     elif [[ "$BRANCH_NAME" == "develop" ]]; then
@@ -86,7 +87,7 @@ steps:
         exit 0
     fi
     export VERSION=$(sentry-cli releases propose-version)
-    sentry-cli releases new -p "$$SENTRY_PROJECT" "$VERSION"
+    sentry-cli releases new -p "$$SENTRY_PROJECT" "$$VERSION"
     sentry-cli releases set-commits "$$VERSION" --auto
     sentry-cli releases finalize "$$VERSION"
   secretEnv: [ 'SENTRY_AUTH_TOKEN' ]
