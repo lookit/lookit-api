@@ -46,9 +46,14 @@ steps:
   name: gcr.io/cloud-builders/docker
   args: [ 'push', 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA']
 
+# SENTRY_AUTH_TOKEN is decrypted before this step runs.
+# Note: Need a shell to resolve environment variables with $$
 - id: deploy-to-cluster
   name: gcr.io/cloud-builders/docker
+  entrypoint: bash
   args: [
+    '-c',
+    'docker',
     'run',
     '--network=cloudbuild',
     '--env',
@@ -63,8 +68,11 @@ steps:
     'BRANCH_NAME=$BRANCH_NAME',
     '--env',
     'TAG_NAME=$TAG_NAME',
+    '--env',
+    'SENTRY_AUTH_TOKEN=$$SENTRY_AUTH_TOKEN',
     'gcr.io/$PROJECT_ID/lookit-orchestrator',
   ]
+  secretEnv: [ 'SENTRY_AUTH_TOKEN' ]
 
 
 # cloud-build-local won't clean `docker run -d`-ed container so we have to do it here.
@@ -75,3 +83,9 @@ steps:
 
 images:
 - 'gcr.io/$PROJECT_ID/lookit:$COMMIT_SHA'
+
+# SENTRY_AUTH_TOKEN is encrypted with GKMS
+secrets:
+- kmsKeyName: projects/mit-lookit-keys/locations/east1-d/keyRings/lookit-keyring/cryptoKeys/sentry-auth
+  secretEnv:
+    SENTRY_AUTH_TOKEN: CiQAVYLHlum+JbxvLUXADsLiiIwXjocXFGg5SAsxKyvAkDRjEaESaABnxmN4TReBWF0cY+XPS8xytlGSUhClZewwH7ttpBFKC65+Y0a6W8XIsTjyQMyVzWiLxSOef46bmI1Bo8JIbh/ErIRWm3rPBNFs843z52oF8M93+miMUlt8UOWmIgyq1U/fjThhq0UI
