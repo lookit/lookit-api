@@ -86,7 +86,7 @@ steps:
         echo "Branch $BRANCH_NAME not mapped to sentry environment"
         exit 0
     fi
-    export VERSION=$(sentry-cli releases propose-version)
+    export VERSION=$$(sentry-cli releases propose-version)
     sentry-cli releases new -p "$$SENTRY_PROJECT" "$$VERSION"
     sentry-cli releases set-commits "$$VERSION" --auto
     sentry-cli releases finalize "$$VERSION"
