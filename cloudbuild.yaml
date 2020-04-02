@@ -26,6 +26,7 @@ steps:
     'lookit',
     '--build-arg',
     'GIT_COMMIT=$COMMIT_SHA',
+    '--build-arg',
     'GIT_TAG=$TAG_NAME',
     '--network=cloudbuild',
     '.'
@@ -85,9 +86,9 @@ steps:
         exit 0
     fi
     export VERSION=$(sentry-cli releases propose-version)
-    sentry-cli releases new -p "$SENTRY_PROJECT" "$VERSION"
-    sentry-cli releases set-commits "$VERSION" --auto
-    sentry-cli releases finalize "$VERSION"
+    sentry-cli releases new -p "$$SENTRY_PROJECT" "$VERSION"
+    sentry-cli releases set-commits "$$VERSION" --auto
+    sentry-cli releases finalize "$$VERSION"
   secretEnv: [ 'SENTRY_AUTH_TOKEN' ]
   env: [
     'SENTRY_ORG=massachusetts-institute-of-technology'
