@@ -6,18 +6,17 @@ steps:
 # We need the full history for sentry-cli to do its job, hence we need the .git directory
 
 # https://github.com/GoogleCloudPlatform/cloud-builders/issues/236
-# if we can't get the .git directory to show up, we have to shelve sentry-cli for now
-#- id: clone-repository
-#  name: gcr.io/cloud-builders/git
-#  entrypoint: bash
-#  env: ['GIT_DISCOVERY_ACROSS_FILESYSTEM=1']
-#  args:
-#    - '-c'
-#    - |
-#      git init
-#      git remote add origin
-#      git clone --branch $BRANCH_NAME https://github.com/lookit/lookit-api.git
-#      git fetch --unshallow
+# Acquire git folder with --no-checkout clone, fetch, then destroy the evidence
+- id: get-git-history
+  name: gcr.io/cloud-builders/git
+  entrypoint: bash
+  args:
+    - '-c'
+    - |
+      git clone https://github.com/lookit/lookit-api.git --no-checkout
+      mv lookit-api/.git .
+      git fetch --unshallow
+      rm -rf lookit-api
 
 - id: boot-postgres
   name: gcr.io/cloud-builders/docker
@@ -90,31 +89,30 @@ steps:
 # SENTRY_AUTH_TOKEN is decrypted before this step runs.
 # Note: Need a shell to resolve environment variables with $$
 # Since sentry-cli image is based on alpine, we use `ash`
-# TODO: when we find a good way to get git history in here,
-#    put this back.
-#- id: create-sentry-release
-#  name: getsentry/sentry-cli
-#  entrypoint: ash
-#  args:
-#  - '-c'
-#  - |
-#    cd /workspace
-#    if [[ "$BRANCH_NAME" == "master" ]]; then
-#        export SENTRY_PROJECT=lookit-backend
-#    elif [[ "$BRANCH_NAME" == "develop" ]]; then
-#        export SENTRY_PROJECT=lookit-backend-w1
-#    else
-#        echo "Branch $BRANCH_NAME not mapped to sentry environment"
-#        exit 0
-#    fi
-#    export VERSION=$$(sentry-cli releases propose-version)
-#    sentry-cli releases new -p "$$SENTRY_PROJECT" "$$VERSION"
-#    sentry-cli releases set-commits "$$VERSION" --auto
-#    sentry-cli releases finalize "$$VERSION"
-#  secretEnv: [ 'SENTRY_AUTH_TOKEN' ]
-#  env: [
-#    'SENTRY_ORG=massachusetts-institute-of-technology'
-#  ]
+
+- id: create-sentry-release
+  name: getsentry/sentry-cli
+  entrypoint: ash
+  args:
+  - '-c'
+  - |
+    cd /workspace
+    if [[ "$BRANCH_NAME" == "master" ]]; then
+        export SENTRY_PROJECT=lookit-backend
+    elif [[ "$BRANCH_NAME" == "develop" ]]; then
+        export SENTRY_PROJECT=lookit-backend-w1
+    else
+        echo "Branch $BRANCH_NAME not mapped to sentry environment"
+        exit 0
+    fi
+    export VERSION=$$(sentry-cli releases propose-version)
+    sentry-cli releases new -p "$$SENTRY_PROJECT" "$$VERSION"
+    sentry-cli releases set-commits "$$VERSION" --auto
+    sentry-cli releases finalize "$$VERSION"
+  secretEnv: [ 'SENTRY_AUTH_TOKEN' ]
+  env: [
+    'SENTRY_ORG=massachusetts-institute-of-technology'
+  ]
 
 # cloud-build-local won't clean `docker run -d`-ed container so we have to do it here.
 - id: cloud-build-local-cleanup
@@ -126,7 +124,7 @@ images:
 
 # SENTRY_AUTH_TOKEN is encrypted with GKMS
 # TODO: bring this back in when the git history thing is resolved.
-#secrets:
-#- kmsKeyName: projects/mit-lookit-keys/locations/us-east1/keyRings/lookit-keyring/cryptoKeys/sentry-auth
-#  secretEnv:
-#    SENTRY_AUTH_TOKEN: CiQAVYLHlum+JbxvLUXADsLiiIwXjocXFGg5SAsxKyvAkDRjEaESaABnxmN4TReBWF0cY+XPS8xytlGSUhClZewwH7ttpBFKC65+Y0a6W8XIsTjyQMyVzWiLxSOef46bmI1Bo8JIbh/ErIRWm3rPBNFs843z52oF8M93+miMUlt8UOWmIgyq1U/fjThhq0UI
+secrets:
+- kmsKeyName: projects/mit-lookit-keys/locations/us-east1/keyRings/lookit-keyring/cryptoKeys/sentry-auth
+  secretEnv:
+    SENTRY_AUTH_TOKEN: CiQAVYLHlum+JbxvLUXADsLiiIwXjocXFGg5SAsxKyvAkDRjEaESaABnxmN4TReBWF0cY+XPS8xytlGSUhClZewwH7ttpBFKC65+Y0a6W8XIsTjyQMyVzWiLxSOef46bmI1Bo8JIbh/ErIRWm3rPBNFs843z52oF8M93+miMUlt8UOWmIgyq1U/fjThhq0UI
