@@ -10,7 +10,7 @@ from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_groups_with_perms
@@ -103,7 +103,7 @@ class Study(models.Model):
     comments = models.TextField(blank=True, null=True)
     study_type = models.ForeignKey(
         "StudyType",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         null=False,
         blank=False,
         verbose_name="type",
@@ -125,7 +125,7 @@ class Study(models.Model):
     )
     public = models.BooleanField(default=False)
     shared_preview = models.BooleanField(default=False)
-    creator = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     metadata = DateTimeAwareJSONField(default={})
     built = models.BooleanField(default=False)
@@ -594,8 +594,8 @@ class ResponseApiManager(models.Manager):
 class Response(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     study = models.ForeignKey(
-        Study, on_delete=models.DO_NOTHING, related_name="responses"
-    )
+        Study, on_delete=models.PROTECT, related_name="responses"
+    )  # Integrity constraints will also prevent deleting study that has responses
     completed = models.BooleanField(default=False)
     completed_consent_frame = models.BooleanField(default=False)
     exp_data = DateTimeAwareJSONField(default=dict)
@@ -604,11 +604,15 @@ class Response(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
     global_event_timings = DateTimeAwareJSONField(default=dict)
-    child = models.ForeignKey(Child, on_delete=models.DO_NOTHING)
+    # For now, don't allow deleting Child still associated with responses. If we need to
+    # delete all data on parent request, delete the associated responses manually. May want
+    # to be able to keep some minimal info about those responses though (e.g. #, # unique
+    # users they came from).
+    child = models.ForeignKey(Child, on_delete=models.PROTECT)
     is_preview = models.BooleanField(default=False)
     demographic_snapshot = models.ForeignKey(
-        DemographicData, on_delete=models.DO_NOTHING
-    )
+        DemographicData, on_delete=models.SET_NULL, null=True
+    )  # Allow deleting a demographic snapshot even though a response points to it
     objects = models.Manager()
     related_manager = ResponseApiManager()
 
@@ -801,9 +805,9 @@ class FeedbackApiManager(models.Manager):
 class Feedback(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     response = models.ForeignKey(
-        Response, on_delete=models.DO_NOTHING, related_name="feedback"
-    )
-    researcher = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+        Response, on_delete=models.CASCADE, related_name="feedback"
+    )  # When deleting a Response, also delete any associated feedback
+    researcher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     comment = models.TextField()
 
     objects = models.Manager()  # Set a default
@@ -824,7 +828,7 @@ class Feedback(models.Model):
 class Log(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return f"<{self.__class__.name}: {self.action} @ {self.created_at:%c}>"
@@ -839,7 +843,7 @@ class StudyLog(Log):
     extra = DateTimeAwareJSONField(null=True)
     study = models.ForeignKey(
         Study,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,  # If a study is deleted, delete its logs also
         related_name="logs",
         related_query_name="logs",
     )
@@ -857,7 +861,8 @@ class StudyLog(Log):
 
 class ResponseLog(Log):
     action = models.CharField(max_length=128, db_index=True)
-    response = models.ForeignKey(Response, on_delete=models.DO_NOTHING)
+    # if deleting Response, also delete its logs
+    response = models.ForeignKey(Response, on_delete=models.CASCADE)
 
     class Meta:
         index_together = ("response", "action")
@@ -882,10 +887,10 @@ class Video(models.Model):
     full_name = models.CharField(
         max_length=255, blank=False, unique=True, db_index=True
     )
-    study = models.ForeignKey(Study, on_delete=models.DO_NOTHING, related_name="videos")
+    study = models.ForeignKey(Study, on_delete=models.PROTECT, related_name="videos")
     response = models.ForeignKey(
-        Response, on_delete=models.DO_NOTHING, related_name="videos"
-    )
+        Response, on_delete=models.CASCADE, related_name="videos"
+    )  # If a response is deleted, also delete related videos
     is_consent_footage = models.BooleanField(default=False, db_index=True)
 
     @classmethod
@@ -968,14 +973,16 @@ class Video(models.Model):
     def download_url(self):
         return get_download_url(self.full_name)
 
-    def delete(self, delete_in_s3=False, **kwargs):
-        """Delete hook override."""
-        super().delete(**kwargs)
 
-        if delete_in_s3:
-            delete_video_from_cloud.apply_async(
-                args=(self.full_name,), countdown=60 * 60 * 24 * 7
-            )  # Delete after 1 week.
+@receiver(pre_delete, sender=Video)
+def delete_video_on_s3(sender, instance, using, **kwargs):
+    """Delete video from S3 when deleting Video object.
+    
+    Do this in a pre_delete hook rather than a custom delete function because this will
+    be called when cascading deletion from responses."""
+    delete_video_from_cloud.apply_async(
+        args=(instance.full_name,), countdown=60 * 60 * 24 * 7
+    )  # Delete after 1 week.
 
 
 class ConsentRuling(models.Model):
@@ -987,11 +994,11 @@ class ConsentRuling(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     action = models.CharField(max_length=100, choices=RULINGS, db_index=True)
     response = models.ForeignKey(
-        Response, on_delete=models.DO_NOTHING, related_name="consent_rulings"
-    )
+        Response, on_delete=models.CASCADE, related_name="consent_rulings"
+    )  # If a response is deleted, also delete related consent rulings.
     arbiter = models.ForeignKey(
-        User, on_delete=models.DO_NOTHING, related_name="consent_rulings"
-    )
+        User, on_delete=models.SET_NULL, related_name="consent_rulings", null=True
+    )  # If a user is deleted, keep their previous consent rulings
     comments = models.TextField(null=True)
 
     class Meta:

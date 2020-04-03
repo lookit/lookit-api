@@ -123,7 +123,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     nickname = models.CharField(max_length=255, blank=True)
     organization = models.ForeignKey(
         Organization,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="users",
         related_query_name="user",
         null=True,
@@ -322,7 +322,11 @@ class Child(models.Model):
     languages_spoken = BitField(flags=LANGUAGES, default=0)
 
     user = models.ForeignKey(
-        "accounts.User", related_name="children", related_query_name="children"
+        "accounts.User",
+        related_name="children",
+        related_query_name="children",
+        on_delete=models.CASCADE  # if deleting User, also delete associated Child -
+        # although may not be possible depending on Responses already associated
     )
 
     objects = BitfieldQuerySet.as_manager()
@@ -490,7 +494,7 @@ class DemographicData(models.Model):
     )
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE,  # If deleting user, delete their demographic data
         null=True,
         related_name="demographics",
         related_query_name="demographics",
@@ -582,12 +586,14 @@ class Message(models.Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     date_created = models.DateTimeField(auto_now_add=True)
-    sender = models.ForeignKey(User, on_delete=models.DO_NOTHING, db_index=True)
+    sender = models.ForeignKey(
+        User, on_delete=models.SET_NULL, db_index=True, null=True
+    )
     recipients = models.ManyToManyField(User, related_name="messages")
     subject = models.CharField(max_length=255)
     body = models.TextField()
     related_study = models.ForeignKey(
-        "studies.Study", on_delete=models.DO_NOTHING, null=True
+        "studies.Study", on_delete=models.SET_NULL, null=True
     )
     email_sent_timestamp = models.DateTimeField(
         null=True, default=None
