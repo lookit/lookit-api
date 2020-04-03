@@ -245,16 +245,14 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         # List View restricted to public.  Detail view can show a private or public study.
         if "List" in self.get_view_name():
             qs = qs.filter(public=True)
-            
-        if self.request.user.has_perm("accounts.can_view_experimenter"):
-        	preview_studies = qs.filter(shared_preview=True) | get_objects_for_user(self.request.user, "studies.can_edit_study")
-        	qs = qs | preview_studies
 
-        return (
-            qs
-            .distinct()
-            .order_by("-date_modified")
-        )
+        if self.request.user.has_perm("accounts.can_view_experimenter"):
+            preview_studies = qs.filter(shared_preview=True) | get_objects_for_user(
+                self.request.user, "studies.can_edit_study"
+            )
+            qs = qs | preview_studies
+
+        return qs.distinct().order_by("-date_modified")
 
 
 class ResponsesFilter(filters.FilterSet):
