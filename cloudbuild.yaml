@@ -1,5 +1,17 @@
 steps:
 
+# See: https://cloud.google.com/cloud-build/docs/running-builds/create-manage-triggers
+# "If you're building using GitHub app triggers, Cloud Build fetches your source from a
+# Cloud Storage archive. Therefore, you must first clone your Git repo before fetching it"
+- id: clone-repository
+  name: gcr.io/cloud-builders/git
+  args: ['clone', 'https://github.com/lookit/lookit-api.git']
+
+# We need the full history for sentry-cli to do its job.
+- id: get-full-repo-history
+  name: gcr.io/cloud-builders/git
+  args: ['fetch', '--unshallow']
+
 - id: boot-postgres
   name: gcr.io/cloud-builders/docker
   args: [
