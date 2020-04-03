@@ -103,7 +103,7 @@ class Study(models.Model):
     comments = models.TextField(blank=True, null=True)
     study_type = models.ForeignKey(
         "StudyType",
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=False,
         blank=False,
         verbose_name="type",
