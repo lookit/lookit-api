@@ -61,6 +61,7 @@ class StudiesTestCase(APITestCase):
         # A researcher can view studies that have can edit permissions
         self.client.force_authenticate(user=self.researcher)
         assign_perm("studies.can_edit_study", self.researcher, self.study)
+        assign_perm("accounts.can_view_experimenter", self.researcher)
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
         )
