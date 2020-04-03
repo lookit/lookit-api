@@ -10,7 +10,7 @@ steps:
   args:
     - '-c'
     - |
-      git clone --branch $BRANCH_NAME git@github.com:lookit/lookit-api.git
+      git clone --branch $BRANCH_NAME https://github.com/lookit/lookit-api.git
       git fetch --unshallow
 
 - id: boot-postgres
