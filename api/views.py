@@ -246,7 +246,7 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if "List" in self.get_view_name():
             qs = qs.filter(public=True)
 
-        if self.request.user.has_perm("accounts.can_view_experimenter"):
+        if self.request.user.is_researcher:
             preview_studies = qs.filter(shared_preview=True) | get_objects_for_user(
                 self.request.user, "studies.can_edit_study"
             )
