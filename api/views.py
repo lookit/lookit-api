@@ -218,7 +218,8 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
     Allows viewing a list of studies or retrieving a single study
 
-    You can view studies that are active as well as studies you have permission to edit.
+    You can view studies that are active, studies you have permission to edit, and any
+    studies with shared preview if you're an experimenter.
     """
 
     resource_name = "studies"
@@ -231,9 +232,9 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
     def get_queryset(self):
         """
-        Shows studies that are either 1) active or 2) studies you have permission to edit.
+        Shows studies that are either 1) active or 2) studies you have permission to preview.
 
-        "can_edit_study" permissions allows the researcher to preview the study before it has been made active/public
+        "can_view_study" permissions allows the researcher to preview the study before it has been made active/public
         """
         qs = (
             super()
@@ -245,11 +246,14 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if "List" in self.get_view_name():
             qs = qs.filter(public=True)
 
-        return (
-            (qs | get_objects_for_user(self.request.user, "studies.can_edit_study"))
-            .distinct()
-            .order_by("-date_modified")
-        )
+        # Researchers
+        if self.request.user.is_researcher:
+            preview_studies = Study.objects.filter(
+                shared_preview=True
+            ) | get_objects_for_user(self.request.user, "studies.can_view_study")
+            qs = qs | preview_studies
+
+        return qs.distinct().order_by("-date_modified")
 
 
 class ResponsesFilter(filters.FilterSet):

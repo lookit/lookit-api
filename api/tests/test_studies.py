@@ -30,6 +30,8 @@ class StudiesTestCase(APITestCase):
             min_age_years=4,
             image="asd",
             exit_url="www.cos.io",
+            shared_preview=False,
+            state="created",
         )
         self.study.save()
 
@@ -45,75 +47,104 @@ class StudiesTestCase(APITestCase):
             ConsentRuling, study=self.study, response=self.response, action="accepted"
         )
 
-        self.url = reverse("study-list", kwargs={"version": "v1"})
-        self.study_detail_url = self.url + str(self.study.uuid) + "/"
-        self.study_responses_url = self.url + str(self.study.uuid) + "/responses/"
+        self.study_list_url = reverse("study-list", kwargs={"version": "v1"})
+        self.study_detail_url = self.study_list_url + str(self.study.uuid) + "/"
+        self.study_responses_url = (
+            self.study_list_url + str(self.study.uuid) + "/responses/"
+        )
         self.client = APIClient()
 
     # Studies GET LIST Tests
     def testGetStudyListUnauthenticated(self):
         api_response = self.client.get(
-            self.url, content_type="application/vnd.api+json"
+            self.study_list_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def testViewStudiesWithCanEditPermissions(self):
-        # A researcher can view studies that have can edit permissions
+    def testViewStudyWithCanViewPermission(self):
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
+        assign_perm("studies.can_view_study", self.researcher, self.study)
         api_response = self.client.get(
-            self.url, content_type="application/vnd.api+json"
+            self.study_detail_url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["name"], self.study.name)
+
+    def testViewSharedStudyWithoutCanViewPermission(self):
+        self.client.force_authenticate(user=self.researcher)
+        self.study.shared_preview = True
+        self.study.save()
+        api_response = self.client.get(
+            self.study_detail_url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["name"], self.study.name)
+
+    def testGetStudyWithoutReadOrSharedPreview(self):
+        self.client.force_authenticate(user=self.researcher)
+        api_response = self.client.get(
+            self.study_detail_url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def testGetStudyListAsReadAuthenticated(self):
+        # Need can_view_study permissions to view study through API
+        assign_perm("studies.can_view_study", self.researcher, self.study)
+        self.client.force_authenticate(user=self.researcher)
+        api_response = self.client.get(
+            self.study_list_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
 
-    def testGetStudyListAsReadAuthenticated(self):
-        # Need can_edit_study permissions to view study through API
-        api_response = self.client.get(
-            self.url, content_type="application/vnd.api+json"
-        )
-        assign_perm("studies.can_view_study", self.researcher, self.study)
-        self.client.force_authenticate(user=self.researcher)
-
-        api_response = self.client.get(
-            self.url, content_type="application/vnd.api+json"
-        )
-        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["links"]["meta"]["count"], 0)
-
     def testGetStudyListAsParticipant(self):
-        # Participants can't view most studies
+        # Participants can't view most studies (unless active & public)
         api_response = self.client.get(
-            self.url, content_type="application/vnd.api+json"
+            self.study_list_url, content_type="application/vnd.api+json"
         )
         self.client.force_authenticate(user=self.participant)
 
         api_response = self.client.get(
-            self.url, content_type="application/vnd.api+json"
+            self.study_list_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data["links"]["meta"]["count"], 0)
 
-    # def testGetPublicAndActiveStudiesAsParticipant(self):
-    #     # Studies must be public and active to be viewed by participant
-    #     self.study.state = 'active'
-    #     self.study.public = True
-    #     # TODO post_save hook is changing this state to rejected, so the study isn't showing up.
-    #     self.study.save()
-    #
-    #     api_response = self.client.get(self.url, content_type="application/vnd.api+json")
-    #     self.client.force_authenticate(user=self.participant)
-    #
-    #     api_response = self.client.get(self.url, content_type="application/vnd.api+json")
-    #     self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(api_response.data['links']['meta']['count'], 1)
+    def testGetPublicAndActiveStudiesAsParticipant(self):
+        # Studies that are public and active can be viewed by participant in list
+        self.study.state = "active"
+        self.study.public = True
+        self.study.save()
+
+        api_response = self.client.get(
+            self.study_list_url, content_type="application/vnd.api+json"
+        )
+        self.client.force_authenticate(user=self.participant)
+
+        api_response = self.client.get(
+            self.study_list_url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
+
+    def testGetSpecificPrivateActiveStudyAsParticipant(self):
+        # Any active studies can be viewed by participant
+        self.study.state = "active"
+        self.study.public = False
+        self.study.save()
+        self.client.force_authenticate(user=self.participant)
+        api_response = self.client.get(
+            self.study_detail_url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["name"], self.study.name)
 
     # POST Study
     def testPostStudy(self):
         assign_perm("studies.can_edit_study", self.researcher, self.study)
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.post(
-            self.url, content_type="application/vnd.api+json"
+            self.study_list_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 

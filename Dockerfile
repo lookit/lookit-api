@@ -52,8 +52,8 @@ RUN pip install --no-cache-dir -r ./requirements/release.txt \
 
 COPY ./ ./
 
-ARG GIT_TAG=
-ARG GIT_COMMIT=
+ARG GIT_TAG
+ARG GIT_COMMIT
 ENV VERSION=${GIT_TAG} \
     GIT_COMMIT=${GIT_COMMIT}
 
