@@ -106,6 +106,7 @@ else:
     from sentry_sdk.integrations.celery import CeleryIntegration
 
     sentry_sdk.init(
+        environment=os.environ.get("ENVIRONMENT"),
         dsn=os.environ.get("SENTRY_DSN", None),
         release=os.environ.get("GIT_COMMIT", "No version"),
         integrations=[DjangoIntegration(), CeleryIntegration()],
