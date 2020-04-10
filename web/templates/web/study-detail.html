@@ -26,8 +26,7 @@
 
 {% block content %}
     <script>
-        function childSelected() {
-            var selectElement = document.getElementById('child-dropdown');
+        function childSelected(selectElement) {
             var participateButton = document.getElementById('participate-button');
             if (selectElement.value === 'none') {
                 participateButton.disabled = true;
@@ -84,11 +83,6 @@
                 return 0;
             }
         }
-        
-        $(document).ready(function() {
-            childSelected();
-        });
-
 
     </script>
     <div class='lookit-row lookit-page-title'>
