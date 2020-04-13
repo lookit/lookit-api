@@ -105,6 +105,9 @@ def organization_post_save(sender, **kwargs):
                 group_instance.permissions.add(view_organization)
 
 
+# AbstractUser incorporates AbstractBaseUser and PermissionsMixin -
+# Why is that class not used here?
+# - username is different (here: EmailField, there: CharField)
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = "username"
     uuid = models.UUIDField(
