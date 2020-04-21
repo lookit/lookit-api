@@ -90,7 +90,7 @@ class FrameActionDispatcher(object):
         withdrawal = frame_data.get("withdrawal", None)
         if withdrawal:
             for video in response.videos.filter(is_consent_footage=False):
-                video.delete(delete_in_s3=True)
+                video.delete()
         elif withdrawal is None:
             logger.warning(
                 f"withdrawal property not found in exit frame for {response}"

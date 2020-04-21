@@ -89,7 +89,6 @@ steps:
 # SENTRY_AUTH_TOKEN is decrypted before this step runs.
 # Note: Need a shell to resolve environment variables with $$
 # Since sentry-cli image is based on alpine, we use `ash`
-
 - id: create-sentry-release
   name: getsentry/sentry-cli
   entrypoint: ash
@@ -98,8 +97,10 @@ steps:
   - |
     cd /workspace
     if [[ "$BRANCH_NAME" == "master" ]]; then
+        export SENTRY_ENVIRONMENT=production
         export SENTRY_PROJECT=lookit-backend
     elif [[ "$BRANCH_NAME" == "develop" ]]; then
+        export SENTRY_ENVIRONMENT=staging
         export SENTRY_PROJECT=lookit-backend-w1
     else
         echo "Branch $BRANCH_NAME not mapped to sentry environment"
@@ -109,6 +110,7 @@ steps:
     sentry-cli releases new -p "$$SENTRY_PROJECT" "$$VERSION"
     sentry-cli releases set-commits "$$VERSION" --auto
     sentry-cli releases finalize "$$VERSION"
+    sentry-cli releases deploys $$VERSION new -e $$SENTRY_ENVIRONMENT
   secretEnv: [ 'SENTRY_AUTH_TOKEN' ]
   env: [
     'SENTRY_ORG=massachusetts-institute-of-technology'
