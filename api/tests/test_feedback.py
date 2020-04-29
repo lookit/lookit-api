@@ -19,7 +19,7 @@ class FeedbackTestCase(APITestCase):
         self.child = G(Child, user=self.participant)
         self.study = G(Study, creator=self.researcher)
         self.response = G(Response, child=self.child, study=self.study)
-        self.url = reverse("feedback-list", kwargs={"version": "v1"})
+        self.url = reverse("api:feedback-list", kwargs={"version": "v1"})
         self.client = APIClient()
 
         self.data = {

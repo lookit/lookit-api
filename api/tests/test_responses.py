@@ -40,7 +40,7 @@ class ResponseTestCase(APITestCase):
             response=self.consented_response,
             action="accepted",
         )
-        self.url = reverse("response-list", kwargs={"version": "v1"})
+        self.url = reverse("api:response-list", kwargs={"version": "v1"})
         self.response_detail_url = self.url + str(self.response.uuid) + "/"
         self.consented_response_detail_url = (
             self.url + str(self.consented_response.uuid) + "/"

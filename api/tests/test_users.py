@@ -23,9 +23,9 @@ class UserTestCase(APITestCase):
         self.child = G(Child, user=self.participant, given_name="Sally")
         self.study = G(Study, creator=self.researcher)
         self.response = G(Response, child=self.child, study=self.study)
-        self.url = reverse("user-list", kwargs={"version": "v1"})
+        self.url = reverse("api:user-list", kwargs={"version": "v1"})
         self.user_detail_url = (
-            reverse("user-list", kwargs={"version": "v1"})
+            reverse("api:user-list", kwargs={"version": "v1"})
             + str(self.participant.uuid)
             + "/"
         )

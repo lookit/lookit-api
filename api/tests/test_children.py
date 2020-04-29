@@ -24,9 +24,9 @@ class ChildrenTestCase(APITestCase):
         self.positive_consent_ruling = G(
             ConsentRuling, study=self.study, response=self.response, action="accepted"
         )
-        self.url = reverse("child-list", kwargs={"version": "v1"})
+        self.url = reverse("api:child-list", kwargs={"version": "v1"})
         self.child_detail_url = (
-            reverse("child-list", kwargs={"version": "v1"}) + str(self.child.uuid) + "/"
+            reverse("api:child-list", kwargs={"version": "v1"}) + str(self.child.uuid) + "/"
         )
         self.client = APIClient()
 

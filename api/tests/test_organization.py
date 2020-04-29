@@ -18,7 +18,7 @@ class OrganizationTestCase(APITestCase):
         self.researcher = G(User, is_active=True, is_researcher=True)
         self.participant = G(User, is_active=True)
         self.url = (
-            reverse("organization-list", kwargs={"version": "v1"})
+            reverse("api:organization-list", kwargs={"version": "v1"})
             + str(self.organization.uuid)
             + "/"
         )
@@ -50,7 +50,7 @@ class OrganizationTestCase(APITestCase):
     def testPostOrganization(self):
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.post(
-            reverse("organization-list", kwargs={"version": "v1"}),
+            reverse("api:organization-list", kwargs={"version": "v1"}),
             content_type="application/vnd.api+json",
         )
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

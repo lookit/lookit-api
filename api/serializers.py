@@ -29,7 +29,7 @@ class DotPropertyRelatedLookupHyperlinkedMixin(HyperlinkedMixin):
 
         child = PatchedResourceRelatedField(
             queryset=Child.objects,
-            related_link_view_name="child-detail",
+            related_link_view_name="api:child-detail",
             related_link_lookup_field="child.uuid",  <--- dot syntax
             related_link_url_kwarg="uuid",
         )

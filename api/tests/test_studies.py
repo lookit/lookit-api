@@ -47,7 +47,7 @@ class StudiesTestCase(APITestCase):
             ConsentRuling, study=self.study, response=self.response, action="accepted"
         )
 
-        self.study_list_url = reverse("study-list", kwargs={"version": "v1"})
+        self.study_list_url = reverse("api:study-list", kwargs={"version": "v1"})
         self.study_detail_url = self.study_list_url + str(self.study.uuid) + "/"
         self.study_responses_url = (
             self.study_list_url + str(self.study.uuid) + "/responses/"
