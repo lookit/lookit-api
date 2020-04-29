@@ -41,11 +41,8 @@ S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 
 dispatch_frame_action = FrameActionDispatcher()
 
-
-class StudyType(models.Model):
-    name = models.CharField(max_length=255, blank=False, null=False)
-    configuration = DateTimeAwareJSONField(
-        default={
+def default_configuration():
+    return {
             # task module should have a build_experiment method decorated as a
             # celery task that takes a study uuid
             "task_module": "studies.tasks",
@@ -57,11 +54,18 @@ class StudyType(models.Model):
                 }
             },
         }
+
+class StudyType(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+    configuration = DateTimeAwareJSONField(
+        default=default_configuration
     )
 
     def __str__(self):
         return f"<Study Type: {self.name}>"
 
+def default_study_structure():
+    return {"frames": {}, "sequence": []}
 
 class Study(models.Model):
 
@@ -114,7 +118,7 @@ class Study(models.Model):
         related_name="studies",
         related_query_name="study",
     )
-    structure = DateTimeAwareJSONField(default={"frames": {}, "sequence": []})
+    structure = DateTimeAwareJSONField(default=default_study_structure)
     display_full_screen = models.BooleanField(default=True)
     exit_url = models.URLField(default="")
     state = models.CharField(
@@ -127,7 +131,7 @@ class Study(models.Model):
     shared_preview = models.BooleanField(default=False)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-    metadata = DateTimeAwareJSONField(default={})
+    metadata = DateTimeAwareJSONField(default=dict)
     built = models.BooleanField(default=False)
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
@@ -621,7 +625,6 @@ class Response(models.Model):
 
     class Meta:
         permissions = (
-            ("view_response", "View Response"),
             (
                 "view_all_response_data_in_analytics",
                 "View all response data in analytics",

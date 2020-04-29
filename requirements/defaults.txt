@@ -21,7 +21,7 @@ django-pandas==0.6.0
 django-prettyjson==0.2.2
 django-revproxy==0.9.15
 django-storages==1.7.1
-Django==2.0
+Django==2.1
 djangorestframework-jsonapi==2.7.0
 djangorestframework==3.9.2
 docker==3.7.2
