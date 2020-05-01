@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Feedback, Response, Study
+from studies.models import Feedback, Response, Study, StudyType
 
 
 class UserTestCase(APITestCase):
@@ -21,7 +21,8 @@ class UserTestCase(APITestCase):
         self.participant2 = G(User, is_active=True, given_name="Participant 2")
         self.participant3 = G(User, is_active=True, given_name="Participant 3")
         self.child = G(Child, user=self.participant, given_name="Sally")
-        self.study = G(Study, creator=self.researcher)
+        self.study_type = G(StudyType, name="default", id=1)
+        self.study = G(Study, creator=self.researcher, study_type=self.study_type)
         self.response = G(Response, child=self.child, study=self.study)
         self.url = reverse("api:user-list", kwargs={"version": "v1"})
         self.user_detail_url = (

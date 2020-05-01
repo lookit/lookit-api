@@ -7,12 +7,13 @@ from lark.exceptions import UnexpectedCharacters
 from accounts.models import Child
 from accounts.queries import get_child_eligibility
 from studies.fields import GESTATIONAL_AGE_CHOICES
-from studies.models import Study
+from studies.models import Study, StudyType
 
 
 class CriteriaExpressionTestCase(TestCase):
     def setUp(self):
-        self.fake_study = G(Study)
+        self.study_type = G(StudyType, name="default", id=1)
+        self.fake_study = G(Study, study_type=self.study_type)
         self.complex_condition = (
             "((deaf OR hearing_impairment) OR NOT speaks_en) "
             "AND "

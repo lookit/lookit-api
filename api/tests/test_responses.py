@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, DemographicData, User
-from studies.models import ConsentRuling, Feedback, Response, Study
+from studies.models import ConsentRuling, Feedback, Response, Study, StudyType
 
 
 class ResponseTestCase(APITestCase):
@@ -25,7 +25,8 @@ class ResponseTestCase(APITestCase):
 
         self.child = G(Child, user=self.participant, given_name="Sally")
         self.child_of_researcher = G(Child, user=self.researcher, given_name="Grace")
-        self.study = G(Study, creator=self.researcher)
+        self.study_type = G(StudyType, name="default", id=1)
+        self.study = G(Study, creator=self.researcher, study_type=self.study_type)
         self.response = G(Response, child=self.child, study=self.study, completed=False)
         self.consented_response = G(
             Response,

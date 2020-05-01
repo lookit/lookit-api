@@ -102,7 +102,7 @@ class DateTimeAwareJSONField(JSONField):
             return Json(value, dumps=partial(json.dumps, cls=DateTimeAwareJSONEncoder))
         return value
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if value is None:
             return None
         return super(DateTimeAwareJSONField, self).to_python(

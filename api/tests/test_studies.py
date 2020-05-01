@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import ConsentRuling, Feedback, Response, Study
+from studies.models import ConsentRuling, Feedback, Response, Study, StudyType
 
 
 class StudiesTestCase(APITestCase):
@@ -17,6 +17,7 @@ class StudiesTestCase(APITestCase):
         self.researcher = G(User, is_active=True, is_researcher=True)
         self.participant = G(User, is_active=True)
         self.child = G(Child, user=self.participant)
+        self.study_type = G(StudyType, name="default", id=1)
         self.study = G(
             Study,
             creator=self.researcher,
@@ -32,6 +33,7 @@ class StudiesTestCase(APITestCase):
             exit_url="www.cos.io",
             shared_preview=False,
             state="created",
+            study_type=self.study_type,
         )
         self.study.save()
 
@@ -168,7 +170,7 @@ class StudiesTestCase(APITestCase):
 
     def testStudyResponses(self):
         # Accessing study responses restricts queryset to responses of that particular study
-        self.study2 = G(Study, creator=self.researcher)
+        self.study2 = G(Study, creator=self.researcher, study_type=self.study_type)
         self.response2 = self.response = G(
             Response,
             child=self.child,
@@ -191,7 +193,7 @@ class StudiesTestCase(APITestCase):
 
     def testStudyResponsesAsParticipant(self):
         # Participants can only see the study responses they created
-        self.study2 = G(Study, creator=self.researcher)
+        self.study2 = G(Study, creator=self.researcher, study_type=self.study_type)
         self.response2 = G(
             Response,
             child=G(Child, user=self.researcher),

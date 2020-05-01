@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", False))
+DEBUG = True  # bool(os.environ.get("DEBUG", False))
 ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -154,7 +154,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",  # django.db.backends.postgresql
         "NAME": os.environ.get("DB_NAME", "lookit"),
         "USER": os.environ.get("DB_USER", "postgres"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+        "PASSWORD": os.environ.get("DB_PASSWORD", " "),
         "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
         "PORT": os.environ.get("DB_PORT", "5432"),
         "ATOMIC_REQUESTS": True,
@@ -296,8 +296,7 @@ else:
 
     MEDIAFILES_LOCATION = "/media"
 
-    EXPERIMENT_LOCATION = "/experiments"
-    PREVIEW_EXPERIMENT_LOCATION = "/preview_experiments"
+    EXPERIMENT_LOCATION = "experiments"
 
     GS_BUCKET_NAME = None
     GS_PROJECT_ID = None

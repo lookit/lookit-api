@@ -8,7 +8,7 @@ from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
 from accounts.models import Child, DemographicData, User
-from studies.models import ConsentRuling, Feedback, Response, Study, Video
+from studies.models import ConsentRuling, Feedback, Response, Study, Video, StudyType
 
 
 class ResponseViewsTestCase(TestCase):
@@ -30,9 +30,10 @@ class ResponseViewsTestCase(TestCase):
         self.participants = [
             G(User, is_active=True, given_name="Mom") for i in range(n_participants)
         ]
-        self.study = G(Study, creator=self.study_admin, shared_preview=False)
+        self.study_type = G(StudyType, name="default", id=1)        
+        self.study = G(Study, creator=self.study_admin, shared_preview=False, study_type=self.study_type, name="Test Study")
         self.study_shared_preview = G(
-            Study, creator=self.study_admin, shared_preview=True
+            Study, creator=self.study_admin, shared_preview=True, study_type=self.study_type, name="Test Study"
         )
 
         self.study.study_admin_group.user_set.add(self.study_admin)
@@ -265,7 +266,8 @@ class ResponseSaveHandlingTestCase(TestCase):
         self.participant = G(User, is_active=True, given_name="Participant 1")
         self.participant.save()
         self.child = G(Child, user=self.participant, given_name="Sally")
-        self.study = G(Study, creator=self.researcher)
+        self.study_type = G(StudyType, name="default", id=1)
+        self.study = G(Study, creator=self.researcher, study_type=self.study_type)
         self.response_after_consent_frame = G(
             Response,
             child=self.child,
