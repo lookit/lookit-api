@@ -144,7 +144,6 @@ class Study(models.Model):
     def __init__(self, *args, **kwargs):
 
         super(Study, self).__init__(*args, **kwargs)
-        # self.save() # leads to null value in column "study_type_id" violates not-null constraint, even with study_type defined in the call to G(Study, ...)
         self.machine = Machine(
             self,
             states=workflow.states,
@@ -154,7 +153,6 @@ class Study(models.Model):
             before_state_change="check_permission",
             after_state_change="_finalize_state_change",
         )
-        # self.save() # With the call to save here, we're back at 'Model instances without primary key value are unhashable'
 
     def __str__(self):
         return f"<Study: {self.name}>"
