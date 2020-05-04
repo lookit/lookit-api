@@ -3,12 +3,13 @@ import json
 import tempfile
 import uuid
 
-from accounts.models import Child, DemographicData, Organization, User
 from django.conf import settings
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
+
+from accounts.models import Child, DemographicData, Organization, User
 from studies.models import ConsentRuling, Feedback, Response, Study, StudyType, Video
 
 

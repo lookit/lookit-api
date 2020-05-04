@@ -119,8 +119,8 @@ class Study(models.Model):
         on_delete=models.DO_NOTHING,
         related_name="studies",
         related_query_name="study",
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
     )
     structure = DateTimeAwareJSONField(default=default_study_structure)
     display_full_screen = models.BooleanField(default=True)
@@ -930,8 +930,8 @@ class Video(models.Model):
 
         if "PREVIEW_DATA_DISREGARD" in new_full_name:
             return (
-                None
-            )  # early exit, since we are not saving an object in the database.
+                None  # early exit, since we are not saving an object in the database.
+            )
         else:
             _, study_uuid, frame_id, response_uuid, timestamp, _ = new_full_name.split(
                 "_"
