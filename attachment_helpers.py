@@ -77,6 +77,3 @@ def rename_stored_video(old_name, new_name, ext):
         s3.Object(settings.BUCKET_NAME, old_name_thum).delete()
 
     return True
-
-
-test_black_var = 'something in single quotes'
