@@ -11,7 +11,7 @@ RUN apt-get update \
         libxml2-dev \
         libxslt1-dev \
         libffi-dev \
-        psycopg2
+        # psycopg2 
         python-dev \
         libpq-dev \
         graphviz \
