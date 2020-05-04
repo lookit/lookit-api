@@ -31,7 +31,7 @@ favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 urlpatterns = [
     url(r"^favicon\.ico$", favicon_view),
     url(r"^admin/", admin.site.urls),
-    url(r"^api/", include((api_urls, 'api'))),
+    url(r"^api/", include((api_urls, "api"))),
     url(
         r"^accounts/social/login/cancelled/$",
         osf_oauth2_adapter_views.login_errored_cancelled,

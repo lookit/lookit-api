@@ -1,14 +1,20 @@
+import datetime
 import json
+import tempfile
 import uuid
+from unittest import mock
 
 from django.conf import settings
+from django.core.files import File
+from django.core.files.images import ImageFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
-from accounts.models import Child, DemographicData, User
-from studies.models import ConsentRuling, Feedback, Response, Study, Video, StudyType
+from accounts.models import Child, DemographicData, Organization, User
+from studies.models import ConsentRuling, Feedback, Response, Study, StudyType, Video
 
 
 class ResponseViewsTestCase(TestCase):
@@ -30,10 +36,27 @@ class ResponseViewsTestCase(TestCase):
         self.participants = [
             G(User, is_active=True, given_name="Mom") for i in range(n_participants)
         ]
-        self.study_type = G(StudyType, name="default", id=1)        
-        self.study = G(Study, creator=self.study_admin, shared_preview=False, study_type=self.study_type, name="Test Study")
+        self.study_type = G(StudyType, name="default", id=1)
+
+        self.org = G(Organization, name="MIT")
+        self.study = G(
+            Study,
+            creator=self.study_admin,
+            shared_preview=False,
+            study_type=self.study_type,
+            name="Test Study",
+            organization=self.org,
+        )
+        # Note: currently not mocking Study.image field, because I couldn't get any of the
+        # approaches outlined at https://stackoverflow.com/questions/26298821/django-testing-model-with-imagefield
+        # working.
         self.study_shared_preview = G(
-            Study, creator=self.study_admin, shared_preview=True, study_type=self.study_type, name="Test Study"
+            Study,
+            creator=self.study_admin,
+            shared_preview=True,
+            study_type=self.study_type,
+            name="Test Study",
+            organization=self.org,
         )
 
         self.study.study_admin_group.user_set.add(self.study_admin)
@@ -48,10 +71,16 @@ class ResponseViewsTestCase(TestCase):
         ]
 
         self.study_reader_child = G(
-            Child, user=self.study_reader, given_name="Study reader child"
+            Child,
+            user=self.study_reader,
+            given_name="Study reader child",
+            birthday=datetime.date.today() - datetime.timedelta(30),
         )
         self.other_researcher_child = G(
-            Child, user=self.other_researcher, given_name="Other researcher child"
+            Child,
+            user=self.other_researcher,
+            given_name="Other researcher child",
+            birthday=datetime.date.today() - datetime.timedelta(60),
         )
 
         self.children_for_participants = []
@@ -60,13 +89,17 @@ class ResponseViewsTestCase(TestCase):
         self.preview_responses = []
         for part in self.participants:
             these_children = [
-                G(Child, user=part, given_name="Child" + str(i))
+                G(
+                    Child,
+                    user=part,
+                    given_name="Child" + str(i),
+                    birthday=datetime.date.today() - datetime.timedelta(60),
+                )
                 for i in range(children_per_participant)
             ]
             self.children_for_participants.append(these_children)
-            self.demo_snapshots_for_participants.append(
-                G(DemographicData, user=part, density="urban")
-            )
+            demo_snapshot = G(DemographicData, user=part, density="urban")
+            self.demo_snapshots_for_participants.append(demo_snapshot)
             self.responses += [
                 G(
                     Response,
@@ -80,6 +113,7 @@ class ResponseViewsTestCase(TestCase):
                         "1-video-setup": {"frameType": "DEFAULT"},
                         "2-my-consent-frame": {"frameType": "CONSENT"},
                     },
+                    demographic_snapshot=demo_snapshot,
                 )
                 for child in these_children
             ]
@@ -97,6 +131,7 @@ class ResponseViewsTestCase(TestCase):
                         "1-video-setup": {"frameType": "DEFAULT"},
                         "2-my-consent-frame": {"frameType": "CONSENT"},
                     },
+                    demographic_snapshot=demo_snapshot,
                 )
                 for child in these_children
             ]
@@ -105,7 +140,12 @@ class ResponseViewsTestCase(TestCase):
 
         self.n_previews = children_per_participant * n_participants
         self.consent_rulings = [
-            G(ConsentRuling, study=self.study, response=response, action="accepted")
+            G(
+                ConsentRuling,
+                response=response,
+                action="accepted",
+                arbiter=self.study_reader,
+            )
             for response in self.responses + self.preview_responses
         ]
 
@@ -267,7 +307,13 @@ class ResponseSaveHandlingTestCase(TestCase):
         self.participant.save()
         self.child = G(Child, user=self.participant, given_name="Sally")
         self.study_type = G(StudyType, name="default", id=1)
-        self.study = G(Study, creator=self.researcher, study_type=self.study_type)
+        self.org = G(Organization, name="MIT")
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            study_type=self.study_type,
+            organization=self.org,
+        )
         self.response_after_consent_frame = G(
             Response,
             child=self.child,

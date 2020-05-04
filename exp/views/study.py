@@ -1661,7 +1661,7 @@ class StudyResponsesAll(
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:
-                # response logs, consent rulings, feedback, videos will all be deleted 
+                # response logs, consent rulings, feedback, videos will all be deleted
                 # via cascades - videos will be removed from S3 also on pre_delete hook
                 resp.delete()
         return super().get(request, *args, **kwargs)

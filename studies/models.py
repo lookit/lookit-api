@@ -16,7 +16,7 @@ from django.utils.text import slugify
 from guardian.shortcuts import assign_perm, get_groups_with_perms
 from kombu.utils import cached_property
 from model_utils import Choices
-from transitions.extensions import GraphMachine as Machine
+from transitions import Machine
 
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.utils import build_study_group_name
@@ -41,31 +41,33 @@ S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 
 dispatch_frame_action = FrameActionDispatcher()
 
+
 def default_configuration():
     return {
-            # task module should have a build_experiment method decorated as a
-            # celery task that takes a study uuid
-            "task_module": "studies.tasks",
-            "metadata": {
-                # defines the default metadata fields for that type of study
-                "fields": {
-                    "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
-                    "last_known_player_sha": None,
-                }
-            },
-        }
+        # task module should have a build_experiment method decorated as a
+        # celery task that takes a study uuid
+        "task_module": "studies.tasks",
+        "metadata": {
+            # defines the default metadata fields for that type of study
+            "fields": {
+                "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
+                "last_known_player_sha": None,
+            }
+        },
+    }
+
 
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
-    configuration = DateTimeAwareJSONField(
-        default=default_configuration
-    )
+    configuration = DateTimeAwareJSONField(default=default_configuration)
 
     def __str__(self):
         return f"<Study Type: {self.name}>"
 
+
 def default_study_structure():
     return {"frames": {}, "sequence": []}
+
 
 class Study(models.Model):
 
@@ -140,7 +142,7 @@ class Study(models.Model):
     criteria_expression = models.TextField(blank=True)
 
     def __init__(self, *args, **kwargs):
-        
+
         super(Study, self).__init__(*args, **kwargs)
         # self.save() # leads to null value in column "study_type_id" violates not-null constraint, even with study_type defined in the call to G(Study, ...)
         self.machine = Machine(

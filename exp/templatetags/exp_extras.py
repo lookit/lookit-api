@@ -13,7 +13,9 @@ def query_transform(request, **kwargs):
 
     for key in acceptable_keys:
         if kwargs.get(key):
-            updated[key] = str(kwargs.get(key)) # cast to string as e.g. page 2 otherwise causes error on encoding
+            updated[key] = str(
+                kwargs.get(key)
+            )  # cast to string as e.g. page 2 otherwise causes error on encoding
 
     # Assume it was not implemented like this (or as oneliner) for some sort of security reasons...
     # for (key, val) in kwargs.items():

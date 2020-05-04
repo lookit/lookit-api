@@ -8,18 +8,26 @@ from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, User
+from accounts.models import Child, Organization, User
 from studies.models import ConsentRuling, Feedback, Response, Study, StudyType
 
 
 class StudiesTestCase(APITestCase):
     def setUp(self):
-        self.researcher = G(User, is_active=True, is_researcher=True)
+        self.researcher = G(
+            User,
+            is_active=True,
+            is_researcher=True,
+            given_name="Jane",
+            family_name="Smith",
+        )
         self.participant = G(User, is_active=True)
         self.child = G(Child, user=self.participant)
         self.study_type = G(StudyType, name="default", id=1)
+        self.org = G(Organization, name="MIT")
         self.study = G(
             Study,
+            organization=self.org,
             creator=self.researcher,
             name="Test Name",
             short_description="Short description",
@@ -46,7 +54,10 @@ class StudiesTestCase(APITestCase):
         )
 
         self.positive_consent_ruling = G(
-            ConsentRuling, study=self.study, response=self.response, action="accepted"
+            ConsentRuling,
+            response=self.response,
+            action="accepted",
+            arbiter=self.researcher,
         )
 
         self.study_list_url = reverse("api:study-list", kwargs={"version": "v1"})
@@ -170,7 +181,12 @@ class StudiesTestCase(APITestCase):
 
     def testStudyResponses(self):
         # Accessing study responses restricts queryset to responses of that particular study
-        self.study2 = G(Study, creator=self.researcher, study_type=self.study_type)
+        self.study2 = G(
+            Study,
+            creator=self.researcher,
+            study_type=self.study_type,
+            organization=self.org,
+        )
         self.response2 = self.response = G(
             Response,
             child=self.child,
@@ -193,7 +209,12 @@ class StudiesTestCase(APITestCase):
 
     def testStudyResponsesAsParticipant(self):
         # Participants can only see the study responses they created
-        self.study2 = G(Study, creator=self.researcher, study_type=self.study_type)
+        self.study2 = G(
+            Study,
+            creator=self.researcher,
+            study_type=self.study_type,
+            organization=self.org,
+        )
         self.response2 = G(
             Response,
             child=G(Child, user=self.researcher),

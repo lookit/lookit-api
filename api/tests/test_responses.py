@@ -8,7 +8,7 @@ from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, DemographicData, User
+from accounts.models import Child, DemographicData, Organization, User
 from studies.models import ConsentRuling, Feedback, Response, Study, StudyType
 
 
@@ -26,7 +26,14 @@ class ResponseTestCase(APITestCase):
         self.child = G(Child, user=self.participant, given_name="Sally")
         self.child_of_researcher = G(Child, user=self.researcher, given_name="Grace")
         self.study_type = G(StudyType, name="default", id=1)
-        self.study = G(Study, creator=self.researcher, study_type=self.study_type)
+
+        self.org = G(Organization, name="MIT")
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            study_type=self.study_type,
+            organization=self.org,
+        )
         self.response = G(Response, child=self.child, study=self.study, completed=False)
         self.consented_response = G(
             Response,
@@ -36,10 +43,7 @@ class ResponseTestCase(APITestCase):
             completed_consent_frame=True,
         )
         self.positive_consent_ruling = G(
-            ConsentRuling,
-            study=self.study,
-            response=self.consented_response,
-            action="accepted",
+            ConsentRuling, response=self.consented_response, action="accepted"
         )
         self.url = reverse("api:response-list", kwargs={"version": "v1"})
         self.response_detail_url = self.url + str(self.response.uuid) + "/"
@@ -97,7 +101,7 @@ class ResponseTestCase(APITestCase):
             completed_consent_frame=True,
         )
         self.positive_consent_ruling2 = G(
-            ConsentRuling, study=self.study, response=self.response2, action="accepted"
+            ConsentRuling, response=self.response2, action="accepted"
         )
         self.response3 = G(
             Response,
@@ -107,7 +111,7 @@ class ResponseTestCase(APITestCase):
             completed_consent_frame=True,
         )
         self.positive_consent_ruling3 = G(
-            ConsentRuling, study=self.study, response=self.response3, action="accepted"
+            ConsentRuling, response=self.response3, action="accepted"
         )
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"

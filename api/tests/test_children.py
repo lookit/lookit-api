@@ -8,7 +8,7 @@ from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, User
+from accounts.models import Child, Organization, User
 from studies.models import ConsentRuling, Feedback, Response, Study, StudyType
 
 
@@ -18,17 +18,24 @@ class ChildrenTestCase(APITestCase):
         self.participant = G(User, is_active=True)
         self.child = G(Child, user=self.participant, given_name="Sally")
         self.study_type = G(StudyType, name="default", id=1)
-        self.study_type.save()
-        self.study = G(Study, creator=self.researcher, study_type=self.study_type)
+        self.org = G(Organization, name="MIT")
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            study_type=self.study_type,
+            organization=self.org,
+        )
         self.response = G(
             Response, child=self.child, study=self.study, completed_consent_frame=True
         )
         self.positive_consent_ruling = G(
-            ConsentRuling, study=self.study, response=self.response, action="accepted"
+            ConsentRuling, response=self.response, action="accepted"
         )
         self.url = reverse("api:child-list", kwargs={"version": "v1"})
         self.child_detail_url = (
-            reverse("api:child-list", kwargs={"version": "v1"}) + str(self.child.uuid) + "/"
+            reverse("api:child-list", kwargs={"version": "v1"})
+            + str(self.child.uuid)
+            + "/"
         )
         self.client = APIClient()
 

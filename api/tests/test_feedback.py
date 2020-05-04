@@ -8,7 +8,7 @@ from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, User
+from accounts.models import Child, Organization, User
 from studies.models import Feedback, Response, Study, StudyType
 
 
@@ -18,7 +18,13 @@ class FeedbackTestCase(APITestCase):
         self.participant = G(User, is_active=True)
         self.child = G(Child, user=self.participant)
         self.study_type = G(StudyType, name="default", id=1)
-        self.study = G(Study, creator=self.researcher, study_type=self.study_type)
+        self.org = G(Organization, name="MIT")
+        self.study = G(
+            Study,
+            creator=self.researcher,
+            study_type=self.study_type,
+            organization=self.org,
+        )
         self.response = G(Response, child=self.child, study=self.study)
         self.url = reverse("api:feedback-list", kwargs={"version": "v1"})
         self.client = APIClient()
