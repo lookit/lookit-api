@@ -1955,6 +1955,7 @@ class StudyDemographics(
             .select_related("child", "child__user", "study", "demographic_snapshot")
             .values(
                 "uuid",
+                "date_created",
                 "child__user__uuid",
                 "study__uuid",
                 "study__salt",
@@ -2013,7 +2014,7 @@ class StudyDemographics(
                                 ],
                                 "child_rounded_ages": round_ages_from_birthdays(
                                     resp["demographic_snapshot__child_birthdays"],
-                                    resp["demographic_snapshot__created_at"],
+                                    resp["date_created"],
                                 ),
                                 "languages_spoken_at_home": resp[
                                     "demographic_snapshot__languages_spoken_at_home"
@@ -2097,12 +2098,11 @@ class StudyDemographics(
             (
                 "demographic_child_rounded_ages",
                 round_ages_from_birthdays(
-                    resp["demographic_snapshot__child_birthdays"],
-                    resp["demographic_snapshot__created_at"],
+                    resp["demographic_snapshot__child_birthdays"], resp["date_created"]
                 )
                 if resp
                 else "",
-                "List of rounded ages based on child birthdays entered in demographic form (not based on children registered). Ages are in days, rounded to nearest 10 for ages under 1 year and nearest 30 otherwise. In format e.g. [60, 390]",
+                "List of rounded ages based on child birthdays entered in demographic form (not based on children registered). Ages are at time of response for this row, in days, rounded to nearest 10 for ages under 1 year and nearest 30 otherwise. In format e.g. [60, 390]",
             ),
             (
                 "demographic_languages_spoken_at_home",
