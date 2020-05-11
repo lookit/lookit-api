@@ -1661,7 +1661,7 @@ class StudyResponsesAll(
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:
-                # response logs, consent rulings, feedback, videos will all be deleted 
+                # response logs, consent rulings, feedback, videos will all be deleted
                 # via cascades - videos will be removed from S3 also on pre_delete hook
                 resp.delete()
         return super().get(request, *args, **kwargs)
@@ -1955,6 +1955,7 @@ class StudyDemographics(
             .select_related("child", "child__user", "study", "demographic_snapshot")
             .values(
                 "uuid",
+                "date_created",
                 "child__user__uuid",
                 "study__uuid",
                 "study__salt",
@@ -2013,7 +2014,7 @@ class StudyDemographics(
                                 ],
                                 "child_rounded_ages": round_ages_from_birthdays(
                                     resp["demographic_snapshot__child_birthdays"],
-                                    resp["demographic_snapshot__created_at"],
+                                    resp["date_created"],
                                 ),
                                 "languages_spoken_at_home": resp[
                                     "demographic_snapshot__languages_spoken_at_home"
@@ -2097,12 +2098,11 @@ class StudyDemographics(
             (
                 "demographic_child_rounded_ages",
                 round_ages_from_birthdays(
-                    resp["demographic_snapshot__child_birthdays"],
-                    resp["demographic_snapshot__created_at"],
+                    resp["demographic_snapshot__child_birthdays"], resp["date_created"]
                 )
                 if resp
                 else "",
-                "List of rounded ages based on child birthdays entered in demographic form (not based on children registered). Ages are in days, rounded to nearest 10 for ages under 1 year and nearest 30 otherwise. In format e.g. [60, 390]",
+                "List of rounded ages based on child birthdays entered in demographic form (not based on children registered). Ages are at time of response for this row, in days, rounded to nearest 10 for ages under 1 year and nearest 30 otherwise. In format e.g. [60, 390]",
             ),
             (
                 "demographic_languages_spoken_at_home",
