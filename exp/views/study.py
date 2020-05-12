@@ -1916,7 +1916,7 @@ class StudyDemographics(
     ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
 ):
     """
-    StudyParticiapnts view shows participant demographic snapshots associated
+    StudyDemographics view shows participant demographic snapshots associated
     with each response to the study
     """
 
@@ -1938,15 +1938,15 @@ class StudyDemographics(
         if optional_header_ids == None:
             optional_header_ids = []
         optional_header_ids_to_columns = {"globalparent": "participant_global_id"}
-        allHeaders = self.get_csv_demographic_row_and_headers()["headers"]
-        selectedHeaders = [
+        all_headers = self.get_csv_demographic_row_and_headers()["headers"]
+        selected_headers = [
             optional_header_ids_to_columns[id]
             for id in optional_header_ids
             if id in optional_header_ids_to_columns
         ]
-        optionalHeaders = optional_header_ids_to_columns.values()
+        optional_headers = optional_header_ids_to_columns.values()
         return [
-            h for h in allHeaders if h not in optionalHeaders or h in selectedHeaders
+            h for h in all_headers if h not in optional_headers or h in selected_headers
         ]
 
     def get_response_values_for_demographics(self, study):
@@ -2199,7 +2199,7 @@ class StudyDemographics(
         """
 
         participant_list = []
-        theseHeaders = self.get_demographic_headers(optional_header_ids)
+        these_headers = self.get_demographic_headers(optional_header_ids)
 
         paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
         for page_num in paginator.page_range:
@@ -2209,7 +2209,7 @@ class StudyDemographics(
                 # Add any new headers from this session
                 participant_list.append(row_data)
 
-        output, writer = csv_dict_output_and_writer(theseHeaders)
+        output, writer = csv_dict_output_and_writer(these_headers)
         writer.writerows(participant_list)
         return output.getvalue()
 
@@ -2219,11 +2219,11 @@ class StudyDemographics(
         """
 
         descriptions = self.get_csv_demographic_row_and_headers()["descriptions"]
-        theseHeaders = self.get_demographic_headers(optional_header_ids)
+        these_headers = self.get_demographic_headers(optional_header_ids)
         all_descriptions = [
             {"column": key, "description": val}
             for (key, val) in descriptions.items()
-            if key in theseHeaders
+            if key in these_headers
         ]
         output, writer = csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
