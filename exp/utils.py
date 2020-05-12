@@ -1,5 +1,6 @@
 import csv
 import io
+import datetime
 
 RESPONSE_PAGE_SIZE = 500  # for pagination of responses when processing for download
 
@@ -60,7 +61,7 @@ def round_age(age_in_days):
 def round_ages_from_birthdays(child_birthdays, date_created):
     return [
         round_age((date_created.date() - birthdate).days)
-        if birthdate and type(birthdate) == type(date_created.date())
+        if birthdate and type(birthdate) is datetime.date
         else None
         for birthdate in child_birthdays
     ]
