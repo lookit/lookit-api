@@ -8,11 +8,14 @@ import fleep
 import pytz
 from botocore.exceptions import ClientError
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.text import slugify
+from django.utils.translation import ugettext as _
+from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import assign_perm, get_groups_with_perms
 from kombu.utils import cached_property
 from model_utils import Choices
@@ -25,7 +28,8 @@ from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
-from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
+from studies.permissions import LabPermission, StudyPermission
+from studies.tasks import delete_video_from_cloud
 
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
@@ -40,6 +44,43 @@ S3_RESOURCE = boto3.resource("s3")
 S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 
 dispatch_frame_action = FrameActionDispatcher()
+
+
+class Lab(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    name = models.CharField(max_length=255, unique=True)
+    primary_investigator_name = models.CharField(max_length=255)
+    contact_email = models.EmailField(unique=True, verbose_name="Contact Email")
+    contact_phone = models.CharField(max_length=255, verbose_name="Contact Phone")
+    lab_website = models.URLField(verbose_name="Lab Website")
+    description = models.TextField(blank=True)
+    irb_contact_info = models.TextField(blank=True)
+    # The related_name convention seems silly, but django complains about reverse
+    # accessor clashes if these aren't unique :/ regardless, we won't be using
+    # the reverse accessors much so it doesn't really matter.
+    researcher_group = models.OneToOneField(
+        Group, related_name="lab_for_researchers", on_delete=models.SET_NULL, null=True
+    )
+    view_group = models.OneToOneField(
+        Group, related_name="lab_for_viewers", on_delete=models.SET_NULL, null=True
+    )
+    admin_group = models.OneToOneField(
+        Group, related_name="lab_to_administer", on_delete=models.SET_NULL, null=True
+    )
+
+    class Meta:
+        permissions = LabPermission
+        ordering = ["name"]
+
+
+# Using Direct foreign keys for guardian, see:
+# https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
+class LabUserObjectPermission(UserObjectPermissionBase):
+    content_object = models.ForeignKey(Lab, on_delete=models.CASCADE)
+
+
+class LabGroupObjectPermission(GroupObjectPermissionBase):
+    content_object = models.ForeignKey(Lab, on_delete=models.CASCADE)
 
 
 class StudyType(models.Model):
@@ -108,11 +149,18 @@ class Study(models.Model):
         blank=False,
         verbose_name="type",
     )
-    organization = models.ForeignKey(
-        Organization,
-        on_delete=models.DO_NOTHING,
+    # organization = models.ForeignKey(
+    #     Organization,
+    #     on_delete=models.DO_NOTHING,
+    #     related_name="studies",
+    #     related_query_name="study",
+    # )
+    lab = models.ForeignKey(
+        Lab,
+        on_delete=models.SET_NULL,
         related_name="studies",
         related_query_name="study",
+        null=True,
     )
     structure = DateTimeAwareJSONField(default={"frames": {}, "sequence": []})
     display_full_screen = models.BooleanField(default=True)
@@ -133,6 +181,35 @@ class Study(models.Model):
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True)
 
+    # Groups
+    # The related_name convention seems silly, but django complains about reverse
+    # accessor clashes if these aren't unique :/ regardless, we won't be using
+    # the reverse accessors much so it doesn't really matter.
+    preview_group = models.OneToOneField(
+        Group, related_name="study_to_preview", on_delete=models.SET_NULL, null=True
+    )
+    design_group = models.OneToOneField(
+        Group, related_name="study_to_design", on_delete=models.SET_NULL, null=True
+    )
+    analysis_group = models.OneToOneField(
+        Group, related_name="study_for_analysis", on_delete=models.SET_NULL, null=True
+    )
+    submission_processor_group = models.OneToOneField(
+        Group,
+        related_name="study_for_submission_processing",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    researcher_group = models.OneToOneField(
+        Group, related_name="study_for_research", on_delete=models.SET_NULL, null=True
+    )
+    manager_group = models.OneToOneField(
+        Group, related_name="study_to_manage", on_delete=models.SET_NULL, null=True
+    )
+    admin_group = models.OneToOneField(
+        Group, related_name="study_to_administer", on_delete=models.SET_NULL, null=True
+    )
+
     def __init__(self, *args, **kwargs):
         super(Study, self).__init__(*args, **kwargs)
         self.machine = Machine(
@@ -149,26 +226,7 @@ class Study(models.Model):
         return f"<Study: {self.name}>"
 
     class Meta:
-        permissions = (
-            ("can_view_study", "Can View Study"),
-            ("can_create_study", "Can Create Study"),
-            ("can_edit_study", "Can Edit Study"),
-            ("can_remove_study", "Can Remove Study"),
-            ("can_activate_study", "Can Activate Study"),
-            ("can_deactivate_study", "Can Deactivate Study"),
-            ("can_pause_study", "Can Pause Study"),
-            ("can_resume_study", "Can Resume Study"),
-            ("can_approve_study", "Can Approve Study"),
-            ("can_submit_study", "Can Submit Study"),
-            ("can_retract_study", "Can Retract Study"),
-            ("can_resubmit_study", "Can Resubmit Study"),
-            ("can_edit_study_permissions", "Can Edit Study Permissions"),
-            ("can_view_study_permissions", "Can View Study Permissions"),
-            ("can_view_study_responses", "Can View Study Responses"),
-            ("can_view_study_video_responses", "Can View Study Video Responses"),
-            ("can_view_study_demographics", "Can View Study Demographics"),
-            ("can_archive_study", "Can Archive Study"),
-        )
+        permissions = StudyPermission
         ordering = ["name"]
 
     class JSONAPIMeta:
@@ -256,29 +314,17 @@ class Study(models.Model):
     @property
     def study_admin_group(self):
         """ Fetches the study admin group """
-        groups = get_groups_with_perms(self)
-        for group in groups:
-            if "STUDY" in group.name and "ADMIN" in group.name:
-                return group
-        return None
+        return self.admin_group
 
     @property
     def study_organization_admin_group(self):
         """ Fetches the study organization admin group """
-        groups = get_groups_with_perms(self)
-        for group in groups:
-            if "ORG" in group.name and "ADMIN" in group.name:
-                return group
-        return None
+        return self.lab.admin_group
 
     @property
     def study_read_group(self):
         """ Fetches the study read group """
-        groups = get_groups_with_perms(self)
-        for group in groups:
-            if "STUDY" in group.name and "READ" in group.name:
-                return group
-        return None
+        return self.researcher_group
 
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
@@ -486,6 +532,17 @@ class Study(models.Model):
     def _finalize_state_change(self, ev):
         ev.model.save()
         self._log_action(ev)
+
+
+# Using Direct foreign keys for guardian, see:
+# https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
+# Opting not to use "enabled" feature and just to load custom perms directly.
+class StudyUserObjectPermission(UserObjectPermissionBase):
+    content_object = models.ForeignKey(Study, on_delete=models.CASCADE)
+
+
+class StudyGroupObjectPermission(GroupObjectPermissionBase):
+    content_object = models.ForeignKey(Study, on_delete=models.CASCADE)
 
 
 @receiver(post_save, sender=Study)
