@@ -68,12 +68,12 @@ class BasicUserSerializer(UuidHyperlinkedModelSerializer):
         related_link_url_kwarg="user_uuid",
         related_link_lookup_field="uuid",
     )
-    organization = PatchedHyperlinkedRelatedField(
-        queryset=Organization.objects,
-        related_link_view_name="api:organization-detail",
-        related_link_lookup_field="organization.uuid",
-        related_link_url_kwarg="uuid",
-    )
+    # organization = PatchedHyperlinkedRelatedField(
+    #     queryset=Organization.objects,
+    #     related_link_view_name="organization-detail",
+    #     related_link_lookup_field="organization.uuid",
+    #     related_link_url_kwarg="uuid",
+    # )
     children = PatchedHyperlinkedRelatedField(
         queryset=Child.objects,
         many=True,
@@ -95,7 +95,7 @@ class BasicUserSerializer(UuidHyperlinkedModelSerializer):
             "is_staff",
             "is_researcher",
             "demographics",
-            "organization",
+            # "organization",
             "children",
             "former_lookit_id",
             "linked_former_lookit_ids",

@@ -1,13 +1,15 @@
+import operator
 from collections import defaultdict
 from datetime import timedelta
+from functools import reduce
 
 from django.db import models
 from django.db.models import Count, IntegerField, OuterRef, Q, Subquery
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, Lower
+from django.utils import timezone
 from django.utils.timezone import now
 from guardian.shortcuts import get_objects_for_user
 
-from accounts.models import Child, User
 from attachment_helpers import get_download_url
 from studies.models import (
     ACCEPTED,
@@ -15,9 +17,11 @@ from studies.models import (
     REJECTED,
     ConsentRuling,
     Response,
+    Study,
     StudyLog,
     Video,
 )
+from studies.permissions import StudyPermission
 
 
 def get_annotated_responses_qs(include_comments=False, include_time=False):
@@ -231,7 +235,7 @@ def get_registration_analytics_qs():
     """
 
 
-def get_study_list_qs(user):
+def get_study_list_qs(user, query_dict):
     """Gets a study list query set annotated with response counts.
 
     TODO: Factor in all the query mutation from the (view) caller.
@@ -239,6 +243,7 @@ def get_study_list_qs(user):
 
     Args:
         user: django.utils.functional.SimpleLazyObject masquerading as a user.
+        query_dict: django.http.QueryDict from the self.request.GET property.
 
     Returns:
         A heavily annotated queryset for the list of studies.
@@ -246,7 +251,10 @@ def get_study_list_qs(user):
     annotated_responses_qs = get_annotated_responses_qs()
 
     queryset = (
-        get_objects_for_user(user, "studies.can_view_study")
+        # TODO: add klass=Study param?
+        get_objects_for_user(
+            user, StudyPermission.READ_STUDY_DETAILS.codename, klass=Study
+        )
         .exclude(state="archived")
         .select_related("creator")
         .annotate(
@@ -304,5 +312,48 @@ def get_study_list_qs(user):
             ),
         )
     )
+
+    # Request filtering
+
+    state = query_dict.get("state")
+    if state and state != "all":
+        if state == "myStudies":
+            queryset = queryset.filter(creator=user)
+        else:
+            queryset = queryset.filter(state=state)
+
+    match = query_dict.get("match")
+    if match:
+        queryset = queryset.filter(
+            reduce(
+                operator.or_,
+                (
+                    Q(name__icontains=term) | Q(short_description__icontains=term)
+                    for term in match.split()
+                ),
+            )
+        )
+
+    sort = query_dict.get("sort", "")
+    if "name" in sort:
+        queryset = queryset.order_by(
+            Lower("name").desc() if "-" in sort else Lower("name").asc()
+        )
+    elif "beginDate" in sort:
+        # TODO optimize using subquery
+        queryset = sorted(
+            queryset,
+            key=lambda t: t.begin_date or timezone.now(),
+            reverse=True if "-" in sort else False,
+        )
+    elif "endDate" in sort:
+        # TODO optimize using subquery
+        queryset = sorted(
+            queryset,
+            key=lambda t: t.end_date or timezone.now(),
+            reverse=True if "-" in sort else False,
+        )
+    else:
+        queryset = queryset.order_by(Lower("name"))
 
     return queryset

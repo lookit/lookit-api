@@ -11,8 +11,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
 )
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.core.mail import BadHeaderError
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Prefetch, Q
@@ -25,16 +25,15 @@ from django.http import (
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils import timezone
 from django.utils.text import slugify
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
-from guardian.mixins import PermissionRequiredMixin
+from guardian.mixins import PermissionRequiredMixin as ObjectPermissionRequiredMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
 from revproxy.views import ProxyView
 
 import attachment_helpers
-from accounts.models import Child, Message, Organization, User
+from accounts.models import Child, Message, User
 from accounts.utils import (
     hash_child_id,
     hash_demographic_id,
@@ -60,17 +59,8 @@ from studies.fields import (
 )
 from studies.forms import StudyEditForm, StudyForm
 from studies.helpers import send_mail
-from studies.models import (
-    ACCEPTED,
-    ConsentRuling,
-    Feedback,
-    Response,
-    ResponseLog,
-    Study,
-    StudyLog,
-    StudyType,
-    Video,
-)
+from studies.models import Feedback, Lab, Study, StudyType
+from studies.permissions import LabPermission, StudyPermission
 from studies.queries import (
     get_annotated_responses_qs,
     get_consent_statistics,
@@ -143,11 +133,28 @@ KEY_DISPLAY_NAMES = {
 }
 
 
+class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):
+
+    object: Study
+
+    def get_object(self, queryset=None):
+        """Override get_object() to be smarter.
+
+        This is to allow us to get the study for use the predicate function
+        of UserPassesTestMixin without making `SingleObjectMixin.get` (called
+        within the context of `View.dispatch`) issue a second expensive query.
+        """
+        if getattr(self, "object", None) is None:
+            # Only call get_object() when self.object isn't present.
+            self.object = super().get_object()
+        return self.object
+
+
 class StudyCreateView(
     ExperimenterLoginRequiredMixin,
-    DjangoPermissionRequiredMixin,
-    generic.CreateView,
+    UserPassesTestMixin,
     StudyTypeMixin,
+    generic.CreateView,
 ):
     """
     StudyCreateView allows a user to create a study and then redirects
@@ -155,9 +162,26 @@ class StudyCreateView(
     """
 
     model = Study
-    permission_required = "studies.can_create_study"
+    # permission_required = "studies.can_create_study"
     raise_exception = True
     form_class = StudyForm
+
+    def user_can_make_studies_for_lab(self):
+        user = self.request.user
+        lab = user.lab
+
+        if lab:
+            # has_perm will check for superuser by default.
+            return user.has_perm(
+                LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
+            )
+        else:
+            # This should effectively delegate to the correct handler, by way
+            # of View.dispatch()
+            return False
+
+    # Make PyCharm happy - otherwise we'd just override get_test_func()
+    test_func = user_can_make_studies_for_lab
 
     def form_valid(self, form):
         """
@@ -166,22 +190,18 @@ class StudyCreateView(
         redirect to the supplied URL
         """
         user = self.request.user
-        form.instance.metadata = self.extract_type_metadata()
+        target_study_type_id = self.request.POST["study_type"]
+        target_study_type = StudyType.objects.get(id=target_study_type_id)
+        form.instance.metadata = self.extract_type_metadata(target_study_type)
         form.instance.creator = user
-        form.instance.organization = user.organization
-        self.object = form.save()
-        self.add_creator_to_study_admin_group()
+        form.instance.lab = user.lab
+        # Add user to admin group for study.
+        new_study = self.object = form.save()
+        new_study.admin_group.add(user)
+        new_study.save()
         # Adds success message that study has been created.
         messages.success(self.request, f"{self.object.name} created.")
         return HttpResponseRedirect(self.get_success_url())
-
-    def add_creator_to_study_admin_group(self):
-        """
-        Add the study's creator to the study admin group.
-        """
-        study_admin_group = self.object.study_admin_group
-        study_admin_group.user_set.add(self.request.user)
-        return study_admin_group
 
     def get_success_url(self):
         return reverse("exp:study-detail", kwargs=dict(pk=self.object.id))
@@ -212,10 +232,11 @@ class StudyCreateView(
 
 class StudyUpdateView(
     ExperimenterLoginRequiredMixin,
-    PermissionRequiredMixin,
-    generic.UpdateView,
+    UserPassesTestMixin,
     PaginatorMixin,
     StudyTypeMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.UpdateView,
 ):
     """
     StudyUpdateView allows user to edit study metadata, add researchers to study, update researcher permissions, and delete researchers from study.
@@ -225,8 +246,21 @@ class StudyUpdateView(
     template_name = "studies/study_edit.html"
     form_class = StudyEditForm
     model = Study
-    permission_required = "studies.can_edit_study"
+    # permission_required = "studies.can_edit_study"
     raise_exception = True
+
+    def user_can_edit_study(self):
+        """Test predicate for the study editing view."""
+        user = self.request.user
+        # If we end up using method, this will be useful.
+        # method = self.request.method
+        study = self.get_object()
+
+        return user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study)
+
+    # Make PyCharm happy - otherwise we'd just override
+    # UserPassesTestMixin.get_test_func()
+    test_func = user_can_edit_study
 
     def get_initial(self):
         """
@@ -246,9 +280,12 @@ class StudyUpdateView(
         """
         study = self.get_object()
 
-        metadata, meta_errors = self.validate_and_fetch_metadata()
+        target_study_type_id = self.request.POST["study_type"]
+        target_study_type = StudyType.objects.get(id=target_study_type_id)
 
-        study_type = StudyType.objects.get(id=self.request.POST.get("study_type"))
+        metadata, meta_errors = self.validate_and_fetch_metadata(
+            study_type=target_study_type
+        )
 
         if meta_errors:
             messages.error(
@@ -256,16 +293,17 @@ class StudyUpdateView(
                 f"WARNING: Experiment runner version not saved: {meta_errors}",
             )
         else:
-            new_study_id = StudyType.objects.filter(
-                id=self.request.POST.get("study_type")
-            ).values_list("id", flat=True)[0]
-            if not (study.study_type_id == new_study_id and metadata == study.metadata):
+            # Check that study type hasn't changed.
+            if not (
+                study.study_type_id == target_study_type_id
+                and metadata == study.metadata
+            ):
                 # Invalidate the previous build
                 study.built = False
                 # May still be building, but we're now good to allow another build
                 study.is_building = False
             study.metadata = metadata
-            study.study_type_id = new_study_id
+            study.study_type_id = target_study_type_id
             study.save()
 
             return super().post(request, *args, **kwargs)
@@ -307,16 +345,16 @@ class StudyUpdateView(
 
 class StudyListView(
     ExperimenterLoginRequiredMixin,
-    DjangoPermissionRequiredMixin,
-    generic.ListView,
+    # DjangoPermissionRequiredMixin,
     PaginatorMixin,
+    generic.ListView,
 ):
     """
     StudyListView shows a list of studies that a user has permission to.
     """
 
     model = Study
-    permission_required = "accounts.can_view_experimenter"
+    # permission_required = "accounts.can_view_experimenter"
     raise_exception = True
     template_name = "studies/study_list.html"
 
@@ -325,54 +363,12 @@ class StudyListView(
         Returns paginated list of items for the StudyListView - handles filtering on state, match,
         and sort.
         """
-        request = self.request.GET
+        user = self.request.user
+        query_dict = self.request.GET
 
-        queryset = get_study_list_qs(self.request.user)
+        queryset = get_study_list_qs(user, query_dict)
 
-        # TODO: Starting date and ending date as subqueries, then delete the model methods.
-
-        state = request.get("state")
-        if state and state != "all":
-            if state == "myStudies":
-                queryset = queryset.filter(creator=self.request.user)
-            else:
-                queryset = queryset.filter(state=state)
-
-        match = request.get("match")
-        if match:
-            queryset = queryset.filter(
-                reduce(
-                    operator.or_,
-                    (
-                        Q(name__icontains=term) | Q(short_description__icontains=term)
-                        for term in match.split()
-                    ),
-                )
-            )
-
-        sort = request.get("sort", "")
-        if "name" in sort:
-            queryset = queryset.order_by(
-                Lower("name").desc() if "-" in sort else Lower("name").asc()
-            )
-        elif "beginDate" in sort:
-            # TODO optimize using subquery
-            queryset = sorted(
-                queryset,
-                key=lambda t: t.begin_date or timezone.now(),
-                reverse=True if "-" in sort else False,
-            )
-        elif "endDate" in sort:
-            # TODO optimize using subquery
-            queryset = sorted(
-                queryset,
-                key=lambda t: t.end_date or timezone.now(),
-                reverse=True if "-" in sort else False,
-            )
-        else:
-            queryset = queryset.order_by(Lower("name"))
-
-        return self.paginated_queryset(queryset, request.get("page"), 10)
+        return self.paginated_queryset(queryset, query_dict.get("page"), 10)
 
     def get_context_data(self, **kwargs):
         """
@@ -391,9 +387,10 @@ class StudyListView(
 
 class StudyDetailView(
     ExperimenterLoginRequiredMixin,
-    PermissionRequiredMixin,
-    generic.DetailView,
+    UserPassesTestMixin,
     PaginatorMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """
     StudyDetailView shows information about a study. Can view basic metadata about a study, can view
@@ -402,8 +399,33 @@ class StudyDetailView(
 
     template_name = "studies/study_detail.html"
     model = Study
-    permission_required = "studies.can_view_study"
+    # permission_required = "studies.can_view_study"
     raise_exception = True
+
+    def user_can_see_or_edit_study_details(self):
+        """Checks based on method, with fallback to umbrella lab perms.
+
+        Returns:
+            A boolean indicating whether or not the user should be able to see
+            this view.
+        """
+        user = self.request.user
+        method = self.request.method
+        study = self.object = self.get_object()
+
+        if method == "GET":
+            return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
+        elif method == "POST":
+            return user.has_study_perms(StudyPermission.MANAGE_STUDY_RESEARCHERS, study)
+            # What to do about study cloning
+        else:
+            # If we're not one of the two allowed methods this should be caught
+            # earlier
+            return False
+
+    # Make PyCharm happy - otherwise we'd just override
+    # UserPassesTestMixin.get_test_func()
+    test_func = user_can_see_or_edit_study_details
 
     def post(self, *args, **kwargs):
         """
@@ -424,7 +446,8 @@ class StudyDetailView(
         if self.request.POST.get("clone_study"):
             clone = self.get_object().clone()
             clone.creator = self.request.user
-            clone.organization = self.request.user.organization
+            # clone.organization = self.request.user.organization
+            clone.lab = self.request.user.lab
             clone.study_type = self.get_object().study_type
             clone.built = False
             clone.is_building = False
@@ -445,43 +468,59 @@ class StudyDetailView(
         Handles adding, updating, and deleting researcher from study. Users are
         added to study read group by default.
         """
+        change_requester = self.request.user
         study = self.get_object()
-        study_read_group = study.study_read_group
-        study_admin_group = study.study_admin_group
-        add_user = self.request.POST.get("add_user")
-        remove_user = self.request.POST.get("remove_user")
-        update_user = None
+        study_researcher_group = study.researcher_group
+        study_admin_group = study.admin_group
+        id_of_user_to_add = self.request.POST.get("add_user")
+        id_of_user_to_remove = self.request.POST.get("remove_user")
 
         # Early exit if the user doesn't have proper permissions.
-        if not self.request.user.groups.filter(name=study_admin_group.name).exists():
-            messages.error(
-                self.request,
-                f"You don't have proper permissions to add researchers to {study.name}.",
-            )
-            return
+        # We should not need this because the test function will check for us whether
+        # or not this user is legal for the POST request based on object perms.
+        # if not self.request.user.groups.filter(name=study_admin_group.name).exists():
+        #     messages.error(
+        #         self.request,
+        #         f"You don't have proper permissions to add researchers to {study.name}.",
+        #     )
+        #     return
 
         if self.request.POST.get("name") == "update_user":
-            update_user = self.request.POST.get("pk")
-            permissions = self.request.POST.get("value")
-        if add_user:
+            id_of_user_to_update = self.request.POST.get("pk")
+            name_of_role_to_enable = self.request.POST.get("value")
+            if id_of_user_to_update:
+                user_to_update = User.objects.get(pk=id_of_user_to_update)
+                if name_of_role_to_enable == "study_admin":
+                    # if admin, removes user from study read and adds to study admin
+                    user_to_update.groups.add(study_admin_group)
+                    user_to_update.groups.remove(study_researcher_group)
+                    self.send_study_email(user_to_update, "admin")
+                if name_of_role_to_enable == "study_read":
+                    # if read, removes user from study admin and adds to study read
+                    # Must have more than one admin to make this change.
+                    if study_admin_group.user_set.count() > 1:
+                        user_to_update.groups.add(study_researcher_group)
+                        user_to_update.groups.remove(study_admin_group)
+                        self.send_study_email(user_to_update, "read")
+        if id_of_user_to_add:
             # Adds user to study read by default
-            add_user_object = User.objects.get(pk=add_user)
-            study_read_group.user_set.add(add_user_object)
+            user_to_add = User.objects.get(pk=id_of_user_to_add)
+            user_to_add.groups.add(study_researcher_group)
             messages.success(
                 self.request,
-                f"{add_user_object.get_short_name()} given {study.name} Read Permissions.",
+                f"{user_to_add.get_short_name()} given {study.name} Read Permissions.",
                 extra_tags="user_added",
             )
-            self.send_study_email(add_user_object, "read")
-        if remove_user:
+            self.send_study_email(user_to_add, "read")
+        if id_of_user_to_remove:
             # Removes user from both study read and study admin groups
-            remove = User.objects.get(pk=remove_user)
-            if self.adequate_study_admins(study_admin_group, remove):
-                study_read_group.user_set.remove(remove)
-                study_admin_group.user_set.remove(remove)
+            user_to_remove = User.objects.get(pk=id_of_user_to_remove)
+            if study_admin_group.user_set.count() > 1:
+                user_to_remove.groups.remove(study_researcher_group)
+                user_to_remove.groups.remove(study_admin_group)
                 messages.success(
                     self.request,
-                    f"{remove.get_short_name()} removed from {study.name}.",
+                    f"{user_to_remove.get_short_name()} removed from {study.name}.",
                     extra_tags="user_removed",
                 )
             else:
@@ -490,20 +529,6 @@ class StudyDetailView(
                     "Could not delete this researcher. There must be at least one study admin.",
                     extra_tags="user_removed",
                 )
-        if update_user:
-            update = User.objects.get(pk=update_user)
-            if permissions == "study_admin":
-                # if admin, removes user from study read and adds to study admin
-                study_read_group.user_set.remove(update)
-                study_admin_group.user_set.add(update)
-                self.send_study_email(update, "admin")
-            if permissions == "study_read":
-                # if read, removes user from study admin and adds to study read
-                if self.adequate_study_admins(study_admin_group, update):
-                    study_read_group.user_set.add(update)
-                    study_admin_group.user_set.remove(update)
-                    self.send_study_email(update, "read")
-        return
 
     def send_study_email(self, user, permission):
         study = self.get_object()
@@ -526,8 +551,9 @@ class StudyDetailView(
         """
         Add the study's creator to the clone's study admin group.
         """
-        study_admin_group = clone.study_admin_group
-        study_admin_group.user_set.add(self.request.user)
+        user = self.request.user
+        study_admin_group = clone.admin_group
+        user.groups.add(study_admin_group)
         return study_admin_group
 
     @property
@@ -545,7 +571,7 @@ class StudyDetailView(
         context = super(StudyDetailView, self).get_context_data(**kwargs)
 
         study = context["study"]
-        admin_group = study.study_admin_group
+        admin_group = study.admin_group
 
         context["triggers"] = get_permitted_triggers(
             self, self.object.machine.get_triggers(self.object.state)
@@ -578,28 +604,23 @@ class StudyDetailView(
 
         Not showing Org Admin and Org Read in this list (even though they technically can view the project)
         """
-        study = self.object
-        return (
-            User.objects.filter(
-                Q(groups__name=study.study_admin_group.name)
-                | Q(groups__name=study.study_read_group.name)
-            )
-            .distinct()
-            .order_by(Lower("family_name").asc())
-        )
+        study = self.get_object()
+        study_admins = study.admin_group.user_set.all()
+        study_researchers = study.researcher_group.user_set.all()
+        return (study_admins | study_researchers).order_by(Lower("family_name").asc())
 
     def search_researchers(self):
         """Searches user first, last, and middle names for search query.
         Does not display researchers that are already on project.
         """
         search_query = self.request.GET.get("match", None)
-        researchers_result = None
+
         if search_query:
             current_researcher_ids = self.get_study_researchers().values_list(
                 "id", flat=True
             )
             user_queryset = User.objects.filter(
-                organization=self.get_object().organization, is_active=True
+                lab=self.get_object().lab, is_active=True
             )
             researchers_result = (
                 user_queryset.filter(
@@ -617,14 +638,8 @@ class StudyDetailView(
                 .distinct()
                 .order_by(Lower("family_name").asc())
             )
-            researchers_result = self.build_researchers_paginator(researchers_result)
-        return researchers_result
 
-    def adequate_study_admins(self, admin_group, researcher):
-        # Returns true if researchers's permissions can be edited, or researcher deleted,
-        # with the constraint of there being at least one study admin at all times
-        admins = User.objects.filter(groups__name=admin_group.name)
-        return len(admins) - (researcher in admins) > 0
+            return self.build_researchers_paginator(researchers_result)
 
     def build_researchers_paginator(self, researchers_result):
         """Builds paginated search results for researchers."""
@@ -633,16 +648,26 @@ class StudyDetailView(
 
 
 class StudyParticipantContactView(
-    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """
     StudyParticipantContactView lets you contact study participants.
     """
 
     model = Study
-    permission_required = "studies.can_edit_study"
+    # permission_required = "studies.can_edit_study"
     raise_exception = True
     template_name = "studies/study_participant_contact.html"
+
+    def can_contact_participants(self):
+        user = self.request.user
+        study = self.get_object()
+        user.has_study_perms(StudyPermission.CONTACT_STUDY_PARTICIPANTS, study)
+
+    test_func = can_contact_participants
 
     def participant_hash(self, participant):
         return hash_id(participant["uuid"], self.object.uuid, self.object.salt)
@@ -757,10 +782,10 @@ class StudyParticipantContactView(
 
 class StudyResponsesList(
     ExperimenterLoginRequiredMixin,
-    PermissionRequiredMixin,
-    generic.DetailView,
-    SingleObjectMixin,
+    UserPassesTestMixin,
     PaginatorMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """
     View to acquire a list of study responses.
@@ -768,8 +793,20 @@ class StudyResponsesList(
 
     template_name = "studies/study_responses.html"
     queryset = Study.objects.all()
-    permission_required = "studies.can_view_study_responses"
+    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
+
+    def user_can_see_study_responses(self):
+        user = self.request.user
+        study = self.get_object()
+        method = self.request.method
+
+        if method == "GET":
+            return user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+        elif method == "POST":
+            return user.has_study_perms(StudyPermission.EDIT_STUDY_FEEDBACK, study)
+
+    test_func = user_can_see_study_responses
 
     def post(self, request, *args, **kwargs):
         """Currently, handles feedback form."""
@@ -896,14 +933,24 @@ class StudyResponsesList(
 
 
 class StudyResponsesConsentManager(
-    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """Manage videos from here."""
 
     template_name = "studies/study_responses_consent_ruling.html"
     queryset = Study.objects.all()
-    permission_required = "studies.can_view_study_responses"
+    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
+
+    def user_can_encode_consent(self):
+        user = self.request.user
+        study = self.get_object()
+        return user.has_study_perms(StudyPermission.CODE_STUDY_CONSENT, study)
+
+    test_func = user_can_encode_consent
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1571,8 +1618,8 @@ def build_summary_csv(responses, optional_headers_selected_ids):
             headers = headers | set(row_data.keys())
             session_list.append(row_data)
 
-    headerList = get_response_headers(optional_headers_selected_ids, headers)
-    output, writer = csv_dict_output_and_writer(headerList)
+    header_list = get_response_headers(optional_headers_selected_ids, headers)
+    output, writer = csv_dict_output_and_writer(header_list)
     writer.writerows(session_list)
     return output.getvalue()
 
@@ -1594,9 +1641,9 @@ def build_single_response_framedata_csv(response):
 
 class StudyResponsesAll(
     ExperimenterLoginRequiredMixin,
-    PermissionRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
     generic.DetailView,
-    SingleObjectMixin,
 ):
     """
     StudyResponsesAll shows a variety of download options for response and child data.
@@ -1604,7 +1651,7 @@ class StudyResponsesAll(
 
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
-    permission_required = "studies.can_view_study_responses"
+    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
     http_method_names = ["get", "post"]
 
@@ -1623,6 +1670,14 @@ class StudyResponsesAll(
         "participant_global_id",
         "participant_nickname",
     ]
+
+    def user_can_see_study_responses(self):
+        user = self.request.user
+        study = self.get_object()
+        # TODO: What about POST - deleting preview data?
+        return user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+
+    test_func = user_can_see_study_responses
 
     def get_response_values_for_framedata(self, study):
         return (
@@ -1913,7 +1968,10 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
 
 
 class StudyDemographics(
-    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """
     StudyDemographics view shows participant demographic snapshots associated
@@ -1922,8 +1980,15 @@ class StudyDemographics(
 
     template_name = "studies/study_demographics.html"
     queryset = Study.objects.all()
-    permission_required = "studies.can_view_study_responses"
+    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
+
+    def user_can_view_study_responses(self):
+        user = self.request.user
+        study = self.get_object()
+        return user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+
+    test_func = user_can_view_study_responses
 
     def get_context_data(self, **kwargs):
         """
@@ -2340,9 +2405,10 @@ class StudyCollisionCheck(StudyResponsesAll):
 
 class StudyAttachments(
     ExperimenterLoginRequiredMixin,
-    PermissionRequiredMixin,
-    generic.DetailView,
+    UserPassesTestMixin,
     PaginatorMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """
     StudyAttachments View shows video attachments for the study
@@ -2350,8 +2416,16 @@ class StudyAttachments(
 
     template_name = "studies/study_attachments.html"
     queryset = Study.objects.prefetch_related("responses", "videos")
-    permission_required = "studies.can_view_study_responses"
+    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
+
+    def user_can_see_study_responses(self):
+        user = self.request.user
+        study = self.get_object()
+
+        return user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+
+    test_func = user_can_see_study_responses
 
     def get_context_data(self, **kwargs):
         """
@@ -2434,11 +2508,11 @@ class StudyBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
         return reverse(return_path, kwargs={"pk": str(self.object.pk)})
 
     def post(self, request, *args, **kwargs):
-        study_permissions = get_perms(request.user, self.object)
+        user = self.request.user
+        study = self.object
 
-        if study_permissions and "can_edit_study" in study_permissions:
+        if user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study):
 
-            study = self.object
             if not study.is_building:
                 study.is_building = True
                 study.save(update_fields=["is_building"])
@@ -2484,7 +2558,7 @@ class StudyBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
 
 
 class StudyParticipantAnalyticsView(
-    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, generic.TemplateView
+    ExperimenterLoginRequiredMixin, ObjectPermissionRequiredMixin, generic.TemplateView
 ):
     template_name = "studies/study_participant_analytics.html"
     model = Study
@@ -2584,74 +2658,106 @@ class StudyParticipantAnalyticsView(
 
 
 class StudyPreviewDetailView(
-    ExperimenterLoginRequiredMixin, PermissionRequiredMixin, ParticipantStudyDetailView
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
 ):
 
     queryset = Study.objects.all()
     http_method_names = ["get", "post"]
-    permission_required = "accounts.can_view_experimenter"
+    # permission_required = "accounts.can_view_experimenter"
     raise_exception = True
     template_name = "../../web/templates/web/study-detail.html"
 
-    def get_context_data(self, **kwargs):
-        """
-        Just add preview mode to slightly modify template
-        """
-        context = super().get_context_data(**kwargs)
-        context["preview_mode"] = True
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
+    def can_view_preview_data(self):
+        user = self.request.user
         study = self.get_object()
 
-        if (
-            study.shared_preview
-            and self.request.user.has_perm("accounts.can_view_experimenter")
-        ) or self.request.user.has_perm("studies.can_view_study_responses", study):
-            if request.method == "POST":
-                if study.built:
-                    return redirect(
-                        "exp:preview-proxy", study.uuid, request.POST["child_id"]
-                    )
-                else:
-                    return HttpResponseForbidden(
-                        f'Unable to preview: no experiment runner for study "{study.name}" is available. Please return to the study edit page to build the experiment runner.'
-                    )
-            return super(generic.DetailView, self).dispatch(request)
-        else:
-            return HttpResponseForbidden(f"Not authorized to view study preview.")
+        return user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+
+    test_func = can_view_preview_data
+
+    def get_object(self, queryset=None):
+        """
+        Needed because view expecting pk or slug, but url has UUID. Looks up
+        study by uuid.
+        """
+        uuid = self.kwargs.get("uuid")
+        return get_object_or_404(Study, uuid=uuid)
+
+    def get_context_data(self, **kwargs):
+        """If user is authenticated, add demographic, children, and response data.
+
+        Note: mostly copied from StudyDetailView in web/ until we can find the right
+            abstraction for all this.
+        """
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["has_demographic"] = self.request.user.latest_demographics
+            context["children"] = self.request.user.children.filter(deleted=False)
+            context["preview_mode"] = True
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """POST override to act as GET would in RedirectView.
+
+        TODO: No more POST masquerading as GET, rewrite the template and both the
+            web and experimenter views to be more reasonably sane.
+        """
+        child_id = self.request.POST.get("child_id")
+        kwargs["child_id"] = child_id
+        return HttpResponseRedirect(reverse("exp:preview-proxy", kwargs=kwargs))
 
 
-class PreviewProxyView(ProxyView, ExperimenterLoginRequiredMixin):
+class PreviewProxyView(ExperimenterLoginRequiredMixin, UserPassesTestMixin, ProxyView):
     """
     Proxy view to forward researcher to preview page in the Ember app
     """
 
+    # So we are definitely not doing PREVIEW_EXPERIMENT_BASE_URL anymore
     upstream = settings.EXPERIMENT_BASE_URL
 
-    def dispatch(self, request, path, *args, **kwargs):
+    def user_can_view_previews(self):
+        request = self.request
+        kwargs = self.kwargs
+        user = request.user
+
         try:
             child = Child.objects.get(uuid=kwargs.get("child_id", None))
         except Child.DoesNotExist:
-            raise Http404(f"Child not found")
+            return False
 
         try:
             study = Study.objects.get(uuid=kwargs.get("uuid", None))
         except Study.DoesNotExist:
-            raise Http404(f"Study not found")
+            return False
 
         if child.user != request.user:
             # requesting user doesn't belong to that child
-            raise PermissionDenied()
+            return False
 
-        if study.shared_preview or self.request.user.has_perm(
-            "studies.can_view_study_responses", study
+        if study.shared_preview or user.has_study_perms(
+            StudyPermission.READ_STUDY_PREVIEW_DATA, study
         ):
-            if request.path[-1] == "/":
-                path = f"{path.split('/')[0]}/index.html"
-            return super().dispatch(request, path)
+            return True
         else:
-            return HttpResponseForbidden(f"Not authorized to view study preview.")
+            return False
+
+    test_func = user_can_view_previews
+
+    def dispatch(self, request, *args, **kwargs):
+        """Override to fix argument signature mismatch w.r.t. ProxyView.
+
+        Also, the redirect functionality in revproxy is broken so we have to patch
+        path replacement manually. Great! Just wonderful.
+        """
+
+        _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
+        path = f"{study_uuid}/{'/'.join(rest)}"
+        if not rest:
+            path += "index.html"
+        # path = f"{kwargs['uuid']}/index.html"
+
+        return super().dispatch(request, path)
 
 
 def get_flattened_responses(response_qs, studies_for_child):
@@ -2782,7 +2888,12 @@ def get_permitted_triggers(view_instance, triggers):
             # 3) trigger is found in user's study permissions
         if not user.is_superuser:
             if trigger in admin_triggers:
-                if not (user.organization == study.organization and user.is_org_admin):
+                if not (
+                    user.lab == study.lab
+                    and user.has_perm(
+                        LabPermission.CHANGE_STUDY_STATUS.codename, user.lab
+                    )
+                ):
                     continue
             elif ("can_" + trigger + "_study") not in study_permissions:
                 continue
