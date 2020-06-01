@@ -355,8 +355,10 @@ def download_repos(player_repo_url, player_sha=None):
 
 
 def notify_involved_parties_of_build_status(study, failure_stage=None, log_output=None):
+    lab = study.lab
+    lab_name = lab.name if lab else None
     email_context = {
-        "org_name": study.organization.name,
+        "lab_name": lab_name,
         "study_name": study.name,
         "study_id": study.pk,
         "study_uuid": str(study.uuid),
@@ -371,11 +373,7 @@ def notify_involved_parties_of_build_status(study, failure_stage=None, log_outpu
             "notify_admins_of_study_action",
             "Study Deployed",
             settings.EMAIL_FROM_ADDRESS,
-            bcc=list(
-                study.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
-            ),
+            bcc=list(study.admin_group.user_set.values_list("username", flat=True)),
             **email_context,
         )
         subject_line = f"Experiment runner built"
@@ -390,6 +388,6 @@ def notify_involved_parties_of_build_status(study, failure_stage=None, log_outpu
         researcher_notification_template,
         subject_line,
         settings.EMAIL_FROM_ADDRESS,
-        bcc=list(study.study_admin_group.user_set.values_list("username", flat=True)),
+        bcc=list(study.admin_group.user_set.values_list("username", flat=True)),
         **email_context,
     )

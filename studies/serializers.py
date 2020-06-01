@@ -14,12 +14,12 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="study-detail", lookup_field="uuid"
     )
-    organization = PatchedHyperlinkedRelatedField(
-        queryset=Organization.objects,
-        related_link_view_name="organization-detail",
-        related_link_lookup_field="organization.uuid",
-        related_link_url_kwarg="uuid",
-    )
+    # organization = PatchedHyperlinkedRelatedField(
+    #     queryset=Organization.objects,
+    #     related_link_view_name="organization-detail",
+    #     related_link_lookup_field="organization.uuid",
+    #     related_link_url_kwarg="uuid",
+    # )
 
     creator = PatchedHyperlinkedRelatedField(
         queryset=User.objects,
@@ -52,7 +52,7 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
             "exit_url",
             "state",
             "public",
-            "organization",
+            # "organization",
             "creator",
             "responses",
             "pk",

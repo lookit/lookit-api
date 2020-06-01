@@ -3,6 +3,8 @@ from django.contrib.flatpages import views as flatpages_views
 
 from web import views
 
+app_name = "web"
+
 urlpatterns = [
     url(r"^signup/$", views.ParticipantSignupView.as_view(), name="participant-signup"),
     url(

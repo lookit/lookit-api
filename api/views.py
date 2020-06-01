@@ -6,6 +6,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_json_api import views
 
+from studies.permissions import StudyPermission
 from accounts.models import Child, DemographicData, Organization, User
 from accounts.serializers import (
     BasicUserSerializer,
@@ -239,7 +240,7 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         qs = (
             super()
             .get_queryset()
-            .select_related("creator", "organization")
+            .select_related("creator")
             .prefetch_related("responses__demographic_snapshot")
         )
         # List View restricted to public.  Detail view can show a private or public study.
@@ -250,7 +251,11 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if self.request.user.is_researcher:
             preview_studies = Study.objects.filter(
                 shared_preview=True
-            ) | get_objects_for_user(self.request.user, "studies.can_view_study")
+            ) | get_objects_for_user(
+                self.request.user,
+                StudyPermission.READ_STUDY_PREVIEW_DATA.codename,
+                klass=Study,
+            )
             qs = qs | preview_studies
 
         return qs.distinct().order_by("-date_modified")
