@@ -6,7 +6,7 @@ import pydenticon
 from bitfield import BitField
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import Permission, PermissionsMixin
+from django.contrib.auth.models import Group, Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
@@ -32,6 +32,7 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
+from studies.permissions import UMBRELLA_LAB_PERMISSION_MAP, StudyPermission
 
 
 class UserManager(BaseUserManager):
@@ -84,7 +85,7 @@ def organization_post_save(sender, **kwargs):
     organization, created = kwargs["instance"], kwargs["created"]
 
     if created:
-        from django.contrib.auth.models import Group
+        # from django.contrib.auth.models import Group
 
         for group in ["researcher", "read", "admin"]:
             group_instance, created = Group.objects.get_or_create(
@@ -126,6 +127,14 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         on_delete=models.PROTECT,
         related_name="users",
         related_query_name="user",
+        null=True,
+        blank=True,
+    )
+    lab = models.ForeignKey(
+        "studies.Lab",
+        on_delete=models.SET_NULL,
+        related_name="members",
+        related_query_name="member",
         null=True,
         blank=True,
     )
@@ -242,6 +251,27 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
                 for k in range(0, 255, 10):
                     rbw.append(f"rgb({i},{j},{k})")
         return rbw
+
+    def has_study_perms(self, study_perm: StudyPermission, study) -> bool:
+        # 1) Modeled perm should be passed already
+        has_study_perm = self.has_perm(study_perm.codename, study)
+        if has_study_perm:
+            return True
+        else:
+            umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
+            lab = study.lab
+            if lab:
+                return self.has_perm(umbrella_lab_perm.codename, study.lab)
+            else:
+                return False
+
+    def has_any_perms(self, perm_list, obj=None):
+        """
+        Returns True if the user has ANY of the specified permissions. If
+        object is passed, it checks if the user has all required perms for this
+        object.
+        """
+        return any(self.has_perm(perm, obj) for perm in perm_list)
 
     def get_short_name(self):
         return f"{self.given_name} {self.family_name}"
