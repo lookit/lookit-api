@@ -1,5 +1,5 @@
 """Fields constants - at the moment, just used for BitFields."""
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from model_utils import Choices
 
 # Conditions and Multiple birth are bitfield, NOT choices!

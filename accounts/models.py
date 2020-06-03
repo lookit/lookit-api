@@ -16,7 +16,7 @@ from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import assign_perm, get_objects_for_user
