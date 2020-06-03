@@ -136,7 +136,7 @@ def revert_migration(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("studies", "0064_new-lab-study-perms-model-defs"),
+        ("studies", "0065_new-lab-study-perms-model-defs"),
         ("accounts", "0047_new-lab-study-perms-model-defs"),
     ]
 

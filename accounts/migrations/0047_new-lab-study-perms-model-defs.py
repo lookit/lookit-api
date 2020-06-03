@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("studies", "0064_new-lab-study-perms-model-defs"),
+        ("studies", "0065_new-lab-study-perms-model-defs"),
         ("accounts", "0046_catch-up-migrations-to-current"),
     ]
 

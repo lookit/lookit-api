@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("auth", "0008_alter_user_username_max_length"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("studies", "0063_catch-up-migrations-to-current"),
+        ("studies", "0064_upgrade_django_1_11_to_2_1"),
     ]
 
     operations = [
