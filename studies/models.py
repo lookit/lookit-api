@@ -8,7 +8,7 @@ import fleep
 import pytz
 from botocore.exceptions import ClientError
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
@@ -28,7 +28,12 @@ from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
-from studies.permissions import LabPermission, StudyPermission
+from studies.permissions import (
+    LabPermission,
+    StudyPermission,
+    create_groups_for_instance,
+    StudyGroup,
+)
 from studies.tasks import delete_video_from_cloud
 
 logger = logging.getLogger(__name__)
@@ -64,28 +69,40 @@ def default_configuration():
 class Lab(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=255, unique=True)
-    primary_investigator_name = models.CharField(max_length=255)
+    institution = models.CharField(max_length=255)
+    principal_investigator_name = models.CharField(max_length=255)
     contact_email = models.EmailField(unique=True, verbose_name="Contact Email")
     contact_phone = models.CharField(max_length=255, verbose_name="Contact Phone")
     lab_website = models.URLField(verbose_name="Lab Website")
     description = models.TextField(blank=True)
     irb_contact_info = models.TextField(blank=True)
+    approved_to_test = models.BooleanField(default=False)
     # The related_name convention seems silly, but django complains about reverse
     # accessor clashes if these aren't unique :/ regardless, we won't be using
     # the reverse accessors much so it doesn't really matter.
-    researcher_group = models.OneToOneField(
-        Group, related_name="lab_for_researchers", on_delete=models.SET_NULL, null=True
-    )
     view_group = models.OneToOneField(
         Group, related_name="lab_for_viewers", on_delete=models.SET_NULL, null=True
     )
     admin_group = models.OneToOneField(
         Group, related_name="lab_to_administer", on_delete=models.SET_NULL, null=True
     )
+    researchers = models.ManyToManyField(
+        "accounts.User",
+        blank=True,
+        help_text=_(
+            "The Users who belong to this Lab. A user in this lab will be able to create "
+            "studies associated with this Lab and can be added to this Lab's studies."
+        ),
+        related_name="labs",
+        related_query_name="lab",  # User.objects.filter(lab=...)
+    )
 
     class Meta:
         permissions = LabPermission
         ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.name} ({self.principal_investigator_name}, {self.institution})"
 
 
 # Using Direct foreign keys for guardian, see:
@@ -155,12 +172,6 @@ class Study(models.Model):
         blank=False,
         verbose_name="type",
     )
-    # organization = models.ForeignKey(
-    #     Organization,
-    #     on_delete=models.DO_NOTHING,
-    #     related_name="studies",
-    #     related_query_name="study",
-    # )
     lab = models.ForeignKey(
         Lab,
         on_delete=models.SET_NULL,

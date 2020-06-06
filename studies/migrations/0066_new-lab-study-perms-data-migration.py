@@ -73,16 +73,41 @@ def apply_migration(apps, schema_editor):
     StudyGroupObjectPermission = apps.get_model("studies", "StudyGroupObjectPermission")
     LabGroupObjectPermission = apps.get_model("studies", "LabGroupObjectPermission")
 
+    practice_lab = Lab(
+        name="Sandbox lab",
+        institution="Lookit",
+        principal_investigator_name="Sample Name",
+        contact_email="lookit@mit.edu",
+        contact_phone="(123) 456-7890",
+        lab_website="https://lookit.mit.edu/",
+        description="""This is a sample lab researchers are added to upon joining Lookit. You can make studies in 
+            this lab to try Lookit out ahead of setting up your own lab account. However, you will not be able to 
+            collect actual data from these studies - you will need to create or join a lab that is approved to 
+            run studies on Lookit.""",
+        irb_contact_info="""IRB contact information would go here for a real lab.""",
+        approved_to_test=False,
+    )
+    practice_lab.save()
+
     # Abstain from using QuerySet.create here; emulate what we'll need to do when these
     # group fields are non-nullable.
     mit_eccl_lab = Lab(
-        name="MIT Early Childhood Cognition Lab",
-        primary_investigator_name="Laura Schulz",
+        name="Early Childhood Cognition Lab",
+        institution="MIT",
+        principal_investigator_name="Laura Schulz",
         contact_email="eccl@mit.edu",
-        contact_phone="INSERT THE PHONE NUMBER HERE",
+        contact_phone="(617) 324-4859",
         lab_website="http://eccl.mit.edu/",
-        description="The Early Childhood Cognition Lab at MIT.",
-        irb_contact_info="Lots of IRB contact information",
+        description="""We study how children construct a commonsense understanding of the physical and social world. 
+            Current lab members are especially interested in how children generate new ideas and choose which problems 
+            are worth working on.
+            Research in the lab often addresses 1) how children figure out cause-and-effect relations so that they can 
+            predict, explain, and themselves cause things to happen; 2) influences on curiosity and exploration; and 3) 
+            how these abilities interact with social cognition to help children understand themselves and other people. 
+            """,
+        irb_contact_info="""Committee on the Use of Humans as Experimental Subjects, M.I.T., Room E25-143B, 77 
+            Massachusetts Ave, Cambridge, MA 02139, phone 1-617-253-6787.""",
+        approved_to_test=True,
     )
 
     mit_eccl_lab.save()
@@ -90,9 +115,16 @@ def apply_migration(apps, schema_editor):
     # of assign_perm
 
     _create_groups(mit_eccl_lab, LabGroup, Group, Permission, LabGroupObjectPermission)
+    _create_groups(practice_lab, LabGroup, Group, Permission, LabGroupObjectPermission)
+
+    # TODO: add all active researchers to the practice lab
+    # practice_lab.researchers.add()
 
     for study in Study.objects.all():
         _create_groups(study, StudyGroup, Group, Permission, StudyGroupObjectPermission)
+        # TODO: set all studies' lab to the practice lab
+        # study.lab = practice_lab
+        # study.save()
 
 
 def revert_migration(apps, schema_editor):
@@ -135,9 +167,6 @@ def revert_migration(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ("studies", "0065_new-lab-study-perms-model-defs"),
-        ("accounts", "0047_new-lab-study-perms-model-defs"),
-    ]
+    dependencies = [("studies", "0065_new-lab-study-perms-model-defs")]
 
     operations = [migrations.RunPython(apply_migration, revert_migration)]
