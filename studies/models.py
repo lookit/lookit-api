@@ -227,6 +227,37 @@ class Study(models.Model):
         Group, related_name="study_to_administer", on_delete=models.SET_NULL, null=True
     )
 
+    def all_study_groups(self):
+        """Returns a list of all the groups that grant permissions on this study"""
+        return [
+            self.preview_group,
+            self.design_group,
+            self.analysis_group,
+            self.submission_processor_group,
+            self.researcher_group,
+            self.manager_group,
+            self.admin_group,
+        ]
+
+    def get_group_of_researcher(self, user):
+        """Returns label for the highest-level group the researcher is in for this study, or None if not in any study groups"""
+        user_groups = user.groups.all()
+        if self.admin_group in user_groups:
+            return "Admin"
+        if self.manager_group in user_groups:
+            return "Manager"
+        if self.researcher_group in user_groups:
+            return "Researcher"
+        if self.submission_processor_group in user_groups:
+            return "Submission Processor"
+        if self.analysis_group in user_groups:
+            return "Analysis"
+        if self.design_group in user_groups:
+            return "Design"
+        if self.preview_group in user_groups:
+            return "Preview"
+        return None
+
     def __init__(self, *args, **kwargs):
 
         super(Study, self).__init__(*args, **kwargs)
@@ -241,7 +272,7 @@ class Study(models.Model):
         )
 
     def __str__(self):
-        return f"<Study: {self.name}>"
+        return f"<Study: {self.name} ({self.uuid})>"
 
     class Meta:
         permissions = StudyPermission
@@ -328,21 +359,6 @@ class Study(models.Model):
             return self.logs.filter(action="deactivated").first().created_at
         except AttributeError:
             return None
-
-    @property
-    def study_admin_group(self):
-        """ Fetches the study admin group """
-        return self.admin_group
-
-    @property
-    def study_organization_admin_group(self):
-        """ Fetches the study organization admin group """
-        return self.lab.admin_group
-
-    @property
-    def study_read_group(self):
-        """ Fetches the study read group """
-        return self.researcher_group
 
     # WORKFLOW CALLBACKS
     def check_permission(self, ev):
@@ -624,39 +640,16 @@ def remove_rejection_comments_after_approved(sender, instance, created, **kwargs
 @receiver(post_save, sender=Study)
 def study_post_save(sender, **kwargs):
     """
-    Add study permissions to organization groups and
-    create groups for all newly created Study instances. We only
+    Create groups for newly created Study instances. We only
     run on study creation to avoid having to check for existence
     on each call to Study.save.
     """
     study, created = kwargs["instance"], kwargs["created"]
     if created:
-        from django.contrib.auth.models import Group
 
-        organization_groups = Group.objects.filter(
-            name__startswith=f"{slugify(study.organization.name)}_ORG_".upper()
+        create_groups_for_instance(
+            study, StudyGroup, Group, Permission, StudyGroupObjectPermission
         )
-        # assign study permissions to organization groups
-        for group in organization_groups:
-            for perm, _ in Study._meta.permissions:
-                if "ADMIN" in group.name:
-                    assign_perm(perm, group, obj=study)
-                elif "READ" in group.name and "view" in perm:
-                    assign_perm(perm, group, obj=study)
-
-        # create study groups and assign permissions
-        for group in ["read", "admin"]:
-            study_group_instance = Group.objects.create(
-                name=build_study_group_name(
-                    study.organization.name, study.name, study.pk, group
-                )
-            )
-            for perm, _ in Study._meta.permissions:
-                # add only view permissions to non-admin
-                if group == "read" and "view" not in perm:
-                    continue
-                if "approve" not in perm:
-                    assign_perm(perm, study_group_instance, obj=study)
 
 
 class ResponseApiManager(models.Manager):

@@ -32,7 +32,11 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
-from studies.permissions import UMBRELLA_LAB_PERMISSION_MAP, StudyPermission
+from studies.permissions import (
+    UMBRELLA_LAB_PERMISSION_MAP,
+    StudyPermission,
+    LabPermission,
+)
 
 
 class UserManager(BaseUserManager):
@@ -75,6 +79,7 @@ class Organization(models.Model):
         ordering = ["name"]
 
 
+# TODO: make equivalent for Labs
 @receiver(post_save, sender=Organization)
 def organization_post_save(sender, **kwargs):
     """
@@ -122,19 +127,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
     nickname = models.CharField(max_length=255, blank=True)
-    organization = models.ForeignKey(
+    organization = models.ForeignKey(  # TODO: remove
         Organization,
         on_delete=models.PROTECT,
         related_name="users",
         related_query_name="user",
-        null=True,
-        blank=True,
-    )
-    lab = models.ForeignKey(
-        "studies.Lab",
-        on_delete=models.SET_NULL,
-        related_name="members",
-        related_query_name="member",
         null=True,
         blank=True,
     )
@@ -265,10 +262,20 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             else:
                 return False
 
+    def can_create_study(self):
+        return any(
+            [
+                self.has_perm(
+                    LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
+                )
+                for lab in self.labs.all()
+            ]
+        )
+
     def has_any_perms(self, perm_list, obj=None):
         """
         Returns True if the user has ANY of the specified permissions. If
-        object is passed, it checks if the user has all required perms for this
+        object is passed, it checks if the user has any required perms for this
         object.
         """
         return any(self.has_perm(perm, obj) for perm in perm_list)
@@ -395,6 +402,7 @@ class Child(models.Model):
         lookup_field = "uuid"
 
 
+# TODO: adapt for lab or remove
 @receiver(post_save, sender=User)
 def send_email_when_receive_groups(sender, instance, created, **kwargs):
     """
