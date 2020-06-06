@@ -6,6 +6,7 @@ from studies.models import (
     Feedback,
     Response,
     ResponseLog,
+    Lab,
     Study,
     StudyLog,
     StudyType,
@@ -17,6 +18,12 @@ class StudyAdmin(GuardedModelAdmin):
     list_display = ("uuid", "name", "state", "public", "creator", "built")
     list_filter = ("state", "creator")
     search_fields = ["name"]
+    pass
+
+
+class LabAdmin(GuardedModelAdmin):
+    list_display = ("uuid", "name", "institution", "principal_investigator_name")
+    search_fields = ["name", "institution"]
     pass
 
 
@@ -87,3 +94,4 @@ admin.site.register(Feedback, FeedbackAdmin)
 admin.site.register(StudyType, StudyTypeAdmin)
 admin.site.register(Video, VideoAdmin)
 admin.site.register(ConsentRuling, ConsentRulingAdmin)
+admin.site.register(Lab, LabAdmin)
