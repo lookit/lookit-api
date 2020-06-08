@@ -33,7 +33,7 @@
             rejectionCommentsInput.hide();
             let $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
 
-            if (trigger === 'reject') {
+            if (trigger === 'reject') { # TODO also allow comments on submit
                 rejectionCommentsInput.show();
             }
 
@@ -261,12 +261,12 @@
                                 <i aria-hidden="true" class="fas fa-edit"></i> Edit Study
                             </a>
                         {% endif %}
-                        {% if "read_study__responses" %}
+                        {% if "read_study__responses" in study_perms %}
                             <a type="button" class="btn btn-default" href="{% url 'exp:study-responses-all' pk=study.id %}">
                                 <i class="fas fa-comment-dots" aria-hidden="true"></i> View Study Responses
                             </a>
                         {%  endif %}
-                        {% if "edit_study__message_set" %}
+                        {% if "edit_study__message_set" in study_perms %}
                             <a type="button" class="btn btn-default" href="{% url 'exp:study-participant-contact' pk=study.id %}">
                                 <i class="fas fa-mail-bulk" aria-hidden="true"></i> Message Participants
                             </a>

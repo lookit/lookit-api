@@ -162,7 +162,6 @@ class StudyCreateView(
     """
 
     model = Study
-    # permission_required = "studies.can_create_study"
     raise_exception = True
     form_class = StudyCreateForm
 
@@ -177,9 +176,8 @@ class StudyCreateView(
 
     def form_valid(self, form):
         """
-        Add the logged-in user as the study creator and the user's organization as the
-        study's organization. If the form is valid, save the associated study and
-        redirect to the supplied URL
+        Add the logged-in user as the study creator. If the form is valid,
+        save the associated study and redirect to the supplied URL
         """
         user = self.request.user
         target_study_type_id = self.request.POST["study_type"]
@@ -242,7 +240,6 @@ class StudyUpdateView(
     template_name = "studies/study_edit.html"
     form_class = StudyEditForm
     model = Study
-    # permission_required = "studies.can_edit_study"
     raise_exception = True
 
     def user_can_edit_study(self):
@@ -355,7 +352,6 @@ class StudyListView(
     """
 
     model = Study
-    # permission_required = "accounts.can_view_experimenter"
     raise_exception = True
     template_name = "studies/study_list.html"
 
@@ -367,7 +363,7 @@ class StudyListView(
         user = self.request.user
         query_dict = self.request.GET
 
-        queryset = get_study_list_qs(user, query_dict)
+        queryset = get_study_list_qs(user, query_dict)  # READ_STUDY_DETAILS permission
 
         return self.paginated_queryset(queryset, query_dict.get("page"), 10)
 
@@ -414,9 +410,18 @@ class StudyDetailView(
         if method == "GET":
             return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
         elif method == "POST":
-            return user.has_study_perms(StudyPermission.MANAGE_STUDY_RESEARCHERS, study)
-            # TODO: What to do about study cloning
-            # TODO: and what to do about study state changes
+            if (
+                "add_user" in self.request.POST
+                or "remove_user" in self.request.POST
+                or self.request.POST.get("name") == "update_user"
+            ):
+                return user.has_study_perms(
+                    StudyPermission.MANAGE_STUDY_RESEARCHERS, study
+                )
+            if "trigger" in self.request.POST:
+                return user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
+            if "clone_study" in self.request.POST:
+                return user.can_create_study()
         else:
             # If we're not one of the two allowed methods this should be caught
             # earlier
@@ -431,12 +436,18 @@ class StudyDetailView(
         Post method can update the trigger if the state of the study has changed.  If "clone" study
         button is pressed, clones study and redirects to the clone.
         """
-        # TODO: put this in if block
-        try:
-            self.manage_researcher_permissions()
-        except AssertionErrror:
-            return HttpResponseForbidden()
+        # Manage researchers case
+        if (
+            "add_user" in self.request.POST
+            or "remove_user" in self.request.POST
+            or self.request.POST.get("name") == "update_user"
+        ):
 
+            try:
+                self.manage_researcher_permissions()
+            except AssertionError:
+                return HttpResponseForbidden()
+        # Change study status case
         if "trigger" in self.request.POST:
             try:
                 update_trigger(self)
@@ -445,7 +456,7 @@ class StudyDetailView(
                 return HttpResponseRedirect(
                     reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
                 )
-
+        # Clone study case
         if self.request.POST.get("clone_study"):
             clone = self.get_object().clone()
             clone.creator = self.request.user
@@ -465,7 +476,6 @@ class StudyDetailView(
             reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
         )
 
-    # TODO: adapt for new permissions and Lab
     def manage_researcher_permissions(self):
         """
         Handles adding, updating, and deleting researcher from study. Users are
@@ -473,7 +483,6 @@ class StudyDetailView(
         """
         change_requester = self.request.user
         study = self.get_object()
-        study_researcher_group = study.researcher_group
         study_admin_group = study.admin_group
         id_of_user_to_add = self.request.POST.get("add_user")
         id_of_user_to_remove = self.request.POST.get("remove_user")
@@ -497,14 +506,13 @@ class StudyDetailView(
                 if name_of_role_to_enable in roles_to_groups:
                     # Enforce not changing a current admin unless there's another admin
                     if study_admin_group in user_to_update.groups.all():
-                        assert study_admin_group.user_set.count() > 1
                         if study_admin_group.user_set.count() <= 1:
                             messages.error(
                                 self.request,
                                 "Could not change permissions for this researcher. There must be at least one study admin.",
                                 extra_tags="user_removed",
                             )
-                            raise NotEnoughAdminsError
+                        assert study_admin_group.user_set.count() > 1
                     for gr in study.all_study_groups():
                         gr.user_set.remove(user_to_update)
                     user_to_update.groups.add(roles_to_groups[name_of_role_to_enable])
@@ -679,7 +687,6 @@ class StudyParticipantContactView(
     """
 
     model = Study
-    # permission_required = "studies.can_edit_study"
     raise_exception = True
     template_name = "studies/study_participant_contact.html"
 
@@ -711,8 +718,7 @@ class StudyParticipantContactView(
         ctx = super().get_context_data(**kwargs)
         study = ctx["study"]
         participants = (
-            study.participants.select_related("organization")
-            .order_by(
+            study.participants.order_by(
                 "-email_next_session"
             )  # Just to get the grouping in the right order
             .all()
@@ -791,13 +797,12 @@ class StudyParticipantContactView(
             reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
         )
 
-    def get_researchers(self):
-        """Pulls researchers that belong to Study Admin and Study Read groups.
-        Currently same as StudyDetailView.get_study_researchers"""
+    def get_researchers(self):  # TODO
+        """Pulls researchers that can contact participants."""
         study = self.get_object()
-        return User.objects.filter(
-            Q(groups__name=study.study_admin_group.name)
-            | Q(groups__name=study.study_read_group.name)
+        return get_users_with_perms(
+            study,
+            only_with_perms_in=[StudyPermission.CONTACT_STUDY_PARTICIPANTS.codename],
         )
 
 
@@ -814,7 +819,6 @@ class StudyResponsesList(
 
     template_name = "studies/study_responses.html"
     queryset = Study.objects.all()
-    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
     def user_can_see_study_responses(self):
@@ -823,7 +827,9 @@ class StudyResponsesList(
         method = self.request.method
 
         if method == "GET":
-            return user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+            return user.has_study_perms(
+                StudyPermission.READ_STUDY_RESPONSE_DATA, study
+            ) or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
         elif method == "POST":
             return user.has_study_perms(StudyPermission.EDIT_STUDY_FEEDBACK, study)
 
@@ -877,9 +883,11 @@ class StudyResponsesList(
         context = super().get_context_data(**kwargs)
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
+
         responses = (
             context["study"]
-            .consented_responses.prefetch_related(
+            .responses_for_researcher(self.request.user)
+            .prefetch_related(
                 "consent_rulings__arbiter",
                 Prefetch(
                     "feedback",
@@ -966,12 +974,12 @@ class StudyResponsesConsentManager(
     # permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
-    def user_can_encode_consent(self):
+    def user_can_code_consent(self):
         user = self.request.user
         study = self.get_object()
         return user.has_study_perms(StudyPermission.CODE_STUDY_CONSENT, study)
 
-    test_func = user_can_encode_consent
+    test_func = user_can_code_consent
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1672,7 +1680,6 @@ class StudyResponsesAll(
 
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
-    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
     http_method_names = ["get", "post"]
 
@@ -1695,14 +1702,27 @@ class StudyResponsesAll(
     def user_can_see_study_responses(self):
         user = self.request.user
         study = self.get_object()
-        # TODO: What about POST - deleting preview data?
-        return user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+        method = self.request.method
+
+        if method == "GET":
+            return user.has_study_perms(
+                StudyPermission.READ_STUDY_RESPONSE_DATA, study
+            ) or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+        elif method == "POST":
+            return user.has_study_perms(StudyPermission.DELETE_ALL_PREVIEW_DATA, study)
+        else:
+            # If we're not one of the two allowed methods this should be caught
+            # earlier
+            return False
 
     test_func = user_can_see_study_responses
 
+    def valid_responses(self, study):
+        return study.responses_for_researcher(self.request.user).order_by("id")
+
     def get_response_values_for_framedata(self, study):
         return (
-            study.consented_responses.order_by("id")
+            self.valid_responses(study)
             .select_related("child", "study")
             .values(
                 "uuid",
@@ -1720,7 +1740,9 @@ class StudyResponsesAll(
         In addition to the study, adds several items to the context dictionary.
         """
         context = super().get_context_data(**kwargs)
-        context["n_responses"] = context["study"].consented_responses.count()
+        context["n_responses"] = (
+            context["study"].responses_for_researcher(self.request.user).count()
+        )
         context["childoptions"] = CHILD_DATA_OPTIONS
         context["ageoptions"] = AGE_DATA_OPTIONS
         return context
@@ -1730,6 +1752,7 @@ class StudyResponsesAll(
         Post method on all responses view handles the  'delete all preview data' button.
         """
         study = self.get_object()
+        # Note: delete all, not just consented!
         preview_responses = study.responses.filter(is_preview=True).prefetch_related(
             "videos", "responselog_set", "consent_rulings", "feedback"
         )
@@ -1750,7 +1773,7 @@ class StudyResponsesAllDownloadJSON(StudyResponsesAll):
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
-        responses = study.consented_responses.order_by("id")
+        responses = self.valid_responses(study)
         header_options = self.request.GET.getlist(
             "ageoptions"
         ) + self.request.GET.getlist("childoptions")
@@ -1775,7 +1798,7 @@ class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
         header_options = self.request.GET.getlist(
             "ageoptions"
         ) + self.request.GET.getlist("childoptions")
-        responses = study.consented_responses.order_by("id")
+        responses = self.valid_responses(study)
         cleaned_data = build_summary_csv(responses, header_options)
         IDENTIFIABLE_DATA_OPTIONS = [
             "exact",
@@ -1867,7 +1890,7 @@ class StudyChildrenSummaryCSV(StudyResponsesAll):
 
     def get(self, request, *args, **kwargs):
         study = self.get_object()
-        responses = study.consented_responses.order_by("id")
+        responses = self.valid_responses(study)
         cleaned_data = self.build_child_csv(responses)
         filename = "{}_{}.csv".format(
             study_name_for_files(study.name), "all-children-identifiable"
@@ -1973,12 +1996,14 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
     def get(self, request, *args, **kwargs):
 
         study = self.get_object()
-        responses = self.get_response_values_for_framedata(study)
+        responses = self.valid_responses(study)
         filename = "{}_{}_{}".format(
             study_name_for_files(study.name), study.uuid, "all-frames-dict"
         )
 
-        build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
+        build_framedata_dict.delay(
+            filename, responses, study.uuid, self.request.user.uuid
+        )
         messages.success(
             request,
             f"A frame data dictionary for {self.get_object().name} is being generated. You will be emailed a link when it's completed.",
@@ -2001,13 +2026,14 @@ class StudyDemographics(
 
     template_name = "studies/study_demographics.html"
     queryset = Study.objects.all()
-    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
     def user_can_view_study_responses(self):
         user = self.request.user
         study = self.get_object()
-        return user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+        return user.has_study_perms(
+            StudyPermission.READ_STUDY_RESPONSE_DATA, study
+        ) or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
 
     test_func = user_can_view_study_responses
 
@@ -2017,7 +2043,9 @@ class StudyDemographics(
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        context["n_responses"] = context["study"].consented_responses.count()
+        context["n_responses"] = (
+            context["study"].responses_for_researcher(self.request.user).count()
+        )
         return context
 
     def get_demographic_headers(self, optional_header_ids=None):
@@ -2037,7 +2065,8 @@ class StudyDemographics(
 
     def get_response_values_for_demographics(self, study):
         return (
-            study.consented_responses.order_by("id")
+            study.responses_for_researcher(self.request.user)
+            .order_by("id")
             .select_related("child", "child__user", "study", "demographic_snapshot")
             .values(
                 "uuid",
@@ -2437,16 +2466,41 @@ class StudyAttachments(
 
     template_name = "studies/study_attachments.html"
     queryset = Study.objects.prefetch_related("responses", "videos")
-    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
     def user_can_see_study_responses(self):
         user = self.request.user
         study = self.get_object()
 
-        return user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+        return user.has_study_perms(
+            StudyPermission.READ_STUDY_RESPONSE_DATA, study
+        ) or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
 
     test_func = user_can_see_study_responses
+
+    def get_consent_videos(self, study):
+        videos = study.consent_videos
+        if not self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_RESPONSE_DATA, study
+        ):
+            videos = videos.filter(is_preview=True)
+        if not self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_PREVIEW_DATA, study
+        ):
+            videos = videos.filter(is_preview=False)
+        return videos
+
+    def get_consented_videos(self, study):
+        videos = study.videos_for_consented_responses
+        if not self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_RESPONSE_DATA, study
+        ):
+            videos = videos.filter(is_preview=True)
+        if not self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_PREVIEW_DATA, study
+        ):
+            videos = videos.filter(is_preview=False)
+        return videos
 
     def get_context_data(self, **kwargs):
         """
@@ -2456,7 +2510,7 @@ class StudyAttachments(
         context = super().get_context_data(**kwargs)
         orderby = self.request.GET.get("sort", "full_name")
         match = self.request.GET.get("match", "")
-        videos = context["study"].videos_for_consented_responses
+        videos = self.get_consented_videos(study)
         if match:
             videos = videos.filter(full_name__icontains=match)
         if orderby:
@@ -2478,6 +2532,7 @@ class StudyAttachments(
 
         if self.request.POST.get("all-attachments"):
             build_zipfile_of_videos.delay(
+                self.get_consented_videos(self.get_object()),
                 f"{self.get_object().uuid}_all_attachments",
                 self.get_object().uuid,
                 orderby,
@@ -2491,12 +2546,12 @@ class StudyAttachments(
 
         if self.request.POST.get("all-consent-videos"):
             build_zipfile_of_videos.delay(
+                self.get_consent_videos(self.get_object()),
                 f"{self.get_object().uuid}_all_consent",
                 self.get_object().uuid,
                 orderby,
                 match,
                 self.request.user.uuid,
-                consent=True,
             )
             messages.success(
                 request,
@@ -2531,7 +2586,6 @@ class StudyBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
     def post(self, request, *args, **kwargs):
         user = self.request.user
         study = self.object
-        # TODO: is this where the perms check belongs?
         if user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study):
 
             if not study.is_building:
@@ -2597,14 +2651,14 @@ class StudyParticipantAnalyticsView(
             ctx["can_view_all_responses"] = True
         else:
             # Researcher or other
-            studies_for_user = get_objects_for_user(
-                self.request.user, "studies.can_view_study"
+            studies_for_user = self.request.user.studies_for_perm(
+                StudyPermission.READ_STUDY_RESPONSE_DATA
             )
 
-            # Responses for studies
+        # Responses for studies
         annotated_responses = (
             get_annotated_responses_qs()
-            .filter(study__in=studies_for_user)
+            .filter(study__in=studies_for_user, is_preview=False)
             .select_related("child", "child__user", "study", "demographic_snapshot")
         ).values(
             "uuid",
@@ -2684,17 +2738,18 @@ class StudyPreviewDetailView(
 
     queryset = Study.objects.all()
     http_method_names = ["get", "post"]
-    # permission_required = "accounts.can_view_experimenter"
     raise_exception = True
     template_name = "../../web/templates/web/study-detail.html"
 
-    def can_view_preview_data(self):
+    def can_preview(self):
         user = self.request.user
         study = self.get_object()
+        # Relevant permission in order to preview is READ_STUDY_DETAILS (previewing is essentially
+        # examining the study protocol configuration), rather than READY_STUDY_PREVIEW_DATA
+        # (which has to do with accessing data from other preview sessions)
+        return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
 
-        return user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
-
-    test_func = can_view_preview_data
+    test_func = can_preview
 
     def get_object(self, queryset=None):
         """
@@ -2757,7 +2812,7 @@ class PreviewProxyView(ExperimenterLoginRequiredMixin, UserPassesTestMixin, Prox
             return False
 
         if study.shared_preview or user.has_study_perms(
-            StudyPermission.READ_STUDY_PREVIEW_DATA, study
+            StudyPermission.READ_STUDY_DETAILS, study
         ):
             return True
         else:
@@ -2896,6 +2951,7 @@ def get_permitted_triggers(view_instance, triggers):
     """
     permitted_triggers = []
     user = view_instance.request.user
+    can_change_status = user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
     study = view_instance.object
 
     admin_triggers = ["approve"]
@@ -2906,11 +2962,10 @@ def get_permitted_triggers(view_instance, triggers):
             continue
 
         # Trigger valid if superuser or user can change study status and trigger is non-admin-only
-        if not user.is_superuser:
-            if (not trigger in admin_triggers) and user.has_study_perms(
-                StudyPermission.CHANGE_STUDY_STATUS, study
-            ):
-                continue
+        if (not user.is_superuser) and (
+            (trigger in admin_triggers) or not can_change_status
+        ):
+            continue
 
         permitted_triggers.append(trigger)
 

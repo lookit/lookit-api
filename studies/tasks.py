@@ -113,18 +113,17 @@ def cleanup_docker_images():
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_zipfile_of_videos(
-    self, filename, study_uuid, orderby, match, requesting_user_uuid, consent=False
+    self, video_qs, filename, study_uuid, orderby, match, requesting_user_uuid
 ):
     from studies.models import Study
     from accounts.models import User
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
-    videos = study.consent_videos if consent else study.videos_for_consented_responses
 
     m = hashlib.sha256()
 
-    for video in videos:
+    for video in video_qs:
         m.update(video.full_name.encode("utf-8"))
     # create a sha256 of the included filenames
     sha = m.hexdigest()
@@ -179,26 +178,21 @@ def build_zipfile_of_videos(
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
-def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
+def build_framedata_dict(self, filename, response_qs, study_uuid, requesting_user_uuid):
     from studies.models import Study
     from accounts.models import User
-    from exp.utils import RESPONSE_PAGE_SIZE
     from exp.views.study import build_framedata_dict_csv
 
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
     study = Study.objects.get(uuid=study_uuid)
-    responses = (
-        study.consented_responses.order_by("id")
-        .select_related("child", "study")
-        .values(
-            "uuid",
-            "exp_data",
-            "child__uuid",
-            "study__uuid",
-            "study__salt",
-            "study__hash_digits",
-            "global_event_timings",
-        )
+    responses = response_qs.select_related("child", "study").values(
+        "uuid",
+        "exp_data",
+        "child__uuid",
+        "study__uuid",
+        "study__salt",
+        "study__hash_digits",
+        "global_event_timings",
     )
 
     # make filename for this request unique by adding timestamp

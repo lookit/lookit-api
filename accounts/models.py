@@ -195,6 +195,21 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             else:
                 return False
 
+    def studies_for_perm(self, study_perm: StudyPermission):
+        from studies.models import Study, Lab
+
+        specifically_granted_studies = get_objects_for_user(
+            self, study_perm.codename, klass=Study
+        )
+
+        umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
+        labs_with_labwide_perms = get_objects_for_user(
+            self, umbrella_lab_perm.codename, klass=Lab
+        )
+        lab_granted_studies = Study.objects.filter(lab__in=labs_with_labwide_perms)
+
+        return specifically_granted_studies.union(lab_granted_studies)
+
     def can_create_study(self):
         return any(
             [

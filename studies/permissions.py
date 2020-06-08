@@ -188,7 +188,8 @@ def create_lab_version(study_permission: _PermissionMeta):
 
 class StudyPermission(_PermissionMeta, Enum):
     READ_STUDY_DETAILS = _PermissionMeta(
-        codename=f"read_study__<DETAILS>", description="Read study details"
+        codename=f"read_study__<DETAILS>",
+        description="Read study details and preview study",
     )
     WRITE_STUDY_DETAILS = _PermissionMeta(
         codename=f"edit_study__<DETAILS>", description="Write study details"
@@ -197,8 +198,7 @@ class StudyPermission(_PermissionMeta, Enum):
         codename="edit_study__status", description="Change study status"
     )
     MANAGE_STUDY_RESEARCHERS = _PermissionMeta(
-        codename="edit_study__researcher_group__user_set",
-        description="Manage study researchers",
+        codename="edit_study__<GROUP>__user_set", description="Manage study researchers"
     )
     READ_STUDY_RESPONSE_DATA = _PermissionMeta(
         codename="read_study__responses",
@@ -237,7 +237,7 @@ class LabPermission(_PermissionMeta, Enum):
         codename="associate_lab__study", description="Associate a study with a lab"
     )
     MANAGE_LAB_RESEARCHERS = _PermissionMeta(
-        codename="edit_lab__researcher_group", description="Manage researchers in a lab"
+        codename="edit_lab__<GROUPS>", description="Manage researchers in a lab"
     )
     EDIT_LAB_METADATA = _PermissionMeta(
         codename="edit_lab__<DETAILS>", description="Edit the metadata for a lab"

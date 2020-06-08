@@ -251,10 +251,7 @@ def get_study_list_qs(user, query_dict):
     annotated_responses_qs = get_annotated_responses_qs()
 
     queryset = (
-        # TODO: add klass=Study param?
-        get_objects_for_user(
-            user, StudyPermission.READ_STUDY_DETAILS.codename, klass=Study
-        )
+        user.get_studies_for_perm(StudyPermission.READ_STUDY_DETAILS)
         .exclude(state="archived")
         .select_related("creator")
         .annotate(

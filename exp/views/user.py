@@ -94,6 +94,9 @@ class ParticipantDetailView(
             user.latest_demographics.to_display() if user.latest_demographics else None
         )
         context["studies"] = self.get_study_info()
+        context["children"] = user.children.filter(
+            id__in=self.valid_responses().values_list("child", flat=True)
+        )
         return context
 
     def get_study_info(self):
@@ -102,7 +105,7 @@ class ParticipantDetailView(
         id, completion status, and date modified.
         """
         resps = (
-            get_consented_responses_qs()
+            self.valid_responses()
             .filter(child__user=self.get_object())
             .select_related("child__user")
         )

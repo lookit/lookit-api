@@ -116,11 +116,17 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if self.request.user.has_perm("accounts.can_read_all_user_data"):
             return children_for_active_users
 
-        studies = get_objects_for_user(
-            self.request.user, "studies.can_view_study_responses"
+        # TODO: make helper for this, maybe on user
+        studies_for_data = self.request.user.studies_for_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA
+        ).values_list("id", flat=True)
+        studies_for_preview = self.request.user.studies_for_perm(
+            StudyPermission.READ_STUDY_PREVIEW_DATA
+        ).values_list("id", flat=True)
+        consented_responses = get_consented_responses_qs().filter(
+            (Q(study__id__in=studies_for_data) & Q(is_preview=False))
+            | (Q(study__id__in=studies_for_preview) & Q(is_preview=True))
         )
-
-        consented_responses = get_consented_responses_qs().filter(study__in=studies)
 
         child_ids = consented_responses.values_list("child", flat=True)
 
@@ -156,11 +162,16 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if self.request.user.has_perm("accounts.can_read_all_user_data"):
             return demographics_for_active_users
 
-        studies = get_objects_for_user(
-            self.request.user, "studies.can_view_study_responses"
+        studies_for_data = self.request.user.studies_for_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA
+        ).values_list("id", flat=True)
+        studies_for_preview = self.request.user.studies_for_perm(
+            StudyPermission.READ_STUDY_PREVIEW_DATA
+        ).values_list("id", flat=True)
+        consented_responses = get_consented_responses_qs().filter(
+            (Q(study__id__in=studies_for_data) & Q(is_preview=False))
+            | (Q(study__id__in=studies_for_preview) & Q(is_preview=True))
         )
-
-        consented_responses = get_consented_responses_qs().filter(study__in=studies)
 
         demographics_ids = consented_responses.values_list(
             "demographic_snapshot", flat=True
@@ -202,15 +213,21 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if self.request.user.has_perm("accounts.can_read_all_user_data"):
             return all_users.filter(is_active=True)
         qs_ids = all_users.values_list("id", flat=True)
-        studies = get_objects_for_user(
-            self.request.user, "studies.can_view_study_responses"
+
+        studies_for_data = self.request.user.studies_for_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA
+        ).values_list("id", flat=True)
+        studies_for_preview = self.request.user.studies_for_perm(
+            StudyPermission.READ_STUDY_PREVIEW_DATA
+        ).values_list("id", flat=True)
+        consented_responses = get_consented_responses_qs().filter(
+            (Q(study__id__in=studies_for_data) & Q(is_preview=False))
+            | (Q(study__id__in=studies_for_preview) & Q(is_preview=True))
         )
-        study_ids = studies.values_list("id", flat=True)
+
+        child_ids = consented_responses.values_list("child", flat=True)
         return User.objects.filter(
-            (
-                Q(children__response__study__id__in=study_ids)
-                | Q(id=self.request.user.id)
-            ),
+            (Q(children__id__in=child_ids) | Q(id=self.request.user.id)),
             Q(id__in=qs_ids),
         ).distinct()
 
@@ -218,9 +235,6 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
     Allows viewing a list of studies or retrieving a single study
-
-    You can view studies that are active, studies you have permission to edit, and any
-    studies with shared preview if you're an experimenter.
     """
 
     resource_name = "studies"
@@ -233,16 +247,11 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 
     def get_queryset(self):
         """
-        Shows studies that are either 1) active or 2) studies you have permission to preview.
-
-        "can_view_study" permissions allows the researcher to preview the study before it has been made active/public
+        In general: all active studies.
+        List view: only public studies.
+        Researchers: also include any studies the researcher can preview
         """
-        qs = (
-            super()
-            .get_queryset()
-            .select_related("creator")
-            .prefetch_related("responses__demographic_snapshot")
-        )
+        qs = Study.objects.filter(state="active")
         # List View restricted to public.  Detail view can show a private or public study.
         if "List" in self.get_view_name():
             qs = qs.filter(public=True)
@@ -251,11 +260,7 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if self.request.user.is_researcher:
             preview_studies = Study.objects.filter(
                 shared_preview=True
-            ) | get_objects_for_user(
-                self.request.user,
-                StudyPermission.READ_STUDY_PREVIEW_DATA.codename,
-                klass=Study,
-            )
+            ) | self.request.user.studies_for_perm(StudyPermission.READ_STUDY_DETAILS)
             qs = qs | preview_studies
 
         return qs.distinct().order_by("-date_modified")
@@ -264,9 +269,7 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
 class ResponsesFilter(filters.FilterSet):
     """A Response filter that actually works."""
 
-    # Temporarily leave this out so that response requests on TEST_CHILD_DISREGARD
-    # work
-    # child = filters.UUIDFilter(field_name="child__uuid")
+    child = filters.UUIDFilter(field_name="child__uuid")
     study = filters.UUIDFilter(field_name="study__uuid")
 
     class Meta:
@@ -332,11 +335,14 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
 
             # CASE 2: Experimenters/parents getting responses for study.
             else:
-                if self.request.user.has_perm(
-                    "studies.can_view_study_responses",
-                    get_object_or_404(Study, uuid=study_uuid),
+                if self.request.user.has_study_perms(
+                    StudyPermission.READ_STUDY_DATA, study
+                ) or self.request.user.has_study_perms(
+                    StudyPermission.READ_STUDY_PREVIEW_DATA
                 ):
-                    consented_responses = study.consented_responses
+                    consented_responses = study.responses_for_researcher(
+                        self.request.user
+                    )  # consented preview/real responses as appropriate
                     nested_responses = nested_responses.filter(
                         Q(pk__in=consented_responses)
                         | Q(child__in=children_belonging_to_user)
@@ -363,16 +369,21 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
             # This route gets accessed by:
             #     1) Participant sessions PATCHing (partial updating) ongoing response-sessions.
             #     2) Experimenters/parents programmatically GETting the Responses API
-            viewable_studies = get_objects_for_user(
-                self.request.user, "studies.can_view_study_responses"
+
+            studies_for_data = self.request.user.studies_for_perm(
+                StudyPermission.READ_STUDY_RESPONSE_DATA
+            ).values_list("id", flat=True)
+            studies_for_preview = self.request.user.studies_for_perm(
+                StudyPermission.READ_STUDY_PREVIEW_DATA
+            ).values_list("id", flat=True)
+            consented_responses = get_consented_responses_qs().filter(
+                (Q(study__id__in=studies_for_data) & Q(is_preview=False))
+                | (Q(study__id__in=studies_for_preview) & Q(is_preview=True))
             )
 
             response_queryset = Response.objects.filter(
                 Q(child__in=children_belonging_to_user)  # Case #1
-                | (
-                    Q(study__in=viewable_studies)  # Case #2
-                    & Q(pk__in=get_consented_responses_qs())
-                )
+                | Q(pk__in=consented_responses)  # Case #2
             ).select_related(
                 "child",
                 "child__user",
@@ -411,10 +422,19 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, ConvertUuidToIdMixin, views.ModelV
         A researcher can only add feedback to responses to studies they have permission to edit.
         """
         qs = super().get_queryset()
-        study_ids = get_objects_for_user(
-            self.request.user, "studies.can_edit_study"
+
+        studies_for_data = self.request.user.studies_for_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA
         ).values_list("id", flat=True)
+        studies_for_preview = self.request.user.studies_for_perm(
+            StudyPermission.READ_STUDY_PREVIEW_DATA
+        ).values_list("id", flat=True)
+        consented_responses = get_consented_responses_qs().filter(
+            (Q(study__id__in=studies_for_data) & Q(is_preview=False))
+            | (Q(study__id__in=studies_for_preview) & Q(is_preview=True))
+        )
+        response_ids = consented_responses.values_list("id", flat=True)
         return qs.filter(
-            Q(response__study__id__in=study_ids)
+            Q(response__id__in=response_ids)
             | Q(response__child__user=self.request.user)
         ).distinct()

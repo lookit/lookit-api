@@ -359,6 +359,15 @@ class Study(models.Model):
         # Only return the things for which our annotated property == accepted.
         return annotated.filter(current_ruling="accepted")
 
+    def responses_for_researcher(self, user):
+        """Return all responses to this study that the researcher has access to read"""
+        responses = self.consented_responses
+        if not user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, self):
+            responses = responses.filter(is_preview=True)
+        if not user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, self):
+            responses = responses.filter(is_preview=False)
+        return responses
+
     @property
     def videos_for_consented_responses(self):
         """Gets videos but only for consented responses."""
