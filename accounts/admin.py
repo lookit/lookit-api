@@ -4,7 +4,7 @@ from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 
-from accounts.models import Child, DemographicData, Organization, User
+from accounts.models import Child, DemographicData, User
 
 
 class ChildAdmin(GuardedModelAdmin):
@@ -37,16 +37,11 @@ class UserAdmin(GuardedModelAdmin):
     search_fields = ["uuid", "nickname", "given_name", "family_name"]
 
 
-class OrganizationAdmin(GuardedModelAdmin):
-    pass
-
-
 class DemographicDataAdmin(GuardedModelAdmin):
     list_display = ("uuid", "created_at", "user")
     list_filter = ("user", "country", "lookit_referrer", "number_of_children")
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(DemographicData, DemographicDataAdmin)
 admin.site.register(Child, ChildAdmin)

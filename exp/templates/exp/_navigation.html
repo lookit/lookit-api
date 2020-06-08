@@ -23,7 +23,7 @@
                 <li><a href="{% url 'exp:participant-list' %}">See Participants</a></li>
             {% endif %}
             {% if perms.accounts.can_view_organization %}
-                <li><a href="{% url 'exp:researcher-list' %}">Manage Organization</a></li>
+                <li><a href="{% url 'exp:researcher-list' %}">Manage Lab</a></li>
             {% endif %}
             <li role="separator" class="divider"></li>
             {% if perms.accounts.can_view_experimenter %}

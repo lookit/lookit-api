@@ -7,16 +7,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_json_api import views
 
 from studies.permissions import StudyPermission
-from accounts.models import Child, DemographicData, Organization, User
+from accounts.models import Child, DemographicData, User
 from accounts.serializers import (
     BasicUserSerializer,
     ChildSerializer,
     DemographicDataSerializer,
     FullUserSerializer,
-    OrganizationSerializer,
+    LabSerializer,
 )
 from api.permissions import FeedbackPermissions, ResponsePermissions
-from studies.models import Feedback, Response, Study
+from studies.models import Feedback, Response, Study, Lab
 from studies.queries import get_consented_responses_qs
 from studies.serializers import (
     FeedbackSerializer,
@@ -74,15 +74,15 @@ class ConvertUuidToIdMixin(views.ModelViewSet):
         super().initial(request, *args, **kwargs)
 
 
-class OrganizationViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
+class LabViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
     """
-    Allows viewing a list of all organizations or retrieving a single organization
+    Allows viewing a list of all approved labs or retrieving a single lab
     """
 
-    resource_name = "organizations"
+    resource_name = "labs"
     lookup_field = "uuid"
-    queryset = Organization.objects.all()
-    serializer_class = OrganizationSerializer
+    queryset = Lab.objects.filter(approved_to_test=True)
+    serializer_class = LabSerializer
     filter_fields = [("study", "study"), ("user", "user")]
     http_method_names = ["get", "head", "options"]
     permission_classes = [IsAuthenticated]

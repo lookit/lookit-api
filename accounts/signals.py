@@ -6,14 +6,14 @@ from django.contrib.auth.management import create_permissions
 from project import settings
 
 
-def post_migrate_create_organization(sender, **kwargs):
-    for app_config in apps.get_app_configs():
-        create_permissions(app_config, apps=apps, verbosity=0)
-
-    Organization = sender.get_model("Organization")
-    org, created = Organization.objects.get_or_create(
-        name="MIT", url="https://lookit.mit.edu"
-    )
+# def post_migrate_create_organization(sender, **kwargs):
+#    for app_config in apps.get_app_configs():
+#        create_permissions(app_config, apps=apps, verbosity=0)
+#
+#    Organization = sender.get_model("Organization")
+#    org, created = Organization.objects.get_or_create(
+#        name="MIT", url="https://lookit.mit.edu"
+#    )
 
 
 def post_migrate_create_social_app(sender, **kwargs):

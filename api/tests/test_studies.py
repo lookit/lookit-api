@@ -8,8 +8,8 @@ from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, Organization, User
-from studies.models import ConsentRuling, Feedback, Response, Study, StudyType
+from accounts.models import Child, User
+from studies.models import ConsentRuling, Feedback, Lab, Response, Study, StudyType
 
 
 class StudiesTestCase(APITestCase):
@@ -24,10 +24,10 @@ class StudiesTestCase(APITestCase):
         self.participant = G(User, is_active=True)
         self.child = G(Child, user=self.participant)
         self.study_type = G(StudyType, name="default", id=1)
-        self.org = G(Organization, name="MIT")
+        self.lab = G(Lab, name="MIT")
         self.study = G(
             Study,
-            organization=self.org,
+            lab=self.lab,
             creator=self.researcher,
             name="Test Name",
             short_description="Short description",
@@ -182,10 +182,7 @@ class StudiesTestCase(APITestCase):
     def testStudyResponses(self):
         # Accessing study responses restricts queryset to responses of that particular study
         self.study2 = G(
-            Study,
-            creator=self.researcher,
-            study_type=self.study_type,
-            organization=self.org,
+            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
         )
         self.response2 = self.response = G(
             Response,
@@ -210,10 +207,7 @@ class StudiesTestCase(APITestCase):
     def testStudyResponsesAsParticipant(self):
         # Participants can only see the study responses they created
         self.study2 = G(
-            Study,
-            creator=self.researcher,
-            study_type=self.study_type,
-            organization=self.org,
+            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
         )
         self.response2 = G(
             Response,

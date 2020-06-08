@@ -9,8 +9,8 @@ from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, Organization, User
-from studies.models import Feedback, Response, Study, StudyType
+from accounts.models import Child, User
+from studies.models import Feedback, Lab, Response, Study, StudyType
 
 
 class UserTestCase(APITestCase):
@@ -23,12 +23,9 @@ class UserTestCase(APITestCase):
         self.participant3 = G(User, is_active=True, given_name="Participant 3")
         self.child = G(Child, user=self.participant, given_name="Sally")
         self.study_type = G(StudyType, name="default", id=1)
-        self.org = G(Organization, name="MIT")
+        self.lab = G(Lab, name="MIT")
         self.study = G(
-            Study,
-            creator=self.researcher,
-            study_type=self.study_type,
-            organization=self.org,
+            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
         )
         self.response = G(Response, child=self.child, study=self.study)
         self.url = reverse("api:user-list", kwargs={"version": "v1"})
@@ -102,8 +99,9 @@ class UserTestCase(APITestCase):
     )
     def testAdminsCannotAutomaticallyViewEmails(self):
         # Regular org admin permissions and even ability to read all user data are insufficient to see usernames
-        self.org = G(Organization, name="MIT")
-        self.admin = G(User, is_active=True, is_researcher=True, organization=self.org)
+        self.lab = G(Lab, name="MIT")
+        self.admin = G(User, is_active=True, is_researcher=True)
+        self.admin.labs.add(lab)
         assign_perm("accounts.can_read_all_user_data", self.admin)
         self.client.force_authenticate(user=self.admin)
         api_response = self.client.get(

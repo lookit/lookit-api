@@ -10,7 +10,7 @@ You can modify your study and resubmit for approval.
 Your study can be found here: {{base_url}}{% url 'exp:study-detail' study_id %}
 
 {% if comments and not approved  %}
-Comments from the Organization Admin:
+Comments from the Lookit Admin:
 
 {{comments}}
 {% endif %}

@@ -1,6 +1,6 @@
 from rest_framework_json_api import serializers
 
-from accounts.models import Child, DemographicData, Organization, User
+from accounts.models import Child, DemographicData, User
 from api.serializers import (
     PatchedHyperlinkedRelatedField,
     PatchedResourceRelatedField,
@@ -14,12 +14,6 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="api:study-detail", lookup_field="uuid"
     )
-    # organization = PatchedHyperlinkedRelatedField(
-    #     queryset=Organization.objects,
-    #     related_link_view_name="organization-detail",
-    #     related_link_lookup_field="organization.uuid",
-    #     related_link_url_kwarg="uuid",
-    # )
     creator = PatchedHyperlinkedRelatedField(
         queryset=User.objects,
         related_link_view_name="api:user-detail",

@@ -150,7 +150,7 @@ class ResearcherListView(
     template_name = "accounts/researcher_list.html"
     queryset = User.objects.filter(is_researcher=True, is_active=True)
     model = User
-    permission_required = "accounts.can_view_organization"
+    permission_required = "accounts.can_view_organization"  # TODO
     raise_exception = True
 
     def get_org_groups(self):
@@ -158,6 +158,7 @@ class ResearcherListView(
         Fetches the org admin, org read, and org researcher groups for the organization that
         the current user belongs to
         """
+        # TODO: change organization -> lab(s) if we actually need this
         user_org = self.request.user.organization
         if user_org:
             user_org_name = user_org.name
@@ -174,6 +175,7 @@ class ResearcherListView(
         else:
             raise PermissionDenied
 
+    # TODO: adapt for lab
     def get_queryset(self):
         """
         Restricts queryset on active users that belong to the org admin, org read, or org researcher groups. Handles filtering on name and sorting.
@@ -231,6 +233,7 @@ class ResearcherListView(
                 )
         return self.paginated_queryset(queryset, self.request.GET.get("page"), 10)
 
+    # TODO: adapt for lab
     def post(self, request, *args, **kwargs):
         """
         Post form for disabling a researcher. If researcher is deleted - is actually disabled, then removed
@@ -240,7 +243,6 @@ class ResearcherListView(
         if "disable" in self.request.POST and self.request.method == "POST":
             researcher = User.objects.get(pk=self.request.POST["disable"])
             researcher.is_active = False
-            researcher.organization = None
             researcher.save()
             messages.success(
                 self.request,
@@ -254,6 +256,7 @@ class ResearcherListView(
         Post form for disabling a researcher. If researcher is deleted - is actually disabled, then removed
         from org admin, org read, and org researcher groups.
         """
+        # TODO: remove from labs
         admin_group, read_group, researcher_group = self.get_org_groups()
         admin_group.user_set.remove(researcher)
         read_group.user_set.remove(researcher)
@@ -270,6 +273,7 @@ class ResearcherListView(
         return context
 
 
+# TODO: adapt for Lab
 class ResearcherDetailView(
     ExperimenterLoginRequiredMixin, DjangoPermissionRequiredMixin, generic.UpdateView
 ):
@@ -352,14 +356,13 @@ class ResearcherDetailView(
                 self.object.middle_name = self.request.POST["value"]
             elif changed_field == "family_name":
                 self.object.family_name = self.request.POST["value"]
-            if not self.object.organization:
-                self.object.organization = request.user.organization
             if self.request.POST.get("name") == "user_permissions":
                 self.modify_researcher_permissions()
         self.object.is_active = True
         self.object.save()
         return retval
 
+    # TODO: adapt for Lab
     def modify_researcher_permissions(self):
         """
         Modifies researcher permissions by adding the user to the respective admin,

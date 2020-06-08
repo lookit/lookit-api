@@ -21,7 +21,7 @@ from kombu.utils import cached_property
 from model_utils import Choices
 from transitions import Machine
 
-from accounts.models import Child, DemographicData, Organization, User
+from accounts.models import Child, DemographicData, User
 from accounts.utils import build_study_group_name
 from attachment_helpers import get_download_url
 from project import settings
@@ -29,6 +29,7 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.permissions import (
+    LabGroup,
     LabPermission,
     StudyPermission,
     create_groups_for_instance,
@@ -113,6 +114,21 @@ class LabUserObjectPermission(UserObjectPermissionBase):
 
 class LabGroupObjectPermission(GroupObjectPermissionBase):
     content_object = models.ForeignKey(Lab, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=Lab)
+def lab_post_save(sender, **kwargs):
+    """
+    Create groups for all newly created Lab instances.
+    We only run on Lab creation to avoid having to check
+    existence on each call to Lab.save.
+    """
+    lab, created = kwargs["instance"], kwargs["created"]
+
+    if created:
+        create_groups_for_instance(
+            lab, LabGroup, Group, Permission, LabGroupObjectPermission
+        )
 
 
 class StudyType(models.Model):
@@ -267,7 +283,6 @@ class Study(models.Model):
             transitions=workflow.transitions,
             initial=self.state,
             send_event=True,
-            before_state_change="check_permission",
             after_state_change="_finalize_state_change",
         )
 
@@ -361,12 +376,6 @@ class Study(models.Model):
             return None
 
     # WORKFLOW CALLBACKS
-    def check_permission(self, ev):
-        user = ev.kwargs.get("user")
-        if user.is_superuser:
-            return
-        # raise TODO NOT RAISING ANYTHING
-        return
 
     def clone(self):
         """ Create a new, unsaved copy of the study. """
@@ -393,7 +402,7 @@ class Study(models.Model):
 
     def notify_administrators_of_submission(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),

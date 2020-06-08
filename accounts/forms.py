@@ -67,7 +67,7 @@ class ParticipantSignupForm(UserCreationForm):
             "user_permissions",
             "groups",
             "_identicon",
-            "organization",
+            "labs",
             "is_active",
             "is_staff",
             "is_superuser",

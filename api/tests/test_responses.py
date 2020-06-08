@@ -8,8 +8,8 @@ from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, DemographicData, Organization, User
-from studies.models import ConsentRuling, Feedback, Response, Study, StudyType
+from accounts.models import Child, DemographicData, User
+from studies.models import ConsentRuling, Feedback, Lab, Response, Study, StudyType
 
 
 class ResponseTestCase(APITestCase):
@@ -27,12 +27,9 @@ class ResponseTestCase(APITestCase):
         self.child_of_researcher = G(Child, user=self.researcher, given_name="Grace")
         self.study_type = G(StudyType, name="default", id=1)
 
-        self.org = G(Organization, name="MIT")
+        self.lab = G(Lab, name="MIT")
         self.study = G(
-            Study,
-            creator=self.researcher,
-            study_type=self.study_type,
-            organization=self.org,
+            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
         )
         self.response = G(Response, child=self.child, study=self.study, completed=False)
         self.consented_response = G(

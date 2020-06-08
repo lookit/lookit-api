@@ -1,7 +1,7 @@
-Dear {{ lab_name }} Admin,
+Dear Lookit Admin,
 
 {% if action == 'submitted' %}
-    {{ researcher_name }} has submitted a study for approval: {{ study_name }}
+    {{ researcher_name }} from {{ lab_name }} has submitted a study for approval: {{ study_name }}
 
     You can approve or disapprove the study here: {{ base_url }}{% url 'exp:study-detail' pk=study_id %}
 {% elif action == 'retracted' %}

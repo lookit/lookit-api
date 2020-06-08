@@ -27,7 +27,6 @@ from model_utils import Choices
 from multiselectfield import MultiSelectField
 
 from accounts.queries import BitfieldQuerySet
-from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from project.settings import EMAIL_FROM_ADDRESS
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
@@ -79,38 +78,6 @@ class Organization(models.Model):
         ordering = ["name"]
 
 
-# TODO: make equivalent for Labs
-@receiver(post_save, sender=Organization)
-def organization_post_save(sender, **kwargs):
-    """
-    Create groups for all newly created Organization instances.
-    We only run on Organization creation to avoid having to check
-    existence on each call to Organization.save.
-    """
-    organization, created = kwargs["instance"], kwargs["created"]
-
-    if created:
-        # from django.contrib.auth.models import Group
-
-        for group in ["researcher", "read", "admin"]:
-            group_instance, created = Group.objects.get_or_create(
-                name=build_org_group_name(organization.name, group)
-            )
-
-            create_study = Permission.objects.get(codename="can_create_study")
-            view_experimenter = Permission.objects.get(codename="can_view_experimenter")
-            view_organization = Permission.objects.get(codename="can_view_organization")
-            edit_organization = Permission.objects.get(codename="can_edit_organization")
-
-            group_instance.permissions.add(create_study)
-            group_instance.permissions.add(view_experimenter)
-            if group == "admin":
-                group_instance.permissions.add(view_organization)
-                group_instance.permissions.add(edit_organization)
-            if group == "read":
-                group_instance.permissions.add(view_organization)
-
-
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = "username"
     uuid = models.UUIDField(
@@ -127,14 +94,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
     nickname = models.CharField(max_length=255, blank=True)
-    organization = models.ForeignKey(  # TODO: remove
-        Organization,
-        on_delete=models.PROTECT,
-        related_name="users",
-        related_query_name="user",
-        null=True,
-        blank=True,
-    )
     _identicon = models.TextField(verbose_name="identicon")
     time_zone = models.CharField(max_length=255)
     locale = models.CharField(max_length=255)
@@ -192,41 +151,15 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return self.demographics.exists()
 
     @property
-    def studies(self):
+    def studies(self):  # TODO remove??
         if not self.is_participant:
             return get_objects_for_user(
                 self, ["studies.can_view_study", "studies.can_edit_study"]
             )
         return None
 
-    @cached_property
-    def is_org_admin(self):
-        if not self.organization_id:
-            return False
-        return self.groups.filter(
-            name=build_org_group_name(self.organization.name, "admin")
-        ).exists()
-
     @property
-    def is_org_read(self):
-        if not self.organization_id:
-            return False
-        if self.is_org_admin:
-            return True
-        return self.groups.filter(
-            name=build_org_group_name(self.organization.name, "read")
-        ).exists()
-
-    @property
-    def is_org_researcher(self):
-        if not self.organization_id:
-            return False
-        return self.groups.filter(
-            name=build_org_group_name(self.organization.name, "researcher")
-        ).exists()
-
-    @property
-    def display_permission(self):
+    def display_permission(self):  # TODO
         if self.is_org_admin:
             return "Organization Admin"
         elif self.is_org_read:
@@ -413,12 +346,7 @@ def send_email_when_receive_groups(sender, instance, created, **kwargs):
         if not original_groups and set(instance.groups.all()) != set(
             instance.__original_groups
         ):
-            if instance.is_org_admin:
-                permission = "admin"
-            elif instance.is_org_read:
-                permission = "read"
-            else:
-                permission = "researcher"
+            permission = "permission description placeholder"  # TODO
 
             context = {
                 "researcher_name": instance.get_short_name(),

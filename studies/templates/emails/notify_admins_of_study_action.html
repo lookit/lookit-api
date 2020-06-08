@@ -1,9 +1,9 @@
 <p>
-    Dear {{ lab_name }} Admin,
+    Dear Lookit Admin,
 </p>
 <p>
     {% if action == 'submitted' %}
-        {{ researcher_name }} has submitted a study for approval: {{ study_name }}
+        {{ researcher_name }} from {{ lab_name }} has submitted a study for approval: {{ study_name }}
         <br>
         You can approve or disapprove the study <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">here</a>.
     {% elif action == 'retracted' %}
