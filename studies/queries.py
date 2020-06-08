@@ -257,7 +257,10 @@ def get_study_list_qs(user, query_dict):
         .annotate(
             completed_responses_count=Subquery(
                 Response.objects.filter(
-                    study=OuterRef("pk"), completed_consent_frame=True, completed=True
+                    study=OuterRef("pk"),
+                    is_preview=False,
+                    completed_consent_frame=True,
+                    completed=True,
                 )
                 .values("completed")
                 .order_by()
@@ -267,7 +270,10 @@ def get_study_list_qs(user, query_dict):
             ),
             incomplete_responses_count=Subquery(
                 Response.objects.filter(
-                    study=OuterRef("pk"), completed_consent_frame=True, completed=False
+                    study=OuterRef("pk"),
+                    is_preview=False,
+                    completed_consent_frame=True,
+                    completed=False,
                 )
                 .values("completed")
                 .order_by()
@@ -277,7 +283,7 @@ def get_study_list_qs(user, query_dict):
             ),
             valid_consent_count=Subquery(
                 annotated_responses_qs.filter(
-                    study=OuterRef("pk"), current_ruling="accepted"
+                    study=OuterRef("pk"), is_preview=False, current_ruling="accepted"
                 )
                 .values("current_ruling")
                 .order_by("current_ruling")  # Need this for GROUP BY to work properly
@@ -287,7 +293,7 @@ def get_study_list_qs(user, query_dict):
             ),
             pending_consent_count=Subquery(
                 annotated_responses_qs.filter(
-                    study=OuterRef("pk"), current_ruling="pending"
+                    study=OuterRef("pk"), is_preview=False, current_ruling="pending"
                 )
                 .values("current_ruling")
                 .order_by("current_ruling")
