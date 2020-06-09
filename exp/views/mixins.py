@@ -3,9 +3,27 @@ from typing import Optional
 import requests
 from django.conf import settings
 from django.http.request import HttpRequest
+from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
 
-from studies.models import StudyType
+from studies.models import StudyType, Study
+
+
+class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):
+
+    object: Study
+
+    def get_object(self, queryset=None):
+        """Override get_object() to be smarter.
+
+        This is to allow us to get the study for use the predicate function
+        of UserPassesTestMixin without making `SingleObjectMixin.get` (called
+        within the context of `View.dispatch`) issue a second expensive query.
+        """
+        if getattr(self, "object", None) is None:
+            # Only call get_object() when self.object isn't present.
+            self.object = super().get_object()
+        return self.object
 
 
 class ExperimenterLoginRequiredMixin(LoginRequiredMixin):

@@ -21,7 +21,7 @@
             {% if can_edit_lab %}
             <div class="row">
                 <div class="pull-right ">
-                  <a href="" > Edit lab </a> <!-- TODO -->
+                  <a href="{% url 'exp:lab-edit' pk=lab.id %}"> Edit lab </a>
                 </div>
             </div>
             {% endif %}

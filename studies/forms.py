@@ -51,6 +51,21 @@ PROTOCOL_HELP_TEXT_INITIAL = (
 )
 
 
+class LabEditForm(ModelForm):
+    class Meta:
+        model = Lab
+        fields = [
+            "name",
+            "institution",
+            "principal_investigator_name",
+            "contact_email",
+            "contact_phone",
+            "lab_website",
+            "description",
+            "irb_contact_info",
+        ]
+
+
 class StudyForm(ModelForm):
     """Base form for creating or editing a study"""
 

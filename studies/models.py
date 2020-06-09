@@ -69,14 +69,27 @@ def default_configuration():
 
 class Lab(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
-    name = models.CharField(max_length=255, unique=True)
-    institution = models.CharField(max_length=255)
-    principal_investigator_name = models.CharField(max_length=255)
+    name = models.CharField(
+        max_length=255, unique=True, blank=False, verbose_name="Lab Name"
+    )
+    institution = models.CharField(max_length=255, blank=True)
+    principal_investigator_name = models.CharField(max_length=255, blank=False)
     contact_email = models.EmailField(unique=True, verbose_name="Contact Email")
     contact_phone = models.CharField(max_length=255, verbose_name="Contact Phone")
-    lab_website = models.URLField(verbose_name="Lab Website")
-    description = models.TextField(blank=True)
-    irb_contact_info = models.TextField(blank=True)
+    lab_website = models.URLField(verbose_name="Lab Website", blank=True)
+    description = models.TextField(
+        blank=False,
+        help_text="A short (2-3 sentences), parent-facing description of what "
+        "your lab studies or other information of interest to families.",
+    )
+    irb_contact_info = models.TextField(
+        blank=False,
+        verbose_name="IRB contact info",
+        help_text="A statement about what organization conducts ethical review of your research, "
+        "and contact information for that organization. E.g., 'All of our Lookit studies are "
+        "approved by MIT's Committee on the Use of Humans as Experimental Subjects (COUHES), "
+        "[address], phone: [phone], email: [email].",
+    )
     approved_to_test = models.BooleanField(default=False)
     # The related_name convention seems silly, but django complains about reverse
     # accessor clashes if these aren't unique :/ regardless, we won't be using
