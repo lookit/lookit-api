@@ -138,6 +138,7 @@ def revert_migration(apps, schema_editor):
     Study = apps.get_model("studies", "Study")
     Group = apps.get_model("auth", "Group")
     Permission = apps.get_model("auth", "Permission")
+    Organization = apps.get_model("accounts", "Organization")
     StudyGroupObjectPermission = apps.get_model("studies", "StudyGroupObjectPermission")
     LabGroupObjectPermission = apps.get_model("studies", "LabGroupObjectPermission")
 
@@ -164,6 +165,10 @@ def revert_migration(apps, schema_editor):
     labs = Lab.objects.all()
     if labs.exists():
         labs.delete()
+
+    # Create a single Organization object
+    org = Organization(name="MIT")
+    org.save()
 
 
 class Migration(migrations.Migration):

@@ -97,6 +97,13 @@ class Lab(models.Model):
         related_name="labs",
         related_query_name="lab",  # User.objects.filter(lab=...)
     )
+    requested_researchers = models.ManyToManyField(
+        "accounts.User",
+        blank=True,
+        help_text=_("The Users who have requested to join this Lab."),
+        related_name="requested_labs",
+        related_query_name="requested_lab",  # User.objects.filter(requested_lab=...)
+    )
 
     class Meta:
         permissions = LabPermission
