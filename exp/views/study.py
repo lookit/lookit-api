@@ -380,6 +380,55 @@ class StudyListView(
         return context
 
 
+class LabDetailView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
+):
+    """
+    LabDetailView shows information about a lab.
+    """
+
+    queryset = Lab.objects.all()
+    template_name = "studies/lab_detail.html"
+    model = Lab
+    raise_exception = True
+
+    def user_can_see_labs(self):
+        user = self.request.user
+        return user.is_researcher
+
+    test_func = user_can_see_labs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["in_this_lab"] = user.labs.filter(pk=self.object.pk).exists()
+        context["requested_this_lab"] = user.requested_labs.filter(
+            pk=self.object.pk
+        ).exists()
+        context["can_edit_lab"] = user.has_perm(
+            LabPermission.EDIT_LAB_METADATA, self.object
+        )
+        context["can_manage_lab_researchers"] = user.has_perm(
+            LabPermission.MANAGE_LAB_RESEARCHERS
+        )
+        return context
+
+    def add_user_to_requested_researchers(self, lab):
+        """
+        Send reset_password email to researcher
+        """
+
+        lab.requested_researchers.add(self.request.user)
+        lab.save()
+        return
+
+    def post(self, request, *args, **kwargs):
+        lab = self.get_object()
+        if "request_join_lab" in self.request.POST:
+            self.add_user_to_requested_researchers(lab)
+        return HttpResponseRedirect(reverse("exp:lab-detail", kwargs={"pk": lab.pk}))
+
+
 class StudyDetailView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
@@ -2655,7 +2704,7 @@ class StudyParticipantAnalyticsView(
                 StudyPermission.READ_STUDY_RESPONSE_DATA
             )
 
-        # Responses for studies
+        # Responses for studies - only include real (non-preview) responses here
         annotated_responses = (
             get_annotated_responses_qs()
             .filter(study__in=studies_for_user, is_preview=False)

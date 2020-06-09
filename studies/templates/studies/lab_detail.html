@@ -1,0 +1,100 @@
+{% extends 'exp/base.html' %}
+{% load bootstrap3 %}
+
+{% block title %}{{ lab.name }}{% endblock %}
+{% block content %}
+<div class="container mb-lg">
+    <div class="row">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+              <li><a href=""> Labs </a></li> <!-- TODO -->
+              <li class="active"><span> {{lab.name}} </span></li>
+            </ol>
+        </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-6">
+          <strong> Name </strong>
+          <p> {{ lab.name }}
+      </div>
+        <div class="col-xs-6">
+            {% if can_edit_lab %}
+            <div class="row">
+                <div class="pull-right ">
+                  <a href="" > Edit lab </a> <!-- TODO -->
+                </div>
+            </div>
+            {% endif %}
+            {% if can_manage_lab_researchers %}
+            <div class="row">
+                <div class="pull-right ">
+                    <a href="" > View/Manage lab members </a> <!-- TODO -->
+                </div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="pull-right ">
+                    {% if in_this_lab %}
+                        You are a member of this lab.
+                    {% elif requested_this_lab %}
+                        You have requested to join this lab.
+                    {% else %}
+                    <form method="post">{% csrf_token %}
+                        <button type="submit" name="request_join_lab" class="btn btn-default"> Request to join </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Institution </strong>
+           <p> {{ lab.institution }}
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Principal investigator </strong>
+           <p> {{ lab.principal_investigator_name }}
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Contact email </strong>
+           <p> {{ lab.contact_email }}
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Contact phone </strong>
+           <p> {{ lab.contact_phone }}
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Lab website </strong>
+          <p> <a href="{{ lab.lab_website }}" target="_blank" rel="noopener noreferrer">{{ lab.lab_website }}</a>
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Lab description </strong>
+           <p> {{ lab.description }}
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> IRB contact info </strong>
+           <p> {{ lab.irb_contact_info }}
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
+          <strong> Approved to test: </strong>
+          {% if lab.approved_to_test %} Yes {% else %} No {% endif %}
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

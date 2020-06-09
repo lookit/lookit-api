@@ -15,10 +15,12 @@ Including another URLconf
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import url
+from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from exp.views import (
     ExperimenterDashboardView,
+    LabDetailView,
     ParticipantDetailView,
     ParticipantListView,
     PreviewProxyView,
@@ -55,132 +57,129 @@ from exp.views import (
 app_name = "exp"
 
 urlpatterns = [
-    url(r"researchers/$", ResearcherListView.as_view(), name="researcher-list"),
-    url(
-        r"researchers/(?P<pk>\d+)/$",
+    path("labs/<int:pk>/", LabDetailView.as_view(), name="lab-detail"),
+    path("researchers/", ResearcherListView.as_view(), name="researcher-list"),
+    path(
+        "researchers/<int:pk>/",
         ResearcherDetailView.as_view(),
         name="researcher-detail",
     ),
-    url(r"participants/$", ParticipantListView.as_view(), name="participant-list"),
-    url(
-        r"participants/(?P<pk>\d+)/$",
+    path("participants/", ParticipantListView.as_view(), name="participant-list"),
+    path(
+        "participants/<int:pk>/",
         ParticipantDetailView.as_view(),
         name="participant-detail",
     ),
-    url(r"renamevideo/$", csrf_exempt(RenameVideoView.as_view()), name="rename-video"),
-    url(r"studies/$", StudyListView.as_view(), name="study-list"),
-    url(
-        r"studies/analytics/$",
+    path("renamevideo/", csrf_exempt(RenameVideoView.as_view()), name="rename-video"),
+    path("studies/", StudyListView.as_view(), name="study-list"),
+    path(
+        "studies/analytics/",
         StudyParticipantAnalyticsView.as_view(),
         name="study-participant-analytics",
     ),
-    url(r"studies/create/$", StudyCreateView.as_view(), name="study-create"),
-    url(r"studies/(?P<pk>\d+)/$", StudyDetailView.as_view(), name="study-detail"),
-    url(
-        r"studies/(?P<pk>\d+)/contact/$",
+    path(r"studies/create/", StudyCreateView.as_view(), name="study-create"),
+    path(r"studies/<int:pk>/", StudyDetailView.as_view(), name="study-detail"),
+    path(
+        "studies/<int:pk>/contact/",
         StudyParticipantContactView.as_view(),
         name="study-participant-contact",
     ),
-    url(r"studies/(?P<pk>\d+)/edit/$", StudyUpdateView.as_view(), name="study-edit"),
-    url(
-        r"studies/(?P<pk>\d+)/responses/$",
+    path("studies/<int:pk>/edit/", StudyUpdateView.as_view(), name="study-edit"),
+    path(
+        "studies/<int:pk>/responses/",
         StudyResponsesList.as_view(),
         name="study-responses-list",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/$",
+    path(
+        "studies/<int:pk>/responses/all/",
         StudyResponsesAll.as_view(),
         name="study-responses-all",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/consent_videos/$",
+    path(
+        "studies/<int:pk>/responses/consent_videos/",
         StudyResponsesConsentManager.as_view(),
         name="study-responses-consent-manager",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/download_json/$",
+    path(
+        "studies/<int:pk>/responses/all/download_json/",
         StudyResponsesAllDownloadJSON.as_view(),
         name="study-responses-download-json",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/download_summary_csv/$",
+    path(
+        "studies/<int:pk>/responses/all/download_summary_csv/",
         StudyResponsesSummaryDownloadCSV.as_view(),
         name="study-responses-download-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/download_summary_dict_csv/$",
+    path(
+        "studies/<int:pk>/responses/all/download_summary_dict_csv/",
         StudyResponsesSummaryDictCSV.as_view(),
         name="study-responses-download-summary-dict-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/download_summary_children_csv/$",
+    path(
+        "studies/<int:pk>/responses/all/download_summary_children_csv/",
         StudyChildrenSummaryCSV.as_view(),
         name="study-responses-children-summary-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/download_summary_children_dict_csv/$",
+    path(
+        "studies/<int:pk>/responses/all/download_summary_children_dict_csv/",
         StudyChildrenSummaryDictCSV.as_view(),
         name="study-responses-children-summary-dict-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/collision_check/$",
+    path(
+        "studies/<int:pk>/responses/all/collision_check/",
         StudyCollisionCheck.as_view(),
         name="study-hashed-id-collision-check",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/download_frame_csv/$",
+    path(
+        "studies/<int:pk>/responses/all/download_frame_csv/",
         StudyResponsesFrameDataCSV.as_view(),
         name="study-responses-download-frame-data-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/download_frame_zip_csv/$",
+    path(
+        "studies/<int:pk>/responses/all/download_frame_zip_csv/",
         StudyResponsesFrameDataIndividualCSV.as_view(),
         name="study-responses-download-frame-data-zip-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/all/download_frame_dict_csv/$",
+    path(
+        "studies/<int:pk>/responses/all/download_frame_dict_csv/",
         StudyResponsesFrameDataDictCSV.as_view(),
         name="study-responses-download-frame-data-dict-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/demographics/$",
+    path(
+        "studies/<int:pk>/responses/demographics/",
         StudyDemographics.as_view(),
         name="study-demographics",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/demographics/download_json/$",
+    path(
+        "studies/<int:pk>/responses/demographics/download_json/",
         StudyDemographicsDownloadJSON.as_view(),
         name="study-demographics-download-json",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/demographics/download_csv/$",
+    path(
+        "studies/<int:pk>/responses/demographics/download_csv/",
         StudyDemographicsDownloadCSV.as_view(),
         name="study-demographics-download-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/demographics/download_csv_dict/$",
+    path(
+        "studies/<int:pk>/responses/demographics/download_csv_dict/",
         StudyDemographicsDownloadDictCSV.as_view(),
         name="study-demographics-download-dict-csv",
     ),
-    url(
-        r"studies/(?P<pk>\d+)/responses/attachments/$",
+    path(
+        "studies/<int:pk>/responses/attachments/",
         StudyAttachments.as_view(),
         name="study-attachments",
     ),
-    url(
-        r"studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/build/$",
-        StudyBuildView.as_view(),
-        name="study-build",
-    ),
-    url(
-        r"studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/preview-detail/$",
+    path("studies/<uuid:uuid>/build/", StudyBuildView.as_view(), name="study-build"),
+    path(
+        "studies/<uuid:uuid>/preview-detail/",
         StudyPreviewDetailView.as_view(),
         name="preview-detail",
     ),
-    url(
-        r"studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/(?P<child_id>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/preview/$",
+    path(
+        "studies/<uuid:uuid>/<uuid:child_id>/preview/",
         PreviewProxyView.as_view(),
         name="preview-proxy",
     ),
-    url(r"", ExperimenterDashboardView.as_view(), name="dashboard"),
+    path("", ExperimenterDashboardView.as_view(), name="dashboard"),
 ]
