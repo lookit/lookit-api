@@ -342,13 +342,13 @@ CHILD_DATA_OPTIONS = [
     {
         "id": "conditions",
         "name": "Child conditions",
-        "column": "child_characteristics",
+        "column": "child_condition_list",
         "default": True,
     },
     {
         "id": "languages",
         "name": "Child languages",
-        "column": "child_languages",
+        "column": "child_language_list",
         "default": True,
     },
     {
