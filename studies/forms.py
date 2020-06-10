@@ -5,7 +5,7 @@ from django import forms
 from django.forms import ModelForm, Textarea
 
 from accounts.queries import compile_expression
-from studies.models import Response, Study, Lab
+from studies.models import Lab, Response, Study
 from studies.permissions import StudyPermission
 
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
@@ -51,7 +51,7 @@ PROTOCOL_HELP_TEXT_INITIAL = (
 )
 
 
-class LabEditForm(ModelForm):
+class LabForm(ModelForm):
     class Meta:
         model = Lab
         fields = [

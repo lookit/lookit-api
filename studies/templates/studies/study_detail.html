@@ -33,7 +33,7 @@
             rejectionCommentsInput.hide();
             let $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
 
-            if (trigger === 'reject') { # TODO also allow comments on submit
+            if (trigger === 'reject') { // TODO also allow comments on submit
                 rejectionCommentsInput.show();
             }
 
@@ -529,7 +529,7 @@
                     <span id="study-status-additional-information"> </span>
                 </p>
                 <textarea class="form-control" rows="5" name="comments-text"
-                          placeholder="Please leave a reason for rejection here."></textarea>
+                          placeholder="Please leave a reason for rejection here."></textarea> <!--TODO-->
             </div>
             <div class="modal-footer"> {% csrf_token %}
                 <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}">
@@ -537,7 +537,7 @@
                 <button id="changeStatusButton"
                         {% if 'can_edit_study' not in study_perms %}disabled{% endif %}
                         name="submit" value="submit" class="btn btn-success" type="submit">Save
-                </button>
+                </button>  <!--TODO! use updated perms -->
             </div>
         </div>
     </form>

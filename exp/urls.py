@@ -20,6 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from exp.views import (
     ExperimenterDashboardView,
+    LabCreateView,
     LabDetailView,
     LabUpdateView,
     ParticipantDetailView,
@@ -58,6 +59,7 @@ from exp.views import (
 app_name = "exp"
 
 urlpatterns = [
+    path("labs/create/", LabCreateView.as_view(), name="lab-create"),
     path("labs/<int:pk>/", LabDetailView.as_view(), name="lab-detail"),
     path("labs/<int:pk>/edit/", LabUpdateView.as_view(), name="lab-edit"),
     path("researchers/", ResearcherListView.as_view(), name="researcher-list"),

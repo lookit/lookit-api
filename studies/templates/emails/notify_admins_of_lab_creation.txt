@@ -1,0 +1,5 @@
+Dear Lookit Admin,
+
+{{ researcher_name }} has created a new lab, {{ lab_name }}, on Lookit.
+
+You can approve the lab here: {{ base_url }}{% url 'exp:lab-detail' pk=lab_id %}

@@ -13,28 +13,20 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
-from django.utils.text import slugify
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
-from guardian.shortcuts import assign_perm, get_groups_with_perms
 from kombu.utils import cached_property
 from model_utils import Choices
 from transitions import Machine
 
 from accounts.models import Child, DemographicData, User
-from accounts.utils import build_study_group_name
 from attachment_helpers import get_download_url
 from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
+from project.permissions import create_groups_for_instance
 from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
-from studies.permissions import (
-    LabGroup,
-    LabPermission,
-    StudyPermission,
-    create_groups_for_instance,
-    StudyGroup,
-)
+from studies.permissions import LabGroup, LabPermission, StudyGroup, StudyPermission
 from studies.tasks import delete_video_from_cloud
 
 logger = logging.getLogger(__name__)
@@ -430,6 +422,9 @@ class Study(models.Model):
         return copy
 
     def notify_administrators_of_submission(self, ev):
+        lookit_admin_group = Group.objects.get(
+            name="LOOKIT_ADMIN"
+        )  # TODO: at least import this from some common location
         context = {
             "lab_name": self.lab.name,
             "study_name": self.name,
@@ -442,11 +437,7 @@ class Study(models.Model):
             "notify_admins_of_study_action",
             "Study Submission Notification",
             settings.EMAIL_FROM_ADDRESS,
-            bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
-            ),
+            bcc=list(lookit_admin_group.user_set.values_list("username", flat=True)),
             **context,
         )
 
@@ -684,7 +675,6 @@ def study_post_save(sender, **kwargs):
     """
     study, created = kwargs["instance"], kwargs["created"]
     if created:
-
         create_groups_for_instance(
             study, StudyGroup, Group, Permission, StudyGroupObjectPermission
         )
