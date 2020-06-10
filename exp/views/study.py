@@ -18,11 +18,11 @@ from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.views.mixins import (
     ExperimenterLoginRequiredMixin,
-    StudyTypeMixin,
     SingleObjectParsimoniousQueryMixin,
+    StudyTypeMixin,
 )
 from project import settings
-from studies.forms import StudyEditForm, StudyCreateForm
+from studies.forms import StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyType
 from studies.permissions import StudyPermission
@@ -121,7 +121,7 @@ class StudyCreateView(
         form.instance.creator = user
         # Add user to admin group for study.
         new_study = self.object = form.save()
-        new_study.admin_group.add(user)
+        new_study.admin_group.add(user)  # TODO does this actually work?
         new_study.save()
         # Adds success message that study has been created.
         messages.success(self.request, f"{self.object.name} created.")
@@ -921,8 +921,8 @@ def get_permitted_triggers(view_instance, triggers):
     """
     permitted_triggers = []
     user = view_instance.request.user
-    can_change_status = user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
     study = view_instance.object
+    can_change_status = user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
 
     admin_triggers = ["approve"]
 

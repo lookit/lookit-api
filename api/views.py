@@ -6,7 +6,6 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_json_api import views
 
-from studies.permissions import StudyPermission
 from accounts.models import Child, DemographicData, User
 from accounts.serializers import (
     BasicUserSerializer,
@@ -16,7 +15,8 @@ from accounts.serializers import (
     LabSerializer,
 )
 from api.permissions import FeedbackPermissions, ResponsePermissions
-from studies.models import Feedback, Response, Study, Lab
+from studies.models import Feedback, Lab, Response, Study
+from studies.permissions import StudyPermission
 from studies.queries import get_consented_responses_qs
 from studies.serializers import (
     FeedbackSerializer,

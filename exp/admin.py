@@ -4,9 +4,9 @@ from guardian.admin import GuardedModelAdmin
 from studies.models import (
     ConsentRuling,
     Feedback,
+    Lab,
     Response,
     ResponseLog,
-    Lab,
     Study,
     StudyLog,
     StudyType,

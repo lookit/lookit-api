@@ -7,7 +7,7 @@ from lark.exceptions import UnexpectedCharacters
 from accounts.models import Child
 from accounts.queries import get_child_eligibility
 from studies.fields import GESTATIONAL_AGE_CHOICES
-from studies.models import Study, StudyType, Lab
+from studies.models import Lab, Study, StudyType
 
 
 class CriteriaExpressionTestCase(TestCase):

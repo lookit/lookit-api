@@ -10,6 +10,7 @@ from django.contrib.auth.models import Group, Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import get_template
@@ -33,8 +34,8 @@ from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
 from studies.permissions import (
     UMBRELLA_LAB_PERMISSION_MAP,
-    StudyPermission,
     LabPermission,
+    StudyPermission,
 )
 
 
@@ -198,17 +199,21 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def studies_for_perm(self, study_perm: StudyPermission):
         from studies.models import Study, Lab
 
-        specifically_granted_studies = get_objects_for_user(
+        specifically_granted_study_ids = get_objects_for_user(
             self, study_perm.codename, klass=Study
-        )
+        ).values_list("id", flat=True)
 
         umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
         labs_with_labwide_perms = get_objects_for_user(
             self, umbrella_lab_perm.codename, klass=Lab
         )
-        lab_granted_studies = Study.objects.filter(lab__in=labs_with_labwide_perms)
+        # lab_granted_studies = Study.objects.filter(lab__in=labs_with_labwide_perms)
 
-        return specifically_granted_studies.union(lab_granted_studies)
+        return Study.objects.filter(
+            Q(lab__in=labs_with_labwide_perms)
+            | Q(id__in=specifically_granted_study_ids)
+        )
+        # return specifically_granted_studies.union(lab_granted_studies)
 
     def can_create_study(self):
         return any(

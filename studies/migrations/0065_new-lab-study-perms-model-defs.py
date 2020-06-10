@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
                 default=1,
             ),
         ),
-        migrations.RemoveField(model_name="study", name="organization",),
+        migrations.RemoveField(model_name="study", name="organization"),
         migrations.AddField(
             model_name="study",
             name="admin_group",

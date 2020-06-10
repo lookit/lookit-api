@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.utils.text import slugify
 from django.views import generic
+
 from accounts.models import Message, User
 from accounts.utils import hash_id
 from exp.views.mixins import (

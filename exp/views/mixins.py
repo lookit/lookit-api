@@ -6,7 +6,7 @@ from django.http.request import HttpRequest
 from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
 
-from studies.models import StudyType, Study
+from studies.models import Study, StudyType
 
 
 class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):

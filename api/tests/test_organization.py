@@ -11,6 +11,7 @@ from rest_framework.test import APIClient, APITestCase
 from accounts.models import Child, User
 from studies.models import Feedback, Response, Study
 
+
 # TODO: remove or update for lab
 class OrganizationTestCase(APITestCase):
     def setUp(self):
