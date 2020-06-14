@@ -10,7 +10,7 @@
         <span class="icon-bar"></span>
       </button>
       
-      {% if perms.accounts.can_view_experimenter %}
+      {% if user.is_researcher %}
         <ul class="nav navbar-nav navbar-left">
           <li class="nav-item active"><a class="navbar-item" href="{% url 'web:home' %}">Lookit</a></li>
           <li class="nav-item"><a class="navbar-item active" href="{% url 'exp:study-list' %}">Experimenter</a></li>
@@ -35,7 +35,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
         <ul class="nav navbar-nav navbar-right">
           {% if user.is_authenticated %}
-            {% if perms.accounts.can_view_experimenter %}
+            {% if user.is_researcher %}
               <li><a href="{% url 'web:participant-update' %}">Participant account</a></li>
             {% else %}
               <li><a href="{% url 'web:participant-update' %}">Hi {{ user.nickname }}</a></li>
