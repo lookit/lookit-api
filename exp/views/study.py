@@ -367,8 +367,11 @@ class StudyDetailView(
 
     def post(self, *args, **kwargs):
         """
-        Post method can update the trigger if the state of the study has changed.  If "clone" study
-        button is pressed, clones study and redirects to the clone.
+        Post method can:
+         - update the trigger if the state of the study has changed
+         - clone study and redirect to the clone
+         - add, remove, or update permissions for a researcher
+        TODO: these should be broken out into three separate views!
         """
         # Manage researchers case
         if (
@@ -627,7 +630,7 @@ class StudyParticipantContactView(
     def can_contact_participants(self):
         user = self.request.user
         study = self.get_object()
-        user.has_study_perms(StudyPermission.CONTACT_STUDY_PARTICIPANTS, study)
+        return user.has_study_perms(StudyPermission.CONTACT_STUDY_PARTICIPANTS, study)
 
     test_func = can_contact_participants
 
@@ -740,7 +743,7 @@ class StudyParticipantContactView(
         )
 
 
-class StudyBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
+class StudyBuildView(SingleObjectParsimoniousQueryMixin, generic.RedirectView):
     """
     Checks to make sure an existing build isn't running, that the user has permissions
     to build, and then triggers a build.
@@ -748,23 +751,18 @@ class StudyBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
 
     http_method_names = ["post"]
     model = Study
-    _object = None
-
-    @property
-    def object(self):
-        if not self._object:
-            self._object = self.get_object(queryset=self.get_queryset())
-        return self._object
+    pk_url_kwarg = "uuid"
 
     def get_redirect_url(self, *args, **kwargs):
-        return_path = self.request.POST.get("return", "exp:study-edit")
-        return reverse(return_path, kwargs={"pk": str(self.object.pk)})
+        # TODO: is this how to do this, or can we set url?
+        return reverse("exp:study-detail", kwargs={"pk": str(self.get_object().pk)})
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
         study = self.object
+        # TODO: these permissions should be handled via e.g. UserPassesTestMixin, not
+        # in the post function...
         if user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study):
-
             if not study.is_building:
                 study.is_building = True
                 study.save(update_fields=["is_building"])
@@ -779,34 +777,6 @@ class StudyBuildView(generic.detail.SingleObjectMixin, generic.RedirectView):
                     f"Experiment runner for {self.object.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
                 )
         return super().post(request, *args, **kwargs)
-
-    def get_object(self, queryset=None):
-        """
-        Returns the object the view is displaying.
-        By default this requires `self.queryset` and a `pk` or `slug` argument
-        in the URLconf, but subclasses can override this to return any object.
-        """
-        # Use a custom queryset if provided; this is required for subclasses
-        # like DateDetailView
-        if queryset is None:
-            queryset = self.get_queryset()
-        uuid = self.kwargs.get("uuid")
-        if uuid is not None:
-            queryset = queryset.filter(uuid=uuid)
-
-        if uuid is None:
-            raise AttributeError(
-                "View %s must be called with " "a uuid." % self.__class__.__name__
-            )
-        try:
-            # Get the single item from the filtered queryset
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
-            raise Http404(
-                f"No {queryset.model._meta.verbose_name}s found matching the query"
-            )
-
-        return obj
 
 
 class StudyPreviewDetailView(
