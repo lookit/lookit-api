@@ -22,13 +22,14 @@ from exp.views import (
     ExperimenterDashboardView,
     LabCreateView,
     LabDetailView,
+    LabListView,
+    LabMembershipRequestView,
+    LabMembersView,
     LabUpdateView,
     ParticipantDetailView,
     ParticipantListView,
     PreviewProxyView,
     RenameVideoView,
-    ResearcherDetailView,
-    ResearcherListView,
     StudyAttachments,
     StudyBuildView,
     StudyChildrenSummaryCSV,
@@ -59,14 +60,13 @@ from exp.views import (
 app_name = "exp"
 
 urlpatterns = [
+    path("labs/", LabListView.as_view(), name="lab-list"),
     path("labs/create/", LabCreateView.as_view(), name="lab-create"),
     path("labs/<int:pk>/", LabDetailView.as_view(), name="lab-detail"),
     path("labs/<int:pk>/edit/", LabUpdateView.as_view(), name="lab-edit"),
-    path("researchers/", ResearcherListView.as_view(), name="researcher-list"),
+    path("labs/<int:pk>/members/", LabMembersView.as_view(), name="lab-members-list"),
     path(
-        "researchers/<int:pk>/",
-        ResearcherDetailView.as_view(),
-        name="researcher-detail",
+        "labs/request/<int:pk>/", LabMembershipRequestView.as_view(), name="lab-request"
     ),
     path("participants/", ParticipantListView.as_view(), name="participant-list"),
     path(

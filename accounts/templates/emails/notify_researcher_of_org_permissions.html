@@ -2,12 +2,12 @@
   Dear {{ researcher_name }},
 </p>
 <p>
-    You have been given {{ permission }} permissions for the organization {{ org_name }}.
+    You have been given {{ permission }} permissions for the lab {{ lab_name }}.
 </p>
 <p>
-    Here is a link to <a href="{{ base_url }}{% url 'exp:study-list' %}">this organization's studies</a>.
+    Here is a link to <a href="{{ base_url }}{% url 'exp:lab-detail' pk={{ lab_id }} %}">this lab</a>.
 </p>
 <p>
     Best,
-    <div> {{ org_name }} Admin </div>
+    <div> {{ lab_name }} Admin </div>
 </p>

@@ -329,7 +329,7 @@ def get_study_list_qs(user, query_dict):
     if match:
         queryset = queryset.filter(
             reduce(
-                operator.or_,
+                operator.and_,
                 (
                     Q(name__icontains=term) | Q(short_description__icontains=term)
                     for term in match.split()

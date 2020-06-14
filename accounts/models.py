@@ -147,29 +147,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def identicon_html(self):
         return mark_safe(f'<img src="{str(self.identicon)}" width="64" />')
 
-    @cached_property
-    def is_participant(self):
-        return self.demographics.exists()
-
-    @property
-    def studies(self):  # TODO remove??
-        if not self.is_participant:
-            return get_objects_for_user(
-                self, ["studies.can_view_study", "studies.can_edit_study"]
-            )
-        return None
-
-    @property
-    def display_permission(self):  # TODO
-        if self.is_org_admin:
-            return "Organization Admin"
-        elif self.is_org_read:
-            return "Organization Read"
-        elif self.is_org_researcher:
-            return "Researcher"
-        else:
-            return "No organization groups"
-
     @property
     def slug(self):
         """Temporary workaround."""
@@ -353,33 +330,6 @@ class Child(models.Model):
     class JSONAPIMeta:
         resource_name = "children"
         lookup_field = "uuid"
-
-
-# TODO: adapt for lab or remove
-@receiver(post_save, sender=User)
-def send_email_when_receive_groups(sender, instance, created, **kwargs):
-    """
-    If researcher is given groups for the first time, send an email letting them know.
-    """
-    if instance.is_researcher and hasattr(instance, "__original_groups"):
-        original_groups = getattr(instance, "__original_groups")
-        if not original_groups and set(instance.groups.all()) != set(
-            instance.__original_groups
-        ):
-            permission = "permission description placeholder"  # TODO
-
-            context = {
-                "researcher_name": instance.get_short_name(),
-                "org_name": instance.organization.name,
-                "permission": permission,
-            }
-            send_mail.delay(
-                "notify_researcher_of_org_permissions",
-                f"Invitation to access studies on {instance.organization.name}",
-                instance.username,
-                from_address=EMAIL_FROM_ADDRESS,
-                **context,
-            )
 
 
 class DemographicData(models.Model):

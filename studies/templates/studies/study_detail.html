@@ -388,8 +388,7 @@
                                                 {% for user in users_result %}
                                                     <div class="row pt-xs">
                                                         <div class="col-xs-8 col-xs-offset-1">
-                                                            <a target="_blank"
-                                                               href="{% url 'exp:researcher-detail' pk=user.id %}"> {{ user.identicon_small_html }} {{ user.get_short_name }} </a>
+                                                            {{ user.identicon_small_html }} {{ user.get_short_name }} ({{user.username}})
                                                         </div>
                                                         <div class="col-xs-3">
                                                             <form method="POST"
@@ -441,9 +440,7 @@
                                         {% for researcher in current_researchers %}
                                             <div class="row pt-xs">
                                                 <div class="col-sm-6 researcher-name">
-                                                    <a target="_blank"
-                                                       href="{% url 'exp:researcher-detail' pk=researcher.user.id %}">
-                                                        {{ researcher.user.identicon_small_html }} {{ researcher.user.get_short_name }} </a>
+                                                        {{ researcher.user.identicon_small_html }} {{ researcher.user.get_short_name }}
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <div class="permissionDisplay">

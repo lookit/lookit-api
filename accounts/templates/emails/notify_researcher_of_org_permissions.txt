@@ -1,8 +1,9 @@
 Dear {{ researcher_name }},
 
-You have been given {{ permission }} permissions for the organization {{ org_name }}.
+You have been given {{ permission }} permissions for the lab {{ lab_name }}.
 
-Here is a link to this organization’s studies: {{ base_url }}{% url 'exp:study-list' %}.
+Here is a link to this lab: {{ base_url }}{% url 'exp:lab-detail' pk={{ lab_id }} %}.
 
 Best,
-{{ org_name }} Admin
+{{ lab_name }} Admin
+

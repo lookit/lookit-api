@@ -19,16 +19,10 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
         {% if request.user.is_authenticated %}
-            {% if perms.accounts.can_view_experimenter %}
-                <li><a href="{% url 'exp:participant-list' %}">See Participants</a></li>
-            {% endif %}
-            {% if perms.accounts.can_view_organization %}
-                <li><a href="{% url 'exp:researcher-list' %}">Manage Lab</a></li>
-            {% endif %}
+            <li><a href="{% url 'exp:participant-list' %}">See Participants</a></li>
+            <li><a href="{% url 'exp:lab-list' %}">Manage Labs</a></li>
             <li role="separator" class="divider"></li>
-            {% if perms.accounts.can_view_experimenter %}
-                <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-            {% endif %}
+            <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
             {% if perms.accounts.can_view_analytics %}
                 <li><a href="{% url 'exp:study-participant-analytics' %}">Manage Recruitment</a></li>
             {% endif %}

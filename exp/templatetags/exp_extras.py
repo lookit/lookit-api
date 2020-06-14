@@ -9,7 +9,15 @@ register = template.Library()
 def query_transform(request, **kwargs):
     updated = request.GET.copy()
 
-    acceptable_keys = ["state", "page", "match", "sort", "ageoptions", "childoptions"]
+    acceptable_keys = [
+        "state",
+        "set",
+        "page",
+        "match",
+        "sort",
+        "ageoptions",
+        "childoptions",
+    ]
 
     for key in acceptable_keys:
         if kwargs.get(key):
