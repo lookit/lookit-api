@@ -34,6 +34,7 @@ DEBUG = bool(os.environ.get("DEBUG", False))
 ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
 
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_AGE = 60 * 60 * 24  # One day in seconds
 
 AUTH_USER_MODEL = "accounts.User"
 GUARDIAN_MONKEY_PATCH = False
