@@ -2,11 +2,11 @@
   Dear Study Admin,
 </p>
 <p>
-  Your study {{ study_name }} has been{% if approved %} approved {% else %} disapproved {% endif %}to run on {{ org_name }}.
+  Your study {{ study_name }} has been{% if approved %} approved {% else %} disapproved {% endif %}to run on Lookit.
 </p>
 <p>
   {% if approved %}
-    To start your study, login to Experimenter, navigate to the study, and select "Activate" from the dropdown.
+    To start your study, log in to Lookit, navigate to the study, and select "Activate" from the dropdown.
   {% else %}
     You can modify your study and resubmit for approval.
   {% endif %}
@@ -22,5 +22,5 @@
 {% endif %}
 <p>
   Best,
-  {{ org_name }} Admin
+  Lookit Admin
 </p>

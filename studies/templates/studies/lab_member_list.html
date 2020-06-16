@@ -89,13 +89,13 @@
                             <select class="form-control" name="user_action">
                                 <option value="">---</option>
                                 {% if user_obj.user_data.group_label == "Requested to join" %}
-                                    <option value="make_member">Approve request</option>
+                                    <option value="make_guest">Approve request</option>
                                 {% else %}
-                                    {% if user_obj.user_data.group_label != "Member" %}
-                                        <option value="make_member">Change to lab member</option>
+                                    {% if user_obj.user_data.group_label != "Guest" %}
+                                        <option value="make_guest">Change to guest</option>
                                     {% endif %}
-                                    {% if user_obj.user_data.group_label != "View" %}
-                                        <option value="make_view">Change to lab view</option>
+                                    {% if user_obj.user_data.group_label != "Member" %}
+                                        <option value="make_member">Change to full lab member</option>
                                     {% endif %}
                                     {% if user_obj.user_data.group_label != "Admin" %}
                                         <option value="make_admin">Change to lab admin</option>

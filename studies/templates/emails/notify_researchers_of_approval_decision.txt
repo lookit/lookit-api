@@ -1,9 +1,9 @@
 Dear Study Admin,
 
-Your study {{study_name}} has been {% if approved %}approved{% else %}disapproved{% endif %} to run on {{ org_name }}.
+Your study {{study_name}} has been {% if approved %}approved{% else %}disapproved{% endif %} to run on Lookit.
 
 {% if approved %}
-To start your study, login to Experimenter, navigate to the study, and select "Activate" from the dropdown.
+To start your study, log in to Lookit, navigate to the study, and select "Activate" from the dropdown.
 {% else %}
 You can modify your study and resubmit for approval.
 {% endif %}
@@ -15,4 +15,4 @@ Comments from the Lookit Admin:
 {{comments}}
 {% endif %}
 Best,
-{{ org_name }} Admin
+Lookit Admin

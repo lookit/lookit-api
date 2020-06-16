@@ -220,7 +220,7 @@ def build_framedata_dict(self, filename, response_qs, study_uuid, requesting_use
     # if the file exists short circuit and send the email
     if not gs_blob.exists():
         # if it doesn't exist build the file
-        with tempfile.TemporaryDirectory() as temp_directory:  # TODO
+        with tempfile.TemporaryDirectory() as temp_directory:
             file_path = os.path.join(temp_directory, csv_filename)
             with open(file_path, "w") as csv_file:
                 writer = csv.DictWriter(

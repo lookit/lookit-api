@@ -1,6 +1,6 @@
 Dear {{ researcher_name }},
 
-You have been given {{ permission }} permissions for the lab {{ lab_name }}.
+Your permission level for the lab {{ lab_name }} on Lookit has been changed to: {{ permission }}
 
 Here is a link to this lab: {{ base_url }}{% url 'exp:lab-detail' pk={{ lab_id }} %}.
 

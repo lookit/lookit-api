@@ -3,8 +3,9 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
+from guardian.shortcuts import assign_perm
 
-from studies.permissions import LabGroup, LabPermission, StudyGroup, StudyPermission
+from studies.permissions import LabGroup, StudyGroup, SiteAdminGroup
 
 
 def add_all_permissions():
@@ -68,63 +69,106 @@ def apply_migration(apps, schema_editor):
     # models.
     Lab = apps.get_model("studies", "Lab")
     Study = apps.get_model("studies", "Study")
+    User = apps.get_model("accounts", "User")
     Group = apps.get_model("auth", "Group")
     Permission = apps.get_model("auth", "Permission")
     StudyGroupObjectPermission = apps.get_model("studies", "StudyGroupObjectPermission")
     LabGroupObjectPermission = apps.get_model("studies", "LabGroupObjectPermission")
 
-    practice_lab = Lab(
-        name="Sandbox lab",
-        institution="Lookit",
-        principal_investigator_name="Sample Name",
-        contact_email="lookit@mit.edu",
-        contact_phone="(123) 456-7890",
-        lab_website="https://lookit.mit.edu/",
-        description="""This is a sample lab researchers are added to upon joining Lookit. You can make studies in 
-            this lab to try Lookit out ahead of setting up your own lab account. However, you will not be able to 
-            collect actual data from these studies - you will need to create or join a lab that is approved to 
-            run studies on Lookit.""",
-        irb_contact_info="""IRB contact information would go here for a real lab.""",
-        approved_to_test=False,
-    )
-    practice_lab.save()
+    if not Lab.objects.filter(name="Sandbox lab").exists():
+        practice_lab = Lab(
+            name="Sandbox lab",
+            institution="Lookit",
+            principal_investigator_name="Sample Name",
+            contact_email="lookit+practice@mit.edu",
+            contact_phone="(123) 456-7890",
+            lab_website="https://lookit.mit.edu/",
+            description="""This is a sample lab researchers are added to upon joining Lookit. You can make studies in 
+                this lab to try Lookit out ahead of setting up your own lab account. However, you will not be able to 
+                collect actual data from these studies - you will need to create or join a lab that is approved to 
+                run studies on Lookit.""",
+            irb_contact_info="""IRB contact information would go here for a real lab.""",
+            approved_to_test=False,
+        )
+        practice_lab.save()
+
+    if not Lab.objects.filter(name="Demo lab").exists():
+        demo_lab = Lab(
+            name="Demo lab",
+            institution="Lookit",
+            principal_investigator_name="Sample Name",
+            contact_email="lookit+demo@mit.edu",
+            contact_phone="(123) 456-7890",
+            lab_website="https://lookit.mit.edu/",
+            description="""This is a sample lab researchers are added to upon joining Lookit. It contains several demo
+                studies you will be able to see.""",
+            irb_contact_info="""IRB contact information would go here for a real lab.""",
+            approved_to_test=False,
+        )
+        demo_lab.save()
 
     # Abstain from using QuerySet.create here; emulate what we'll need to do when these
     # group fields are non-nullable.
-    mit_eccl_lab = Lab(
-        name="Early Childhood Cognition Lab",
-        institution="MIT",
-        principal_investigator_name="Laura Schulz",
-        contact_email="eccl@mit.edu",
-        contact_phone="(617) 324-4859",
-        lab_website="http://eccl.mit.edu/",
-        description="""We study how children construct a commonsense understanding of the physical and social world. 
-            Current lab members are especially interested in how children generate new ideas and choose which problems 
-            are worth working on.
-            Research in the lab often addresses 1) how children figure out cause-and-effect relations so that they can 
-            predict, explain, and themselves cause things to happen; 2) influences on curiosity and exploration; and 3) 
-            how these abilities interact with social cognition to help children understand themselves and other people. 
-            """,
-        irb_contact_info="""Committee on the Use of Humans as Experimental Subjects, M.I.T., Room E25-143B, 77 
-            Massachusetts Ave, Cambridge, MA 02139, phone 1-617-253-6787.""",
-        approved_to_test=True,
-    )
+    if not Lab.objects.filter(name="Early Childhood Cognition Lab").exists():
+        mit_eccl_lab = Lab(
+            name="Early Childhood Cognition Lab",
+            institution="MIT",
+            principal_investigator_name="Laura Schulz",
+            contact_email="eccl@mit.edu",
+            contact_phone="(617) 324-4859",
+            lab_website="http://eccl.mit.edu/",
+            description="""We study how children construct a commonsense understanding of the physical and social world. 
+                Current lab members are especially interested in how children generate new ideas and choose which problems 
+                are worth working on.
+                Research in the lab often addresses 1) how children figure out cause-and-effect relations so that they can 
+                predict, explain, and themselves cause things to happen; 2) influences on curiosity and exploration; and 3) 
+                how these abilities interact with social cognition to help children understand themselves and other people. 
+                """,
+            irb_contact_info="""Committee on the Use of Humans as Experimental Subjects, M.I.T., Room E25-143B, 77 
+                Massachusetts Ave, Cambridge, MA 02139, phone 1-617-253-6787.""",
+            approved_to_test=True,
+        )
 
-    mit_eccl_lab.save()
+        mit_eccl_lab.save()
     # Have to save so that this can go in as content_object during execution
     # of assign_perm
 
     _create_groups(mit_eccl_lab, LabGroup, Group, Permission, LabGroupObjectPermission)
     _create_groups(practice_lab, LabGroup, Group, Permission, LabGroupObjectPermission)
+    _create_groups(demo_lab, LabGroup, Group, Permission, LabGroupObjectPermission)
 
-    # TODO: add all active researchers to the practice lab
-    # practice_lab.researchers.add()
+    researchers = User.objects.filter(is_researcher=True, is_active=True)
+    practice_lab.researchers.add(*researchers)
+    practice_lab.guest_group.user_set.add(*researchers)
+    practice_lab.save()
 
+    demo_lab.researchers.add(*researchers)
+    demo_lab.readonly_group.user_set.add(*researchers)
+    demo_lab.save()
+
+    # Create study groups and set the lab of all studies to the practice lab temporarily (will need to move
+    # manually to appropriate new lab)
     for study in Study.objects.all():
         _create_groups(study, StudyGroup, Group, Permission, StudyGroupObjectPermission)
-        # TODO: set all studies' lab to the practice lab
-        # study.lab = practice_lab
-        # study.save()
+        study.lab = practice_lab
+        study.admin_group.user_set.add(study.creator)
+        study.save()
+
+    # TODO after transfer complete - delete all Organizations and org-related perm groups
+    # - e.g. MIT_ORG_RESEARCHER/READ/ADMIN; MIT_<...>_STUDY_READ/ADMIN
+
+    for group_spec in SiteAdminGroup:
+        group_name = group_spec.name
+        if not Group.objects.filter(name=group_name).exists():
+            group = Group.objects.create(name=group_name)
+        else:
+            group = Group.objects.get(name=group_name)
+            group.permissions.set(Permission.objects.none())
+        for permission_meta in group_spec.value:
+            permission = Permission.objects.get(codename=permission_meta.codename)
+            # assign_perm(permission, group) # Can't do this because we don't have the "real" Group imported
+            group.permissions.add(permission)
+        group.save()
 
 
 def revert_migration(apps, schema_editor):
@@ -142,8 +186,7 @@ def revert_migration(apps, schema_editor):
     StudyGroupObjectPermission = apps.get_model("studies", "StudyGroupObjectPermission")
     LabGroupObjectPermission = apps.get_model("studies", "LabGroupObjectPermission")
 
-    # These should cascade, effectively killing the related permissions. SET_NULL
-    # behavior in Studies/Labs will prevent
+    # These should cascade, effectively killing the related permissions.
     Group.objects.filter(
         id__in=StudyGroupObjectPermission.objects.values_list("group_id", flat=True)
     ).delete()
@@ -158,15 +201,17 @@ def revert_migration(apps, schema_editor):
         id__in=LabGroupObjectPermission.objects.values_list("group_id", flat=True)
     ).delete()
 
+    Group.objects.filter(
+        name__in=SiteAdminGroup.objects.values_list("name", flat=True)
+    ).delete()
+
     Permission.objects.filter(
         id__in=LabGroupObjectPermission.objects.values_list("permission_id", flat=True)
     ).delete()
 
-    labs = Lab.objects.all()
-    if labs.exists():
-        labs.delete()
-
     # Create a single Organization object
+    Organization.objects.all().delete()
+    # TODO: reset id sequence?
     org = Organization(name="MIT")
     org.save()
 

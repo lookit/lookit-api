@@ -66,6 +66,22 @@ class LabForm(ModelForm):
         ]
 
 
+class LabApprovalForm(ModelForm):
+    class Meta:
+        model = Lab
+        fields = [
+            "name",
+            "institution",
+            "principal_investigator_name",
+            "contact_email",
+            "contact_phone",
+            "lab_website",
+            "description",
+            "irb_contact_info",
+            "approved_to_test",
+        ]
+
+
 class StudyForm(ModelForm):
     """Base form for creating or editing a study"""
 

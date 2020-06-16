@@ -35,6 +35,9 @@
                     {% bootstrap_field form.lab_website %}
                     {% bootstrap_field form.description %}
                     {% bootstrap_field form.irb_contact_info %}
+                    {% if form.approved_to_test %}
+                        {% bootstrap_field form.approved_to_test %}
+                    {% endif %}
                     <div class="modal-footer"> {% csrf_token %}
                         <a class="btn btn-default"
                            href="{% url 'exp:lab-edit' pk=lab.id %}"> Discard Changes </a>

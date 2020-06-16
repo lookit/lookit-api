@@ -315,7 +315,9 @@
                                         </ul>
                                     </div>
                                     <div class="col-xs-6 col-xs-offset-4 text-right">
-                                        {{ study.name }} is currently <em>{{ study.state }}</em>.
+                                        {{ study.name }} is currently <strong>{{ study.state }}</strong>.
+                                        {% if not study.lab.approved_to_test %} <em> It is not possible to submit
+                                        or start this study until the lab {{study.lab.name}} is approved to test. </em> {% endif %}
                                     </div>
                                 </div>
                             </li>
@@ -526,15 +528,15 @@
                     <span id="study-status-additional-information"> </span>
                 </p>
                 <textarea class="form-control" rows="5" name="comments-text"
-                          placeholder="Please leave a reason for rejection here."></textarea> <!--TODO-->
+                          placeholder="Please leave a reason for rejection here."></textarea> <!--TODO allow for comments for other reasons-->
             </div>
             <div class="modal-footer"> {% csrf_token %}
                 <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}">
                     Cancel </a>
                 <button id="changeStatusButton"
-                        {% if 'can_edit_study' not in study_perms %}disabled{% endif %}
+                        {% if not can_change_status %}disabled{% endif %}
                         name="submit" value="submit" class="btn btn-success" type="submit">Save
-                </button>  <!--TODO! use updated perms -->
+                </button>
             </div>
         </div>
     </form>

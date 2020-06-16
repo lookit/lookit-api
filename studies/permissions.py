@@ -69,17 +69,128 @@ road" in terms of properly segmenting permissions, or represent things
 that simply aren't modeled in the database.
 """
 
-from collections import namedtuple
+
 from enum import Enum
 
 # Upgrade to python 3.8 for cached_property
 # from functools import cached_property
 from typing import NamedTuple, Tuple
 
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
 
-from project.permissions import _PermissionMeta, _PermissionName, _PermissionParts
+class _PermissionName(Enum):
+    # Model-level
+    ADD = "add"
+    CHANGE = "change"
+    DELETE = "delete"
+    VIEW = "view"
+    # Field-level
+    EDIT = "edit"
+    READ = "read"
+    ASSOCIATE = "associate"
+    DISSOCIATE = "dissociate"
+
+
+class _PermissionParts(NamedTuple):
+    permission: str
+    model_name: str
+    relationship_path: Tuple[str, ...]
+    target_fields: Tuple[str, ...]
+
+
+class _PermissionMeta(NamedTuple):
+    """Immutable, object-oriented wrapper for Study and Lab permissions.
+
+    We exploit the fact that private fields are not returned when iterating
+    over tuples.
+
+    Properties:
+        codename: a string codename. See module docstring for conventions.
+        description: a string description.
+    """
+
+    codename: str
+    description: str
+
+    @property
+    def parts(self) -> _PermissionParts:
+        perm_and_model, *field_vector = self.codename.split("__")
+        permission, model_name = perm_and_model.split("_")
+
+        if field_vector:
+            final_field_spec = field_vector.pop()
+            target_fields = tuple(final_field_spec.strip("[]").split("|"))
+        else:
+            target_fields = ()
+
+        return _PermissionParts(
+            permission=permission,
+            model_name=model_name,
+            relationship_path=tuple(field_vector),
+            target_fields=target_fields,
+        )
+
+    @property
+    def permission(self) -> str:
+        return self.parts.permission
+
+    @property
+    def model_name(self) -> str:
+        return self.parts.model_name
+
+    @property
+    def relationship_path(self) -> Tuple[str, ...]:
+        return self.parts.relationship_path
+
+    @property
+    def target_fields(self) -> Tuple[str, ...]:
+        return self.parts.target_fields
+
+    @classmethod
+    def from_parts(
+        cls,
+        permission: str,
+        model_name: str,
+        relationship_path: Tuple[str, ...],
+        target_fields: Tuple[str, ...],
+        description: str,
+    ):
+        codename = f"{permission}_{model_name}"
+        if relationship_path:
+            codename += f"__{'__'.join(relationship_path)}"
+        if target_fields:
+            if len(target_fields) > 1:
+                codename += f"__[{'|'.join(target_fields)}]"
+            else:
+                codename += f"__{target_fields[0]}"
+
+        return cls(codename, description)
+
+
+def create_groups_for_instance(
+    model_instance, group_enum, group_class, perm_class, group_object_permission_model
+):
+    uuid_segment = str(model_instance.uuid)[:7]
+    object_name = model_instance._meta.object_name
+    unique_group_tag = (
+        f"{object_name} :: {model_instance.name[:7]}... ({uuid_segment}...)"
+    )
+
+    for group_spec in group_enum:
+        # Group name is going to be something like "READ :: Lab :: MIT (0235dfa...)
+        group_name = f"{group_spec.name} :: {unique_group_tag}"
+        group = group_class.objects.create(name=group_name)
+
+        for permission_meta in group_spec.value:
+            permission = perm_class.objects.get(codename=permission_meta.codename)
+
+            group_object_permission_model.objects.create(
+                content_object=model_instance, permission=permission, group=group
+            )
+            group.save()
+
+        setattr(model_instance, f"{group_spec.name.lower()}_group", group)
+
+    model_instance.save()
 
 
 def create_lab_version(study_permission: _PermissionMeta):
@@ -139,6 +250,9 @@ class StudyPermission(_PermissionMeta, Enum):
         codename="delete_study__responses(is_preview=True)",
         description="Delete preview data for study",
     )
+    APPROVE_REJECT_STUDY = _PermissionMeta(
+        codename="edit_study__<APPROVAL>", description="Approve or reject study"
+    )
 
 
 UMBRELLA_LAB_PERMISSION_MAP = {
@@ -155,6 +269,14 @@ class LabPermission(_PermissionMeta, Enum):
     )
     EDIT_LAB_METADATA = _PermissionMeta(
         codename="edit_lab__<DETAILS>", description="Edit the metadata for a lab"
+    )
+    EDIT_LAB_APPROVAL = _PermissionMeta(
+        codename="edit_lab__approved_to_test",
+        description="Edit whether a lab is approved to test",
+    )
+    READ_LAB_RESEARCHERS = _PermissionMeta(
+        codename="read_lab__<GROUPS>",
+        description="View the list of researchers in a lab",
     )
 
     READ_STUDY_DETAILS = UMBRELLA_LAB_PERMISSION_MAP[StudyPermission.READ_STUDY_DETAILS]
@@ -197,17 +319,25 @@ class LabPermission(_PermissionMeta, Enum):
 
 
 class LabGroup(set, Enum):
-    READ = {LabPermission.READ_STUDY_DETAILS, LabPermission.READ_STUDY_PREVIEW_DATA}
+    GUEST = {LabPermission.CREATE_LAB_ASSOCIATED_STUDY}
+    READONLY = {LabPermission.READ_STUDY_DETAILS, LabPermission.READ_STUDY_PREVIEW_DATA}
+    MEMBER = {
+        LabPermission.CREATE_LAB_ASSOCIATED_STUDY,
+        LabPermission.READ_LAB_RESEARCHERS,
+        LabPermission.READ_STUDY_DETAILS,
+        LabPermission.READ_STUDY_PREVIEW_DATA,
+    }
     ADMIN = {
         # Umbrella permissions
         LabPermission.READ_STUDY_PREVIEW_DATA,
         LabPermission.WRITE_STUDY_DETAILS,
         LabPermission.CHANGE_STUDY_STATUS,
-        LabPermission.MANAGE_LAB_RESEARCHERS,
+        LabPermission.MANAGE_STUDY_RESEARCHERS,
         # Lab-centric permissions
         LabPermission.CREATE_LAB_ASSOCIATED_STUDY,
         LabPermission.EDIT_LAB_METADATA,
-        LabPermission.MANAGE_STUDY_RESEARCHERS,
+        LabPermission.MANAGE_LAB_RESEARCHERS,
+        LabPermission.READ_LAB_RESEARCHERS,
     }
 
 
@@ -269,11 +399,14 @@ class StudyGroup(set, Enum):
     }
 
 
-# Permissions for Lookit-wide groups affecting all studies/labs.
-# Minimal now but a placeholder for where
-# we can flesh out permissions for e.g. RAs working on tech support vs. recruitment.
-# In studies app because perms do apply to Study, Lab models specifically; Lookit-wide
-# groups are defined under accounts and perms relating to all users may be there also in the
-# future.
-# Codenames used here are NOT directly in line with model/study level perms used elsewhere
-# for ease of avoiding conflicts and removing these permissions later.
+class SiteAdminGroup(set, Enum):
+    """
+    Simple starting point/placeholder for site-wide groups. Because the current permissions are directly related
+    to Study and Lab permissions, keep here for now; upon creating other site-level perms and groups, may
+    transfer to accounts app. Core
+    """
+
+    LOOKIT_ADMIN = {
+        StudyPermission.APPROVE_REJECT_STUDY,
+        LabPermission.EDIT_LAB_APPROVAL,
+    }

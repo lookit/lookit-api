@@ -294,7 +294,7 @@ class StudiesListView(generic.ListView):
 
     def get_queryset(self):
         # TODO if we need to filter by study demographics vs user demographics
-        # TODO or by if they've taken the study before this is the spot
+        # or by if they've taken the study before this is the spot
         return super().get_queryset().filter(state="active", public=True)
 
 

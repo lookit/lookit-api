@@ -15,6 +15,7 @@ from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
+from guardian.shortcuts import get_users_with_perms
 from kombu.utils import cached_property
 from model_utils import Choices
 from transitions import Machine
@@ -23,10 +24,17 @@ from accounts.models import Child, DemographicData, User
 from attachment_helpers import get_download_url
 from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
-from project.permissions import create_groups_for_instance
 from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
-from studies.permissions import LabGroup, LabPermission, StudyGroup, StudyPermission
+from studies.permissions import (
+    create_groups_for_instance,
+    LabGroup,
+    LabPermission,
+    StudyGroup,
+    StudyPermission,
+    UMBRELLA_LAB_PERMISSION_MAP,
+    SiteAdminGroup,
+)
 from studies.tasks import delete_video_from_cloud
 
 logger = logging.getLogger(__name__)
@@ -86,8 +94,14 @@ class Lab(models.Model):
     # The related_name convention seems silly, but django complains about reverse
     # accessor clashes if these aren't unique :/ regardless, we won't be using
     # the reverse accessors much so it doesn't really matter.
-    view_group = models.OneToOneField(
-        Group, related_name="lab_for_viewers", on_delete=models.SET_NULL, null=True
+    guest_group = models.OneToOneField(
+        Group, related_name="lab_for_guests", on_delete=models.SET_NULL, null=True
+    )
+    readonly_group = models.OneToOneField(
+        Group, related_name="lab_for_readonly", on_delete=models.SET_NULL, null=True
+    )
+    member_group = models.OneToOneField(
+        Group, related_name="lab_for_members", on_delete=models.SET_NULL, null=True
     )
     admin_group = models.OneToOneField(
         Group, related_name="lab_to_administer", on_delete=models.SET_NULL, null=True
@@ -202,7 +216,7 @@ class Study(models.Model):
     )
     lab = models.ForeignKey(
         Lab,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,  # don't allow deleting lab without moving out studies. Could also switch to a default lab.
         related_name="studies",
         related_query_name="study",
         null=True,
@@ -308,6 +322,19 @@ class Study(models.Model):
     class JSONAPIMeta:
         resource_name = "studies"
         lookup_field = "uuid"
+
+    def users_with_study_perms(self, study_perm: StudyPermission):
+        users_with_perms = get_users_with_perms(
+            self, only_with_perms_in=[study_perm.codename]
+        )
+        if self.lab and study_perm in UMBRELLA_LAB_PERMISSION_MAP:
+            umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
+            users_with_perms = users_with_perms.union(
+                get_users_with_perms(
+                    self.lab, only_with_perms_in=[umbrella_lab_perm.codename]
+                )
+            )
+        return users_with_perms
 
     @cached_property
     def begin_date(self):
@@ -422,9 +449,6 @@ class Study(models.Model):
         return copy
 
     def notify_administrators_of_submission(self, ev):
-        lookit_admin_group = Group.objects.get(
-            name="LOOKIT_ADMIN"
-        )  # TODO: at least import this from some common location
         context = {
             "lab_name": self.lab.name,
             "study_name": self.name,
@@ -437,14 +461,18 @@ class Study(models.Model):
             "notify_admins_of_study_action",
             "Study Submission Notification",
             settings.EMAIL_FROM_ADDRESS,
-            bcc=list(lookit_admin_group.user_set.values_list("username", flat=True)),
+            bcc=list(
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
+            ),
             **context,
         )
 
     def notify_submitter_of_approval(self, ev):
+
         context = {
             "study_name": self.name,
-            "org_name": self.organization.name,
             "study_id": self.pk,
             "approved": True,
             "comments": self.comments,
@@ -454,7 +482,9 @@ class Study(models.Model):
             "{} Approval Notification".format(self.name),
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_admin_group.user_set.values_list("username", flat=True)
+                self.users_with_study_perms(
+                    StudyPermission.CAN_CHANGE_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
@@ -462,7 +492,6 @@ class Study(models.Model):
     def notify_submitter_of_rejection(self, ev):
         context = {
             "study_name": self.name,
-            "org_name": self.organization.name,
             "study_id": self.pk,
             "approved": False,
             "comments": self.comments,
@@ -472,26 +501,30 @@ class Study(models.Model):
             "{} Rejection Notification".format(self.name),
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_admin_group.user_set.values_list("username", flat=True)
+                self.users_with_study_perms(
+                    StudyPermission.CAN_CHANGE_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_submitter_of_recission(self, ev):
-        context = {"study_name": self.name, "org_name": self.organization.name}
+        context = {"study_name": self.name}
         send_mail.delay(
             "notify_researchers_of_approval_rescission",
             "{} Rescinded Notification".format(self.name),
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_admin_group.user_set.values_list("username", flat=True)
+                self.users_with_study_perms(
+                    StudyPermission.CAN_CHANGE_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_administrators_of_retraction(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
@@ -503,9 +536,9 @@ class Study(models.Model):
             "Study Retraction Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
@@ -524,7 +557,7 @@ class Study(models.Model):
 
     def notify_administrators_of_activation(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
@@ -536,16 +569,16 @@ class Study(models.Model):
             "Study Activation Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_administrators_of_pause(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
@@ -557,16 +590,16 @@ class Study(models.Model):
             "Study Pause Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_administrators_of_deactivation(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
@@ -578,9 +611,9 @@ class Study(models.Model):
             "Study Deactivation Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
@@ -667,7 +700,7 @@ def remove_rejection_comments_after_approved(sender, instance, created, **kwargs
 
 
 @receiver(post_save, sender=Study)
-def study_post_save(sender, **kwargs):
+def create_study_groups(sender, **kwargs):
     """
     Create groups for newly created Study instances. We only
     run on study creation to avoid having to check for existence

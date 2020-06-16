@@ -23,9 +23,6 @@ Attributes:
     BASE_DIR (str): holds the path to the current working directory
     PATH_TO_CERTS (str): holds the path to certificates used to serve the django application securely.
 
-Todo:
-    *Coloring stdout responses for emphasize and readability purposes
-
 """
 import os
 import platform

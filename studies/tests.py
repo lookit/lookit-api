@@ -63,8 +63,8 @@ class ResponseViewsTestCase(TestCase):
             lab=self.lab,
         )
 
-        self.study.study_admin_group.user_set.add(self.study_admin)
-        self.study.study_read_group.user_set.add(self.study_reader)
+        self.study.admin_group.user_set.add(self.study_admin)
+        self.study.researcher_group.user_set.add(self.study_reader)
         [
             assign_perm("accounts.can_view_experimenter", researcher)
             for researcher in [
