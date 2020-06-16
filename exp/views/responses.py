@@ -160,6 +160,9 @@ class StudyResponsesList(
             build_summary_csv([resp], ALL_OPTIONAL_HEADER_KEYS)
             for resp in paginated_responses
         ]
+        context["can_edit_feedback"] = self.request.user.has_study_perms(
+            StudyPermission.EDIT_STUDY_FEEDBACK, context["study"]
+        )
         return context
 
     def sort_attachments_by_response(self, responses):
@@ -204,24 +207,31 @@ class StudyResponsesConsentManager(
 
     template_name = "studies/study_responses_consent_ruling.html"
     queryset = Study.objects.all()
-    # permission_required = "studies.can_view_study_responses"
     raise_exception = True
 
     def user_can_code_consent(self):
         user = self.request.user
         study = self.get_object()
-        return user.has_study_perms(StudyPermission.CODE_STUDY_CONSENT, study)
+        return user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        ) or user.has_study_perms(StudyPermission.CODE_STUDY_PREVIEW_CONSENT, study)
 
     test_func = user_can_code_consent
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         # Need to prefetch our responses with consent-footage videos.
         study = context["study"]
-        responses = get_responses_with_current_rulings_and_videos(study.id)
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        responses = get_responses_with_current_rulings_and_videos(
+            study.id, preview_only
+        )
 
         context["loaded_responses"] = responses
-        context["summary_statistics"] = get_consent_statistics(study.id)
+        context["summary_statistics"] = get_consent_statistics(study.id, preview_only)
 
         # Using a map for arbitrarily structured data - lists and objects that we can't just trivially shove onto
         # data-* properties in HTML
@@ -275,7 +285,12 @@ class StudyResponsesConsentManager(
         form_data = self.request.POST
         user = self.request.user
         study = self.get_object()
-        responses = study.responses
+        preview_only = not self.request.user.has_study_perms(
+            StudyPermission.CODE_STUDY_CONSENT, study
+        )
+        preview_filter = Q(is_preview=True) if preview_only else Q()
+        # Only allow any action on preview responses unless full perms
+        responses = study.responses.filter(preview_filter)
 
         comments = json.loads(form_data.get("comments"))
 
@@ -978,6 +993,9 @@ class StudyResponsesAll(
         )
         context["childoptions"] = CHILD_DATA_OPTIONS
         context["ageoptions"] = AGE_DATA_OPTIONS
+        context["can_delete_preview_data"] = self.request.user.has_study_perms(
+            StudyPermission.DELETE_ALL_PREVIEW_DATA, context["study"]
+        )
         return context
 
     def post(self, request, *args, **kwargs):
@@ -1728,11 +1746,11 @@ class StudyAttachments(
         if not self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_RESPONSE_DATA, study
         ):
-            videos = videos.filter(is_preview=True)
+            videos = videos.filter(response__is_preview=True)
         if not self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_PREVIEW_DATA, study
         ):
-            videos = videos.filter(is_preview=False)
+            videos = videos.filter(response__is_preview=False)
         return videos
 
     def get_context_data(self, **kwargs):
@@ -1743,7 +1761,7 @@ class StudyAttachments(
         context = super().get_context_data(**kwargs)
         orderby = self.request.GET.get("sort", "full_name")
         match = self.request.GET.get("match", "")
-        videos = self.get_consented_videos(study)
+        videos = self.get_consented_videos(context["study"])
         if match:
             videos = videos.filter(full_name__icontains=match)
         if orderby:

@@ -174,27 +174,30 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <form method="POST" class="form-inline">{% csrf_token %}
-                        <h4>New Feedback</h4>
-                        <section class="form-group">
-                            <label class="sr-only" for="response-feedback">
-                                Response feedback
-                            </label>
-                            <textarea
-                                    id="response-feedback"
-                                    class="form-control"
-                                    name="comment"
-                                    rows="4"
-                                    cols="50"></textarea>
-                            <input id="response-id-for-feedback" type="hidden" name="response_id" value=0 />
-                            <button class="btn mt-sm btn-primary" type="submit">Create</button>
-                        </section>
-                    </form>
+                    {% if can_edit_feedback %}
+                        <form method="POST" class="form-inline">{% csrf_token %}
+                            <h4>New Feedback</h4>
+                            <section class="form-group">
+                                <label class="sr-only" for="response-feedback">
+                                    Response feedback
+                                </label>
+                                <textarea
+                                        id="response-feedback"
+                                        class="form-control"
+                                        name="comment"
+                                        rows="4"
+                                        cols="50"></textarea>
+                                <input id="response-id-for-feedback" type="hidden" name="response_id" value=0 />
+                                <button class="btn mt-sm btn-primary" type="submit">Create</button>
+                            </section>
+                        </form>
+                    {% endif %}
                     <section class="mt-md">
-                        <h4>Existing Feedback</h4>
+                        <h4>Existing Feedback:</h4>
                         {% for response in responses %}
                             <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
                             {% for feedback in response.feedback.all %}
+                                {% if can_edit_feedback %}
                                 <form method="POST" class="small form-inline">{% csrf_token %}
                                     <div class="form-group">
                                         <label class="sr-only"
@@ -214,6 +217,14 @@
                                         </footer>
                                     </div>
                                 </form>
+                                {% else %}
+                                <p>{{ feedback.comment }}</p>
+                                <footer class="pt-sm pb-sm">
+                                    {{ feedback.researcher.get_full_name }}
+                                </footer>
+                                {% endif %}
+                                {% empty %}
+                                No feedback
                             {% endfor %}
                             </div>
                         {% endfor %}

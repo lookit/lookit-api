@@ -64,7 +64,7 @@ urlpatterns = [
     path("labs/create/", LabCreateView.as_view(), name="lab-create"),
     path("labs/<int:pk>/", LabDetailView.as_view(), name="lab-detail"),
     path("labs/<int:pk>/edit/", LabUpdateView.as_view(), name="lab-edit"),
-    path("labs/<int:pk>/members/", LabMembersView.as_view(), name="lab-members-list"),
+    path("labs/<int:pk>/members/", LabMembersView.as_view(), name="lab-members"),
     path(
         "labs/request/<int:pk>/", LabMembershipRequestView.as_view(), name="lab-request"
     ),

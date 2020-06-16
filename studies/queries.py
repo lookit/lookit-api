@@ -63,11 +63,12 @@ def get_annotated_responses_qs(include_comments=False, include_time=False):
     return annotated_query
 
 
-def get_responses_with_current_rulings_and_videos(study_id):
+def get_responses_with_current_rulings_and_videos(study_id, preview_only):
     """Gets all the responses for a given study, including the current ruling and consent videos.
 
     Args:
         study_id: The study ID related to the responses we want.
+        preview_only: Whether to include only preview responses (True), or all data (False)
 
     Returns:
         A queryset of responses with attached consent videos.
@@ -76,9 +77,11 @@ def get_responses_with_current_rulings_and_videos(study_id):
     dont_show_old_approved = Q(study_id=study_id) & (
         Q(time_of_ruling__gt=three_weeks_ago) | ~Q(current_ruling=ACCEPTED)
     )
+    preview_filter = Q(is_preview=True) if preview_only else Q()
     responses_for_study = (
         get_annotated_responses_qs(include_comments=True, include_time=True)
         .filter(dont_show_old_approved)
+        .filter(preview_filter)
         # .prefetch_related(
         #     models.Prefetch(
         #         "videos",
@@ -140,7 +143,7 @@ def get_responses_with_current_rulings_and_videos(study_id):
     return responses_for_study
 
 
-def get_consent_statistics(study_id):
+def get_consent_statistics(study_id, preview_only):
     """Retrieve summary statistics for consent manager view.
 
     Required Fields:
@@ -154,6 +157,7 @@ def get_consent_statistics(study_id):
 
     Args:
         study_id: The integer ID for the study we want.
+        preview_only: Whether to include only preview responses (True), or all data (False)
 
     Returns:
         A dict containing the summary stats.
@@ -161,10 +165,12 @@ def get_consent_statistics(study_id):
     statistics = {"responses": {"total": 0}, "children": {}}
     response_stats = statistics["responses"]
     child_stats = statistics["children"]
+    preview_filter = Q(is_preview=True) if preview_only else Q()
 
     response_counts = (
         get_annotated_responses_qs()
         .filter(study_id=study_id)
+        .filter(preview_filter)
         .values("current_ruling")
         .order_by("current_ruling")
         .annotate(count=Count("current_ruling"))

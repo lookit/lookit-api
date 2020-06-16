@@ -38,7 +38,7 @@
             {% if can_see_lab_researchers %}
             <div class="row">
                 <div class="pull-right ">
-                    <a href="{% url 'exp:lab-members-list' pk=lab.id %}"> View/Manage lab members </a>
+                    <a href="{% url 'exp:lab-members' pk=lab.id %}"> View/Manage lab members </a>
                 </div>
             </div>
             {% endif %}

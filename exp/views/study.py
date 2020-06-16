@@ -383,6 +383,9 @@ class StudyDetailView(
 
             try:
                 self.manage_researcher_permissions()
+                HttpResponseRedirect(
+                    reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
+                )
             except AssertionError:
                 return HttpResponseForbidden()
         # Change study status case
@@ -558,6 +561,11 @@ class StudyDetailView(
         context["can_change_status"] = self.request.user.has_study_perms(
             StudyPermission.CHANGE_STUDY_STATUS, study
         )
+        context["can_manage_researchers"] = self.request.user.has_study_perms(
+            StudyPermission.MANAGE_STUDY_RESEARCHERS, study
+        )
+        # Since get_obj_perms template tag doesn't collect study + lab perms
+        context["study_perms"] = self.request.user.perms_for_study(study)
         return context
 
     def get_study_researchers(self):
@@ -896,7 +904,7 @@ def get_permitted_triggers(view_instance, triggers):
     lab_approved = study.lab.approved_to_test
     can_change_status = user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
 
-    admin_triggers = ["approve"]
+    admin_triggers = ["approve", "reject"]
 
     only_for_approved_labs_triggers = ["activate", "approve", "submit", "resubmit"]
 

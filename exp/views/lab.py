@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.db.models import Q
 from django.db.models.functions import Lower
+from django.http import HttpResponseRedirect
 from django.shortcuts import reverse, get_object_or_404
 from django.views import generic
 
@@ -63,9 +64,11 @@ class LabDetailView(
         ).exists()
         context["can_edit_lab"] = user.has_perm(
             LabPermission.EDIT_LAB_METADATA.codename, self.object
-        )
-        context["can_see_lab_researchers"] = context["in_this_lab"] or user.has_perm(
-            LabPermission.MANAGE_LAB_RESEARCHERS.codename, lab
+        ) or user.has_perm("studies." + LabPermission.EDIT_LAB_METADATA.codename)
+        context["can_see_lab_researchers"] = (
+            context["in_this_lab"]
+            or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.codename, lab)
+            or user.has_perm("studies." + LabPermission.READ_LAB_RESEARCHERS.codename)
         )
         return context
 
@@ -90,10 +93,18 @@ class LabMembersView(
         lab = self.get_object()
         user = self.request.user
         if self.request.method == "POST":
-            return user.has_perm(LabPermission.MANAGE_LAB_RESEARCHERS.codename, lab)
-        else:
-            return lab in user.labs.all() or user.has_perm(
+            return user.has_perm(
                 LabPermission.MANAGE_LAB_RESEARCHERS.codename, lab
+            ) or user.has_perm(
+                "studies." + LabPermission.MANAGE_LAB_RESEARCHERS.codename
+            )
+        else:
+            return (
+                lab in user.labs.all()
+                or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.codename, lab)
+                or user.has_perm(
+                    "studies." + LabPermission.READ_LAB_RESEARCHERS.codename
+                )
             )
 
     test_func = user_can_view_lab_members
@@ -164,6 +175,8 @@ class LabMembersView(
         context["lab_members"] = self.get_lab_members()
         context["can_edit"] = self.request.user.has_perm(
             LabPermission.MANAGE_LAB_RESEARCHERS.codename, lab
+        ) or self.request.user.has_perm(
+            "studies." + LabPermission.MANAGE_LAB_RESEARCHERS.codename
         )
         return context
 
@@ -271,6 +284,8 @@ class LabMembersView(
             for study in Study.objects.filter(lab=lab):
                 for gr in study.all_study_groups():
                     gr.user_set.remove(researcher)
+                    gr.save()
+                study.save()
             messages.success(
                 self.request,
                 f"Removed {researcher.get_full_name()} from {lab.name} and from all of this lab's studies.",
@@ -293,7 +308,9 @@ class LabMembersView(
         if action == "resend_confirmation":
             self.send_resend_confirmation_email(researcher)
 
-        return retval
+        return HttpResponseRedirect(
+            reverse("exp:lab-members", kwargs={"pk": self.object.id})
+        )
 
     def send_reset_password_email(self, researcher):
         """
@@ -355,7 +372,11 @@ class LabUpdateView(
 
     def user_can_edit_lab(self):
         lab = self.get_object()
-        return self.request.user.has_perm(LabPermission.EDIT_LAB_METADATA.codename, lab)
+        return self.request.user.has_perm(
+            LabPermission.EDIT_LAB_METADATA.codename, lab
+        ) or self.request.user.has_perm(
+            "studies." + LabPermission.EDIT_LAB_METADATA.codename
+        )
 
     test_func = user_can_edit_lab
 
@@ -447,7 +468,7 @@ class LabMembershipRequestView(
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-        lab = self.object
+        lab = self.get_object()
 
         # Technically allow re-requesting if already in a lab; won't have any effect
         # but will re-notify lab admins.
@@ -455,12 +476,14 @@ class LabMembershipRequestView(
             # Add the request to the user/lab
             user.requested_labs.add(lab)
             user.save()
-            # Notify lab admins so they can go approve the request
+            # Notify lab admins so they can go approve the request.
+            # TODO: could also handle this via m2m post-add signals on Lab model
+            # (see https://docs.djangoproject.com/en/3.0/ref/signals/#m2m-changed)
             researcher_name = user.get_full_name()
             context = {
                 "researcher_name": researcher_name,
                 "lab_name": lab.name,
-                "lab_id": lab.id,
+                "url": reverse("exp:lab-members", kwargs={"pk": lab.pk}),
             }
             send_mail.delay(
                 "notify_lab_admins_of_request_to_join",
@@ -513,27 +536,12 @@ class LabListView(
         # ahead of approval.
         if lab_set == "all":
             queryset = Lab.objects.all()
-            # filter(
-            #    Q(approved_to_test=True)
-            #    | Q(id__in=user.labs.all())
-            #    | Q(id__in=user.requested_labs.all())
-            # )
-        elif lab_set == "myLabs":
+        elif lab_set == "unapproved":
+            queryset = Lab.objects.filter(approved_to_test=False)
+        else:  # lab_set == "myLabs": (should match default in context["set"] )
             queryset = Lab.objects.filter(
                 Q(id__in=user.labs.all()) | Q(id__in=user.requested_labs.all())
             )
-        else:  # unapproved
-            # If able to approve labs, include unapproved labs
-            # if user in LOOKIT_ADMIN_GROUP.user_set.all(): # replace with specific perm
-            queryset = Lab.objects.filter(approved_to_test=False)
-            # else:
-            #     queryset = Lab.objects.filter(
-            #         (
-            #             Q(id__in=user.labs.all())
-            #             | Q(id__in=user.requested_labs.all())
-            #             & Q(approved_to_test=False)
-            #         )
-            #     )
 
         match = query_dict.get("match")
         if match:

@@ -184,6 +184,7 @@ class Study(models.Model):
         "metadata",
         "study_type",
         "compensation_description",
+        "lab",
     ]
 
     DAY_CHOICES = [(i, i) for i in range(0, 32)]
@@ -483,7 +484,7 @@ class Study(models.Model):
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
                 self.users_with_study_perms(
-                    StudyPermission.CAN_CHANGE_STATUS
+                    StudyPermission.CHANGE_STUDY_STATUS
                 ).values_list("username", flat=True)
             ),
             **context,
@@ -711,6 +712,25 @@ def create_study_groups(sender, **kwargs):
         create_groups_for_instance(
             study, StudyGroup, Group, Permission, StudyGroupObjectPermission
         )
+
+
+@receiver(pre_save, sender=Study)
+def remove_old_lab_researchers(sender, instance, **kwargs):
+    """
+    If changing the lab of a study, remove any researchers who are not in the
+    new lab from all study access groups.
+    """
+    study_in_db = Study.objects.filter(pk=instance.id).first()
+    if not study_in_db:
+        return
+    old_lab = study_in_db.lab
+    new_lab = instance.lab
+    if old_lab.pk != new_lab.pk:
+        new_lab_researchers = new_lab.researchers.all()
+        for group in instance.all_study_groups():
+            for user in group.user_set.all():
+                if user not in new_lab_researchers:
+                    group.user_set.remove(user)
 
 
 class ResponseApiManager(models.Manager):

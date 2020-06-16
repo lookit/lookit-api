@@ -2,4 +2,4 @@ Dear {{ lab_name }} Admin,
 
 {{ researcher_name }} has requested to join your lab, {{ lab_name }}, on Lookit.
 
-You can approve the request and set their permissions here: {{ base_url }}{% url 'exp:lab-detail' pk=lab_id %}
+You can approve the request and set their permissions here: {{ base_url }}{{ url }}

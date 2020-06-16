@@ -237,6 +237,10 @@ class StudyPermission(_PermissionMeta, Enum):
         codename="edit_study__responses__consent_rulings",
         description="Code consent for study",
     )
+    CODE_STUDY_PREVIEW_CONSENT = _PermissionMeta(
+        codename="edit_study__responses__consent_rulings(is_preview=True)",
+        description="Code consent for preview responses only",
+    )
     CONTACT_STUDY_PARTICIPANTS = _PermissionMeta(
         codename="edit_study__message_set", description="Contact participants for study"
     )
@@ -303,6 +307,10 @@ class LabPermission(_PermissionMeta, Enum):
 
     CODE_STUDY_CONSENT = UMBRELLA_LAB_PERMISSION_MAP[StudyPermission.CODE_STUDY_CONSENT]
 
+    CODE_STUDY_PREVIEW_CONSENT = UMBRELLA_LAB_PERMISSION_MAP[
+        StudyPermission.CODE_STUDY_PREVIEW_CONSENT
+    ]
+
     CONTACT_STUDY_PARTICIPANTS = UMBRELLA_LAB_PERMISSION_MAP[
         StudyPermission.CONTACT_STUDY_PARTICIPANTS
     ]
@@ -326,10 +334,13 @@ class LabGroup(set, Enum):
         LabPermission.READ_LAB_RESEARCHERS,
         LabPermission.READ_STUDY_DETAILS,
         LabPermission.READ_STUDY_PREVIEW_DATA,
+        LabPermission.CODE_STUDY_PREVIEW_CONSENT,
     }
     ADMIN = {
         # Umbrella permissions
+        LabPermission.READ_STUDY_DETAILS,
         LabPermission.READ_STUDY_PREVIEW_DATA,
+        LabPermission.CODE_STUDY_PREVIEW_CONSENT,
         LabPermission.WRITE_STUDY_DETAILS,
         LabPermission.CHANGE_STUDY_STATUS,
         LabPermission.MANAGE_STUDY_RESEARCHERS,
@@ -345,22 +356,26 @@ class StudyGroup(set, Enum):
     PREVIEW = {
         StudyPermission.READ_STUDY_DETAILS,
         StudyPermission.READ_STUDY_PREVIEW_DATA,
+        StudyPermission.CODE_STUDY_PREVIEW_CONSENT,
     }
     DESIGN = {
         StudyPermission.READ_STUDY_DETAILS,
         StudyPermission.READ_STUDY_PREVIEW_DATA,
+        StudyPermission.CODE_STUDY_PREVIEW_CONSENT,
         StudyPermission.DELETE_ALL_PREVIEW_DATA,
         StudyPermission.WRITE_STUDY_DETAILS,
     }
     ANALYSIS = {
         StudyPermission.READ_STUDY_DETAILS,
         StudyPermission.READ_STUDY_PREVIEW_DATA,
+        StudyPermission.CODE_STUDY_PREVIEW_CONSENT,
         StudyPermission.DELETE_ALL_PREVIEW_DATA,
         StudyPermission.READ_STUDY_RESPONSE_DATA,
     }
     SUBMISSION_PROCESSOR = {
         StudyPermission.READ_STUDY_DETAILS,
         StudyPermission.READ_STUDY_PREVIEW_DATA,
+        StudyPermission.CODE_STUDY_PREVIEW_CONSENT,
         StudyPermission.DELETE_ALL_PREVIEW_DATA,
         StudyPermission.CHANGE_STUDY_STATUS,
         StudyPermission.CODE_STUDY_CONSENT,
@@ -370,6 +385,7 @@ class StudyGroup(set, Enum):
     RESEARCHER = {
         StudyPermission.READ_STUDY_DETAILS,
         StudyPermission.READ_STUDY_PREVIEW_DATA,
+        StudyPermission.CODE_STUDY_PREVIEW_CONSENT,
         StudyPermission.DELETE_ALL_PREVIEW_DATA,
         StudyPermission.CHANGE_STUDY_STATUS,
         StudyPermission.READ_STUDY_RESPONSE_DATA,
@@ -380,6 +396,7 @@ class StudyGroup(set, Enum):
     MANAGER = {
         StudyPermission.READ_STUDY_DETAILS,
         StudyPermission.READ_STUDY_PREVIEW_DATA,
+        StudyPermission.CODE_STUDY_PREVIEW_CONSENT,
         StudyPermission.DELETE_ALL_PREVIEW_DATA,
         StudyPermission.WRITE_STUDY_DETAILS,
         StudyPermission.CHANGE_STUDY_STATUS,
@@ -388,6 +405,7 @@ class StudyGroup(set, Enum):
     ADMIN = {
         StudyPermission.READ_STUDY_DETAILS,
         StudyPermission.READ_STUDY_PREVIEW_DATA,
+        StudyPermission.CODE_STUDY_PREVIEW_CONSENT,
         StudyPermission.DELETE_ALL_PREVIEW_DATA,
         StudyPermission.WRITE_STUDY_DETAILS,
         StudyPermission.EDIT_STUDY_FEEDBACK,
@@ -403,10 +421,14 @@ class SiteAdminGroup(set, Enum):
     """
     Simple starting point/placeholder for site-wide groups. Because the current permissions are directly related
     to Study and Lab permissions, keep here for now; upon creating other site-level perms and groups, may
-    transfer to accounts app. Core
+    transfer to accounts app.
     """
 
     LOOKIT_ADMIN = {
         StudyPermission.APPROVE_REJECT_STUDY,
+        StudyPermission.CHANGE_STUDY_STATUS,
         LabPermission.EDIT_LAB_APPROVAL,
+        LabPermission.EDIT_LAB_METADATA,
+        LabPermission.READ_LAB_RESEARCHERS,
+        LabPermission.MANAGE_LAB_RESEARCHERS,
     }

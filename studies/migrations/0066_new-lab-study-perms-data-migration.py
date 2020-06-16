@@ -201,9 +201,7 @@ def revert_migration(apps, schema_editor):
         id__in=LabGroupObjectPermission.objects.values_list("group_id", flat=True)
     ).delete()
 
-    Group.objects.filter(
-        name__in=SiteAdminGroup.objects.values_list("name", flat=True)
-    ).delete()
+    Group.objects.filter(name__in=[g.name for g in SiteAdminGroup]).delete()
 
     Permission.objects.filter(
         id__in=LabGroupObjectPermission.objects.values_list("permission_id", flat=True)

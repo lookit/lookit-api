@@ -3,6 +3,7 @@ from rest_framework import permissions
 
 from accounts.models import Child
 from studies.models import Response
+from studies.permissions import StudyPermission
 
 
 class FeedbackPermissions(permissions.BasePermission):
@@ -16,7 +17,9 @@ class FeedbackPermissions(permissions.BasePermission):
             if response and response.get("id"):
                 related_study = get_object_or_404(Response, id=response.get("id")).study
                 user = request.user
-                if not user.has_perm("studies.can_edit_study", related_study):
+                if not user.has_study_perms(
+                    StudyPermission.EDIT_STUDY_FEEDBACK, related_study
+                ):
                     return False
         return True
 

@@ -20,7 +20,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import assign_perm, get_objects_for_user
+from guardian.shortcuts import assign_perm, get_objects_for_user, get_perms
 from kombu.utils import cached_property
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
@@ -162,6 +162,9 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     def has_study_perms(self, study_perm: StudyPermission, study) -> bool:
         # 1) Modeled perm should be passed already
+        has_all_studies_perm = self.has_perm("studies." + study_perm.codename)
+        if has_all_studies_perm:
+            return True
         has_study_perm = self.has_perm(study_perm.codename, study)
         if has_study_perm:
             return True
@@ -172,6 +175,16 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
                 return self.has_perm(umbrella_lab_perm.codename, study.lab)
             else:
                 return False
+
+    def perms_for_study(self, study):
+        user_study_perms = get_perms(self, study)
+        user_lab_perms = get_perms(self, study.lab)
+
+        for study_perm, lab_perm in UMBRELLA_LAB_PERMISSION_MAP.items():
+            if lab_perm.codename in user_lab_perms:
+                user_study_perms.append(study_perm.codename)
+
+        return user_study_perms
 
     def studies_for_perm(self, study_perm: StudyPermission):
         from studies.models import Study, Lab
