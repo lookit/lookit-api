@@ -33,6 +33,8 @@ SECRET_KEY = os.environ.get(
 DEBUG = bool(os.environ.get("DEBUG", False))
 ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
 
+SESSION_COOKIE_SECURE = True
+
 AUTH_USER_MODEL = "accounts.User"
 GUARDIAN_MONKEY_PATCH = False
 
