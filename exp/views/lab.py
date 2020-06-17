@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
-from django.shortcuts import reverse, get_object_or_404
+from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
 
 from accounts.models import User
@@ -17,7 +17,7 @@ from exp.views.mixins import (
     SingleObjectParsimoniousQueryMixin,
 )
 from project import settings
-from studies.forms import LabForm, LabApprovalForm
+from studies.forms import LabApprovalForm, LabForm
 from studies.helpers import send_mail
 from studies.models import Lab, Study
 from studies.permissions import LabPermission, SiteAdminGroup
@@ -138,9 +138,12 @@ class LabMembersView(
         queryset = queryset.order_by("family_name")
         queryset = self.paginated_queryset(queryset, query_dict.get("page", 1), 20)
 
+        return queryset
+
+    def members_with_group_labels(self, qs):
         return [
             {"user": user, "user_data": {"group_label": self.get_group_label(user)}}
-            for user in queryset
+            for user in qs
         ]
 
     def get_group_label(self, member):
@@ -172,7 +175,9 @@ class LabMembersView(
         context["page"] = self.request.GET.get("page", "1")
         lab = self.get_object()
         context["lab"] = lab
-        context["lab_members"] = self.get_lab_members()
+        lab_members = self.get_lab_members()
+        context["lab_members"] = self.members_with_group_labels(lab_members)
+        context["lab_members_qs"] = lab_members
         context["can_edit"] = self.request.user.has_perm(
             LabPermission.MANAGE_LAB_RESEARCHERS.codename, lab
         ) or self.request.user.has_perm(

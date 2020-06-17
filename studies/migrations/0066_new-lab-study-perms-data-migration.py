@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations
 from guardian.shortcuts import assign_perm
 
-from studies.permissions import LabGroup, StudyGroup, SiteAdminGroup
+from studies.permissions import LabGroup, SiteAdminGroup, StudyGroup
 
 
 def add_all_permissions():

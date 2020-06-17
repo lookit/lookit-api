@@ -803,7 +803,9 @@ class StudyPreviewDetailView(
         # Relevant permission in order to preview is READ_STUDY_DETAILS (previewing is essentially
         # examining the study protocol configuration), rather than READY_STUDY_PREVIEW_DATA
         # (which has to do with accessing data from other preview sessions)
-        return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
+        return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study) or (
+            study.shared_preview and user.is_researcher
+        )
 
     test_func = can_preview
 
@@ -867,12 +869,12 @@ class PreviewProxyView(ExperimenterLoginRequiredMixin, UserPassesTestMixin, Prox
             # requesting user doesn't belong to that child
             return False
 
-        if study.shared_preview or user.has_study_perms(
+        # Relevant permission in order to preview is READ_STUDY_DETAILS (previewing is essentially
+        # examining the study protocol configuration), rather than READY_STUDY_PREVIEW_DATA
+        # (which has to do with accessing data from other preview sessions)
+        return (study.shared_preview and user.is_researcher) or user.has_study_perms(
             StudyPermission.READ_STUDY_DETAILS, study
-        ):
-            return True
-        else:
-            return False
+        )
 
     test_func = user_can_view_previews
 

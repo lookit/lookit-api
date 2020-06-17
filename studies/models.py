@@ -13,6 +13,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import get_users_with_perms
@@ -27,13 +28,13 @@ from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.permissions import (
-    create_groups_for_instance,
+    UMBRELLA_LAB_PERMISSION_MAP,
     LabGroup,
     LabPermission,
+    SiteAdminGroup,
     StudyGroup,
     StudyPermission,
-    UMBRELLA_LAB_PERMISSION_MAP,
-    SiteAdminGroup,
+    create_groups_for_instance,
 )
 from studies.tasks import delete_video_from_cloud
 
@@ -140,6 +141,34 @@ class LabUserObjectPermission(UserObjectPermissionBase):
 
 class LabGroupObjectPermission(GroupObjectPermissionBase):
     content_object = models.ForeignKey(Lab, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=User)
+def add_researcher_to_labs(sender, **kwargs):
+    """
+    Add researchers to default labs if needed.
+    """
+    user, created, update_fields = (
+        kwargs["instance"],
+        kwargs["created"],
+        kwargs["update_fields"],
+    )
+    # Tradeoff - could be more efficient and more flexible in case we want to
+    # remove some reserachers from these labs by adding only when created or is_researcher changed,
+    # but then need to always send update_fields with save (e.g., not via admin app).
+    # Not sure if new researcher creation will involve setting is_researcher ahead of creation
+    # or might involve saving first, then editing, so hold off for now -
+    if user.is_researcher:  # and (created or "is_researcher" in update_fields):
+        if Lab.objects.filter(name="Demo lab").exists():
+            demo_lab = Lab.objects.get(name="Demo lab")
+            demo_lab.researchers.add(user)
+            demo_lab.readonly_group.user_set.add(user)
+            demo_lab.save()
+        if Lab.objects.filter(name="Sandbox lab").exists():
+            sandbox_lab = Lab.objects.get(name="Sandbox lab")
+            sandbox_lab.researchers.add(user)
+            sandbox_lab.guest_group.user_set.add(user)
+            sandbox_lab.save()
 
 
 @receiver(post_save, sender=Lab)

@@ -33,7 +33,7 @@
                 </a>
             </div>
         </div>
-        <div class="row text-center mt-lg">
+        <div class="row text-center mt-lg mb-md">
             <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
                 <form method="GET">
                     <input id="search-labs" class="form-control" name="match"
@@ -56,7 +56,7 @@
                         <li class="multi-toggle-filter {% if set == 'unapproved' %}active {% endif %} ">
                             <a class='state-link'
                                href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='unapproved' %}">
-                                Unapproved
+                                Inactive
                             </a>
                         </li>
                     {% endif %}

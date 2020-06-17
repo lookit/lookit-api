@@ -73,11 +73,11 @@
                     <div class="col-xs-4">
                         {{ user_obj.user.identicon_small_html }} <strong>{{ user_obj.user.get_full_name }}</strong>
                         {% if can_edit %}
-                        <p><strong>Username: </strong> {{ user_obj.user.username }}</p>
-                        {% if user_obj.user.osf_profile_url != "#" %}
-                        <p><a href="{{ user_obj.user.osf_profile_url }}" target="_blank" rel="noopener noreferer">OSF
-                            profile</a></p>
-                        {% endif %}
+                            <p><strong>Username: </strong> {{ user_obj.user.username }}</p>
+                            {% if user_obj.user.osf_profile_url != "#" %}
+                                <p><a href="{{ user_obj.user.osf_profile_url }}" target="_blank" rel="noopener noreferer">OSF
+                                    profile</a></p>
+                            {% endif %}
                         {% endif %}
                     </div>
                     <div class="col-xs-4 ">
@@ -123,10 +123,10 @@
         {% endfor %}
 
         <div class="paginator pt-lg">
-            {% if object_list %}
+            {% if lab_members_qs %}
             <div class="row pb-lg">
                 <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                    {% include 'studies/_paginator.html' with items=object_list %}
+                    {% include 'studies/_paginator.html' with items=lab_members_qs %}
                 </div>
             </div>
             {% endif %}

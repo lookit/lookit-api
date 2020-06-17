@@ -13,6 +13,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify

@@ -7,8 +7,9 @@ for ease of avoiding conflicts and removing these permissions later.
 from collections import namedtuple
 from enum import Enum
 
-from studies.models import Lab, Study
 from django.contrib.contenttypes.models import ContentType
+
+from studies.models import Lab, Study
 
 SimplePermissionSpec = namedtuple(
     "SimplePermissionSpec", ["codename", "name", "content_type", "description"]

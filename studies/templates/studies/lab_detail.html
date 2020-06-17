@@ -103,7 +103,7 @@
     <div class="row mt-md">
       <div class="col-xs-12">
           <strong> Approved to test: </strong>
-          {% if lab.approved_to_test %} Yes {% else %} No {% endif %}
+          {{ lab.approved_to_test|yesno:"Yes,No" }}
       </div>
     </div>
 
