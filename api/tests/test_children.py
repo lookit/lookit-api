@@ -9,29 +9,54 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import ConsentRuling, Feedback, Response, Study, StudyType
+from studies.models import ConsentRuling, Feedback, Lab, Response, Study, StudyType
+from studies.permissions import LabPermission, StudyPermission
 
 
 class ChildrenTestCase(APITestCase):
     def setUp(self):
         self.researcher = G(User, is_active=True, is_researcher=True)
         self.participant = G(User, is_active=True)
-        self.child = G(Child, user=self.participant, given_name="Sally")
+        self.child_with_consented_response = G(
+            Child, user=self.participant, given_name="Sally"
+        )
+        self.child_without_consented_response = G(
+            Child, user=self.participant, given_name="Jane"
+        )
         self.study_type = G(StudyType, name="default", id=1)
-        self.labs.add(G(Lab, name="ECCL"))
+        self.lab = G(Lab, name="ECCL")
+        self.lab.researchers.add(self.researcher)
+        self.lab.save()
         self.study = G(
             Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
         )
-        self.response = G(
-            Response, child=self.child, study=self.study, completed_consent_frame=True
+        self.response_consented = G(
+            Response,
+            child=self.child_with_consented_response,
+            study=self.study,
+            completed_consent_frame=True,
         )
         self.positive_consent_ruling = G(
-            ConsentRuling, response=self.response, action="accepted"
+            ConsentRuling, response=self.response_consented, action="accepted"
+        )
+        self.response_unconsented = G(
+            Response,
+            child=self.child_without_consented_response,
+            study=self.study,
+            completed_consent_frame=True,
+        )
+        self.negative_consent_ruling = G(
+            ConsentRuling, response=self.response_unconsented, action="rejected"
         )
         self.url = reverse("api:child-list", kwargs={"version": "v1"})
-        self.child_detail_url = (
+        self.child_with_consent_detail_url = (
             reverse("api:child-list", kwargs={"version": "v1"})
-            + str(self.child.uuid)
+            + str(self.child_with_consented_response.uuid)
+            + "/"
+        )
+        self.child_without_consent_detail_url = (
+            reverse("api:child-list", kwargs={"version": "v1"})
+            + str(self.child_without_consented_response.uuid)
             + "/"
         )
         self.client = APIClient()
@@ -56,16 +81,16 @@ class ChildrenTestCase(APITestCase):
         self.assertEqual(api_response.data["links"]["meta"]["count"], 0)
 
     def testGetChildrenListSeeOwnChildren(self):
-        # A participant can see their own children
+        # A participant can see their own children (regardless of consent coding status)
         self.client.force_authenticate(user=self.participant)
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
+        self.assertEqual(api_response.data["links"]["meta"]["count"], 2)
 
     def testGetChildrenListNoResearchers(self):
-        # Researchers can see their children
+        # Researchers can see their children (regardless of consent coding status)
         self.participant.is_researcher = True
         self.participant.save()
         self.client.force_authenticate(user=self.participant)
@@ -73,11 +98,29 @@ class ChildrenTestCase(APITestCase):
             self.url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
+        self.assertEqual(api_response.data["links"]["meta"]["count"], 2)
 
     def testGetChildrenListCanViewStudyPermissions(self):
-        # Cannot see children if only have can_view_study permissions
-        assign_perm("studies.can_view_study", self.researcher, self.study)
+        # Cannot see children unless have READ_STUDY_RESPONSE_DATA perms on study or associated lab. Add a variety
+        # of other study-specific perms & add to design group, none of these should grant access.
+        assign_perm(
+            StudyPermission.READ_STUDY_PREVIEW_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.CODE_STUDY_CONSENT.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.CONTACT_STUDY_PARTICIPANTS.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.study.design_group.user_set.add(self.researcher)
+        self.study.lab.admin_group.user_set.add(self.researcher)
+        self.study.save()
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
@@ -87,8 +130,28 @@ class ChildrenTestCase(APITestCase):
 
     def testGetChildrenListCanViewStudyResponsesPermissions(self):
         # As a researcher, can only see children who've taken studies where you have
-        # can_view_study_responses permissions
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        # read response data permissions, and can only see children with consented responses
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.client.force_authenticate(user=self.researcher)
+        api_response = self.client.get(
+            self.url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
+
+    def testGetChildrenListLabwideCanViewStudyResponsesPermissions(self):
+        # As a researcher, can only see children who've taken studies where you have
+        # read response data permissions, and can only see children with consented responses.
+        # Lab-wide perms work as well as study-specific
+        assign_perm(
+            LabPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study.lab,
+        )
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
@@ -105,13 +168,13 @@ class ChildrenTestCase(APITestCase):
             self.url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertGreater(api_response.data["links"]["meta"]["count"], 1)
+        self.assertGreater(api_response.data["links"]["meta"]["count"], 2)
 
     # Children GET Detail Tests
     def testGetChildDetailUnauthenticated(self):
         # Must be authenticated to view child
         api_response = self.client.get(
-            self.child_detail_url, content_type="application/vnd.api+json"
+            self.child_with_consent_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -121,53 +184,117 @@ class ChildrenTestCase(APITestCase):
         self.participant.save()
         self.client.force_authenticate(user=self.participant)
         api_response = self.client.get(
-            self.child_detail_url, content_type="application/vnd.api+json"
+            self.child_with_consent_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
 
     def testGetOwnChildDetail(self):
-        # A participant can see their own child
+        # A participant can see their own child, regardless of consent coding status
         self.client.force_authenticate(user=self.participant)
         api_response = self.client.get(
-            self.child_detail_url, content_type="application/vnd.api+json"
+            self.child_without_consent_detail_url,
+            content_type="application/vnd.api+json",
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["given_name"], "Sally")
+        self.assertEqual(api_response.data["given_name"], "Jane")
 
     def testGetChildDetailResearcher(self):
-        # A researcher can see their child
+        # A researcher can see their child, regardless of consent coding status
         self.participant.is_researcher = True
         self.participant.save()
         self.client.force_authenticate(user=self.participant)
         api_response = self.client.get(
-            self.child_detail_url, content_type="application/vnd.api+json"
+            self.child_with_consent_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
 
     def testGetChildDetailCanViewStudyPermissions(self):
-        # Can't see a child with just can_view_study permissions
-        assign_perm("studies.can_view_study", self.researcher, self.study)
+        # None of the following perms or groups should grant access
+        assign_perm(
+            StudyPermission.READ_STUDY_PREVIEW_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.CODE_STUDY_CONSENT.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.CONTACT_STUDY_PARTICIPANTS.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.study.design_group.user_set.add(self.researcher)
+        self.study.lab.admin_group.user_set.add(self.researcher)
+        self.study.save()
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
-            self.child_detail_url, content_type="application/vnd.api+json"
+            self.child_with_consent_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
 
     def testGetChildDetailCanViewStudyResponsesPermissions(self):
         # As a researcher, can only view a child if they've taken a study where you have
-        # can_view_study_responses permissions
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        # read_study__responses permissions and consent has been approved
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
-            self.child_detail_url, content_type="application/vnd.api+json"
+            self.child_with_consent_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data["given_name"], "Sally")
 
+    def testGetChildDetailLabwideCanViewStudyResponsesPermissions(self):
+        # As a researcher, can only view a child if they've taken a study where you have
+        # read_study__responses permissions and consent has been approved
+        assign_perm(
+            LabPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study.lab,
+        )
+        self.client.force_authenticate(user=self.researcher)
+        api_response = self.client.get(
+            self.child_with_consent_detail_url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["given_name"], "Sally")
+
+    def testGetChildDetailNoConsentCanViewStudyResponsesPermissions(self):
+        # As a researcher, can only view a child if they've taken a study where you have
+        # can_view_study_responses permissions and consent has been approved
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            LabPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study.lab,
+        )
+        self.client.force_authenticate(user=self.researcher)
+        api_response = self.client.get(
+            self.child_without_consent_detail_url,
+            content_type="application/vnd.api+json",
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
+
     # Children POST Children Tests
     def testPostChild(self):
-        # Cannot POST to children
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        # Cannot POST to children, regardless of perms.
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.study.admin_group.user_set.add(self.researcher)
+        self.study.lab.admin_group.user_set.add(self.researcher)
+        self.study.save()
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.post(
             self.url, content_type="application/vnd.api+json"
@@ -177,19 +304,33 @@ class ChildrenTestCase(APITestCase):
     # Children PATCH Children Tests
     def testUpdateChild(self):
         # Cannot Update Child
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.study.admin_group.user_set.add(self.researcher)
+        self.study.lab.admin_group.user_set.add(self.researcher)
+        self.study.save()
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.patch(
-            self.child_detail_url, content_type="application/vnd.api+json"
+            self.child_with_consent_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     # Children DELETE Children Tests
     def testDeleteChild(self):
         # Cannot Update Child
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.study.admin_group.user_set.add(self.researcher)
+        self.study.lab.admin_group.user_set.add(self.researcher)
+        self.study.save()
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.delete(
-            self.child_detail_url, content_type="application/vnd.api+json"
+            self.child_with_consent_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

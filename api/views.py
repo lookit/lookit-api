@@ -336,9 +336,9 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
             # CASE 2: Experimenters/parents getting responses for study.
             else:
                 if self.request.user.has_study_perms(
-                    StudyPermission.READ_STUDY_DATA, study
+                    StudyPermission.READ_STUDY_RESPONSE_DATA, study
                 ) or self.request.user.has_study_perms(
-                    StudyPermission.READ_STUDY_PREVIEW_DATA
+                    StudyPermission.READ_STUDY_PREVIEW_DATA, study
                 ):
                     consented_responses = study.responses_for_researcher(
                         self.request.user
@@ -419,7 +419,8 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, ConvertUuidToIdMixin, views.ModelV
         Overrides queryset.
 
         Shows feedback for studies you can edit, or feedback left on your created responses.
-        A researcher can only add feedback to responses to studies they have permission to edit.
+        A researcher can only add feedback to responses to studies they have permission to
+        edit feedback for.
         """
         qs = super().get_queryset()
 

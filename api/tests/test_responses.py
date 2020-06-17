@@ -10,6 +10,7 @@ from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, DemographicData, User
 from studies.models import ConsentRuling, Feedback, Lab, Response, Study, StudyType
+from studies.permissions import LabPermission, StudyPermission
 
 
 class ResponseTestCase(APITestCase):
@@ -18,6 +19,7 @@ class ResponseTestCase(APITestCase):
             User, is_active=True, is_researcher=True, given_name="Researcher 1"
         )
         self.participant = G(User, is_active=True, given_name="Participant 1")
+        self.superuser = G(User, is_active=True, is_researcher=True, is_superuser=True)
         self.demographics = G(
             DemographicData, user=self.participant, languages_spoken_at_home="French"
         )
@@ -88,7 +90,11 @@ class ResponseTestCase(APITestCase):
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def testGetResponseOrderingReverseDateModified(self):
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         self.client.force_authenticate(user=self.researcher)
         self.response2 = G(
             Response,
@@ -134,7 +140,18 @@ class ResponseTestCase(APITestCase):
 
     def testGetResponsesListViewStudyPermissions(self):
         # Can view study permissions insufficient to view responses
-        assign_perm("studies.can_view_study", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.lab.admin_group.user_set.add(self.researcher)
+        self.lab.save()
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
@@ -144,7 +161,24 @@ class ResponseTestCase(APITestCase):
 
     def testGetResponsesListViewStudyResponsesPermissions(self):
         # With can_view_study_responses permissions, can view study responses
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.client.force_authenticate(user=self.researcher)
+        api_response = self.client.get(
+            self.url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
+
+    def testGetResponsesListLabwideViewStudyResponsesPermissions(self):
+        assign_perm(
+            LabPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study.lab,
+        )
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
@@ -156,12 +190,12 @@ class ResponseTestCase(APITestCase):
     def testGetResponseDetailUnauthenticated(self):
         # Can't view response detail unless authenticated
         api_response = self.client.get(
-            self.response_detail_url, content_type="application/vnd.api+json"
+            self.consented_response_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def testGetResponseDetailByOwnChildren(self):
-        # Participant can view their own response detail
+        # Participant can view their own response detail regardless of consent coding
         self.client.force_authenticate(user=self.participant)
         api_response = self.client.get(
             self.response_detail_url, content_type="application/vnd.api+json"
@@ -170,16 +204,32 @@ class ResponseTestCase(APITestCase):
 
     def testGetResponseDetailViewStudyPermissions(self):
         # Can view study permissions insufficient to view responses
-        assign_perm("studies.can_view_study", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.lab.admin_group.user_set.add(self.researcher)
+        self.lab.save()
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
-            self.response_detail_url, content_type="application/vnd.api+json"
+            self.consented_response_detail_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
 
     def testGetResponseDetailViewStudyResponsesPermissions(self):
-        # With can_view_study_responses permissions, can view study response detail
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        # With can_view_study_responses permissions, can view study response detail,
+        # but still can't view non-consented response
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
             self.response_detail_url, content_type="application/vnd.api+json"
@@ -188,7 +238,27 @@ class ResponseTestCase(APITestCase):
 
     def testGetResponseDetailViewStudyResponsesPermissionsAfterConsent(self):
         # With can_view_study_responses permissions, can view study response detail
-        assign_perm("studies.can_view_study_responses", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        self.client.force_authenticate(user=self.researcher)
+
+        api_response = self.client.get(
+            self.consented_response_detail_url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["completed"], False)
+        self.assertEqual(api_response.data["completed_consent_frame"], True)
+
+    def testGetResponseDetailLabwideViewStudyResponsesPermissionsAfterConsent(self):
+        # With can_view_study_responses permissions, can view study response detail
+        assign_perm(
+            LabPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study.lab,
+        )
         self.client.force_authenticate(user=self.researcher)
 
         api_response = self.client.get(
@@ -425,7 +495,7 @@ class ResponseTestCase(APITestCase):
 
     # Delete responses
     def testDeleteResponse(self):
-        self.client.force_authenticate(user=self.participant)
+        self.client.force_authenticate(user=self.superuser)
         api_response = self.client.delete(
             self.response_detail_url, content_type="application/vnd.api+json"
         )

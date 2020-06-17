@@ -237,7 +237,7 @@ class ResponseViewsTestCase(TestCase):
 
     def testCanSeeStudyPreviewAsStudyRead(self):
         self.client.force_login(self.study_reader)
-        url = reverse("exp:preview-detail", kwargs={"path": self.study.uuid})
+        url = reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid})
         page = self.client.get(url)
         self.assertEqual(
             page.status_code,
@@ -248,7 +248,7 @@ class ResponseViewsTestCase(TestCase):
     def testCanSeeStudyPreviewAsOtherResearcherIfShared(self):
         self.client.force_login(self.other_researcher)
         url = reverse(
-            "exp:preview-detail", kwargs={"path": self.study_shared_preview.uuid}
+            "exp:preview-detail", kwargs={"uuid": self.study_shared_preview.uuid}
         )
         page = self.client.get(url)
         self.assertEqual(
@@ -260,7 +260,7 @@ class ResponseViewsTestCase(TestCase):
     def testCannotSeeStudyPreviewAsParticipant(self):
         self.client.force_login(self.participants[0])
         url = reverse(
-            "exp:preview-detail", kwargs={"path": self.study_shared_preview.uuid}
+            "exp:preview-detail", kwargs={"uuid": self.study_shared_preview.uuid}
         )
         page = self.client.get(url)
         self.assertEqual(
@@ -269,7 +269,7 @@ class ResponseViewsTestCase(TestCase):
 
     def testCannotSeeStudyPreviewAsOtherResearcherIfNotShared(self):
         self.client.force_login(self.other_researcher)
-        url = reverse("exp:preview-detail", kwargs={"path": self.study.uuid})
+        url = reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid})
         page = self.client.get(url)
         self.assertEqual(
             page.status_code,

@@ -9,7 +9,8 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Feedback, Lab, Response, Study, StudyType
+from studies.models import ConsentRuling, Feedback, Lab, Response, Study, StudyType
+from studies.permissions import LabPermission, StudyPermission
 
 
 class FeedbackTestCase(APITestCase):
@@ -19,10 +20,28 @@ class FeedbackTestCase(APITestCase):
         self.child = G(Child, user=self.participant)
         self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT")
+        self.lab.researchers.add(self.researcher)
+        self.lab.save()
         self.study = G(
             Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
         )
-        self.response = G(Response, child=self.child, study=self.study)
+        # completed_consent_frame is important - won't be included in queryset regardless of consent ruling if not
+        self.response = G(
+            Response,
+            child=self.child,
+            study=self.study,
+            is_preview=False,
+            completed_consent_frame=True,
+        )
+        self.positive_consent_ruling = G(
+            ConsentRuling, response=self.response, action="accepted"
+        )
+        self.feedback = G(
+            Feedback,
+            response=self.response,
+            researcher=self.researcher,
+            comment="This was very helpful.",
+        )
         self.url = reverse("api:feedback-list", kwargs={"version": "v1"})
         self.client = APIClient()
 
@@ -45,32 +64,44 @@ class FeedbackTestCase(APITestCase):
         )
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def testGetFeedbackListAsAdminAuthenticated(self):
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This was very helpful.",
+    def testGetFeedbackListWithReadStudyResponsePermissions(self):
+        # Researcher should be able to read existing feedback along with other response data
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
         )
         self.client.force_authenticate(user=self.researcher)
-
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
 
-    def testGetFeedbackListAsReadAuthenticated(self):
-        assign_perm("studies.can_view_study", self.researcher, self.study)
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This was very helpful.",
+    def testGetFeedbackListWithLabwideReadResponsePermissions(self):
+        # Lab-wide response data read perms also grant access to feedback on this study
+        assign_perm(
+            LabPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study.lab,
         )
         self.client.force_authenticate(user=self.researcher)
+        api_response = self.client.get(
+            self.url, content_type="application/vnd.api+json"
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
 
+    def testGetFeedbackListWithIncorrectPermissions(self):
+        # None of these perms/groups should grant access
+        assign_perm(
+            LabPermission.READ_STUDY_DETAILS.prefixed_codename,
+            self.researcher,
+            self.study.lab,
+        )
+        self.study.lab.admin_group.user_set.add(self.researcher)
+        self.study.lab.save()
+        self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
         )
@@ -78,14 +109,7 @@ class FeedbackTestCase(APITestCase):
         self.assertEqual(api_response.data["links"]["meta"]["count"], 0)
 
     def testGetFeedbackListAsParticipant(self):
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This was very helpful.",
-        )
         self.client.force_authenticate(user=self.participant)
-
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
         )
@@ -93,16 +117,8 @@ class FeedbackTestCase(APITestCase):
         self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
 
     def testGetFeedbackListAsUnaffiliatedParticipant(self):
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This was very helpful.",
-        )
         self.participant2 = G(User, is_active=True)
-
         self.client.force_authenticate(user=self.participant2)
-
         api_response = self.client.get(
             self.url, content_type="application/vnd.api+json"
         )
@@ -111,108 +127,127 @@ class FeedbackTestCase(APITestCase):
 
     # Feedback GET DETAIL Tests
     def testGetFeedbackDetailUnauthenticated(self):
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This was very helpful.",
-        )
         api_response = self.client.get(
-            self.url + str(feedback.uuid) + "/", content_type="application/vnd.api+json"
+            self.url + str(self.feedback.uuid) + "/",
+            content_type="application/vnd.api+json",
         )
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def testGetFeedbackDetailAsAdminAuthenticated(self):
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
-        self.client.force_authenticate(user=self.researcher)
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This is some new feedback.",
+    def testGetFeedbackDetailWithResponseReadPerms(self):
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
         )
+        self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
-            self.url + str(feedback.uuid) + "/", content_type="application/vnd.api+json"
+            self.url + str(self.feedback.uuid) + "/",
+            content_type="application/vnd.api+json",
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["comment"], "This is some new feedback.")
+        self.assertEqual(api_response.data["comment"], self.feedback.comment)
 
-    def testGetFeedbackDetailAsReadAuthenticated(self):
-        assign_perm("studies.can_view_study", self.researcher, self.study)
-        self.client.force_authenticate(user=self.researcher)
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This is some new feedback.",
+    def testGetFeedbackDetailWithLabwideResponseReadPerms(self):
+        assign_perm(
+            LabPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study.lab,
         )
+        self.client.force_authenticate(user=self.researcher)
         api_response = self.client.get(
-            self.url + str(feedback.uuid) + "/", content_type="application/vnd.api+json"
+            self.url + str(self.feedback.uuid) + "/",
+            content_type="application/vnd.api+json",
+        )
+        self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(api_response.data["comment"], self.feedback.comment)
+
+    def testGetFeedbackDetailWithInsufficientPerms(self):
+        # None of the following should be sufficient to look up feedback
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            LabPermission.READ_STUDY_DETAILS.prefixed_codename,
+            self.researcher,
+            self.study.lab,
+        )
+        self.study.design_group.user_set.add(self.researcher)
+        self.study.lab.admin_group.user_set.add(self.researcher)
+        self.study.save()
+        self.client.force_authenticate(user=self.researcher)
+        api_response = self.client.get(
+            self.url + str(self.feedback.uuid) + "/",
+            content_type="application/vnd.api+json",
         )
         # Is throwing Not Found because feedback not in queryset that user can access
         self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
 
     def testGetFeedbackDetailAsParticipant(self):
         self.client.force_authenticate(user=self.participant)
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This is some new feedback.",
-        )
         api_response = self.client.get(
-            self.url + str(feedback.uuid) + "/", content_type="application/vnd.api+json"
+            self.url + str(self.feedback.uuid) + "/",
+            content_type="application/vnd.api+json",
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["comment"], "This is some new feedback.")
+        self.assertEqual(api_response.data["comment"], self.feedback.comment)
 
     def testGetFeedbackDetailAsUnaffiliatedParticipant(self):
         self.participant2 = G(User, is_active=True)
         self.client.force_authenticate(user=self.participant2)
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This is some new feedback.",
-        )
         api_response = self.client.get(
-            self.url + str(feedback.uuid) + "/", content_type="application/vnd.api+json"
+            self.url + str(self.feedback.uuid) + "/",
+            content_type="application/vnd.api+json",
         )
         self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
 
     # Feedback POST Tests
     def testPostFeedbackUnauthenticated(self):
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
-
         api_response = self.client.post(
             self.url, json.dumps(self.data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(Feedback.objects.count(), 0)
+        self.assertEqual(
+            Feedback.objects.count(), 1
+        )  # only single feedback already there
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
-    def testPostFeedbackAsAdminAuthenticated(self):
+    def testPostFeedbackWithEditFeedbackPerms(self):
+        # edit_study_feedback perms allow creating new feedback
+        assign_perm(
+            StudyPermission.EDIT_STUDY_FEEDBACK.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
-
         api_response = self.client.post(
             self.url, json.dumps(self.data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Feedback.objects.count(), 1)
+        self.assertEqual(Feedback.objects.count(), 2)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
-    def testPostFeedbackAsReadAuthenticated(self):
+    def testPostFeedbackWithReadResponsePerms(self):
+        # Need edit_study_feedback perms to create new feedback
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_view_study", self.researcher, self.study)
-
         api_response = self.client.post(
             self.url, json.dumps(self.data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(Feedback.objects.count(), 0)
+        self.assertEqual(Feedback.objects.count(), 1)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
@@ -223,14 +258,22 @@ class FeedbackTestCase(APITestCase):
             self.url, json.dumps(self.data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(Feedback.objects.count(), 0)
+        self.assertEqual(Feedback.objects.count(), 1)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
     def testPostFeedbackBadResponseUUID(self):
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
-
+        assign_perm(
+            StudyPermission.EDIT_STUDY_FEEDBACK.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         data = {
             "data": {
                 "attributes": {"comment": "This is a test"},
@@ -244,40 +287,22 @@ class FeedbackTestCase(APITestCase):
             self.url, json.dumps(data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(Feedback.objects.count(), 0)
+        self.assertEqual(Feedback.objects.count(), 1)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
-    # TODO This gives a 500 error because UUID is not a UUID-type.
-    # def testPostFeedbackInvalidResponseUUID(self):
-    #     self.client.force_authenticate(user=self.researcher)
-    #     assign_perm('studies.can_edit_study', self.researcher, self.study)
-    #
-    #     data = {
-    #       "data": {
-    #         "attributes": {
-    #           "comment": "This is a test"
-    #         },
-    #         "relationships": {
-    #           "response": {
-    #             "data": {
-    #               "type": "responses",
-    #               "id": "12345"
-    #             }
-    #           }
-    #         },
-    #         "type": "feedback"
-    #       }
-    #     }
-    #     api_response = self.client.post(self.url, json.dumps(data), content_type="application/vnd.api+json")
-    #     self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
-    #     self.assertEqual(Feedback.objects.count(), 0)
-    #     self.assertEqual(Response.objects.count(), 1)
-    #     self.assertEqual(Study.objects.count(), 1)
-
     def testPostFeedbackInvalidType(self):
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.EDIT_STUDY_FEEDBACK.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         data = {
             "data": {
                 "attributes": {"comment": "This is a test"},
@@ -294,13 +319,22 @@ class FeedbackTestCase(APITestCase):
             self.url, json.dumps(data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_409_CONFLICT)
-        self.assertEqual(Feedback.objects.count(), 0)
+        self.assertEqual(Feedback.objects.count(), 1)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
     def testPostFeedbackMissingResponse(self):
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.EDIT_STUDY_FEEDBACK.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         data = {
             "data": {"attributes": {"comment": "This is a test"}, "type": "feedback"}
         }
@@ -309,13 +343,22 @@ class FeedbackTestCase(APITestCase):
             self.url, json.dumps(data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(Feedback.objects.count(), 0)
+        self.assertEqual(Feedback.objects.count(), 1)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
     def testPostFeedbackMissingComment(self):
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.EDIT_STUDY_FEEDBACK.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         data = {
             "data": {
                 "attributes": {},
@@ -332,19 +375,22 @@ class FeedbackTestCase(APITestCase):
             self.url, json.dumps(data), content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(Feedback.objects.count(), 0)
+        self.assertEqual(Feedback.objects.count(), 1)
         self.assertEqual(Response.objects.count(), 1)
         self.assertEqual(Study.objects.count(), 1)
 
     def testPatchFeedback(self):
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This was very helpful.",
-        )
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.EDIT_STUDY_FEEDBACK.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
         data = {
             "data": {
                 "attributes": {"comment": "changed feedback"},
@@ -354,12 +400,12 @@ class FeedbackTestCase(APITestCase):
                     }
                 },
                 "type": "feedback",
-                "id": str(feedback.uuid),
+                "id": str(self.feedback.uuid),
             }
         }
 
         api_response = self.client.patch(
-            self.url + str(feedback.uuid) + "/",
+            self.url + str(self.feedback.uuid) + "/",
             json.dumps(data),
             content_type="application/vnd.api+json",
         )
@@ -367,16 +413,20 @@ class FeedbackTestCase(APITestCase):
         self.assertEqual(api_response.data["comment"], "changed feedback")
 
     def testDeleteFeedback(self):
-        feedback = G(
-            Feedback,
-            response=self.response,
-            researcher=self.researcher,
-            comment="This was very helpful.",
-        )
         self.client.force_authenticate(user=self.researcher)
-        assign_perm("studies.can_edit_study", self.researcher, self.study)
+        assign_perm(
+            StudyPermission.EDIT_STUDY_FEEDBACK.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            self.researcher,
+            self.study,
+        )
 
         api_response = self.client.delete(
-            self.url + str(feedback.uuid) + "/", content_type="application/vnd.api+json"
+            self.url + str(self.feedback.uuid) + "/",
+            content_type="application/vnd.api+json",
         )
         self.assertEqual(api_response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
