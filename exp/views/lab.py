@@ -64,11 +64,11 @@ class LabDetailView(
         ).exists()
         context["can_edit_lab"] = user.has_perm(
             LabPermission.EDIT_LAB_METADATA.codename, self.object
-        ) or user.has_perm("studies." + LabPermission.EDIT_LAB_METADATA.codename)
+        ) or user.has_perm(LabPermission.EDIT_LAB_METADATA.prefixed_codename)
         context["can_see_lab_researchers"] = (
             context["in_this_lab"]
             or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.codename, lab)
-            or user.has_perm("studies." + LabPermission.READ_LAB_RESEARCHERS.codename)
+            or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.prefixed_codename)
         )
         return context
 
@@ -95,15 +95,13 @@ class LabMembersView(
         if self.request.method == "POST":
             return user.has_perm(
                 LabPermission.MANAGE_LAB_RESEARCHERS.codename, lab
-            ) or user.has_perm(
-                "studies." + LabPermission.MANAGE_LAB_RESEARCHERS.codename
-            )
+            ) or user.has_perm(LabPermission.MANAGE_LAB_RESEARCHERS.prefixed_codename)
         else:
             return (
                 lab in user.labs.all()
                 or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.codename, lab)
                 or user.has_perm(
-                    "studies." + LabPermission.READ_LAB_RESEARCHERS.codename
+                    LabPermission.READ_LAB_RESEARCHERS.codename.prefixed_codename
                 )
             )
 
@@ -181,7 +179,7 @@ class LabMembersView(
         context["can_edit"] = self.request.user.has_perm(
             LabPermission.MANAGE_LAB_RESEARCHERS.codename, lab
         ) or self.request.user.has_perm(
-            "studies." + LabPermission.MANAGE_LAB_RESEARCHERS.codename
+            LabPermission.MANAGE_LAB_RESEARCHERS.prefixed_codename
         )
         return context
 
@@ -369,7 +367,7 @@ class LabUpdateView(
 
     def get_form_class(self):
         if self.request.user.has_perm(
-            "studies." + LabPermission.EDIT_LAB_APPROVAL.codename
+            LabPermission.EDIT_LAB_APPROVAL.prefixed_codename
         ):
             return LabApprovalForm
         else:
@@ -380,7 +378,7 @@ class LabUpdateView(
         return self.request.user.has_perm(
             LabPermission.EDIT_LAB_METADATA.codename, lab
         ) or self.request.user.has_perm(
-            "studies." + LabPermission.EDIT_LAB_METADATA.codename
+            LabPermission.EDIT_LAB_METADATA.prefixed_codename
         )
 
     test_func = user_can_edit_lab
@@ -575,7 +573,7 @@ class LabListView(
         context["user_labs"] = user.labs.all()
         context["user_requested_labs"] = user.requested_labs.all()
         context["can_approve_labs"] = user.has_perm(
-            "studies." + LabPermission.EDIT_LAB_APPROVAL.codename
+            LabPermission.EDIT_LAB_APPROVAL.prefixed_codename
         )
         context["set"] = self.request.GET.get("set", "myLabs")
         context["match"] = self.request.GET.get("match", "")

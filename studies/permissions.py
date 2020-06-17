@@ -110,6 +110,7 @@ class _PermissionMeta(NamedTuple):
 
     codename: str
     description: str
+    app_name = "studies"
 
     @property
     def parts(self) -> _PermissionParts:
@@ -128,6 +129,10 @@ class _PermissionMeta(NamedTuple):
             relationship_path=tuple(field_vector),
             target_fields=target_fields,
         )
+
+    @property
+    def prefixed_codename(self) -> str:
+        return self.app_name + "." + self.codename
 
     @property
     def permission(self) -> str:

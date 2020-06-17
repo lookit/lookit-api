@@ -919,9 +919,7 @@ def get_permitted_triggers(view_instance, triggers):
             continue
 
         if (
-            not user.has_perm(
-                "studies." + StudyPermission.APPROVE_REJECT_STUDY.codename
-            )
+            not user.has_perm(StudyPermission.APPROVE_REJECT_STUDY.prefixed_codename)
         ) and (not can_change_status or (trigger in admin_triggers)):
             continue
 

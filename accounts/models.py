@@ -163,7 +163,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     def has_study_perms(self, study_perm: StudyPermission, study) -> bool:
         # 1) Modeled perm should be passed already
-        has_all_studies_perm = self.has_perm("studies." + study_perm.codename)
+        has_all_studies_perm = self.has_perm(study_perm.prefixed_codename)
         if has_all_studies_perm:
             return True
         has_study_perm = self.has_perm(study_perm.codename, study)
