@@ -16,11 +16,7 @@ from revproxy.views import ProxyView
 from accounts.models import Child, Message, User
 from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
-from exp.views.mixins import (
-    ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
-    StudyTypeMixin,
-)
+from exp.views.mixins import SingleObjectParsimoniousQueryMixin, StudyTypeMixin
 from project import settings
 from studies.forms import StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
@@ -85,12 +81,7 @@ KEY_DISPLAY_NAMES = {
 }
 
 
-class StudyCreateView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    StudyTypeMixin,
-    generic.CreateView,
-):
+class StudyCreateView(UserPassesTestMixin, StudyTypeMixin, generic.CreateView):
     """
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
@@ -104,7 +95,7 @@ class StudyCreateView(
         # If returning False,
         # should effectively delegate to the correct handler by way of
         # View.dispatch()
-        return self.request.user.can_create_study()
+        return self.request.user.is_researcher and self.request.user.can_create_study()
 
     # Make PyCharm happy - otherwise we'd just override get_test_func()
     test_func = user_can_make_study
@@ -160,7 +151,6 @@ class StudyCreateView(
 
 
 class StudyUpdateView(
-    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     StudyTypeMixin,
     SingleObjectParsimoniousQueryMixin,
@@ -183,7 +173,9 @@ class StudyUpdateView(
         # method = self.request.method
         study = self.get_object()
 
-        return user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study)
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.WRITE_STUDY_DETAILS, study
+        )
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -275,12 +267,7 @@ class StudyUpdateView(
         return reverse("exp:study-edit", kwargs={"pk": self.object.id})
 
 
-class StudyListView(
-    ExperimenterLoginRequiredMixin,
-    # DjangoPermissionRequiredMixin,
-    PaginatorMixin,
-    generic.ListView,
-):
+class StudyListView(UserPassesTestMixin, PaginatorMixin, generic.ListView):
     """
     StudyListView shows a list of studies that a user has permission to.
     """
@@ -288,6 +275,11 @@ class StudyListView(
     model = Study
     raise_exception = True
     template_name = "studies/study_list.html"
+
+    def can_see_study_list(self):
+        return self.request.user.is_researcher
+
+    test_func = can_see_study_list
 
     def get_queryset(self, *args, **kwargs):
         """
@@ -315,7 +307,6 @@ class StudyListView(
 
 
 class StudyDetailView(
-    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
     SingleObjectParsimoniousQueryMixin,
@@ -340,6 +331,9 @@ class StudyDetailView(
         user = self.request.user
         method = self.request.method
         study = self.object = self.get_object()
+
+        if not user.is_researcher:
+            return False
 
         if method == "GET":
             return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
@@ -626,10 +620,7 @@ class StudyDetailView(
 
 
 class StudyParticipantContactView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.DetailView,
+    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
 ):
     """
     StudyParticipantContactView lets you contact study participants.
@@ -642,7 +633,9 @@ class StudyParticipantContactView(
     def can_contact_participants(self):
         user = self.request.user
         study = self.get_object()
-        return user.has_study_perms(StudyPermission.CONTACT_STUDY_PARTICIPANTS, study)
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.CONTACT_STUDY_PARTICIPANTS, study
+        )
 
     test_func = can_contact_participants
 
@@ -788,9 +781,7 @@ class StudyBuildView(SingleObjectParsimoniousQueryMixin, generic.RedirectView):
         return super().post(request, *args, **kwargs)
 
 
-class StudyPreviewDetailView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
-):
+class StudyPreviewDetailView(UserPassesTestMixin, generic.DetailView):
 
     queryset = Study.objects.all()
     http_method_names = ["get", "post"]
@@ -803,8 +794,9 @@ class StudyPreviewDetailView(
         # Relevant permission in order to preview is READ_STUDY_DETAILS (previewing is essentially
         # examining the study protocol configuration), rather than READY_STUDY_PREVIEW_DATA
         # (which has to do with accessing data from other preview sessions)
-        return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study) or (
-            study.shared_preview and user.is_researcher
+        return user.is_researcher and (
+            user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
+            or (study.shared_preview and user.is_researcher)
         )
 
     test_func = can_preview
@@ -842,7 +834,7 @@ class StudyPreviewDetailView(
         return HttpResponseRedirect(reverse("exp:preview-proxy", kwargs=kwargs))
 
 
-class PreviewProxyView(ExperimenterLoginRequiredMixin, UserPassesTestMixin, ProxyView):
+class PreviewProxyView(UserPassesTestMixin, ProxyView):
     """
     Proxy view to forward researcher to preview page in the Ember app
     """
@@ -854,6 +846,9 @@ class PreviewProxyView(ExperimenterLoginRequiredMixin, UserPassesTestMixin, Prox
         request = self.request
         kwargs = self.kwargs
         user = request.user
+
+        if not user.is_researcher:
+            return False
 
         try:
             child = Child.objects.get(uuid=kwargs.get("child_id", None))

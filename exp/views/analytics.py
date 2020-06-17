@@ -2,6 +2,7 @@ import datetime
 import json
 from collections import Counter, defaultdict
 
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views import generic
@@ -9,7 +10,6 @@ from guardian.mixins import PermissionRequiredMixin as ObjectPermissionRequiredM
 
 from accounts.models import Child, User
 from exp.utils import RESPONSE_PAGE_SIZE
-from exp.views.mixins import ExperimenterLoginRequiredMixin
 from studies.fields import (
     CONDITIONS,
     GESTATIONAL_AGE_ENUM_MAP,
@@ -24,13 +24,18 @@ LANGUAGES_MAP = {code: lang for code, lang in LANGUAGES}
 CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDITIONS}
 
 
-class StudyParticipantAnalyticsView(
-    ExperimenterLoginRequiredMixin, ObjectPermissionRequiredMixin, generic.TemplateView
-):
+class StudyParticipantAnalyticsView(UserPassesTestMixin, generic.TemplateView):
     template_name = "studies/study_participant_analytics.html"
     model = Study
-    permission_required = "accounts.can_view_analytics"
     raise_exception = True
+
+    def can_see_analytics(self):
+        return (
+            self.request.user.has_perm("accounts.can_view_analytics")
+            and self.request.user.is_researcher
+        )
+
+    test_func = can_see_analytics
 
     def get_context_data(self, **kwargs):
         """Context getter override."""

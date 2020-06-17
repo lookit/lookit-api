@@ -26,10 +26,7 @@ from exp.utils import (
     round_ages_from_birthdays,
     study_name_for_files,
 )
-from exp.views.mixins import (
-    ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
-)
+from exp.views.mixins import SingleObjectParsimoniousQueryMixin
 from studies.models import Feedback, Study
 from studies.permissions import StudyPermission
 from studies.queries import (
@@ -40,7 +37,6 @@ from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
 
 class StudyResponsesList(
-    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
     SingleObjectParsimoniousQueryMixin,
@@ -58,6 +54,9 @@ class StudyResponsesList(
         user = self.request.user
         study = self.get_object()
         method = self.request.method
+
+        if not user.is_researcher:
+            return False
 
         if method == "GET":
             return user.has_study_perms(
@@ -198,10 +197,7 @@ class StudyResponsesList(
 
 
 class StudyResponsesConsentManager(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.DetailView,
+    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
 ):
     """Manage videos from here."""
 
@@ -212,9 +208,10 @@ class StudyResponsesConsentManager(
     def user_can_code_consent(self):
         user = self.request.user
         study = self.get_object()
-        return user.has_study_perms(
-            StudyPermission.CODE_STUDY_CONSENT, study
-        ) or user.has_study_perms(StudyPermission.CODE_STUDY_PREVIEW_CONSENT, study)
+        return user.is_researcher and (
+            user.has_study_perms(StudyPermission.CODE_STUDY_CONSENT, study)
+            or user.has_study_perms(StudyPermission.CODE_STUDY_PREVIEW_CONSENT, study)
+        )
 
     test_func = user_can_code_consent
 
@@ -917,10 +914,7 @@ def build_single_response_framedata_csv(response):
 
 
 class StudyResponsesAll(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.DetailView,
+    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
 ):
     """
     StudyResponsesAll shows a variety of download options for response and child data.
@@ -951,6 +945,9 @@ class StudyResponsesAll(
         user = self.request.user
         study = self.get_object()
         method = self.request.method
+
+        if not user.is_researcher:
+            return False
 
         if method == "GET":
             return user.has_study_perms(
@@ -1262,10 +1259,7 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
 
 
 class StudyDemographics(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.DetailView,
+    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
 ):
     """
     StudyDemographics view shows participant demographic snapshots associated
@@ -1279,9 +1273,10 @@ class StudyDemographics(
     def user_can_view_study_responses(self):
         user = self.request.user
         study = self.get_object()
-        return user.has_study_perms(
-            StudyPermission.READ_STUDY_RESPONSE_DATA, study
-        ) or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+        return user.is_researcher and (
+            user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+            or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+        )
 
     test_func = user_can_view_study_responses
 
@@ -1702,7 +1697,6 @@ class StudyCollisionCheck(StudyResponsesAll):
 
 
 class StudyAttachments(
-    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
     SingleObjectParsimoniousQueryMixin,
@@ -1720,9 +1714,10 @@ class StudyAttachments(
         user = self.request.user
         study = self.get_object()
 
-        return user.has_study_perms(
-            StudyPermission.READ_STUDY_RESPONSE_DATA, study
-        ) or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+        return user.is_researcher and (
+            user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+            or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+        )
 
     test_func = user_can_see_study_responses
 

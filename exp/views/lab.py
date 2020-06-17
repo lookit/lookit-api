@@ -12,10 +12,7 @@ from django.views import generic
 
 from accounts.models import User
 from exp.mixins.paginator_mixin import PaginatorMixin
-from exp.views.mixins import (
-    ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
-)
+from exp.views.mixins import SingleObjectParsimoniousQueryMixin
 from project import settings
 from studies.forms import LabApprovalForm, LabForm
 from studies.helpers import send_mail
@@ -23,9 +20,7 @@ from studies.models import Lab, Study
 from studies.permissions import LabPermission, SiteAdminGroup
 
 
-class LabDetailView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
-):
+class LabDetailView(UserPassesTestMixin, generic.DetailView):
     """
     LabDetailView shows information about a lab and provides links to request to join,
     update metadata, and view/manage researchers.
@@ -74,7 +69,6 @@ class LabDetailView(
 
 
 class LabMembersView(
-    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectParsimoniousQueryMixin,
     PaginatorMixin,
@@ -92,6 +86,10 @@ class LabMembersView(
         """Allow viewing members for labs you're in, and managing members if specific perms."""
         lab = self.get_object()
         user = self.request.user
+
+        if not user.is_researcher:
+            return False
+
         if self.request.method == "POST":
             return user.has_perm(
                 LabPermission.MANAGE_LAB_RESEARCHERS.codename, lab
@@ -351,10 +349,7 @@ class LabMembersView(
 
 
 class LabUpdateView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.UpdateView,
+    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.UpdateView
 ):
     """
     LabUpdateView allows updating lab metadata.
@@ -375,10 +370,11 @@ class LabUpdateView(
 
     def user_can_edit_lab(self):
         lab = self.get_object()
-        return self.request.user.has_perm(
-            LabPermission.EDIT_LAB_METADATA.codename, lab
-        ) or self.request.user.has_perm(
-            LabPermission.EDIT_LAB_METADATA.prefixed_codename
+        return self.request.user.is_researcher and (
+            self.request.user.has_perm(LabPermission.EDIT_LAB_METADATA.codename, lab)
+            or self.request.user.has_perm(
+                LabPermission.EDIT_LAB_METADATA.prefixed_codename
+            )
         )
 
     test_func = user_can_edit_lab
@@ -388,10 +384,7 @@ class LabUpdateView(
 
 
 class LabCreateView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.CreateView,
+    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.CreateView
 ):
     """
     LabCreateView allows creating a new lab.
@@ -447,10 +440,7 @@ class LabCreateView(
 
 
 class LabMembershipRequestView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.RedirectView,
+    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.RedirectView
 ):
 
     http_method_names = ["post"]
@@ -506,12 +496,7 @@ class LabMembershipRequestView(
         return super().post(request, *args, **kwargs)
 
 
-class LabListView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    PaginatorMixin,
-    generic.ListView,
-):
+class LabListView(UserPassesTestMixin, PaginatorMixin, generic.ListView):
     """
     Shows a list of all labs.
     """

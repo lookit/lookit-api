@@ -26,10 +26,6 @@ class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):
         return self.object
 
 
-class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
-    login_url = settings.EXPERIMENTER_LOGIN_URL
-
-
 class StudyTypeMixin:
 
     request: HttpRequest

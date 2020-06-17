@@ -4,6 +4,7 @@ from functools import reduce
 from django.contrib import messages
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
+    UserPassesTestMixin,
 )
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
@@ -20,7 +21,6 @@ from accounts.models import User
 from accounts.utils import build_org_group_name
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
-from exp.views.mixins import ExperimenterLoginRequiredMixin
 from project.settings import EXPERIMENTER_LOGIN_URL as login_url
 from studies.helpers import send_mail
 from studies.models import Response
@@ -28,7 +28,7 @@ from studies.queries import get_consented_responses_qs
 
 
 class ParticipantListView(
-    ExperimenterLoginRequiredMixin, ParticipantMixin, generic.ListView, PaginatorMixin
+    UserPassesTestMixin, ParticipantMixin, generic.ListView, PaginatorMixin
 ):
     """
     ParticipantListView shows a list of participants that have responded to the studies the
@@ -36,6 +36,11 @@ class ParticipantListView(
     """
 
     template_name = "accounts/participant_list.html"
+
+    def can_see_participant_list(self):
+        return self.is_researcher
+
+    test_func = can_see_participant_list
 
     def get_queryset(self):
         """
@@ -68,9 +73,7 @@ class ParticipantListView(
         return context
 
 
-class ParticipantDetailView(
-    ExperimenterLoginRequiredMixin, ParticipantMixin, generic.DetailView, PaginatorMixin
-):
+class ParticipantDetailView(ParticipantMixin, generic.DetailView, PaginatorMixin):
     """
     ParticipantDetailView shows demographic information, children information, and
     studies that a participant has responded to.
@@ -83,6 +86,11 @@ class ParticipantDetailView(
 
     fields = ("is_active",)
     template_name = "accounts/participant_detail.html"
+
+    def can_see_participant_detail(self):
+        return self.is_researcher
+
+    test_func = can_see_participant_detail
 
     def get_context_data(self, **kwargs):
         """
