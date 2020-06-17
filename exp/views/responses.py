@@ -1247,14 +1247,11 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
     def get(self, request, *args, **kwargs):
 
         study = self.get_object()
-        responses = self.valid_responses(study)
         filename = "{}_{}_{}".format(
             study_name_for_files(study.name), study.uuid, "all-frames-dict"
         )
 
-        build_framedata_dict.delay(
-            filename, responses, study.uuid, self.request.user.uuid
-        )
+        build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
         messages.success(
             request,
             f"A frame data dictionary for {self.get_object().name} is being generated. You will be emailed a link when it's completed.",

@@ -178,13 +178,14 @@ def build_zipfile_of_videos(
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
-def build_framedata_dict(self, filename, response_qs, study_uuid, requesting_user_uuid):
+def build_framedata_dict(task, filename, study_uuid, requesting_user_uuid):
     from studies.models import Study
     from accounts.models import User
-    from exp.views.study import build_framedata_dict_csv
+    from exp.views.responses import build_framedata_dict_csv
 
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
     study = Study.objects.get(uuid=study_uuid)
+    response_qs = study.responses_for_researcher(requesting_user).order_by("id")
     responses = response_qs.select_related("child", "study").values(
         "uuid",
         "exp_data",

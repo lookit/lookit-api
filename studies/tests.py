@@ -65,14 +65,6 @@ class ResponseViewsTestCase(TestCase):
 
         self.study.admin_group.user_set.add(self.study_admin)
         self.study.researcher_group.user_set.add(self.study_reader)
-        [
-            assign_perm("accounts.can_view_experimenter", researcher)
-            for researcher in [
-                self.study_admin,
-                self.study_reader,
-                self.other_researcher,
-            ]
-        ]
 
         self.study_reader_child = G(
             Child,

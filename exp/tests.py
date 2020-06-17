@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Feedback, Response, Study, StudyType
+from studies.models import Feedback, Lab, Response, Study, StudyType
 
 
 class RenameVideoTestCase(APITestCase):
