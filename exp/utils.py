@@ -1,7 +1,6 @@
 import csv
 import datetime
 import io
-import datetime
 
 RESPONSE_PAGE_SIZE = 500  # for pagination of responses when processing for download
 

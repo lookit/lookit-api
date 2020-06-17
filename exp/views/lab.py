@@ -98,9 +98,7 @@ class LabMembersView(
             return (
                 lab in user.labs.all()
                 or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.codename, lab)
-                or user.has_perm(
-                    LabPermission.READ_LAB_RESEARCHERS.codename.prefixed_codename
-                )
+                or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.prefixed_codename)
             )
 
     test_func = user_can_view_lab_members

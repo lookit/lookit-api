@@ -4,8 +4,8 @@ from functools import reduce
 from django.contrib import messages
 from django.contrib.auth.mixins import (
     PermissionRequiredMixin as DjangoPermissionRequiredMixin,
-    UserPassesTestMixin,
 )
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
