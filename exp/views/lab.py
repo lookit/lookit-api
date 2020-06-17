@@ -227,6 +227,8 @@ class LabMembersView(
                 **context,
             )
         if action == "make_member":
+            lab.requested_researchers.remove(researcher)
+            lab.researchers.add(researcher)
             lab.guest_group.user_set.remove(researcher)
             lab.readonly_group.user_set.remove(researcher)
             lab.member_group.user_set.add(researcher)
@@ -249,6 +251,8 @@ class LabMembersView(
                 **context,
             )
         if action == "make_admin":
+            lab.requested_researchers.remove(researcher)
+            lab.researchers.add(researcher)
             lab.guest_group.user_set.remove(researcher)
             lab.readonly_group.user_set.remove(researcher)
             lab.member_group.user_set.remove(researcher)
