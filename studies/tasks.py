@@ -177,8 +177,8 @@ def build_zipfile_of_videos(
     )
 
 
-@app.task(bind=True, max_retries=10, retry_backoff=10)
-def build_framedata_dict(task, filename, study_uuid, requesting_user_uuid):
+@app.task
+def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
     from studies.models import Study
     from accounts.models import User
     from exp.views.responses import build_framedata_dict_csv
