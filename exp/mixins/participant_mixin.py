@@ -2,7 +2,7 @@ from django.db.models import Prefetch, Q
 
 from accounts.models import Child, User
 from studies.permissions import StudyPermission
-from studies.queries import get_consented_responses_qs
+from studies.queries import get_consented_responses_qs, studies_for_which_user_has_perm
 
 
 class ParticipantMixin:
@@ -11,11 +11,11 @@ class ParticipantMixin:
     model = User
 
     def valid_responses(self):
-        study_ids_real_data = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_RESPONSE_DATA
+        study_ids_real_data = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_RESPONSE_DATA
         ).values_list("id", flat=True)
-        study_ids_preview_data = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_PREVIEW_DATA
+        study_ids_preview_data = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_PREVIEW_DATA
         ).values_list("id", flat=True)
         return get_consented_responses_qs().filter(
             Q(study__id__in=study_ids_real_data, is_preview=False)

@@ -17,7 +17,7 @@ from accounts.serializers import (
 from api.permissions import FeedbackPermissions, ResponsePermissions
 from studies.models import Feedback, Lab, Response, Study
 from studies.permissions import StudyPermission
-from studies.queries import get_consented_responses_qs
+from studies.queries import get_consented_responses_qs, studies_for_which_user_has_perm
 from studies.serializers import (
     FeedbackSerializer,
     ResponseSerializer,
@@ -117,11 +117,11 @@ class ChildViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             return children_for_active_users
 
         # TODO: make helper for this, maybe on user
-        studies_for_data = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_RESPONSE_DATA
+        studies_for_data = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_RESPONSE_DATA
         ).values_list("id", flat=True)
-        studies_for_preview = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_PREVIEW_DATA
+        studies_for_preview = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_PREVIEW_DATA
         ).values_list("id", flat=True)
         consented_responses = get_consented_responses_qs().filter(
             (Q(study__id__in=studies_for_data) & Q(is_preview=False))
@@ -162,11 +162,11 @@ class DemographicDataViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if self.request.user.has_perm("accounts.can_read_all_user_data"):
             return demographics_for_active_users
 
-        studies_for_data = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_RESPONSE_DATA
+        studies_for_data = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_RESPONSE_DATA
         ).values_list("id", flat=True)
-        studies_for_preview = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_PREVIEW_DATA
+        studies_for_preview = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_PREVIEW_DATA
         ).values_list("id", flat=True)
         consented_responses = get_consented_responses_qs().filter(
             (Q(study__id__in=studies_for_data) & Q(is_preview=False))
@@ -214,11 +214,11 @@ class UserViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
             return all_users.filter(is_active=True)
         qs_ids = all_users.values_list("id", flat=True)
 
-        studies_for_data = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_RESPONSE_DATA
+        studies_for_data = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_RESPONSE_DATA
         ).values_list("id", flat=True)
-        studies_for_preview = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_PREVIEW_DATA
+        studies_for_preview = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_PREVIEW_DATA
         ).values_list("id", flat=True)
         consented_responses = get_consented_responses_qs().filter(
             (Q(study__id__in=studies_for_data) & Q(is_preview=False))
@@ -260,7 +260,9 @@ class StudyViewSet(FilterByUrlKwargsMixin, views.ModelViewSet):
         if self.request.user.is_researcher:
             preview_studies = Study.objects.filter(
                 shared_preview=True
-            ) | self.request.user.studies_for_perm(StudyPermission.READ_STUDY_DETAILS)
+            ) | studies_for_which_user_has_perm(
+                self.request.user, StudyPermission.READ_STUDY_DETAILS
+            )
             qs = qs | preview_studies
 
         return qs.distinct().order_by("-date_modified")
@@ -370,11 +372,11 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
             #     1) Participant sessions PATCHing (partial updating) ongoing response-sessions.
             #     2) Experimenters/parents programmatically GETting the Responses API
 
-            studies_for_data = self.request.user.studies_for_perm(
-                StudyPermission.READ_STUDY_RESPONSE_DATA
+            studies_for_data = studies_for_which_user_has_perm(
+                self.request.user, StudyPermission.READ_STUDY_RESPONSE_DATA
             ).values_list("id", flat=True)
-            studies_for_preview = self.request.user.studies_for_perm(
-                StudyPermission.READ_STUDY_PREVIEW_DATA
+            studies_for_preview = studies_for_which_user_has_perm(
+                self.request.user, StudyPermission.READ_STUDY_PREVIEW_DATA
             ).values_list("id", flat=True)
             consented_responses = get_consented_responses_qs().filter(
                 (Q(study__id__in=studies_for_data) & Q(is_preview=False))
@@ -424,11 +426,11 @@ class FeedbackViewSet(FilterByUrlKwargsMixin, ConvertUuidToIdMixin, views.ModelV
         """
         qs = super().get_queryset()
 
-        studies_for_data = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_RESPONSE_DATA
+        studies_for_data = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_RESPONSE_DATA
         ).values_list("id", flat=True)
-        studies_for_preview = self.request.user.studies_for_perm(
-            StudyPermission.READ_STUDY_PREVIEW_DATA
+        studies_for_preview = studies_for_which_user_has_perm(
+            self.request.user, StudyPermission.READ_STUDY_PREVIEW_DATA
         ).values_list("id", flat=True)
         consented_responses = get_consented_responses_qs().filter(
             (Q(study__id__in=studies_for_data) & Q(is_preview=False))

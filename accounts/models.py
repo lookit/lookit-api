@@ -187,22 +187,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
         return user_study_perms
 
-    def studies_for_perm(self, study_perm: StudyPermission):
-        from studies.models import Study
-
-        study_level_perm_study_ids = get_objects_for_user(
-            self, study_perm.prefixed_codename
-        ).values_list("id", flat=True)
-
-        umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
-        labs_with_labwide_perms = get_objects_for_user(
-            self, umbrella_lab_perm.prefixed_codename
-        )
-
-        return Study.objects.filter(
-            Q(lab__in=labs_with_labwide_perms) | Q(id__in=study_level_perm_study_ids)
-        )
-
     def can_create_study(self):
         return any(
             [

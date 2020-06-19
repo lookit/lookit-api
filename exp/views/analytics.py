@@ -18,7 +18,7 @@ from studies.fields import (
 )
 from studies.models import Study
 from studies.permissions import StudyPermission
-from studies.queries import get_annotated_responses_qs
+from studies.queries import get_annotated_responses_qs, studies_for_which_user_has_perm
 
 LANGUAGES_MAP = {code: lang for code, lang in LANGUAGES}
 CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDITIONS}
@@ -48,8 +48,8 @@ class StudyParticipantAnalyticsView(UserPassesTestMixin, generic.TemplateView):
             ctx["can_view_all_responses"] = True
         else:
             # Researcher or other
-            studies_for_user = self.request.user.studies_for_perm(
-                StudyPermission.READ_STUDY_RESPONSE_DATA
+            studies_for_user = studies_for_which_user_has_perm(
+                self.request.user, StudyPermission.READ_STUDY_RESPONSE_DATA
             )
 
         # Responses for studies - only include real (non-preview) responses here

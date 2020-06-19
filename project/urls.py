@@ -37,8 +37,7 @@ urlpatterns = [
         osf_oauth2_adapter_views.login_errored_cancelled,
     ),
     path(
-        "accounts/social/login/error/",
-        osf_oauth2_adapter_views.login_errored_cancelled,
+        "accounts/social/login/error/", osf_oauth2_adapter_views.login_errored_cancelled
     ),
     path("accounts/", include("allauth.urls")),
     path("exp/", include(exp_urls)),

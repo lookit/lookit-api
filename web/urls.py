@@ -26,9 +26,9 @@ urlpatterns = [
     ),
     path("studies/", views.StudiesListView.as_view(), name="studies-list"),
     path(
-        "studies/history/", views.StudiesHistoryView.as_view(), name="studies-history",
+        "studies/history/", views.StudiesHistoryView.as_view(), name="studies-history"
     ),
-    path("studies/<uuid:uuid>/", views.StudyDetailView.as_view(), name="study-detail",),
+    path("studies/<uuid:uuid>/", views.StudyDetailView.as_view(), name="study-detail"),
     path(
         "studies/<uuid:uuid>/<uuid:child_id>/",
         views.ExperimentProxyView.as_view(),

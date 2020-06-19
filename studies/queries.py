@@ -21,7 +21,7 @@ from studies.models import (
     StudyLog,
     Video,
 )
-from studies.permissions import StudyPermission
+from studies.permissions import StudyPermission, UMBRELLA_LAB_PERMISSION_MAP
 
 
 def get_annotated_responses_qs(include_comments=False, include_time=False):
@@ -86,17 +86,7 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         responses_for_study = responses_for_study.filter(is_preview=True)
 
     responses_for_study = (
-        responses_for_study
-        # .prefetch_related(
-        #     models.Prefetch(
-        #         "videos",
-        #         queryset=Video.objects.filter(is_consent_footage=True).only(
-        #             "full_name"
-        #         ),
-        #         to_attr="consent_videos",
-        #     )
-        # )
-        .select_related("child", "child__user")
+        responses_for_study.select_related("child", "child__user")
         .order_by("-date_created")
         .values(
             "id",
@@ -126,10 +116,10 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         )
     )
 
-    # See: https://code.djangoproject.com/ticket/26565n tandem without
-    #     #     combinatorial explosion of result set is precluding us from relying on
-    #     #     django's join machinery. Instead, we need to manually join here.
-    #     The inability to use values() and prefetch_related i
+    # Not prefetching videos above because the inability to use values() and
+    # prefetch_related in tandem without combinatorial explosion of result set is precluding us
+    # from relying on django's join machinery. Instead, we need to manually join here.
+    # See: https://code.djangoproject.com/ticket/26565n
     consent_videos = Video.objects.filter(
         study_id=study_id, is_consent_footage=True
     ).values("full_name", "response_id")
@@ -146,6 +136,22 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         response["videos"] = videos_per_response.get(response["id"], [])
 
     return responses_for_study
+
+
+def studies_for_which_user_has_perm(user, study_perm: StudyPermission):
+
+    study_level_perm_study_ids = get_objects_for_user(
+        user, study_perm.prefixed_codename
+    ).values_list("id", flat=True)
+
+    umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
+    labs_with_labwide_perms = get_objects_for_user(
+        user, umbrella_lab_perm.prefixed_codename
+    )
+
+    return Study.objects.filter(
+        Q(lab__in=labs_with_labwide_perms) | Q(id__in=study_level_perm_study_ids)
+    )
 
 
 def get_consent_statistics(study_id, preview_only):
@@ -262,7 +268,7 @@ def get_study_list_qs(user, query_dict):
     annotated_responses_qs = get_annotated_responses_qs()
 
     queryset = (
-        user.studies_for_perm(StudyPermission.READ_STUDY_DETAILS)
+        studies_for_which_user_has_perm(user, StudyPermission.READ_STUDY_DETAILS)
         .exclude(state="archived")
         .select_related("creator")
         .annotate(
