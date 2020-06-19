@@ -58,9 +58,6 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
     model = DemographicData
     form_class = forms.DemographicDataForm
 
-    def get_success_url(self):
-        return reverse("web:demographic-data-update")
-
     def form_valid(self, form):
         """
         Before saving form, adds user relationship to demographic data, and sets "previous"
