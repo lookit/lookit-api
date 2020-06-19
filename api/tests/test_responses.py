@@ -45,9 +45,9 @@ class ResponseTestCase(APITestCase):
             ConsentRuling, response=self.consented_response, action="accepted"
         )
         self.url = reverse("api:response-list", kwargs={"version": "v1"})
-        self.response_detail_url = self.url + str(self.response.uuid) + "/"
+        self.response_detail_url = f"{self.url}{self.response.uuid}/"
         self.consented_response_detail_url = (
-            self.url + str(self.consented_response.uuid) + "/"
+            f"{self.url}{self.consented_response.uuid}/"
         )
         self.client = APIClient()
 
@@ -398,7 +398,7 @@ class ResponseTestCase(APITestCase):
                                     "eventType": "stoppingCapture",
                                     "timestamp": "2017-10-31T20:09:53.051Z",
                                     "videoId": "e729321f-418f-4728-992c-9364623dbe9b_1-video-consent_bdebd15b-adc7-4377-b2f6-e9f3de70dd19",
-                                    "streamTime": 2.459000000000003,
+                                    "streamTime": 2.459,
                                 },
                                 {
                                     "eventType": "nextFrame",

@@ -77,11 +77,16 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
     dont_show_old_approved = Q(study_id=study_id) & (
         Q(time_of_ruling__gt=three_weeks_ago) | ~Q(current_ruling=ACCEPTED)
     )
-    preview_filter = Q(is_preview=True) if preview_only else Q()
+
+    responses_for_study = get_annotated_responses_qs(
+        include_comments=True, include_time=True
+    ).filter(dont_show_old_approved)
+
+    if preview_only:
+        responses_for_study = responses_for_study.filter(is_preview=True)
+
     responses_for_study = (
-        get_annotated_responses_qs(include_comments=True, include_time=True)
-        .filter(dont_show_old_approved)
-        .filter(preview_filter)
+        responses_for_study
         # .prefetch_related(
         #     models.Prefetch(
         #         "videos",
@@ -121,10 +126,10 @@ def get_responses_with_current_rulings_and_videos(study_id, preview_only):
         )
     )
 
-    # See: https://code.djangoproject.com/ticket/26565
-    #     The inability to use values() and prefetch_related in tandem without
-    #     combinatorial explosion of result set is precluding us from relying on
-    #     django's join machinery. Instead, we need to manually join here.
+    # See: https://code.djangoproject.com/ticket/26565n tandem without
+    #     #     combinatorial explosion of result set is precluding us from relying on
+    #     #     django's join machinery. Instead, we need to manually join here.
+    #     The inability to use values() and prefetch_related i
     consent_videos = Video.objects.filter(
         study_id=study_id, is_consent_footage=True
     ).values("full_name", "response_id")
@@ -165,13 +170,13 @@ def get_consent_statistics(study_id, preview_only):
     statistics = {"responses": {"total": 0}, "children": {}}
     response_stats = statistics["responses"]
     child_stats = statistics["children"]
-    preview_filter = Q(is_preview=True) if preview_only else Q()
+
+    response_qs = get_annotated_responses_qs().filter(study_id=study_id)
+    if preview_only:
+        response_qs = response_qs.filter(is_preview=True)
 
     response_counts = (
-        get_annotated_responses_qs()
-        .filter(study_id=study_id)
-        .filter(preview_filter)
-        .values("current_ruling")
+        response_qs.values("current_ruling")
         .order_by("current_ruling")
         .annotate(count=Count("current_ruling"))
     )

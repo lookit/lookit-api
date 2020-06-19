@@ -278,8 +278,7 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     DEFAULT_FILE_STORAGE = "project.storages.LookitMediaStorage"
     MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
 
-    EXPERIMENT_LOCATION = "/experiments"
-    PREVIEW_EXPERIMENT_LOCATION = "/preview_experiments"
+    EXPERIMENT_LOCATION = "experiments"
 
     GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME", "")
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")

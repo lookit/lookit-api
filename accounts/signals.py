@@ -1,5 +1,3 @@
-import os
-
 from django.apps import apps
 from django.contrib.auth.management import create_permissions
 

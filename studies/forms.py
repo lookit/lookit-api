@@ -39,16 +39,12 @@ STUDY_TYPE_HELP_TEXT_INITIAL = f"""<p>After selecting an experiment runner type 
     For more information on experiment runner types, please
     <a href={STUDY_TYPE_HELP_LINK}>see the documentation.</a></p>"""
 
-STUDY_TYPE_HELP_TEXT_EDIT = (
-    STUDY_TYPE_HELP_TEXT_INITIAL  # Leave the same for now but may change in the future
-)
+# Leave the same for now but may change in the future
+STUDY_TYPE_HELP_TEXT_EDIT = STUDY_TYPE_HELP_TEXT_INITIAL
 
 PROTOCOL_HELP_TEXT_EDIT = f"Configure frames to use in your study and specify their order. For information on how to set up your protocol, please <a href={PROTOCOL_CONFIG_HELP_LINK}>see the documentation.</a>"
 
-PROTOCOL_HELP_TEXT_INITIAL = (
-    PROTOCOL_HELP_TEXT_EDIT
-    + " You can leave the default for now and come back to this later."
-)
+PROTOCOL_HELP_TEXT_INITIAL = f"{PROTOCOL_HELP_TEXT_EDIT}  You can leave the default for now and come back to this later."
 
 
 class LabForm(ModelForm):
@@ -234,9 +230,10 @@ class StudyEditForm(StudyForm):
             StudyPermission.CHANGE_STUDY_LAB, self.instance
         )
         if can_change_lab:
-            self.fields[
-                "lab"
-            ].help_text = "Which lab this study will be affiliated with. Be careful changing the lab of an existing study: this will affect who can view and edit the study."
+            self.fields["lab"].help_text = (
+                "Which lab this study will be affiliated with. Be careful changing the lab of an existing study: "
+                "this will affect who can view and edit the study."
+            )
         else:
             # Ensure we display the current lab on the edit form, even if user isn't part of this lab (which
             # isn't technically possible the way permissions are set up, but in principle options should be

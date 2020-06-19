@@ -19,11 +19,10 @@ def query_transform(request, **kwargs):
         "childoptions",
     ]
 
-    for key in acceptable_keys:
-        if kwargs.get(key):
-            updated[key] = str(
-                kwargs.get(key)
-            )  # cast to string as e.g. page 2 otherwise causes error on encoding
+    # Cast to string so that e.g. page 2 doesn't cause error on encoding
+    updated.update(
+        {key: str(kwargs.get(key)) for key in acceptable_keys if kwargs.get(key)}
+    )
 
     # Assume it was not implemented like this (or as oneliner) for some sort of security reasons...
     # for (key, val) in kwargs.items():

@@ -50,14 +50,10 @@ class ChildrenTestCase(APITestCase):
         )
         self.url = reverse("api:child-list", kwargs={"version": "v1"})
         self.child_with_consent_detail_url = (
-            reverse("api:child-list", kwargs={"version": "v1"})
-            + str(self.child_with_consented_response.uuid)
-            + "/"
+            f"{self.url}{self.child_with_consented_response.uuid}/"
         )
         self.child_without_consent_detail_url = (
-            reverse("api:child-list", kwargs={"version": "v1"})
-            + str(self.child_without_consented_response.uuid)
-            + "/"
+            f"{self.url}{self.child_without_consented_response.uuid}/"
         )
         self.client = APIClient()
 

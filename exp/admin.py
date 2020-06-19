@@ -23,8 +23,7 @@ class StudyAdmin(GuardedModelAdmin):
 
 class LabAdmin(GuardedModelAdmin):
     list_display = ("uuid", "name", "institution", "principal_investigator_name")
-    search_fields = ["name", "institution"]
-    pass
+    search_fields = ["name", "institution", "principal_investigator_name"]
 
 
 class ResponseAdmin(GuardedModelAdmin):

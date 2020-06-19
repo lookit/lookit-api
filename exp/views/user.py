@@ -1,30 +1,13 @@
 import operator
 from functools import reduce
 
-from django.contrib import messages
-from django.contrib.auth.mixins import (
-    PermissionRequiredMixin as DjangoPermissionRequiredMixin,
-)
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.models import Group
-from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.db.models.functions import Lower
-from django.http import Http404
 from django.shortcuts import reverse
 from django.views import generic
-from guardian.mixins import PermissionRequiredMixin
-from guardian.shortcuts import get_objects_for_user
 
-from accounts.forms import UserStudiesForm
-from accounts.models import User
-from accounts.utils import build_org_group_name
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
-from project.settings import EXPERIMENTER_LOGIN_URL as login_url
-from studies.helpers import send_mail
-from studies.models import Response
-from studies.queries import get_consented_responses_qs
 
 
 class ParticipantListView(

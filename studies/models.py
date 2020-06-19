@@ -1098,9 +1098,8 @@ class Video(models.Model):
             S3_RESOURCE.Object(settings.BUCKET_NAME, throwaway_jpg_name).delete()
 
         if "PREVIEW_DATA_DISREGARD" in new_full_name:
-            return (
-                None  # early exit, since we are not saving an object in the database.
-            )
+            # early exit, since we are not saving an object in the database.
+            return None
         else:
             _, study_uuid, frame_id, response_uuid, timestamp, _ = new_full_name.split(
                 "_"
