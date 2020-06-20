@@ -1,5 +1,6 @@
 from unittest import skip
 
+from django.conf import settings
 from django.test import Client, TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
@@ -61,6 +62,7 @@ class LabViewsTestCase(TestCase):
 
     # Create lab view: can create new lab as researcher
     def testCanCreateNewLabAsResearcher(self):
+        settings.CELERY_TASK_ALWAYS_EAGER = True  # Don't test removal from S3
         self.client.force_login(self.researcher)
         post_data = {
             "name": "New lab",
