@@ -21,7 +21,7 @@ from studies.models import (
     StudyLog,
     Video,
 )
-from studies.permissions import StudyPermission, UMBRELLA_LAB_PERMISSION_MAP
+from studies.permissions import UMBRELLA_LAB_PERMISSION_MAP, StudyPermission
 
 
 def get_annotated_responses_qs(include_comments=False, include_time=False):

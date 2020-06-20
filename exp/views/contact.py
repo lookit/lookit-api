@@ -112,6 +112,8 @@ class StudyParticipantContactView(
         """
         study = self.get_object()
 
+        # TODO: implement checks on these being in the list of study participants &
+        # appropriate for this message type
         participant_uuids = request.POST.getlist("recipients")
         subject = request.POST["subject"]
         body = request.POST["body"]
@@ -132,10 +134,7 @@ class StudyParticipantContactView(
             reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
         )
 
-    def get_researchers(self):  # TODO
+    def get_researchers(self):
         """Pulls researchers that can contact participants."""
         study = self.get_object()
-        return get_users_with_perms(
-            study,
-            only_with_perms_in=[StudyPermission.CONTACT_STUDY_PARTICIPANTS.codename],
-        )
+        return study.users_with_study_perms(StudyPermission.CONTACT_STUDY_PARTICIPANTS)

@@ -6,7 +6,6 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views import generic
-from guardian.mixins import PermissionRequiredMixin as ObjectPermissionRequiredMixin
 
 from accounts.models import Child, User
 from exp.utils import RESPONSE_PAGE_SIZE

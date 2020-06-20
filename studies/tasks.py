@@ -1,7 +1,6 @@
 import csv
 import datetime
 import hashlib
-import json
 import logging
 import os
 import re
@@ -10,22 +9,16 @@ import subprocess
 import tempfile
 import time
 import zipfile
-from enum import IntEnum
-from io import BytesIO, StringIO
-from typing import NamedTuple
+from io import StringIO
 
 import boto3
 import docker
 import requests
 from celery.utils.log import get_task_logger
 from django.conf import settings
-from django.core.files import File
-from django.core.paginator import Paginator
 from django.utils import timezone
 from google.cloud import storage as gc_storage
 
-from exp.utils import csv_dict_output_and_writer
-from project import storages
 from project.celery import app
 from studies.experiment_builder import EmberFrameplayerBuilder
 from studies.helpers import send_mail

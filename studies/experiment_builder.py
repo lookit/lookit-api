@@ -173,9 +173,8 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         from studies.models import Study
 
         study = Study.objects.get(uuid=study_uuid)
-        study.is_building = (
-            True  # Set this here (in addition to in view) in case re-trying
-        )
+        # Set this here (in addition to in view) in case re-trying
+        study.is_building = True
         study.save(update_fields=["is_building"])
         self.build_context["study"] = study
 

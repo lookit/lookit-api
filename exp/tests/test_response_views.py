@@ -7,6 +7,7 @@ from django_dynamic_fixture import G
 from accounts.models import Child, DemographicData, User
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType
 
+
 # Run celery tasks right away, but don't catch errors from them. The relevant tasks for
 # this case involve S3/GCP access which we're not testing.
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
