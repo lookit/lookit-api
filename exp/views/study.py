@@ -753,7 +753,8 @@ class StudyBuildView(SingleObjectParsimoniousQueryMixin, generic.RedirectView):
 
     http_method_names = ["post"]
     model = Study
-    pk_url_kwarg = "uuid"
+    slug_url_kwarg = "uuid"
+    slug_field = "uuid"
 
     def get_redirect_url(self, *args, **kwargs):
         # TODO: is this how to do this, or can we set url?
@@ -761,7 +762,7 @@ class StudyBuildView(SingleObjectParsimoniousQueryMixin, generic.RedirectView):
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
-        study = self.object
+        study = self.get_object()
         # TODO: these permissions should be handled via e.g. UserPassesTestMixin, not
         # in the post function...
         if user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study):
@@ -771,12 +772,12 @@ class StudyBuildView(SingleObjectParsimoniousQueryMixin, generic.RedirectView):
                 ember_build_and_gcp_deploy.delay(study.uuid, request.user.uuid)
                 messages.success(
                     request,
-                    f"Scheduled experiment runner build for {self.object.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+                    f"Scheduled experiment runner build for {study.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
                 )
             else:
                 messages.warning(
                     request,
-                    f"Experiment runner for {self.object.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
+                    f"Experiment runner for {study.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
                 )
         return super().post(request, *args, **kwargs)
 
