@@ -893,12 +893,38 @@ class Response(models.Model):
             "date": self.most_recent_ruling_date,
         }
 
+    def exit_frame_properties(self, property):
+        exit_frame_values = [
+            f.get(property, None)
+            for f in self.exp_data.values()
+            if f.get("frameType", None) == "EXIT"
+        ]
+        if exit_frame_values and exit_frame_values != [None]:
+            # return " ".join(list(set(([val for val in exit_frame_values if val is not None]))))
+            return exit_frame_values[-1]
+        else:
+            return None
+
     @property
     def withdrawn(self):
-        exit_frames = [
-            f for f in self.exp_data.values() if f.get("frameType", None) == "EXIT"
-        ]
-        return exit_frames[0].get("withdrawal", None) if exit_frames else None
+        return bool(self.exit_frame_properties("withdrawal"))
+
+    @property
+    def databrary(self):
+        return self.exit_frame_properties("databraryShare")
+
+    @property
+    def privacy(self):
+        return self.exit_frame_properties("useOfMedia")
+
+    @property
+    def parent_feedback(self):
+        return self.exit_frame_properties("feedback")
+
+    # @property
+    # def birthdate_difference(self):
+    #    return self.exit_frame_properties("feedback")
+    #    # "birthDate": "2020-04-22T19:15:43.173Z"
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
