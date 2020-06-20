@@ -48,17 +48,16 @@ class LabViewsTestCase(TestCase):
 
     # Create lab view: can get as researcher
     def testCanGetCreateLabViewAsResearcher(self):
-        self.assertTrue(1 == 1)
-        # self.client.force_login(self.researcher)
-        # page = self.client.get(self.create_lab_url)
-        # self.assertEqual(
-        #     page.status_code, 200, "Unable to get create lab view as researcher"
-        # )
-        # self.assertTemplateUsed(
-        #     page,
-        #     "studies/lab_create.html",
-        #     "Incorrect template used for displaying create lab form",
-        # )
+        self.client.force_login(self.researcher)
+        page = self.client.get(self.create_lab_url)
+        self.assertEqual(
+            page.status_code, 200, "Unable to get create lab view as researcher"
+        )
+        self.assertTemplateUsed(
+            page,
+            "studies/lab_create.html",
+            "Incorrect template used for displaying create lab form",
+        )
 
     # Create lab view: can create new lab as researcher
     @skip
