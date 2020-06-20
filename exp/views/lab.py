@@ -414,18 +414,18 @@ class LabCreateView(
             "researcher_name": self.request.user.get_short_name(),
             "lab_id": self.object.id,
         }
-        send_mail.delay(
-            "notify_admins_of_lab_creation",
-            "Lab Submission Notification",
-            settings.EMAIL_FROM_ADDRESS,
-            bcc=["abc@def.edu"],
-            # bcc=list(
-            #     Group.objects.get(
-            #         name=SiteAdminGroup.LOOKIT_ADMIN.name
-            #     ).user_set.values_list("username", flat=True)
-            # ),
-            **email_context,
-        )
+        print(settings.EMAIL_FROM_ADDRESS)
+        # send_mail.delay(
+        #    "notify_admins_of_lab_creation",
+        #    "Lab Submission Notification",
+        #    settings.EMAIL_FROM_ADDRESS,
+        #    bcc=list(
+        #        Group.objects.get(
+        #            name=SiteAdminGroup.LOOKIT_ADMIN.name
+        #        ).user_set.values_list("username", flat=True)
+        #    ),
+        #    **email_context,
+        # )
 
     def form_valid(self, form):
         """
