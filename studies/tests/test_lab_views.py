@@ -131,7 +131,6 @@ class LabViewsTestCase(TestCase):
         self.assertNotIn("Bobbington", page.rendered_content)
 
     # Lab members view: cannot post as researcher in lab w/o manage perms
-    @skip
     def testPostLabMembersViewIncorrectPerms(self):
         self.client.force_login(self.researcher)
         post_data = {
@@ -246,7 +245,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab update view: cannot post as researcher w/o edit perms
-    @skip
     def testPostLabUpdateViewIncorrectPerms(self):
         assign_perm(
             LabPermission.MANAGE_LAB_RESEARCHERS.codename, self.researcher, self.lab
@@ -272,7 +270,6 @@ class LabViewsTestCase(TestCase):
         self.assertEqual(updated_lab.institution, "MIT")
 
     # Lab update view: can post as researcher w/ edit perms
-    @skip
     def testPostLabUpdateViewCorrectPerms(self):
         assign_perm(LabPermission.EDIT_LAB_METADATA.codename, self.researcher, self.lab)
         self.client.force_login(self.researcher)
@@ -296,7 +293,6 @@ class LabViewsTestCase(TestCase):
         self.assertEqual(updated_lab.institution, "New institution")
 
     # Lab update view: cannot update approved_to_test
-    @skip
     def testPostLabUpdateViewEditApproval(self):
         assign_perm(LabPermission.EDIT_LAB_METADATA.codename, self.researcher, self.lab)
         self.client.force_login(self.researcher)
@@ -319,7 +315,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab update view: can update approved_to_test as admin
-    @skip
     def testPostLabUpdateViewEditApprovalAsAdmin(self):
         assign_perm(LabPermission.EDIT_LAB_APPROVAL.prefixed_codename, self.researcher)
         assign_perm(LabPermission.EDIT_LAB_METADATA.prefixed_codename, self.researcher)
@@ -343,7 +338,7 @@ class LabViewsTestCase(TestCase):
             "Researcher could not approve lab to test despite permission",
         )
 
-    # Lab list view: can see as researcher
+    # Lab membership request: can make as researcher
     @skip
     def testRequestLabMembershipAsResearcher(self):
         self.client.force_login(self.researcher)
@@ -354,8 +349,7 @@ class LabViewsTestCase(TestCase):
         self.assertIn(self.researcher, self.lab2.requested_researchers.all())
         self.assertNotIn(self.researcher, self.lab2.researchers.all())
 
-    # Lab list view: cannot see as participant
-    @skip
+    # Lab membership request: cannot make as participant
     def testRequestLabMembershipAsParticipant(self):
         self.client.force_login(self.participant)
         page = self.client.post(self.lab2_request_url, {})
