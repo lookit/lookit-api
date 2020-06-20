@@ -1,7 +1,4 @@
-from unittest import skip
-
-from django.conf import settings
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
@@ -11,11 +8,15 @@ from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission
 
 
+# run celery .delay() tasks right away and propagate errors.
+# Ideally to test celery tasks we would mock per
+# https://docs.celeryproject.org/en/stable/userguide/testing.html
+# but for these views the celery tasks are relatively unimportant and
+# we're happy just checking there aren't errors when emails are sent.
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
 class LabViewsTestCase(TestCase):
     def setUp(self):
-        settings.CELERY_TASK_ALWAYS_EAGER = True  # run celery .delay() tasks right away
-        settings.CELERY_TASK_EAGER_PROPAGATES = True  # propagate errors - we want to see if there are errors in celery tasks!
-
         self.client = Client()
 
         self.lab = G(Lab, name="ECCL", institution="MIT", approved_to_test=False)
