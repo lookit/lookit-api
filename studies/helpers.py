@@ -40,7 +40,7 @@ def send_mail(
         subject, text_content, from_address, to_addresses, cc=cc, bcc=bcc
     )
     email.attach_alternative(html_content, "text/html")
-    email.send()
+    # email.send()
 
 
 class FrameActionDispatcher(object):
