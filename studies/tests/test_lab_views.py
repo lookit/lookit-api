@@ -13,6 +13,9 @@ from studies.permissions import LabPermission
 
 class LabViewsTestCase(TestCase):
     def setUp(self):
+        settings.CELERY_TASK_ALWAYS_EAGER = True  # run celery .delay() tasks right away
+        settings.CELERY_TASK_EAGER_PROPAGATES = True  # propagate errors - we want to see if there are errors in celery tasks!
+
         self.client = Client()
 
         self.lab = G(Lab, name="ECCL", institution="MIT", approved_to_test=False)
@@ -62,7 +65,6 @@ class LabViewsTestCase(TestCase):
 
     # Create lab view: can create new lab as researcher
     def testCanCreateNewLabAsResearcher(self):
-        settings.CELERY_TASK_ALWAYS_EAGER = True  # Don't test removal from S3
         self.client.force_login(self.researcher)
         post_data = {
             "name": "New lab",
@@ -146,7 +148,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab members view: can add new researcher w/ appropriate perms
-    @skip
     def testAddNewLabMemberWithCorrectPerms(self):
         self.client.force_login(self.researcher)
         assign_perm(
@@ -171,7 +172,6 @@ class LabViewsTestCase(TestCase):
         self.assertIn(self.researcher_outside_lab, self.lab.guest_group.user_set.all())
 
     # Lab members view: can remove researcher w/ appropriate perms
-    @skip
     def testRemoveLabMemberWithCorrectPerms(self):
         self.client.force_login(self.researcher)
         assign_perm(
@@ -340,7 +340,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab membership request: can make as researcher
-    @skip
     def testRequestLabMembershipAsResearcher(self):
         self.client.force_login(self.researcher)
         page = self.client.post(self.lab2_request_url, {})
