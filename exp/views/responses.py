@@ -319,17 +319,6 @@ class StudyResponsesConsentManager(
         )
 
 
-def response_is_withdrawn(exp_data):
-    """Check if a response is withdrawn, using the experiment frame data.
-
-    XXX: This is copied over from the model methods in studies/models.py
-
-    TODO: See if we can delete the model method now that we're using .values() here.
-    """
-    exit_frames = [f for f in exp_data.values() if f.get("frameType", None) == "EXIT"]
-    return exit_frames[0].get("withdrawal", None) if exit_frames else None
-
-
 # Definitions of optional columns that can be included in downloads in the individual
 # responses and all responses views.
 AGE_DATA_OPTIONS = [
@@ -379,6 +368,15 @@ CHILD_DATA_OPTIONS = [
 ]
 ALL_OPTIONAL_HEADER_KEYS = [
     option["id"] for option in AGE_DATA_OPTIONS + CHILD_DATA_OPTIONS
+]
+IDENTIFIABLE_DATA_OPTIONS = [
+    "exact",
+    "birthday",
+    "name",
+    "addl",
+    "parent",
+    "globalchild",
+    "globalparent",
 ]
 
 # ------- Helper functions for response downloads ----------------------------------------
@@ -432,6 +430,9 @@ def build_responses_json(responses, optional_headers=None):
                         "completed": resp.completed,
                         "date_created": resp.date_created,
                         "withdrawn": resp.withdrawn,
+                        "parent_feedback": resp.parent_feedback,
+                        "video_privacy": resp.privacy,
+                        "databrary": resp.databrary,
                         "is_preview": resp.is_preview,
                     },
                     "study": {"uuid": str(resp.study.uuid)},
@@ -538,6 +539,36 @@ def get_response_headers_and_row_data(resp=None):
             (
                 "Whether the participant withdrew permission for viewing/use of study video beyond consent video. If "
                 "true, video will not be available and must not be used."
+            ),
+        ),
+        (
+            "response_parent_feedback",
+            resp.parent_feedback if resp else "",
+            (
+                "Freeform parent feedback entered into the exit survey, if any. This field may incidentally contain "
+                "identifying or sensitive information depending on what parents say, so it should be scrubbed or "
+                "omitted from published data."
+            ),
+        ),
+        (
+            "response_video_privacy",
+            resp.privacy if resp else "",
+            (
+                "Privacy level for videos selected during the exit survey, if the parent completed the exit survey. "
+                "Possible levels are 'private' (only people listed on your IRB protocol can view), 'scientific' "
+                "(can share for scientific/educational purposes), and 'publicity' (can also share for publicity). "
+                "In no cases may videos be shared for commercial purposes. If this is missing (e.g., family stopped "
+                "just after the consent form and did not complete the exit survey), you must treat the video as "
+                "private."
+            ),
+        ),
+        (
+            "response_databrary",
+            resp.databrary if resp else "",
+            (
+                "Whether the parent agreed to share video data on Databrary - 'yes' or 'no'. If missing, you must "
+                "treat the video as if 'no' were selected. If 'yes', the video privacy selections also apply to "
+                "authorized Databrary users."
             ),
         ),
         (
@@ -1140,7 +1171,15 @@ class StudyResponsesAllDownloadJSON(StudyResponsesAll):
             build_responses_json(responses, header_options), indent=4, default=str
         )
         filename = "{}_{}.json".format(
-            study_name_for_files(study.name), "all-responses"
+            study_name_for_files(study.name),
+            "all-responses"
+            + (
+                "-identifiable"
+                if any(
+                    [option in IDENTIFIABLE_DATA_OPTIONS for option in header_options]
+                )
+                else ""
+            ),
         )
         response = HttpResponse(cleaned_data, content_type="text/json")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
@@ -1159,15 +1198,6 @@ class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
         ) + self.request.GET.getlist("childoptions")
         responses = self.valid_responses(study)
         cleaned_data = build_summary_csv(responses, header_options)
-        IDENTIFIABLE_DATA_OPTIONS = [
-            "exact",
-            "birthday",
-            "name",
-            "addl",
-            "parent",
-            "globalchild",
-            "globalparent",
-        ]
         filename = "{}_{}.csv".format(
             study_name_for_files(study.name),
             "all-responses"
