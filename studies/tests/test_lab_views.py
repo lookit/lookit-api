@@ -60,7 +60,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Create lab view: can create new lab as researcher
-    @skip
     def testCanCreateNewLabAsResearcher(self):
         self.client.force_login(self.researcher)
         post_data = {
@@ -77,7 +76,6 @@ class LabViewsTestCase(TestCase):
         self.assertEqual(page.status_code, 302, "Unable to create lab as researcher")
 
     # Create lab view: cannot get as participant
-    @skip
     def testCanGetCreateLabViewAsParticipant(self):
         self.client.force_login(self.participant)
         page = self.client.get(self.create_lab_url)
@@ -86,7 +84,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab detail view: can see as researcher
-    @skip
     def testCanGetLabDetailViewAsResearcher(self):
         self.client.force_login(self.researcher)
         page = self.client.get(self.lab_detail_url)
@@ -100,7 +97,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab detail view: cannot see as participant
-    @skip
     def testCanGetLabDetailViewAsParticipant(self):
         self.client.force_login(self.participant)
         page = self.client.get(self.lab_detail_url)
@@ -109,7 +105,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab members view: cannot see as researcher not in lab
-    @skip
     def testCannotGetLabMembersViewAsUnaffiliatedResearcher(self):
         self.client.force_login(self.researcher_outside_lab)
         page = self.client.get(self.lab_members_url)
@@ -118,7 +113,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab members view: can see as researcher in lab.
-    @skip
     def testCanGetLabMembersViewAsLabResearcher(self):
         self.client.force_login(self.researcher)
         page = self.client.get(self.lab_members_url)
@@ -136,7 +130,6 @@ class LabViewsTestCase(TestCase):
         self.assertNotIn("Bobbington", page.rendered_content)
 
     # Lab members view: cannot post as researcher in lab w/o manage perms
-    @skip
     def testPostLabMembersViewIncorrectPerms(self):
         self.client.force_login(self.researcher)
         post_data = {
@@ -151,7 +144,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Lab members view: can add new researcher w/ appropriate perms
-    @skip
     def testAddNewLabMemberWithCorrectPerms(self):
         self.client.force_login(self.researcher)
         assign_perm(
@@ -176,7 +168,6 @@ class LabViewsTestCase(TestCase):
         self.assertIn(self.researcher_outside_lab, self.lab.guest_group.user_set.all())
 
     # Lab members view: can remove researcher w/ appropriate perms
-    @skip
     def testRemoveLabMemberWithCorrectPerms(self):
         self.client.force_login(self.researcher)
         assign_perm(
