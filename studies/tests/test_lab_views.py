@@ -1,4 +1,4 @@
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
@@ -8,6 +8,13 @@ from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission
 
 
+# run celery .delay() tasks right away and propagate errors.
+# Ideally to test celery tasks we would mock per
+# https://docs.celeryproject.org/en/stable/userguide/testing.html
+# but for these views the celery tasks are relatively unimportant and
+# we're happy just checking there aren't errors when emails are sent.
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
 class LabViewsTestCase(TestCase):
     def setUp(self):
         self.client = Client()
@@ -333,7 +340,7 @@ class LabViewsTestCase(TestCase):
             "Researcher could not approve lab to test despite permission",
         )
 
-    # Lab list view: can see as researcher
+    # Lab membership request: can make as researcher
     def testRequestLabMembershipAsResearcher(self):
         self.client.force_login(self.researcher)
         page = self.client.post(self.lab2_request_url, {})
@@ -343,7 +350,7 @@ class LabViewsTestCase(TestCase):
         self.assertIn(self.researcher, self.lab2.requested_researchers.all())
         self.assertNotIn(self.researcher, self.lab2.researchers.all())
 
-    # Lab list view: cannot see as participant
+    # Lab membership request: cannot make as participant
     def testRequestLabMembershipAsParticipant(self):
         self.client.force_login(self.participant)
         page = self.client.post(self.lab2_request_url, {})
