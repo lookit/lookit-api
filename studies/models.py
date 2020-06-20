@@ -185,6 +185,26 @@ def lab_post_save(sender, **kwargs):
         )
 
 
+@receiver(pre_save, sender=Lab)
+def notify_lab_of_approval(sender, instance, **kwargs):
+    """
+    If changing the lab of a study, remove any researchers who are not in the
+    new lab from all study access groups.
+    """
+    lab_in_db = Lab.objects.filter(pk=instance.id).first()
+    if not lab_in_db:
+        return
+    if (not lab_in_db.approved_to_test) and instance.approved_to_test:
+        context = {"lab_name": instance.name, "lab_id": instance.pk}
+        send_mail.delay(
+            "notify_lab_admins_of_approval",
+            "Lab Approval Notification",
+            settings.EMAIL_FROM_ADDRESS,
+            bcc=list(instance.admin_group.user_set.values_list("username", flat=True)),
+            **context,
+        )
+
+
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     configuration = DateTimeAwareJSONField(default=default_configuration)
