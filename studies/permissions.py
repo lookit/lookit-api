@@ -97,78 +97,89 @@ class _PermissionParts(NamedTuple):
     target_fields: Tuple[str, ...]
 
 
-class _PermissionMeta(NamedTuple):
-    """Immutable, object-oriented wrapper for Study and Lab permissions.
-
-    We exploit the fact that private fields are not returned when iterating
-    over tuples.
-
-    Properties:
-        codename: a string codename. See module docstring for conventions.
-        description: a string description.
+def _make_permission_meta_for_app(app_name: str):
+    """
+    Construct a _PermissionMeta class for this app. The app_name is not simply defined
+    as a field because then it would be included when iterating over the tuple, breaking
+    use of this as a wrapper for permissions as defined on models.
     """
 
-    codename: str
-    description: str
-    app_name = "studies"
+    class _PermissionMeta(NamedTuple):
+        """Immutable, object-oriented wrapper for Study and Lab permissions.
 
-    @property
-    def parts(self) -> _PermissionParts:
-        perm_and_model, *field_vector = self.codename.split("__")
-        permission, model_name = perm_and_model.split("_")
+        We exploit the fact that private fields are not returned when iterating
+        over tuples.
 
-        if field_vector:
-            final_field_spec = field_vector.pop()
-            target_fields = tuple(final_field_spec.strip("[]").split("|"))
-        else:
-            target_fields = ()
+        Properties:
+            codename: a string codename. See module docstring for conventions.
+            description: a string description.
+        """
 
-        return _PermissionParts(
-            permission=permission,
-            model_name=model_name,
-            relationship_path=tuple(field_vector),
-            target_fields=target_fields,
-        )
+        codename: str
+        description: str
 
-    @property
-    def prefixed_codename(self) -> str:
-        return self.app_name + "." + self.codename
+        @property
+        def parts(self) -> _PermissionParts:
+            perm_and_model, *field_vector = self.codename.split("__")
+            permission, model_name = perm_and_model.split("_")
 
-    @property
-    def permission(self) -> str:
-        return self.parts.permission
-
-    @property
-    def model_name(self) -> str:
-        return self.parts.model_name
-
-    @property
-    def relationship_path(self) -> Tuple[str, ...]:
-        return self.parts.relationship_path
-
-    @property
-    def target_fields(self) -> Tuple[str, ...]:
-        return self.parts.target_fields
-
-    @classmethod
-    def from_parts(
-        cls,
-        permission: str,
-        model_name: str,
-        relationship_path: Tuple[str, ...],
-        target_fields: Tuple[str, ...],
-        description: str,
-    ):
-        codename = f"{permission}_{model_name}"
-        if relationship_path:
-            codename += f"__{'__'.join(relationship_path)}"
-        if target_fields:
-            if len(target_fields) > 1:
-                codename += f"__[{'|'.join(target_fields)}]"
+            if field_vector:
+                final_field_spec = field_vector.pop()
+                target_fields = tuple(final_field_spec.strip("[]").split("|"))
             else:
-                codename += f"__{target_fields[0]}"
+                target_fields = ()
 
-        return cls(codename, description)
+            return _PermissionParts(
+                permission=permission,
+                model_name=model_name,
+                relationship_path=tuple(field_vector),
+                target_fields=target_fields,
+            )
+
+        @property
+        def prefixed_codename(self) -> str:
+            return app_name + "." + self.codename
+
+        @property
+        def permission(self) -> str:
+            return self.parts.permission
+
+        @property
+        def model_name(self) -> str:
+            return self.parts.model_name
+
+        @property
+        def relationship_path(self) -> Tuple[str, ...]:
+            return self.parts.relationship_path
+
+        @property
+        def target_fields(self) -> Tuple[str, ...]:
+            return self.parts.target_fields
+
+        @classmethod
+        def from_parts(
+            cls,
+            permission: str,
+            model_name: str,
+            relationship_path: Tuple[str, ...],
+            target_fields: Tuple[str, ...],
+            description: str,
+        ):
+            codename = f"{permission}_{model_name}"
+            if relationship_path:
+                codename += f"__{'__'.join(relationship_path)}"
+            if target_fields:
+                if len(target_fields) > 1:
+                    codename += f"__[{'|'.join(target_fields)}]"
+                else:
+                    codename += f"__{target_fields[0]}"
+
+            return cls(codename, description)
+
+    return _PermissionMeta
+
+
+_PermissionMetaStudiesApp = _make_permission_meta_for_app("studies")
 
 
 def create_groups_for_instance(
@@ -198,7 +209,7 @@ def create_groups_for_instance(
     model_instance.save()
 
 
-def create_lab_version(study_permission: _PermissionMeta):
+def create_lab_version(study_permission: _PermissionMetaStudiesApp):
     permission, model_name, relationship_path, target_fields = study_permission.parts
     if model_name == "lab":
         raise TypeError("This permission is already lab specific!")
@@ -207,7 +218,7 @@ def create_lab_version(study_permission: _PermissionMeta):
 
     relationship_path = (model_name,) + relationship_path
 
-    return _PermissionMeta.from_parts(
+    return _PermissionMetaStudiesApp.from_parts(
         permission,
         "lab",
         relationship_path,
@@ -216,50 +227,50 @@ def create_lab_version(study_permission: _PermissionMeta):
     )
 
 
-class StudyPermission(_PermissionMeta, Enum):
-    READ_STUDY_DETAILS = _PermissionMeta(
+class StudyPermission(_PermissionMetaStudiesApp, Enum):
+    READ_STUDY_DETAILS = _PermissionMetaStudiesApp(
         codename=f"read_study__<DETAILS>",
         description="Read study details and preview study",
     )
-    WRITE_STUDY_DETAILS = _PermissionMeta(
+    WRITE_STUDY_DETAILS = _PermissionMetaStudiesApp(
         codename=f"edit_study__<DETAILS>", description="Write study details"
     )
-    CHANGE_STUDY_STATUS = _PermissionMeta(
+    CHANGE_STUDY_STATUS = _PermissionMetaStudiesApp(
         codename="edit_study__status", description="Change study status"
     )
-    MANAGE_STUDY_RESEARCHERS = _PermissionMeta(
+    MANAGE_STUDY_RESEARCHERS = _PermissionMetaStudiesApp(
         codename="edit_study__<GROUP>__user_set", description="Manage study researchers"
     )
-    READ_STUDY_RESPONSE_DATA = _PermissionMeta(
+    READ_STUDY_RESPONSE_DATA = _PermissionMetaStudiesApp(
         codename="read_study__responses",
         description="View/download study response data",
     )
-    READ_STUDY_PREVIEW_DATA = _PermissionMeta(
+    READ_STUDY_PREVIEW_DATA = _PermissionMetaStudiesApp(
         codename="read_study__responses(is_preview=True)",
         description="View/download preview data",
     )
-    CODE_STUDY_CONSENT = _PermissionMeta(
+    CODE_STUDY_CONSENT = _PermissionMetaStudiesApp(
         codename="edit_study__responses__consent_rulings",
         description="Code consent for study",
     )
-    CODE_STUDY_PREVIEW_CONSENT = _PermissionMeta(
+    CODE_STUDY_PREVIEW_CONSENT = _PermissionMetaStudiesApp(
         codename="edit_study__responses__consent_rulings(is_preview=True)",
         description="Code consent for preview responses only",
     )
-    CONTACT_STUDY_PARTICIPANTS = _PermissionMeta(
+    CONTACT_STUDY_PARTICIPANTS = _PermissionMetaStudiesApp(
         codename="edit_study__message_set", description="Contact participants for study"
     )
-    EDIT_STUDY_FEEDBACK = _PermissionMeta(
+    EDIT_STUDY_FEEDBACK = _PermissionMetaStudiesApp(
         codename="edit_study__feedback", description="Edit feedback for study"
     )
-    CHANGE_STUDY_LAB = _PermissionMeta(
+    CHANGE_STUDY_LAB = _PermissionMetaStudiesApp(
         codename="edit_study__lab", description="Change the associated lab for study"
     )
-    DELETE_ALL_PREVIEW_DATA = _PermissionMeta(
+    DELETE_ALL_PREVIEW_DATA = _PermissionMetaStudiesApp(
         codename="delete_study__responses(is_preview=True)",
         description="Delete preview data for study",
     )
-    APPROVE_REJECT_STUDY = _PermissionMeta(
+    APPROVE_REJECT_STUDY = _PermissionMetaStudiesApp(
         codename="edit_study__<APPROVAL>", description="Approve or reject study"
     )
 
@@ -269,21 +280,21 @@ UMBRELLA_LAB_PERMISSION_MAP = {
 }
 
 
-class LabPermission(_PermissionMeta, Enum):
-    CREATE_LAB_ASSOCIATED_STUDY = _PermissionMeta(
+class LabPermission(_PermissionMetaStudiesApp, Enum):
+    CREATE_LAB_ASSOCIATED_STUDY = _PermissionMetaStudiesApp(
         codename="associate_lab__study", description="Associate a study with a lab"
     )
-    MANAGE_LAB_RESEARCHERS = _PermissionMeta(
+    MANAGE_LAB_RESEARCHERS = _PermissionMetaStudiesApp(
         codename="edit_lab__<GROUPS>", description="Manage researchers in a lab"
     )
-    EDIT_LAB_METADATA = _PermissionMeta(
+    EDIT_LAB_METADATA = _PermissionMetaStudiesApp(
         codename="edit_lab__<DETAILS>", description="Edit the metadata for a lab"
     )
-    EDIT_LAB_APPROVAL = _PermissionMeta(
+    EDIT_LAB_APPROVAL = _PermissionMetaStudiesApp(
         codename="edit_lab__approved_to_test",
         description="Edit whether a lab is approved to test",
     )
-    READ_LAB_RESEARCHERS = _PermissionMeta(
+    READ_LAB_RESEARCHERS = _PermissionMetaStudiesApp(
         codename="read_lab__<GROUPS>",
         description="View the list of researchers in a lab",
     )
