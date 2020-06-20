@@ -60,7 +60,6 @@ class LabViewsTestCase(TestCase):
         )
 
     # Create lab view: can create new lab as researcher
-    @skip
     def testCanCreateNewLabAsResearcher(self):
         self.client.force_login(self.researcher)
         post_data = {

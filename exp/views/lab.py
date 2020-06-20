@@ -418,11 +418,12 @@ class LabCreateView(
             "notify_admins_of_lab_creation",
             "Lab Submission Notification",
             settings.EMAIL_FROM_ADDRESS,
-            bcc=list(
-                Group.objects.get(
-                    name=SiteAdminGroup.LOOKIT_ADMIN.name
-                ).user_set.values_list("username", flat=True)
-            ),
+            bcc=["abc@def.edu"],
+            # bcc=list(
+            #     Group.objects.get(
+            #         name=SiteAdminGroup.LOOKIT_ADMIN.name
+            #     ).user_set.values_list("username", flat=True)
+            # ),
             **email_context,
         )
 
