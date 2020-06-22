@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals, update_session_auth_hash
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch, Q
 from django.dispatch import receiver
@@ -397,22 +398,37 @@ class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
         return super().dispatch(request, path, *args, **kwargs)
 
 
-class ExperimentProxyView(ProxyView, LoginRequiredMixin):
+class ExperimentProxyView(UserPassesTestMixin, ProxyView):
     """
     Proxy view to forward user to participate page in the Ember app
     """
 
     upstream = settings.EXPERIMENT_BASE_URL
 
-    def dispatch(self, request, *args, **kwargs):
+    def user_can_participate(self):
+        request = self.request
+        kwargs = self.kwargs
+        user = request.user
+
         try:
             child = Child.objects.get(uuid=kwargs.get("child_id", None))
         except Child.DoesNotExist:
-            raise Http404()
+            return False
 
-        if child.user != request.user:
+        try:
+            study = Study.objects.get(uuid=kwargs.get("uuid", None))
+        except Study.DoesNotExist:
+            return False
+
+        if child.user != user:
             # requesting user doesn't belong to that child
-            raise PermissionDenied()
+            return False
+
+        return True
+
+    test_func = user_can_participate
+
+    def dispatch(self, request, *args, **kwargs):
 
         _, _, study_uuid, _, _, *rest = request.path.split("/")
         path = f"{study_uuid}/{'/'.join(rest)}"
