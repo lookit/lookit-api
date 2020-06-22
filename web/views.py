@@ -404,7 +404,7 @@ class ExperimentProxyView(ProxyView, LoginRequiredMixin):
 
     upstream = settings.EXPERIMENT_BASE_URL
 
-    def dispatch(self, request, path, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         try:
             child = Child.objects.get(uuid=kwargs.get("child_id", None))
         except Child.DoesNotExist:
@@ -414,7 +414,9 @@ class ExperimentProxyView(ProxyView, LoginRequiredMixin):
             # requesting user doesn't belong to that child
             raise PermissionDenied()
 
-        if request.path[-1] == "/":
-            path = f"{path.split('/')[0]}/index.html"
+        _, _, study_uuid, _, _, *rest = request.path.split("/")
+        path = f"{study_uuid}/{'/'.join(rest)}"
+        if not rest:
+            path += "index.html"
 
         return super().dispatch(request, path)
