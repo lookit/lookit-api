@@ -336,6 +336,7 @@ class ResponseDataDownloadTestCase(TestCase):
             self.children_for_participants.append(these_children)
             demo_snapshot = G(DemographicData, user=part, density="urban")
             self.demo_snapshots_for_participants.append(demo_snapshot)
+            # Include one incomplete response for each participant
             self.responses += [
                 G(
                     Response,
@@ -353,6 +354,7 @@ class ResponseDataDownloadTestCase(TestCase):
                 )
                 for child in these_children
             ]
+            # And one complete response
             self.responses += [
                 G(
                     Response,
@@ -371,6 +373,7 @@ class ResponseDataDownloadTestCase(TestCase):
                 )
                 for child in these_children
             ]
+            # And one preview
             self.preview_responses += [
                 G(
                     Response,
@@ -499,6 +502,13 @@ class ResponseDataDownloadTestCase(TestCase):
             content,
             "Child given name was included in CSV when not selected as download field",
         )
+        self.assertNotIn(
+            datetime.datetime.strftime(
+                self.children_for_participants[0][0].birthday, "%Y-%m-%d"
+            ),
+            content,
+            "Child birthdate was included in CSV when not selected as download field",
+        )
         # Check that the filename is appropriately titled - because parent name is present
         self.assertRegex(
             response.get("Content-Disposition"),
@@ -541,6 +551,13 @@ class ResponseDataDownloadTestCase(TestCase):
             "ChildGivenName",
             content,
             "Child given name was included in JSON when not selected as download field",
+        )
+        self.assertNotIn(
+            datetime.datetime.strftime(
+                self.children_for_participants[0][0].birthday, "%Y-%m-%d"
+            ),
+            content,
+            "Child birthdate was included in JSON when not selected as download field",
         )
         # Check that the filename is appropriately titled - because parent name is present
         self.assertRegex(
@@ -595,7 +612,13 @@ class ResponseDataDownloadTestCase(TestCase):
             content,
             "Child given name was missing from CSV when selected as download field",
         )
-
+        self.assertIn(
+            datetime.datetime.strftime(
+                self.children_for_participants[0][0].birthday, "%Y-%m-%d"
+            ),
+            content,
+            "Child birthday was not included in CSV when selected as download field",
+        )
         # Check that the filename is appropriately titled - because child name is present
         self.assertRegex(
             response.get("Content-Disposition"),
@@ -616,11 +639,30 @@ class ResponseDataDownloadTestCase(TestCase):
                 "0-video-config": {"frameType": "DEFAULT"},
                 "1-video-setup": {"frameType": "DEFAULT"},
                 "2-my-consent-frame": {"frameType": "CONSENT"},
+                # Include an additional exit survey frame just to make sure this doesn't break anything
+                # - the last one is what should count
                 "3-my-exit-survey": {
+                    "frameType": "EXIT",
+                    "withdrawal": False,
+                    "databraryShare": "yes",
+                    "useOfMedia": "",
+                    "birthDate": datetime.datetime.strftime(
+                        self.children_for_participants[0][0].birthday
+                        + datetime.timedelta(17),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ),
+                    "feedback": "this was fun but my older child was reciting top secret prime numbers",
+                },
+                "4-my-exit-survey": {
                     "frameType": "EXIT",
                     "withdrawal": True,
                     "databraryShare": "yes",
                     "useOfMedia": "private",
+                    "birthDate": datetime.datetime.strftime(
+                        self.children_for_participants[0][0].birthday
+                        + datetime.timedelta(17),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ),
                     "feedback": "this was fun but my older child was reciting top secret prime numbers",
                 },
             },
@@ -643,6 +685,11 @@ class ResponseDataDownloadTestCase(TestCase):
                     "withdrawal": True,
                     "databraryShare": "yes",
                     "useOfMedia": "private",
+                    "birthDate": datetime.datetime.strftime(
+                        self.children_for_participants[0][0].birthday
+                        + datetime.timedelta(17),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ),
                     "feedback": "this was fun but my older child was reciting top secret prime numbers",
                 },
             },
@@ -671,6 +718,7 @@ class ResponseDataDownloadTestCase(TestCase):
             "response_parent_feedback",
             "response_video_privacy",
             "response_databrary",
+            "response_birthdate_difference",
         ]
         exit_survey_headers_columns = {}
 
@@ -715,32 +763,39 @@ class ResponseDataDownloadTestCase(TestCase):
             "yes",
             "Databrary consent was not correctly inserted in CSV summary",
         )
+        self.assertEqual(
+            withdrawn_response_line[
+                exit_survey_headers_columns["response_birthdate_difference"]
+            ],
+            "17",
+            "Birthdate difference was not correctly inserted in CSV summary",
+        )
 
-        withdrawn_response_line = [
+        incomplete_response_line = [
             line
             for line in csv_body
             if line[exit_survey_headers_columns["response_uuid"]]
             == str(incomplete_response.uuid)
         ][0]
         self.assertEqual(
-            withdrawn_response_line[exit_survey_headers_columns["response_withdrawn"]],
+            incomplete_response_line[exit_survey_headers_columns["response_withdrawn"]],
             "False",
             "Incomplete response was not marked as non-withdrawn",
         )
         self.assertEqual(
-            withdrawn_response_line[
+            incomplete_response_line[
                 exit_survey_headers_columns["response_parent_feedback"]
             ],
             "",
         )
         self.assertEqual(
-            withdrawn_response_line[
+            incomplete_response_line[
                 exit_survey_headers_columns["response_video_privacy"]
             ],
             "",
         )
         self.assertEqual(
-            withdrawn_response_line[exit_survey_headers_columns["response_databrary"]],
+            incomplete_response_line[exit_survey_headers_columns["response_databrary"]],
             "",
         )
 
@@ -763,6 +818,11 @@ class ResponseDataDownloadTestCase(TestCase):
                     "withdrawal": True,
                     "databraryShare": "yes",
                     "useOfMedia": "private",
+                    "birthDate": datetime.datetime.strftime(
+                        self.children_for_participants[0][0].birthday
+                        + datetime.timedelta(17),
+                        "%Y-%m-%dT%H:%M:%S.%fZ",
+                    ),
                     "feedback": "this was fun but my older child was reciting top secret prime numbers",
                 },
             },
@@ -785,6 +845,7 @@ class ResponseDataDownloadTestCase(TestCase):
             "parent_feedback",
             "video_privacy",
             "databrary",
+            "birthdate_difference",
         ]
 
         this_response = [
@@ -808,6 +869,7 @@ class ResponseDataDownloadTestCase(TestCase):
         )
         self.assertEqual(this_response["response"]["video_privacy"], "private")
         self.assertEqual(this_response["response"]["databrary"], "yes")
+        self.assertEqual(this_response["response"]["birthdate_difference"], 17)
 
     # TODO: add test for study-demographics-download-csv, checking for global ID inclusion
     # TODO: add test for study-responses-children-summary-csv

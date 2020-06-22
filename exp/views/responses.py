@@ -431,6 +431,7 @@ def build_responses_json(responses, optional_headers=None):
                         "date_created": resp.date_created,
                         "withdrawn": resp.withdrawn,
                         "parent_feedback": resp.parent_feedback,
+                        "birthdate_difference": resp.birthdate_difference,
                         "video_privacy": resp.privacy,
                         "databrary": resp.databrary,
                         "is_preview": resp.is_preview,
@@ -548,6 +549,15 @@ def get_response_headers_and_row_data(resp=None):
                 "Freeform parent feedback entered into the exit survey, if any. This field may incidentally contain "
                 "identifying or sensitive information depending on what parents say, so it should be scrubbed or "
                 "omitted from published data."
+            ),
+        ),
+        (
+            "response_birthdate_difference",
+            resp.birthdate_difference if resp else "",
+            (
+                "Difference between birthdate entered in exit survey, if any, and birthdate of registered child "
+                "participating. Positive values mean that the birthdate from the exit survey is LATER. Blank if "
+                "no birthdate available from the exit survey."
             ),
         ),
         (
@@ -845,6 +855,9 @@ def get_frame_data(resp):
                 )
                 # omit frameType values from CSV
             elif key == "frameType":
+                continue
+                # Omit the DOB from any exit survey
+            elif key == "birthDate" and frame_data["frameType"] == "EXIT":
                 continue
                 # Omit empty generatedProperties values from CSV
             elif key == "generatedProperties" and not (value):

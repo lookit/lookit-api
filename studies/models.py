@@ -930,10 +930,21 @@ class Response(models.Model):
     def parent_feedback(self):
         return self.exit_frame_properties("feedback")
 
-    # @property
-    # def birthdate_difference(self):
-    #    return self.exit_frame_properties("feedback")
-    #    # "birthDate": "2020-04-22T19:15:43.173Z"
+    @property
+    def birthdate_difference(self):
+        """Difference between birthdate on exit survey (if any) and registered child's birthday, """
+        exit_survey_birthdate = self.exit_frame_properties("birthDate")
+        registered_birthdate = self.child.birthday
+        if exit_survey_birthdate and registered_birthdate:
+            try:
+                return (
+                    datetime.strptime(exit_survey_birthdate[:10], "%Y-%m-%d").date()
+                    - self.child.birthday
+                ).days
+            except (ValueError, TypeError):
+                return None
+        else:
+            return None
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
