@@ -54,10 +54,6 @@ class StudyLogAdmin(GuardedModelAdmin):
     pass
 
 
-class ResponseLogAdmin(GuardedModelAdmin):
-    pass
-
-
 class StudyTypeAdmin(GuardedModelAdmin):
     pass
 
@@ -88,7 +84,6 @@ class ConsentRulingAdmin(GuardedModelAdmin):
 admin.site.register(Study, StudyAdmin)
 admin.site.register(Response, ResponseAdmin)
 admin.site.register(StudyLog, StudyLogAdmin)
-admin.site.register(ResponseLog, ResponseLogAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
 admin.site.register(StudyType, StudyTypeAdmin)
 admin.site.register(Video, VideoAdmin)

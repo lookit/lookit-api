@@ -1082,6 +1082,8 @@ class StudyLog(Log):
 
 
 class ResponseLog(Log):
+    """Unused class, keeping for migrations only."""
+
     action = models.CharField(max_length=128, db_index=True)
     # if deleting Response, also delete its logs
     response = models.ForeignKey(Response, on_delete=models.CASCADE)
