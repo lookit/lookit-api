@@ -129,6 +129,12 @@ TRANSITION_HELP_TEXT = {
     "archive": "This will effectively delete your study! You will not be able to access your study or any response data. If you have already collected participant data or might want your study protocol for reference, deactivate instead.",
 }
 
+COMMENTS_HELP_TEXT = {
+    "submit": "Please list researchers outside your group who have provided feedback on your study prior to submission, and what changes you made in response to their feedback. Please also note here any elements of your study that require additional review (see Terms of Use), including: deception, incorporation of participant information from other sources, longer than usual sessions, or nonstandard elements in the consent form.",
+    "resubmit": "Please list all changes you have made since your study was last approved. This will speed up the review process.",
+    "reject": "Please list any changes that need to be made before the study can be approved.",
+}
+
 TRANSITION_LABELS = {
     "submit": "Submit (submit study for Lookit admin review)",
     "resubmit": "Submit (submit study for Lookit admin review)",

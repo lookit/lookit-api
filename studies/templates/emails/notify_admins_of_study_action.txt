@@ -3,6 +3,10 @@ Dear Lookit Admin,
 {% if action == 'submitted' %}
     {{ researcher_name }} from {{ lab_name }} has submitted a study for approval: {{ study_name }}
 
+    Comments about this submission from the research group:
+
+    {{ comments|linebreaks }}
+
     You can approve or disapprove the study here: {{ base_url }}{% url 'exp:study-detail' pk=study_id %}
 {% elif action == 'retracted' %}
     {{ researcher_name }} has retracted the submission of a study: {{ study_name }}

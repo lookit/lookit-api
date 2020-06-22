@@ -19,6 +19,7 @@
         $.fn.editable.defaults.mode = 'inline';
 
         window.transitionHelpData = JSON.parse('{{ transition_help | escapejs }}');
+        window.commentsHelpData = JSON.parse('{{ comments_help | escapejs }}');
 
         function cloneStudy() {
             document.getElementById('cloneForm').submit()
@@ -27,17 +28,27 @@
         function onStateSelect(stateListItem) {
             let trigger = $(stateListItem).data()['trigger'],
                 stateChangeForm = $('#study-state-modal'),
-                rejectionCommentsInput = stateChangeForm.find('textarea[name=comments-text]'),
+                stateChangeCommentsInput = stateChangeForm.find('textarea[name=comments-text]'),
                 infoText = transitionHelpData[trigger];
+                commentsHelpText = commentsHelpData[trigger];
 
-            rejectionCommentsInput.hide();
-            let $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
-
-            if (trigger === 'reject') { // TODO also allow comments on submit
-                rejectionCommentsInput.show();
+            stateChangeCommentsInput.hide();
+            if (trigger === 'reject' || trigger === 'submit' || trigger === 'resubmit') {
+                stateChangeCommentsInput.show();
+                if (trigger === 'reject') {
+                    stateChangeCommentsInput.attr('placeholder', 'List requested changes here');
+                } else if (trigger === 'resubmit') {
+                    stateChangeCommentsInput.attr('placeholder', 'List changes here');
+                } else if (trigger === 'submit') {
+                    stateChangeCommentsInput.attr('placeholder', 'Provide information about peer review and any nonstandard elements here');
+                }
             }
 
+            let $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
             $additionalInfoSpan.text(infoText);
+
+            let $commentsHelpText = stateChangeForm.find('#study-comments-help-text');
+            $commentsHelpText.text(commentsHelpText);
 
             stateChangeForm.find('input[name=trigger]').val(trigger);
         }
@@ -493,12 +504,25 @@
                                                 {{ log.created_at }}
                                             {% endtimezone %}
                                         </div>
-                                        <div class="col-sm-9">
-                                            {{ log.study.name }} study
-                                            {% if log.action == "active" %} activated
+                                        <div class="col-sm-3">
+                                            Study
+                                            {% if log.action == "active" %} started
                                             {% elif log.action == "deploy" %} experiment runner built
                                             {% else %}
-                                                {{ log.action }} {% endif %} by {{ log.user.get_short_name }}.
+                                                {{ log.action }}
+                                            {% endif %}
+
+
+                                            {% if log.user %}
+                                                by {{ log.user.get_short_name }}
+                                            {% elif log.action == "rejected" %}
+                                                due to changes
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-sm-6">
+                                            {% if log.extra.comments %}
+                                                {{ log.extra.comments|linebreaks }}
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -522,17 +546,19 @@
                 <h3>Are you sure you want to change the status of {{ study.name }}? </h3>
             </div>
             <div class="modal-body">
+                <p class="help-text">
+                    <span id="study-comments-help-text"> </span>
+                </p>
+                <textarea class="form-control" rows="5" name="comments-text"
+                          placeholder="Please explain what changes need to be made here."></textarea>
                 <p>
                     <span id="study-status-additional-information"> </span>
                 </p>
-                <textarea class="form-control" rows="5" name="comments-text"
-                          placeholder="Please leave a reason for rejection here."></textarea> <!--TODO allow for comments for other reasons-->
             </div>
             <div class="modal-footer"> {% csrf_token %}
                 <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}">
                     Cancel </a>
                 <button id="changeStatusButton"
-                        {% if not can_change_status %}disabled{% endif %}
                         name="submit" value="submit" class="btn btn-success" type="submit">Save
                 </button>
             </div>

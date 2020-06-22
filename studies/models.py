@@ -505,6 +505,7 @@ class Study(models.Model):
             "study_uuid": str(self.uuid),
             "researcher_name": ev.kwargs.get("user").get_short_name(),
             "action": ev.transition.dest,
+            "comments": self.comments,
         }
         send_mail.delay(
             "notify_admins_of_study_action",
@@ -547,11 +548,11 @@ class Study(models.Model):
         }
         send_mail.delay(
             "notify_researchers_of_approval_decision",
-            "{} Rejection Notification".format(self.name),
+            "{}: Changes requested notification".format(self.name),
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
                 self.users_with_study_perms(
-                    StudyPermission.CAN_CHANGE_STATUS
+                    StudyPermission.CHANGE_STUDY_STATUS
                 ).values_list("username", flat=True)
             ),
             **context,
@@ -565,7 +566,7 @@ class Study(models.Model):
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
                 self.users_with_study_perms(
-                    StudyPermission.CAN_CHANGE_STATUS
+                    StudyPermission.CHANGE_STUDY_STATUS
                 ).values_list("username", flat=True)
             ),
             **context,
@@ -669,9 +670,17 @@ class Study(models.Model):
 
     # Runs for every transition to log action
     def _log_action(self, ev):
-        StudyLog.objects.create(
-            action=ev.state.name, study=ev.model, user=ev.kwargs.get("user")
-        )
+        if ev.event.name in ["submit", "resubmit", "reject"]:
+            StudyLog.objects.create(
+                action=ev.state.name,
+                study=ev.model,
+                user=ev.kwargs.get("user"),
+                extra={"comments": ev.model.comments},
+            )
+        else:
+            StudyLog.objects.create(
+                action=ev.state.name, study=ev.model, user=ev.kwargs.get("user")
+            )
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
@@ -733,9 +742,9 @@ def check_modification_of_approved_study(
     if instance.state in approved_states and important_fields_changed:
         instance.state = "rejected"
         instance.comments = "Your study has been modified following approval.  You must resubmit this study to get it approved again."
-        StudyLog.objects.create(
-            action="rejected", study=instance, user=instance.creator
-        )
+        # Don't store a user because it's confusing unless that person is actually the one who made the change,
+        # and we don't have access to who made the change from this signal.
+        StudyLog.objects.create(action="rejected", study=instance)
 
 
 @receiver(post_save, sender=Study)

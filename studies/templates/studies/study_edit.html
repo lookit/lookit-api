@@ -96,37 +96,45 @@
                                 {% buttons %}
                                     <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
                                         Cancel </a>
-                                    <a id="save-button" data-toggle="modal" class="btn btn-success" href="#saveStudyConfirmation">Save
+                                    <a id="save-button" data-toggle="modal" class="btn btn-success" href="#save-study-confirmation">Save
                                         Changes</a>
                                 {% endbuttons %}
-                                <div class="modal fade" id="saveStudyConfirmation">
+                                <div class="modal fade" id="save-study-confirmation">
                                     <form class="well" method="post">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <button type="button" class="close" data-dismiss="modal">×</button>
                                                 <h3> Are you sure you want to modify {{ study.name }}? </h3>
                                             </div>
-                                            <div class="modal-body">
-                                                {% csrf_token %}
-                                                <p id="invalidate-build-warning">
-                                                {% if study.built%}
-                                                    You have already built an experiment runner!
-                                                    Because you are changing the runner version, you will need to rebuild these
-                                                    before you can preview or start your study.
-                                                {% endif %}
-                                                </p>
-                                                {% if save_confirmation %}
-                                                <p>
-                                                    This study has already been <strong><em>approved</em></strong>. If
-                                                    you edit this study, the system will
-                                                    automatically give it a rejected status. You will have to resubmit
-                                                    the study so your changes can
-                                                    be reviewed.
-                                                </p>
-                                                <p>(If your only changes are <strong>toggling the study between private/public</strong> or <strong>changing the age range</strong>,
-                                                    your study will stay in its {{ study.state }} state.) </p>
-                                                {% endif %}
-                                            </div>
+                                            {% if study.built or save_confirmation %}
+                                                <div class="modal-body">
+                                                    {% if study.built%}
+                                                        <p id="invalidate-build-warning">
+                                                            You have already built an experiment runner!
+                                                            Because you are changing the runner version, you will need to rebuild these
+                                                            before you can preview or start your study.
+                                                        </p>
+                                                    {% endif %}
+                                                    {% if save_confirmation %}
+                                                        <p>
+                                                            This study has already been <strong>approved</strong>. If
+                                                            you edit this study, the system will
+                                                            automatically give it a rejected status. You will have to resubmit
+                                                            the study so your changes can be reviewed.
+                                                        </p>
+                                                        <p>
+                                                            If your changes are limited to
+                                                            <ul>
+                                                                <li> whether the study is discoverable </li>
+                                                                <li> whether the preview is shared </li>
+                                                                <li> the minimum and maximum age </li>
+                                                                <li> the participant eligibility description </li>
+                                                            </ul>
+                                                            then your study will stay in its {{ study.state }} state.
+                                                        </p>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
                                             <div class="modal-footer"> {% csrf_token %}
                                                 <a class="btn btn-default"
                                                    href="{% url 'exp:study-edit' pk=study.id %}"> Discard Changes </a>

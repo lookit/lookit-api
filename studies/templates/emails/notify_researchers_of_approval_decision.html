@@ -1,12 +1,16 @@
 <p>
-  Dear Study Admin,
-</p>
-<p>
-  Your study {{ study_name }} has been{% if approved %} approved {% else %} disapproved {% endif %}to run on Lookit.
+  Dear researcher,
 </p>
 <p>
   {% if approved %}
-    To start your study, log in to Lookit, navigate to the study, and select "Activate" from the dropdown.
+  Your study {{ study_name }} has been approved to run on Lookit.
+  {% else %}
+  Changes have been requested before your study {{ study_name }} can be approved to run on Lookit.
+  {% endif %}
+</p>
+<p>
+  {% if approved %}
+    To start your study, log in to Lookit, navigate to the study, and select "Start" from the "Change state" dropdown.
   {% else %}
     You can modify your study and resubmit for approval.
   {% endif %}
@@ -17,7 +21,7 @@
   <p>
   Comments from the Lookit Admin:
   <br>
-  {{comments}}
+  {{comments|linebreaks}}
   </p>
 {% endif %}
 <p>

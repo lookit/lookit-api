@@ -23,6 +23,7 @@ from studies.permissions import StudyPermission
 from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
 from studies.workflow import (
+    COMMENTS_HELP_TEXT,
     STATE_UI_SIGNALS,
     STATUS_HELP_TEXT,
     TRANSITION_HELP_TEXT,
@@ -545,6 +546,7 @@ class StudyDetailView(
             groups__name=admin_group.name
         ).values_list("id", flat=True)
         context["discoverability_text"] = get_discoverability_text(study)
+        context["comments_help"] = json.dumps(COMMENTS_HELP_TEXT)
         context["transition_help"] = json.dumps(TRANSITION_HELP_TEXT)
         context["triggers_with_labels"] = [
             {"name": trigger, "label": TRANSITION_LABELS[trigger]}
@@ -809,11 +811,11 @@ def update_trigger(view_instance):
     object = view_instance.get_object()
     if trigger:
         if hasattr(object, trigger):
+            if "comments-text" in view_instance.request.POST.keys():
+                object.comments = view_instance.request.POST["comments-text"]
+                object.save()
             # transition through workflow state
             getattr(object, trigger)(user=view_instance.request.user)
-    if "comments-text" in view_instance.request.POST.keys():
-        object.comments = view_instance.request.POST["comments-text"]
-        object.save()
     displayed_state = object.state if object.state != "active" else "activated"
     messages.success(view_instance.request, f"Study {object.name} {displayed_state}.")
     return object
