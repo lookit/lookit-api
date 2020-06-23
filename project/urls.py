@@ -29,7 +29,7 @@ from web import urls as web_urls
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
 urlpatterns = [
-    path("favicon\.ico", favicon_view),
+    path("favicon.ico", favicon_view),
     path("__CTRL__/", admin.site.urls),
     path("api/", include((api_urls, "api"))),
     path(
