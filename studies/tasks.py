@@ -137,7 +137,7 @@ def build_zipfile_of_videos(
         with tempfile.TemporaryDirectory() as temp_directory:
             zip_file_path = os.path.join(temp_directory, zip_filename)
             with zipfile.ZipFile(zip_file_path, "w") as zf:
-                for video in videos:
+                for video in video_qs:
                     temporary_file_path = os.path.join(temp_directory, video.full_name)
                     file_response = requests.get(video.download_url, stream=True)
                     with open(temporary_file_path, mode="w+b") as local_file:
@@ -157,7 +157,7 @@ def build_zipfile_of_videos(
     email_context = dict(
         signed_url=signed_url,
         user=requesting_user,
-        videos=videos,
+        videos=video_qs,
         zip_filename=zip_filename,
     )
     send_mail(
