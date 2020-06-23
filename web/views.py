@@ -377,23 +377,12 @@ class StudyDetailView(generic.DetailView):
             )
 
 
-class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
+class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
     upstream = settings.EXPERIMENT_BASE_URL
 
     def dispatch(self, request, path, *args, **kwargs):
-        referer = request.META.get("HTTP_REFERER", None)
         uuid = kwargs.pop("uuid", None)
-        filename = kwargs.pop("filename", None)
-        # if it's one of the hdfv files
-        if filename:
-            if referer.endswith("/"):
-                study_uuid = referer.split("/")[-3]
-            else:
-                # For firefox
-                study_uuid = referer.split("/")[-2]
-            path = f"{study_uuid}/{filename}"
-            return super().dispatch(request, path, *args, **kwargs)
-        # if it's just regular assets remove the child_id from the path
+        # remove the child_id from the path
         path = f"{path.split('/')[0]}{request.path.split(path)[1]}"
         return super().dispatch(request, path, *args, **kwargs)
 

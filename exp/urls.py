@@ -80,8 +80,8 @@ urlpatterns = [
         StudyParticipantAnalyticsView.as_view(),
         name="study-participant-analytics",
     ),
-    path(r"studies/create/", StudyCreateView.as_view(), name="study-create"),
-    path(r"studies/<int:pk>/", StudyDetailView.as_view(), name="study-detail"),
+    path("studies/create/", StudyCreateView.as_view(), name="study-create"),
+    path("studies/<int:pk>/", StudyDetailView.as_view(), name="study-detail"),
     path(
         "studies/<int:pk>/contact/",
         StudyParticipantContactView.as_view(),

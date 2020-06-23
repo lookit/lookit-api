@@ -69,9 +69,4 @@ urlpatterns = [
         name="experiment-fonts-proxy",
     ),
     path("", flatpages_views.flatpage, dict(url=""), name="home"),
-    re_path(
-        r"^(?P<path>(?P<filename>avc_settings\.(php|asp)|loading\.swf|translations\/.*|audio_video_quality_profiles\/.*))$",
-        views.ExperimentAssetsProxyView.as_view(),
-        name="experiment-assets-proxy",
-    ),
 ]
