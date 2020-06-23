@@ -4,8 +4,8 @@ from datetime import timedelta
 from functools import reduce
 
 from django.db import models
-from django.db.models import Count, IntegerField, OuterRef, Q, Subquery
-from django.db.models.functions import Coalesce, Lower
+from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery, Value
+from django.db.models.functions import Coalesce, Concat, Lower
 from django.utils import timezone
 from django.utils.timezone import now
 from guardian.shortcuts import get_objects_for_user
@@ -22,6 +22,11 @@ from studies.models import (
     Video,
 )
 from studies.permissions import UMBRELLA_LAB_PERMISSION_MAP, StudyPermission
+
+
+class SubqueryCount(Subquery):
+    template = "(SELECT count(*) FROM (%(subquery)s) _count)"
+    output_field = IntegerField()
 
 
 def get_annotated_responses_qs(include_comments=False, include_time=False):
@@ -241,17 +246,6 @@ def get_pending_responses_qs():
     )
 
 
-def get_registration_analytics_qs():
-    """
-
-    Args:
-        user: django.utils.functional.SimpleLazyObject masquerading as a user.
-
-    Returns:
-        An annotated queryset containing user data.
-    """
-
-
 def get_study_list_qs(user, query_dict):
     """Gets a study list query set annotated with response counts.
 
@@ -265,58 +259,64 @@ def get_study_list_qs(user, query_dict):
     Returns:
         A heavily annotated queryset for the list of studies.
     """
-    annotated_responses_qs = get_annotated_responses_qs()
+    annotated_responses_qs = get_annotated_responses_qs().only(
+        "id",
+        "completed",
+        "completed_consent_frame",
+        "date_created",
+        "date_modified",
+        "is_preview",
+    )
 
     queryset = (
         studies_for_which_user_has_perm(user, StudyPermission.READ_STUDY_DETAILS)
+        # .select_related("lab")
+        # .select_related("creator")
+        .only(
+            "id",
+            "state",
+            "uuid",
+            "name",
+            "date_modified",
+            "short_description",
+            "image",
+            "comments",
+            "lab__name",
+            "creator__given_name",
+            "creator__family_name",
+        )
         .exclude(state="archived")
-        .select_related("creator")
+        .filter(lab_id__isnull=False, creator_id__isnull=False)
         .annotate(
-            completed_responses_count=Subquery(
+            lab_name=F("lab__name"),
+            creator_name=Concat(
+                "creator__given_name", Value(" "), "creator__family_name"
+            ),
+            completed_responses_count=SubqueryCount(
                 Response.objects.filter(
                     study=OuterRef("pk"),
                     is_preview=False,
                     completed_consent_frame=True,
                     completed=True,
-                )
-                .values("completed")
-                .order_by()
-                .annotate(count=Count("completed"))
-                .values("count")[:1],  # [:1] ensures that a queryset is returned
-                output_field=IntegerField(),
+                ).values("id")
             ),
-            incomplete_responses_count=Subquery(
+            incomplete_responses_count=SubqueryCount(
                 Response.objects.filter(
                     study=OuterRef("pk"),
                     is_preview=False,
                     completed_consent_frame=True,
                     completed=False,
-                )
-                .values("completed")
-                .order_by()
-                .annotate(count=Count("completed"))
-                .values("count")[:1],  # [:1] ensures that a queryset is returned
-                output_field=IntegerField(),
+                ).values("id")
             ),
-            valid_consent_count=Subquery(
+            valid_consent_count=SubqueryCount(
                 annotated_responses_qs.filter(
                     study=OuterRef("pk"), is_preview=False, current_ruling="accepted"
                 )
-                .values("current_ruling")
-                .order_by("current_ruling")  # Need this for GROUP BY to work properly
-                .annotate(count=Count("current_ruling"))
-                .values("count")[:1],  # [:1] ensures that a queryset is returned
-                output_field=IntegerField(),
             ),
-            pending_consent_count=Subquery(
+            pending_consent_count=SubqueryCount(
                 annotated_responses_qs.filter(
                     study=OuterRef("pk"), is_preview=False, current_ruling="pending"
                 )
-                .values("current_ruling")
-                .order_by("current_ruling")
-                .annotate(count=Count("current_ruling"))
-                .values("count")[:1],
-                output_field=IntegerField(),
             ),
             starting_date=Subquery(
                 StudyLog.objects.filter(study=OuterRef("pk"))
@@ -360,20 +360,8 @@ def get_study_list_qs(user, query_dict):
             Lower("name").desc() if "-" in sort else Lower("name").asc()
         )
     elif "beginDate" in sort:
-        # TODO optimize using subquery
-        queryset = sorted(
-            queryset,
-            key=lambda t: t.begin_date or timezone.now(),
-            reverse=True if "-" in sort else False,
-        )
+        queryset = queryset.order_by("starting_date")
     elif "endDate" in sort:
-        # TODO optimize using subquery
-        queryset = sorted(
-            queryset,
-            key=lambda t: t.end_date or timezone.now(),
-            reverse=True if "-" in sort else False,
-        )
-    else:
-        queryset = queryset.order_by(Lower("name"))
+        queryset = queryset.order_by("ending_date")
 
     return queryset

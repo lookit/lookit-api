@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Consolidates settings from defaults.py and local.py.
 """
+import itertools
 import os
 import warnings
-import itertools
 
 from .defaults import *  # noqa
 

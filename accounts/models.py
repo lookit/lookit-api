@@ -193,7 +193,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
                 self.has_perm(
                     LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
                 )
-                for lab in self.labs.all()
+                for lab in self.labs.values("id")
             ]
         )
 

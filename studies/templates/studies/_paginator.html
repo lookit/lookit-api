@@ -2,16 +2,16 @@
 
 <div class="items-pagination">
     <span class="step-links">
-        {% if items.has_previous %}
-            <a aria-label="Go to previous page" href="?{% query_transform request page=items.previous_page_number %}{% if anchor %}#{{ anchor }}{% endif %}"><i aria-hidden="true" class="fa fa-chevron-left"> </i></a>
+        {% if page.has_previous %}
+            <a aria-label="Go to previous page" href="?{% query_transform request page=page.previous_page_number %}{% if anchor %}#{{ anchor }}{% endif %}"><i aria-hidden="true" class="fa fa-chevron-left"> </i></a>
         {% endif %}
 
         <span class="current">
-            &nbsp;Page {{ items.number }} of {{ items.paginator.num_pages }} &nbsp;
+            &nbsp;Page {{ page.number }} of {{ page.paginator.num_pages }} &nbsp;
         </span>
 
-        {% if items.has_next %}
-            <a aria-label="Go to next page" href="?{% query_transform request page=items.next_page_number %}{% if anchor %}#{{ anchor }}{% endif %}"><i aria-hidden="true" class="fa fa-chevron-right"></i></a>
+        {% if page.has_next %}
+            <a aria-label="Go to next page" href="?{% query_transform request page=page.next_page_number %}{% if anchor %}#{{ anchor }}{% endif %}"><i aria-hidden="true" class="fa fa-chevron-right"></i></a>
         {% endif %}
     </span>
 </div>

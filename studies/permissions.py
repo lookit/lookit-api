@@ -71,9 +71,6 @@ that simply aren't modeled in the database.
 
 
 from enum import Enum
-
-# Upgrade to python 3.8 for cached_property
-# from functools import cached_property
 from typing import NamedTuple, Tuple
 
 
@@ -102,6 +99,8 @@ def _make_permission_meta_for_app(app_name: str):
     Construct a _PermissionMeta class for this app. The app_name is not simply defined
     as a field because then it would be included when iterating over the tuple, breaking
     use of this as a wrapper for permissions as defined on models.
+
+    TODO: upgrade to python 3.8 and use cachedproperty decorator
     """
 
     class _PermissionMeta(NamedTuple):

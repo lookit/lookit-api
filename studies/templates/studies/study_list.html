@@ -184,10 +184,10 @@
                     </div>
                     <div class="row table-block">
                         <div class="col-xs-12">
-                            <strong>Study Creator: </strong> {{ study.creator.get_short_name }}
+                            <strong>Study Creator: </strong> {{ study.creator_name }}
                         </div>
                         <div class="col-xs-12">
-                            <strong>Lab: </strong> {{ study.lab.name }}
+                            <strong>Lab: </strong> {{ study.lab_name }}
                         </div>
                     </div>
                     <div class="row table-block">
@@ -227,11 +227,10 @@
             {% if object_list %}
                 <div class="row pb-lg">
                     <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                        {% include 'studies/_paginator.html' with items=object_list %}
+                        {% include 'studies/_paginator.html' with page=page_obj %}
                     </div>
                 </div>
             {% endif %}
         </div>
-    </div>
     </div>
 {% endblock %}
