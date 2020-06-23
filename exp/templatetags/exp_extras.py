@@ -9,25 +9,21 @@ register = template.Library()
 def query_transform(request, **kwargs):
     updated = request.GET.copy()
 
-    acceptable_keys = [
-        "state",
-        "set",
-        "page",
-        "match",
-        "sort",
-        "ageoptions",
-        "childoptions",
-    ]
+    # Avoid duplicating these keys at all (no page=1&page=2)
+    single_value_keys = ["state", "set", "page", "match", "sort"]
 
-    # Cast to string so that e.g. page 2 doesn't cause error on encoding
-    updated.update(
-        {key: str(kwargs.get(key)) for key in acceptable_keys if kwargs.get(key)}
-    )
+    # Allow multiple values for these, but not duplicates (allow
+    # ageoptions=birthday&ageoptions=rounded but not
+    # ageoptions=birthday&ageoptions=birthday
+    multi_value_keys = ["ageoptions", "childoptions"]
 
-    # Assume it was not implemented like this (or as oneliner) for some sort of security reasons...
-    # for (key, val) in kwargs.items():
-    #    if val:
-    #        updated[key] = val
+    for (key, val) in kwargs.items():
+        # Cast to string so that e.g. page 2 doesn't cause error on encoding
+        val = str(val)
+        if key in single_value_keys:
+            updated[key] = val
+        elif key in multi_value_keys and val not in updated[key]:
+            updated.update({key: val})
 
     return updated.urlencode()
 
