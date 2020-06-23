@@ -35,7 +35,9 @@ urlpatterns = [
         name="experiment-proxy",
     ),
     re_path(
-        r"^studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/.*$",
+        r"^studies/"
+        r"(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/"
+        r"(?P<path>.*)$",
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),

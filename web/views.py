@@ -380,10 +380,11 @@ class StudyDetailView(generic.DetailView):
 class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
     upstream = settings.EXPERIMENT_BASE_URL
 
-    def dispatch(self, request, path, *args, **kwargs):
-        uuid = kwargs.pop("uuid", None)
-        # remove the child_id from the path
-        path = f"{path.split('/')[0]}{request.path.split(path)[1]}"
+    def dispatch(self, request, *args, **kwargs):
+        """Bypass presence of child ID."""
+        uuid = kwargs.pop("uuid")
+        asset_path = kwargs.pop("path")
+        path = f"{uuid}/{asset_path}"
         return super().dispatch(request, path, *args, **kwargs)
 
 
