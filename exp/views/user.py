@@ -10,30 +10,27 @@ from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
 
 
-class ParticipantListView(
-    UserPassesTestMixin, ParticipantMixin, generic.ListView, PaginatorMixin
-):
+class ParticipantListView(UserPassesTestMixin, ParticipantMixin, generic.ListView):
     """
     ParticipantListView shows a list of participants that have responded to the studies the
     user has permission to view.
     """
 
     template_name = "accounts/participant_list.html"
+    paginate_by = 10
 
     def can_see_participant_list(self):
-        return self.is_researcher
+        return self.request.user.is_researcher
 
     test_func = can_see_participant_list
 
     def get_queryset(self):
         """
-        Returns users that researcher has permission to view. Handles sorting and pagination.
+        Returns users that researcher has permission to view
         """
         qs = super().get_queryset()
+
         match = self.request.GET.get("match", False)
-        order = self.request.GET.get("sort", "nickname")
-        if "nickname" not in order and "last_login" not in order:
-            order = "nickname"
 
         if match:
             qs = qs.filter(
@@ -42,9 +39,14 @@ class ParticipantListView(
                     (Q(nickname__icontains=term) for term in match.split()),
                 )
             )
-        return self.paginated_queryset(
-            qs.order_by(order), self.request.GET.get("page"), 10
-        )
+
+        return qs
+
+    def get_ordering(self):
+        """Override for get_ordering."""
+        order = self.request.GET.get("sort", "nickname")
+        if "nickname" not in order and "last_login" not in order:
+            return ("nickname",)
 
     def get_context_data(self, **kwargs):
         """
@@ -71,7 +73,7 @@ class ParticipantDetailView(ParticipantMixin, generic.DetailView, PaginatorMixin
     template_name = "accounts/participant_detail.html"
 
     def can_see_participant_detail(self):
-        return self.is_researcher
+        return self.request.user.is_researcher
 
     test_func = can_see_participant_detail
 

@@ -498,7 +498,7 @@ class LabMembershipRequestView(
         return super().post(request, *args, **kwargs)
 
 
-class LabListView(UserPassesTestMixin, PaginatorMixin, generic.ListView):
+class LabListView(UserPassesTestMixin, generic.ListView):
     """
     Shows a list of all labs.
     """
@@ -506,6 +506,8 @@ class LabListView(UserPassesTestMixin, PaginatorMixin, generic.ListView):
     model = Lab
     raise_exception = True
     template_name = "studies/lab_list.html"
+    paginate_by = 10
+    ordering = ("name",)
 
     def user_can_view_labs(self):
         return self.request.user.is_researcher
@@ -547,8 +549,7 @@ class LabListView(UserPassesTestMixin, PaginatorMixin, generic.ListView):
                 )
             )
 
-        queryset = queryset.order_by(Lower("name"))
-        return self.paginated_queryset(queryset, query_dict.get("page", 1), 20)
+        return queryset
 
     def get_context_data(self, **kwargs):
         """

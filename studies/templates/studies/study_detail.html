@@ -420,7 +420,7 @@
                                                     </div>
                                                 {% endfor %}
                                                 <div class="pt-md">
-                                                    {% include 'studies/_paginator.html' with items=users_result request=request %}
+                                                    {% include 'studies/_paginator.html' with page=users_result %}
                                                 </div>
 
                                             {% else %}
@@ -540,7 +540,7 @@
                                 {% endfor %}
                                 <div class="row">
                                     <div class="col-xs-10 col-xs-offset-1">
-                                        {% include 'studies/_paginator.html' with items=logs anchor="study-logs" %}
+                                        {% include 'studies/_paginator.html' with page=logs anchor="study-logs" %}
                                     </div>
                                 </div>
                             </div>
