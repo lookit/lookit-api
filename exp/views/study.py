@@ -621,7 +621,9 @@ class StudyDetailView(
         return self.paginated_queryset(researchers_result, page, 10)
 
 
-class StudyBuildView(SingleObjectParsimoniousQueryMixin, generic.RedirectView):
+class StudyBuildView(
+    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.RedirectView
+):
     """
     Checks to make sure an existing build isn't running, that the user has permissions
     to build, and then triggers a build.
@@ -633,28 +635,32 @@ class StudyBuildView(SingleObjectParsimoniousQueryMixin, generic.RedirectView):
     slug_field = "uuid"
 
     def get_redirect_url(self, *args, **kwargs):
-        # TODO: is this how to do this, or can we set url?
         return reverse("exp:study-detail", kwargs={"pk": str(self.get_object().pk)})
 
-    def post(self, request, *args, **kwargs):
+    def user_can_build_study(self):
         user = self.request.user
         study = self.get_object()
-        # TODO: these permissions should be handled via e.g. UserPassesTestMixin, not
-        # in the post function...
-        if user.has_study_perms(StudyPermission.WRITE_STUDY_DETAILS, study):
-            if not study.is_building:
-                study.is_building = True
-                study.save(update_fields=["is_building"])
-                ember_build_and_gcp_deploy.delay(study.uuid, request.user.uuid)
-                messages.success(
-                    request,
-                    f"Scheduled experiment runner build for {study.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
-                )
-            else:
-                messages.warning(
-                    request,
-                    f"Experiment runner for {study.name} is already building. This may take up to 30 minutes. You will be emailed when it's completed.",
-                )
+        if study.built or study.is_building:
+            messages.warning(
+                self.request,
+                f"Experiment runner for {study.name} is already built or in progress. This may take up to 30 minutes. You will be emailed when it's completed.",
+            )
+            return False
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.WRITE_STUDY_DETAILS, study
+        )
+
+    test_func = user_can_build_study
+
+    def post(self, request, *args, **kwargs):
+        study = self.get_object()
+        study.is_building = True
+        study.save(update_fields=["is_building"])
+        ember_build_and_gcp_deploy.delay(study.uuid, request.user.uuid)
+        messages.success(
+            request,
+            f"Scheduled experiment runner build for {study.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
+        )
         return super().post(request, *args, **kwargs)
 
 
@@ -761,7 +767,7 @@ class PreviewProxyView(UserPassesTestMixin, ProxyView):
         path = f"{study_uuid}/{'/'.join(rest)}"
         if not rest:
             path += "index.html"
-        # path = f"{kwargs['uuid']}/index.html"
+        path = f"{kwargs['uuid']}/index.html"
 
         return super().dispatch(request, path)
 

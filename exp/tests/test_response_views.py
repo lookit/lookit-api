@@ -223,49 +223,6 @@ class ResponseViewsTestCase(TestCase):
                 page.status_code, [200, 302], "Unexpected status code for " + url
             )
 
-    def testCanSeeStudyPreviewAsStudyRead(self):
-        self.client.force_login(self.study_reader)
-        url = reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid})
-        page = self.client.get(url)
-        self.assertEqual(
-            page.status_code,
-            200,
-            "Researcher with study read access cannot access: " + url,
-        )
-
-    def testCanSeeStudyPreviewAsOtherResearcherIfShared(self):
-        self.client.force_login(self.other_researcher)
-        url = reverse(
-            "exp:preview-detail", kwargs={"uuid": self.study_shared_preview.uuid}
-        )
-        page = self.client.get(url)
-        self.assertEqual(
-            page.status_code,
-            200,
-            "Study preview is shared but unassociated researcher cannot access: " + url,
-        )
-
-    def testCannotSeeStudyPreviewAsParticipant(self):
-        self.client.force_login(self.participants[0])
-        url = reverse(
-            "exp:preview-detail", kwargs={"uuid": self.study_shared_preview.uuid}
-        )
-        page = self.client.get(url)
-        self.assertEqual(
-            page.status_code, 403, "Study preview is accessible by participant: " + url
-        )
-
-    def testCannotSeeStudyPreviewAsOtherResearcherIfNotShared(self):
-        self.client.force_login(self.other_researcher)
-        url = reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid})
-        page = self.client.get(url)
-        self.assertEqual(
-            page.status_code,
-            403,
-            "Study preview is not shared but unassociated researcher can access: "
-            + url,
-        )
-
     def testCannotDeletePreviewDataAsUnassociatedResearcher(self):
         self.client.force_login(self.other_researcher)
         url = reverse("exp:study-responses-all", kwargs={"pk": self.study.pk})
@@ -873,3 +830,5 @@ class ResponseDataDownloadTestCase(TestCase):
 
     # TODO: add test for study-demographics-download-csv, checking for global ID inclusion
     # TODO: add test for study-responses-children-summary-csv
+    # TODO: add test of study response downloads with large responses and with large
+    #       number of responses
