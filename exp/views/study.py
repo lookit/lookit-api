@@ -266,7 +266,7 @@ class StudyUpdateView(
         return reverse("exp:study-edit", kwargs={"pk": self.object.id})
 
 
-class StudyListView(UserPassesTestMixin, PaginatorMixin, generic.ListView):
+class StudyListView(UserPassesTestMixin, generic.ListView):
     """
     StudyListView shows a list of studies that a user has permission to.
     """
@@ -274,6 +274,8 @@ class StudyListView(UserPassesTestMixin, PaginatorMixin, generic.ListView):
     model = Study
     raise_exception = True
     template_name = "studies/study_list.html"
+    paginate_by = 10
+    ordering = ("name",)
 
     def can_see_study_list(self):
         return self.request.user.is_researcher
@@ -290,7 +292,7 @@ class StudyListView(UserPassesTestMixin, PaginatorMixin, generic.ListView):
 
         queryset = get_study_list_qs(user, query_dict)  # READ_STUDY_DETAILS permission
 
-        return self.paginated_queryset(queryset, query_dict.get("page"), 10)
+        return queryset
 
     def get_context_data(self, **kwargs):
         """
