@@ -499,7 +499,7 @@ class StudyDetailView(
             "notify_researcher_of_study_permissions",
             f"New access granted for study {self.get_object().name}",
             user.username,
-            from_address=settings.EMAIL_FROM_ADDRESS,
+            from_email=study.lab.contact_email,
             **context,
         )
 

@@ -223,7 +223,7 @@ class LabMembersView(
                 "notify_researcher_of_lab_permissions",
                 f"You are now part of the Lookit lab {lab.name}",
                 researcher.username,
-                from_address=settings.EMAIL_FROM_ADDRESS,
+                from_email=lab.contact_email,
                 **context,
             )
         if action == "make_member":
@@ -247,7 +247,7 @@ class LabMembersView(
                 "notify_researcher_of_lab_permissions",
                 f"You now have lab member permissions for the Lookit lab {lab.name}",
                 researcher.username,
-                from_address=settings.EMAIL_FROM_ADDRESS,
+                from_email=lab.contact_email,
                 **context,
             )
         if action == "make_admin":
@@ -271,7 +271,7 @@ class LabMembersView(
                 "notify_researcher_of_lab_permissions",
                 f"You are now an admin of the Lookit lab {lab.name}",
                 researcher.username,
-                from_address=settings.EMAIL_FROM_ADDRESS,
+                from_email=lab.contact_email,
                 **context,
             )
         if action == "remove_researcher":
@@ -303,7 +303,7 @@ class LabMembersView(
                 "notify_researcher_of_lab_permissions",
                 f"You have been removed from the Lookit lab {lab.name}",
                 researcher.username,
-                from_address=settings.EMAIL_FROM_ADDRESS,
+                from_email=lab.contact_email,
                 **context,
             )
         if action == "reset_password":

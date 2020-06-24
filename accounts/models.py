@@ -8,20 +8,14 @@ from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group, Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
-from django.core.mail import EmailMultiAlternatives
 from django.db import models
-from django.db.models import Q
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.shortcuts import get_object_or_404
-from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import assign_perm, get_objects_for_user, get_perms
+from guardian.shortcuts import get_perms
 from kombu.utils import cached_property
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
@@ -30,7 +24,6 @@ from multiselectfield import MultiSelectField
 
 from accounts.queries import BitfieldQuerySet
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
-from project.settings import EMAIL_FROM_ADDRESS
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
 from studies.permissions import (
@@ -537,21 +530,24 @@ class Message(models.Model):
             "custom_message": mark_safe(self.body),
         }
 
-        text_content = get_template("emails/{}.txt".format("custom_email")).render(
-            context
-        )
-        html_content = get_template("emails/{}.html".format("custom_email")).render(
-            context
+        lab_email = self.related_study.lab.contact_email
+
+        recipient_email_list = list(self.recipients.values_list("username", flat=True))
+        if len(recipient_email_list) == 1:
+            to_email_list = recipient_email_list
+            bcc_email_list = []
+        else:
+            to_email_list = []
+            bcc_email_list = recipient_email_list
+
+        send_mail.delay(
+            "custom_email",
+            self.subject,
+            to_email_list,
+            bcc=bcc_email_list,
+            from_email=lab_email,
+            **context,
         )
 
-        email = EmailMultiAlternatives(
-            self.subject,
-            text_content,
-            from_email=EMAIL_FROM_ADDRESS,
-            to=[EMAIL_FROM_ADDRESS],
-            bcc=self.recipients.values_list("username", flat=True),
-        )
-        email.attach_alternative(html_content, "text/html")
-        email.send()
         self.email_sent_timestamp = now()  # will use UTC now (see USE_TZ in settings)
         self.save()
