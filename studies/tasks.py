@@ -3,9 +3,7 @@ import datetime
 import hashlib
 import logging
 import os
-import re
 import shutil
-import subprocess
 import tempfile
 import time
 import zipfile
@@ -96,12 +94,7 @@ def cleanup_checkouts(older_than=None):
 @app.task
 def cleanup_docker_images():
     logger.debug("Cleaning up docker images...")
-    images = subprocess.run(
-        ["docker", "images", "--quiet", "--filter", "dangling=true"],
-        stdout=subprocess.PIPE,
-    )
-    for image in images.stdout.splitlines():
-        subprocess.run(["docker", "rmi", "--force", image])
+    DOCKER_CLIENT.images.prune(filters={"dangling": True})
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
