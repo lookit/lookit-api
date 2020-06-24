@@ -9,7 +9,7 @@ router.register(r"studies", api_views.StudyViewSet)
 router.register(r"demographics", api_views.DemographicDataViewSet)
 router.register(r"children", api_views.ChildViewSet)
 router.register(r"responses", api_views.ResponseViewSet)
-router.register(r"organizations", api_views.OrganizationViewSet)
+router.register(r"labs", api_views.LabViewSet)
 router.register(r"feedback", api_views.FeedbackViewSet)
 
 

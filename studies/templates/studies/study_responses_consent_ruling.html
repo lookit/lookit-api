@@ -175,7 +175,7 @@
                     $videoElement.css("visibility", "visible");
                     $videoSource.attr("src", awsUrl);
                     numberedVideoButtons[0].addClass("active");
-                    $videoElement.load().trigger("play");
+                    $videoElement.trigger("load").trigger("play");
                 } else {
                     $videoElement.css("visibility", "hidden");
                     $currentVideoInfo.addClass("bg-warning").text("No video found for this response.")
@@ -266,7 +266,7 @@
 
                 awsUrl = videoData["aws_url"];
                 $videoSource.attr("src", awsUrl);
-                $videoElement.load().trigger("play");
+                $videoElement.trigger("load").trigger("play");
             });
 
             $consentRulingForm.submit(function (event) {

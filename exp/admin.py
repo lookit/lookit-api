@@ -4,6 +4,7 @@ from guardian.admin import GuardedModelAdmin
 from studies.models import (
     ConsentRuling,
     Feedback,
+    Lab,
     Response,
     ResponseLog,
     Study,
@@ -18,6 +19,11 @@ class StudyAdmin(GuardedModelAdmin):
     list_filter = ("state", "creator")
     search_fields = ["name"]
     pass
+
+
+class LabAdmin(GuardedModelAdmin):
+    list_display = ("uuid", "name", "institution", "principal_investigator_name")
+    search_fields = ["name", "institution", "principal_investigator_name"]
 
 
 class ResponseAdmin(GuardedModelAdmin):
@@ -45,10 +51,6 @@ class FeedbackAdmin(GuardedModelAdmin):
 
 class StudyLogAdmin(GuardedModelAdmin):
     list_filter = ("study",)
-    pass
-
-
-class ResponseLogAdmin(GuardedModelAdmin):
     pass
 
 
@@ -82,8 +84,8 @@ class ConsentRulingAdmin(GuardedModelAdmin):
 admin.site.register(Study, StudyAdmin)
 admin.site.register(Response, ResponseAdmin)
 admin.site.register(StudyLog, StudyLogAdmin)
-admin.site.register(ResponseLog, ResponseLogAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
 admin.site.register(StudyType, StudyTypeAdmin)
 admin.site.register(Video, VideoAdmin)
 admin.site.register(ConsentRuling, ConsentRulingAdmin)
+admin.site.register(Lab, LabAdmin)

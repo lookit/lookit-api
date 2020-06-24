@@ -194,6 +194,10 @@ a:hover.view-responses-link {
     color: gray;
 }
 
+#study-state-modal {
+    max-width: 50em;
+}
+
 #cloneForm:hover {
     color: gray;
 }
@@ -516,6 +520,10 @@ a:hover.build-study-link {
 
 #commit-description .panel-title {
     width: 100%;
+}
+
+#save-study-confirmation {
+    max-width: 50em;
 }
 
 /* Participant Detail */

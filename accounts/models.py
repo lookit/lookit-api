@@ -6,20 +6,16 @@ import pydenticon
 from bitfield import BitField
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import Permission, PermissionsMixin
+from django.contrib.auth.models import Group, Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
-from django.core.mail import EmailMultiAlternatives
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import assign_perm, get_objects_for_user
+from guardian.shortcuts import get_perms
 from kombu.utils import cached_property
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
@@ -27,11 +23,14 @@ from model_utils import Choices
 from multiselectfield import MultiSelectField
 
 from accounts.queries import BitfieldQuerySet
-from accounts.utils import build_org_group_name
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
-from project.settings import EMAIL_FROM_ADDRESS
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
+from studies.permissions import (
+    UMBRELLA_LAB_PERMISSION_MAP,
+    LabPermission,
+    StudyPermission,
+)
 
 
 class UserManager(BaseUserManager):
@@ -74,37 +73,6 @@ class Organization(models.Model):
         ordering = ["name"]
 
 
-@receiver(post_save, sender=Organization)
-def organization_post_save(sender, **kwargs):
-    """
-    Create groups for all newly created Organization instances.
-    We only run on Organization creation to avoid having to check
-    existence on each call to Organization.save.
-    """
-    organization, created = kwargs["instance"], kwargs["created"]
-
-    if created:
-        from django.contrib.auth.models import Group
-
-        for group in ["researcher", "read", "admin"]:
-            group_instance, created = Group.objects.get_or_create(
-                name=build_org_group_name(organization.name, group)
-            )
-
-            create_study = Permission.objects.get(codename="can_create_study")
-            view_experimenter = Permission.objects.get(codename="can_view_experimenter")
-            view_organization = Permission.objects.get(codename="can_view_organization")
-            edit_organization = Permission.objects.get(codename="can_edit_organization")
-
-            group_instance.permissions.add(create_study)
-            group_instance.permissions.add(view_experimenter)
-            if group == "admin":
-                group_instance.permissions.add(view_organization)
-                group_instance.permissions.add(edit_organization)
-            if group == "read":
-                group_instance.permissions.add(view_organization)
-
-
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = "username"
     uuid = models.UUIDField(
@@ -121,14 +89,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
     nickname = models.CharField(max_length=255, blank=True)
-    organization = models.ForeignKey(
-        Organization,
-        on_delete=models.PROTECT,
-        related_name="users",
-        related_query_name="user",
-        null=True,
-        blank=True,
-    )
     _identicon = models.TextField(verbose_name="identicon")
     time_zone = models.CharField(max_length=255)
     locale = models.CharField(max_length=255)
@@ -181,55 +141,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def identicon_html(self):
         return mark_safe(f'<img src="{str(self.identicon)}" width="64" />')
 
-    @cached_property
-    def is_participant(self):
-        return self.demographics.exists()
-
-    @property
-    def studies(self):
-        if not self.is_participant:
-            return get_objects_for_user(
-                self, ["studies.can_view_study", "studies.can_edit_study"]
-            )
-        return None
-
-    @cached_property
-    def is_org_admin(self):
-        if not self.organization_id:
-            return False
-        return self.groups.filter(
-            name=build_org_group_name(self.organization.name, "admin")
-        ).exists()
-
-    @property
-    def is_org_read(self):
-        if not self.organization_id:
-            return False
-        if self.is_org_admin:
-            return True
-        return self.groups.filter(
-            name=build_org_group_name(self.organization.name, "read")
-        ).exists()
-
-    @property
-    def is_org_researcher(self):
-        if not self.organization_id:
-            return False
-        return self.groups.filter(
-            name=build_org_group_name(self.organization.name, "researcher")
-        ).exists()
-
-    @property
-    def display_permission(self):
-        if self.is_org_admin:
-            return "Organization Admin"
-        elif self.is_org_read:
-            return "Organization Read"
-        elif self.is_org_researcher:
-            return "Researcher"
-        else:
-            return "No organization groups"
-
     @property
     def slug(self):
         """Temporary workaround."""
@@ -242,6 +153,50 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
                 for k in range(0, 255, 10):
                     rbw.append(f"rgb({i},{j},{k})")
         return rbw
+
+    def has_study_perms(self, study_perm: StudyPermission, study) -> bool:
+        # 1) Modeled perm should be passed already
+        has_all_studies_perm = self.has_perm(study_perm.prefixed_codename)
+        if has_all_studies_perm:
+            return True
+        has_study_perm = self.has_perm(study_perm.codename, study)
+        if has_study_perm:
+            return True
+        else:
+            umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
+            lab = study.lab
+            if lab:
+                return self.has_perm(umbrella_lab_perm.codename, study.lab)
+            else:
+                return False
+
+    def perms_for_study(self, study):
+        user_study_perms = get_perms(self, study)
+        user_lab_perms = get_perms(self, study.lab)
+
+        for study_perm, lab_perm in UMBRELLA_LAB_PERMISSION_MAP.items():
+            if lab_perm.codename in user_lab_perms:
+                user_study_perms.append(study_perm.codename)
+
+        return user_study_perms
+
+    def can_create_study(self):
+        return any(
+            [
+                self.has_perm(
+                    LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
+                )
+                for lab in self.labs.values("id")
+            ]
+        )
+
+    def has_any_perms(self, perm_list, obj=None):
+        """
+        Returns True if the user has ANY of the specified permissions. If
+        object is passed, it checks if the user has any required perms for this
+        object.
+        """
+        return any(self.has_perm(perm, obj) for perm in perm_list)
 
     def get_short_name(self):
         return f"{self.given_name} {self.family_name}"
@@ -363,37 +318,6 @@ class Child(models.Model):
     class JSONAPIMeta:
         resource_name = "children"
         lookup_field = "uuid"
-
-
-@receiver(post_save, sender=User)
-def send_email_when_receive_groups(sender, instance, created, **kwargs):
-    """
-    If researcher is given groups for the first time, send an email letting them know.
-    """
-    if instance.is_researcher and hasattr(instance, "__original_groups"):
-        original_groups = getattr(instance, "__original_groups")
-        if not original_groups and set(instance.groups.all()) != set(
-            instance.__original_groups
-        ):
-            if instance.is_org_admin:
-                permission = "admin"
-            elif instance.is_org_read:
-                permission = "read"
-            else:
-                permission = "researcher"
-
-            context = {
-                "researcher_name": instance.get_short_name(),
-                "org_name": instance.organization.name,
-                "permission": permission,
-            }
-            send_mail.delay(
-                "notify_researcher_of_org_permissions",
-                f"Invitation to access studies on {instance.organization.name}",
-                instance.username,
-                from_address=EMAIL_FROM_ADDRESS,
-                **context,
-            )
 
 
 class DemographicData(models.Model):
@@ -606,21 +530,24 @@ class Message(models.Model):
             "custom_message": mark_safe(self.body),
         }
 
-        text_content = get_template("emails/{}.txt".format("custom_email")).render(
-            context
-        )
-        html_content = get_template("emails/{}.html".format("custom_email")).render(
-            context
+        lab_email = self.related_study.lab.contact_email
+
+        recipient_email_list = list(self.recipients.values_list("username", flat=True))
+        if len(recipient_email_list) == 1:
+            to_email_list = recipient_email_list
+            bcc_email_list = []
+        else:
+            to_email_list = []
+            bcc_email_list = recipient_email_list
+
+        send_mail.delay(
+            "custom_email",
+            self.subject,
+            to_email_list,
+            bcc=bcc_email_list,
+            from_email=lab_email,
+            **context,
         )
 
-        email = EmailMultiAlternatives(
-            self.subject,
-            text_content,
-            from_email=EMAIL_FROM_ADDRESS,
-            to=[EMAIL_FROM_ADDRESS],
-            bcc=self.recipients.values_list("username", flat=True),
-        )
-        email.attach_alternative(html_content, "text/html")
-        email.send()
         self.email_sent_timestamp = now()  # will use UTC now (see USE_TZ in settings)
         self.save()

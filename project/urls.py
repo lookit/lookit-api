@@ -14,10 +14,10 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.urls import path
 from django.views.generic.base import RedirectView
 
 from api import urls as api_urls
@@ -29,28 +29,27 @@ from web import urls as web_urls
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
 urlpatterns = [
-    url(r"^favicon\.ico$", favicon_view),
-    url(r"^admin/", admin.site.urls),
-    url(r"^api/", include(api_urls)),
-    url(
-        r"^accounts/social/login/cancelled/$",
+    path("favicon.ico", favicon_view),
+    path("__CTRL__/", admin.site.urls),
+    path("api/", include((api_urls, "api"))),
+    path(
+        "accounts/social/login/cancelled/",
         osf_oauth2_adapter_views.login_errored_cancelled,
     ),
-    url(
-        r"^accounts/social/login/error/$",
-        osf_oauth2_adapter_views.login_errored_cancelled,
+    path(
+        "accounts/social/login/error/", osf_oauth2_adapter_views.login_errored_cancelled
     ),
-    url(r"^accounts/", include("allauth.urls")),
-    url(r"^exp/", include(exp_urls, namespace="exp")),
-    url(r"^", include("django.contrib.auth.urls")),
-    url(r"^", include(web_urls, namespace="web")),
+    path("accounts/", include("allauth.urls")),
+    path("exp/", include(exp_urls)),
+    path("", include("django.contrib.auth.urls")),
+    path("", include(web_urls)),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns = (
-        [url(r"^__debug__/", include(debug_toolbar.urls))]
+        [path("__debug__/", include(debug_toolbar.urls))]
         + urlpatterns
         + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     )

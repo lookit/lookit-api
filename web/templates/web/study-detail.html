@@ -109,7 +109,7 @@
                               <table class="study-detail-infotable">
                                   <tr>
                                       <td>Eligibility criteria</td>
-                                      <td>{{ object.criteria }}</td>
+                                      <td>{{ object.criteria|linebreaks }}</td>
                                   </tr>
                                   <tr>
                                       <td>Duration</td>
@@ -118,16 +118,16 @@
                                   {% if object.compensation_description %}
                                   <tr>
                                       <td>Compensation</td>
-                                      <td>{{ object.compensation_description }}</td>
+                                      <td>{{ object.compensation_description|linebreaks }}</td>
                                   </tr>
                                   {% endif %}
                                   <tr>
                                       <td>What happens</td>
-                                      <td>{{ object.short_description }}</td>
+                                      <td>{{ object.short_description|linebreaks }}</td>
                                   </tr>
                                   <tr>
                                       <td>What we're studying</td>
-                                      <td>{{ object.long_description }}</td>
+                                      <td>{{ object.long_description|linebreaks }}</td>
                                   </tr>
                               </table>
                           <p class="study-detail-contactinfo"><em>This study is conducted by {{object.contact_info}} </em></p>

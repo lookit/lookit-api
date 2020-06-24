@@ -19,7 +19,7 @@ def send_mail(
 
     :param str template_name: Name of the template to send. There should exist a txt and html version
     :param str subject: Subject line of the email
-    :param str from_address: From address for email
+    :param str from_email: From address for email
     :param list to_addresses: List of addresses to email. If str is provided, wrapped in list
     :param list cc: List of addresses to carbon copy
     :param list bcc: List of addresses to blind carbon copy

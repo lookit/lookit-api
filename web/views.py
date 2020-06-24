@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals, update_session_auth_hash
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch, Q
 from django.dispatch import receiver
 from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views import generic
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
@@ -57,9 +58,6 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
     template_name = "web/demographic-data-update.html"
     model = DemographicData
     form_class = forms.DemographicDataForm
-
-    def get_success_url(self):
-        return reverse("web:demographic-data-update")
 
     def form_valid(self, form):
         """
@@ -157,7 +155,7 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         return kwargs
 
     def form_invalid(self, **kwargs):
-        return self.render_to_response(self.get_context_data(**kwargs))
+        return self.render(self.get_context_data(**kwargs))
 
     def post(self, request, *args, **kwargs):
         """
@@ -211,9 +209,7 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         """
         If form invalid, add child form needs to be open when page reloads.
         """
-        return self.render_to_response(
-            self.get_context_data(form=form, form_hidden=False)
-        )
+        return self.render(self.get_context_data(form=form, form_hidden=False))
 
     def form_valid(self, form):
         """
@@ -296,8 +292,8 @@ class StudiesListView(generic.ListView):
 
     def get_queryset(self):
         # TODO if we need to filter by study demographics vs user demographics
-        # TODO or by if they've taken the study before this is the spot
-        return super().get_queryset().filter(state="active", public=True)
+        # or by if they've taken the study before this is the spot
+        return super().get_queryset().filter(state="active", public=True).order_by("?")
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
@@ -381,45 +377,52 @@ class StudyDetailView(generic.DetailView):
             )
 
 
-class ExperimentAssetsProxyView(ProxyView, LoginRequiredMixin):
+class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
     upstream = settings.EXPERIMENT_BASE_URL
 
-    def dispatch(self, request, path, *args, **kwargs):
-        referer = request.META.get("HTTP_REFERER", None)
-        uuid = kwargs.pop("uuid", None)
-        filename = kwargs.pop("filename", None)
-        # if it's one of the hdfv files
-        if filename:
-            if referer.endswith("/"):
-                study_uuid = referer.split("/")[-3]
-            else:
-                # For firefox
-                study_uuid = referer.split("/")[-2]
-            path = f"{study_uuid}/{filename}"
-            return super().dispatch(request, path, *args, **kwargs)
-        # if it's just regular assets remove the child_id from the path
-        path = f"{path.split('/')[0]}{request.path.split(path)[1]}"
+    def dispatch(self, request, *args, **kwargs):
+        """Bypass presence of child ID."""
+        uuid = kwargs.pop("uuid")
+        asset_path = kwargs.pop("path")
+        path = f"{uuid}/{asset_path}"
         return super().dispatch(request, path, *args, **kwargs)
 
 
-class ExperimentProxyView(ProxyView, LoginRequiredMixin):
+class ExperimentProxyView(UserPassesTestMixin, ProxyView):
     """
     Proxy view to forward user to participate page in the Ember app
     """
 
     upstream = settings.EXPERIMENT_BASE_URL
 
-    def dispatch(self, request, path, *args, **kwargs):
+    def user_can_participate(self):
+        request = self.request
+        kwargs = self.kwargs
+        user = request.user
+
         try:
             child = Child.objects.get(uuid=kwargs.get("child_id", None))
         except Child.DoesNotExist:
-            raise Http404()
+            return False
 
-        if child.user != request.user:
+        try:
+            study = Study.objects.get(uuid=kwargs.get("uuid", None))
+        except Study.DoesNotExist:
+            return False
+
+        if child.user != user:
             # requesting user doesn't belong to that child
-            raise PermissionDenied()
+            return False
 
-        if request.path[-1] == "/":
-            path = f"{path.split('/')[0]}/index.html"
+        return True
+
+    test_func = user_can_participate
+
+    def dispatch(self, request, *args, **kwargs):
+
+        _, _, study_uuid, _, _, *rest = request.path.split("/")
+        path = f"{study_uuid}/{'/'.join(rest)}"
+        if not rest:
+            path += "index.html"
 
         return super().dispatch(request, path)

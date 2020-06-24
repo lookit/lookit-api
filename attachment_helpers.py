@@ -33,7 +33,7 @@ def get_study_attachments(study, orderby="key", match=None):
     """
     Fetches study attachments from s3
     """
-    sort = "last_modified" if "date_modified" in orderby else "key"
+    sort = "created_at" if "created_at" in orderby else "key"
     attachments = [
         att
         for att in get_all_study_attachments(str(study.uuid))

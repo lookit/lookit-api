@@ -28,7 +28,7 @@
     <div class='row'>
         <div class='col-md-6 col-sm-5'>
             <h3>Children</h3>
-            {% for child in user.children.all %}
+            {% for child in children %}
             <div class="pb-md">
                 <h4 class="child-name"><em>{{child.given_name}}</em></h4>
                 <div class="pl-md">
@@ -227,18 +227,18 @@
                     <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
                 </div>
-                <div class="col-md-1 col-xs-12">
+                <div class="col-md-2 col-xs-12">
                     Response
                 </div>
-                <div class="col-md-1 col-xs-12">
+                <div class="col-md-2 col-xs-12">
                     Child
                 </div>
-                <div class="col-md-3 col-xs-12">
+                <div class="col-md-2 col-xs-12">
                     Completion Status
                     <a aria-label="Sort user studies by completion status" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
                 </div>
-                <div class="col-md-3 col-xs-12">
+                <div class="col-md-2 col-xs-12">
                     Date of Response
                     <a aria-label="Sort user studies by date created" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
@@ -283,15 +283,15 @@
                 <div class="col-md-4 col-xs-12">
                     <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
                 </div>
-                <div class="col-md-1 col-xs-12">
-                    <span class="visible-xs visible-sm">Response ID: {{ study_dict.response.id }} </span>
-                    <span class="hidden-xs hidden-sm">{{ study_dict.response.id }} </span>
+                <div class="col-md-2 col-xs-12">
+                    <span class="visible-xs visible-sm">Response UUID: {{ study_dict.response.uuid }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.response.uuid|truncatechars:9 }} </span>
                 </div>
-                <div class="col-md-1 col-xs-12">
-                    <span class="visible-xs visible-sm">Child ID: {{ study_dict.response.child.id }} </span>
-                    <span class="hidden-xs hidden-sm">{{ study_dict.response.child.id }} </span>
+                <div class="col-md-2 col-xs-12">
+                    <span class="visible-xs visible-sm">Child: {{ study_dict.response.child.given_name }} </span>
+                    <span class="hidden-xs hidden-sm">{{ study_dict.response.child.given_name }} </span>
                 </div>
-                <div class="col-md-3 col-xs-12">
+                <div class="col-md-2 col-xs-12">
 
                     {% if study_dict.completed %}
                         <span class="visible-xs visible-sm">Status: Completed </span>
@@ -301,7 +301,7 @@
                         <span class="hidden-xs hidden-sm">In Progress </span>
                     {% endif %}
                 </div>
-                <div class="col-md-3 col-xs-12">
+                <div class="col-md-2 col-xs-12">
                     <span class="visible-xs visible-sm">Date: {{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
                     <span class="hidden-xs hidden-sm">{{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
                 </div>
@@ -313,7 +313,7 @@
     <div class="row pt-xl">
         <div class="col-md-11 col-md-offset-1">
             <div class="pull-right">
-                {% include 'studies/_paginator.html' with items=studies request=request %}
+                {% include 'studies/_paginator.html' with page=studies request=request %}
             </div>
         </div>
     </div>

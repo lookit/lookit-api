@@ -33,6 +33,9 @@ SECRET_KEY = os.environ.get(
 DEBUG = bool(os.environ.get("DEBUG", False))
 ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
 
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_AGE = 60 * 60 * 24  # One day in seconds
+
 AUTH_USER_MODEL = "accounts.User"
 GUARDIAN_MONKEY_PATCH = False
 
@@ -81,14 +84,13 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.auth.middleware.SessionAuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
@@ -96,7 +98,7 @@ MIDDLEWARE_CLASSES = [
 
 if DEBUG:
     INSTALLED_APPS += ["debug_toolbar", "shells", "sslserver"]
-    MIDDLEWARE_CLASSES += [
+    MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
         "pyinstrument.middleware.ProfilerMiddleware",
     ]
@@ -165,12 +167,16 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
-
+# Why 16 characters?
+# See https://www.lmgsecurity.com/how-long-should-your-password-be-a-technical-guide-to-a-safe-password-length-policy/
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 16},
+    },
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
@@ -298,13 +304,13 @@ else:
     MEDIAFILES_LOCATION = "/media"
 
     EXPERIMENT_LOCATION = "/experiments"
-    PREVIEW_EXPERIMENT_LOCATION = "/preview_experiments"
 
     GS_BUCKET_NAME = None
     GS_PROJECT_ID = None
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "_static"),)
 
 EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", "lookit.robot@some.domain")
 

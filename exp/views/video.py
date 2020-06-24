@@ -16,9 +16,9 @@ from studies.models import Video
 
 class RenameVideoView(View):
     """
-	Webhook handler for Pipe webhook that fires upon uploading to S3, so we can rename
-	video to the intended permanent name instead of the random string assigned by Pipe.
-	"""
+    Webhook handler for Pipe webhook that fires upon uploading to S3, so we can rename
+    video to the intended permanent name instead of the random string assigned by Pipe.
+    """
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):

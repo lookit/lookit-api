@@ -1,12 +1,13 @@
 -r ./defaults.txt
 
-Werkzeug==0.15.3
+Werkzeug==0.15.5
 ipdb==0.10.2
-ipython==6.5.0
-django-pdb==0.5.1
-django-debug-toolbar==1.8
+ipython==7.13.0
+django-pdb==0.6.2
 black==18.9b0
+importanize==0.7.0
 isort==4.3.4
-django-shells==0.1.0
+pre-commit==2.3.0
 ptpython==2.0.4
-watchdog==0.9.0
+pyopenssl==19.1.0
+watchdog==0.10.2

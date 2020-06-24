@@ -4,7 +4,6 @@ Toggle Widget stolen shamelessly from https://blog.ihfazh.com/django-custom-widg
 forthwith to support multiple checkboxes.
 """
 from bitfield.forms import BitFieldCheckboxSelectMultiple
-from django import forms
 
 
 class ToggleWidget(BitFieldCheckboxSelectMultiple):

@@ -29,7 +29,7 @@ class DotPropertyRelatedLookupHyperlinkedMixin(HyperlinkedMixin):
 
         child = PatchedResourceRelatedField(
             queryset=Child.objects,
-            related_link_view_name="child-detail",
+            related_link_view_name="api:child-detail",
             related_link_lookup_field="child.uuid",  <--- dot syntax
             related_link_url_kwarg="uuid",
         )
@@ -48,7 +48,7 @@ class DotPropertyRelatedLookupHyperlinkedMixin(HyperlinkedMixin):
             }
         except AttributeError:
             # Currently a patch for optional relationships - for instance, users may or may
-            # not have an organization.
+            # not have an lab.
             return {"related": None}
 
         self_kwargs = kwargs.copy()
