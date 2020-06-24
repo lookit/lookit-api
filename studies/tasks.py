@@ -163,8 +163,7 @@ def build_zipfile_of_videos(
     send_mail(
         "download_zip",
         "Your video archive has been created",
-        settings.EMAIL_FROM_ADDRESS,
-        bcc=[requesting_user.username],
+        [requesting_user.username],
         from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )
@@ -239,8 +238,7 @@ def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
     send_mail(
         "download_framedata_dict",
         "Your frame data dictionary has been created",
-        settings.EMAIL_FROM_ADDRESS,
-        bcc=[requesting_user.username],
+        [requesting_user.username],
         from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )
