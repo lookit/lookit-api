@@ -9,7 +9,7 @@ from django.views import generic
 
 from accounts.models import Child, User
 from exp.utils import RESPONSE_PAGE_SIZE
-from exp.views import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ExperimenterLoginRequiredMixin
 from studies.fields import (
     CONDITIONS,
     GESTATIONAL_AGE_ENUM_MAP,

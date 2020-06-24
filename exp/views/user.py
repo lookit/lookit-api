@@ -8,7 +8,7 @@ from django.views import generic
 
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
-from exp.views import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ExperimenterLoginRequiredMixin
 
 
 class ParticipantListView(

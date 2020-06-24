@@ -635,7 +635,8 @@ class StudyDetailView(
 
 
 class StudyBuildView(
-    ExperimenterLoginRequiredMixinUserPassesTestMixin,
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
     SingleObjectParsimoniousQueryMixin,
     generic.RedirectView,
 ):

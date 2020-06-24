@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
-from exp.views import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ExperimenterLoginRequiredMixin
 
 
 class ExperimenterDashboardView(ExperimenterLoginRequiredMixin, generic.TemplateView):
