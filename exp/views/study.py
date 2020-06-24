@@ -14,7 +14,11 @@ from revproxy.views import ProxyView
 
 from accounts.models import Child, User
 from exp.mixins.paginator_mixin import PaginatorMixin
-from exp.views.mixins import SingleObjectParsimoniousQueryMixin, StudyTypeMixin
+from exp.views.mixins import (
+    ExperimenterLoginRequiredMixin,
+    SingleObjectParsimoniousQueryMixin,
+    StudyTypeMixin,
+)
 from project import settings
 from studies.forms import StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
@@ -80,7 +84,12 @@ KEY_DISPLAY_NAMES = {
 }
 
 
-class StudyCreateView(UserPassesTestMixin, StudyTypeMixin, generic.CreateView):
+class StudyCreateView(
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    StudyTypeMixin,
+    generic.CreateView,
+):
     """
     StudyCreateView allows a user to create a study and then redirects
     them to the detail view for that study.
@@ -150,6 +159,7 @@ class StudyCreateView(UserPassesTestMixin, StudyTypeMixin, generic.CreateView):
 
 
 class StudyUpdateView(
+    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     StudyTypeMixin,
     SingleObjectParsimoniousQueryMixin,
@@ -266,7 +276,9 @@ class StudyUpdateView(
         return reverse("exp:study-edit", kwargs={"pk": self.object.id})
 
 
-class StudyListView(UserPassesTestMixin, generic.ListView):
+class StudyListView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.ListView
+):
     """
     StudyListView shows a list of studies that a user has permission to.
     """
@@ -308,6 +320,7 @@ class StudyListView(UserPassesTestMixin, generic.ListView):
 
 
 class StudyDetailView(
+    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
     SingleObjectParsimoniousQueryMixin,
@@ -622,7 +635,10 @@ class StudyDetailView(
 
 
 class StudyBuildView(
-    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.RedirectView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.RedirectView,
 ):
     """
     Checks to make sure an existing build isn't running, that the user has permissions
@@ -664,7 +680,9 @@ class StudyBuildView(
         return super().post(request, *args, **kwargs)
 
 
-class StudyPreviewDetailView(UserPassesTestMixin, generic.DetailView):
+class StudyPreviewDetailView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
+):
 
     queryset = Study.objects.all()
     http_method_names = ["get", "post"]
@@ -717,7 +735,7 @@ class StudyPreviewDetailView(UserPassesTestMixin, generic.DetailView):
         return HttpResponseRedirect(reverse("exp:preview-proxy", kwargs=kwargs))
 
 
-class PreviewProxyView(UserPassesTestMixin, ProxyView):
+class PreviewProxyView(ExperimenterLoginRequiredMixin, UserPassesTestMixin, ProxyView):
     """
     Proxy view to forward researcher to preview page in the Ember app
     """

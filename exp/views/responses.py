@@ -26,7 +26,10 @@ from exp.utils import (
     round_ages_from_birthdays,
     study_name_for_files,
 )
-from exp.views.mixins import SingleObjectParsimoniousQueryMixin
+from exp.views.mixins import (
+    ExperimenterLoginRequiredMixin,
+    SingleObjectParsimoniousQueryMixin,
+)
 from studies.models import Feedback, Study
 from studies.permissions import StudyPermission
 from studies.queries import (
@@ -37,6 +40,7 @@ from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
 
 class StudyResponsesList(
+    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
     SingleObjectParsimoniousQueryMixin,
@@ -197,7 +201,10 @@ class StudyResponsesList(
 
 
 class StudyResponsesConsentManager(
-    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """Manage videos from here."""
 
@@ -1069,7 +1076,10 @@ def build_single_response_framedata_csv(response):
 
 
 class StudyResponsesAll(
-    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """
     StudyResponsesAll shows a variety of download options for response and child data.
@@ -1415,7 +1425,10 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
 
 
 class StudyDemographics(
-    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """
     StudyDemographics view shows participant demographic snapshots associated
@@ -1917,6 +1930,7 @@ class StudyCollisionCheck(StudyResponsesAll):
 
 
 class StudyAttachments(
+    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
     SingleObjectParsimoniousQueryMixin,

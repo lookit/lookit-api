@@ -388,7 +388,7 @@ class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
         return super().dispatch(request, path, *args, **kwargs)
 
 
-class ExperimentProxyView(UserPassesTestMixin, ProxyView):
+class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
     """
     Proxy view to forward user to participate page in the Ember app
     """
