@@ -93,7 +93,9 @@ class ResponseViewsTestCase(TestCase):
             "Study preview is shared but unassociated researcher cannot access: " + url,
         )
 
-    @skip("Skip until preview proxy working...")
+    @skip(
+        "Skip testing redirect to GCP resources until build -> deploy to GCP is part of testing"
+    )
     def testCanSeeStudyPreviewProxyAsOtherResearcherIfShared(self):
         self.client.force_login(self.other_researcher)
         url = reverse(
@@ -201,7 +203,7 @@ class ResponseViewsTestCase(TestCase):
             self.study.built, "Study built field not True following study build"
         )
 
-    # @skip
+    @skip
     def testBuildStudyWithCorrectPermsAndSpecificExpRunner(self):
         self.client.force_login(self.lab_researcher)
         self.study.metadata = {
