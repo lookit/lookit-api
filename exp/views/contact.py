@@ -7,13 +7,19 @@ from django.views import generic
 
 from accounts.models import Message, User
 from accounts.utils import hash_id
-from exp.views.mixins import SingleObjectParsimoniousQueryMixin
+from exp.views.mixins import (
+    ExperimenterLoginRequiredMixin,
+    SingleObjectParsimoniousQueryMixin,
+)
 from studies.models import Study
 from studies.permissions import StudyPermission
 
 
 class StudyParticipantContactView(
-    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.DetailView,
 ):
     """
     StudyParticipantContactView lets you contact study participants.

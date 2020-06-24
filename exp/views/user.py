@@ -8,9 +8,15 @@ from django.views import generic
 
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
+from exp.views import ExperimenterLoginRequiredMixin
 
 
-class ParticipantListView(UserPassesTestMixin, ParticipantMixin, generic.ListView):
+class ParticipantListView(
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    ParticipantMixin,
+    generic.ListView,
+):
     """
     ParticipantListView shows a list of participants that have responded to the studies the
     user has permission to view.

@@ -12,7 +12,10 @@ from django.views import generic
 
 from accounts.models import User
 from exp.mixins.paginator_mixin import PaginatorMixin
-from exp.views.mixins import SingleObjectParsimoniousQueryMixin
+from exp.views.mixins import (
+    ExperimenterLoginRequiredMixin,
+    SingleObjectParsimoniousQueryMixin,
+)
 from project import settings
 from studies.forms import LabApprovalForm, LabForm
 from studies.helpers import send_mail
@@ -20,7 +23,9 @@ from studies.models import Lab, Study
 from studies.permissions import LabPermission, SiteAdminGroup
 
 
-class LabDetailView(UserPassesTestMixin, generic.DetailView):
+class LabDetailView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
+):
     """
     LabDetailView shows information about a lab and provides links to request to join,
     update metadata, and view/manage researchers.
@@ -69,6 +74,7 @@ class LabDetailView(UserPassesTestMixin, generic.DetailView):
 
 
 class LabMembersView(
+    ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectParsimoniousQueryMixin,
     PaginatorMixin,
@@ -351,7 +357,10 @@ class LabMembersView(
 
 
 class LabUpdateView(
-    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.UpdateView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.UpdateView,
 ):
     """
     LabUpdateView allows updating lab metadata.
@@ -386,7 +395,10 @@ class LabUpdateView(
 
 
 class LabCreateView(
-    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.CreateView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.CreateView,
 ):
     """
     LabCreateView allows creating a new lab.
@@ -442,7 +454,10 @@ class LabCreateView(
 
 
 class LabMembershipRequestView(
-    UserPassesTestMixin, SingleObjectParsimoniousQueryMixin, generic.RedirectView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    generic.RedirectView,
 ):
 
     http_method_names = ["post"]
@@ -498,7 +513,9 @@ class LabMembershipRequestView(
         return super().post(request, *args, **kwargs)
 
 
-class LabListView(UserPassesTestMixin, generic.ListView):
+class LabListView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.ListView
+):
     """
     Shows a list of all labs.
     """

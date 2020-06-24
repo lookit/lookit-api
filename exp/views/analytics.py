@@ -9,6 +9,7 @@ from django.views import generic
 
 from accounts.models import Child, User
 from exp.utils import RESPONSE_PAGE_SIZE
+from exp.views import ExperimenterLoginRequiredMixin
 from studies.fields import (
     CONDITIONS,
     GESTATIONAL_AGE_ENUM_MAP,
@@ -23,7 +24,9 @@ LANGUAGES_MAP = {code: lang for code, lang in LANGUAGES}
 CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDITIONS}
 
 
-class StudyParticipantAnalyticsView(UserPassesTestMixin, generic.TemplateView):
+class StudyParticipantAnalyticsView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.TemplateView
+):
     template_name = "studies/study_participant_analytics.html"
     model = Study
     raise_exception = True

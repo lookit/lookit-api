@@ -4,8 +4,15 @@ import requests
 from django.conf import settings
 from django.http.request import HttpRequest
 from django.views.generic.detail import SingleObjectMixin
+from guardian.mixins import LoginRequiredMixin
 
 from studies.models import Lab, Study, StudyType
+
+
+class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
+    """Require logged-in user; if not logged in, redirect to experimenter login."""
+
+    login_url = settings.EXPERIMENTER_LOGIN_URL
 
 
 class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):
