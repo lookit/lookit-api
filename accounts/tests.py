@@ -4,10 +4,39 @@ from django.test import TestCase
 from django_dynamic_fixture import G
 from lark.exceptions import UnexpectedCharacters
 
-from accounts.models import Child
+from accounts.models import Child, User
 from accounts.queries import get_child_eligibility
 from studies.fields import GESTATIONAL_AGE_CHOICES
 from studies.models import Lab, Study, StudyType
+
+
+class UserModelTestCase(TestCase):
+    def setUp(self):
+        self.lab_researcher = G(
+            User, is_active=True, is_researcher=True, nickname="Lab Researcher"
+        )
+
+        self.unaffiliated_researcher = G(
+            User, is_active=True, is_researcher=True, nickname="Study Researcher"
+        )
+
+        self.unaffiliated_researcher.labs.clear()
+
+        self.participant = G(
+            User, is_active=True, is_researcher=False, nickname="Participant"
+        )
+        self.lab = G(Lab, name="MIT", approved_to_test=True)
+        self.study = G(Study, name="Test Study", lab=self.lab, built=True)
+
+        self.study.researcher_group.user_set.add(self.unaffiliated_researcher)
+
+        self.lab.researchers.add(self.lab_researcher)
+
+    def test_lab_researcher_can_create_study(self):
+        self.assertTrue(self.lab_researcher.can_create_study())
+
+    def test_unaffiliated_researcher_cannot_create_study(self):
+        self.assertFalse(self.unaffiliated_researcher.can_create_study())
 
 
 class CriteriaExpressionTestCase(TestCase):
