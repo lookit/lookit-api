@@ -213,7 +213,7 @@ class StudyUpdateView(
         """
         study = self.get_object()
 
-        target_study_type_id = self.request.POST["study_type"]
+        target_study_type_id = int(self.request.POST["study_type"])
         target_study_type = StudyType.objects.get(id=target_study_type_id)
 
         metadata, meta_errors = self.validate_and_fetch_metadata(
