@@ -1,13 +1,16 @@
 import datetime
 from unittest import skip
+from unittest.mock import patch
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.forms.models import model_to_dict
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
-from accounts.models import Child, DemographicData, User
-from studies.models import ConsentRuling, Lab, Response, Study, StudyType
+from accounts.models import Child, User
+from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -33,11 +36,16 @@ class ResponseViewsTestCase(TestCase):
         )
         self.participant = G(User, is_active=True, is_researcher=False, nickname="Dada")
         self.study_type = G(StudyType, name="default", id=1)
+        self.other_study_type = G(StudyType, name="other", id=2)
         self.approved_lab = G(Lab, name="MIT", approved_to_test=True)
         self.unapproved_lab = G(Lab, name="Harvard", approved_to_test=True)
 
         self.study = G(
             Study,
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),  # we could also pass fill_nullable_fields=True
+            # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
             creator=self.study_admin,
             shared_preview=False,
             study_type=self.study_type,
@@ -45,9 +53,7 @@ class ResponseViewsTestCase(TestCase):
             lab=self.approved_lab,
             built=True,
         )
-        # Note: currently not mocking Study.image field, because I couldn't get any of the
-        # approaches outlined at https://stackoverflow.com/questions/26298821/django-testing-model-with-imagefield
-        # working.
+
         self.study_shared_preview = G(
             Study,
             creator=self.study_admin,
@@ -225,6 +231,25 @@ class ResponseViewsTestCase(TestCase):
         )
         self.assertTrue(
             self.study.built, "Study built field not True following study build"
+        )
+
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    def test_study_edit_change_study_type(self, mock_validate):
+        mock_validate.return_value = {"fake": "metadata"}, None
+        # Mock validation function - we should test that unit separately
+        self.client.force_login(self.lab_researcher)
+        url = reverse("exp:study-edit", kwargs={"pk": self.study.id})
+        assign_perm(
+            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
+            self.lab_researcher,
+            self.study,
+        )
+        data = model_to_dict(self.study)
+        data["study_type"] = 2  # Other study type
+        data["comments"] = "Changing the study type"
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.status_code, 200, "Study edit returns a valid response"
         )
 
 
