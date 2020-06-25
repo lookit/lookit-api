@@ -177,9 +177,7 @@ class StudyUpdateView(
 
     def user_can_edit_study(self):
         """Test predicate for the study editing view."""
-        user = self.request.user
-        # If we end up using method, this will be useful.
-        # method = self.request.method
+        user: User = self.request.user  # Weird that PyCharm can't figure out the type?
         study = self.get_object()
 
         return user.is_researcher and user.has_study_perms(
