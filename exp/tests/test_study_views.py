@@ -1,13 +1,16 @@
 import datetime
 from unittest import skip
+from unittest.mock import patch
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.forms.models import model_to_dict
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
-from accounts.models import Child, DemographicData, User
-from studies.models import ConsentRuling, Lab, Response, Study, StudyType
+from accounts.models import Child, User
+from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -29,25 +32,40 @@ class ResponseViewsTestCase(TestCase):
             User, is_active=True, is_researcher=True, given_name="Researcher 3"
         )
         self.lab_researcher = G(
-            User, is_active=True, is_researcher=True, given_name="Researcher 4"
+            User,
+            is_active=True,
+            is_researcher=True,
+            given_name="Researcher 4",
+            time_zone="America/New_York",
         )
         self.participant = G(User, is_active=True, is_researcher=False, nickname="Dada")
         self.study_type = G(StudyType, name="default", id=1)
+        self.other_study_type = G(StudyType, name="other", id=2)
         self.approved_lab = G(Lab, name="MIT", approved_to_test=True)
         self.unapproved_lab = G(Lab, name="Harvard", approved_to_test=True)
 
         self.study = G(
             Study,
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),  # we could also pass fill_nullable_fields=True
+            # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
             creator=self.study_admin,
             shared_preview=False,
             study_type=self.study_type,
             name="Test Study",
             lab=self.approved_lab,
+            structure={
+                "frames": {"frame-a": {}, "frame-b": {}},
+                "sequence": ["frame-a", "frame-b"],
+            },
+            metadata={
+                "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
+                "last_known_player_sha": "fakecommitsha",
+            },
             built=True,
         )
-        # Note: currently not mocking Study.image field, because I couldn't get any of the
-        # approaches outlined at https://stackoverflow.com/questions/26298821/django-testing-model-with-imagefield
-        # working.
+
         self.study_shared_preview = G(
             Study,
             creator=self.study_admin,
@@ -81,7 +99,31 @@ class ResponseViewsTestCase(TestCase):
             "exp:study-build", kwargs={"uuid": self.study.uuid}
         )
 
-    def testCanSeeStudyPreviewDetailAsOtherResearcherIfShared(self):
+        self.all_study_views_urls = [
+            reverse("exp:study-list"),
+            reverse("exp:study-create"),
+            reverse("exp:study-detail", kwargs={"pk": self.study.pk}),
+            reverse("exp:study-participant-contact", kwargs={"pk": self.study.pk}),
+            reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid}),
+            reverse(
+                "exp:preview-proxy",
+                kwargs={
+                    "uuid": self.study.uuid,
+                    "child_id": self.other_researcher_child.uuid,
+                },
+            ),
+        ]
+
+    def test_cannot_see_any_study_views_unauthenticated(self):
+        for url in self.all_study_views_urls:
+            page = self.client.get(url)
+            self.assertEqual(
+                page.status_code,
+                302,
+                "Unauthenticated user not redirected from study view: " + url,
+            )
+
+    def test_can_see_study_preview_detail_as_other_researcher_if_shared(self):
         self.client.force_login(self.other_researcher)
         url = reverse(
             "exp:preview-detail", kwargs={"uuid": self.study_shared_preview.uuid}
@@ -96,7 +138,7 @@ class ResponseViewsTestCase(TestCase):
     @skip(
         "Skip testing redirect to GCP resources until build -> deploy to GCP is part of testing"
     )
-    def testCanSeeStudyPreviewProxyAsOtherResearcherIfShared(self):
+    def test_can_see_study_preview_proxy_as_other_researcher_if_shared(self):
         self.client.force_login(self.other_researcher)
         url = reverse(
             "exp:preview-proxy",
@@ -112,7 +154,7 @@ class ResponseViewsTestCase(TestCase):
             "Study preview is shared but unassociated researcher cannot access: " + url,
         )
 
-    def testCannotSeeStudyPreviewDetailAsParticipant(self):
+    def test_cannot_see_study_preview_detail_as_participant(self):
         self.client.force_login(self.participant)
         url = reverse(
             "exp:preview-detail", kwargs={"uuid": self.study_shared_preview.uuid}
@@ -122,7 +164,7 @@ class ResponseViewsTestCase(TestCase):
             page.status_code, 403, "Study preview is accessible by participant: " + url
         )
 
-    def testCannotSeeStudyPreviewDetailAsOtherResearcherIfNotShared(self):
+    def test_cannot_see_study_preview_detail_as_other_researcher_if_not_shared(self):
         self.client.force_login(self.other_researcher)
         url = reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid})
         page = self.client.get(url)
@@ -133,21 +175,21 @@ class ResponseViewsTestCase(TestCase):
             + url,
         )
 
-    def testGetStudyBuildView(self):
+    def test_get_study_build_view(self):
         self.client.force_login(self.study_designer)
         page = self.client.get(self.study_build_url)
         self.assertIn(
             page.status_code, [403, 405], "GET method allowed on study build view"
         )
 
-    def testBuildStudyOutsideLab(self):
+    def test_build_study_as_rsearcher_outside_lab(self):
         self.client.force_login(self.other_researcher)
         page = self.client.post(self.study_build_url, {})
         self.assertEqual(
             page.status_code, 403, "Study build allowed from outside researcher"
         )
 
-    def testBuildStudyAlreadyBuilt(self):
+    def test_build_study_already_built(self):
         self.client.force_login(self.study_designer)
         self.study.built = True
         self.study.save()
@@ -156,7 +198,7 @@ class ResponseViewsTestCase(TestCase):
             page.status_code, 403, "Study build allowed when already built"
         )
 
-    def testBuildStudyCurrentlyBuilding(self):
+    def test_build_study_currently_building(self):
         self.client.force_login(self.study_designer)
         self.study.is_building = True
         self.study.save()
@@ -165,7 +207,7 @@ class ResponseViewsTestCase(TestCase):
             page.status_code, 403, "Study build allowed when already building"
         )
 
-    def testBuildStudyInLabWithoutCorrectPerms(self):
+    def test_build_study_in_lab_without_correct_perms(self):
         self.client.force_login(self.lab_researcher)
         # Assign some permissions that should NOT grant ability to build study
         assign_perm(
@@ -186,7 +228,7 @@ class ResponseViewsTestCase(TestCase):
         )
 
     @skip
-    def testBuildStudyWithCorrectPermsAndCurrentExpRunner(self):
+    def test_build_study_with_correct_perms_and_current_exp_runner(self):
         self.client.force_login(self.lab_researcher)
         assign_perm(
             StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
@@ -204,7 +246,7 @@ class ResponseViewsTestCase(TestCase):
         )
 
     @skip
-    def testBuildStudyWithCorrectPermsAndSpecificExpRunner(self):
+    def test_build_study_with_correct_perms_and_specific_exp_runner(self):
         self.client.force_login(self.lab_researcher)
         self.study.metadata = {
             "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
@@ -227,6 +269,159 @@ class ResponseViewsTestCase(TestCase):
             self.study.built, "Study built field not True following study build"
         )
 
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    def test_study_edit_change_study_type(self, mock_validate):
+        mock_validate.return_value = {"fake": "metadata"}, []
+        # Mock validation function - we should test that unit separately
+        self.client.force_login(self.lab_researcher)
+        url = reverse("exp:study-edit", kwargs={"pk": self.study.id})
+        assign_perm(
+            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
+            self.lab_researcher,
+            self.study,
+        )
+        data = model_to_dict(self.study)
+        data["study_type"] = 2  # Other study type
+        data["comments"] = "Changing the study type"
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.status_code,
+            200,
+            "Study edit returns invalid response when editing study type",
+        )
+        updated_study = Study.objects.get(id=self.study.id)
+        self.assertFalse(
+            updated_study.built,
+            "Study build was not invalidated after editing study type",
+        )
+
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    def test_change_study_metadata_invalidates_build(
+        self, mock_validate_and_fetch_metadata
+    ):
+        new_metadata = {
+            "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
+            "last_known_player_sha": "2aa08ee6132cd6351eed58abc2253368c14ad184",
+        }
+        mock_validate_and_fetch_metadata.return_value = new_metadata, []
+        self.client.force_login(self.lab_researcher)
+        url = reverse("exp:study-edit", kwargs={"pk": self.study.id})
+        assign_perm(
+            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
+            self.lab_researcher,
+            self.study,
+        )
+        data = model_to_dict(self.study)
+        data["metadata"] = new_metadata
+        data["comments"] = "Changed experiment runner version"
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.status_code,
+            200,
+            "Study edit returns invalid response when editing metadata",
+        )
+        updated_study = Study.objects.get(id=self.study.id)
+        self.assertFalse(
+            updated_study.built,
+            "Study build was not invalidated after editing metadata",
+        )
+
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    def test_change_study_protocol_does_not_affect_build_status(
+        self, mock_validate_and_fetch_metadata
+    ):
+        mock_validate_and_fetch_metadata.return_value = self.study.metadata, []
+        self.client.force_login(self.lab_researcher)
+        url = reverse("exp:study-edit", kwargs={"pk": self.study.id})
+        assign_perm(
+            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
+            self.lab_researcher,
+            self.study,
+        )
+        data = model_to_dict(self.study)
+        data["structure"] = {"frames": {"frame-c": {}}, "sequence": ["frame-c"]}
+        data["comments"] = "Changed protocol"
+        response = self.client.post(url, data)
+        self.assertEqual(
+            response.status_code,
+            200,
+            "Study edit returns invalid response when editing metadata",
+        )
+        updated_study = Study.objects.get(id=self.study.id)
+        self.assertTrue(
+            updated_study.built, "Study build was invalidated upon editing protocol"
+        )
+
+    def test_new_user_can_create_studies_in_sandbox_lab_only(self):
+        new_researcher = G(
+            User, is_active=True, is_researcher=True, given_name="New researcher"
+        )
+        self.client.force_login(new_researcher)
+        self.assertTrue(
+            new_researcher.can_create_study(), "New researcher unable to create study"
+        )
+        sandbox_lab = Lab.objects.get(name="Sandbox lab")
+        demo_lab = Lab.objects.get(name="Demo lab")
+        self.assertTrue(
+            new_researcher.has_perm(
+                LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=sandbox_lab
+            ),
+            "New researcher unable to create studies in sandbox lab",
+        )
+        self.assertFalse(
+            new_researcher.has_perm(
+                LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=demo_lab
+            ),
+            "New researcher able to create studies in demo lab",
+        )
+        self.assertEqual(new_researcher.labs_user_can_create_study_in().count(), 1)
+
+    def test_create_study_buttons_shown_if_allowed(self):
+        self.client.force_login(self.lab_researcher)
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.codename, self.lab_researcher, self.study
+        )
+        list_view_response = self.client.get(reverse("exp:study-list"))
+        self.assertIn(
+            "Create Study",
+            list_view_response.content.decode("utf-8"),
+            "Create Study button not displayed on study list view",
+        )
+        detail_view_response = self.client.get(
+            reverse("exp:study-detail", kwargs={"pk": self.study.pk})
+        )
+        self.assertIn(
+            "Clone Study",
+            detail_view_response.content.decode("utf-8"),
+            "Clone Study button not displayed on study detail view",
+        )
+
+    def test_create_study_buttons_not_shown_if_not_allowed(self):
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.codename, self.lab_researcher, self.study
+        )
+        sandbox_lab = Lab.objects.get(name="Sandbox lab")
+        sandbox_lab.guest_group.user_set.remove(self.lab_researcher)
+        self.client.force_login(self.lab_researcher)
+        self.assertFalse(
+            self.lab_researcher.can_create_study(),
+            "Researcher can_create_study function returns true after removing perms",
+        )
+        list_view_response = self.client.get(reverse("exp:study-list"))
+        self.assertNotIn(
+            "Create Study",
+            list_view_response.content.decode("utf-8"),
+            "Create Study button displayed on study list view",
+        )
+        detail_view_response = self.client.get(
+            reverse("exp:study-detail", kwargs={"pk": self.study.pk})
+        )
+        self.assertNotIn(
+            "Clone Study",
+            detail_view_response.content.decode("utf-8"),
+            "Clone Study button displayed on study detail view",
+        )
+
 
 # TODO: StudyCreateView
 # - check user has to be in a lab with perms to create study to get
@@ -240,6 +435,7 @@ class ResponseViewsTestCase(TestCase):
 # - check you see exactly studies you have view details perms for
 # TODO: StudyDetailView
 # - check can get as researcher only
+# - check correct links are shown given perms
 # - [postpone checks of POST which will be refactored]
 # TODO: StudyPreviewProxyView
 # - add checks analogous to preview detail view

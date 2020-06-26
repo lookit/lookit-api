@@ -98,7 +98,9 @@ class StudyForm(ModelForm):
         # Limit lab options to labs this user is a member of
         user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
-        self.fields["lab"].queryset = user.labs.all()
+        self.fields["lab"].queryset = user.labs.filter(
+            id__in=user.labs_user_can_create_study_in()
+        )
 
     def clean(self):
         cleaned_data = super().clean()

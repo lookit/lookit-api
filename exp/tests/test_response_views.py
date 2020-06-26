@@ -185,9 +185,19 @@ class ResponseViewsTestCase(TestCase):
                 "exp:study-responses-download-summary-dict-csv",
                 kwargs={"pk": self.study.pk},
             ),
+            reverse("exp:study-attachments", kwargs={"pk": self.study.pk}),
         ]
 
-    def testCannotSeeAnyResponsesViewsAsParticipant(self):
+    def test_cannot_see_any_responses_views_unauthenticated(self):
+        for url in self.all_response_urls:
+            page = self.client.get(url)
+            self.assertEqual(
+                page.status_code,
+                302,
+                "Unauthenticated user not redirected from responses: " + url,
+            )
+
+    def test_cannot_see_any_responses_views_as_participant(self):
         self.client.force_login(self.participants[0])
         for url in self.all_response_urls:
             page = self.client.get(url)
@@ -197,7 +207,7 @@ class ResponseViewsTestCase(TestCase):
                 "Unassociated participant not forbidden to access responses: " + url,
             )
 
-    def testCannotSeeAnyResponsesViewsAsUnassociatedResearcher(self):
+    def test_cannot_see_any_responses_views_as_unassociated_researcher(self):
         self.client.force_login(self.other_researcher)
         for url in self.all_response_urls:
             page = self.client.get(url)
@@ -207,7 +217,7 @@ class ResponseViewsTestCase(TestCase):
                 "Unassociated researcher not forbidden to access responses: " + url,
             )
 
-    def testCanSeeResponseViewsAsStudyResearcher(self):
+    def test_can_see_response_views_as_study_researcher(self):
         self.client.force_login(self.study_reader)
         for url in self.all_response_urls:
             page = self.client.get(url)
@@ -215,7 +225,7 @@ class ResponseViewsTestCase(TestCase):
                 page.status_code, [200, 302], "Unexpected status code for " + url
             )
 
-    def testCanSeeResponseViewsAsStudyAdmin(self):
+    def test_can_see_response_views_as_study_admin(self):
         self.client.force_login(self.study_admin)
         for url in self.all_response_urls:
             page = self.client.get(url)
@@ -223,7 +233,7 @@ class ResponseViewsTestCase(TestCase):
                 page.status_code, [200, 302], "Unexpected status code for " + url
             )
 
-    def testCannotDeletePreviewDataAsUnassociatedResearcher(self):
+    def test_cannot_delete_preview_data_as_unassociated_researcher(self):
         self.client.force_login(self.other_researcher)
         url = reverse("exp:study-responses-all", kwargs={"pk": self.study.pk})
         response = self.client.post(url, {})
@@ -237,7 +247,7 @@ class ResponseViewsTestCase(TestCase):
             self.study.responses.filter(is_preview=True).count(), self.n_previews
         )
 
-    def testDeletePreviewData(self):
+    def test_delete_preview_data(self):
         self.client.force_login(self.study_admin)
         url = reverse("exp:study-responses-all", kwargs={"pk": self.study.pk})
         self.assertEqual(
@@ -413,7 +423,7 @@ class ResponseDataDownloadTestCase(TestCase):
             "exp:study-responses-download-json", kwargs={"pk": self.study.pk}
         )
 
-    def testGetAppropriateFieldsInCSVDownloadsSet1(self):
+    def test_get_appropriate_fields_in_csv_downloads_set1(self):
         self.client.force_login(self.study_reader)
         query_string = urlencode(
             {
@@ -472,7 +482,7 @@ class ResponseDataDownloadTestCase(TestCase):
             r"^attachment; filename=\"(.*)-identifiable\.csv\"",
         )
 
-    def testGetAppropriateFieldsInJSONDownloads(self):
+    def test_get_appropriate_fields_in_json_downloads(self):
         self.client.force_login(self.study_reader)
         query_string = urlencode(
             {
@@ -523,7 +533,7 @@ class ResponseDataDownloadTestCase(TestCase):
             "JSON file not named with -identifiable suffix as expected based on fields included",
         )
 
-    def testGetAppropriateFieldsInCSVDownloadsSet2(self):
+    def test_get_appropriate_fields_in_csv_downloads_set2(self):
         self.client.force_login(self.study_reader)
         query_string = urlencode(
             {
@@ -582,7 +592,7 @@ class ResponseDataDownloadTestCase(TestCase):
             r"^attachment; filename=\"(.*)-identifiable\.csv\"",
         )
 
-    def testGetExitSurveyFieldsInSummaryCSV(self):
+    def test_get_exit_survey_fields_in_summary_csv(self):
         self.client.force_login(self.study_reader)
         # Add a few single responses where we expect specific fields
         withdrawn_response = G(
@@ -756,7 +766,7 @@ class ResponseDataDownloadTestCase(TestCase):
             "",
         )
 
-    def testGetExitSurveyFieldsInSummaryJSON(self):
+    def test_get_exit_survey_fields_in_summary_json(self):
         self.client.force_login(self.study_reader)
         # Add a single response where we expect specific fields
         withdrawn_response = G(
