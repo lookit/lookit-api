@@ -15,7 +15,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import get_perms
+from guardian.shortcuts import get_objects_for_user, get_perms
 from kombu.utils import cached_property
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
@@ -191,14 +191,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         )
 
     def labs_user_can_create_study_in(self):
-        lab_ids = [
-            lab.id
-            for lab in self.labs.only("id")
-            if self.has_perm(
-                LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
-            )
-        ]
-        return self.labs.filter(id__in=lab_ids)
+        return self.labs.filter(
+            id__in=get_objects_for_user(
+                self, LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename
+            ).only("id")
+        )
 
     def has_any_perms(self, perm_list, obj=None):
         """
