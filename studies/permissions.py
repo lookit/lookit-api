@@ -424,6 +424,7 @@ class StudyGroup(set, Enum):
         StudyPermission.DELETE_ALL_PREVIEW_DATA,
         StudyPermission.WRITE_STUDY_DETAILS,
         StudyPermission.EDIT_STUDY_FEEDBACK,
+        StudyPermission.CHANGE_STUDY_STATUS,
         StudyPermission.MANAGE_STUDY_RESEARCHERS,
         StudyPermission.READ_STUDY_RESPONSE_DATA,
         StudyPermission.CODE_STUDY_CONSENT,
