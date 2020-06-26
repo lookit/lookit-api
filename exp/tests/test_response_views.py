@@ -193,8 +193,8 @@ class ResponseViewsTestCase(TestCase):
             page = self.client.get(url)
             self.assertEqual(
                 page.status_code,
-                403,
-                "Unauthenticated user not forbidden to access responses: " + url,
+                302,
+                "Unauthenticated user not redirected from responses: " + url,
             )
 
     def test_cannot_see_any_responses_views_as_participant(self):
