@@ -23,7 +23,7 @@ from project import settings
 from studies.forms import StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyType
-from studies.permissions import StudyPermission
+from studies.permissions import LabPermission, StudyPermission
 from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
 from studies.workflow import (
@@ -405,15 +405,28 @@ class StudyDetailView(
                 )
         # Clone study case
         if self.request.POST.get("clone_study"):
-            clone = self.get_object().clone()
+            orig_study = self.get_object()
+            clone = orig_study.clone()
             clone.creator = self.request.user
-            clone.lab = self.request.user.labs.first()
-            clone.study_type = self.get_object().study_type
+            # Clone within the current lab if user is allowed to. Otherwise, choose the first possible
+            if not self.request.user.has_perm(
+                LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=orig_study.lab
+            ):
+                for lab in self.request.user.labs.only("id"):
+                    if clone.creator.has_perm(
+                        LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
+                    ):
+                        clone.lab = lab
+                        break
+                else:
+                    # Shouldn't end up here because we checked can_create_study, but just in case
+                    return HttpResponseForbidden()
+            clone.study_type = orig_study.study_type
             clone.built = False
             clone.is_building = False
             clone.save()
             # Adds success message when study is cloned
-            messages.success(self.request, f"{self.get_object().name} copied.")
+            messages.success(self.request, f"{orig_study.name} copied.")
             self.add_creator_to_study_admin_group(clone)
             return HttpResponseRedirect(
                 reverse("exp:study-edit", kwargs=dict(pk=clone.pk))
@@ -571,6 +584,7 @@ class StudyDetailView(
         context["can_manage_researchers"] = self.request.user.has_study_perms(
             StudyPermission.MANAGE_STUDY_RESEARCHERS, study
         )
+        context["can_create_study"] = self.request.user.can_create_study()
         # Since get_obj_perms template tag doesn't collect study + lab perms
         context["study_perms"] = self.request.user.perms_for_study(study)
         return context

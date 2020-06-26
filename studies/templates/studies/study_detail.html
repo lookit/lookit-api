@@ -299,7 +299,7 @@
                                 <i aria-hidden="true" class="fa fas fa-address-card"></i> Review Consent
                             </a>
                         {% endif %}
-                        {% if user.can_create_study %}
+                        {% if can_create_study %}
                             {#  Here we have a hidden clone form so we can maintain dropdown styling. #}
                             {#  TODO: actually use this form to let the user clone the study in a specific lab. #}
                             <form id="cloneForm" method="POST" style="display:none;">{% csrf_token %}
