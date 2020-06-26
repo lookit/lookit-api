@@ -145,19 +145,16 @@ class LabGroupObjectPermission(GroupObjectPermissionBase):
 @receiver(post_save, sender=User)
 def add_researcher_to_labs(sender, **kwargs):
     """
-    Add researchers to default labs if needed.
+    Add researchers to default labs upon initial creation. Note will need to add researchers
+    to labs if turning a participant account into a researcher account.
     """
-    user, created, update_fields = (
+    user, created = (
         kwargs["instance"],
         kwargs["created"],
-        kwargs["update_fields"],
     )
-    # Tradeoff - could be more efficient and more flexible in case we want to
-    # remove some reserachers from these labs by adding only when created or is_researcher changed,
-    # but then need to always send update_fields with save (e.g., not via admin app).
-    # Not sure if new researcher creation will involve setting is_researcher ahead of creation
-    # or might involve saving first, then editing, so hold off for now -
-    if user.is_researcher:  # and (created or "is_researcher" in update_fields):
+    # Note: if new researcher creation will involve setting saving first,
+    # # then editing, will need to add groups at that point too.
+    if user.is_researcher and created:
         if Lab.objects.filter(name="Demo lab").exists():
             demo_lab = Lab.objects.get(name="Demo lab")
             demo_lab.researchers.add(user)
@@ -188,8 +185,7 @@ def lab_post_save(sender, **kwargs):
 @receiver(pre_save, sender=Lab)
 def notify_lab_of_approval(sender, instance, **kwargs):
     """
-    If changing the lab of a study, remove any researchers who are not in the
-    new lab from all study access groups.
+    If lab is approved, email the lab admins to let them know.
     """
     lab_in_db = Lab.objects.filter(pk=instance.id).first()
     if not lab_in_db:
