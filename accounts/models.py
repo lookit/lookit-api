@@ -212,7 +212,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         return f"{self.given_name} {self.middle_name} {self.family_name}"
 
     def __str__(self):
-        return f"<User: ID {self.id}, {self.uuid}>"
+        if self.family_name:
+            return f"<User: {self.given_name} {self.family_name}, ID {self.id}, {self.uuid}>"
+        else:
+            return f"<User: {self.nickname}, ID {self.id}, {self.uuid}>"
 
     objects = UserManager()
 

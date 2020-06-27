@@ -6,7 +6,6 @@ from studies.models import (
     Feedback,
     Lab,
     Response,
-    ResponseLog,
     Study,
     StudyLog,
     StudyType,
@@ -16,14 +15,30 @@ from studies.models import (
 
 class StudyAdmin(GuardedModelAdmin):
     list_display = ("uuid", "name", "state", "public", "creator", "built")
-    list_filter = ("state", "creator")
+    list_filter = ("state", "lab")
     search_fields = ["name"]
-    pass
+    raw_id_fields = (
+        "creator",
+        "lab",
+        "preview_group",
+        "design_group",
+        "analysis_group",
+        "submission_processor_group",
+        "researcher_group",
+        "manager_group",
+        "admin_group",
+    )
 
 
 class LabAdmin(GuardedModelAdmin):
     list_display = ("uuid", "name", "institution", "principal_investigator_name")
     search_fields = ["name", "institution", "principal_investigator_name"]
+    raw_id_fields = ("guest_group", "readonly_group", "member_group", "admin_group")
+    list_filter = ("approved_to_test",)
+    filter_horizontal = (
+        "researchers",
+        "requested_researchers",
+    )
 
 
 class ResponseAdmin(GuardedModelAdmin):
@@ -37,21 +52,30 @@ class ResponseAdmin(GuardedModelAdmin):
         "withdrawn",
         "is_preview",
     )
+    raw_id_fields = (
+        "child",
+        "demographic_snapshot",
+    )
     empty_value_display = "None"
     list_filter = ("study",)
     date_hierarchy = "date_created"
-    pass
 
 
 class FeedbackAdmin(GuardedModelAdmin):
     list_display = ("uuid", "researcher", "response", "comment")
-    list_filter = ("response__study", "researcher")
-    pass
+    search_fields = (
+        "uuid",
+        "researcher__given_name",
+        "researcher__family_name",
+        "response__uuid",
+        "comment",
+    )
+    raw_id_fields = ("researcher", "response")
 
 
 class StudyLogAdmin(GuardedModelAdmin):
     list_filter = ("study",)
-    pass
+    raw_id_fields = ("study", "user")
 
 
 class StudyTypeAdmin(GuardedModelAdmin):
@@ -69,16 +93,22 @@ class VideoAdmin(GuardedModelAdmin):
         "is_consent_footage",
     )
     list_filter = ("study",)
+    # Use raw_id_fields to avoid a large number of queries to display every possible
+    # option for response & study in the update form, which was making it impossible
+    # to use on staging/production. (
+    raw_id_fields = (
+        "response",
+        "study",
+    )
     date_hierarchy = "created_at"
     search_fields = ["uuid", "full_name"]
-    pass
 
 
 class ConsentRulingAdmin(GuardedModelAdmin):
     list_display = ("uuid", "created_at", "action", "arbiter")
     list_filter = ("response__study", "arbiter")
     date_hierarchy = "created_at"
-    pass
+    raw_id_fields = ("arbiter", "response")
 
 
 admin.site.register(Study, StudyAdmin)
