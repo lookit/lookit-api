@@ -356,6 +356,7 @@ class LabGroup(set, Enum):
         LabPermission.READ_STUDY_DETAILS,
         LabPermission.READ_STUDY_PREVIEW_DATA,
         LabPermission.CODE_STUDY_PREVIEW_CONSENT,
+        LabPermission.DELETE_ALL_PREVIEW_DATA,
         LabPermission.WRITE_STUDY_DETAILS,
         LabPermission.CHANGE_STUDY_STATUS,
         LabPermission.MANAGE_STUDY_RESEARCHERS,
