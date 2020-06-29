@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import bitfield.models
 from django.db import migrations, models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from model_utils import Choices
 
 # Deprecating

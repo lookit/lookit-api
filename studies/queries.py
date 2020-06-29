@@ -1,13 +1,15 @@
+import operator
 from collections import defaultdict
 from datetime import timedelta
+from functools import reduce
 
 from django.db import models
-from django.db.models import Count, IntegerField, OuterRef, Q, Subquery
-from django.db.models.functions import Coalesce
+from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery, Value
+from django.db.models.functions import Coalesce, Concat, Lower
+from django.utils import timezone
 from django.utils.timezone import now
 from guardian.shortcuts import get_objects_for_user
 
-from accounts.models import Child, User
 from attachment_helpers import get_download_url
 from studies.models import (
     ACCEPTED,
@@ -15,9 +17,16 @@ from studies.models import (
     REJECTED,
     ConsentRuling,
     Response,
+    Study,
     StudyLog,
     Video,
 )
+from studies.permissions import UMBRELLA_LAB_PERMISSION_MAP, StudyPermission
+
+
+class SubqueryCount(Subquery):
+    template = "(SELECT count(*) FROM (%(subquery)s) _count)"
+    output_field = IntegerField()
 
 
 def get_annotated_responses_qs(include_comments=False, include_time=False):
@@ -59,11 +68,12 @@ def get_annotated_responses_qs(include_comments=False, include_time=False):
     return annotated_query
 
 
-def get_responses_with_current_rulings_and_videos(study_id):
+def get_responses_with_current_rulings_and_videos(study_id, preview_only):
     """Gets all the responses for a given study, including the current ruling and consent videos.
 
     Args:
         study_id: The study ID related to the responses we want.
+        preview_only: Whether to include only preview responses (True), or all data (False)
 
     Returns:
         A queryset of responses with attached consent videos.
@@ -72,19 +82,16 @@ def get_responses_with_current_rulings_and_videos(study_id):
     dont_show_old_approved = Q(study_id=study_id) & (
         Q(time_of_ruling__gt=three_weeks_ago) | ~Q(current_ruling=ACCEPTED)
     )
+
+    responses_for_study = get_annotated_responses_qs(
+        include_comments=True, include_time=True
+    ).filter(dont_show_old_approved)
+
+    if preview_only:
+        responses_for_study = responses_for_study.filter(is_preview=True)
+
     responses_for_study = (
-        get_annotated_responses_qs(include_comments=True, include_time=True)
-        .filter(dont_show_old_approved)
-        # .prefetch_related(
-        #     models.Prefetch(
-        #         "videos",
-        #         queryset=Video.objects.filter(is_consent_footage=True).only(
-        #             "full_name"
-        #         ),
-        #         to_attr="consent_videos",
-        #     )
-        # )
-        .select_related("child", "child__user")
+        responses_for_study.select_related("child", "child__user")
         .order_by("-date_created")
         .values(
             "id",
@@ -114,10 +121,10 @@ def get_responses_with_current_rulings_and_videos(study_id):
         )
     )
 
-    # See: https://code.djangoproject.com/ticket/26565
-    #     The inability to use values() and prefetch_related in tandem without
-    #     combinatorial explosion of result set is precluding us from relying on
-    #     django's join machinery. Instead, we need to manually join here.
+    # Not prefetching videos above because the inability to use values() and
+    # prefetch_related in tandem without combinatorial explosion of result set is precluding us
+    # from relying on django's join machinery. Instead, we need to manually join here.
+    # See: https://code.djangoproject.com/ticket/26565n
     consent_videos = Video.objects.filter(
         study_id=study_id, is_consent_footage=True
     ).values("full_name", "response_id")
@@ -136,7 +143,23 @@ def get_responses_with_current_rulings_and_videos(study_id):
     return responses_for_study
 
 
-def get_consent_statistics(study_id):
+def studies_for_which_user_has_perm(user, study_perm: StudyPermission):
+
+    study_level_perm_study_ids = get_objects_for_user(
+        user, study_perm.prefixed_codename
+    ).values_list("id", flat=True)
+
+    umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
+    labs_with_labwide_perms = get_objects_for_user(
+        user, umbrella_lab_perm.prefixed_codename
+    )
+
+    return Study.objects.filter(
+        Q(lab__in=labs_with_labwide_perms) | Q(id__in=study_level_perm_study_ids)
+    )
+
+
+def get_consent_statistics(study_id, preview_only):
     """Retrieve summary statistics for consent manager view.
 
     Required Fields:
@@ -150,6 +173,7 @@ def get_consent_statistics(study_id):
 
     Args:
         study_id: The integer ID for the study we want.
+        preview_only: Whether to include only preview responses (True), or all data (False)
 
     Returns:
         A dict containing the summary stats.
@@ -158,10 +182,12 @@ def get_consent_statistics(study_id):
     response_stats = statistics["responses"]
     child_stats = statistics["children"]
 
+    response_qs = get_annotated_responses_qs().filter(study_id=study_id)
+    if preview_only:
+        response_qs = response_qs.filter(is_preview=True)
+
     response_counts = (
-        get_annotated_responses_qs()
-        .filter(study_id=study_id)
-        .values("current_ruling")
+        response_qs.values("current_ruling")
         .order_by("current_ruling")
         .annotate(count=Count("current_ruling"))
     )
@@ -220,18 +246,7 @@ def get_pending_responses_qs():
     )
 
 
-def get_registration_analytics_qs():
-    """
-
-    Args:
-        user: django.utils.functional.SimpleLazyObject masquerading as a user.
-
-    Returns:
-        An annotated queryset containing user data.
-    """
-
-
-def get_study_list_qs(user):
+def get_study_list_qs(user, query_dict):
     """Gets a study list query set annotated with response counts.
 
     TODO: Factor in all the query mutation from the (view) caller.
@@ -239,56 +254,69 @@ def get_study_list_qs(user):
 
     Args:
         user: django.utils.functional.SimpleLazyObject masquerading as a user.
+        query_dict: django.http.QueryDict from the self.request.GET property.
 
     Returns:
         A heavily annotated queryset for the list of studies.
     """
-    annotated_responses_qs = get_annotated_responses_qs()
+    annotated_responses_qs = get_annotated_responses_qs().only(
+        "id",
+        "completed",
+        "completed_consent_frame",
+        "date_created",
+        "date_modified",
+        "is_preview",
+    )
 
     queryset = (
-        get_objects_for_user(user, "studies.can_view_study")
+        studies_for_which_user_has_perm(user, StudyPermission.READ_STUDY_DETAILS)
+        # .select_related("lab")
+        # .select_related("creator")
+        .only(
+            "id",
+            "state",
+            "uuid",
+            "name",
+            "date_modified",
+            "short_description",
+            "image",
+            "comments",
+            "lab__name",
+            "creator__given_name",
+            "creator__family_name",
+        )
         .exclude(state="archived")
-        .select_related("creator")
+        .filter(lab_id__isnull=False, creator_id__isnull=False)
         .annotate(
-            completed_responses_count=Subquery(
+            lab_name=F("lab__name"),
+            creator_name=Concat(
+                "creator__given_name", Value(" "), "creator__family_name"
+            ),
+            completed_responses_count=SubqueryCount(
                 Response.objects.filter(
-                    study=OuterRef("pk"), completed_consent_frame=True, completed=True
-                )
-                .values("completed")
-                .order_by()
-                .annotate(count=Count("completed"))
-                .values("count")[:1],  # [:1] ensures that a queryset is returned
-                output_field=IntegerField(),
+                    study=OuterRef("pk"),
+                    is_preview=False,
+                    completed_consent_frame=True,
+                    completed=True,
+                ).values("id")
             ),
-            incomplete_responses_count=Subquery(
+            incomplete_responses_count=SubqueryCount(
                 Response.objects.filter(
-                    study=OuterRef("pk"), completed_consent_frame=True, completed=False
-                )
-                .values("completed")
-                .order_by()
-                .annotate(count=Count("completed"))
-                .values("count")[:1],  # [:1] ensures that a queryset is returned
-                output_field=IntegerField(),
+                    study=OuterRef("pk"),
+                    is_preview=False,
+                    completed_consent_frame=True,
+                    completed=False,
+                ).values("id")
             ),
-            valid_consent_count=Subquery(
+            valid_consent_count=SubqueryCount(
                 annotated_responses_qs.filter(
-                    study=OuterRef("pk"), current_ruling="accepted"
+                    study=OuterRef("pk"), is_preview=False, current_ruling="accepted"
                 )
-                .values("current_ruling")
-                .order_by("current_ruling")  # Need this for GROUP BY to work properly
-                .annotate(count=Count("current_ruling"))
-                .values("count")[:1],  # [:1] ensures that a queryset is returned
-                output_field=IntegerField(),
             ),
-            pending_consent_count=Subquery(
+            pending_consent_count=SubqueryCount(
                 annotated_responses_qs.filter(
-                    study=OuterRef("pk"), current_ruling="pending"
+                    study=OuterRef("pk"), is_preview=False, current_ruling="pending"
                 )
-                .values("current_ruling")
-                .order_by("current_ruling")
-                .annotate(count=Count("current_ruling"))
-                .values("count")[:1],
-                output_field=IntegerField(),
             ),
             starting_date=Subquery(
                 StudyLog.objects.filter(study=OuterRef("pk"))
@@ -304,5 +332,36 @@ def get_study_list_qs(user):
             ),
         )
     )
+
+    # Request filtering
+
+    state = query_dict.get("state")
+    if state and state != "all":
+        if state == "myStudies":
+            queryset = queryset.filter(creator=user)
+        else:
+            queryset = queryset.filter(state=state)
+
+    match = query_dict.get("match")
+    if match:
+        queryset = queryset.filter(
+            reduce(
+                operator.and_,
+                (
+                    Q(name__icontains=term) | Q(short_description__icontains=term)
+                    for term in match.split()
+                ),
+            )
+        )
+
+    sort = query_dict.get("sort", "")
+    if "name" in sort:
+        queryset = queryset.order_by(
+            Lower("name").desc() if "-" in sort else Lower("name").asc()
+        )
+    elif "beginDate" in sort:
+        queryset = queryset.order_by("starting_date")
+    elif "endDate" in sort:
+        queryset = queryset.order_by("ending_date")
 
     return queryset

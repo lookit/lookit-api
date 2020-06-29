@@ -6,6 +6,7 @@ import logging
 from decimal import Decimal
 from functools import partial
 
+import ciso8601
 import pytz
 from django.contrib.postgres import lookups
 from django.contrib.postgres.fields.jsonb import JSONField
@@ -13,8 +14,6 @@ from django.contrib.postgres.forms.jsonb import JSONField as JSONFormField
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from psycopg2.extras import Json
-
-import ciso8601
 
 
 class NaiveDatetimeException(Exception):
@@ -102,7 +101,7 @@ class DateTimeAwareJSONField(JSONField):
             return Json(value, dumps=partial(json.dumps, cls=DateTimeAwareJSONEncoder))
         return value
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if value is None:
             return None
         return super(DateTimeAwareJSONField, self).to_python(

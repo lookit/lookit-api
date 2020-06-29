@@ -1,83 +1,74 @@
-from django.conf.urls import include, url
 from django.contrib.flatpages import views as flatpages_views
+from django.urls import path, re_path
 
 from web import views
 
+app_name = "web"
+
 urlpatterns = [
-    url(r"^signup/$", views.ParticipantSignupView.as_view(), name="participant-signup"),
-    url(
-        r"^account/$", views.ParticipantUpdateView.as_view(), name="participant-update"
-    ),
-    url(
-        r"^account/demographics/$",
+    path("signup/", views.ParticipantSignupView.as_view(), name="participant-signup"),
+    path("account/", views.ParticipantUpdateView.as_view(), name="participant-update"),
+    path(
+        "account/demographics/",
         views.DemographicDataUpdateView.as_view(),
         name="demographic-data-update",
     ),
-    url(r"^account/children/$", views.ChildrenListView.as_view(), name="children-list"),
-    url(
-        r"^account/children/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/$",
+    path("account/children/", views.ChildrenListView.as_view(), name="children-list"),
+    path(
+        "account/children/<uuid:uuid>/",
         views.ChildUpdateView.as_view(),
         name="child-update",
     ),
-    url(
-        r"^account/email/$",
+    path(
+        "account/email/",
         views.ParticipantEmailPreferencesView.as_view(),
         name="email-preferences",
     ),
-    url(r"^studies/$", views.StudiesListView.as_view(), name="studies-list"),
-    url(
-        r"^studies/history/$",
-        views.StudiesHistoryView.as_view(),
-        name="studies-history",
+    path("studies/", views.StudiesListView.as_view(), name="studies-list"),
+    path(
+        "studies/history/", views.StudiesHistoryView.as_view(), name="studies-history"
     ),
-    url(
-        r"^studies/(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/$",
-        views.StudyDetailView.as_view(),
-        name="study-detail",
-    ),
-    url(
-        r"^studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/(?P<child_id>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/$",
+    path("studies/<uuid:uuid>/", views.StudyDetailView.as_view(), name="study-detail"),
+    path(
+        "studies/<uuid:uuid>/<uuid:child_id>/",
         views.ExperimentProxyView.as_view(),
         name="experiment-proxy",
     ),
-    url(
-        r"^studies/(?P<path>(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}))/.*$",
+    re_path(
+        r"^studies/"
+        r"(?P<uuid>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12})/"
+        r"(?P<path>.*)$",
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),
-    url(r"^faq/$", flatpages_views.flatpage, dict(url="/faq/"), name="faq"),
-    url(
-        r"^scientists/$",
+    path("faq/", flatpages_views.flatpage, dict(url="/faq/"), name="faq"),
+    path(
+        "scientists/",
         flatpages_views.flatpage,
         dict(url="/scientists/"),
         name="scientists",
     ),
-    url(
-        r"^resources/$",
+    path(
+        "resources/",
         flatpages_views.flatpage,
         dict(url="/resources/"),
         name="resources",
     ),
-    url(
-        r"^contact_us/$",
+    path(
+        "contact_us/",
         flatpages_views.flatpage,
         dict(url="/contact_us/"),
         name="contact_us",
     ),
-    url(
+    re_path(
         r"^(?P<path>assets/.*)$",
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),
-    url(
+    re_path(
         r"^(?P<path>fonts/.*)$",
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-fonts-proxy",
     ),
-    url(r"^$", flatpages_views.flatpage, dict(url=""), name="home"),
-    url(
-        r"^(?P<path>(?P<filename>avc_settings\.(php|asp)|loading\.swf|translations\/.*|audio_video_quality_profiles\/.*))$",
-        views.ExperimentAssetsProxyView.as_view(),
-        name="experiment-assets-proxy",
-    ),
+    path("", flatpages_views.flatpage, dict(url=""), name="home"),
 ]

@@ -86,9 +86,9 @@
                             <th>
                                 Date
                                 <a class="pl-sm"
-                                   href="{% url 'exp:study-attachments' study.id %}?{% query_transform request sort='date_modified' %}"><i
+                                   href="{% url 'exp:study-attachments' study.id %}?{% query_transform request sort='created_at' %}"><i
                                         class="fa fa-chevron-up" role="button"></i></a>
-                                <a href="{% url 'exp:study-attachments' study.id %}?{% query_transform request sort='-date_modified' %}"><i
+                                <a href="{% url 'exp:study-attachments' study.id %}?{% query_transform request sort='-created_at' %}"><i
                                         class="fa fa-chevron-down" role="button"></i></a>
                             </th>
                             <th></th>

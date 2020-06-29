@@ -173,9 +173,8 @@ class EmberFrameplayerBuilder(ExperimentBuilder):
         from studies.models import Study
 
         study = Study.objects.get(uuid=study_uuid)
-        study.is_building = (
-            True
-        )  # Set this here (in addition to in view) in case re-trying
+        # Set this here (in addition to in view) in case re-trying
+        study.is_building = True
         study.save(update_fields=["is_building"])
         self.build_context["study"] = study
 
@@ -282,11 +281,9 @@ def get_repo_path(full_repo_path):
 
 
 def get_branch_sha(repo_url, branch):
-    api_url = f"https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs"
+    api_url = f"https://api.github.com/repos/{get_repo_path(repo_url)}/git/refs/heads/{branch}"
     response = requests.get(api_url)
-    sha = list(
-        filter(lambda datum: datum["ref"] == f"refs/heads/{branch}", response.json())
-    )[0]["object"]["sha"]
+    sha = response.json()["object"]["sha"]
     return sha
 
 
@@ -355,8 +352,10 @@ def download_repos(player_repo_url, player_sha=None):
 
 
 def notify_involved_parties_of_build_status(study, failure_stage=None, log_output=None):
+    lab = study.lab
+    lab_name = lab.name if lab else None
     email_context = {
-        "org_name": study.organization.name,
+        "lab_name": lab_name,
         "study_name": study.name,
         "study_id": study.pk,
         "study_uuid": str(study.uuid),
@@ -371,11 +370,7 @@ def notify_involved_parties_of_build_status(study, failure_stage=None, log_outpu
             "notify_admins_of_study_action",
             "Study Deployed",
             settings.EMAIL_FROM_ADDRESS,
-            bcc=list(
-                study.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
-            ),
+            bcc=list(study.admin_group.user_set.values_list("username", flat=True)),
             **email_context,
         )
         subject_line = f"Experiment runner built"
@@ -390,6 +385,6 @@ def notify_involved_parties_of_build_status(study, failure_stage=None, log_outpu
         researcher_notification_template,
         subject_line,
         settings.EMAIL_FROM_ADDRESS,
-        bcc=list(study.study_admin_group.user_set.values_list("username", flat=True)),
+        bcc=list(study.admin_group.user_set.values_list("username", flat=True)),
         **email_context,
     )

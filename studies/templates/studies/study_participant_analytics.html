@@ -1,33 +1,33 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
+{% load static %}
 {% load guardian_tags %}
 
 {% block head %}
     {{ block.super }}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=" crossorigin="anonymous"></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM="></script>
 
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/css/bootstrap-select.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
+          href="{% static 'css/bootstrap-select.min.css' %}">
+    <script src="{% static 'js/bootstrap-select.min.js' %}"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js" integrity="sha256-+9Mf3cAVmxxudDsr1XwXUeRZFtvdWVYdq5/vcgiYyNU=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.css" integrity="sha256-H83YjkVzXEyHSdZ/5aVRoW2QfqeJ7gIWduA7aCy9tWY=" crossorigin="anonymous" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.min.js" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44=" crossorigin="anonymous"></script>
-{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/metrics-graphics/2.15.6/metricsgraphics.js" integrity="sha256-XevW8oTz1EmE00mqCsOAyUv07/6MrJ0mEQtHH8V9UZ0=" crossorigin="anonymous"></script>#}
+    <script src="{% static 'studies/js/d3.min.js' %}" integrity="sha256-Xb6SSzhH3wEPC4Vy3W70Lqh9Y3Du/3KxPqI2JHQSpTw="></script>
+    <link rel="stylesheet" href="{% static 'studies/css/metricsgraphics.min.css' %}" />
+    <script src="{% static 'studies/js/metricsgraphics.min.js' %}" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44="></script>
     {# Moment #}
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/moment.min.js' %}"></script>
 
     {# PivotTable.js #}
-    <script src="https://cdn.jsdelivr.net/npm/pivottable@2.23.0/dist/pivot.min.js" integrity="sha256-/btBGbvOvx2h/NcXVS+JPFhnoUGbZXDX0O2v6AaABLU=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/pivot.min.css" integrity="sha256-nn3M6N8S2BjPirPhvCF61ZCcgcppdLtnaNOLhiwro7E=" crossorigin="anonymous" />
+    <script src="{% static 'studies/js/pivot.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'studies/css/pivot.min.css' %}" />
 
     {# Google Charts (for PivotTable js rendering) #}
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.23.0/gchart_renderers.min.js" integrity="sha256-Ve5qXDsBeNuaKKg22jpTMlWThC0OWupW9JtFrXxdy1Q=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{% static 'studies/js/google-charts-loader.js' %}"></script>
+    <script src="{% static 'studies/js/gchart_renderers.min.js' %}"></script>
 
     <!-- Datepicker -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <script type="text/javascript" src="{% static 'js/daterangepicker.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.min.css' %}"/>
 
     {% comment %}
         When we upgrade to django 2.x, please convert to the following insertions to json_script.

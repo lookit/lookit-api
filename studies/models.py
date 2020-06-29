@@ -8,24 +8,34 @@ import fleep
 import pytz
 from botocore.exceptions import ClientError
 from django.conf import settings
+from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
-from django.utils.text import slugify
-from guardian.shortcuts import assign_perm, get_groups_with_perms
+from django.utils.translation import gettext as _
+from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
+from guardian.shortcuts import get_users_with_perms
 from kombu.utils import cached_property
 from model_utils import Choices
-from transitions.extensions import GraphMachine as Machine
+from transitions import Machine
 
-from accounts.models import Child, DemographicData, Organization, User
-from accounts.utils import build_study_group_name
+from accounts.models import Child, DemographicData, User
 from attachment_helpers import get_download_url
 from project import settings
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
-from studies.tasks import delete_video_from_cloud, ember_build_and_gcp_deploy
+from studies.permissions import (
+    UMBRELLA_LAB_PERMISSION_MAP,
+    LabGroup,
+    LabPermission,
+    SiteAdminGroup,
+    StudyGroup,
+    StudyPermission,
+    create_groups_for_instance,
+)
+from studies.tasks import delete_video_from_cloud
 
 logger = logging.getLogger(__name__)
 date_parser = dateutil.parser
@@ -42,25 +52,165 @@ S3_BUCKET = S3_RESOURCE.Bucket(settings.BUCKET_NAME)
 dispatch_frame_action = FrameActionDispatcher()
 
 
+def default_configuration():
+    return {
+        # task module should have a build_experiment method decorated as a
+        # celery task that takes a study uuid
+        "task_module": "studies.tasks",
+        "metadata": {
+            # defines the default metadata fields for that type of study
+            "fields": {
+                "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
+                "last_known_player_sha": None,
+            }
+        },
+    }
+
+
+class Lab(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    name = models.CharField(
+        max_length=255, unique=True, blank=False, verbose_name="Lab Name"
+    )
+    institution = models.CharField(max_length=255, blank=True)
+    principal_investigator_name = models.CharField(max_length=255, blank=False)
+    contact_email = models.EmailField(unique=True, verbose_name="Contact Email")
+    contact_phone = models.CharField(max_length=255, verbose_name="Contact Phone")
+    lab_website = models.URLField(verbose_name="Lab Website", blank=True)
+    description = models.TextField(
+        blank=False,
+        help_text="A short (2-3 sentences), parent-facing description of what "
+        "your lab studies or other information of interest to families.",
+    )
+    irb_contact_info = models.TextField(
+        blank=False,
+        verbose_name="IRB contact info",
+        help_text="A statement about what organization conducts ethical review of your research, "
+        "and contact information for that organization. E.g., 'All of our Lookit studies are "
+        "approved by MIT's Committee on the Use of Humans as Experimental Subjects (COUHES), "
+        "[address], phone: [phone], email: [email].",
+    )
+    approved_to_test = models.BooleanField(default=False)
+    # The related_name convention seems silly, but django complains about reverse
+    # accessor clashes if these aren't unique :/ regardless, we won't be using
+    # the reverse accessors much so it doesn't really matter.
+    guest_group = models.OneToOneField(
+        Group, related_name="lab_for_guests", on_delete=models.SET_NULL, null=True
+    )
+    readonly_group = models.OneToOneField(
+        Group, related_name="lab_for_readonly", on_delete=models.SET_NULL, null=True
+    )
+    member_group = models.OneToOneField(
+        Group, related_name="lab_for_members", on_delete=models.SET_NULL, null=True
+    )
+    admin_group = models.OneToOneField(
+        Group, related_name="lab_to_administer", on_delete=models.SET_NULL, null=True
+    )
+    researchers = models.ManyToManyField(
+        "accounts.User",
+        blank=True,
+        help_text=_(
+            "The Users who belong to this Lab. A user in this lab will be able to create "
+            "studies associated with this Lab and can be added to this Lab's studies."
+        ),
+        related_name="labs",
+        related_query_name="lab",  # User.objects.filter(lab=...)
+    )
+    requested_researchers = models.ManyToManyField(
+        "accounts.User",
+        blank=True,
+        help_text=_("The Users who have requested to join this Lab."),
+        related_name="requested_labs",
+        related_query_name="requested_lab",  # User.objects.filter(requested_lab=...)
+    )
+
+    class Meta:
+        permissions = LabPermission
+        ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.name} ({self.principal_investigator_name}, {self.institution})"
+
+
+# Using Direct foreign keys for guardian, see:
+# https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
+class LabUserObjectPermission(UserObjectPermissionBase):
+    content_object = models.ForeignKey(Lab, on_delete=models.CASCADE)
+
+
+class LabGroupObjectPermission(GroupObjectPermissionBase):
+    content_object = models.ForeignKey(Lab, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=User)
+def add_researcher_to_labs(sender, **kwargs):
+    """
+    Add researchers to default labs upon initial creation. Note will need to add researchers
+    to labs if turning a participant account into a researcher account.
+    """
+    user, created = (
+        kwargs["instance"],
+        kwargs["created"],
+    )
+    # Note: if new researcher creation will involve setting saving first,
+    # # then editing, will need to add groups at that point too.
+    if user.is_researcher and created:
+        if Lab.objects.filter(name="Demo lab").exists():
+            demo_lab = Lab.objects.get(name="Demo lab")
+            demo_lab.researchers.add(user)
+            demo_lab.readonly_group.user_set.add(user)
+            demo_lab.save()
+        if Lab.objects.filter(name="Sandbox lab").exists():
+            sandbox_lab = Lab.objects.get(name="Sandbox lab")
+            sandbox_lab.researchers.add(user)
+            sandbox_lab.guest_group.user_set.add(user)
+            sandbox_lab.save()
+
+
+@receiver(post_save, sender=Lab)
+def lab_post_save(sender, **kwargs):
+    """
+    Create groups for all newly created Lab instances.
+    We only run on Lab creation to avoid having to check
+    existence on each call to Lab.save.
+    """
+    lab, created = kwargs["instance"], kwargs["created"]
+
+    if created:
+        create_groups_for_instance(
+            lab, LabGroup, Group, Permission, LabGroupObjectPermission
+        )
+
+
+@receiver(pre_save, sender=Lab)
+def notify_lab_of_approval(sender, instance, **kwargs):
+    """
+    If lab is approved, email the lab admins to let them know.
+    """
+    lab_in_db = Lab.objects.filter(pk=instance.id).first()
+    if not lab_in_db:
+        return
+    if (not lab_in_db.approved_to_test) and instance.approved_to_test:
+        context = {"lab_name": instance.name, "lab_id": instance.pk}
+        send_mail.delay(
+            "notify_lab_admins_of_approval",
+            "Lab Approval Notification",
+            settings.EMAIL_FROM_ADDRESS,
+            bcc=list(instance.admin_group.user_set.values_list("username", flat=True)),
+            **context,
+        )
+
+
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
-    configuration = DateTimeAwareJSONField(
-        default={
-            # task module should have a build_experiment method decorated as a
-            # celery task that takes a study uuid
-            "task_module": "studies.tasks",
-            "metadata": {
-                # defines the default metadata fields for that type of study
-                "fields": {
-                    "player_repo_url": settings.EMBER_EXP_PLAYER_REPO,
-                    "last_known_player_sha": None,
-                }
-            },
-        }
-    )
+    configuration = DateTimeAwareJSONField(default=default_configuration)
 
     def __str__(self):
         return f"<Study Type: {self.name}>"
+
+
+def default_study_structure():
+    return {"frames": {}, "sequence": []}
 
 
 class Study(models.Model):
@@ -78,6 +228,7 @@ class Study(models.Model):
         "metadata",
         "study_type",
         "compensation_description",
+        "lab",
     ]
 
     DAY_CHOICES = [(i, i) for i in range(0, 32)]
@@ -108,13 +259,14 @@ class Study(models.Model):
         blank=False,
         verbose_name="type",
     )
-    organization = models.ForeignKey(
-        Organization,
-        on_delete=models.DO_NOTHING,
+    lab = models.ForeignKey(
+        Lab,
+        on_delete=models.PROTECT,  # don't allow deleting lab without moving out studies. Could also switch to a default lab.
         related_name="studies",
         related_query_name="study",
+        null=True,
     )
-    structure = DateTimeAwareJSONField(default={"frames": {}, "sequence": []})
+    structure = DateTimeAwareJSONField(default=default_study_structure)
     display_full_screen = models.BooleanField(default=True)
     exit_url = models.URLField(default="")
     state = models.CharField(
@@ -127,13 +279,74 @@ class Study(models.Model):
     shared_preview = models.BooleanField(default=False)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-    metadata = DateTimeAwareJSONField(default={})
+    metadata = DateTimeAwareJSONField(default=dict)
     built = models.BooleanField(default=False)
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True)
 
+    # Groups
+    # The related_name convention seems silly, but django complains about reverse
+    # accessor clashes if these aren't unique :/ regardless, we won't be using
+    # the reverse accessors much so it doesn't really matter.
+    preview_group = models.OneToOneField(
+        Group, related_name="study_to_preview", on_delete=models.SET_NULL, null=True
+    )
+    design_group = models.OneToOneField(
+        Group, related_name="study_to_design", on_delete=models.SET_NULL, null=True
+    )
+    analysis_group = models.OneToOneField(
+        Group, related_name="study_for_analysis", on_delete=models.SET_NULL, null=True
+    )
+    submission_processor_group = models.OneToOneField(
+        Group,
+        related_name="study_for_submission_processing",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    researcher_group = models.OneToOneField(
+        Group, related_name="study_for_research", on_delete=models.SET_NULL, null=True
+    )
+    manager_group = models.OneToOneField(
+        Group, related_name="study_to_manage", on_delete=models.SET_NULL, null=True
+    )
+    admin_group = models.OneToOneField(
+        Group, related_name="study_to_administer", on_delete=models.SET_NULL, null=True
+    )
+
+    def all_study_groups(self):
+        """Returns a list of all the groups that grant permissions on this study"""
+        return [
+            self.preview_group,
+            self.design_group,
+            self.analysis_group,
+            self.submission_processor_group,
+            self.researcher_group,
+            self.manager_group,
+            self.admin_group,
+        ]
+
+    def get_group_of_researcher(self, user):
+        """Returns label for the highest-level group the researcher is in for this study, or None if not in any study groups"""
+        user_groups = user.groups.all()
+        if self.admin_group in user_groups:
+            return "Admin"
+        if self.manager_group in user_groups:
+            return "Manager"
+        if self.researcher_group in user_groups:
+            return "Researcher"
+        if self.submission_processor_group in user_groups:
+            return "Submission Processor"
+        if self.analysis_group in user_groups:
+            return "Analysis"
+        if self.design_group in user_groups:
+            return "Design"
+        if self.preview_group in user_groups:
+            return "Preview"
+        return None
+
     def __init__(self, *args, **kwargs):
+
         super(Study, self).__init__(*args, **kwargs)
         self.machine = Machine(
             self,
@@ -141,39 +354,32 @@ class Study(models.Model):
             transitions=workflow.transitions,
             initial=self.state,
             send_event=True,
-            before_state_change="check_permission",
             after_state_change="_finalize_state_change",
         )
 
     def __str__(self):
-        return f"<Study: {self.name}>"
+        return f"<Study: {self.name} ({self.uuid})>"
 
     class Meta:
-        permissions = (
-            ("can_view_study", "Can View Study"),
-            ("can_create_study", "Can Create Study"),
-            ("can_edit_study", "Can Edit Study"),
-            ("can_remove_study", "Can Remove Study"),
-            ("can_activate_study", "Can Activate Study"),
-            ("can_deactivate_study", "Can Deactivate Study"),
-            ("can_pause_study", "Can Pause Study"),
-            ("can_resume_study", "Can Resume Study"),
-            ("can_approve_study", "Can Approve Study"),
-            ("can_submit_study", "Can Submit Study"),
-            ("can_retract_study", "Can Retract Study"),
-            ("can_resubmit_study", "Can Resubmit Study"),
-            ("can_edit_study_permissions", "Can Edit Study Permissions"),
-            ("can_view_study_permissions", "Can View Study Permissions"),
-            ("can_view_study_responses", "Can View Study Responses"),
-            ("can_view_study_video_responses", "Can View Study Video Responses"),
-            ("can_view_study_demographics", "Can View Study Demographics"),
-            ("can_archive_study", "Can Archive Study"),
-        )
+        permissions = StudyPermission
         ordering = ["name"]
 
     class JSONAPIMeta:
         resource_name = "studies"
         lookup_field = "uuid"
+
+    def users_with_study_perms(self, study_perm: StudyPermission):
+        users_with_perms = get_users_with_perms(
+            self, only_with_perms_in=[study_perm.codename]
+        )
+        if self.lab and study_perm in UMBRELLA_LAB_PERMISSION_MAP:
+            umbrella_lab_perm = UMBRELLA_LAB_PERMISSION_MAP.get(study_perm)
+            users_with_perms = users_with_perms.union(
+                get_users_with_perms(
+                    self.lab, only_with_perms_in=[umbrella_lab_perm.codename]
+                )
+            )
+        return users_with_perms
 
     @cached_property
     def begin_date(self):
@@ -237,6 +443,15 @@ class Study(models.Model):
         # Only return the things for which our annotated property == accepted.
         return annotated.filter(current_ruling="accepted")
 
+    def responses_for_researcher(self, user):
+        """Return all responses to this study that the researcher has access to read"""
+        responses = self.consented_responses
+        if not user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, self):
+            responses = responses.filter(is_preview=True)
+        if not user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, self):
+            responses = responses.filter(is_preview=False)
+        return responses
+
     @property
     def videos_for_consented_responses(self):
         """Gets videos but only for consented responses."""
@@ -253,40 +468,7 @@ class Study(models.Model):
         except AttributeError:
             return None
 
-    @property
-    def study_admin_group(self):
-        """ Fetches the study admin group """
-        groups = get_groups_with_perms(self)
-        for group in groups:
-            if "STUDY" in group.name and "ADMIN" in group.name:
-                return group
-        return None
-
-    @property
-    def study_organization_admin_group(self):
-        """ Fetches the study organization admin group """
-        groups = get_groups_with_perms(self)
-        for group in groups:
-            if "ORG" in group.name and "ADMIN" in group.name:
-                return group
-        return None
-
-    @property
-    def study_read_group(self):
-        """ Fetches the study read group """
-        groups = get_groups_with_perms(self)
-        for group in groups:
-            if "STUDY" in group.name and "READ" in group.name:
-                return group
-        return None
-
     # WORKFLOW CALLBACKS
-    def check_permission(self, ev):
-        user = ev.kwargs.get("user")
-        if user.is_superuser:
-            return
-        # raise TODO NOT RAISING ANYTHING
-        return
 
     def clone(self):
         """ Create a new, unsaved copy of the study. """
@@ -313,29 +495,30 @@ class Study(models.Model):
 
     def notify_administrators_of_submission(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
             "researcher_name": ev.kwargs.get("user").get_short_name(),
             "action": ev.transition.dest,
+            "comments": self.comments,
         }
         send_mail.delay(
             "notify_admins_of_study_action",
             "Study Submission Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_submitter_of_approval(self, ev):
+
         context = {
             "study_name": self.name,
-            "org_name": self.organization.name,
             "study_id": self.pk,
             "approved": True,
             "comments": self.comments,
@@ -345,7 +528,9 @@ class Study(models.Model):
             "{} Approval Notification".format(self.name),
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_admin_group.user_set.values_list("username", flat=True)
+                self.users_with_study_perms(
+                    StudyPermission.CHANGE_STUDY_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
@@ -353,36 +538,39 @@ class Study(models.Model):
     def notify_submitter_of_rejection(self, ev):
         context = {
             "study_name": self.name,
-            "org_name": self.organization.name,
             "study_id": self.pk,
             "approved": False,
             "comments": self.comments,
         }
         send_mail.delay(
             "notify_researchers_of_approval_decision",
-            "{} Rejection Notification".format(self.name),
+            "{}: Changes requested notification".format(self.name),
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_admin_group.user_set.values_list("username", flat=True)
+                self.users_with_study_perms(
+                    StudyPermission.CHANGE_STUDY_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_submitter_of_recission(self, ev):
-        context = {"study_name": self.name, "org_name": self.organization.name}
+        context = {"study_name": self.name}
         send_mail.delay(
             "notify_researchers_of_approval_rescission",
             "{} Rescinded Notification".format(self.name),
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_admin_group.user_set.values_list("username", flat=True)
+                self.users_with_study_perms(
+                    StudyPermission.CHANGE_STUDY_STATUS
+                ).values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_administrators_of_retraction(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
@@ -394,9 +582,9 @@ class Study(models.Model):
             "Study Retraction Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
@@ -415,7 +603,7 @@ class Study(models.Model):
 
     def notify_administrators_of_activation(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
@@ -427,16 +615,16 @@ class Study(models.Model):
             "Study Activation Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_administrators_of_pause(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
@@ -448,16 +636,16 @@ class Study(models.Model):
             "Study Pause Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
 
     def notify_administrators_of_deactivation(self, ev):
         context = {
-            "org_name": self.organization.name,
+            "lab_name": self.lab.name,
             "study_name": self.name,
             "study_id": self.pk,
             "study_uuid": str(self.uuid),
@@ -469,23 +657,42 @@ class Study(models.Model):
             "Study Deactivation Notification",
             settings.EMAIL_FROM_ADDRESS,
             bcc=list(
-                self.study_organization_admin_group.user_set.values_list(
-                    "username", flat=True
-                )
+                Group.objects.get(
+                    name=SiteAdminGroup.LOOKIT_ADMIN.name
+                ).user_set.values_list("username", flat=True)
             ),
             **context,
         )
 
     # Runs for every transition to log action
     def _log_action(self, ev):
-        StudyLog.objects.create(
-            action=ev.state.name, study=ev.model, user=ev.kwargs.get("user")
-        )
+        if ev.event.name in ["submit", "resubmit", "reject"]:
+            StudyLog.objects.create(
+                action=ev.state.name,
+                study=ev.model,
+                user=ev.kwargs.get("user"),
+                extra={"comments": ev.model.comments},
+            )
+        else:
+            StudyLog.objects.create(
+                action=ev.state.name, study=ev.model, user=ev.kwargs.get("user")
+            )
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
         ev.model.save()
         self._log_action(ev)
+
+
+# Using Direct foreign keys for guardian, see:
+# https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
+# Opting not to use "enabled" feature and just to load custom perms directly.
+class StudyUserObjectPermission(UserObjectPermissionBase):
+    content_object = models.ForeignKey(Study, on_delete=models.CASCADE)
+
+
+class StudyGroupObjectPermission(GroupObjectPermissionBase):
+    content_object = models.ForeignKey(Study, on_delete=models.CASCADE)
 
 
 @receiver(post_save, sender=Study)
@@ -531,9 +738,9 @@ def check_modification_of_approved_study(
     if instance.state in approved_states and important_fields_changed:
         instance.state = "rejected"
         instance.comments = "Your study has been modified following approval.  You must resubmit this study to get it approved again."
-        StudyLog.objects.create(
-            action="rejected", study=instance, user=instance.creator
-        )
+        # Don't store a user because it's confusing unless that person is actually the one who made the change,
+        # and we don't have access to who made the change from this signal.
+        StudyLog.objects.create(action="rejected", study=instance)
 
 
 @receiver(post_save, sender=Study)
@@ -547,41 +754,38 @@ def remove_rejection_comments_after_approved(sender, instance, created, **kwargs
 
 
 @receiver(post_save, sender=Study)
-def study_post_save(sender, **kwargs):
+def create_study_groups(sender, **kwargs):
     """
-    Add study permissions to organization groups and
-    create groups for all newly created Study instances. We only
+    Create groups for newly created Study instances. We only
     run on study creation to avoid having to check for existence
     on each call to Study.save.
     """
     study, created = kwargs["instance"], kwargs["created"]
     if created:
-        from django.contrib.auth.models import Group
-
-        organization_groups = Group.objects.filter(
-            name__startswith=f"{slugify(study.organization.name)}_ORG_".upper()
+        create_groups_for_instance(
+            study, StudyGroup, Group, Permission, StudyGroupObjectPermission
         )
-        # assign study permissions to organization groups
-        for group in organization_groups:
-            for perm, _ in Study._meta.permissions:
-                if "ADMIN" in group.name:
-                    assign_perm(perm, group, obj=study)
-                elif "READ" in group.name and "view" in perm:
-                    assign_perm(perm, group, obj=study)
 
-        # create study groups and assign permissions
-        for group in ["read", "admin"]:
-            study_group_instance = Group.objects.create(
-                name=build_study_group_name(
-                    study.organization.name, study.name, study.pk, group
-                )
-            )
-            for perm, _ in Study._meta.permissions:
-                # add only view permissions to non-admin
-                if group == "read" and "view" not in perm:
-                    continue
-                if "approve" not in perm:
-                    assign_perm(perm, study_group_instance, obj=study)
+
+@receiver(pre_save, sender=Study)
+def remove_old_lab_researchers(sender, instance, **kwargs):
+    """
+    If changing the lab of a study, remove any researchers who are not in the
+    new lab from all study access groups.
+    """
+    study_in_db = Study.objects.filter(pk=instance.id).first()
+    if not study_in_db:
+        return
+    old_lab = study_in_db.lab
+    # When cloning, fks have been emptied so there's no previous lab
+    if old_lab:
+        new_lab = instance.lab
+        if old_lab.pk != new_lab.pk:
+            new_lab_researchers = new_lab.researchers.all()
+            for group in instance.all_study_groups():
+                for user in group.user_set.all():
+                    if user not in new_lab_researchers:
+                        group.user_set.remove(user)
 
 
 class ResponseApiManager(models.Manager):
@@ -621,7 +825,6 @@ class Response(models.Model):
 
     class Meta:
         permissions = (
-            ("view_response", "View Response"),
             (
                 "view_all_response_data_in_analytics",
                 "View all response data in analytics",
@@ -697,12 +900,49 @@ class Response(models.Model):
             "date": self.most_recent_ruling_date,
         }
 
+    def exit_frame_properties(self, property):
+        exit_frame_values = [
+            f.get(property, None)
+            for f in self.exp_data.values()
+            if f.get("frameType", None) == "EXIT"
+        ]
+        if exit_frame_values and exit_frame_values != [None]:
+            # return " ".join(list(set(([val for val in exit_frame_values if val is not None]))))
+            return exit_frame_values[-1]
+        else:
+            return None
+
     @property
     def withdrawn(self):
-        exit_frames = [
-            f for f in self.exp_data.values() if f.get("frameType", None) == "EXIT"
-        ]
-        return exit_frames[0].get("withdrawal", None) if exit_frames else None
+        return bool(self.exit_frame_properties("withdrawal"))
+
+    @property
+    def databrary(self):
+        return self.exit_frame_properties("databraryShare")
+
+    @property
+    def privacy(self):
+        return self.exit_frame_properties("useOfMedia")
+
+    @property
+    def parent_feedback(self):
+        return self.exit_frame_properties("feedback")
+
+    @property
+    def birthdate_difference(self):
+        """Difference between birthdate on exit survey (if any) and registered child's birthday, """
+        exit_survey_birthdate = self.exit_frame_properties("birthDate")
+        registered_birthdate = self.child.birthday
+        if exit_survey_birthdate and registered_birthdate:
+            try:
+                return (
+                    datetime.strptime(exit_survey_birthdate[:10], "%Y-%m-%d").date()
+                    - self.child.birthday
+                ).days
+            except (ValueError, TypeError):
+                return None
+        else:
+            return None
 
     def generate_videos_from_events(self):
         """Creates the video containers/representations for this given response.
@@ -849,7 +1089,7 @@ class StudyLog(Log):
     )
 
     def __str__(self):
-        return f"<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}"  # noqa
+        return f"<StudyLog: {self.action} on {self.study.name} at {self.created_at}"  # noqa
 
     class JSONAPIMeta:
         resource_name = "study-logs"
@@ -860,6 +1100,8 @@ class StudyLog(Log):
 
 
 class ResponseLog(Log):
+    """Unused class, keeping for migrations only."""
+
     action = models.CharField(max_length=128, db_index=True)
     # if deleting Response, also delete its logs
     response = models.ForeignKey(Response, on_delete=models.CASCADE)
@@ -921,9 +1163,8 @@ class Video(models.Model):
             S3_RESOURCE.Object(settings.BUCKET_NAME, throwaway_jpg_name).delete()
 
         if "PREVIEW_DATA_DISREGARD" in new_full_name:
-            return (
-                None
-            )  # early exit, since we are not saving an object in the database.
+            # early exit, since we are not saving an object in the database.
+            return None
         else:
             _, study_uuid, frame_id, response_uuid, timestamp, _ = new_full_name.split(
                 "_"

@@ -119,7 +119,14 @@
                     <div class="row">
                         <div class="col-md-7 col-sm-6">
                             All response data 
-                            <p class="help-text"> The true "raw" data is most naturally represented in JSON format, a structured format that allows nesting (for instance, you might see a question1 field inside formData inside parent-survey). This file contains a list of all responses to your study; each response has basic information about the participant, account, and consent coding as well as what happened during the study.</p>
+                            <p class="help-text"> The true "raw" data is most naturally represented in JSON format, a
+                                structured format that allows nesting (for instance, you might see a question1 field
+                                inside formData inside parent-survey). This file contains a list of all responses to
+                                your study; each response has basic information about the participant, account, and
+                                consent coding as well as what happened during the study. Fields you uncheck above will
+                                not be included in the summary information; however, the "expData" field may still include
+                                the child's birthdate as confirmed in the exit survey.
+                            </p>
                         </div>
                         <div class="col-md-5 col-sm-6">
                             <div class='pull-right download-button'> 
@@ -160,7 +167,13 @@
                     <div class="row">
                         <div class="col-md-7 col-sm-6">
                             Frame data
-                            <p class="help-text"> The frame data files include all of the information captured by the individual frames of your experiment: for instance, text and selections on forms, which option a participant clicked during a forced-choice trial, and events such as entering or leaving fullscreen, pausing the study, or pressing buttons. These data are shown in a "long" format, with one row per datum and columns for the key and value.</p>
+                            <p class="help-text"> The frame data files include all of the information captured by the
+                                individual frames of your experiment: for instance, text and selections on forms,
+                                which option a participant clicked during a forced-choice trial, and events such as
+                                entering or leaving fullscreen, pausing the study, or pressing buttons. These data
+                                are shown in a "long" format, with one row per datum and columns for the key and value.
+                                Birthdates entered in the exit survey are omitted. 
+                            </p>
                         </div>
                         <div class="col-md-5 col-sm-6">
                             <div class='pull-right download-button'> 
@@ -228,24 +241,26 @@
                 
                 </form>
                 <hr>
-                <form method="POST"> {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-7 col-sm-6">
-                            Tool: Delete preview data
-                            <p class="help-text"> This utility will delete all preview data, including video, that you have collected for this study. You may find it helpful to clear out preview data to simplify analysis. </p>
-                        </div>
-                        <div class="col-md-5 col-sm-6">
-                            <div class='pull-right download-button'> 
-                                <button id='delete-preview-data' class='btn btn-primary' type="submit" action="">
-                                    <span> Delete all preview data </span>
-                                </button>
+                {% if can_delete_preview_data %}
+                    <form method="POST"> {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-7 col-sm-6">
+                                Tool: Delete preview data
+                                <p class="help-text"> This utility will delete all preview data, including video, that you have collected for this study. You may find it helpful to clear out preview data to simplify analysis. </p>
                             </div>
-                            <div class='pull-right' style="clear:both;">
-                                <p id="delete-preview-indicator"></p>
+                            <div class="col-md-5 col-sm-6">
+                                <div class='pull-right download-button'>
+                                    <button id='delete-preview-data' class='btn btn-primary' type="submit" action="">
+                                        <span> Delete all preview data </span>
+                                    </button>
+                                </div>
+                                <div class='pull-right' style="clear:both;">
+                                    <p id="delete-preview-indicator"></p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                {% endif %}
             {% endif %}
             {% if active == 'demographics' %}
             

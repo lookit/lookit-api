@@ -4,10 +4,8 @@ from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from django.core.exceptions import ValidationError
-from guardian.shortcuts import assign_perm, get_objects_for_user, remove_perm
 
 from accounts.models import Child, DemographicData, User
-from studies.models import Study
 
 
 class UserForm(forms.ModelForm):
@@ -16,41 +14,13 @@ class UserForm(forms.ModelForm):
         exclude = ("password",)
 
 
-class UserStudiesForm(forms.Form):
-    template = "accounts/researcher_form.html"
-    user = forms.ModelChoiceField(User.objects.all(), required=True, label="Researcher")
-    studies = forms.ModelMultipleChoiceField(
-        Study.objects.all(), required=True, label="Assigned Studies"
-    )
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop("instance")
-        super(UserStudiesForm, self).__init__(*args, **kwargs)
-
-    def is_valid(self):
-        valid = super(UserStudiesForm, self).is_valid()
-        if valid and len(self.data["studies"]) > 0:
-            return True
-
-    def save(self):
-        permissions = ["studies.can_view_study", "studies.can_edit_study"]
-        current_permitted_objects = get_objects_for_user(
-            self.cleaned_data["user"], permissions
-        )
-        disallowed_studies = current_permitted_objects.exclude(
-            id__in=[x.id for x in self.cleaned_data["studies"]]
-        )
-
-        for perm in permissions:
-            for study in self.cleaned_data["studies"]:
-                assign_perm(perm, self.cleaned_data["user"], study)
-            for study in disallowed_studies:
-                remove_perm(perm, self.cleaned_data["user"], study)
-        return self.cleaned_data["user"]
-
-
 class ParticipantSignupForm(UserCreationForm):
     nickname = forms.CharField(required=True, max_length=255)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
+        self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
@@ -67,7 +37,7 @@ class ParticipantSignupForm(UserCreationForm):
             "user_permissions",
             "groups",
             "_identicon",
-            "organization",
+            "labs",
             "is_active",
             "is_staff",
             "is_superuser",
@@ -97,6 +67,8 @@ class ParticipantPasswordForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["old_password"].widget.attrs.pop("autofocus", None)
+        self.fields["new_password1"].widget.attrs["autocomplete"] = "new-password"
+        self.fields["new_password2"].widget.attrs["autocomplete"] = "new-password"
 
     class Meta:
         model = User

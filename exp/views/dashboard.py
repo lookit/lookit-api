@@ -8,18 +8,17 @@ from exp.views.mixins import ExperimenterLoginRequiredMixin
 class ExperimenterDashboardView(ExperimenterLoginRequiredMixin, generic.TemplateView):
     """
     ExperimenterDashboard will show a customized view to each user based on the
-    role and tasks that they perform.
+    role and tasks that they perform. Redirects to experimenter login for non-logged-in users.
     """
 
     template_name = "exp/dashboard.html"
 
     def dispatch(self, request, *args, **kwargs):
+        # logged-in non-researchers, send back to web app
         if hasattr(request.user, "is_researcher") and not request.user.is_researcher:
             return redirect(reverse_lazy("web:home"))
+        # For researchers, default to study-list
         if self.request.path.endswith("/"):
-            if self.request.user.groups.exists():
-                # Redirect to manage studies if user has been approved
-                return redirect(reverse_lazy("exp:study-list"))
-            return super().dispatch(request, *args, **kwargs)
+            return redirect(reverse_lazy("exp:study-list"))
         # If no trailing slash, append slash and redirect.
         return redirect(self.request.path + "/")

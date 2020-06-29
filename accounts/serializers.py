@@ -1,21 +1,31 @@
 from rest_framework_json_api import serializers
 
-from accounts.models import Child, DemographicData, Organization, User
+from accounts.models import Child, DemographicData, User
 from api.serializers import (
     PatchedHyperlinkedRelatedField,
     UuidHyperlinkedModelSerializer,
 )
+from studies.models import Lab
 
 
-class OrganizationSerializer(UuidHyperlinkedModelSerializer):
-    resource_name = "organizations"
+class LabSerializer(UuidHyperlinkedModelSerializer):
+    resource_name = "labs"
     url = serializers.HyperlinkedIdentityField(
-        view_name="organization-detail", lookup_field="uuid"
+        view_name="api:lab-detail", lookup_field="uuid"
     )
 
     class Meta:
-        model = Organization
-        fields = ("name", "url", "pk")
+        model = Lab
+        fields = (
+            "name",
+            "institution",
+            "principal_investigator_name",
+            "lab_website",
+            "description",
+            "approved_to_test",
+            "url",
+            "pk",
+        )
 
 
 class DemographicDataSerializer(UuidHyperlinkedModelSerializer):
@@ -24,7 +34,7 @@ class DemographicDataSerializer(UuidHyperlinkedModelSerializer):
     date_created = serializers.DateTimeField(read_only=True, source="created_at")
 
     url = serializers.HyperlinkedIdentityField(
-        view_name="demographicdata-detail", lookup_field="uuid"
+        view_name="api:demographicdata-detail", lookup_field="uuid"
     )
 
     class Meta:
@@ -58,26 +68,20 @@ class DemographicDataSerializer(UuidHyperlinkedModelSerializer):
 class BasicUserSerializer(UuidHyperlinkedModelSerializer):
     resource_name = "users"
     url = serializers.HyperlinkedIdentityField(
-        view_name="user-detail", lookup_field="uuid"
+        view_name="api:user-detail", lookup_field="uuid"
     )
 
     demographics = PatchedHyperlinkedRelatedField(
         queryset=DemographicData.objects,
         many=True,
-        related_link_view_name="user-demographics-list",
+        related_link_view_name="api:user-demographics-list",
         related_link_url_kwarg="user_uuid",
         related_link_lookup_field="uuid",
-    )
-    organization = PatchedHyperlinkedRelatedField(
-        queryset=Organization.objects,
-        related_link_view_name="organization-detail",
-        related_link_lookup_field="organization.uuid",
-        related_link_url_kwarg="uuid",
     )
     children = PatchedHyperlinkedRelatedField(
         queryset=Child.objects,
         many=True,
-        related_link_view_name="user-children-list",
+        related_link_view_name="api:user-children-list",
         related_link_url_kwarg="user_uuid",
         related_link_lookup_field="uuid",
     )
@@ -95,7 +99,6 @@ class BasicUserSerializer(UuidHyperlinkedModelSerializer):
             "is_staff",
             "is_researcher",
             "demographics",
-            "organization",
             "children",
             "former_lookit_id",
             "linked_former_lookit_ids",
@@ -117,12 +120,12 @@ class FullUserSerializer(BasicUserSerializer):
 class ChildSerializer(UuidHyperlinkedModelSerializer):
     lookup_field = "uuid"
     url = serializers.HyperlinkedIdentityField(
-        view_name="child-detail", lookup_field="uuid"
+        view_name="api:child-detail", lookup_field="uuid"
     )
 
     user = PatchedHyperlinkedRelatedField(
         queryset=User.objects,
-        related_link_view_name="user-detail",
+        related_link_view_name="api:user-detail",
         related_link_lookup_field="user.uuid",
         related_link_url_kwarg="uuid",
     )

@@ -1,34 +1,26 @@
 import csv
 import datetime
 import hashlib
-import json
 import logging
 import os
-import re
 import shutil
-import subprocess
 import tempfile
 import time
 import zipfile
-from enum import IntEnum
-from io import BytesIO, StringIO
-from typing import NamedTuple
+from io import StringIO
 
 import boto3
 import docker
 import requests
 from celery.utils.log import get_task_logger
 from django.conf import settings
-from django.core.files import File
-from django.core.paginator import Paginator
 from django.utils import timezone
 from google.cloud import storage as gc_storage
 
-from exp.utils import csv_dict_output_and_writer
-from project import storages
 from project.celery import app
 from studies.experiment_builder import EmberFrameplayerBuilder
 from studies.helpers import send_mail
+from studies.permissions import StudyPermission
 
 logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -103,28 +95,37 @@ def cleanup_checkouts(older_than=None):
 @app.task
 def cleanup_docker_images():
     logger.debug("Cleaning up docker images...")
-    images = subprocess.run(
-        ["docker", "images", "--quiet", "--filter", "dangling=true"],
-        stdout=subprocess.PIPE,
-    )
-    for image in images.stdout.splitlines():
-        subprocess.run(["docker", "rmi", "--force", image])
+    DOCKER_CLIENT.images.prune(filters={"dangling": True})
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_zipfile_of_videos(
-    self, filename, study_uuid, orderby, match, requesting_user_uuid, consent=False
+    self, filename, study_uuid, orderby, match, requesting_user_uuid, consent_only=False
 ):
     from studies.models import Study
     from accounts.models import User
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
-    videos = study.consent_videos if consent else study.videos_for_consented_responses
+
+    video_qs = (
+        study.consent_videos if consent_only else study.videos_for_consented_responses
+    )
+
+    if not requesting_user.has_study_perms(
+        StudyPermission.READ_STUDY_RESPONSE_DATA, study
+    ):
+        video_qs = video_qs.filter(response__is_preview=True)
+    if not requesting_user.has_study_perms(
+        StudyPermission.READ_STUDY_PREVIEW_DATA, study
+    ):
+        video_qs = video_qs.filter(response__is_preview=False)
+    if match:
+        video_qs = video_qs.filter(full_name__contains=match)
 
     m = hashlib.sha256()
 
-    for video in videos:
+    for video in video_qs:
         m.update(video.full_name.encode("utf-8"))
     # create a sha256 of the included filenames
     sha = m.hexdigest()
@@ -145,7 +146,7 @@ def build_zipfile_of_videos(
         with tempfile.TemporaryDirectory() as temp_directory:
             zip_file_path = os.path.join(temp_directory, zip_filename)
             with zipfile.ZipFile(zip_file_path, "w") as zf:
-                for video in videos:
+                for video in video_qs:
                     temporary_file_path = os.path.join(temp_directory, video.full_name)
                     file_response = requests.get(video.download_url, stream=True)
                     with open(temporary_file_path, mode="w+b") as local_file:
@@ -165,40 +166,35 @@ def build_zipfile_of_videos(
     email_context = dict(
         signed_url=signed_url,
         user=requesting_user,
-        videos=videos,
+        videos=video_qs,
         zip_filename=zip_filename,
     )
     send_mail(
         "download_zip",
         "Your video archive has been created",
-        settings.EMAIL_FROM_ADDRESS,
-        bcc=[requesting_user.username],
+        [requesting_user.username],
         from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )
 
 
-@app.task(bind=True, max_retries=10, retry_backoff=10)
-def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
+@app.task
+def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
     from studies.models import Study
     from accounts.models import User
-    from exp.utils import RESPONSE_PAGE_SIZE
-    from exp.views.study import build_framedata_dict_csv
+    from exp.views.responses import build_framedata_dict_csv
 
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
     study = Study.objects.get(uuid=study_uuid)
-    responses = (
-        study.consented_responses.order_by("id")
-        .select_related("child", "study")
-        .values(
-            "uuid",
-            "exp_data",
-            "child__uuid",
-            "study__uuid",
-            "study__salt",
-            "study__hash_digits",
-            "global_event_timings",
-        )
+    response_qs = study.responses_for_researcher(requesting_user).order_by("id")
+    responses = response_qs.select_related("child", "study").values(
+        "uuid",
+        "exp_data",
+        "child__uuid",
+        "study__uuid",
+        "study__salt",
+        "study__hash_digits",
+        "global_event_timings",
     )
 
     # make filename for this request unique by adding timestamp
@@ -226,7 +222,7 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     # if the file exists short circuit and send the email
     if not gs_blob.exists():
         # if it doesn't exist build the file
-        with tempfile.TemporaryDirectory() as temp_directory:  # TODO
+        with tempfile.TemporaryDirectory() as temp_directory:
             file_path = os.path.join(temp_directory, csv_filename)
             with open(file_path, "w") as csv_file:
                 writer = csv.DictWriter(
@@ -251,8 +247,7 @@ def build_framedata_dict(self, filename, study_uuid, requesting_user_uuid):
     send_mail(
         "download_framedata_dict",
         "Your frame data dictionary has been created",
-        settings.EMAIL_FROM_ADDRESS,
-        bcc=[requesting_user.username],
+        [requesting_user.username],
         from_email=settings.EMAIL_FROM_ADDRESS,
         **email_context,
     )

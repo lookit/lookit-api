@@ -1,19 +1,42 @@
+from typing import Optional, Union
+
 import requests
 from django.conf import settings
+from django.http.request import HttpRequest
+from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
 
-from studies.models import StudyType
-
-# TODO: Using a mixin for this stuff is overkill. All of this functionality should be migrated
-# to helper functions.
+from studies.models import Lab, Study, StudyType
 
 
 class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
+    """Require logged-in user; if not logged in, redirect to experimenter login."""
+
     login_url = settings.EXPERIMENTER_LOGIN_URL
 
 
+class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):
+
+    object: Union[Study, Lab]
+
+    def get_object(self, queryset=None):
+        """Override get_object() to be smarter.
+
+        This is to allow us to get the study for use the predicate function
+        of UserPassesTestMixin without making `SingleObjectMixin.get` (called
+        within the context of `View.dispatch`) issue a second expensive query.
+        """
+        if getattr(self, "object", None) is None:
+            # Only call get_object() when self.object isn't present.
+            self.object = super().get_object()
+        return self.object
+
+
 class StudyTypeMixin:
-    def validate_and_fetch_metadata(self):
+
+    request: HttpRequest
+
+    def validate_and_fetch_metadata(self, study_type: Optional[StudyType] = None):
         """Gets the study type and runs hardcoded validations.
 
         TODO: this is obviously a fragile pattern, and there's probably a better way to do this.
@@ -21,20 +44,19 @@ class StudyTypeMixin:
 
         :return: A tuple of boolean and tuple, the inner tuple containing error data.
         """
-        study_type = StudyType.objects.get(id=self.request.POST.get("study_type"))
+        if not study_type:
+            target_study_type_id = self.request.POST["study_type"]
+            study_type = StudyType.objects.get(id=target_study_type_id)
         metadata = self.extract_type_metadata(study_type=study_type)
 
         errors = VALIDATIONS.get(study_type.name, is_valid_ember_frame_player)(metadata)
 
         return metadata, errors
 
-    def extract_type_metadata(self, study_type=None):
+    def extract_type_metadata(self, study_type):
         """
         Pull the metadata related to the selected StudyType from the POST request
         """
-        if not study_type:
-            study_type = StudyType.objects.get(id=self.request.POST.get("study_type"))
-
         type_fields = study_type.configuration["metadata"]["fields"]
 
         metadata = {}
