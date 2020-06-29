@@ -1955,19 +1955,12 @@ class StudyAttachments(
 
     test_func = user_can_see_study_responses
 
-    def get_consent_videos(self, study):
-        videos = study.consent_videos
-        if not self.request.user.has_study_perms(
-            StudyPermission.READ_STUDY_RESPONSE_DATA, study
-        ):
-            videos = videos.filter(response__is_preview=True)
-        if not self.request.user.has_study_perms(
-            StudyPermission.READ_STUDY_PREVIEW_DATA, study
-        ):
-            videos = videos.filter(response__is_preview=False)
-        return videos
-
     def get_consented_videos(self, study):
+        """
+        Fetches all consented videos this user has access to.
+        TODO: use a helper (e.g. in queries) select_videos_for_user to fetch the appropriate videos here
+        and in build_zipfile_of_videos - deferring for the moment to work out dependencies.
+        """
         videos = study.videos_for_consented_responses
         if not self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_RESPONSE_DATA, study
@@ -2009,12 +2002,12 @@ class StudyAttachments(
 
         if self.request.POST.get("all-attachments"):
             build_zipfile_of_videos.delay(
-                self.get_consented_videos(self.get_object()),
                 f"{self.get_object().uuid}_all_attachments",
                 self.get_object().uuid,
                 orderby,
                 match,
                 self.request.user.uuid,
+                consent_only=False,
             )
             messages.success(
                 request,
@@ -2023,12 +2016,12 @@ class StudyAttachments(
 
         if self.request.POST.get("all-consent-videos"):
             build_zipfile_of_videos.delay(
-                self.get_consent_videos(self.get_object()),
                 f"{self.get_object().uuid}_all_consent",
                 self.get_object().uuid,
                 orderby,
                 match,
                 self.request.user.uuid,
+                consent_only=True,
             )
             messages.success(
                 request,

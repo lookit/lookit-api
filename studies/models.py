@@ -777,13 +777,15 @@ def remove_old_lab_researchers(sender, instance, **kwargs):
     if not study_in_db:
         return
     old_lab = study_in_db.lab
-    new_lab = instance.lab
-    if old_lab.pk != new_lab.pk:
-        new_lab_researchers = new_lab.researchers.all()
-        for group in instance.all_study_groups():
-            for user in group.user_set.all():
-                if user not in new_lab_researchers:
-                    group.user_set.remove(user)
+    # When cloning, fks have been emptied so there's no previous lab
+    if old_lab:
+        new_lab = instance.lab
+        if old_lab.pk != new_lab.pk:
+            new_lab_researchers = new_lab.researchers.all()
+            for group in instance.all_study_groups():
+                for user in group.user_set.all():
+                    if user not in new_lab_researchers:
+                        group.user_set.remove(user)
 
 
 class ResponseApiManager(models.Manager):
@@ -1087,7 +1089,7 @@ class StudyLog(Log):
     )
 
     def __str__(self):
-        return f"<StudyLog: {self.action} on {self.study.name} at {self.created_at} by {self.user.username}"  # noqa
+        return f"<StudyLog: {self.action} on {self.study.name} at {self.created_at}"  # noqa
 
     class JSONAPIMeta:
         resource_name = "study-logs"

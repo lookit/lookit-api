@@ -20,6 +20,7 @@ from google.cloud import storage as gc_storage
 from project.celery import app
 from studies.experiment_builder import EmberFrameplayerBuilder
 from studies.helpers import send_mail
+from studies.permissions import StudyPermission
 
 logger = get_task_logger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -99,13 +100,28 @@ def cleanup_docker_images():
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_zipfile_of_videos(
-    self, video_qs, filename, study_uuid, orderby, match, requesting_user_uuid
+    self, filename, study_uuid, orderby, match, requesting_user_uuid, consent_only=False
 ):
     from studies.models import Study
     from accounts.models import User
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
+
+    video_qs = (
+        study.consent_videos if consent_only else study.videos_for_consented_responses
+    )
+
+    if not requesting_user.has_study_perms(
+        StudyPermission.READ_STUDY_RESPONSE_DATA, study
+    ):
+        video_qs = video_qs.filter(response__is_preview=True)
+    if not requesting_user.has_study_perms(
+        StudyPermission.READ_STUDY_PREVIEW_DATA, study
+    ):
+        video_qs = video_qs.filter(response__is_preview=False)
+    if match:
+        video_qs = video_qs.filter(full_name__contains=match)
 
     m = hashlib.sha256()
 

@@ -1,3 +1,7 @@
-<p> {{ custom_message|linebreaks }} </p>
+{% autoescape off %}
+{{ custom_message }}
+{% endautoescape %}
+
+<br>
 
 <a href="{{base_url}}{% url 'web:email-preferences' %}"> Update your email preferences </a>

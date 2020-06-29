@@ -409,9 +409,11 @@ class StudyDetailView(
             clone = orig_study.clone()
             clone.creator = self.request.user
             # Clone within the current lab if user is allowed to. Otherwise, choose the first possible
-            if not self.request.user.has_perm(
+            if self.request.user.has_perm(
                 LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=orig_study.lab
             ):
+                clone.lab = orig_study.lab
+            else:
                 for lab in self.request.user.labs.only("id"):
                     if clone.creator.has_perm(
                         LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
