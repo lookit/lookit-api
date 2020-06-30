@@ -153,7 +153,7 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         return kwargs
 
     def form_invalid(self, **kwargs):
-        return self.render(self.get_context_data(**kwargs))
+        return self.render_to_response(self.get_context_data(**kwargs))
 
     def post(self, request, *args, **kwargs):
         """
@@ -207,7 +207,9 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         """
         If form invalid, add child form needs to be open when page reloads.
         """
-        return self.render(self.get_context_data(form=form, form_hidden=False))
+        return self.render_to_response(
+            self.get_context_data(form=form, form_hidden=False)
+        )
 
     def form_valid(self, form):
         """
