@@ -36,10 +36,7 @@ class UserAdmin(GuardedModelAdmin):
     search_fields = ["uuid", "nickname", "given_name", "family_name"]
     # make the interface for adding/removing groups and perms easier to use and
     # harder to screw up
-    filter_horizontal = (
-        "groups",
-        "user_permissions",
-    )
+    filter_horizontal = ("groups", "user_permissions")
 
 
 class DemographicDataAdmin(GuardedModelAdmin):
