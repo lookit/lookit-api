@@ -383,15 +383,14 @@ class ResponseDataDownloadTestCase(TestCase):
         ]
 
         # Build a few complementary sets of options for fields to include in downloads
-        self.age_optionset_1 = ["rounded"]
-        self.child_optionset_1 = ["globalchild", "gender", "conditions", "parent"]
-        self.labels_1 = [
-            "child_age_rounded",
-            "child_global_id",
-            "child_gender",
-            "child_condition_list",
-            "participant_nickname",
+        self.age_optionset_1 = ["child__age_rounded"]
+        self.child_optionset_1 = [
+            "child__global_id",
+            "child__gender",
+            "child__condition_list",
+            "participant__nickname",
         ]
+        self.optionset_1 = self.age_optionset_1 + self.child_optionset_1
         self.child_labels_json_1 = [
             "global_id",
             "gender",
@@ -399,23 +398,15 @@ class ResponseDataDownloadTestCase(TestCase):
             "age_rounded",
         ]
         self.participant_labels_json_1 = ["nickname"]
-        self.age_optionset_2 = ["exact", "birthday"]
+        self.age_optionset_2 = ["child__age_in_days", "child__birthday"]
         self.child_optionset_2 = [
-            "name",
-            "gestage",
-            "languages",
-            "addl",
-            "globalparent",
+            "child__name",
+            "child__age_at_birth",
+            "child__language_list",
+            "child__additional_information",
+            "participant__global_id",
         ]
-        self.labels_2 = [
-            "child_age_in_days",
-            "child_birthday",
-            "child_name",
-            "child_age_at_birth",
-            "child_language_list",
-            "child_additional_information",
-            "participant_global_id",
-        ]
+        self.optionset_2 = self.age_optionset_2 + self.child_optionset_2
         self.child_labels_json_2 = [
             "age_in_days",
             "birthday",
@@ -434,13 +425,7 @@ class ResponseDataDownloadTestCase(TestCase):
 
     def test_get_appropriate_fields_in_csv_downloads_set1(self):
         self.client.force_login(self.study_reader)
-        query_string = urlencode(
-            {
-                "ageoptions": self.age_optionset_1,
-                "childoptions": self.child_optionset_1,
-            },
-            doseq=True,
-        )
+        query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
         content = response.content.decode("utf-8")
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
@@ -453,14 +438,14 @@ class ResponseDataDownloadTestCase(TestCase):
             "Unexpected number of response rows in CSV download",
         )
         # Check that the appropriate specifically-requested headers ARE present
-        for header in self.labels_1:
+        for header in self.optionset_1:
             self.assertIn(
                 header,
                 csv_headers,
                 f"Downloaded summary CSV file is missing header {header}",
             )
         # Check that the remaining headers ARE NOT present
-        for header in self.labels_2:
+        for header in self.optionset_2:
             self.assertNotIn(
                 header,
                 csv_headers,
@@ -493,13 +478,7 @@ class ResponseDataDownloadTestCase(TestCase):
 
     def test_get_appropriate_fields_in_json_downloads(self):
         self.client.force_login(self.study_reader)
-        query_string = urlencode(
-            {
-                "ageoptions": self.age_optionset_1,
-                "childoptions": self.child_optionset_1,
-            },
-            doseq=True,
-        )
+        query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_json_url}?{query_string}")
         content = response.content.decode("utf-8")
         data = json.loads(content)
@@ -517,9 +496,9 @@ class ResponseDataDownloadTestCase(TestCase):
             self.assertNotEqual(data[0]["participant"][header], "")
         # # Check that the remaining headers ARE NOT present
         for header in self.child_labels_json_2:
-            self.assertEqual(data[0]["child"][header], "")
+            self.assertNotIn(header, data[0]["child"].keys())
         for header in self.participant_labels_json_2:
-            self.assertEqual(data[0]["participant"][header], "")
+            self.assertNotIn(header, data[0]["participant"].keys())
         # Check that some *data* is present as expect: parent, but not child names
         for row in data:
             self.assertIn(row["participant"]["nickname"], self.participant_names)
@@ -544,13 +523,7 @@ class ResponseDataDownloadTestCase(TestCase):
 
     def test_get_appropriate_fields_in_csv_downloads_set2(self):
         self.client.force_login(self.study_reader)
-        query_string = urlencode(
-            {
-                "ageoptions": self.age_optionset_2,
-                "childoptions": self.child_optionset_2,
-            },
-            doseq=True,
-        )
+        query_string = urlencode({"data_options": self.optionset_2}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
         content = response.content.decode("utf-8")
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
@@ -563,14 +536,14 @@ class ResponseDataDownloadTestCase(TestCase):
             "Unexpected number of response rows in CSV download",
         )
         # Check that the appropriate specifically-requested headers ARE present
-        for header in self.labels_2:
+        for header in self.optionset_2:
             self.assertIn(
                 header,
                 csv_headers,
                 f"Downloaded summary CSV file is missing header {header}",
             )
         # Check that the remaining headers ARE NOT present
-        for header in self.labels_1:
+        for header in self.optionset_1:
             self.assertNotIn(
                 header,
                 csv_headers,
@@ -689,12 +662,12 @@ class ResponseDataDownloadTestCase(TestCase):
         csv_headers = csv_body.pop(0)
 
         exit_survey_headers = [
-            "response_uuid",
-            "response_withdrawn",
-            "response_parent_feedback",
-            "response_video_privacy",
-            "response_databrary",
-            "response_birthdate_difference",
+            "response__uuid",
+            "response__withdrawn",
+            "response__parent_feedback",
+            "response__video_privacy",
+            "response__databrary",
+            "response__birthdate_difference",
         ]
         exit_survey_headers_columns = {}
 
@@ -712,36 +685,36 @@ class ResponseDataDownloadTestCase(TestCase):
         withdrawn_response_line = [
             line
             for line in csv_body
-            if line[exit_survey_headers_columns["response_uuid"]]
+            if line[exit_survey_headers_columns["response__uuid"]]
             == str(withdrawn_response.uuid)
         ][0]
         self.assertEqual(
-            withdrawn_response_line[exit_survey_headers_columns["response_withdrawn"]],
+            withdrawn_response_line[exit_survey_headers_columns["response__withdrawn"]],
             "True",
             "Withdrawn response was not marked as response in CSV summary!",
         )
         self.assertEqual(
             withdrawn_response_line[
-                exit_survey_headers_columns["response_parent_feedback"]
+                exit_survey_headers_columns["response__parent_feedback"]
             ],
             "this was fun but my older child was reciting top secret prime numbers",
             "Parent feedback was not correctly inserted in CSV summary",
         )
         self.assertEqual(
             withdrawn_response_line[
-                exit_survey_headers_columns["response_video_privacy"]
+                exit_survey_headers_columns["response__video_privacy"]
             ],
             "private",
             "Video privacy level was not correctly inserted in CSV summary",
         )
         self.assertEqual(
-            withdrawn_response_line[exit_survey_headers_columns["response_databrary"]],
+            withdrawn_response_line[exit_survey_headers_columns["response__databrary"]],
             "yes",
             "Databrary consent was not correctly inserted in CSV summary",
         )
         self.assertEqual(
             withdrawn_response_line[
-                exit_survey_headers_columns["response_birthdate_difference"]
+                exit_survey_headers_columns["response__birthdate_difference"]
             ],
             "17",
             "Birthdate difference was not correctly inserted in CSV summary",
@@ -750,28 +723,32 @@ class ResponseDataDownloadTestCase(TestCase):
         incomplete_response_line = [
             line
             for line in csv_body
-            if line[exit_survey_headers_columns["response_uuid"]]
+            if line[exit_survey_headers_columns["response__uuid"]]
             == str(incomplete_response.uuid)
         ][0]
         self.assertEqual(
-            incomplete_response_line[exit_survey_headers_columns["response_withdrawn"]],
+            incomplete_response_line[
+                exit_survey_headers_columns["response__withdrawn"]
+            ],
             "False",
             "Incomplete response was not marked as non-withdrawn",
         )
         self.assertEqual(
             incomplete_response_line[
-                exit_survey_headers_columns["response_parent_feedback"]
+                exit_survey_headers_columns["response__parent_feedback"]
             ],
             "",
         )
         self.assertEqual(
             incomplete_response_line[
-                exit_survey_headers_columns["response_video_privacy"]
+                exit_survey_headers_columns["response__video_privacy"]
             ],
             "",
         )
         self.assertEqual(
-            incomplete_response_line[exit_survey_headers_columns["response_databrary"]],
+            incomplete_response_line[
+                exit_survey_headers_columns["response__databrary"]
+            ],
             "",
         )
 
@@ -823,7 +800,6 @@ class ResponseDataDownloadTestCase(TestCase):
             "databrary",
             "birthdate_difference",
         ]
-
         this_response = [
             r for r in data if r["response"]["uuid"] == str(withdrawn_response.uuid)
         ][0]
@@ -846,6 +822,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.assertEqual(this_response["response"]["video_privacy"], "private")
         self.assertEqual(this_response["response"]["databrary"], "yes")
         self.assertEqual(this_response["response"]["birthdate_difference"], 17)
+        self.assertEqual(this_response["consent"]["ruling"], "accepted")
 
     # TODO: add test for study-demographics-download-csv, checking for global ID inclusion
     # TODO: add test for study-responses-children-summary-csv

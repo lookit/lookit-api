@@ -82,37 +82,21 @@
                 
                         <div class="col-xs-6">
                         
-                            <p>Participant age data to include with responses:</p>
+                            <p>Participant data to include with responses:</p>
 
-                            {% for option in ageoptions %}
+                            {% for option in data_options %}
                             <div>
-                                <input id="include-age-{{option.id}}"
-                                        name="ageoptions"
+                                <input id="include-data-{{option.id}}"
+                                        name="data_options"
                                         type="checkbox"
                                         value="{{option.id}}"
                                         {% if option.default %} checked {% endif %}
                                         >
-                                <label for="include-age-{{option.id}}">
+                                <label for="include-data-{{option.id}}">
                                     {{option.name}}
                                 </label>
                             </div>
                             {% endfor %} 
-                        </div>
-                        <div class="col-xs-6">
-                            <p>Other participant data to include with responses:</p>
-                            {% for option in childoptions %}
-                            <div>
-                                <input id="include-child-{{option.id}}"
-                                        name="childoptions"
-                                        type="checkbox"
-                                        value="{{option.id}}"
-                                        {% if option.default %} checked {% endif %}
-                                        >
-                                <label for="include-child-{{option.id}}">
-                                    {{option.name}}
-                                </label>
-                            </div>
-                            {% endfor %}
                         </div>
                     </div>
                     <hr>
