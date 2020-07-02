@@ -17,14 +17,23 @@ Including another URLconf
 from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.urls import urlpatterns as auth_urls
 from django.urls import path
 from django.views.generic.base import RedirectView
+from more_itertools import locate
 
+from accounts.views import TwoFactorAuthLoginView
 from api import urls as api_urls
 from exp import urls as exp_urls
 from osf_oauth2_adapter import views as osf_oauth2_adapter_views
 from project import settings
 from web import urls as web_urls
+
+# Just change the login path, keep everything else.
+login_path_index = next(locate(auth_urls, lambda patt: patt.name == "login"))
+auth_urls[login_path_index] = path(
+    "login/", TwoFactorAuthLoginView.as_view(), name="login"
+)
 
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
@@ -41,7 +50,7 @@ urlpatterns = [
     ),
     path("accounts/", include("allauth.urls")),
     path("exp/", include(exp_urls)),
-    path("", include("django.contrib.auth.urls")),
+    path("", include(auth_urls)),
     path("", include(web_urls)),
 ]
 
