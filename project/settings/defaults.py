@@ -118,9 +118,10 @@ else:
 INTERNAL_IPS = ["127.0.0.1"]
 
 AUTHENTICATION_BACKENDS = (
-    "django.contrib.auth.backends.ModelBackend",  # this is default
+    # "django.contrib.auth.backends.ModelBackend",  # this is default
+    "accounts.backends.TwoFactorAuthenticationBackend",
     "guardian.backends.ObjectPermissionBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
+    # "allauth.account.auth_backends.AuthenticationBackend",
 )
 
 ROOT_URLCONF = "project.urls"
