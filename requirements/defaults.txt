@@ -32,6 +32,7 @@ fleep==1.0.1
 google-cloud-storage==1.29.0
 kombu==4.6.10
 lark-parser==0.8.9
+more-itertools==8.4.0
 psycopg2-binary==2.8.5
 pydenticon==0.3
 pytop==2.3.0
