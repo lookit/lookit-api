@@ -2,9 +2,15 @@ import datetime
 
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
-from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    PasswordChangeForm,
+    UserCreationForm,
+)
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
+from accounts.backends import two_factor_auth_backend
 from accounts.models import Child, DemographicData, User
 
 
@@ -12,6 +18,57 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         exclude = ("password",)
+
+
+class TOTPLoginForm(AuthenticationForm):
+    error_messages = {
+        "invalid_login": _(
+            "Please enter a correct %(username)s and password. Note that email "
+            "and password fields may be case-sensitive. "
+            "If you have turned on two-factor authentication, you will need "
+            "an OTP authorization code from Google Authenticator as well. "
+        ),
+        "inactive": _("This account is inactive."),
+    }
+
+    auth_code = forms.CharField(
+        label="Two Factor Auth Code",
+        max_length=6,
+        required=False,
+        help_text="6-digit authorization code",
+    )
+
+    def clean(self):
+        """Hook that gets run after all the fields are cleaned.
+
+        Note: we are technically breaking LSP here since this is changing the
+            functionality of the superclass rather than extending it, but
+            AuthenticationForm is so dang close to what we want that it's ok
+            to bend the rules a little bit.
+        """
+        username = self.cleaned_data.get("username")
+        password = self.cleaned_data.get("password")
+
+        # Auth code is "Optional" in the sense that TwoFactorAuthenticationBackend
+        # will just flip a `using_2FA` flag as a signal to later requests - without
+        # this flag, Experimenters will be blocked from experimenter views.
+        auth_code = self.cleaned_data.get("auth_code")
+
+        if username is not None and password:
+            # Don't need ObjectPermissionBackend - just cut to the chase.
+            self.user_cache = two_factor_auth_backend.authenticate(
+                self.request, username=username, password=password, auth_code=auth_code
+            )
+
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+            else:
+                # Set the backend path as django.contrib.auth.authenticate would usually,
+                # django.contrib.auth.login needs to know.
+                self.user_cache.backend = "accounts.backends.two_factor_auth_backend"
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
 
 
 class ParticipantSignupForm(UserCreationForm):
