@@ -14,7 +14,7 @@ from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
 
 from accounts import forms
-from accounts.models import Child, DemographicData, User
+from accounts.models import Child, DemographicData, GoogleAuthenticatorTOTP, User
 from project import settings
 from studies.models import Response, Study, Video
 
@@ -426,3 +426,11 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
             path += "index.html"
 
         return super().dispatch(request, path)
+
+
+class TwoFactorAuthSetupView(generic.base.TemplateView):
+    template_name = "web/2fa-setup.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        return context

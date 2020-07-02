@@ -13,6 +13,7 @@ urlpatterns = [
         views.DemographicDataUpdateView.as_view(),
         name="demographic-data-update",
     ),
+    path("2fa/", views.TwoFactorAuthSetupView.as_view(), name="2fa-setup"),
     path("account/children/", views.ChildrenListView.as_view(), name="children-list"),
     path(
         "account/children/<uuid:uuid>/",
