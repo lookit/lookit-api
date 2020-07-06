@@ -127,6 +127,6 @@ images:
 # SENTRY_AUTH_TOKEN is encrypted with GKMS
 # TODO: bring this back in when the git history thing is resolved.
 secrets:
-- kmsKeyName: projects/lookit-mbah-keys/locations/europe-west1/keyRings/lookit-mbah-keys/cryptoKeys/lookit-mbah-rhodri
+- kmsKeyName: projects/lookit-mbah-keys/locations/europe-west1/keyRings/lookit-mbah-rhodri/cryptoKeys/lookit-mbah-keys
   secretEnv:
     SENTRY_AUTH_TOKEN: CiQAGuTcS/UVjd71yF4x3PtHnYN6NFV5rKFfP88jAW7EirBOVpYScgDwrsX5Hi3S1xdJDxXYomvA82rSAfKkqWhqJhHMMX+o84iHBf4uZ7oL22+47hxkXEI5l3xJg4ni3WgoJtkkGdZhEaFU9pdGkRM/lIwkRLVkU83EM62UqIcu+pu3echPrEGoZINMi9p+xxljo//CHI9/ZA==
