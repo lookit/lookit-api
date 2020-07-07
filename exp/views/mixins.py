@@ -2,11 +2,12 @@ from typing import Optional, Union
 
 import requests
 from django.conf import settings
+from django.db.models import Model
 from django.http.request import HttpRequest
 from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
 
-from studies.models import Lab, Study, StudyType
+from studies.models import StudyType
 
 
 class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
@@ -17,7 +18,7 @@ class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
 
 class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):
 
-    object: Union[Study, Lab]
+    object: Model
 
     def get_object(self, queryset=None):
         """Override get_object() to be smarter.
