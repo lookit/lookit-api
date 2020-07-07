@@ -64,8 +64,13 @@ class TOTPLoginForm(AuthenticationForm):
                 raise self.get_invalid_login_error()
             else:
                 # Set the backend path as django.contrib.auth.authenticate would usually,
-                # django.contrib.auth.login needs to know.
-                self.user_cache.backend = "accounts.backends.two_factor_auth_backend"
+                # django.contrib.auth.login needs to know. This MUST also match the
+                # class name listed in settings.AUTHENTICATION_BACKENDS in order for
+                # AuthenticationMiddleware's request processor to work correctly, see:
+                # https://github.com/django/django/blob/master/django/contrib/auth/__init__.py#L179
+                self.user_cache.backend = (
+                    "accounts.backends.TwoFactorAuthenticationBackend"
+                )
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
