@@ -22,10 +22,16 @@ class TwoFactorAuthenticationBackend(ModelBackend):
         **kwargs: Any
     ) -> Optional[User]:
         """Authentication override."""
+
+        # Use normal ModelBackend.authenticate to get user the normal way.
         user: Optional[User] = super().authenticate(
             request, username, password, **kwargs
         )
 
+        # Now, we check if the user has 2FA activated. If they do, we must verify the
+        # code that they provided. In downstream requests, the `using_2FA` flag will be used
+        # in conjunction with User.is_researcher to make sure certain views are properly
+        # guarded.
         if user:  # Implicit return of nothing, so no else statement.
             if user.otp:
                 if user.otp.verify(auth_code):
