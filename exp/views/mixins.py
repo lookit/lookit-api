@@ -4,16 +4,36 @@ import requests
 from django.conf import settings
 from django.db.models import Model
 from django.http.request import HttpRequest
+from django.http.response import HttpResponseForbidden
 from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
 
+from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from studies.models import StudyType
 
 
 class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
     """Require logged-in user; if not logged in, redirect to experimenter login."""
 
-    login_url = settings.EXPERIMENTER_LOGIN_URL
+    def dispatch(self, request, *args, **kwargs):
+        """Dispatch override."""
+        user = request.user
+        # Potential anonymous user should not break the view.
+        is_researcher = getattr(user, "is_researcher", False)
+        two_factor_auth_enabled = request.session.get(TWO_FACTOR_AUTH_SESSION_KEY)
+        if is_researcher:
+            if two_factor_auth_enabled:
+                return super().dispatch(request, *args, **kwargs)
+            else:
+                return HttpResponseForbidden(
+                    "In order to access this page, you must have two-factor "
+                    "authentication enabled, and have logged in with your "
+                    "OTP key."
+                )
+        else:
+            return HttpResponseForbidden(
+                f"Unauthorized: {user} is not a Researcher account."
+            )
 
 
 class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):

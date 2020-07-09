@@ -5,6 +5,8 @@ from django.http import HttpRequest
 
 from accounts.models import User
 
+TWO_FACTOR_AUTH_SESSION_KEY = "using_2FA"
+
 
 class TwoFactorAuthenticationBackend(ModelBackend):
     """Grabs a regular user, but checks OTP as well as password.
@@ -35,10 +37,10 @@ class TwoFactorAuthenticationBackend(ModelBackend):
         if user:  # Implicit return of nothing, so no else statement.
             if user.otp:
                 if user.otp.verify(auth_code):
-                    request.session["using_2FA"] = True
+                    request.session[TWO_FACTOR_AUTH_SESSION_KEY] = True
                     return user
             else:
-                request.session["using_2FA"] = False
+                request.session[TWO_FACTOR_AUTH_SESSION_KEY] = False
                 return user
 
 
