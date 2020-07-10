@@ -47,7 +47,6 @@ from exp.views import (
     StudyResponsesAll,
     StudyResponsesAllDownloadJSON,
     StudyResponsesConsentManager,
-    StudyResponsesFrameDataCSV,
     StudyResponsesFrameDataDictCSV,
     StudyResponsesFrameDataIndividualCSV,
     StudyResponsesList,
@@ -132,11 +131,6 @@ urlpatterns = [
         "studies/<int:pk>/responses/all/collision_check/",
         StudyCollisionCheck.as_view(),
         name="study-hashed-id-collision-check",
-    ),
-    path(
-        "studies/<int:pk>/responses/all/download_frame_csv/",
-        StudyResponsesFrameDataCSV.as_view(),
-        name="study-responses-download-frame-data-csv",
     ),
     path(
         "studies/<int:pk>/responses/all/download_frame_zip_csv/",

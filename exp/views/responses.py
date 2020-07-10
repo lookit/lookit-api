@@ -1276,32 +1276,6 @@ class StudyChildrenSummaryDictCSV(StudyResponsesAll):
         return response
 
 
-class StudyResponsesFrameDataCSV(StudyResponsesAll):
-    """
-    Hitting this URL downloads frame-level data from all study responses in CSV format
-    """
-
-    def get(self, request, *args, **kwargs):
-        study = self.get_object()
-        responses = self.get_response_values_for_framedata(study)
-        paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
-        headers = get_frame_data(responses[0])["data_headers"]
-        output, writer = csv_dict_output_and_writer(headers)
-
-        for page_num in paginator.page_range:
-            page_of_responses = paginator.page(page_num)
-            for resp in page_of_responses:
-                this_resp_data = get_frame_data(resp)
-                writer.writerows(this_resp_data["data"])
-
-        cleaned_data = output.getvalue()
-
-        filename = "{}_{}.csv".format(study_name_for_files(study.name), "all-frames")
-        response = HttpResponse(cleaned_data, content_type="text/csv")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
-        return response
-
-
 class StudyResponsesFrameDataIndividualCSV(StudyResponsesAll):
     """Hitting this URL downloads a ZIP file with frame data from one response per file in CSV format"""
 

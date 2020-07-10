@@ -161,12 +161,6 @@
                         </div>
                         <div class="col-md-5 col-sm-6">
                             <div class='pull-right download-button'> 
-                                Data (all responses)
-                                <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
-                                    <span> <i class="fa fa-download"></i> (CSV)</span>
-                                </a>
-                            </div>
-                            <div class='pull-right download-button'> 
                                 Data (one file per response)
                                 <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
                                     <span> <i class="fa fa-download"></i> (ZIP, CSVs)</span>
