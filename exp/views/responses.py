@@ -1,16 +1,26 @@
 import io
 import json
+import os
 import types
 import zipfile
 from typing import NamedTuple, Union
+from wsgiref.util import FileWrapper
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.db.models import Prefetch, Q
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect, reverse
+from django.http import (
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+    StreamingHttpResponse,
+)
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views import generic
+from django.views.generic.base import View
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.list import MultipleObjectMixin
 
 import attachment_helpers
 from accounts.utils import (
@@ -22,6 +32,7 @@ from accounts.utils import (
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.utils import (
     RESPONSE_PAGE_SIZE,
+    Echo,
     csv_dict_output_and_writer,
     flatten_dict,
     round_age,
@@ -32,7 +43,7 @@ from exp.views.mixins import (
     ExperimenterLoginRequiredMixin,
     SingleObjectParsimoniousQueryMixin,
 )
-from studies.models import Feedback, Study
+from studies.models import Feedback, Response, Study
 from studies.permissions import StudyPermission
 from studies.queries import (
     get_consent_statistics,
@@ -405,7 +416,17 @@ def get_response_headers(selected_headers, all_available_headers):
     )
 
 
+# Which headers from the response data summary should go in the child data downloads
+child_csv_headers = [
+    col.id
+    for col in response_columns
+    if col.id.startswith("child__") or col.id.startswith("participant__")
+]
+
+
 def construct_response_dictionary(resp, optional_headers):
+    if optional_headers is None:
+        optional_headers = []
     resp_dict = {}
     for col in response_columns:
         if col.id in optional_headers or not col.optional:
@@ -417,9 +438,12 @@ def construct_response_dictionary(resp, optional_headers):
                     resp_dict[object_name] = {field_name: col.extractor(resp)}
             except ValueError:
                 resp_dict[col.id] = col.extractor(resp)
+    # Include exp_data field in dictionary
+    resp_dict["exp_data"] = resp.exp_data
     return resp_dict
 
 
+# TODO: eliminate, only used in study list view
 def build_responses_csv(responses, optional_headers_selected_ids):
     """
     Builds CSV file contents for overview of all responses.
@@ -459,6 +483,7 @@ def build_responses_csv(responses, optional_headers_selected_ids):
     return output.getvalue()
 
 
+# TODO: eliminate this, just using for individual responses now
 def build_responses_json(responses, optional_headers=None):
     """
     Builds the JSON response data for the researcher to download
@@ -512,7 +537,7 @@ def get_frame_data(resp):
                 }
             )
 
-            # Next add all data in exp_data
+    # Next add all data in exp_data
     event_prefix = "eventTimings."
     for (frame_id, frame_data) in resp["exp_data"].items():
         for (key, value) in flatten_dict(frame_data).items():
@@ -533,7 +558,7 @@ def get_frame_data(resp):
             elif key == "frameType":
                 continue
                 # Omit the DOB from any exit survey
-            elif key == "birthDate" and frame_data["frameType"] == "EXIT":
+            elif key == "birthDate" and frame_data.get("frameType", None) == "EXIT":
                 continue
                 # Omit empty generatedProperties values from CSV
             elif key == "generatedProperties" and not (value):
@@ -722,6 +747,64 @@ def build_single_response_framedata_csv(response):
 # ------- End helper functions for response downloads ------------------------------------
 
 
+class StudyLookupMixin:
+
+    study = None
+
+    def get_study(self):
+        if self.study is None:
+            self.study = get_object_or_404(Study, pk=self.kwargs.get("pk"))
+        return self.study
+
+
+class CanViewStudyResponsesMixin(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin
+):
+
+    raise_exception = True
+
+    def can_view_responses(self):
+        user = self.request.user
+        study = self.get_study()
+
+        return user.is_researcher and (
+            user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+            or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+        )
+
+    test_func = can_view_responses
+
+
+class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
+
+    model = Response
+    paginate_by = 5
+    ordering = ("id",)
+    http_method_names = ["get"]
+
+    def valid_responses(self, study):
+        return study.responses_for_researcher(self.request.user).order_by("id")
+
+    def get_queryset(self):
+        study = self.get_study()
+        return study.responses_for_researcher(self.request.user).order_by("id")
+
+    def get_response_values_for_framedata(self, study):
+        return (
+            study.responses_for_researcher(self.request.user)
+            .select_related("child", "study")
+            .values(
+                "uuid",
+                "exp_data",
+                "child__uuid",
+                "study__uuid",
+                "study__salt",
+                "study__hash_digits",
+                "global_event_timings",
+            )
+        )
+
+
 class StudyResponsesList(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
@@ -754,6 +837,7 @@ class StudyResponsesList(
 
     test_func = user_can_see_study_responses
 
+    # TODO: split into separate post views for attachments, editing feedback
     def post(self, request, *args, **kwargs):
         """Currently, handles feedback form."""
         form_data = self.request.POST
@@ -822,11 +906,11 @@ class StudyResponsesList(
         )
 
         minimal_optional_headers = [
-            "rounded",
-            "gender",
-            "languages",
-            "conditions",
-            "gestage",
+            "child__age_rounded",
+            "child__gender",
+            "child__language_list",
+            "child__condition_list",
+            "child__age_at_birth",
         ]
         context["response_data"] = build_responses_json(
             paginated_responses, minimal_optional_headers
@@ -1013,65 +1097,17 @@ class StudyResponsesConsentManager(
 
 
 class StudyResponsesAll(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.DetailView,
+    CanViewStudyResponsesMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
 ):
     """
-    StudyResponsesAll shows a variety of download options for response and child data.
+    StudyResponsesAll shows a variety of download options for response and child data
+    from a given study. (It does not actually show any data.)
     """
 
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
     raise_exception = True
-    http_method_names = ["get", "post"]
-
-    # Which headers from the response data summary should go in the child data downloads
-    child_csv_headers = [
-        col.id
-        for col in response_columns
-        if col.id.startswith("child__") or col.id.startswith("participant__")
-    ]
-
-    def user_can_see_study_responses(self):
-        user = self.request.user
-        study = self.get_object()
-        method = self.request.method
-
-        if not user.is_researcher:
-            return False
-
-        if method == "GET":
-            return user.has_study_perms(
-                StudyPermission.READ_STUDY_RESPONSE_DATA, study
-            ) or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
-        elif method == "POST":
-            return user.has_study_perms(StudyPermission.DELETE_ALL_PREVIEW_DATA, study)
-        else:
-            # If we're not one of the two allowed methods this should be caught
-            # earlier
-            return False
-
-    test_func = user_can_see_study_responses
-
-    def valid_responses(self, study):
-        return study.responses_for_researcher(self.request.user).order_by("id")
-
-    def get_response_values_for_framedata(self, study):
-        return (
-            self.valid_responses(study)
-            .select_related("child", "study")
-            .values(
-                "uuid",
-                "exp_data",
-                "child__uuid",
-                "study__uuid",
-                "study__salt",
-                "study__hash_digits",
-                "global_event_timings",
-            )
-        )
+    http_method_names = ["get"]
 
     def get_context_data(self, **kwargs):
         """
@@ -1086,6 +1122,26 @@ class StudyResponsesAll(
             StudyPermission.DELETE_ALL_PREVIEW_DATA, context["study"]
         )
         return context
+
+
+class StudyDeletePreviewResponses(
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectParsimoniousQueryMixin,
+    View,
+):
+
+    model = Study
+    queryset = Study.objects.all()
+
+    def user_can_delete_preview_data(self):
+        user = self.request.user
+        study = self.get_object()
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.DELETE_ALL_PREVIEW_DATA, study
+        )
+
+    test_func = user_can_delete_preview_data
 
     def post(self, request, *args, **kwargs):
         """
@@ -1103,21 +1159,40 @@ class StudyResponsesAll(
                 # response logs, consent rulings, feedback, videos will all be deleted
                 # via cascades - videos will be removed from S3 also on pre_delete hook
                 resp.delete()
-        return super().get(request, *args, **kwargs)
+        return HttpResponseRedirect(
+            reverse("exp:study-responses-all", kwargs={"pk": study.id})
+        )
 
 
-class StudyResponsesAllDownloadJSON(StudyResponsesAll):
+class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
     """
     Hitting this URL downloads all study responses in JSON format.
     """
 
-    def get(self, request, *args, **kwargs):
-        study = self.get_object()
-        responses = self.valid_responses(study)
-        header_options = self.request.GET.getlist("data_options")
-        cleaned_data = json.dumps(
-            build_responses_json(responses, header_options), indent=4, default=str
+    # Smaller pagination because individual responses may be large and we don't want the json representing 100
+    # responses in memory
+    paginate_by = 1
+
+    def make_chunk(self, paginator, page_num, header_options):
+        chunk = ""
+        if page_num == 1:
+            chunk = "[\n"
+        chunk += ",\n".join(
+            json.dumps(
+                construct_response_dictionary(resp, header_options),
+                indent="\t",
+                default=str,
+            )
+            for resp in paginator.page(page_num)
         )
+        if page_num == paginator.page_range[-1]:
+            chunk += "\n]"
+        return chunk
+
+    def render_to_response(self, context):
+        paginator = context["paginator"]
+        study = self.get_study()
+        header_options = self.request.GET.getlist("data_options")
         identifiable_data_headers = [
             col.id for col in response_columns if col.identifiable
         ]
@@ -1132,21 +1207,45 @@ class StudyResponsesAllDownloadJSON(StudyResponsesAll):
                 else ""
             ),
         )
-        response = HttpResponse(cleaned_data, content_type="text/json")
+
+        response = StreamingHttpResponse(
+            (
+                self.make_chunk(paginator, page_num, header_options)
+                for page_num in paginator.page_range
+            ),
+            content_type="text/json",
+        )
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
 
 
-class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
+class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
     """
     Hitting this URL downloads a summary of all study responses in CSV format.
     """
 
-    def get(self, request, *args, **kwargs):
-        study = self.get_object()
+    def render_to_response(self, context):
+        paginator = context["paginator"]
+        study = self.get_study()
+
+        headers = set()
+        session_list = []
+
+        for page_num in paginator.page_range:
+            page_of_responses = paginator.page(page_num)
+            for resp in page_of_responses:
+                row_data = flatten_dict(
+                    {col.id: col.extractor(resp) for col in response_columns}
+                )
+                # Add any new headers from this session
+                headers = headers | set(row_data.keys())
+                session_list.append(row_data)
         header_options = self.request.GET.getlist("data_options")
-        responses = self.valid_responses(study)
-        cleaned_data = build_responses_csv(responses, header_options)
+        header_list = get_response_headers(header_options, headers)
+        output, writer = csv_dict_output_and_writer(header_list)
+        writer.writerows(session_list)
+        cleaned_data = output.getvalue()
+
         identifiable_data_headers = [
             col.id for col in response_columns if col.identifiable
         ]
@@ -1166,7 +1265,7 @@ class StudyResponsesSummaryDownloadCSV(StudyResponsesAll):
         return response
 
 
-class StudyResponsesSummaryDictCSV(StudyResponsesAll):
+class StudyResponsesDictCSV(CanViewStudyResponsesMixin, View):
     """
     Hitting this URL downloads a data dictionary for the study response summary in CSV format. Does not depend on actual response data.
     """
@@ -1177,19 +1276,19 @@ class StudyResponsesSummaryDictCSV(StudyResponsesAll):
         """
 
         descriptions = {col.id: col.description for col in response_columns}
-        headerList = get_response_headers(
+        header_list = get_response_headers(
             optional_headers_selected_ids, descriptions.keys()
         )
         all_descriptions = [
             {"column": header, "description": descriptions[header]}
-            for header in headerList
+            for header in header_list
         ]
         output, writer = csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
         return output.getvalue()
 
     def get(self, request, *args, **kwargs):
-        study = self.get_object()
+        study = self.get_study()
         header_options = self.request.GET.getlist("data_options")
         cleaned_data = self.build_summary_dict_csv(header_options)
         filename = "{}_{}.csv".format(
@@ -1200,20 +1299,17 @@ class StudyResponsesSummaryDictCSV(StudyResponsesAll):
         return response
 
 
-class StudyChildrenSummaryCSV(StudyResponsesAll):
+class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
     """
     Hitting this URL downloads a summary of all children who participated in CSV format.
     """
 
-    def build_child_csv(self, responses):
-        """
-        Builds CSV file contents for overview of all child participants
-        """
+    def render_to_response(self, context):
+        paginator = context["paginator"]
+        study = self.get_study()
 
         child_list = []
         session_list = []
-
-        paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
 
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
@@ -1222,21 +1318,17 @@ class StudyChildrenSummaryCSV(StudyResponsesAll):
                     {
                         col.id: col.extractor(resp)
                         for col in response_columns
-                        if col.id in self.child_csv_headers
+                        if col.id in child_csv_headers
                     }
                 )
                 if row_data["child__global_id"] not in child_list:
                     child_list.append(row_data["child__global_id"])
                     session_list.append(row_data)
 
-        output, writer = csv_dict_output_and_writer(self.child_csv_headers)
+        output, writer = csv_dict_output_and_writer(child_csv_headers)
         writer.writerows(session_list)
-        return output.getvalue()
+        cleaned_data = output.getvalue()
 
-    def get(self, request, *args, **kwargs):
-        study = self.get_object()
-        responses = self.valid_responses(study)
-        cleaned_data = self.build_child_csv(responses)
         filename = "{}_{}.csv".format(
             study_name_for_files(study.name), "all-children-identifiable"
         )
@@ -1245,10 +1337,11 @@ class StudyChildrenSummaryCSV(StudyResponsesAll):
         return response
 
 
-class StudyChildrenSummaryDictCSV(StudyResponsesAll):
+class StudyChildrenDictCSV(CanViewStudyResponsesMixin, View):
     """
     Hitting this URL downloads a data dictionary in CSV format for the summary of children who participated.
     Does not depend on actual response data.
+    TODO: separate from response data mixin
     """
 
     def build_child_dict_csv(self):
@@ -1259,14 +1352,14 @@ class StudyChildrenSummaryDictCSV(StudyResponsesAll):
         all_descriptions = [
             {"column": col.id, "description": col.description}
             for col in response_columns
-            if col.id in self.child_csv_headers
+            if col.id in child_csv_headers
         ]
         output, writer = csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
         return output.getvalue()
 
     def get(self, request, *args, **kwargs):
-        study = self.get_object()
+        study = self.get_study()
         cleaned_data = self.build_child_dict_csv()
         filename = "{}_{}.csv".format(
             study_name_for_files(study.name), "all-children-dict"
@@ -1276,39 +1369,39 @@ class StudyChildrenSummaryDictCSV(StudyResponsesAll):
         return response
 
 
-class StudyResponsesFrameDataIndividualCSV(StudyResponsesAll):
+class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
     """Hitting this URL downloads a ZIP file with frame data from one response per file in CSV format"""
 
-    def get(self, request, *args, **kwargs):
-        study = self.get_object()
-        responses = self.get_response_values_for_framedata(study)
-        paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
+    def render_to_response(self, context):
+        paginator = context["paginator"]
+        study = self.get_study()
 
         zipped_file = io.BytesIO()  # import io
-        with zipfile.ZipFile(
-            zipped_file, "w", zipfile.ZIP_DEFLATED
-        ) as zipped:  # import zipfile
-
+        with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
             for page_num in paginator.page_range:
                 page_of_responses = paginator.page(page_num)
                 for resp in page_of_responses:
                     data = build_single_response_framedata_csv(resp)
                     filename = "{}_{}_{}.csv".format(
-                        study_name_for_files(study.name), resp["uuid"], "frames"
+                        study_name_for_files(study.name), resp.uuid, "frames"
                     )
                     zipped.writestr(filename, data)
 
-        zipped_file.seek(0)
-        response = HttpResponse(zipped_file, content_type="application/octet-stream")
+        response = StreamingHttpResponse(
+            FileWrapper(zipped_file), content_type="application/octet-stream"
+        )
         response[
             "Content-Disposition"
         ] = 'attachment; filename="{}_framedata_per_session.zip"'.format(
             study_name_for_files(study.name)
         )
+        content_len = zipped_file.tell()
+        zipped_file.seek(0)
+        response["Content-Length"] = content_len
         return response
 
 
-class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
+class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
     """
     Hitting this URL queues creation of a template data dictionary for frame-level data in CSV format.
     The file is put on GCP and a link is emailed to the user.
@@ -1316,7 +1409,7 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
 
     def get(self, request, *args, **kwargs):
 
-        study = self.get_object()
+        study = self.get_study()
         filename = "{}_{}_{}".format(
             study_name_for_files(study.name), study.uuid, "all-frames-dict"
         )
@@ -1324,10 +1417,10 @@ class StudyResponsesFrameDataDictCSV(StudyResponsesAll):
         build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
         messages.success(
             request,
-            f"A frame data dictionary for {self.get_object().name} is being generated. You will be emailed a link when it's completed.",
+            f"A frame data dictionary for {self.get_study().name} is being generated. You will be emailed a link when it's completed.",
         )
         return HttpResponseRedirect(
-            reverse("exp:study-responses-all", kwargs=dict(pk=self.get_object().pk))
+            reverse("exp:study-responses-all", kwargs=self.kwargs)
         )
 
 
@@ -1725,7 +1818,7 @@ class StudyDemographics(
         return output.getvalue()
 
 
-class StudyDemographicsDownloadJSON(StudyDemographics):
+class StudyDemographicsJSON(StudyDemographics):
     """
     Hitting this URL downloads all participant demographics in JSON format.
     """
@@ -1743,7 +1836,7 @@ class StudyDemographicsDownloadJSON(StudyDemographics):
         return response
 
 
-class StudyDemographicsDownloadCSV(StudyDemographics):
+class StudyDemographicsCSV(StudyDemographics):
     """
     Hitting this URL downloads all participant demographics in CSV format.
     """
@@ -1761,7 +1854,7 @@ class StudyDemographicsDownloadCSV(StudyDemographics):
         return response
 
 
-class StudyDemographicsDownloadDictCSV(StudyDemographics):
+class StudyDemographicsDictCSV(StudyDemographics):
     """
     Hitting this URL downloads a data dictionary for participant demographics in in CSV format.
     Does not depend on any actual data.
@@ -1779,14 +1872,14 @@ class StudyDemographicsDownloadDictCSV(StudyDemographics):
         return response
 
 
-class StudyCollisionCheck(StudyResponsesAll):
+class StudyCollisionCheck(ResponseDownloadMixin, View):
     """
     Hitting this URL checks for collisions among all child and account hashed IDs, and returns a string describing
     any collisions (empty string if none).
     """
 
     def get(self, request, *args, **kwargs):
-        study = self.get_object()
+        study = self.get_study()
         responses = (
             study.consented_responses.order_by("id")
             .select_related("child", "child__user", "study")

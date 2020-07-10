@@ -220,7 +220,7 @@
                 </form>
                 <hr>
                 {% if can_delete_preview_data %}
-                    <form method="POST"> {% csrf_token %}
+                    <form method="POST" action="{% url 'exp:study-delete-preview-responses' pk=study.id %}"> {% csrf_token %}
                         <div class="row">
                             <div class="col-md-7 col-sm-6">
                                 Tool: Delete preview data
@@ -228,7 +228,7 @@
                             </div>
                             <div class="col-md-5 col-sm-6">
                                 <div class='pull-right download-button'>
-                                    <button id='delete-preview-data' class='btn btn-primary' type="submit" action="">
+                                    <button id='delete-preview-data' class='btn btn-primary' type="submit">
                                         <span> Delete all preview data </span>
                                     </button>
                                 </div>
