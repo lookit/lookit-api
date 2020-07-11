@@ -163,10 +163,6 @@ class ResponseViewsTestCase(TestCase):
                 "exp:study-hashed-id-collision-check", kwargs={"pk": self.study.pk}
             ),
             reverse(
-                "exp:study-responses-download-frame-data-csv",
-                kwargs={"pk": self.study.pk},
-            ),
-            reverse(
                 "exp:study-responses-download-frame-data-dict-csv",
                 kwargs={"pk": self.study.pk},
             ),
@@ -244,7 +240,9 @@ class ResponseViewsTestCase(TestCase):
 
     def test_cannot_delete_preview_data_as_unassociated_researcher(self):
         self.client.force_login(self.other_researcher)
-        url = reverse("exp:study-responses-all", kwargs={"pk": self.study.pk})
+        url = reverse(
+            "exp:study-delete-preview-responses", kwargs={"pk": self.study.pk}
+        )
         response = self.client.post(url, {})
         self.assertEqual(
             response.status_code,
@@ -258,7 +256,9 @@ class ResponseViewsTestCase(TestCase):
 
     def test_delete_preview_data(self):
         self.client.force_login(self.study_admin)
-        url = reverse("exp:study-responses-all", kwargs={"pk": self.study.pk})
+        url = reverse(
+            "exp:study-delete-preview-responses", kwargs={"pk": self.study.pk}
+        )
         self.assertEqual(
             self.study.responses.filter(is_preview=True).count(), self.n_previews
         )
@@ -480,7 +480,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.client.force_login(self.study_reader)
         query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_json_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = b"".join(response.streaming_content).decode("utf-8")
         data = json.loads(content)
 
         # Check that we have the expected number of responses
@@ -790,7 +790,7 @@ class ResponseDataDownloadTestCase(TestCase):
         )
 
         json_response = self.client.get(self.response_summary_json_url)
-        content = json_response.content.decode("utf-8")
+        content = b"".join(json_response.streaming_content).decode("utf-8")
         data = json.loads(content)
 
         exit_survey_headers = [
