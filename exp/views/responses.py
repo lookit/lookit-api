@@ -1,47 +1,41 @@
 import io
 import json
-import os
 import types
 import zipfile
-from typing import NamedTuple, Union
+from typing import NamedTuple
 from wsgiref.util import FileWrapper
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from django.http import (
     HttpResponse,
     HttpResponseRedirect,
     JsonResponse,
     StreamingHttpResponse,
 )
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.shortcuts import redirect, reverse
 from django.views import generic
 from django.views.generic.base import View
-from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
 import attachment_helpers
-from accounts.utils import (
-    hash_child_id,
-    hash_demographic_id,
-    hash_id,
-    hash_participant_id,
-)
+from accounts.utils import hash_child_id, hash_id, hash_participant_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.utils import (
     RESPONSE_PAGE_SIZE,
-    Echo,
     csv_dict_output_and_writer,
     flatten_dict,
     round_age,
-    round_ages_from_birthdays,
     study_name_for_files,
 )
 from exp.views.mixins import (
+    CanViewStudyResponsesMixin,
     ExperimenterLoginRequiredMixin,
     SingleObjectParsimoniousQueryMixin,
+    StudyLookupMixin,
 )
 from studies.models import Feedback, Response, Study
 from studies.permissions import StudyPermission
@@ -49,9 +43,7 @@ from studies.queries import (
     get_consent_statistics,
     get_responses_with_current_rulings_and_videos,
 )
-from studies.tasks import build_framedata_dict, build_zipfile_of_videos
-
-# ------- Helper functions for response downloads ----------------------------------------
+from studies.tasks import build_framedata_dict
 
 
 class ResponseDataColumn(NamedTuple):
@@ -69,16 +61,19 @@ response_columns = [
         id="response__id",
         description="Short ID for this response",
         extractor=lambda resp: str(resp.id),
+        name="Response ID",
     ),
     ResponseDataColumn(
         id="response__uuid",
         description="Unique identifier for response. Can be used to match data to video filenames.",
         extractor=lambda resp: str(resp.uuid),
+        name="Response UUID",
     ),
     ResponseDataColumn(
         id="response__date_created",
         description="Timestamp for when participant began session, in format e.g. 2019-11-07 17:13:38.702958+00:00",
         extractor=lambda resp: str(resp.date_created),
+        name="Date created",
     ),
     ResponseDataColumn(
         id="response__completed",
@@ -88,6 +83,7 @@ response_columns = [
             "exit survey, or may have completed all test trials but not exit survey."
         ),
         extractor=lambda resp: resp.completed,
+        name="Completed",
     ),
     ResponseDataColumn(
         id="response__withdrawn",
@@ -96,6 +92,7 @@ response_columns = [
             "true, video will not be available and must not be used."
         ),
         extractor=lambda resp: resp.withdrawn,
+        name="Withdrawn",
     ),
     ResponseDataColumn(
         id="response__parent_feedback",
@@ -105,6 +102,7 @@ response_columns = [
             "omitted from published data."
         ),
         extractor=lambda resp: resp.parent_feedback,
+        name="Parent feedback",
     ),
     ResponseDataColumn(
         id="response__birthdate_difference",
@@ -114,18 +112,20 @@ response_columns = [
             "no birthdate available from the exit survey."
         ),
         extractor=lambda resp: resp.birthdate_difference,
+        name="Birthdate difference",
     ),
     ResponseDataColumn(
         id="response__video_privacy",
         description=(
             "Privacy level for videos selected during the exit survey, if the parent completed the exit survey. "
             "Possible levels are 'private' (only people listed on your IRB protocol can view), 'scientific' "
-            "(can share for scientific/educational purposes), and 'publicity' (can also share for publicity). "
+            "(can share for scientific/educational purposes), and 'public' (can also share for publicity). "
             "In no cases may videos be shared for commercial purposes. If this is missing (e.g., family stopped "
             "just after the consent form and did not complete the exit survey), you must treat the video as "
             "private."
         ),
         extractor=lambda resp: resp.privacy,
+        name="Video privacy level",
     ),
     ResponseDataColumn(
         id="response__databrary",
@@ -135,6 +135,7 @@ response_columns = [
             "authorized Databrary users."
         ),
         extractor=lambda resp: resp.databrary,
+        name="Databrary sharing",
     ),
     ResponseDataColumn(
         id="response__is_preview",
@@ -143,6 +144,7 @@ response_columns = [
             "not be used in any actual analyses."
         ),
         extractor=lambda resp: resp.is_preview,
+        name="Preview",
     ),
     ResponseDataColumn(
         id="consent__ruling",
@@ -211,6 +213,7 @@ response_columns = [
             resp.study.salt,
             resp.study.hash_digits,
         ),
+        name="Parent ID",
     ),
     ResponseDataColumn(
         id="participant__nickname",
@@ -250,6 +253,7 @@ response_columns = [
         extractor=lambda resp: hash_id(
             resp.child.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
         ),
+        name="Child ID",
     ),
     ResponseDataColumn(
         id="child__name",
@@ -373,7 +377,7 @@ response_columns = [
         ),
         extractor=lambda resp: resp.sequence,
     ),
-    ResponseDataColumn(  # TODO: this may be the only tricky one to import to json
+    ResponseDataColumn(
         id="response__conditions",
         description=(
             "RESEARCHERS: EXPAND THIS SECTION BASED ON YOUR INDIVIDUAL STUDY. Each set of "
@@ -424,7 +428,7 @@ child_csv_headers = [
 ]
 
 
-def construct_response_dictionary(resp, optional_headers):
+def construct_response_dictionary(resp, optional_headers, include_exp_data=True):
     if optional_headers is None:
         optional_headers = []
     resp_dict = {}
@@ -439,67 +443,9 @@ def construct_response_dictionary(resp, optional_headers):
             except ValueError:
                 resp_dict[col.id] = col.extractor(resp)
     # Include exp_data field in dictionary
-    resp_dict["exp_data"] = resp.exp_data
+    if include_exp_data:
+        resp_dict["exp_data"] = resp.exp_data
     return resp_dict
-
-
-# TODO: eliminate, only used in study list view
-def build_responses_csv(responses, optional_headers_selected_ids):
-    """
-    Builds CSV file contents for overview of all responses.
-    Note: this uses the actual response object rather than a dict returned by
-    values() because we use several properties (which cannot be retrieved by
-    values()):
-
-     "withdrawn"
-     "most_recent_ruling",
-     "most_recent_ruling_arbiter",
-     "most_recent_ruling_date",
-     "most_recent_ruling_comment",
-     "child__language_list",
-     "child__condition_list"
-
-    Iterating over the responses to fetch these properties would defeat the point
-    so we just use the object.
-    """
-
-    headers = set()
-    session_list = []
-
-    paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
-    for page_num in paginator.page_range:
-        page_of_responses = paginator.page(page_num)
-        for resp in page_of_responses:
-            row_data = flatten_dict(
-                {col.id: col.extractor(resp) for col in response_columns}
-            )
-            # Add any new headers from this session
-            headers = headers | set(row_data.keys())
-            session_list.append(row_data)
-
-    header_list = get_response_headers(optional_headers_selected_ids, headers)
-    output, writer = csv_dict_output_and_writer(header_list)
-    writer.writerows(session_list)
-    return output.getvalue()
-
-
-# TODO: eliminate this, just using for individual responses now
-def build_responses_json(responses, optional_headers=None):
-    """
-    Builds the JSON response data for the researcher to download
-    """
-    # Note: this uses the actual response object rather than a dict returned by
-    # values() because we use several properties (which cannot be retrieved by
-    # values()), e.g. withdrawn and child__language_list.
-    json_responses = []
-    if optional_headers is None:
-        optional_headers = []
-    paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
-    for page_num in paginator.page_range:
-        page_of_responses = paginator.page(page_num)
-        for resp in page_of_responses:
-            json_responses.append(construct_response_dictionary(resp, optional_headers))
-    return json_responses
 
 
 def get_frame_data(resp):
@@ -744,37 +690,6 @@ def build_single_response_framedata_csv(response):
     return output.getvalue()
 
 
-# ------- End helper functions for response downloads ------------------------------------
-
-
-class StudyLookupMixin:
-
-    study = None
-
-    def get_study(self):
-        if self.study is None:
-            self.study = get_object_or_404(Study, pk=self.kwargs.get("pk"))
-        return self.study
-
-
-class CanViewStudyResponsesMixin(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin
-):
-
-    raise_exception = True
-
-    def can_view_responses(self):
-        user = self.request.user
-        study = self.get_study()
-
-        return user.is_researcher and (
-            user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
-            or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
-        )
-
-    test_func = can_view_responses
-
-
 class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
 
     model = Response
@@ -806,63 +721,18 @@ class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
 
 
 class StudyResponsesList(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
+    CanViewStudyResponsesMixin,
     PaginatorMixin,
     SingleObjectParsimoniousQueryMixin,
     generic.DetailView,
 ):
     """
-    View to acquire a list of study responses.
+    View to display a list of study responses.
     """
 
-    template_name = "studies/study_responses.html"
     queryset = Study.objects.all()
-    raise_exception = True
 
-    def user_can_see_study_responses(self):
-        user = self.request.user
-        study = self.get_object()
-        method = self.request.method
-
-        if not user.is_researcher:
-            return False
-
-        if method == "GET":
-            return user.has_study_perms(
-                StudyPermission.READ_STUDY_RESPONSE_DATA, study
-            ) or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
-        elif method == "POST":
-            return user.has_study_perms(StudyPermission.EDIT_STUDY_FEEDBACK, study)
-
-    test_func = user_can_see_study_responses
-
-    # TODO: split into separate post views for attachments, editing feedback
-    def post(self, request, *args, **kwargs):
-        """Currently, handles feedback form."""
-        form_data = self.request.POST
-        user = self.request.user
-
-        # first, check the case for video download
-        attachment_id = form_data.get("attachment")
-        if attachment_id:
-            download_url = self.get_object().videos.get(pk=attachment_id).download_url
-            return redirect(download_url)
-
-        feedback_id = form_data.get("feedback_id", None)
-        comment = form_data.get("comment", "")
-
-        if feedback_id:
-            Feedback.objects.filter(id=feedback_id).update(comment=comment)
-        else:
-            response_id = int(form_data.get("response_id"))
-            Feedback.objects.create(
-                response_id=response_id, researcher=user, comment=comment
-            )
-
-        return HttpResponseRedirect(
-            reverse("exp:study-responses-list", kwargs=dict(pk=self.get_object().pk))
-        )
+    template_name = "studies/study_responses.html"
 
     def get_responses_orderby(self):
         """
@@ -887,6 +757,7 @@ class StudyResponsesList(
         page = self.request.GET.get("page", None)
         orderby = self.get_responses_orderby()
 
+        # TODO: replace with built-in pagination on list view
         responses = (
             context["study"]
             .responses_for_researcher(self.request.user)
@@ -905,35 +776,62 @@ class StudyResponsesList(
             responses, page, 10
         )
 
-        minimal_optional_headers = [
+        columns_included_in_summary = [
+            "response__id",
+            "response__uuid",
+            "response__date_created",
+            "response__completed",
+            "response__withdrawn",
+            "response__parent_feedback",
+            "response__birthdate_difference",
+            "response__video_privacy",
+            "response__databrary",
+            "response__is_preview",
+            "participant__global_id",
+            "participant__hashed_id",
+            "participant__nickname",
+            "child__global_id",
+            "child__hashed_id",
+            "child__name",
             "child__age_rounded",
             "child__gender",
+            "child__age_at_birth",
             "child__language_list",
             "child__condition_list",
-            "child__age_at_birth",
-        ]
-        context["response_data"] = build_responses_json(
-            paginated_responses, minimal_optional_headers
-        )
-        context["csv_data"] = [
-            build_responses_csv([resp], minimal_optional_headers)
-            for resp in paginated_responses
+            "child__additional_information",
         ]
 
-        context["frame_data"] = [
-            build_single_response_framedata_csv(resp) for resp in paginated_responses
+        columns_included_in_table = [
+            "child__hashed_id",
+            "response__uuid",
+            "response__id",
+            "response__status",
+            "response__completed",
+            "response__is_preview",
         ]
-        optional_header_ids = [col.id for col in response_columns if col.optional]
-        context["response_data_full"] = build_responses_json(
-            paginated_responses, optional_header_ids
-        )
-        context["csv_data_full"] = [
-            build_responses_csv([resp], optional_header_ids)
-            for resp in paginated_responses
-        ]
+        response_data = []
+        for resp in paginated_responses:
+            # Info needed for table display of individual responses
+            this_resp_data = {
+                col.id: col.extractor(resp)
+                for col in response_columns
+                if col.id in columns_included_in_table
+            }
+            # Separately include date_created as actual date object for use in template
+            this_resp_data["response__date_created"] = resp.date_created
+            # info needed for summary table shown at right
+            this_resp_data["summary"] = [
+                {"name": col.name, "value": col.extractor(resp)}
+                for col in response_columns
+                if col.id in columns_included_in_summary
+            ]
+            response_data.append(this_resp_data)
+        context["response_data"] = response_data
+
         context["can_edit_feedback"] = self.request.user.has_study_perms(
             StudyPermission.EDIT_STUDY_FEEDBACK, context["study"]
         )
+
         return context
 
     def sort_attachments_by_response(self, responses):
@@ -968,13 +866,93 @@ class StudyResponsesList(
         )
 
 
+class StudyResponseVideoAttachment(ResponseDownloadMixin, View):
+    """
+    View that redirects to a requested video for a study response.
+    """
+
+    def post(self, request, *args, **kwargs):
+        study = self.get_study()
+
+        attachment_id = self.request.POST.get("attachment", None)
+        if attachment_id:
+            download_url = study.videos_for_consented_responses.get(
+                pk=attachment_id
+            ).download_url
+            return redirect(download_url)
+
+        return HttpResponseRedirect(
+            reverse("exp:study-responses-list", kwargs=dict(pk=study.pk))
+        )
+
+
+class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
+    """
+    View to create or edit response feedback.
+    """
+
+    def user_can_edit_feedback(self):
+        user = self.request.user
+        study = self.get_study()
+        # First check user has permission to be editing feedback from this study at all
+        if not user.is_researcher and user.has_study_perms(
+            StudyPermission.EDIT_STUDY_FEEDBACK, study
+        ):
+            return False
+        # Check that the feedback_id (if given) is from this study
+        feedback_id = self.request.POST.get("feedback_id", None)
+        if feedback_id:
+            try:
+                feedback = Feedback.objects.get(id=feedback_id)
+            except ObjectDoesNotExist:
+                return False
+            if feedback.response.study_id != study.pk:
+                return False
+        # Check that the response_id (if given) is from this study
+        response_id = self.request.POST.get("response_id", None)
+        if response_id:
+            try:
+                response = Response.objects.get(id=int(response_id))
+            except ObjectDoesNotExist:
+                return False
+            if response.study_id != study.pk:
+                return False
+        return True
+
+    test_func = user_can_edit_feedback
+
+    def post(self, request, *args, **kwargs):
+        """
+        Create or edit feedback. Pass feedback_id to edit existing feedback, or response_id to create new
+        feedback for that response.
+        """
+        form_data = self.request.POST
+        user = self.request.user
+        study = self.get_study()
+
+        feedback_id = form_data.get("feedback_id", None)
+        comment = form_data.get("comment", "")
+
+        if feedback_id:
+            Feedback.objects.filter(id=feedback_id).update(comment=comment)
+        else:
+            response_id = int(form_data.get("response_id"))
+            Feedback.objects.create(
+                response_id=response_id, researcher=user, comment=comment
+            )
+
+        return HttpResponseRedirect(
+            reverse("exp:study-responses-list", kwargs=dict(pk=study.pk))
+        )
+
+
 class StudyResponsesConsentManager(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectParsimoniousQueryMixin,
     generic.DetailView,
 ):
-    """Manage videos from here."""
+    """Manage consent videos from here: approve or reject as evidence of informed consent."""
 
     template_name = "studies/study_responses_consent_ruling.html"
     queryset = Study.objects.all()
@@ -1055,7 +1033,7 @@ class StudyResponsesConsentManager(
         return context
 
     def post(self, request, *args, **kwargs):
-        """This is where consent is submitted."""
+        """This is where consent rulings are submitted."""
         form_data = self.request.POST
         user = self.request.user
         study = self.get_object()
@@ -1180,13 +1158,15 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
         chunk += ",\n".join(
             json.dumps(
                 construct_response_dictionary(resp, header_options),
-                indent="\t",
+                indent="\t",  # Use tab rather than spaces to make file smaller (ex. 60MB -> 25MB)
                 default=str,
             )
             for resp in paginator.page(page_num)
         )
         if page_num == paginator.page_range[-1]:
             chunk += "\n]"
+        else:
+            chunk += ",\n"
         return chunk
 
     def render_to_response(self, context):
@@ -1424,454 +1404,6 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
         )
 
 
-class StudyDemographics(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.DetailView,
-):
-    """
-    StudyDemographics view shows participant demographic snapshots associated
-    with each response to the study
-    """
-
-    template_name = "studies/study_demographics.html"
-    queryset = Study.objects.all()
-    raise_exception = True
-
-    def user_can_view_study_responses(self):
-        user = self.request.user
-        study = self.get_object()
-        return user.is_researcher and (
-            user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
-            or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
-        )
-
-    test_func = user_can_view_study_responses
-
-    def get_context_data(self, **kwargs):
-        """
-        In addition to the study, adds several items to the context dictionary.  Study results
-        are paginated.
-        """
-        context = super().get_context_data(**kwargs)
-        context["n_responses"] = (
-            context["study"].responses_for_researcher(self.request.user).count()
-        )
-        return context
-
-    def get_demographic_headers(self, optional_header_ids=None):
-        if optional_header_ids == None:
-            optional_header_ids = []
-        optional_header_ids_to_columns = {"globalparent": "participant_global_id"}
-        all_headers = self.get_csv_demographic_row_and_headers()["headers"]
-        selected_headers = [
-            optional_header_ids_to_columns[id]
-            for id in optional_header_ids
-            if id in optional_header_ids_to_columns
-        ]
-        optional_headers = optional_header_ids_to_columns.values()
-        return [
-            h for h in all_headers if h not in optional_headers or h in selected_headers
-        ]
-
-    def get_response_values_for_demographics(self, study):
-        return (
-            study.responses_for_researcher(self.request.user)
-            .order_by("id")
-            .select_related("child", "child__user", "study", "demographic_snapshot")
-            .values(
-                "uuid",
-                "date_created",
-                "child__user__uuid",
-                "study__uuid",
-                "study__salt",
-                "study__hash_digits",
-                "demographic_snapshot__uuid",
-                "demographic_snapshot__created_at",
-                "demographic_snapshot__number_of_children",
-                "demographic_snapshot__child_birthdays",
-                "demographic_snapshot__languages_spoken_at_home",
-                "demographic_snapshot__number_of_guardians",
-                "demographic_snapshot__number_of_guardians_explanation",
-                "demographic_snapshot__race_identification",
-                "demographic_snapshot__age",
-                "demographic_snapshot__gender",
-                "demographic_snapshot__education_level",
-                "demographic_snapshot__spouse_education_level",
-                "demographic_snapshot__annual_income",
-                "demographic_snapshot__number_of_books",
-                "demographic_snapshot__additional_comments",
-                "demographic_snapshot__country",
-                "demographic_snapshot__state",
-                "demographic_snapshot__density",
-                "demographic_snapshot__lookit_referrer",
-                "demographic_snapshot__extra",
-            )
-        )
-
-    def build_demographic_json(self, responses, optional_headers=None):
-        """
-        Builds a JSON representation of demographic snapshots for download
-        """
-        json_responses = []
-        if optional_headers == None:
-            optional_headers = []
-        paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
-        for page_num in paginator.page_range:
-            page_of_responses = paginator.page(page_num)
-            for resp in page_of_responses:
-                json_responses.append(
-                    json.dumps(
-                        {
-                            "response": {"uuid": str(resp["uuid"])},
-                            "participant": {
-                                "global_id": str(resp["child__user__uuid"])
-                                if "globalparent" in optional_headers
-                                else "",
-                                "hashed_id": hash_participant_id(resp),
-                            },
-                            "demographic_snapshot": {
-                                "hashed_id": hash_demographic_id(resp),
-                                "date_created": str(
-                                    resp["demographic_snapshot__created_at"]
-                                ),
-                                "number_of_children": resp[
-                                    "demographic_snapshot__number_of_children"
-                                ],
-                                "child_rounded_ages": round_ages_from_birthdays(
-                                    resp["demographic_snapshot__child_birthdays"],
-                                    resp["date_created"],
-                                ),
-                                "languages_spoken_at_home": resp[
-                                    "demographic_snapshot__languages_spoken_at_home"
-                                ],
-                                "number_of_guardians": resp[
-                                    "demographic_snapshot__number_of_guardians"
-                                ],
-                                "number_of_guardians_explanation": resp[
-                                    "demographic_snapshot__number_of_guardians_explanation"
-                                ],
-                                "race_identification": resp[
-                                    "demographic_snapshot__race_identification"
-                                ],
-                                "age": resp["demographic_snapshot__age"],
-                                "gender": resp["demographic_snapshot__gender"],
-                                "education_level": resp[
-                                    "demographic_snapshot__education_level"
-                                ],
-                                "spouse_education_level": resp[
-                                    "demographic_snapshot__spouse_education_level"
-                                ],
-                                "annual_income": resp[
-                                    "demographic_snapshot__annual_income"
-                                ],
-                                "number_of_books": resp[
-                                    "demographic_snapshot__number_of_books"
-                                ],
-                                "additional_comments": resp[
-                                    "demographic_snapshot__additional_comments"
-                                ],
-                                "country": resp["demographic_snapshot__country"],
-                                "state": resp["demographic_snapshot__state"],
-                                "density": resp["demographic_snapshot__density"],
-                                "lookit_referrer": resp[
-                                    "demographic_snapshot__lookit_referrer"
-                                ],
-                                "extra": resp["demographic_snapshot__extra"],
-                            },
-                        },
-                        indent=4,
-                    )
-                )
-        return json_responses
-
-    def get_csv_demographic_row_and_headers(self, resp=None):
-        """
-        Returns dict with headers, row data dict, and description dict for csv participant data associated with a
-        response
-        """
-
-        all_row_data = [
-            (
-                "response_uuid",
-                str(resp["uuid"]) if resp else "",
-                (
-                    "Primary unique identifier for response. Can be used to match demographic data to response data "
-                    "and video filenames; must be redacted prior to publication if videos are also published."
-                ),
-            ),
-            (
-                "participant_global_id",
-                str(resp["child__user__uuid"]) if resp else "",
-                (
-                    "Unique identifier for family account associated with this response. Will be the same for multiple "
-                    "responses from a child and for siblings, and across different studies. MUST BE REDACTED FOR "
-                    "PUBLICATION because this allows identification of families across different published studies, "
-                    "which may have unintended privacy consequences. Researchers can use this ID to match participants "
-                    "across studies (subject to their own IRB review), but would need to generate their own random "
-                    "participant IDs for publication in that case. Use participant_hashed_id as a publication-safe "
-                    "alternative if only analyzing data from one Lookit study."
-                ),
-            ),
-            (
-                "participant_hashed_id",
-                hash_participant_id(resp) if resp else "",
-                (
-                    "Identifier for family account associated with this response. Will be the same for multiple "
-                    "responses from a child and for siblings, but is unique to this study. This may be published "
-                    "directly."
-                ),
-            ),
-            (
-                "demographic_hashed_id",
-                hash_demographic_id(resp) if resp else "",
-                (
-                    "Identifier for this demographic snapshot. Changes upon updates to the demographic form, "
-                    "so may vary within the same participant across responses."
-                ),
-            ),
-            (
-                "demographic_date_created",
-                str(resp["demographic_snapshot__created_at"]) if resp else "",
-                (
-                    "Timestamp of creation of the demographic snapshot associated with this response, in format e.g. "
-                    "2019-10-02 21:39:03.713283+00:00"
-                ),
-            ),
-            (
-                "demographic_number_of_children",
-                resp["demographic_snapshot__number_of_children"] if resp else "",
-                "Response to 'How many children do you have?'; options 0-10 or >10 (More than 10)",
-            ),
-            (
-                "demographic_child_rounded_ages",
-                round_ages_from_birthdays(
-                    resp["demographic_snapshot__child_birthdays"], resp["date_created"]
-                )
-                if resp
-                else "",
-                (
-                    "List of rounded ages based on child birthdays entered in demographic form (not based on children "
-                    "registered). Ages are at time of response for this row, in days, rounded to nearest 10 for ages "
-                    "under 1 year and nearest 30 otherwise. In format e.g. [60, 390]"
-                ),
-            ),
-            (
-                "demographic_languages_spoken_at_home",
-                resp["demographic_snapshot__languages_spoken_at_home"] if resp else "",
-                "Freeform response to 'What language(s) does your family speak at home?'",
-            ),
-            (
-                "demographic_number_of_guardians",
-                resp["demographic_snapshot__number_of_guardians"] if resp else "",
-                "Response to 'How many parents/guardians do your children live with?' - 1, 2, 3> [3 or more], varies",
-            ),
-            (
-                "demographic_number_of_guardians_explanation",
-                resp["demographic_snapshot__number_of_guardians_explanation"]
-                if resp
-                else "",
-                (
-                    "Freeform response to 'If the answer varies due to shared custody arrangements or travel, please "
-                    "enter the number of parents/guardians your children are usually living with or explain.'"
-                ),
-            ),
-            (
-                "demographic_race_identification",
-                resp["demographic_snapshot__race_identification"] if resp else "",
-                (
-                    "Comma-separated list of all values checked for question 'What category(ies) does your family "
-                    "identify as?', from list:  White; Hispanic, Latino, or Spanish origin; Black or African American; "
-                    "Asian; American Indian or Alaska Native; Middle Eastern or North African; Native Hawaiian or "
-                    "Other Pacific Islander; Another race, ethnicity, or origin"
-                ),
-            ),
-            (
-                "demographic_age",
-                resp["demographic_snapshot__age"] if resp else "",
-                (
-                    "Parent's response to question 'What is your age?'; options are <18, 18-21, 22-24, 25-29, 30-34, "
-                    "35-39, 40-44, 45-49, 50s, 60s, >70"
-                ),
-            ),
-            (
-                "demographic_gender",
-                resp["demographic_snapshot__gender"] if resp else "",
-                (
-                    "Parent's response to question 'What is your gender?'; options are m [male], f [female], o "
-                    "[other], na [prefer not to answer]"
-                ),
-            ),
-            (
-                "demographic_education_level",
-                resp["demographic_snapshot__education_level"] if resp else "",
-                (
-                    "Parent's response to question 'What is the highest level of education you've completed?'; options "
-                    "are some [some or attending high school], hs [high school diploma or GED], col [some or attending "
-                    "college], assoc [2-year college degree], bach [4-year college degree], grad [some or attending "
-                    "graduate or professional school], prof [graduate or professional degree]"
-                ),
-            ),
-            (
-                "demographic_spouse_education_level",
-                resp["demographic_snapshot__spouse_education_level"] if resp else "",
-                (
-                    "Parent's response to question 'What is the highest level of education your spouse has "
-                    "completed?'; options are some [some or attending high school], hs [high school diploma or GED], "
-                    "col [some or attending college], assoc [2-year college degree], bach [4-year college degree], "
-                    "grad [some or attending graduate or professional school], prof [graduate or professional degree], "
-                    "na [not applicable - no spouse or partner]"
-                ),
-            ),
-            (
-                "demographic_annual_income",
-                resp["demographic_snapshot__annual_income"] if resp else "",
-                (
-                    "Parent's response to question 'What is your approximate family yearly income (in US dollars)?'; "
-                    "options are 0, 5000, 10000, 15000, 20000-19000 in increments of 10000, >200000, or na [prefer not "
-                    "to answer]"
-                ),
-            ),
-            (
-                "demographic_number_of_books",
-                resp["demographic_snapshot__number_of_books"] if resp else "",
-                "Parent's response to question 'About how many children's books are there in your home?'; integer",
-            ),
-            (
-                "demographic_additional_comments",
-                resp["demographic_snapshot__additional_comments"] if resp else "",
-                "Parent's freeform response to question 'Anything else you'd like us to know?'",
-            ),
-            (
-                "demographic_country",
-                resp["demographic_snapshot__country"] if resp else "",
-                "Parent's response to question 'What country do you live in?'; 2-letter country code",
-            ),
-            (
-                "demographic_state",
-                resp["demographic_snapshot__state"] if resp else "",
-                (
-                    "Parent's response to question 'What state do you live in?' if country is US; 2-letter state "
-                    "abbreviation"
-                ),
-            ),
-            (
-                "demographic_density",
-                resp["demographic_snapshot__density"] if resp else "",
-                (
-                    "Parent's response to question 'How would you describe the area where you live?'; options are "
-                    "urban, suburban, rural"
-                ),
-            ),
-            (
-                "demographic_lookit_referrer",
-                resp["demographic_snapshot__lookit_referrer"] if resp else "",
-                "Parent's freeform response to question 'How did you hear about Lookit?'",
-            ),
-        ]
-
-        headers = [name for (name, val, desc) in all_row_data]
-        row_data_with_headers = {name: val for (name, val, desc) in all_row_data}
-        field_descriptions = {name: desc for (name, val, desc) in all_row_data}
-
-        return {
-            "headers": headers,
-            "descriptions": field_descriptions,
-            "dict": row_data_with_headers,
-        }
-
-    def build_all_demographic_csv(self, responses, optional_header_ids=None):
-        """
-        Builds CSV file contents for all participant data
-        """
-
-        participant_list = []
-        these_headers = self.get_demographic_headers(optional_header_ids)
-
-        paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
-        for page_num in paginator.page_range:
-            page_of_responses = paginator.page(page_num)
-            for resp in page_of_responses:
-                row_data = self.get_csv_demographic_row_and_headers(resp)["dict"]
-                # Add any new headers from this session
-                participant_list.append(row_data)
-
-        output, writer = csv_dict_output_and_writer(these_headers)
-        writer.writerows(participant_list)
-        return output.getvalue()
-
-    def build_all_demographic_dict_csv(self, optional_header_ids=None):
-        """
-        Builds CSV file contents for all participant data dictionary
-        """
-
-        descriptions = self.get_csv_demographic_row_and_headers()["descriptions"]
-        these_headers = self.get_demographic_headers(optional_header_ids)
-        all_descriptions = [
-            {"column": key, "description": val}
-            for (key, val) in descriptions.items()
-            if key in these_headers
-        ]
-        output, writer = csv_dict_output_and_writer(["column", "description"])
-        writer.writerows(all_descriptions)
-        return output.getvalue()
-
-
-class StudyDemographicsJSON(StudyDemographics):
-    """
-    Hitting this URL downloads all participant demographics in JSON format.
-    """
-
-    def get(self, request, *args, **kwargs):
-        study = self.get_object()
-        responses = self.get_response_values_for_demographics(study)
-        header_options = self.request.GET.getlist("demooptions")
-        cleaned_data = ", ".join(self.build_demographic_json(responses, header_options))
-        filename = "{}_{}.json".format(
-            study_name_for_files(study.name), "all-demographic-snapshots"
-        )
-        response = HttpResponse(cleaned_data, content_type="text/json")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
-        return response
-
-
-class StudyDemographicsCSV(StudyDemographics):
-    """
-    Hitting this URL downloads all participant demographics in CSV format.
-    """
-
-    def get(self, request, *args, **kwargs):
-        study = self.get_object()
-        responses = self.get_response_values_for_demographics(study)
-        header_options = self.request.GET.getlist("demooptions")
-        cleaned_data = self.build_all_demographic_csv(responses, header_options)
-        filename = "{}_{}.csv".format(
-            study_name_for_files(study.name), "all-demographic-snapshots"
-        )
-        response = HttpResponse(cleaned_data, content_type="text/csv")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
-        return response
-
-
-class StudyDemographicsDictCSV(StudyDemographics):
-    """
-    Hitting this URL downloads a data dictionary for participant demographics in in CSV format.
-    Does not depend on any actual data.
-    """
-
-    def get(self, request, *args, **kwargs):
-        study = self.get_object()
-        header_options = self.request.GET.getlist("demooptions")
-        cleaned_data = self.build_all_demographic_dict_csv(header_options)
-        filename = "{}_{}.csv".format(
-            study_name_for_files(study.name), "all-demographic-snapshots-dict"
-        )
-        response = HttpResponse(cleaned_data, content_type="text/csv")
-        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
-        return response
-
-
 class StudyCollisionCheck(ResponseDownloadMixin, View):
     """
     Hitting this URL checks for collisions among all child and account hashed IDs, and returns a string describing
@@ -1927,107 +1459,3 @@ class StudyCollisionCheck(ResponseDownloadMixin, View):
                 else:
                     child_dict[child_hashed_id] = child_global_id
         return JsonResponse({"collisions": collision_text})
-
-
-class StudyAttachments(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    PaginatorMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.DetailView,
-):
-    """
-    StudyAttachments View shows video attachments for the study
-    """
-
-    template_name = "studies/study_attachments.html"
-    queryset = Study.objects.prefetch_related("responses", "videos")
-    raise_exception = True
-
-    def user_can_see_study_responses(self):
-        user = self.request.user
-        study = self.get_object()
-
-        return user.is_researcher and (
-            user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
-            or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
-        )
-
-    test_func = user_can_see_study_responses
-
-    def get_consented_videos(self, study):
-        """
-        Fetches all consented videos this user has access to.
-        TODO: use a helper (e.g. in queries) select_videos_for_user to fetch the appropriate videos here
-        and in build_zipfile_of_videos - deferring for the moment to work out dependencies.
-        """
-        videos = study.videos_for_consented_responses
-        if not self.request.user.has_study_perms(
-            StudyPermission.READ_STUDY_RESPONSE_DATA, study
-        ):
-            videos = videos.filter(response__is_preview=True)
-        if not self.request.user.has_study_perms(
-            StudyPermission.READ_STUDY_PREVIEW_DATA, study
-        ):
-            videos = videos.filter(response__is_preview=False)
-        return videos
-
-    def get_context_data(self, **kwargs):
-        """
-        In addition to the study, adds several items to the context dictionary.  Study results
-        are paginated.
-        """
-        context = super().get_context_data(**kwargs)
-        orderby = self.request.GET.get("sort", "full_name")
-        match = self.request.GET.get("match", "")
-        videos = self.get_consented_videos(context["study"])
-        if match:
-            videos = videos.filter(full_name__icontains=match)
-        if orderby:
-            videos = videos.order_by(orderby)
-        context["videos"] = videos
-        context["match"] = match
-        return context
-
-    def post(self, request, *args, **kwargs):
-        """
-        Downloads study video
-        """
-        attachment_url = self.request.POST.get("attachment")
-        match = self.request.GET.get("match", "")
-        orderby = self.request.GET.get("sort", "id") or "id"
-
-        if attachment_url:
-            return redirect(attachment_url)
-
-        if self.request.POST.get("all-attachments"):
-            build_zipfile_of_videos.delay(
-                f"{self.get_object().uuid}_all_attachments",
-                self.get_object().uuid,
-                orderby,
-                match,
-                self.request.user.uuid,
-                consent_only=False,
-            )
-            messages.success(
-                request,
-                f"An archive of videos for {self.get_object().name} is being generated. You will be emailed a link when it's completed.",
-            )
-
-        if self.request.POST.get("all-consent-videos"):
-            build_zipfile_of_videos.delay(
-                f"{self.get_object().uuid}_all_consent",
-                self.get_object().uuid,
-                orderby,
-                match,
-                self.request.user.uuid,
-                consent_only=True,
-            )
-            messages.success(
-                request,
-                f"An archive of consent videos for {self.get_object().name} is being generated. You will be emailed a link when it's completed.",
-            )
-
-        return HttpResponseRedirect(
-            reverse("exp:study-attachments", kwargs=dict(pk=self.get_object().pk))
-        )

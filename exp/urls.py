@@ -53,6 +53,8 @@ from exp.views import (
     StudyResponsesFrameDataDictCSV,
     StudyResponsesJSON,
     StudyResponsesList,
+    StudyResponseSubmitFeedback,
+    StudyResponseVideoAttachment,
     StudyUpdateView,
 )
 
@@ -92,6 +94,16 @@ urlpatterns = [
         "studies/<int:pk>/responses/",
         StudyResponsesList.as_view(),
         name="study-responses-list",
+    ),
+    path(
+        "studies/<int:pk>/responses/feedback/",
+        StudyResponseSubmitFeedback.as_view(),
+        name="study-response-submit-feedback",
+    ),
+    path(
+        "studies/<int:pk>/responses/video/",
+        StudyResponseVideoAttachment.as_view(),
+        name="study-response-video-download",
     ),
     path(
         "studies/<int:pk>/responses/all/",

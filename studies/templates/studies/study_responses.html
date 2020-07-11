@@ -13,48 +13,24 @@
     </style>
     <script type="application/javascript">
         $(document).ready(function(){
-            hideResponses();
             $( ".selectable-participant").first().addClass('selected');
-            let currentResponseId = $(".selectable-participant.selected").data("response-id");
-            let currentResponseUuid = $(".selectable-participant.selected").data("response-uuid");
-            showResponse('JSON', 1)
-            console.log($(".selectable-participant.selected"));
+            let currentResponseId = $( ".selectable-participant").first().data("response-id");
+            showResponse(1);
             showFeedbackList(currentResponseId);
-            $( ".response-data").first().show();
-            $( ".response-attachments").first().show();
+            showAttachments(1);
 
             $('.selectable-participant').click(function() {
                 // Shows selected individual's response data
                 var id = $(this)[0].id;
                 var index = extractIdNumber(id);
-                let responseId = $(this).data("response-id");
                 $('.selectable-participant').removeClass('selected');
                 $('#' + id).addClass('selected');
-                hideResponses();
-                showResponse($('#data-type-selector').val(), index);
+                showResponse(index);
                 showAttachments(index);
-                showFeedbackList(responseId);
+                var response_id = $(this).data("response-id");
+                showFeedbackList(response_id);
             });
 
-            $('#data-type-selector').on('change', function(){
-                // Toggles individual responses between CSV and JSON format
-                var selected = $(this).find("option:selected").val();
-                var index = extractIdNumber($('.selectable-participant.selected')[0].id);
-                hideResponses();
-                showResponse(selected, index);
-                $('#download-data-label').text(selected);
-            });
-
-            function prepareDataForDownload(dataClassOrId, buttonId, label, ext) {
-                // Preps Download All button to download either all JSON or all CSV responses
-                var data = "data:text/json;charset=utf-8," + encodeURIComponent($(dataClassOrId).html());
-                var elem = $('#' + 'download-individual-data')[0];
-                if (data && elem) {
-                    elem.href = data;
-                    let study_name_safe = '{{study.name}}'.replace(/[^a-z0-9]/gi, '-');
-                    elem.download = study_name_safe + '_' + label + '.' + ext;
-                }
-            }
             function showAttachments(index) {
                 $('.response-attachments').hide();
                 $('#resp-attachment-' + index).show();
@@ -70,34 +46,12 @@
                 return id.split('-').slice(-1)[0];
             }
 
-            function showResponse(dataType, index) {
-                // Shows individual response
-                if (dataType === 'JSON') {
-                    $('#response-data-' + index).show();
-                    prepareDataForDownload('#json-data-' + index, 'download-individual-data', currentResponseUuid + '_data', 'json');
-                } else if (dataType === 'CSV summary') {
-                    $('#csv-response-data-' + index).show();
-                    prepareDataForDownload('#csv-data-' + index, 'download-individual-data', currentResponseUuid + '_summary-data', 'csv');
-                } else if (dataType === 'CSV frame data') {
-                    $('#frame-response-data-' + index).show();
-                    prepareDataForDownload('#frame-data-' + index, 'download-individual-data', currentResponseUuid + '_frames', 'csv');
-                } else if (dataType === 'JSON with identifiable data') {
-                    $('#response-data-full-' + index).show();
-                    prepareDataForDownload('#json-data-full-' + index, 'download-individual-data', currentResponseUuid + '_data-identifiable', 'json');
-                } else if (dataType === 'CSV summary with identifiable data') {
-                    $('#csv-response-data-full-' + index).show();
-                    prepareDataForDownload('#csv-data-full-' + index, 'download-individual-data', currentResponseUuid + '_summary-data-identifiable', 'csv');
-                }
+            function showResponse(index) {
+                // Shows individual response summary
+                $('.response-summary').hide();
+                $('#response-summary-' + index).show();
             }
 
-            function hideResponses() {
-                // Hides all responses
-                $('.response-data').hide();
-                $('.csv-response-data').hide();
-                $('.frame-response-data').hide();
-                $('.response-data-full').hide();
-                $('.csv-response-data-full').hide();
-            };
         });
 
     </script>
@@ -164,18 +118,18 @@
                         </thead>
                         <tbody>
                         {% for response in response_data %}
-                          <tr class='selectable-participant {% if response.response.is_preview %} preview-row {% endif %}' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.response.id }}" data-response-uuid="{{ response.response.uuid }}">
-                            <td>{% if response.response.is_preview %}P{% endif %}</td>
-                            <td>{{ response.child.hashed_id }}</td>
-                            <td>{{ response.response.uuid|truncatechars:11 }} </td>
-                            <td>{% if response.response.completed %} Complete {% else %} Incomplete {% endif %} </td>
-                            <td>{{ response.response.date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
+                          <tr class='selectable-participant {% if response.response__is_preview %} preview-row {% endif %}' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.response__id }}" data-response-uuid="{{ response.response__uuid }}">
+                            <td>{% if response.response__is_preview %}P{% endif %}</td>
+                            <td>{{ response.child__hashed_id }}</td>
+                            <td>{{ response.response__uuid|truncatechars:9 }} </td>
+                            <td>{% if response.response__completed %} Complete {% else %} Incomplete {% endif %} </td>
+                            <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
                           </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                     {% if can_edit_feedback %}
-                        <form method="POST" class="form-inline">{% csrf_token %}
+                        <form method="POST" class="form-inline" action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">{% csrf_token %}
                             <h4>New Feedback</h4>
                             <section class="form-group">
                                 <label class="sr-only" for="response-feedback">
@@ -198,7 +152,7 @@
                             <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
                             {% for feedback in response.feedback.all %}
                                 {% if can_edit_feedback %}
-                                <form method="POST" class="small form-inline">{% csrf_token %}
+                                <form method="POST" class="small form-inline" action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">{% csrf_token %}
                                     <div class="form-group">
                                         <label class="sr-only"
                                                for="feedback-edit-{{ feedback.id }}">
@@ -233,44 +187,43 @@
                 {% include 'studies/_paginator.html' with page=responses %}
             </div>
             <div class="col-md-6 col-xs-12">
-                <div class="form-group pt-xxxl">
-                    <label for="data-type-selector">Data Type</label>
-                    <select class="form-control" id="data-type-selector">
-                        <option>JSON</option>
-                        <option>JSON with identifiable data</option>
-                        <option>CSV summary</option>
-                        <option>CSV summary with identifiable data</option>
-                        <option>CSV frame data</option>
-                    </select>
-                </div>
-                <a id='download-individual-data' class='btn mb-sm btn-primary'>
-                    Download individual response <span id="download-data-label">JSON </span>
-                </a>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                        <label for="data-type-selector">Data Type</label>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                        <select class="form-control" id="data-type-selector">
+                            <option>JSON</option>
+                            <option>CSV summary</option>
+                            <option>CSV frame data</option>
+                        </select>
+                        </div><div class="col-md-6 col-xs-12">
+                        <a id='download-individual-data' class='btn mb-sm btn-primary'>
+                            Download response
+                        </a>
+                        </div>
+                    </div>
+
                 {% for response in response_data %}
-                    <div class='response-data' id='response-data-{{ forloop.counter }}' style="display:none">
-                        <pre class='json-data individual-block' id='json-data-{{ forloop.counter }}'>{{ response | pretty_json }}</pre>
+                    <div class='response-summary' id='response-summary-{{ forloop.counter }}' style="display:none">
+                        <table class="table table-sm table-hover">
+                            {% for pair in response.summary %}
+                                <tr class='{% if pair.name == "Video privacy level" %} {% if pair.value == "public" %} success {% elif pair.value == "scientific" %} warning {% else %} danger {% endif %} {% endif %}'>
+                                    <td>{{ pair.name }}</td>
+                                    <td>{{ pair.value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
                     </div>
                 {% endfor %}
-                {% for csv in csv_data %}
-                    <div class='csv-response-data' id='csv-response-data-{{ forloop.counter }}' style="display:none">
-                        <pre class='csv-data individual-block' id='csv-data-{{ forloop.counter }}'>{{ csv }}</pre>
-                    </div>
-                {% endfor %}
-                {% for csv in frame_data %}
-                    <div class='frame-response-data' id='frame-response-data-{{ forloop.counter }}' style="display:none">
-                        <pre class='frame-data individual-block' id='frame-data-{{ forloop.counter }}'>{{ csv }}</pre>
-                    </div>
-                {% endfor %}
-                {% for csv in csv_data_full %}
-                    <div class='csv-response-data-full' id='csv-response-data-full-{{ forloop.counter }}' style="display:none">
-                        <pre class='csv-data-full individual-block' id='csv-data-full-{{ forloop.counter }}'>{{ csv }}</pre>
-                    </div>
-                {% endfor %}
-                {% for response in response_data_full %}
-                    <div class='response-data-full' id='response-data-full-{{ forloop.counter }}' style="display:none">
-                        <pre class='json-data-full individual-block' id='json-data-full-{{ forloop.counter }}'>{{ response | pretty_json }}</pre>
-                    </div>
-                {% endfor %}
+
+            </div>
+
+
+
+                </div>
+
+
 
                 <div class="pb-md">
                     <h2> Videos </h2>
@@ -278,7 +231,8 @@
                         <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
                             {% for video in response.videos.all %}
                                 <div class="row pt-xs">
-                                    <form method="POST"> {% csrf_token %}
+
+                                    <form method="POST" action="{% url 'exp:study-response-video-download' pk=study.id %}"> {% csrf_token %}
                                         <div class="col-xs-9">
                                             {{ video.full_name }}
                                         </div>

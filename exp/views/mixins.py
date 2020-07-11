@@ -2,16 +2,19 @@ from typing import Optional
 
 import requests
 from django.conf import settings
+
 from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Model
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseForbidden
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
-from studies.models import StudyType
+from studies.models import Lab, Study, StudyType
+from studies.permissions import StudyPermission
 
 
 class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
@@ -37,6 +40,34 @@ class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
             return HttpResponseForbidden(
                 f"Unauthorized: {user} is not a Researcher account."
             )
+
+
+class StudyLookupMixin:
+
+    study = None
+
+    def get_study(self):
+        if self.study is None:
+            self.study = get_object_or_404(Study, pk=self.kwargs.get("pk"))
+        return self.study
+
+
+class CanViewStudyResponsesMixin(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin
+):
+
+    raise_exception = True
+
+    def can_view_responses(self):
+        user = self.request.user
+        study = self.get_study()
+
+        return user.is_researcher and (
+            user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+            or user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+        )
+
+    test_func = can_view_responses
 
 
 class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):
