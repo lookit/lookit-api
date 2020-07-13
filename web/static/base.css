@@ -401,6 +401,24 @@ button[disabled]#participate-button{
     padding: 10px;
 }
 
+/* Two Factor Auth page */
+#qr-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+#qr-container ol:first-child {
+    width: 40%;
+    text-align: left;
+    font-size: large;
+}
+
+#qr-container ol:first-child li {
+    margin-bottom: 1em;
+}
+
+
 /* CHILD PICKER */
 
 .child-picker-btn {
