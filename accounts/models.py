@@ -104,16 +104,19 @@ class GoogleAuthenticatorTOTP(models.Model):
         """Verifies the provided one-time password."""
         return self.provider.verify(auth_code)
 
-    def get_svg_qr_code(self) -> bytes:
+    def get_svg_qr_code(self) -> str:
         with BytesIO() as stream:
             make_qrcode(
                 pyotp.utils.build_uri(
                     self.secret, name=self.user.username, issuer_name=self.issuer
                 ),
                 image_factory=SvgPathImage,
+                box_size=30,
             ).save(stream)
 
-        return stream.getvalue()
+            content = stream.getvalue().decode()
+
+        return content
 
 
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
