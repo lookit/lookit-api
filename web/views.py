@@ -428,9 +428,25 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
         return super().dispatch(request, path)
 
 
-class TwoFactorAuthSetupView(generic.base.TemplateView):
+class TwoFactorAuthSetupView(UserPassesTestMixin, generic.base.TemplateView):
     template_name = "web/2fa-setup.html"
+    # raise_exception = True
+    permission_denied_message = (
+        "For security reasons, once you've activated Two Factor Authentication, you "
+        "can't access the QR code again. If you are locked out of your account and "
+        "need to reset 2FA to get back in, please contact lookit-tech@mit.edu."
+    )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
+        otp = GoogleAuthenticatorTOTP.objects.get_or_create(user=self.request.user)[0]
+        context["svg_qr_code"] = otp.get_svg_qr_code()
         return context
+
+    def no_previously_set_otp(self):
+        """Don't let the user in if they've had a chance to set up OTP."""
+        user: User = self.request.user
+
+        return not getattr(user, "otp", None)
+
+    test_func = no_previously_set_otp
