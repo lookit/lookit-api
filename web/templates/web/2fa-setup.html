@@ -3,7 +3,43 @@
 {% block title %}Set up Two Factor Authentication{% endblock %}
 
 {% block content %}
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>Two Factor Authentication Setup</h2>
+    </div>
 
-    foo bar baz
+    {% bootstrap_messages %}
+
+    <div class="container mt-lg">
+        <div class="row">
+            <div class="alert alert-danger" role="alert">
+                <h2><strong>ATTENTION!</strong></h2>
+                <p>
+                    <strong><u>Do <em>not</em> leave this page</u></strong> until you have finished setting up two factor
+                    authentication with the steps listed below. For security reasons, once you leave this page, you will
+                    not be able to come back, and you will have to reach out to the
+                    <a href="mailto:lookit-tech@mit.edu">Lookit tech team</a> to reset your account.
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">QR Code</h3>
+                    </div>
+                    <div id="qr-container" class="panel-body">
+                        <ol>
+                            <li>Open up the Google Authenticator App on your mobile device.</li>
+                            <li>Click on the <span class="glyphicon glyphicon-plus"></span> button on the right side of the top menu.</li>
+                            <li>Focus your phone camera on the QR code.</li>
+                            <li>Presto! You've got Two Factor Authentication set up.</li>
+                        </ol>
+
+                        <div>{{ svg_qr_code | safe }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
