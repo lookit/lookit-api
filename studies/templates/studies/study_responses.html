@@ -28,9 +28,9 @@
             $('#' + id).addClass('selected');
             showResponse(index);
             showAttachments(index);
-            var response_id = $(this).data("response-id");
+            var responseId = $(this).data("response-id");
             $('#response-id-for-download').val(responseId);
-            showFeedbackList(response_id);
+            showFeedbackList(responseId);
         });
 
         function showAttachments(index) {
