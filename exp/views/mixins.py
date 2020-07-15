@@ -1,10 +1,12 @@
-from typing import Optional, Union
+from typing import Optional
 
 import requests
 from django.conf import settings
+from django.contrib import messages
 from django.db.models import Model
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseForbidden
+from django.shortcuts import redirect
 from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
 
@@ -25,12 +27,12 @@ class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
             if two_factor_auth_enabled:
                 return super().dispatch(request, *args, **kwargs)
             else:
-                # TODO: Redirect instead?
-                return HttpResponseForbidden(
-                    "In order to access this page, you must have two-factor "
-                    "authentication enabled, and have logged in with your "
-                    "OTP key."
+                messages.error(
+                    request,
+                    "In order to access experimenter pages, you must have two-factor "
+                    "authentication enabled, and have logged in with your OTP key.",
                 )
+                return redirect("accounts:login")
         else:
             return HttpResponseForbidden(
                 f"Unauthorized: {user} is not a Researcher account."

@@ -8,8 +8,17 @@ from django.urls import reverse
 from django.utils.http import urlencode
 from django_dynamic_fixture import G
 
+from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, User
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType
+
+
+class Force2FAClient(Client):
+    @property
+    def session(self):
+        _session = super().session
+        _session[TWO_FACTOR_AUTH_SESSION_KEY] = True
+        return _session
 
 
 # Run celery tasks right away, but don't catch errors from them. The relevant tasks for
@@ -18,7 +27,7 @@ from studies.models import ConsentRuling, Lab, Response, Study, StudyType
 @override_settings(CELERY_TASK_EAGER_PROPAGATES=False)
 class ResponseViewsTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
+        self.client = Force2FAClient()
 
         n_participants = 5
         children_per_participant = 3
@@ -191,9 +200,9 @@ class ResponseViewsTestCase(TestCase):
     def test_cannot_see_any_responses_views_unauthenticated(self):
         for url in self.all_response_urls:
             page = self.client.get(url)
-            self.assertEqual(
+            self.assertNotEqual(
                 page.status_code,
-                302,
+                200,
                 "Unauthenticated user not redirected from responses: " + url,
             )
 
@@ -259,7 +268,7 @@ class ResponseViewsTestCase(TestCase):
 
 class ResponseDataDownloadTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
+        self.client = Force2FAClient()
 
         n_participants = 3
         children_per_participant = 2
