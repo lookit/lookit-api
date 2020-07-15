@@ -22,10 +22,10 @@ from django.urls import path
 from django.views.generic.base import RedirectView
 from more_itertools import locate
 
+from accounts import urls as accounts_urls
 from accounts.views import TwoFactorAuthLoginView
 from api import urls as api_urls
 from exp import urls as exp_urls
-from osf_oauth2_adapter import views as osf_oauth2_adapter_views
 from project import settings
 from web import urls as web_urls
 
@@ -41,15 +41,8 @@ urlpatterns = [
     path("favicon.ico", favicon_view),
     path("__CTRL__/", admin.site.urls),
     path("api/", include((api_urls, "api"))),
-    path(
-        "accounts/social/login/cancelled/",
-        osf_oauth2_adapter_views.login_errored_cancelled,
-    ),
-    path(
-        "accounts/social/login/error/", osf_oauth2_adapter_views.login_errored_cancelled
-    ),
-    path("accounts/", include("allauth.urls")),
     path("exp/", include(exp_urls)),
+    path("", include(accounts_urls)),
     path("", include(auth_urls)),
     path("", include(web_urls)),
 ]

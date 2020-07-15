@@ -20,6 +20,43 @@ class UserForm(forms.ModelForm):
         exclude = ("password",)
 
 
+class TOTPField(forms.CharField):
+    max_length = 6
+    min_length = 6
+    default_error_messages = {
+        "invalid": _("Enter a valid 6-digit OTP code"),
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            max_length=self.max_length, min_length=self.min_length, *args, **kwargs
+        )
+
+    def widget_attrs(self, widget):
+        """Override - used to update widget attrs in Field initializer."""
+        attrs = super().widget_attrs(widget)
+        return {**attrs, "placeholder": "123456"}
+
+
+class TOTPCheckForm(forms.Form):
+    otp_code = TOTPField(label="Test the one-time OTP code you get after scanning.")
+
+    def __init__(self, otp, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.otp = otp
+
+    def clean_otp_code(self):
+        """Final validation check on OTP code."""
+        otp_code = self.cleaned_data["otp_code"]
+        if self.otp.verify(otp_code):
+            return otp_code
+        else:
+            raise forms.ValidationError(
+                "Invalid OTP Code. Make sure that you type the 6 digit number "
+                "exactly, and that you do so quickly (within the 30 second window)!"
+            )
+
+
 class TOTPLoginForm(AuthenticationForm):
     error_messages = {
         "invalid_login": _(
@@ -31,11 +68,8 @@ class TOTPLoginForm(AuthenticationForm):
         "inactive": _("This account is inactive."),
     }
 
-    auth_code = forms.CharField(
-        label="Two Factor Auth Code",
-        max_length=6,
-        required=False,
-        help_text="6-digit authorization code",
+    auth_code = TOTPField(  # Do not require otp code in login views.
+        label="Two Factor Auth Code", help_text="6 digit one-time code", required=False
     )
 
     def clean(self):
@@ -74,6 +108,32 @@ class TOTPLoginForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+
+class ResearcherRegistrationForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Don't autofill passwords, in the interest of security.
+        self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
+        self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
+
+    def save(self, commit=True):
+        """Just flip the active and researcher flags."""
+        user = super().save(commit=False)
+        user.is_active = True
+        user.is_researcher = True
+        if commit:
+            user.save()
+        return user
+
+    class Meta:
+        model = User
+        fields = ("username", "nickname", "given_name", "family_name")
+        labels = {
+            "username": "Email address",
+            "given_name": "First name",
+            "family_name": "Last name",
+        }
 
 
 class ParticipantSignupForm(UserCreationForm):

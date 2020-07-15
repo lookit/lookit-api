@@ -11,13 +11,13 @@
 
     <div class="container mt-lg">
         <div class="row">
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-warning" role="alert">
                 <h2><strong>ATTENTION!</strong></h2>
                 <p>
                     <strong><u>Do <em>not</em> leave this page</u></strong> until you have finished setting up two factor
-                    authentication with the steps listed below. For security reasons, once you leave this page, you will
-                    not be able to come back, and you will have to reach out to the
-                    <a href="mailto:lookit-tech@mit.edu">Lookit tech team</a> to reset your account.
+                    authentication with the steps listed below. For security reasons, once you navigate away from this
+                    page, you will not be able to come back, and you will have to reach out to the
+                    <a href="mailto:lookit-tech@mit.edu">Lookit tech team</a> to reset your OTP Secret.
                 </p>
             </div>
         </div>
@@ -32,7 +32,13 @@
                             <li>Open up the Google Authenticator App on your mobile device.</li>
                             <li>Click on the <span class="glyphicon glyphicon-plus"></span> button on the right side of the top menu.</li>
                             <li>Focus your phone camera on the QR code.</li>
-                            <li>Presto! You've got Two Factor Authentication set up.</li>
+                            <li>
+                                <form method="post">{% csrf_token %}
+                                    {% bootstrap_form_errors form %}
+                                    {% bootstrap_form form %}
+                                    {% bootstrap_button "Test Code" button_type="submit" button_class="btn-primary" %}
+                                </form>
+                            </li>
                         </ol>
 
                         <div>{{ svg_qr_code | safe }}</div>

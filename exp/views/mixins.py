@@ -25,6 +25,7 @@ class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
             if two_factor_auth_enabled:
                 return super().dispatch(request, *args, **kwargs)
             else:
+                # TODO: Redirect instead?
                 return HttpResponseForbidden(
                     "In order to access this page, you must have two-factor "
                     "authentication enabled, and have logged in with your "

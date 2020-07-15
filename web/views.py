@@ -1,12 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals, update_session_auth_hash
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from django.dispatch import receiver
-from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils.translation import gettext as _
 from django.views import generic
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
@@ -14,7 +12,7 @@ from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
 
 from accounts import forms
-from accounts.models import Child, DemographicData, GoogleAuthenticatorTOTP, User
+from accounts.models import Child, DemographicData, User
 from project import settings
 from studies.models import Response, Study, Video
 
@@ -426,27 +424,3 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
             path += "index.html"
 
         return super().dispatch(request, path)
-
-
-class TwoFactorAuthSetupView(UserPassesTestMixin, generic.base.TemplateView):
-    template_name = "web/2fa-setup.html"
-    # raise_exception = True
-    permission_denied_message = (
-        "For security reasons, once you've activated Two Factor Authentication, you "
-        "can't access the QR code again. If you are locked out of your account and "
-        "need to reset 2FA to get back in, please contact lookit-tech@mit.edu."
-    )
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        otp = GoogleAuthenticatorTOTP.objects.get_or_create(user=self.request.user)[0]
-        context["svg_qr_code"] = otp.get_svg_qr_code()
-        return context
-
-    def no_previously_set_otp(self):
-        """Don't let the user in if they've had a chance to set up OTP."""
-        user: User = self.request.user
-
-        return not getattr(user, "otp", None)
-
-    test_func = no_previously_set_otp
