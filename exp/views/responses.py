@@ -7,11 +7,13 @@ from wsgiref.util import FileWrapper
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import (
+    FileResponse,
     HttpResponse,
+    HttpResponseNotModified,
     HttpResponseRedirect,
     JsonResponse,
     StreamingHttpResponse,
@@ -376,6 +378,7 @@ response_columns = [
             "sequences due to randomization or if a participant leaves early."
         ),
         extractor=lambda resp: resp.sequence,
+        name="Response sequence",
     ),
     ResponseDataColumn(
         id="response__conditions",
@@ -392,6 +395,9 @@ response_columns = [
         ],
     ),
 ]
+
+
+identifiable_data_headers = [col.id for col in response_columns if col.identifiable]
 
 
 def get_response_headers(selected_headers, all_available_headers):
@@ -693,16 +699,14 @@ def build_single_response_framedata_csv(response):
 class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
 
     model = Response
-    paginate_by = 5
-    ordering = ("id",)
-    http_method_names = ["get"]
-
-    def valid_responses(self, study):
-        return study.responses_for_researcher(self.request.user).order_by("id")
+    paginate_by = 10
+    ordering = "id"
 
     def get_queryset(self):
         study = self.get_study()
-        return study.responses_for_researcher(self.request.user).order_by("id")
+        return study.responses_for_researcher(self.request.user).order_by(
+            self.get_ordering()
+        )
 
     def get_response_values_for_framedata(self, study):
         return (
@@ -720,21 +724,14 @@ class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
         )
 
 
-class StudyResponsesList(
-    CanViewStudyResponsesMixin,
-    PaginatorMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.DetailView,
-):
+class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
     """
     View to display a list of study responses.
     """
 
-    queryset = Study.objects.all()
-
     template_name = "studies/study_responses.html"
 
-    def get_responses_orderby(self):
+    def get_ordering(self):
         """
         Determine sort field and order. Sorting on id actually sorts on user id, not response id.
         Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
@@ -748,19 +745,10 @@ class StudyResponsesList(
             orderby = "completed" if reverse else "-completed"
         return orderby
 
-    def get_context_data(self, **kwargs):
-        """
-        In addition to the study, adds several items to the context dictionary.  Study results
-        are paginated.
-        """
-        context = super().get_context_data(**kwargs)
-        page = self.request.GET.get("page", None)
-        orderby = self.get_responses_orderby()
-
-        # TODO: replace with built-in pagination on list view
-        responses = (
-            context["study"]
-            .responses_for_researcher(self.request.user)
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
             .prefetch_related(
                 "consent_rulings__arbiter",
                 Prefetch(
@@ -770,12 +758,16 @@ class StudyResponsesList(
                     ),
                 ),
             )
-            .order_by(orderby)
-        )
-        paginated_responses = context["responses"] = self.paginated_queryset(
-            responses, page, 10
         )
 
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.  Study results
+        are paginated.
+        """
+        context = super().get_context_data(**kwargs)
+        context["study"] = study = self.get_study()
+        paginated_responses = context["object_list"]
         columns_included_in_summary = [
             "response__id",
             "response__uuid",
@@ -787,6 +779,7 @@ class StudyResponsesList(
             "response__video_privacy",
             "response__databrary",
             "response__is_preview",
+            "response__sequence",
             "participant__global_id",
             "participant__hashed_id",
             "participant__nickname",
@@ -808,6 +801,7 @@ class StudyResponsesList(
             "response__status",
             "response__completed",
             "response__is_preview",
+            "response__date_created",
         ]
         response_data = []
         for resp in paginated_responses:
@@ -817,45 +811,38 @@ class StudyResponsesList(
                 for col in response_columns
                 if col.id in columns_included_in_table
             }
-            # Separately include date_created as actual date object for use in template
-            this_resp_data["response__date_created"] = resp.date_created
+            this_resp_data["date_created"] = str(resp.date_created)
             # info needed for summary table shown at right
             this_resp_data["summary"] = [
-                {"name": col.name, "value": col.extractor(resp)}
+                {
+                    "name": col.name,
+                    "value": col.extractor(resp),
+                    "description": col.description,
+                }
                 for col in response_columns
                 if col.id in columns_included_in_summary
             ]
+            this_resp_data["videos"] = resp.videos.values("pk", "full_name")
+            for v in this_resp_data["videos"]:
+                v["display_name"] = (
+                    v["full_name"]
+                    .replace("videoStream_{}_".format(study.uuid), "...")
+                    .replace("_{}_".format(resp.uuid), "...")
+                )
             response_data.append(this_resp_data)
         context["response_data"] = response_data
-
+        context["data_options"] = [col for col in response_columns if col.optional]
+        context["can_view_regular_responses"] = self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_RESPONSE_DATA, context["study"]
+        )
+        context["can_view_preview_responses"] = self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_PREVIEW_DATA, context["study"]
+        )
         context["can_edit_feedback"] = self.request.user.has_study_perms(
             StudyPermission.EDIT_STUDY_FEEDBACK, context["study"]
         )
 
         return context
-
-    def sort_attachments_by_response(self, responses):
-        """
-        Build a list of list of videos for each response
-        """
-        study = self.get_object()
-        attachments = attachment_helpers.get_study_attachments(study)
-        all_attachments = []
-        for response in responses:
-            uuid = str(response.uuid)
-            att_list = []
-            for attachment in attachments:
-                if uuid in attachment.key:
-                    att_list.append(
-                        {
-                            "key": attachment.key,
-                            "display": self.build_video_display_name(
-                                str(study.uuid), uuid, attachment.key
-                            ),
-                        }
-                    )
-            all_attachments.append(att_list)
-        return all_attachments
 
     def build_video_display_name(self, study_uuid, response_uuid, vid_name):
         """
@@ -865,6 +852,51 @@ class StudyResponsesList(
             vid_name.split(study_uuid + "_")[1].split("_" + response_uuid + "_")
         )
 
+    def post(self, *args, **kwargs):
+        data_type = self.request.POST.get("data-type-selector", None)
+        if data_type not in ["json", "csv", "framedata"]:
+            raise SuspiciousOperation
+
+        response_id = self.request.POST.get("response_id", None)
+        try:
+            resp = self.get_queryset().get(pk=response_id)
+        except ObjectDoesNotExist:
+            raise SuspiciousOperation
+
+        study = self.get_study()
+        header_options = self.request.POST.getlist("data_options")
+        extension = "json" if data_type == "json" else "csv"
+        filename = "{}_{}{}.{}".format(
+            study_name_for_files(study.name),
+            str(resp.uuid),
+            "_frames"
+            if data_type == "json"
+            else "_identifiable"
+            if any([option in identifiable_data_headers for option in header_options])
+            else "",
+            extension,
+        )
+
+        if data_type == "json":
+            cleaned_data = json.dumps(
+                construct_response_dictionary(resp, header_options),
+                indent="\t",
+                default=str,
+            )
+        elif data_type == "csv":
+            row_data = flatten_dict(
+                {col.id: col.extractor(resp) for col in response_columns}
+            )
+            header_list = get_response_headers(header_options, row_data.keys())
+            output, writer = csv_dict_output_and_writer(header_list)
+            writer.writerow(row_data)
+            cleaned_data = output.getvalue()
+        elif data_type == "framedata":
+            cleaned_data = build_single_response_framedata_csv(resp)
+        response = HttpResponse(cleaned_data, content_type="text/{}".format(extension))
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+
 
 class StudyResponseVideoAttachment(ResponseDownloadMixin, View):
     """
@@ -873,17 +905,25 @@ class StudyResponseVideoAttachment(ResponseDownloadMixin, View):
 
     def post(self, request, *args, **kwargs):
         study = self.get_study()
+        attachment_id = self.request.POST.get("attachment_id", None)
 
-        attachment_id = self.request.POST.get("attachment", None)
         if attachment_id:
-            download_url = study.videos_for_consented_responses.get(
-                pk=attachment_id
-            ).download_url
-            return redirect(download_url)
+            # TODO: use correct set!
+            video = study.videos_for_consented_responses.get(pk=attachment_id)
+            download_url = video.download_url
+            response = redirect(download_url)
 
-        return HttpResponseRedirect(
-            reverse("exp:study-responses-list", kwargs=dict(pk=study.pk))
-        )
+            if "download" in self.request.POST:
+                # fl = open(download_url, 'r')
+                response = HttpResponse(download_url, content_type="video/mp4")
+                response["Content-Disposition"] = 'attachment; filename="{}"'.format(
+                    video.filename
+                )
+                return response
+
+            return response
+
+        return HttpResponseNotModified
 
 
 class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
@@ -1099,6 +1139,12 @@ class StudyResponsesAll(
         context["can_delete_preview_data"] = self.request.user.has_study_perms(
             StudyPermission.DELETE_ALL_PREVIEW_DATA, context["study"]
         )
+        context["can_view_regular_responses"] = self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_RESPONSE_DATA, context["study"]
+        )
+        context["can_view_preview_responses"] = self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_PREVIEW_DATA, context["study"]
+        )
         return context
 
 
@@ -1173,9 +1219,6 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
         paginator = context["paginator"]
         study = self.get_study()
         header_options = self.request.GET.getlist("data_options")
-        identifiable_data_headers = [
-            col.id for col in response_columns if col.identifiable
-        ]
         filename = "{}_{}.json".format(
             study_name_for_files(study.name),
             "all-responses"
@@ -1226,9 +1269,6 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
         writer.writerows(session_list)
         cleaned_data = output.getvalue()
 
-        identifiable_data_headers = [
-            col.id for col in response_columns if col.identifiable
-        ]
         filename = "{}_{}.csv".format(
             study_name_for_files(study.name),
             "all-responses"
@@ -1352,6 +1392,8 @@ class StudyChildrenDictCSV(CanViewStudyResponsesMixin, View):
 class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
     """Hitting this URL downloads a ZIP file with frame data from one response per file in CSV format"""
 
+    # TODO: with large files / many responses generation can take a while. Should generate asynchronously along
+    # with the data dict.
     def render_to_response(self, context):
         paginator = context["paginator"]
         study = self.get_study()
@@ -1367,17 +1409,14 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
                     )
                     zipped.writestr(filename, data)
 
-        response = StreamingHttpResponse(
-            FileWrapper(zipped_file), content_type="application/octet-stream"
-        )
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="{}_framedata_per_session.zip"'.format(
-            study_name_for_files(study.name)
-        )
-        content_len = zipped_file.tell()
         zipped_file.seek(0)
-        response["Content-Length"] = content_len
+        response = FileResponse(
+            zipped_file,
+            as_attachment=True,
+            filename="{}_framedata_per_session.zip".format(
+                study_name_for_files(study.name)
+            ),
+        )
         return response
 
 
