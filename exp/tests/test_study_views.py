@@ -16,6 +16,8 @@ from studies.permissions import LabPermission, StudyPermission
 
 
 class Force2FAClient(Client):
+    """For convenience, let's just pretend everyone is two-factor auth'd."""
+
     @property
     def session(self):
         _session = super().session

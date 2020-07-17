@@ -1,13 +1,113 @@
 import datetime
+from unittest.mock import Mock
 
+from django.http import HttpRequest
 from django.test import TestCase
+from django.urls import reverse
 from django_dynamic_fixture import G
 from lark.exceptions import UnexpectedCharacters
 
-from accounts.models import Child, User
+from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
+from accounts.models import Child, GoogleAuthenticatorTOTP, User
 from accounts.queries import get_child_eligibility
 from studies.fields import GESTATIONAL_AGE_CHOICES
 from studies.models import Lab, Study, StudyType
+
+
+class AuthenticationTestCase(TestCase):
+    def setUp(self):
+        # self._client = Client()
+        self.researcher_email = "test@test.com"
+        self.test_password = "testpassword20chars"
+        self.researcher = G(
+            User,
+            username=self.researcher_email,
+            is_active=True,
+            is_researcher=True,
+            nickname="Lab Researcher",
+        )
+        self.researcher.set_password(self.test_password)
+        self.researcher.save()
+
+        self.otp = G(GoogleAuthenticatorTOTP, user=self.researcher)
+
+    def test_researcher_registration_flow(self):
+        response = self.client.post(
+            reverse("accounts:researcher-registration"),
+            {
+                "username": "tester@test.com",
+                "password1": self.test_password,
+                "password2": self.test_password,
+                "given_name": "Test",
+                "family_name": "Person",
+                "nickname": "Testman",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.redirect_chain, [("/2fa/", 302)])
+        self.assertEqual(response.status_code, 200)
+
+        # Mock correctly entered OTP
+        otp = response.context["user"].otp
+        response = self.client.post(
+            reverse("accounts:2fa-setup"), {"otp_code": otp.provider.now()}, follow=True
+        )
+
+        self.assertTrue(response.wsgi_request.session[TWO_FACTOR_AUTH_SESSION_KEY])
+        self.assertEqual(response.redirect_chain, [("/exp/studies/", 302)])
+        self.assertEqual(response.status_code, 200)
+
+    def test_2fa_flow_wrong_otp_reload_page(self):
+        response = self.client.post(
+            reverse("accounts:researcher-registration"),
+            {
+                "username": "another@test.com",
+                "password1": self.test_password,
+                "password2": self.test_password,
+                "given_name": "Second",
+                "family_name": "Person",
+                "nickname": "Testwoman",
+            },
+            follow=True,
+        )
+
+        # Mock incorrectly entered OTP - off by one.
+        otp = response.context["user"].otp
+        correct = otp.provider.now()
+        incorrect = str(int(correct) + 1)
+        old_qr_svg = response.context["svg_qr_code"]
+        response = self.client.post(
+            reverse("accounts:2fa-setup"), {"otp_code": incorrect}, follow=True
+        )
+        new_qr_svg = response.context["svg_qr_code"]
+
+        # Should have reloaded the page with the same QR code
+        self.assertNotIn(TWO_FACTOR_AUTH_SESSION_KEY, response.wsgi_request.session)
+        self.assertEqual(old_qr_svg, new_qr_svg)
+
+    def test_researcher_login(self):
+        mock_request = Mock(HttpRequest)
+        mock_request.session = {}
+        success = self.client.login(
+            request=mock_request,
+            username=self.researcher_email,
+            password=self.test_password,
+            auth_code=self.otp.provider.now(),
+        )
+        self.assertTrue(success)
+
+    def test_researcher_login_no_authcode(self):
+        success = self.client.login(
+            username=self.researcher_email, password=self.test_password, auth_code="",
+        )
+        self.assertTrue(success)
+
+    def test_qr_view_blocked_after_otp_creation(self):
+        # This is done without OTP.
+        self.client.force_login(self.researcher)
+        response = self.client.get(reverse("accounts:2fa-setup"))
+        self.assertEqual(response.status_code, 403)
 
 
 class UserModelTestCase(TestCase):
