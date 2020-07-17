@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     "storages",
     "django_celery_beat",
     # our stuff
-    # "osf_oauth2_adapter",
     "api",
     "web",
     "accounts",
@@ -78,10 +77,6 @@ INSTALLED_APPS = [
     # See https://stackoverflow.com/a/46836189
     "django.forms",
     "django.contrib.admin",
-    # at the bottom so overriding templates is possible
-    # "allauth",
-    # "allauth.account",
-    # "allauth.socialaccount",
 ]
 
 MIDDLEWARE = [

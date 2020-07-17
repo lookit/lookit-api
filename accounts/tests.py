@@ -16,7 +16,6 @@ from studies.models import Lab, Study, StudyType
 
 class AuthenticationTestCase(TestCase):
     def setUp(self):
-        # self._client = Client()
         self.researcher_email = "test@test.com"
         self.test_password = "testpassword20chars"
         self.researcher = G(
