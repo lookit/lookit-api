@@ -828,3 +828,8 @@ class ResponseDataDownloadTestCase(TestCase):
     # TODO: add test for study-responses-children-summary-csv
     # TODO: add test of study response downloads with large responses and with large
     #       number of responses
+    # TODO: test correct list of responses shows up in response-list
+    #       (e.g. no preview data wo perm, no regular data wo perm, no data from other study)
+    # TODO: test individual file downloads from response-list
+    #       cannot get response from another study, preview/real if no perms, unconsented
+    #       correct fields included (each format) as for all-response downloads

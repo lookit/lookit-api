@@ -101,7 +101,7 @@ urlpatterns = [
         name="study-response-submit-feedback",
     ),
     path(
-        "studies/<int:pk>/responses/video/",
+        "studies/<int:pk>/responses/videos/<int:video>/",
         StudyResponseVideoAttachment.as_view(),
         name="study-response-video-download",
     ),

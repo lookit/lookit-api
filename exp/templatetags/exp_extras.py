@@ -15,7 +15,7 @@ def query_transform(request, **kwargs):
     # Allow multiple values for these, but not duplicates (allow
     # ageoptions=birthday&ageoptions=rounded but not
     # ageoptions=birthday&ageoptions=birthday
-    multi_value_keys = ["ageoptions", "childoptions"]
+    multi_value_keys = ["data_options", "demo_options"]
 
     for (key, val) in kwargs.items():
         # Cast to string so that e.g. page 2 doesn't cause error on encoding

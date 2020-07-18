@@ -167,24 +167,24 @@
                         {% for feedback in response.feedback.all %}
                             {% if can_edit_feedback %}
                                 <form method="POST" class="small" action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">{% csrf_token %}
-                                <div class="form-group">
-                                    <label class="sr-only"
-                                           for="feedback-edit-{{ feedback.id }}">
-                                        <strong>Edit Feedback</strong>
-                                    </label>
+                                    <div class="form-group">
+                                        <label class="sr-only"
+                                               for="feedback-edit-{{ feedback.id }}">
+                                            <strong>Edit Feedback</strong>
+                                        </label>
 
-                                    <textarea id="feedback-edit-{{ feedback.id }}"
-                                              class="form-control"
-                                              name="comment"
-                                              rows="2"
-                                              cols="50">{{ feedback.comment }}</textarea>
-                                    <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
-                                    <button type="submit" class="btn btn-xs btn-warning pull-right mt-sm">Update</button>
-                                    <footer class="pt-sm pb-sm">
-                                        Added by: {{ feedback.researcher.get_full_name }}
-                                    </footer>
-                                </div>
-                            </form>
+                                        <textarea id="feedback-edit-{{ feedback.id }}"
+                                                  class="form-control"
+                                                  name="comment"
+                                                  rows="2"
+                                                  cols="50">{{ feedback.comment }}</textarea>
+                                        <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
+                                        <button type="submit" class="btn btn-xs btn-warning pull-right mt-sm">Update</button>
+                                        <footer class="pt-sm pb-sm">
+                                            Added by: {{ feedback.researcher.get_full_name }}
+                                        </footer>
+                                    </div>
+                                </form>
                             {% else %}
                                 <p>{{ feedback.comment }}</p>
                                 <footer class="pt-sm pb-sm">
@@ -206,12 +206,11 @@
                 {% for video in response.videos %}
                 <div class="row pt-xs">
 
-                    <form method="POST" action="{% url 'exp:study-response-video-download' pk=study.id %}"> {% csrf_token %}
+                    <form method="POST" action="{% url 'exp:study-response-video-download' pk=study.id video=video.pk%}"> {% csrf_token %}
                         <div class="col-xs-12 col-md-8">
                             {{ video.display_name|wordwrap:45 }}
                         </div>
                         <div class="col-xs-12 col-md-4">
-                            <input id="attachment_id" type="hidden" name="attachment_id" value="{{video.pk}}" />
                             <button formtarget="_blank" rel="noreferrer noopener" name="view" type="submit" class="btn btn-primary btn-sm"> View </button>
                             <button name="download" type="submit" class="btn btn-primary btn-sm"> Download </button>
                         </div>

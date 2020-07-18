@@ -20,7 +20,7 @@ def get_all_study_attachments(study_uuid):
 
 def get_download_url(video_key):
     """
-    Generate a presigned url for the video that expires in 60 seconds.
+    Generate a presigned url for the video that expires in 10 minutes.
     """
     return S3_CLIENT.generate_presigned_url(
         "get_object",

@@ -241,9 +241,9 @@
 
                     <div>
                         <input id="include-participant-global"
-                                name="demooptions"
+                                name="demo_options"
                                 type="checkbox"
-                                value="globalparent"
+                                value="participant__global_id"
                                 >
                         <label for="include-participant-global">
                             Include participant global IDs
@@ -254,11 +254,19 @@
             
                     <div class="row">
                         <div class="col-md-7 col-sm-6">
+                            <p>
                             {% if n_responses %}
-                                <p> Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}}) </p>
+                                Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}})
                             {% else %}
-                                <p> There are no responses with confirmed consent yet. Once there are responses with confirmed consent, associated demographic data will be available for download. A data dictionary is available for planning analyses.</p>
+                                There are no responses with confirmed consent yet. Once there are responses with confirmed consent, associated demographic data will be available for download. A data dictionary is available for planning analyses.
                             {% endif %}
+                            {% if can_view_regular_responses and not can_view_preview_responses%}
+                                <span><em> (Based on your permissions, no snapshots from preview responses are included.)</em></span>
+                            {% endif %}
+                            {% if not can_view_regular_responses and can_view_preview_responses%}
+                                <span><em> (Based on your permissions, only snapshots from preview responses are included.)</em></span>
+                            {% endif %}
+                            </p>
                             <p class="help-text"> Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate. 
                             </p>
                             <p class="help-text">Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file if publishing raw data.</p>

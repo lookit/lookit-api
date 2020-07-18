@@ -3,7 +3,6 @@ import json
 import types
 import zipfile
 from typing import NamedTuple
-from wsgiref.util import FileWrapper
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -13,7 +12,6 @@ from django.db.models import Prefetch
 from django.http import (
     FileResponse,
     HttpResponse,
-    HttpResponseNotModified,
     HttpResponseRedirect,
     JsonResponse,
     StreamingHttpResponse,
@@ -23,14 +21,18 @@ from django.views import generic
 from django.views.generic.base import View
 from django.views.generic.list import MultipleObjectMixin
 
-import attachment_helpers
-from accounts.utils import hash_child_id, hash_id, hash_participant_id
-from exp.mixins.paginator_mixin import PaginatorMixin
+from accounts.utils import (
+    hash_child_id,
+    hash_demographic_id,
+    hash_id,
+    hash_participant_id,
+)
 from exp.utils import (
     RESPONSE_PAGE_SIZE,
     csv_dict_output_and_writer,
     flatten_dict,
     round_age,
+    round_ages_from_birthdays,
     study_name_for_files,
 )
 from exp.views.mixins import (
@@ -39,25 +41,28 @@ from exp.views.mixins import (
     SingleObjectParsimoniousQueryMixin,
     StudyLookupMixin,
 )
-from studies.models import Feedback, Response, Study
+from studies.models import Feedback, Response, Study, Video
 from studies.permissions import StudyPermission
 from studies.queries import (
     get_consent_statistics,
     get_responses_with_current_rulings_and_videos,
 )
-from studies.tasks import build_framedata_dict
+from studies.tasks import build_framedata_dict, build_zipfile_of_videos
 
 
 class ResponseDataColumn(NamedTuple):
-    id: str  # unique key to identify data; used as CSV column header. In format object.field_name
+    # id: Unique key to identify data. Used as CSV column header and any portion before __ is used to create a
+    # sub-dictionary for JSON data.
+    id: str
     description: str  # Description for data dictionary
-    extractor: types.LambdaType  # Function to extract value from response instance
+    extractor: types.LambdaType  # Function to extract value from response instance or dict
     optional: bool = False  # is a column the user checks a box to include?
     name: str = ""  # used in template form for optional columns
     include_by_default: bool = False  # whether to initially check checkbox for field
     identifiable: bool = False  # used to determine filename signaling
 
 
+# Columns for response downloads. Extractor functions expect Response instance
 response_columns = [
     ResponseDataColumn(
         id="response__id",
@@ -396,11 +401,220 @@ response_columns = [
     ),
 ]
 
+# Columns for demographic data downloads. Extractor functions expect Response values dict, rather than instance.
+demographic_columns = [
+    ResponseDataColumn(
+        id="response__uuid",
+        description=(
+            "Primary unique identifier for response. Can be used to match demographic data to response data "
+            "and video filenames; must be redacted prior to publication if videos are also published."
+        ),
+        extractor=lambda resp: str(resp["uuid"]),
+        name="Response UUID",
+    ),
+    ResponseDataColumn(
+        id="participant__global_id",
+        description=(
+            "Unique identifier for family account associated with this response. Will be the same for multiple "
+            "responses from a child and for siblings, and across different studies. MUST BE REDACTED FOR "
+            "PUBLICATION because this allows identification of families across different published studies, "
+            "which may have unintended privacy consequences. Researchers can use this ID to match participants "
+            "across studies (subject to their own IRB review), but would need to generate their own random "
+            "participant IDs for publication in that case. Use participant__hashed_id as a publication-safe "
+            "alternative if only analyzing data from one Lookit study."
+        ),
+        extractor=lambda resp: str(resp["child__user__uuid"]),
+        optional=True,
+        name="Parent global ID",
+        include_by_default=False,
+        identifiable=True,
+    ),
+    ResponseDataColumn(
+        id="participant__hashed_id",
+        description=(
+            "Identifier for family account associated with this response. Will be the same for multiple "
+            "responses from a child and for siblings, but is unique to this study. This may be published "
+            "directly."
+        ),
+        extractor=lambda resp: hash_participant_id(resp),
+        name="Participant ID",
+    ),
+    ResponseDataColumn(
+        id="demographic__hashed_id",
+        description=(
+            "Identifier for this demographic snapshot. Changes upon updates to the demographic form, "
+            "so may vary within the same participant across responses."
+        ),
+        extractor=lambda resp: hash_demographic_id(resp),
+        name="Demographic ID",
+    ),
+    ResponseDataColumn(
+        id="demographic__date_created",
+        description=(
+            "Timestamp of creation of the demographic snapshot associated with this response, in format e.g. "
+            "2019-10-02 21:39:03.713283+00:00"
+        ),
+        extractor=lambda resp: str(resp["demographic_snapshot__created_at"]),
+        name="Date created",
+    ),
+    ResponseDataColumn(
+        id="demographic__number_of_children",
+        description="Response to 'How many children do you have?'; options 0-10 or >10 (More than 10)",
+        extractor=lambda resp: resp["demographic_snapshot__number_of_children"],
+        name="Number of children",
+    ),
+    ResponseDataColumn(
+        id="demographic__child_rounded_ages",
+        description=(
+            "List of rounded ages based on child birthdays entered in demographic form (not based on children "
+            "registered). Ages are at time of response for this row, in days, rounded to nearest 10 for ages "
+            "under 1 year and nearest 30 otherwise. In format e.g. [60, 390]"
+        ),
+        extractor=lambda resp: round_ages_from_birthdays(
+            resp["demographic_snapshot__child_birthdays"], resp["date_created"]
+        ),
+        name="Child ages rounded",
+    ),
+    ResponseDataColumn(
+        id="demographic__languages_spoken_at_home",
+        description="Freeform response to 'What language(s) does your family speak at home?'",
+        extractor=lambda resp: resp["demographic_snapshot__languages_spoken_at_home"],
+        name="Languages spoken at home",
+    ),
+    ResponseDataColumn(
+        id="demographic__number_of_guardians",
+        description="Response to 'How many parents/guardians do your children live with?' - 1, 2, 3> [3 or more], varies",
+        extractor=lambda resp: resp["demographic_snapshot__number_of_guardians"],
+        name="Number of guardians",
+    ),
+    ResponseDataColumn(
+        id="demographic__number_of_guardians_explanation",
+        description=(
+            "Freeform response to 'If the answer varies due to shared custody arrangements or travel, please "
+            "enter the number of parents/guardians your children are usually living with or explain.'"
+        ),
+        extractor=lambda resp: resp[
+            "demographic_snapshot__number_of_guardians_explanation"
+        ],
+        name="Number of guardians explanation",
+    ),
+    ResponseDataColumn(
+        id="demographic__race_identification",
+        description=(
+            "Comma-separated list of all values checked for question 'What category(ies) does your family "
+            "identify as?', from list:  White; Hispanic, Latino, or Spanish origin; Black or African American; "
+            "Asian; American Indian or Alaska Native; Middle Eastern or North African; Native Hawaiian or "
+            "Other Pacific Islander; Another race, ethnicity, or origin"
+        ),
+        extractor=lambda resp: resp["demographic_snapshot__race_identification"],
+        name="Race",
+    ),
+    ResponseDataColumn(
+        id="demographic__parent_age",
+        description=(
+            "Parent's response to question 'What is your age?'; options are <18, 18-21, 22-24, 25-29, 30-34, "
+            "35-39, 40-44, 45-49, 50s, 60s, >70"
+        ),
+        extractor=lambda resp: resp["demographic_snapshot__age"],
+        name="Parent age",
+    ),
+    ResponseDataColumn(
+        id="demographic__parent_gender",
+        description=(
+            "Parent's response to question 'What is your gender?'; options are m [male], f [female], o "
+            "[other], na [prefer not to answer]"
+        ),
+        extractor=lambda resp: resp["demographic_snapshot__gender"],
+        name="Parent age",
+    ),
+    ResponseDataColumn(
+        id="demographic__education_level",
+        description=(
+            "Parent's response to question 'What is the highest level of education you've completed?'; options "
+            "are some [some or attending high school], hs [high school diploma or GED], col [some or attending "
+            "college], assoc [2-year college degree], bach [4-year college degree], grad [some or attending "
+            "graduate or professional school], prof [graduate or professional degree]"
+        ),
+        extractor=lambda resp: resp["demographic_snapshot__education_level"],
+        name="Parent education level",
+    ),
+    ResponseDataColumn(
+        id="demographic__spouse_education_level",
+        description=(
+            "Parent's response to question 'What is the highest level of education your spouse has "
+            "completed?'; options are some [some or attending high school], hs [high school diploma or GED], "
+            "col [some or attending college], assoc [2-year college degree], bach [4-year college degree], "
+            "grad [some or attending graduate or professional school], prof [graduate or professional degree], "
+            "na [not applicable - no spouse or partner]"
+        ),
+        extractor=lambda resp: resp["demographic_snapshot__spouse_education_level"],
+        name="Parent education level",
+    ),
+    ResponseDataColumn(
+        id="demographic__annual_income",
+        description=(
+            "Parent's response to question 'What is your approximate family yearly income (in US dollars)?'; "
+            "options are 0, 5000, 10000, 15000, 20000-19000 in increments of 10000, >200000, or na [prefer not "
+            "to answer]"
+        ),
+        extractor=lambda resp: resp["demographic_snapshot__annual_income"],
+        name="Annual income",
+    ),
+    ResponseDataColumn(
+        id="demographic__number_of_books",
+        description="Parent's response to question 'About how many children's books are there in your home?'; integer",
+        extractor=lambda resp: resp["demographic_snapshot__number_of_books"],
+        name="Number of books",
+    ),
+    ResponseDataColumn(
+        id="demographic__additional_comments",
+        description="Parent's freeform response to question 'Anything else you'd like us to know?'",
+        extractor=lambda resp: resp["demographic_snapshot__additional_comments"],
+        name="Additional comments",
+    ),
+    ResponseDataColumn(
+        id="demographic__country",
+        description="Parent's response to question 'What country do you live in?'; 2-letter country code",
+        extractor=lambda resp: resp["demographic_snapshot__country"],
+        name="Country code",
+    ),
+    ResponseDataColumn(
+        id="demographic__state",
+        description=(
+            "Parent's response to question 'What state do you live in?' if country is US; 2-letter state "
+            "abbreviation"
+        ),
+        extractor=lambda resp: resp["demographic_snapshot__state"],
+        name="US State",
+    ),
+    ResponseDataColumn(
+        id="demographic__density",
+        description=(
+            "Parent's response to question 'How would you describe the area where you live?'; options are "
+            "urban, suburban, rural"
+        ),
+        extractor=lambda resp: resp["demographic_snapshot__density"],
+        name="Density",
+    ),
+    ResponseDataColumn(
+        id="demographic__lookit_referrer",
+        description="Parent's freeform response to question 'How did you hear about Lookit?'",
+        extractor=lambda resp: resp["demographic_snapshot__lookit_referrer"],
+        name="How you heard about Lookit",
+    ),
+]
+
+# Which headers from the response data summary should go in the child data downloads
+child_csv_headers = [
+    col.id
+    for col in response_columns
+    if col.id.startswith("child__") or col.id.startswith("participant__")
+]
 
 identifiable_data_headers = [col.id for col in response_columns if col.identifiable]
 
 
-def get_response_headers(selected_headers, all_available_headers):
+def get_response_headers(selected_header_ids, all_available_header_ids):
     """
     Select and order the appropriate headers to include in a file download.
     selected_headers is a list of headers to select from the optional header ids; all_available_headers is a set.
@@ -410,35 +624,39 @@ def get_response_headers(selected_headers, all_available_headers):
     unselected_optional_ids = [
         col.id
         for col in response_columns
-        if col.optional and col.id not in selected_headers
+        if col.optional and col.id not in selected_header_ids
     ]
-    selected_standard_headers = [
+    selected_standard_header_ids = [
         col.id
         for col in response_columns[0:-2]
         if col.id not in unselected_optional_ids
     ]
-    return selected_standard_headers + sorted(
+    return selected_standard_header_ids + sorted(
         list(
-            all_available_headers
-            - set(selected_standard_headers)
+            all_available_header_ids
+            - set(selected_standard_header_ids)
             - set(unselected_optional_ids)
         )
     )
 
 
-# Which headers from the response data summary should go in the child data downloads
-child_csv_headers = [
-    col.id
-    for col in response_columns
-    if col.id.startswith("child__") or col.id.startswith("participant__")
-]
+def get_demographic_headers(selected_header_ids=None):
+    if selected_header_ids is None:
+        selected_header_ids = []
+    return [
+        col.id
+        for col in demographic_columns
+        if col.id in selected_header_ids or not col.optional
+    ]
 
 
-def construct_response_dictionary(resp, optional_headers, include_exp_data=True):
+def construct_response_dictionary(
+    resp, columns, optional_headers, include_exp_data=True
+):
     if optional_headers is None:
         optional_headers = []
     resp_dict = {}
-    for col in response_columns:
+    for col in columns:
         if col.id in optional_headers or not col.optional:
             try:
                 object_name, field_name = col.id.split("__")
@@ -448,7 +666,7 @@ def construct_response_dictionary(resp, optional_headers, include_exp_data=True)
                     resp_dict[object_name] = {field_name: col.extractor(resp)}
             except ValueError:
                 resp_dict[col.id] = col.extractor(resp)
-    # Include exp_data field in dictionary
+    # Include exp_data field in dictionary?
     if include_exp_data:
         resp_dict["exp_data"] = resp.exp_data
     return resp_dict
@@ -708,18 +926,45 @@ class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
             self.get_ordering()
         )
 
-    def get_response_values_for_framedata(self, study):
+
+class DemographicDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
+    model = Response
+    paginate_by = 10
+    ordering = "id"
+
+    def get_queryset(self):
+        study = self.get_study()
         return (
             study.responses_for_researcher(self.request.user)
-            .select_related("child", "study")
+            .order_by(self.get_ordering())
+            .select_related("child", "child__user", "study", "demographic_snapshot")
             .values(
                 "uuid",
-                "exp_data",
-                "child__uuid",
+                "date_created",
+                "child__user__uuid",
                 "study__uuid",
                 "study__salt",
                 "study__hash_digits",
-                "global_event_timings",
+                "demographic_snapshot__uuid",
+                "demographic_snapshot__created_at",
+                "demographic_snapshot__number_of_children",
+                "demographic_snapshot__child_birthdays",
+                "demographic_snapshot__languages_spoken_at_home",
+                "demographic_snapshot__number_of_guardians",
+                "demographic_snapshot__number_of_guardians_explanation",
+                "demographic_snapshot__race_identification",
+                "demographic_snapshot__age",
+                "demographic_snapshot__gender",
+                "demographic_snapshot__education_level",
+                "demographic_snapshot__spouse_education_level",
+                "demographic_snapshot__annual_income",
+                "demographic_snapshot__number_of_books",
+                "demographic_snapshot__additional_comments",
+                "demographic_snapshot__country",
+                "demographic_snapshot__state",
+                "demographic_snapshot__density",
+                "demographic_snapshot__lookit_referrer",
+                "demographic_snapshot__extra",
             )
         )
 
@@ -879,7 +1124,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
 
         if data_type == "json":
             cleaned_data = json.dumps(
-                construct_response_dictionary(resp, header_options),
+                construct_response_dictionary(resp, response_columns, header_options),
                 indent="\t",
                 default=str,
             )
@@ -898,32 +1143,54 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         return response
 
 
-class StudyResponseVideoAttachment(ResponseDownloadMixin, View):
+class StudyResponseVideoAttachment(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin, View
+):
     """
     View that redirects to a requested video for a study response.
     """
 
-    def post(self, request, *args, **kwargs):
+    raise_exception = True
+    video = None
+
+    def get_video(self):
+        # Only select the video from consented videos for this study
+        if self.video is None:
+            self.video = self.get_study().videos_for_consented_responses.get(
+                pk=self.kwargs.get("video")
+            )
+        return self.video
+
+    def can_view_this_video(self):
+        user = self.request.user
         study = self.get_study()
-        attachment_id = self.request.POST.get("attachment_id", None)
+        video = self.get_video()
 
-        if attachment_id:
-            # TODO: use correct set!
-            video = study.videos_for_consented_responses.get(pk=attachment_id)
-            download_url = video.download_url
-            response = redirect(download_url)
+        return user.is_researcher and (
+            (
+                user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)
+                and not video.response.is_preview
+            )
+            or (
+                user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, study)
+                and video.response.is_preview
+            )
+        )
 
-            if "download" in self.request.POST:
-                # fl = open(download_url, 'r')
-                response = HttpResponse(download_url, content_type="video/mp4")
-                response["Content-Disposition"] = 'attachment; filename="{}"'.format(
-                    video.filename
-                )
-                return response
+    test_func = can_view_this_video
 
+    def post(self, request, *args, **kwargs):
+        video = self.get_video()
+        download_url = video.download_url
+
+        if "download" in self.request.POST:
+            response = HttpResponse(download_url, content_type="video/mp4")
+            response["Content-Disposition"] = 'attachment; filename="{}"'.format(
+                video.filename
+            )
             return response
 
-        return HttpResponseNotModified
+        return redirect(download_url)
 
 
 class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
@@ -1124,7 +1391,6 @@ class StudyResponsesAll(
 
     template_name = "studies/study_responses_all.html"
     queryset = Study.objects.all()
-    raise_exception = True
     http_method_names = ["get"]
 
     def get_context_data(self, **kwargs):
@@ -1203,7 +1469,7 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
             chunk = "[\n"
         chunk += ",\n".join(
             json.dumps(
-                construct_response_dictionary(resp, header_options),
+                construct_response_dictionary(resp, response_columns, header_options),
                 indent="\t",  # Use tab rather than spaces to make file smaller (ex. 60MB -> 25MB)
                 default=str,
             )
@@ -1443,6 +1709,126 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
         )
 
 
+class StudyDemographics(
+    CanViewStudyResponsesMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
+):
+    """
+    StudyDemographics view shows participant demographic snapshots associated
+    with each response to the study
+    """
+
+    template_name = "studies/study_demographics.html"
+    queryset = Study.objects.all()
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds information for displaying how many and which types of responses are available.
+        """
+        context = super().get_context_data(**kwargs)
+        context["n_responses"] = (
+            context["study"].responses_for_researcher(self.request.user).count()
+        )
+        context["can_view_regular_responses"] = self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_RESPONSE_DATA, context["study"]
+        )
+        context["can_view_preview_responses"] = self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_PREVIEW_DATA, context["study"]
+        )
+        return context
+
+
+class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
+    """
+    Hitting this URL downloads all participant demographics in JSON format.
+    """
+
+    def render_to_response(self, context):
+        study = self.get_study()
+        header_options = self.request.GET.getlist("demo_options")
+
+        json_responses = []
+        paginator = context["paginator"]
+        for page_num in paginator.page_range:
+            page_of_responses = paginator.page(page_num)
+            for resp in page_of_responses:
+                json_responses.append(
+                    json.dumps(
+                        construct_response_dictionary(
+                            resp,
+                            demographic_columns,
+                            header_options,
+                            include_exp_data=False,
+                        ),
+                        indent="\t",
+                        default=str,
+                    )
+                )
+        cleaned_data = ", ".join(json_responses)
+        filename = "{}_{}.json".format(
+            study_name_for_files(study.name), "all-demographic-snapshots"
+        )
+        response = HttpResponse(cleaned_data, content_type="text/json")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+
+
+class StudyDemographicsCSV(DemographicDownloadMixin, generic.list.ListView):
+    """
+    Hitting this URL downloads all participant demographics in CSV format.
+    """
+
+    def render_to_response(self, context):
+        study = self.get_study()
+        paginator = context["paginator"]
+        header_options = self.request.GET.getlist("demo_options")
+
+        participant_list = []
+        these_headers = get_demographic_headers(header_options)
+        for page_num in paginator.page_range:
+            page_of_responses = paginator.page(page_num)
+            for resp in page_of_responses:
+                row_data = {col.id: col.extractor(resp) for col in demographic_columns}
+                participant_list.append(row_data)
+        output, writer = csv_dict_output_and_writer(these_headers)
+        writer.writerows(participant_list)
+        cleaned_data = output.getvalue()
+
+        filename = "{}_{}.csv".format(
+            study_name_for_files(study.name), "all-demographic-snapshots"
+        )
+        response = HttpResponse(cleaned_data, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+
+
+class StudyDemographicsDictCSV(DemographicDownloadMixin, generic.list.ListView):
+    """
+    Hitting this URL downloads a data dictionary for participant demographics in in CSV format.
+    Does not depend on any actual data.
+    """
+
+    def render_to_response(self, context):
+        header_options = self.request.GET.getlist("demo_options")
+        these_headers = get_demographic_headers(header_options)
+
+        all_descriptions = [
+            {"column": col.id, "description": col.description}
+            for col in demographic_columns
+            if col.id in these_headers
+        ]
+        output, writer = csv_dict_output_and_writer(["column", "description"])
+        writer.writerows(all_descriptions)
+        cleaned_data = output.getvalue()
+
+        filename = "{}_{}.csv".format(
+            study_name_for_files(self.get_study().name),
+            "all-demographic-snapshots-dict",
+        )
+        response = HttpResponse(cleaned_data, content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+        return response
+
+
 class StudyCollisionCheck(ResponseDownloadMixin, View):
     """
     Hitting this URL checks for collisions among all child and account hashed IDs, and returns a string describing
@@ -1498,3 +1884,85 @@ class StudyCollisionCheck(ResponseDownloadMixin, View):
                 else:
                     child_dict[child_hashed_id] = child_global_id
         return JsonResponse({"collisions": collision_text})
+
+
+class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
+    """
+    StudyAttachments View shows video attachments for the study
+    """
+
+    template_name = "studies/study_attachments.html"
+    model = Video
+    paginate_by = 100
+
+    def get_ordering(self):
+        return self.request.GET.get("sort", "-created_at") or "-created_at"
+
+    def get_queryset(self):
+        """
+            Fetches all consented videos this user has access to.
+            TODO: use a helper (e.g. in queries) select_videos_for_user to fetch the appropriate videos here
+            and in build_zipfile_of_videos - deferring for the moment to work out dependencies.
+        """
+        study = self.get_study()
+        videos = study.videos_for_consented_responses
+        if not self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_RESPONSE_DATA, study
+        ):
+            videos = videos.filter(response__is_preview=True)
+        if not self.request.user.has_study_perms(
+            StudyPermission.READ_STUDY_PREVIEW_DATA, study
+        ):
+            videos = videos.filter(response__is_preview=False)
+        match = self.request.GET.get("match", "")
+        if match:
+            videos = videos.filter(full_name__icontains=match)
+        return videos.order_by(self.get_ordering())
+
+    def get_context_data(self, **kwargs):
+        """
+        In addition to the study, adds several items to the context dictionary.  Study results
+        are paginated.
+        """
+        context = super().get_context_data(**kwargs)
+        context["match"] = self.request.GET.get("match", "")
+        context["study"] = self.get_study()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """
+        Downloads study video
+        """
+        match = self.request.GET.get("match", "")
+        orderby = self.get_ordering()
+        study = self.get_study()
+
+        if self.request.POST.get("all-attachments"):
+            build_zipfile_of_videos.delay(
+                f"{study.uuid}_videos",
+                study.uuid,
+                match,
+                self.request.user.uuid,
+                consent_only=False,
+            )
+            messages.success(
+                request,
+                f"An archive of videos for {study.name} is being generated. You will be emailed a link when it's completed.",
+            )
+
+        if self.request.POST.get("all-consent-videos"):
+            build_zipfile_of_videos.delay(
+                f"{study.uuid}_consent_videos",
+                study.uuid,
+                match,
+                self.request.user.uuid,
+                consent_only=True,
+            )
+            messages.success(
+                request,
+                f"An archive of consent videos for {study.name} is being generated. You will be emailed a link when it's completed.",
+            )
+
+        return HttpResponseRedirect(
+            reverse("exp:study-attachments", kwargs=self.kwargs)
+        )
