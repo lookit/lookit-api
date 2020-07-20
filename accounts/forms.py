@@ -131,8 +131,8 @@ class ResearcherRegistrationForm(UserCreationForm):
         fields = ("username", "nickname", "given_name", "family_name")
         labels = {
             "username": "Email address",
-            "given_name": "First name",
-            "family_name": "Last name",
+            "given_name": "Given Name",
+            "family_name": "Family Name",
         }
 
 
