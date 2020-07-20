@@ -12,5 +12,5 @@ class AccountsConfig(AppConfig):
 
     def ready(self):
         # post_migrate.connect(post_migrate_create_organization, sender=self)
-        post_migrate.connect(post_migrate_create_social_app, sender=self)
+        # post_migrate.connect(post_migrate_create_social_app, sender=self)
         post_migrate.connect(post_migrate_create_flatpages, sender=self)
