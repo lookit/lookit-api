@@ -1763,7 +1763,7 @@ class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
                         default=str,
                     )
                 )
-        cleaned_data = ", ".join(json_responses)
+        cleaned_data = f"[ {', '.join(json_responses)} ]"
         filename = "{}_{}.json".format(
             study_name_for_files(study.name), "all-demographic-snapshots"
         )
