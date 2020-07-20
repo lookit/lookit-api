@@ -1,6 +1,7 @@
 {% extends 'exp/base.html' %}
 {% load bootstrap3 %}
 {% load exp_extras %}
+{% load i18n %}
 
 {% block title %}{{ user.nickname |default:"Participant Detail" }}{% endblock %}
 {% block flash %}
@@ -11,7 +12,7 @@
       <div class='row'>
           <div class="col-xs-12">
               <ol class="breadcrumb">
-                <li><a href="{% url 'exp:participant-list' %}"> All Participants </a></li>
+                <li><a href="{% url 'exp:participant-list' %}"> {% trans "All Participants" %} </a></li>
                 <li class="active"> {{ user.nickname |default:"Participant Detail" }} </li>
               </ol>
           </div>
@@ -19,22 +20,22 @@
 
       <div class="row">
           <div class="col-xs-12">
-              <h1> {{ user.identicon_html }} {% if user.nickname %} {{ user.nickname }}{% else %} Participant ID {{ user.id }} {% endif %}</h1>
-              <span><label class='pr-xs'> Last Active: </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
-              <div><label class='pr-xs'> Participant global ID: </label> {{ user.uuid }} </div>
+              <h1> {{ user.identicon_html }} {% if user.nickname %} {{ user.nickname }}{% else %} {% trans "Participant ID" %} {{ user.id }} {% endif %}</h1>
+              <span><label class='pr-xs'> {% trans "Last Active:" %} </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
+              <div><label class='pr-xs'> {% trans "Participant global ID:" %} </label> {{ user.uuid }} </div>
           </div>
       </div>
 
     <div class='row'>
         <div class='col-md-6 col-sm-5'>
-            <h3>Children</h3>
+            <h3>{% trans "Children" %}</h3>
             {% for child in children %}
             <div class="pb-md">
                 <h4 class="child-name"><em>{{child.given_name}}</em></h4>
                 <div class="pl-md">
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> Birthday: </b>
+                            <b> {% trans "Birthday" %}: </b>
                         </div>
                         <div class="col-xs-7">
                             {{child.birthday|date:"n/d/Y"|default:"N/A"}}
@@ -42,7 +43,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> Age: </b>
+                            <b> {% trans "Age" %}: </b>
                         </div>
                         <div class="col-xs-7">
                              {{child.birthday | timesince}}
@@ -50,7 +51,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> Gender: </b>
+                            <b> {% trans "Gender" %}: </b>
                         </div>
                         <div class="col-xs-7">
                              {{child.get_gender_display}}
@@ -58,7 +59,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> Gestational Age at Birth: </b>
+                            <b> {% trans "Gestational Age at Birth" %}: </b>
                         </div>
                         <div class="col-xs-7">
                              {{child.age_at_birth|default:"No response"}}
@@ -66,7 +67,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> Additional Info: </b>
+                            <b> {% trans "Additional Info" %}: </b>
                         </div>
                         <div class="col-xs-7">
                              {{child.additional_information|default:"No response"}}
@@ -75,14 +76,14 @@
                 </div>
             </div>
             {% empty %}
-                <p><em> No children profiles registered! </em></p>
+                <p><em> {% trans "No children profiles registered!" %} </em></p>
             {% endfor %}
         </div>
         <div class='col-md-6 col-sm-7'>
-            <h3>Latest Demographic Data</h3>
+            <h3>{% trans "Latest Demographic Data" %}</h3>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Country: </b>
+                    <b> {% trans "Country" %}: </b>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.country|default:"No Response" }}
@@ -90,7 +91,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> State: </b>
+                    <b> {% trans "State" %}: </b>
                 </div>
                 <div class="col-xs-7">
                      {{ demographics.state|default:"No Response" }}
@@ -98,7 +99,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Area description: </b>
+                    <b> {% trans "Area description" %}: </b>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.density|default:"No Response" }}
@@ -106,7 +107,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Languages Spoken at Home: </b>
+                    <b> {% trans "Languages Spoken at Home" %}: </b>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.languages_spoken_at_home|default:"No Response" }}
@@ -114,7 +115,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Number of Children: </b>
+                    <b> {% trans "Number of Children" %}: </b>
                 </div>
                 <div class="col-xs-7">
                      {{ demographics.number_of_children|default:"No Response" }}
@@ -122,23 +123,23 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b>  Children current ages: </b>
+                    <b> {% trans "Children current ages" %}: </b>
                 </div>
                 <div class="col-xs-7">
-                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday | timesince|default:"N/A"}}{% if not forloop.last %}; {% endif %}{% empty %}No Response{% endfor %}
+                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday | timesince|default:"N/A"}}{% if not forloop.last %}; {% endif %}{% empty %}{% trans No Response %}{% endfor %}
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Number of Guardians: </b>
+                    <b> {% trans "Number of Guardians" %}: </b>
                 </div>
                 <div class="col-xs-7">
-                    {{ demographics.number_of_guardians|default:"No Response" }}
+                    {{ demographics.number_of_guardians|default:"No Response"}}
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Explanation for Guardians: </b>
+                    <b> {% trans "Explanation for Guardians:" %} </b>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.number_of_guardians_explanation|default:"No Response" }}
@@ -146,7 +147,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Race: </b>
+                    <b>{% trans "Race" %}:</b>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.race_identification|default:"No Response" }}

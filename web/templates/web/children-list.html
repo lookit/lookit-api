@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
 {% block title %}Children{% endblock %}
+{% load i18n %}
 
 {% block flash %}
   {% if form.non_field_errors %}
@@ -11,6 +12,7 @@
 {% endblock %}
 {% block content %}
     <script>
+        
         $(document).ready(function() {
             $('.datepicker').datepicker({
                changeMonth: true,
@@ -35,18 +37,18 @@
         });
         function getAge(dateValue) {
             if (dateValue.value === '') {
-                return "Empty birthday"
+                return '{% trans "Empty birthday" %} '  
             }
             var years = moment().diff(new Date(dateValue.value), 'years');
             if (years === 0) {
                 var months = moment().diff(new Date(dateValue.value), 'months');
                 if (months === 0) {
                     var days = moment().diff(new Date(dateValue.value), 'days');
-                    return days === 1 ? days + ' day': days + ' days';
+                    return days === 1 ? days + '{% trans " day" %}': days + '{% trans " days" %}';
                 }
-                return months === 1 ? months + ' month': months + ' months';
+                return months === 1 ? months + '{% trans " month" %}': months + '{% trans " months" %}';
             } else {
-                return years === 1 ? years + ' year': years + ' years';
+                return years === 1 ? years + '{% trans " year" %}': years + '{% trans " years" %}';
             }
         }
 
@@ -56,13 +58,13 @@
         $(function() {
            $("#toggleAddChildButton").click(function () {
               $(this).text(function(i, text){
-                  return text === "Add Child" ? "Hide Form" : "Add Child";
+                  return text === '{% trans "Add Child" %}' ? '{% trans "Hide Form" %}' : '{% trans "Add Child" %}';
               })
            });
         })
     </script>
     <div class='lookit-row lookit-page-title'>
-        <h2 class='container'>My Account</h2>
+        <h2 class='container'>{% trans "My Account" %}</h2>
     </div>
     {% bootstrap_messages %}
     <div class="container">
@@ -72,12 +74,12 @@
             </div>
             <div class="col-md-8">
                 <div class="pull-right">
-                    <button id="toggleAddChildButton" onclick="toggleAddChildForm()"class="btn btn-primary">{% if form_hidden %}Add Child{% else %} Hide Form {% endif %}</button>
+                    <button id="toggleAddChildButton" onclick="toggleAddChildForm()"class="btn btn-primary">{% if form_hidden %}{% trans "Add Child" %}{% else %} {% trans "Hide Form" %} {% endif %}</button>
                 </div>
                 <div id="add-child-form" style="display:{% if form_hidden %} none {% else %} inline {% endif %}">
                     <div class="panel-heading">
                       <h1 class="panel-title">
-                          Add Child
+                          {% trans "Add Child" %}
                       </h1>
                     </div>
                     <div class="panel panel-default">
@@ -87,9 +89,9 @@
                               {% bootstrap_form form %}
                               {% buttons %}
                               <div class="pull-right">
-                                  <a class="btn btn-default" href="{% url 'web:children-list' %}"> Cancel </a>
+                                  <a class="btn btn-default" href="{% url 'web:children-list' %}"> {% trans "Cancel" %} </a>
                                   <button type="submit" class="btn btn-success">
-                                     {% bootstrap_icon "plus" %} Add Child
+                                     {% bootstrap_icon "plus" %} {% trans "Add Child" %}
                                   </button>
                               </div>
                               {% endbuttons %}
@@ -100,14 +102,14 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <h2><label> Children </label></h2>
+                        <h2><label> {% trans "Children" %} </label></h2>
                         {% if objects %}
                             <div class="table-responsive">
                                 <table class="table">
                                   <thead>
                                     <tr>
-                                      <th>Name</th>
-                                      <th>Birthday</th>
+                                      <th>{% trans "Name" %}</th>
+                                      <th>{% trans "Birthday" %}</th>
                                       <th></th>
                                     </tr>
                                   </thead>
@@ -116,14 +118,14 @@
                                           <tr>
                                             <td>{{ child.given_name }}</td>
                                             <td>{{ child.birthday }}</td>
-                                            <td> <a href="{% url 'web:child-update' child.uuid %}" class="btn btn-sm btn-primary"> Update child </a></td>
+                                            <td> <a href="{% url 'web:child-update' child.uuid %}" class="btn btn-sm btn-primary"> {% trans "Update child" %} </a></td>
                                           </tr>
                                       {% endfor %}
                                   </tbody>
                                 </table>
                             </div>
                         {% else %}
-                            <p><em> No child profiles registered! </em></p>
+                            <p><em> {% trans "No child profiles registered!" %} </em></p>
                         {% endif %}
                     </div>
                 </div>

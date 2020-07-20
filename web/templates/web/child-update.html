@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
-{% block title %}Child - {{child.given_name}}{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Child" } - {{child.given_name}}{% endblock %}
 
 
 {% block flash %}
@@ -12,7 +13,7 @@
 {% endblock %}
 {% block content %}
     <div class='lookit-row lookit-page-title'>
-        <h2 class='container'>My Account</h2>
+        <h2 class='container'>{% trans "My Account" %}</h2>
     </div>
     {% bootstrap_messages %}
     <div class="container">
@@ -27,7 +28,7 @@
                 <div id="add-child-form" style="display:{% if form_hidden %} none {% else %} inline {% endif %}">
                     <div class="panel-heading">
                       <h1 class="panel-title">
-                          Update {{ child.given_name }}
+                          {% trans "Update" %} {{ child.given_name }}
                       </h1>
                     </div>
                     <div class="panel panel-default">
@@ -37,12 +38,12 @@
                               {% bootstrap_form form %}
                               {% buttons %}
                               <button name='deleteChild' class="btn btn-danger" type="submit">
-                                  Delete
+                                  {% trans "Delete" %}
                               </button>
                               <div class="pull-right">
                                   <a class="btn btn-default" href="{% url 'web:children-list' %}"> Cancel </a>
                                   <button type="submit" class="btn btn-success">
-                                     Save
+                                     {% trans "Save" %}
                                   </button>
                               </div>
                               {% endbuttons %}

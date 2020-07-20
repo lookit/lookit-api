@@ -1,7 +1,7 @@
 {% extends 'web/base.html' %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block title %}Update demographics{% endblock %}
+{% block title %}{% trans "Update demographics" %}{% endblock %}
 
 {% block flash %}
   {% if form.non_field_errors %}
@@ -97,9 +97,9 @@
                       {% bootstrap_form form %}
                       {% buttons %}
                       <div class="pull-right">
-                          <a class="btn btn-default" href="{% url 'web:demographic-data-update' %}"> Cancel </a>
+                          <a class="btn btn-default" href="{% url 'web:demographic-data-update' %}"> {% trans "Cancel" %} </a>
                           <button type="submit" class="btn btn-success">
-                             Save
+                             {% trans "Save" %}
                           </button>
                       </div>
                       {% endbuttons %}

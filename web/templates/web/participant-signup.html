@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
-{% block title %}Signup{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Signup" %}{% endblock %}
 
 {% block flash %}
   {% bootstrap_messages %}
@@ -20,10 +21,10 @@
         <form method="POST" action="">{% csrf_token %}
           {% bootstrap_form form %}
           {% buttons %}
-          <p> By clicking 'Create Account', I agree that I have read and accepted the <a href="/privacy/" target="_blank">Privacy Statement.</a></p>
+          <p> {% trans "By clicking 'Create Account', I agree that I have read and accepted the "%} <a href="/privacy/" target="_blank">{% trans "Privacy Statement" %}.</a></p>
           <div class="pull-right">
             <button type="submit" class="btn btn-success">
-              {% bootstrap_icon "plus" %} Create Account
+              {% bootstrap_icon "plus" %} {% trans "Create Account" %}
             </button>
           </div>
           {% endbuttons %}
