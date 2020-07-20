@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-20 13:48+0100\n"
-"PO-Revision-Date: 2020-07-20 13:49+0100\n"
+"POT-Creation-Date: 2020-07-20 14:25+0100\n"
+"PO-Revision-Date: 2020-07-20 14:26+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ja\n"
@@ -627,15 +627,42 @@ msgid "Select a State"
 msgstr "州を選択してください"
 
 #: accounts/templates/account/local_user_exists.html:7
+#: accounts/templates/account/local_user_exists.html:13
 #: accounts/templates/account/login_errored_cancelled.html:7
+#: accounts/templates/account/login_errored_cancelled.html:13
 msgid "Login Unsuccessful"
 msgstr "ログイン失敗"
+
+#: accounts/templates/account/local_user_exists.html:16
+msgid ""
+"A Lookit study participant exists with the email address for your OSF user "
+"account. Create an OSF user with a different email address and try logging "
+"into Experimenter with that. "
+msgstr ""
+"OSFユーザーアカウントのメールアドレスを持つLookit研究参加者が存在します。別の"
+"メールアドレスでOSFユーザーを作成し、そのメールアドレスでExperimenterにログイ"
+"ンしてみてください。"
+
+#: accounts/templates/account/local_user_exists.html:19
+msgid ""
+"If this should not have occurred and the issue persists, please report it to "
+"<a href="
+msgstr ""
+"この問題が発生していないはずなのに問題が解決しない場合は、<a href=<a href=<a "
+"href=<a href=<a href=<a href=<a href=<a>）まで報告してください。"
+
+#: accounts/templates/account/local_user_exists.html:22
+#: accounts/templates/account/login_errored_cancelled.html:19
+#| msgid "Experimenter"
+msgid "Return to Experimenter"
+msgstr "実験者を見ることができます"
 
 #: accounts/templates/account/login.html:7
 msgid "Sign In"
 msgstr "サインイン"
 
 #: accounts/templates/account/login.html:13
+#: web/templates/registration/login.html:25
 #: web/templates/web/_navigation.html:47
 msgid "Login"
 msgstr "ログイン"
@@ -662,13 +689,19 @@ msgstr ""
 "\"_blank\">プライバシーポリシーを</a>読み、これに同意したことになります。\n"
 "        "
 
+#: accounts/templates/account/login_errored_cancelled.html:16
+msgid ""
+"If this should not have occurred and the issue persists, please report it to "
+"<a href=\"mailto:support@osf.io\">support@osf.io"
+msgstr ""
+"この問題が発生していないはずなのに問題が解決しない場合は、<a href=\"mailto:"
+"support@osf.io\">support@osf.io</a> まで報告してください。"
+
 #: accounts/templates/accounts/participant_detail.html:15
-#| msgid "Participate"
 msgid "All Participants"
 msgstr "参加する"
 
 #: accounts/templates/accounts/participant_detail.html:23
-#| msgid "Participate"
 msgid "Participant ID"
 msgstr "参加する"
 
@@ -677,7 +710,6 @@ msgid "Last Active:"
 msgstr "最後にアクティブになりました。"
 
 #: accounts/templates/accounts/participant_detail.html:25
-#| msgid "Participant account"
 msgid "Participant global ID:"
 msgstr "参加者アカウント"
 
@@ -699,7 +731,6 @@ msgid "Additional Info"
 msgstr "補足情報"
 
 #: accounts/templates/accounts/participant_detail.html:79
-#| msgid "No child profiles registered!"
 msgid "No children profiles registered!"
 msgstr "子供のプロフィールが登録されていません"
 
@@ -803,6 +834,49 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "本研究室への参加を希望された利用者様。"
 
+#: web/templates/registration/logged_out.html:6
+msgid "You've successfully logged out."
+msgstr "ログアウトに成功しました。"
+
+#: web/templates/registration/login.html:8
+#: web/templates/web/studies-history.html:9
+#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
+msgid "Your username and password didn't match. Please try again."
+msgstr "ユーザー名とパスワードが一致しませんでした。もう一度お試しください。"
+
+#: web/templates/registration/login.html:18
+#| msgid "Participant account"
+msgid "Participant Login"
+msgstr "参加者アカウント"
+
+#: web/templates/registration/login.html:32
+msgid "Forgot password?"
+msgstr "パスワードをお忘れですか?"
+
+#: web/templates/registration/login.html:33
+msgid "Looking for "
+msgstr "を探しています。"
+
+#: web/templates/registration/login.html:33
+msgid "researcher login"
+msgstr "研究者ログイン"
+
+#: web/templates/registration/login.html:33
+msgid "instead?"
+msgstr "を選択してください"
+
+#: web/templates/registration/login.html:34
+msgid "New to Lookit?"
+msgstr "ルキット"
+
+#: web/templates/registration/login.html:34
+msgid "Create an account!"
+msgstr "アカウント作成"
+
+#: web/templates/registration/password_change_done.html:11
+msgid "Password changed"
+msgstr "パスワードが変更されました"
+
 #: web/templates/registration/password_change_done.html:15
 msgid "Your password was changed."
 msgstr "パスワードが変更されていました。"
@@ -848,6 +922,10 @@ msgstr ""
 #: web/templates/registration/password_reset_confirm.html:31
 msgid "Change my password"
 msgstr "パスワードの変更"
+
+#: web/templates/registration/password_reset_complete.html:11
+msgid "Password reset complete"
+msgstr "パスワードリセットの確認"
 
 #: web/templates/registration/password_reset_complete.html:15
 msgid "Your password has been set.  You may go ahead and log in now."
@@ -1019,7 +1097,9 @@ msgstr "子供"
 
 #: web/templates/web/child-update.html:16
 #: web/templates/web/children-list.html:67
+#: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
+#: web/templates/web/participant-update.html:15
 msgid "My Account"
 msgstr "マイアカウント"
 
@@ -1092,13 +1172,16 @@ msgid "Name"
 msgstr "名前"
 
 #: web/templates/web/children-list.html:121
-#| msgid "Update"
 msgid "Update child"
 msgstr "更新"
 
 #: web/templates/web/children-list.html:128
 msgid "No child profiles registered!"
 msgstr "子供のプロフィールが登録されていません"
+
+#: web/templates/web/demographic-data-update.html:4
+msgid "Update demographics"
+msgstr "最新の人口動態データ"
 
 #: web/templates/web/demographic-data-update.html:89
 msgid ""
@@ -1161,11 +1244,6 @@ msgstr "パスワードの変更"
 #: web/templates/web/studies-history.html:27
 msgid "Past Studies"
 msgstr "これまでの研究"
-
-#: web/templates/web/studies-history.html:9
-#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
-msgid "Your username and password didn't match. Please try again."
-msgstr "ユーザー名とパスワードが一致しませんでした。もう一度お試しください。"
 
 #: web/templates/web/studies-history.html:16
 #: web/templates/web/studies-list.html:16
