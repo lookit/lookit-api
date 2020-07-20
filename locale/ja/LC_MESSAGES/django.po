@@ -1,0 +1,787 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-10 23:05+0100\n"
+"PO-Revision-Date: 2020-07-10 23:06+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 2.3.1\n"
+
+#: accounts/forms.py:132
+msgid "What country do you live in?"
+msgstr "どこの国に住んでいるの？"
+
+#: accounts/forms.py:133
+msgid "What state do you live in?"
+msgstr "あなたはどの州に住んでいますか？"
+
+#: accounts/forms.py:134
+msgid "How would you describe the area where you live?"
+msgstr "住んでいる地域をどのように表現しますか？"
+
+#: accounts/forms.py:135
+msgid "What language(s) does your family speak at home?"
+msgstr "ご家庭では何語を話しますか？"
+
+#: accounts/forms.py:136
+msgid "How many children do you have?"
+msgstr "子供は何人いるの？"
+
+#: accounts/forms.py:137
+msgid "For each child, please enter his or her birthdate:"
+msgstr "お子様一人一人の生年月日をご記入ください。"
+
+#: accounts/forms.py:138
+msgid "How many parents/guardians do your children live with?"
+msgstr "あなたのお子さんは何人の親御さん・保護者の方と一緒に暮らしていますか？"
+
+#: accounts/forms.py:139
+msgid "What category(ies) does your family identify as?"
+msgstr "あなたの家族はどのようなカテゴリーに属していますか？"
+
+#: accounts/forms.py:140
+msgid "What is your age?"
+msgstr "年齢。"
+
+#: accounts/forms.py:141
+msgid "What is your gender?"
+msgstr "性別は何ですか？"
+
+#: accounts/forms.py:142
+msgid "What is the highest level of education you've completed?"
+msgstr "最高レベルの学歴は？"
+
+#: accounts/forms.py:143
+msgid "What is the highest level of education your spouse has completed?"
+msgstr "配偶者の最高学歴は？"
+
+#: accounts/forms.py:144
+msgid "What is your approximate family yearly income (in US dollars)?"
+msgstr "おおよそのご家族の年収（ドル建て）は？"
+
+#: accounts/forms.py:145
+msgid "About how many children's books are there in your home?"
+msgstr "あなたの家には児童書が何冊あるかについて。"
+
+#: accounts/forms.py:146
+msgid "Anything else you'd like us to know?"
+msgstr "他に何か知っておいてほしいことは？"
+
+#: accounts/forms.py:147
+msgid "How did you hear about Lookit?"
+msgstr "Lookitをどうやって知りましたか？"
+
+#: accounts/forms.py:148
+msgid ""
+"If the answer varies due to shared custody arrangements or travel, please "
+"enter the number of parents/guardians your children are usually living with "
+"or explain."
+msgstr ""
+"共有親権の取り決めや旅行などで回答が異なる場合は、子どもが普段一緒に暮らして"
+"いる親・保護者の人数を記入するか、説明してください。"
+
+#: accounts/migrations/0041_add_existing_conditions.py:12
+#: accounts/models.py:250 studies/fields.py:136
+msgid "Not sure or prefer not to answer"
+msgstr "わからない、または答えたくない"
+
+#: accounts/migrations/0041_add_existing_conditions.py:13
+#: accounts/models.py:251 studies/fields.py:137
+msgid "Under 24 weeks"
+msgstr "24週未満"
+
+#: accounts/migrations/0041_add_existing_conditions.py:14
+#: accounts/models.py:252 studies/fields.py:138
+msgid "24 weeks"
+msgstr "24週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:15
+#: accounts/models.py:253 studies/fields.py:139
+msgid "25 weeks"
+msgstr "25週間"
+
+#: accounts/migrations/0041_add_existing_conditions.py:16
+#: accounts/models.py:254 studies/fields.py:140
+msgid "26 weeks"
+msgstr "26週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:17
+#: accounts/models.py:255 studies/fields.py:141
+msgid "27 weeks"
+msgstr "27週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:18
+#: accounts/models.py:256 studies/fields.py:142
+msgid "28 weeks"
+msgstr "28週間"
+
+#: accounts/migrations/0041_add_existing_conditions.py:19
+#: accounts/models.py:257 studies/fields.py:143
+msgid "29 weeks"
+msgstr "29週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:20
+#: accounts/models.py:258 studies/fields.py:144
+msgid "30 weeks"
+msgstr "30週間"
+
+#: accounts/migrations/0041_add_existing_conditions.py:21
+#: accounts/models.py:259 studies/fields.py:145
+msgid "31 weeks"
+msgstr "31週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:22
+#: accounts/models.py:260 studies/fields.py:146
+msgid "32 weeks"
+msgstr "32週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:23
+#: accounts/models.py:261 studies/fields.py:147
+msgid "33 weeks"
+msgstr "33週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:24
+#: accounts/models.py:262 studies/fields.py:148
+msgid "34 weeks"
+msgstr "34週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:25
+#: accounts/models.py:263 studies/fields.py:149
+msgid "35 weeks"
+msgstr "35週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:26
+#: accounts/models.py:264 studies/fields.py:150
+msgid "36 weeks"
+msgstr "36週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:27
+#: accounts/models.py:265 studies/fields.py:151
+msgid "37 weeks"
+msgstr "37週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:28
+#: accounts/models.py:266 studies/fields.py:152
+msgid "38 weeks"
+msgstr "38週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:29
+#: accounts/models.py:267 studies/fields.py:153
+msgid "39 weeks"
+msgstr "39週"
+
+#: accounts/migrations/0041_add_existing_conditions.py:30
+#: accounts/models.py:268 studies/fields.py:154
+msgid "40 or more weeks"
+msgstr "40週以上"
+
+#: accounts/models.py:66
+msgid "Can View Organization"
+msgstr "組織を見ることができる"
+
+#: accounts/models.py:67
+msgid "Can Edit Organization"
+msgstr "組織を編集することができます"
+
+#: accounts/models.py:68
+msgid "Can Create Organization"
+msgstr "組織を作成することができます"
+
+#: accounts/models.py:69
+msgid "Can Remove Organization"
+msgstr "組織を削除することができます"
+
+#: accounts/models.py:70
+msgid "Can View Experimenter"
+msgstr "実験者を見ることができます"
+
+#: accounts/models.py:71
+msgid "Can View Analytics"
+msgstr "アナリティクスを表示することができます。"
+
+#: accounts/models.py:228
+msgid "Can Create User"
+msgstr "ユーザーを作成することができます"
+
+#: accounts/models.py:229
+msgid "Can View User"
+msgstr "ユーザーを表示することができます。"
+
+#: accounts/models.py:230
+msgid "Can Edit User"
+msgstr "ユーザーを編集することができます"
+
+#: accounts/models.py:231
+msgid "Can Remove User"
+msgstr "ユーザーを削除することができます"
+
+#: accounts/models.py:232
+msgid "Can View User Permissions"
+msgstr "ユーザー権限を表示することができます"
+
+#: accounts/models.py:233
+msgid "Can Edit User Permissions"
+msgstr "ユーザー権限の編集が可能"
+
+#: accounts/models.py:234
+msgid "Can Read All User Data"
+msgstr "すべてのユーザーデータを読み取ることができます"
+
+#: accounts/models.py:235
+msgid "Can Read User Usernames"
+msgstr "ユーザー名を読み取ることができます"
+
+#: accounts/models.py:242 accounts/models.py:345
+msgid "male"
+msgstr "男性"
+
+#: accounts/models.py:243 accounts/models.py:346
+msgid "female"
+msgstr "女性"
+
+#: accounts/models.py:244 accounts/models.py:347
+msgid "other"
+msgstr "人が『いいね』しました。"
+
+#: accounts/models.py:245 accounts/models.py:348 accounts/models.py:424
+msgid "prefer not to answer"
+msgstr "答えたくない"
+
+#: accounts/models.py:335
+msgid "White"
+msgstr "白"
+
+#: accounts/models.py:336
+msgid "Hispanic, Latino, or Spanish origin"
+msgstr "ヒスパニック系、ラテン系、スペイン系"
+
+#: accounts/models.py:337
+msgid "Black or African American"
+msgstr "黒人またはアフリカ系アメリカ人"
+
+#: accounts/models.py:338
+msgid "Asian"
+msgstr "東洋人"
+
+#: accounts/models.py:339
+msgid "American Indian or Alaska Native"
+msgstr "アメリカインディアンまたはアラスカ原住民"
+
+#: accounts/models.py:340
+msgid "Middle Eastern or North African"
+msgstr "中近東または北アフリカ"
+
+#: accounts/models.py:341
+msgid "Native Hawaiian or Other Pacific Islander"
+msgstr "ネイティブハワイアンまたはその他の太平洋諸島人"
+
+#: accounts/models.py:342
+msgid "Another race, ethnicity, or origin"
+msgstr "他の人種、民族、出身"
+
+#: accounts/models.py:351 accounts/models.py:360
+msgid "some or attending high school"
+msgstr "或は高校に通う"
+
+#: accounts/models.py:352 accounts/models.py:361
+msgid "high school diploma or GED"
+msgstr "高卒以上"
+
+#: accounts/models.py:353 accounts/models.py:362
+msgid "some or attending college"
+msgstr "どっか"
+
+#: accounts/models.py:354 accounts/models.py:363
+msgid "2-year college degree"
+msgstr "二年制大学"
+
+#: accounts/models.py:355 accounts/models.py:364
+msgid "4-year college degree"
+msgstr "四年制大学"
+
+#: accounts/models.py:356 accounts/models.py:365
+msgid "some or attending graduate or professional school"
+msgstr "一部"
+
+#: accounts/models.py:357 accounts/models.py:366
+msgid "graduate or professional degree"
+msgstr "卒論"
+
+#: accounts/models.py:367
+msgid "not applicable - no spouse or partner"
+msgstr "該当しない - 配偶者やパートナーがいない"
+
+#: accounts/models.py:370 accounts/models.py:401
+msgid "0"
+msgstr "0"
+
+#: accounts/models.py:371 accounts/models.py:398
+msgid "1"
+msgstr "1"
+
+#: accounts/models.py:372 accounts/models.py:398
+msgid "2"
+msgstr "2"
+
+#: accounts/models.py:373
+msgid "3"
+msgstr "3"
+
+#: accounts/models.py:374
+msgid "4"
+msgstr "4"
+
+#: accounts/models.py:375
+msgid "5"
+msgstr "5"
+
+#: accounts/models.py:376
+msgid "6"
+msgstr "6"
+
+#: accounts/models.py:377
+msgid "7"
+msgstr "7"
+
+#: accounts/models.py:378
+msgid "8"
+msgstr "8"
+
+#: accounts/models.py:379
+msgid "9"
+msgstr "9"
+
+#: accounts/models.py:380
+msgid "10"
+msgstr "10"
+
+#: accounts/models.py:381
+msgid "More than 10"
+msgstr "10名以上"
+
+#: accounts/models.py:384
+msgid "under 18"
+msgstr "18歳未満"
+
+#: accounts/models.py:385
+msgid "18-21"
+msgstr "18-21"
+
+#: accounts/models.py:386
+msgid "22-24"
+msgstr "22-24"
+
+#: accounts/models.py:387
+msgid "25-29"
+msgstr "25-29"
+
+#: accounts/models.py:388
+msgid "30-34"
+msgstr "30-34"
+
+#: accounts/models.py:389
+msgid "35-39"
+msgstr "35-39"
+
+#: accounts/models.py:390
+msgid "40-44"
+msgstr "40-44"
+
+#: accounts/models.py:391
+msgid "45-49"
+msgstr "45-49"
+
+#: accounts/models.py:392
+msgid "50-59"
+msgstr "50-59"
+
+#: accounts/models.py:393
+msgid "60-69"
+msgstr "60-69"
+
+#: accounts/models.py:394
+msgid "70 or over"
+msgstr "70以上"
+
+#: accounts/models.py:398
+msgid "3 or more"
+msgstr "3個以上"
+
+#: accounts/models.py:398
+msgid "varies"
+msgstr "変わる"
+
+#: accounts/models.py:402
+msgid "5000"
+msgstr "5000"
+
+#: accounts/models.py:403
+msgid "10000"
+msgstr "10000"
+
+#: accounts/models.py:404
+msgid "15000"
+msgstr "15000"
+
+#: accounts/models.py:405
+msgid "20000"
+msgstr "20000"
+
+#: accounts/models.py:406
+msgid "30000"
+msgstr "30000"
+
+#: accounts/models.py:407
+msgid "40000"
+msgstr "40000"
+
+#: accounts/models.py:408
+msgid "50000"
+msgstr "50000"
+
+#: accounts/models.py:409
+msgid "60000"
+msgstr "60000"
+
+#: accounts/models.py:410
+msgid "70000"
+msgstr "70000"
+
+#: accounts/models.py:411
+msgid "80000"
+msgstr "80000"
+
+#: accounts/models.py:412
+msgid "90000"
+msgstr "90000"
+
+#: accounts/models.py:413
+msgid "100000"
+msgstr "100000"
+
+#: accounts/models.py:414
+msgid "110000"
+msgstr "110000"
+
+#: accounts/models.py:415
+msgid "120000"
+msgstr "120000"
+
+#: accounts/models.py:416
+msgid "130000"
+msgstr "130000"
+
+#: accounts/models.py:417
+msgid "140000"
+msgstr "140000"
+
+#: accounts/models.py:418
+msgid "150000"
+msgstr "150000"
+
+#: accounts/models.py:419
+msgid "160000"
+msgstr "160000"
+
+#: accounts/models.py:420
+msgid "170000"
+msgstr "170000"
+
+#: accounts/models.py:421
+msgid "180000"
+msgstr "180000"
+
+#: accounts/models.py:422
+msgid "190000"
+msgstr "190000"
+
+#: accounts/models.py:423
+msgid "over 200000"
+msgstr "二十万以上"
+
+#: accounts/models.py:427
+msgid "urban"
+msgstr "アーバン"
+
+#: accounts/models.py:427
+msgid "suburban"
+msgstr "郊外"
+
+#: accounts/models.py:427
+msgid "rural"
+msgstr "田舎"
+
+#: accounts/models.py:477
+msgid "Select a State"
+msgstr "州を選択してください"
+
+#: accounts/templates/account/local_user_exists.html:7
+#: accounts/templates/account/login_errored_cancelled.html:7
+msgid "Login Unsuccessful"
+msgstr "ログイン失敗"
+
+#: accounts/templates/account/login.html:7
+msgid "Sign In"
+msgstr "サインイン"
+
+#: accounts/templates/account/login.html:13
+msgid "Login"
+msgstr "ログイン"
+
+#: accounts/templates/account/login.html:20
+msgid ""
+"\n"
+"          Please sign in to the Open Science Framework or register for an "
+"account and sign in below.\n"
+"      </p>\n"
+"      <p>\n"
+"        By using or requesting access to Lookit, you agree that you have "
+"read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of "
+"Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</a>.\n"
+"        "
+msgstr ""
+"\n"
+"          オープンサイエンスフレームワークにサインインするか、アカウント登録"
+"をして下記よりサインインしてください。\n"
+"      </p>\n"
+"      <p>\n"
+"        Lookitを使用またはアクセスを要求することで、利用者は<a href=\"/"
+"termsofuse/\" target=\"_blank\">利用規約</a>と<a href=\"/privacy/\" target="
+"\"_blank\">プライバシーポリシーを</a>読み、これに同意したことになります。\n"
+"        "
+
+#: exp/templates/exp/dashboard.html:17
+msgid "Dashboard"
+msgstr "ダッシュボード"
+
+#: studies/fields.py:45
+msgid "Twin"
+msgstr "双子"
+
+#: studies/fields.py:46
+msgid "Triplet"
+msgstr "三つ子"
+
+#: studies/fields.py:47
+msgid "Quadruplet"
+msgstr "四重項"
+
+#: studies/fields.py:48
+msgid "Quintuplet"
+msgstr "五重奏"
+
+#: studies/fields.py:49
+msgid "Sextuplet"
+msgstr "セクスタプレット"
+
+#: studies/fields.py:50
+msgid "Septuplet"
+msgstr "セプトゥプレット"
+
+#: studies/fields.py:51
+msgid "Octuplet"
+msgstr "オクタプレット"
+
+#: studies/fields.py:124
+msgid "Not answered"
+msgstr "未回答"
+
+#: studies/fields.py:125
+msgid "Other"
+msgstr "その他"
+
+#: studies/fields.py:126
+msgid "Male"
+msgstr "男性"
+
+#: studies/fields.py:127
+msgid "Female"
+msgstr "女性"
+
+#: studies/models.py:113
+msgid ""
+"The Users who belong to this Lab. A user in this lab will be able to create "
+"studies associated with this Lab and can be added to this Lab's studies."
+msgstr ""
+"この研究室に所属するユーザーです。本研究室に所属するユーザーは、本研究室に関"
+"連する研究を作成することができ、本研究室の研究に追加することができます。"
+
+#: studies/models.py:122
+msgid "The Users who have requested to join this Lab."
+msgstr "本研究室への参加を希望された利用者様。"
+
+#: web/templates/registration/password_change_done.html:15
+msgid "Your password was changed."
+msgstr "パスワードが変更されていました。"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Documentation"
+msgstr "ドキュメント"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Change password"
+msgstr "パスワードの変更"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Log out"
+msgstr "ログアウト"
+
+#: web/templates/registration/password_change_form.html:7
+msgid "Home"
+msgstr "ホーム"
+
+#: web/templates/registration/password_change_form.html:8
+msgid "Password change"
+msgstr "パスワードの変更"
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the error below."
+msgstr "下記のエラーの修正をお願いします。"
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the errors below."
+msgstr "以下、誤りの訂正をお願いします。"
+
+#: web/templates/registration/password_change_form.html:26
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+"セキュリティのために古いパスワードを入力し、新しいパスワードを2回入力してくだ"
+"さい。"
+
+#: web/templates/registration/password_change_form.html:54
+#: web/templates/registration/password_reset_confirm.html:31
+msgid "Change my password"
+msgstr "パスワードの変更"
+
+#: web/templates/registration/password_reset_complete.html:15
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr "パスワードが設定されています。  今すぐログインしてください。"
+
+#: web/templates/registration/password_reset_complete.html:17
+msgid "Log in"
+msgstr "ログイン"
+
+#: web/templates/registration/password_reset_confirm.html:11
+msgid "Password reset confirmation"
+msgstr "パスワードリセットの確認"
+
+#: web/templates/registration/password_reset_confirm.html:17
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr "新しいパスワードを2回入力してください。"
+
+#: web/templates/registration/password_reset_confirm.html:23
+msgid "New password:"
+msgstr "新しいパスワード："
+
+#: web/templates/registration/password_reset_confirm.html:28
+msgid "Confirm password:"
+msgstr "パスワードの確認："
+
+#: web/templates/registration/password_reset_confirm.html:37
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"パスワードリセットのリンクが無効になっています。  新しいパスワードリセットを"
+"リクエストしてください。"
+
+#: web/templates/registration/password_reset_done.html:15
+msgid ""
+"We've emailed you instructions for setting your password, if an account "
+"exists with the email you entered. You should receive them shortly."
+msgstr ""
+"入力されたメールにアカウントが存在する場合は、パスワードの設定方法をメールで"
+"お知らせしています。まもなくメールが届きます。"
+
+#: web/templates/registration/password_reset_done.html:17
+msgid ""
+"If you don't receive an email, please make sure you've entered the address "
+"you registered with, and check your spam folder."
+msgstr ""
+"メールが届かない場合は、登録したアドレスが入力されていることを確認し、迷惑"
+"メールフォルダをご確認ください。"
+
+#: web/templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+"この電子メールを受信しているのは、%(site_name)s のユーザ・アカウントのパス"
+"ワードのリセットを要求したためです。"
+
+#: web/templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "以下のページに移動し、新しいパスワードを選択してください。"
+
+#: web/templates/registration/password_reset_email.html:8
+msgid "Your username, in case you've forgotten:"
+msgstr "ユーザー名をお忘れですか？こちらになります。"
+
+#: web/templates/registration/password_reset_email.html:10
+msgid "Thanks for using our site!"
+msgstr "当社のサイトをご利用いただき、ありがとうございました"
+
+#: web/templates/registration/password_reset_email.html:12
+#, python-format
+msgid "The %(site_name)s team"
+msgstr "%(site_name) s チーム"
+
+#: web/templates/registration/password_reset_form.html:15
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr "パスワードをお忘れですか？下記にメールアドレスを入力してください。"
+
+#: web/templates/registration/password_reset_form.html:21
+msgid "Email address:"
+msgstr "メールアドレス:"
+
+#: web/templates/registration/password_reset_form.html:24
+msgid "Reset my password"
+msgstr "パスワードをリセットする"
+
+#: web/templates/web/_account-navigation.html:2
+msgid "Account information"
+msgstr ""
+
+#: web/templates/web/_account-navigation.html:2
+msgid "Change your name, email, or password."
+msgstr "パスワードの変更"
+
+#: web/templates/web/demographic-data-update.html:89
+msgid ""
+"One reason we are developing Internet-based experiments is to represent a "
+"more diverse group of families in our research. Your answers to these "
+"questions will help us understand what audience we reach, as well as how "
+"factors like speaking multiple languages or having older siblings affect "
+"children's learning."
+msgstr ""
+"インターネットを利用した実験を開発している理由の一つは、より多様な家族のグ"
+"ループを代表して研究を行うためです。これらの質問への回答は、私たちがどのよう"
+"な対象者に到達するのか、また、多言語を話すことや年上の兄弟がいることなどの要"
+"因が子どもの学習にどのような影響を与えるのかを理解するのに役立ちます。"
+
+#: web/templates/web/demographic-data-update.html:90
+msgid ""
+"Even if you allow your study videos to be published for scientific or "
+"publicity purposes, your demographic information is never published in "
+"conjunction with your video."
+msgstr ""
+"科学や宣伝目的で学習動画の公開を許可したとしても、デモグラフィック情報が動画"
+"と連動して公開されることはありません。"

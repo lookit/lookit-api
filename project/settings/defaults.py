@@ -208,7 +208,7 @@ JSON_API_PLURALIZE_TYPES = True
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ja"
 
 TIME_ZONE = "America/New_York"
 
@@ -370,3 +370,6 @@ OSF_OAUTH_SECRET = os.environ.get(
 )
 
 JAMDB_AUTH_TOKEN = os.environ.get("JAMDB_AUTH_TOKEN", "")
+
+SITE_ROOT = os.path.dirname(os.path.realpath(__name__))
+LOCALE_PATHS = ( os.path.join(SITE_ROOT, 'locale'), )

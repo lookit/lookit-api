@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 
 from accounts.models import Child, DemographicData, User
 
+from django.utils.translation import gettext_lazy as _
 
 class UserForm(forms.ModelForm):
     class Meta:
@@ -128,23 +129,23 @@ class DemographicDataForm(forms.ModelForm):
         }
 
         labels = {
-            "country": "What country do you live in?",
-            "state": "What state do you live in?",
-            "density": "How would you describe the area where you live?",
-            "languages_spoken_at_home": "What language(s) does your family speak at home?",
-            "number_of_children": "How many children do you have?",
-            "child_birthdays": "For each child, please enter his or her birthdate:",
-            "number_of_guardians": "How many parents/guardians do your children live with?",
-            "race_identification": "What category(ies) does your family identify as?",
-            "age": "What is your age?",
-            "gender": "What is your gender?",
-            "education_level": "What is the highest level of education you've completed?",
-            "spouse_education_level": "What is the highest level of education your spouse has completed?",
-            "annual_income": "What is your approximate family yearly income (in US dollars)?",
-            "number_of_books": "About how many children's books are there in your home?",
-            "additional_comments": "Anything else you'd like us to know?",
-            "lookit_referrer": "How did you hear about Lookit?",
-            "number_of_guardians_explanation": "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain.",
+            "country": _("What country do you live in?"),
+            "state": _("What state do you live in?"),
+            "density": _("How would you describe the area where you live?"),
+            "languages_spoken_at_home": _( "What language(s) does your family speak at home?"),
+            "number_of_children": _("How many children do you have?"),
+            "child_birthdays": _("For each child, please enter his or her birthdate:"),
+            "number_of_guardians": _("How many parents/guardians do your children live with?"),
+            "race_identification": _("What category(ies) does your family identify as?"),
+            "age": _("What is your age?"),
+            "gender": _("What is your gender?"),
+            "education_level": _("What is the highest level of education you've completed?"),
+            "spouse_education_level": _("What is the highest level of education your spouse has completed?"),
+            "annual_income": _("What is your approximate family yearly income (in US dollars)?"),
+            "number_of_books": _("About how many children's books are there in your home?"),
+            "additional_comments": _("Anything else you'd like us to know?"),
+            "lookit_referrer": _("How did you hear about Lookit?"),
+            "number_of_guardians_explanation": _("If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."),
         }
 
         widgets = {
