@@ -26,9 +26,11 @@ from osf_oauth2_adapter import views as osf_oauth2_adapter_views
 from project import settings
 from web import urls as web_urls
 
+from django.conf.urls.i18n import i18n_patterns 
+
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     path("favicon.ico", favicon_view),
     path("__CTRL__/", admin.site.urls),
     path("api/", include((api_urls, "api"))),
@@ -43,7 +45,8 @@ urlpatterns = [
     path("exp/", include(exp_urls)),
     path("", include("django.contrib.auth.urls")),
     path("", include(web_urls)),
-]
+    prefix_default_language=False
+)
 
 if settings.DEBUG:
     import debug_toolbar
