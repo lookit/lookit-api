@@ -45,12 +45,12 @@
                     {% if request.user.osf_profile_url != '#' %}
                         <li><a target="_blank" href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
                     {% endif %}
-                    <li><a href="{% url 'accounts:logout' %}?next=/exp/">Logout</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
                 </ul>
             </li>
         {% else %} {# /if request.user.is_authenticated #}
             {% if 'login' not in request.path %}
-                <li><a href="{% url 'accounts:login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
+                <li><a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
             {% endif %}
         {% endif %}
       </ul>
