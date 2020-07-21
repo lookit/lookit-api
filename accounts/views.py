@@ -92,6 +92,9 @@ class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     def form_valid(self, form):
         """If the form is valid, the session should be marked as using 2FA."""
         self.request.session[TWO_FACTOR_AUTH_SESSION_KEY] = True
+        otp: GoogleAuthenticatorTOTP = getattr(self.request.user, "otp")
+        otp.activated = True
+        otp.save()
         return super().form_valid(form)
 
     def check_otp_presence(self):
@@ -104,16 +107,14 @@ class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         user: User = self.request.user
         method: str = self.request.method
 
-        user_has_otp = bool(user.otp)
-
         if method == "GET":
             # If the user has TOTP set up already, then they shouldn't be able to
             # see the QR code again.
-            return not user_has_otp
+            return not user.otp.activated
         elif method == "POST":
             # TOTP checks, however, only depend on the user having an OTP object
             # associated with their account.
-            return user_has_otp
+            return bool(user.otp)
         else:
             return False
 

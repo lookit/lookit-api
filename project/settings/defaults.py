@@ -77,6 +77,8 @@ INSTALLED_APPS = [
     # See https://stackoverflow.com/a/46836189
     "django.forms",
     "django.contrib.admin",
+    "allauth.socialaccount",
+    "allauth.account",
 ]
 
 MIDDLEWARE = [

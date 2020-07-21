@@ -95,6 +95,7 @@ class GoogleAuthenticatorTOTP(models.Model):
         primary_key=True,
     )
     secret = models.CharField(max_length=16, db_index=True, default=pyotp.random_base32)
+    activated = models.BooleanField(default=False)
 
     @property
     def provider(self):
