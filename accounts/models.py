@@ -12,7 +12,7 @@ from django.db import models
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
