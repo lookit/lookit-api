@@ -24,7 +24,9 @@ class TOTPField(forms.CharField):
     max_length = 6
     min_length = 6
     default_error_messages = {
-        "invalid": _("Enter a valid 6-digit OTP code"),
+        "invalid": _(
+            "Enter a valid 6-digit one-time password from Google Authenticator"
+        ),
     }
 
     def __init__(self, *args, **kwargs):
@@ -39,7 +41,9 @@ class TOTPField(forms.CharField):
 
 
 class TOTPCheckForm(forms.Form):
-    otp_code = TOTPField(label="Test the one-time OTP code you get after scanning.")
+    otp_code = TOTPField(
+        label="Test the one-time password (OTP code) you get after scanning."
+    )
 
     def __init__(self, otp, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,7 +67,7 @@ class TOTPLoginForm(AuthenticationForm):
             "Please enter a correct %(username)s and password. Note that email "
             "and password fields may be case-sensitive. "
             "If you have turned on two-factor authentication, you will need "
-            "an OTP authorization code from Google Authenticator as well. "
+            "a one-time password (OTP code) from Google Authenticator as well. "
         ),
         "inactive": _("This account is inactive."),
     }
