@@ -110,7 +110,7 @@ class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         if method == "GET":
             # If the user has TOTP set up already, then they shouldn't be able to
             # see the QR code again.
-            return not user.otp.activated
+            return not user.otp or not getattr(user.otp, "activated")
         elif method == "POST":
             # TOTP checks, however, only depend on the user having an OTP object
             # associated with their account.

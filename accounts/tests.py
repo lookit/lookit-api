@@ -102,11 +102,11 @@ class AuthenticationTestCase(TestCase):
         )
         self.assertTrue(success)
 
-    def test_qr_view_blocked_after_otp_creation(self):
+    def test_qr_view_not_blocked_after_otp_creation(self):
         # This is done without OTP.
         self.client.force_login(self.researcher)
         response = self.client.get(reverse("accounts:2fa-setup"))
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
 
 
 class UserModelTestCase(TestCase):
