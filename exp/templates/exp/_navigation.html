@@ -37,6 +37,12 @@
             </li>
             
             <li role="separator" class="divider-vertical"></li>
+            <p class="navbar-text"
+               data-toggle="tooltip"
+               data-placement="bottom"
+               title="If you need to re-set your 2FA, please contact lookit-tech@mit.edu">
+                <span class="label label-success">Account secured with 2FA</span>
+            </p>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     {{ request.user.identicon_small_html }} {{ request.user.get_short_name }} <span class="caret"></span>

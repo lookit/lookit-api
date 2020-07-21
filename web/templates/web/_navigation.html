@@ -1,5 +1,4 @@
 {% load bootstrap3 %}
-
 <nav class="navbar-default navbar-static-top">
   <div class="container">
     <div class="navbar-header">
@@ -35,6 +34,18 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
         <ul class="nav navbar-nav navbar-right">
           {% if user.is_authenticated %}
+            {% if user.otp %}
+                <p class="navbar-text"
+                   data-toggle="tooltip"
+                   data-placement="bottom"
+                   title="If you need to re-set your 2FA, please contact lookit-tech@mit.edu">
+                    <span class="label label-success">Account secured with 2FA</span>
+                </p>
+            {% else %}
+                <li>
+                    <a href="{% url 'accounts:2fa-setup' %}">Set up 2FA</a>
+                </li>
+            {% endif %}
             {% if user.is_researcher %}
               <li><a href="{% url 'web:participant-update' %}">Participant account</a></li>
             {% else %}
@@ -50,3 +61,8 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-->
 </nav>
+<script type="application/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+</script>
