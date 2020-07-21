@@ -74,10 +74,6 @@
                         {{ user_obj.user.identicon_small_html }} <strong>{{ user_obj.user.get_full_name }}</strong>
                         {% if can_edit %}
                             <p><strong>Username: </strong> {{ user_obj.user.username }}</p>
-                            {% if user_obj.user.osf_profile_url != "#" %}
-                                <p><a href="{{ user_obj.user.osf_profile_url }}" target="_blank" rel="noopener noreferer">OSF
-                                    profile</a></p>
-                            {% endif %}
                         {% endif %}
                     </div>
                     <div class="col-xs-4 ">

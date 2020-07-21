@@ -156,13 +156,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         if self.id:
             setattr(self, f"__original_groups", self.groups.all())
 
-    @cached_property
-    def osf_profile_url(self):
-        try:
-            return self.socialaccount_set.first().extra_data["data"]["links"]["html"]
-        except AttributeError:
-            return "#"
-
     @property
     def identicon(self):
         if not self._identicon:
@@ -587,7 +580,6 @@ class Message(models.Model):
     def send_as_email(self):
         context = {
             "base_url": settings.BASE_URL,
-            "osf_url": settings.OSF_URL,
             "custom_message": mark_safe(self.body),
         }
 

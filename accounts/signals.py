@@ -1,39 +1,6 @@
 from django.apps import apps
-from django.contrib.auth.management import create_permissions
 
 from project import settings
-
-# def post_migrate_create_organization(sender, **kwargs):
-#    for app_config in apps.get_app_configs():
-#        create_permissions(app_config, apps=apps, verbosity=0)
-#
-#    Organization = sender.get_model("Organization")
-#    org, created = Organization.objects.get_or_create(
-#        name="MIT", url="https://lookit.mit.edu"
-#    )
-
-
-def post_migrate_create_social_app(sender, **kwargs):
-    Site = apps.get_model("sites.Site")
-    SocialApp = apps.get_model("socialaccount.SocialApp")
-    site = Site.objects.first()
-
-    site.domain = settings.SITE_DOMAIN
-    site.name = settings.SITE_NAME
-
-    site.save()
-
-    if not SocialApp.objects.exists():
-        app = SocialApp.objects.create(
-            key="",
-            name="OSF",
-            provider="osf",
-            # Defaults are valid for staging
-            client_id=settings.OSF_OAUTH_CLIENT_ID,
-            secret=settings.OSF_OAUTH_SECRET,
-        )
-        app.sites.clear()
-        app.sites.add(site)
 
 
 def post_migrate_create_flatpages(sender, **kwargs):
