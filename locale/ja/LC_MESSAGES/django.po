@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-20 14:25+0100\n"
+"POT-Creation-Date: 2020-07-22 09:49+0100\n"
 "PO-Revision-Date: 2020-07-20 14:26+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -653,7 +653,6 @@ msgstr ""
 
 #: accounts/templates/account/local_user_exists.html:22
 #: accounts/templates/account/login_errored_cancelled.html:19
-#| msgid "Experimenter"
 msgid "Return to Experimenter"
 msgstr "実験者を見ることができます"
 
@@ -690,9 +689,13 @@ msgstr ""
 "        "
 
 #: accounts/templates/account/login_errored_cancelled.html:16
+#, fuzzy
+#| msgid ""
+#| "If this should not have occurred and the issue persists, please report it "
+#| "to <a href=\"mailto:support@osf.io\">support@osf.io"
 msgid ""
 "If this should not have occurred and the issue persists, please report it to "
-"<a href=\"mailto:support@osf.io\">support@osf.io"
+"<a href=\"mailto:support@osf.io\">support@osf.io</a>"
 msgstr ""
 "この問題が発生していないはずなのに問題が解決しない場合は、<a href=\"mailto:"
 "support@osf.io\">support@osf.io</a> まで報告してください。"
@@ -774,6 +777,11 @@ msgstr "ガーディアンズの説明。"
 msgid "Race"
 msgstr "人種"
 
+#: accounts/templates/accounts/participant_list.html:37
+#: accounts/templates/accounts/participant_list.html:58
+msgid "Nickname"
+msgstr ""
+
 #: exp/templates/exp/dashboard.html:17
 msgid "Dashboard"
 msgstr "ダッシュボード"
@@ -845,7 +853,6 @@ msgid "Your username and password didn't match. Please try again."
 msgstr "ユーザー名とパスワードが一致しませんでした。もう一度お試しください。"
 
 #: web/templates/registration/login.html:18
-#| msgid "Participant account"
 msgid "Participant Login"
 msgstr "参加者アカウント"
 
