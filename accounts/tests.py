@@ -44,7 +44,9 @@ class AuthenticationTestCase(TestCase):
             follow=True,
         )
 
-        self.assertEqual(response.redirect_chain, [("/2fa/", 302)])
+        self.assertEqual(
+            response.redirect_chain, [(reverse("accounts:2fa-setup"), 302)]
+        )
         self.assertEqual(response.status_code, 200)
 
         # Mock correctly entered OTP

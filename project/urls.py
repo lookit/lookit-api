@@ -23,7 +23,7 @@ from django.views.generic.base import RedirectView
 from more_itertools import locate
 
 from accounts import urls as accounts_urls
-from accounts.views import TwoFactorAuthLoginView
+from accounts.views import LoginWithRedirectToTwoFactorAuthView
 from api import urls as api_urls
 from exp import urls as exp_urls
 from project import settings
@@ -35,7 +35,7 @@ favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 # plus we REALLY should be using more_itertools :)
 login_path_index = next(locate(auth_urls, lambda patt: patt.name == "login"))
 auth_urls[login_path_index] = path(
-    "login/", TwoFactorAuthLoginView.as_view(), name="login"
+    "login/", LoginWithRedirectToTwoFactorAuthView.as_view(), name="login"
 )
 
 

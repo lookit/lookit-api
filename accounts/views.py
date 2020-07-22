@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, SuccessURLAllowedHostsMixin
+from django.http import HttpResponseRedirect
 from django.urls.base import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import FormView
@@ -9,8 +10,28 @@ from guardian.mixins import LoginRequiredMixin
 
 from accounts import forms
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
-from accounts.forms import TOTPLoginForm
+from accounts.forms import TOTPCheckForm, TOTPLoginForm
 from accounts.models import GoogleAuthenticatorTOTP, User
+
+
+class LoginWithRedirectToTwoFactorAuthView(LoginView):
+    """Step 1 of the login process."""
+
+    def get_success_url(self) -> str:
+        user: User = self.request.user
+        otp: GoogleAuthenticatorTOTP = getattr(user, "otp")
+        if otp and otp.activated:
+            return reverse("accounts:2fa-login")
+        elif user.is_researcher:
+            messages.warning(
+                self.request,
+                "If you're a researcher, you'll want to set up 2FA with us. "
+                "Please complete the Two-Factor Auth setup below and you'll "
+                "be on your way!",
+            )
+            return reverse("accounts:2fa-setup")
+        else:
+            return super().get_success_url()
 
 
 class TwoFactorAuthLoginView(LoginView):
@@ -24,7 +45,16 @@ class TwoFactorAuthLoginView(LoginView):
     that would require full researcher login credentials.
     """
 
-    form_class = TOTPLoginForm
+    form_class = TOTPCheckForm
+
+    def form_valid(self, form):
+        """Override base functionality to skip auth part.
+
+        Since OTP was already checked during Form cleaning process, we can just
+        redirect here.
+        """
+        self.request.session[TWO_FACTOR_AUTH_SESSION_KEY] = True
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ResearcherRegistrationView(generic.CreateView):
@@ -83,18 +113,17 @@ class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         return context
 
     def get_form_kwargs(self):
-        """Pass the OTP to our special TOTPCheckForm, so that it can verify."""
+        """Pass the request object to our special TOTPCheckForm."""
         kwargs = super().get_form_kwargs()
-        otp: GoogleAuthenticatorTOTP = getattr(self.request.user, "otp")
-        kwargs["otp"] = otp
+        kwargs["request"] = self.request
         return kwargs
 
     def form_valid(self, form):
         """If the form is valid, the session should be marked as using 2FA."""
-        self.request.session[TWO_FACTOR_AUTH_SESSION_KEY] = True
         otp: GoogleAuthenticatorTOTP = getattr(self.request.user, "otp")
         otp.activated = True
         otp.save()
+        self.request.session[TWO_FACTOR_AUTH_SESSION_KEY] = True
         return super().form_valid(form)
 
     def check_otp_presence(self):

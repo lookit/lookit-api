@@ -11,8 +11,7 @@ TWO_FACTOR_AUTH_SESSION_KEY = "using_2FA"
 class TwoFactorAuthenticationBackend(ModelBackend):
     """Grabs a regular user, but checks OTP as well as password.
 
-    TODO: get rid of otp client auto-creation, instead redirect to new page
-        when there is no otp
+    DEPRECATED
     """
 
     def authenticate(

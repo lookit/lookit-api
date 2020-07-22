@@ -41,16 +41,26 @@ class TOTPField(forms.CharField):
 
 
 class TOTPCheckForm(forms.Form):
-    otp_code = TOTPField(
-        label="Test the one-time password (OTP code) you get after scanning."
-    )
+    """Checks OTP codes.
 
-    def __init__(self, otp, *args, **kwargs):
+    Should only appear in LoginView-derived classes, where the `request` object
+    is set in view kwargs.
+    """
+
+    otp_code = TOTPField(label="Enter your one-time password (OTP code).")
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop("request")
+        self.request = request
+        self.otp = getattr(request.user, "otp")
         super().__init__(*args, **kwargs)
-        self.otp = otp
+
+    def get_user(self):
+        """User is already technically logged in."""
+        return self.request.user
 
     def clean_otp_code(self):
-        """Final validation check on OTP code."""
+        """Validation check on OTP code."""
         otp_code = self.cleaned_data["otp_code"]
         if self.otp.verify(otp_code):
             return otp_code
@@ -62,6 +72,12 @@ class TOTPCheckForm(forms.Form):
 
 
 class TOTPLoginForm(AuthenticationForm):
+    """DEPRECATED
+
+    We are now doing 2-step login form process. Keeping this until we're 100% sure
+    we don't want any of this code.
+    """
+
     error_messages = {
         "invalid_login": _(
             "Please enter a correct %(username)s and password. Note that email "

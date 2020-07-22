@@ -39,7 +39,11 @@
                    data-toggle="tooltip"
                    data-placement="bottom"
                    title="If you need to re-set your 2FA, please contact lookit-tech@mit.edu">
-                    <span class="label label-success">Account secured with 2FA</span>
+                    {% if request.session.using_2FA is True %}
+                        <span class="label label-success">Logged in with 2FA</span>
+                    {% else %}
+                        <span class="label label-warning">2FA enabled</span>
+                    {% endif %}
                 </p>
             {% else %}
                 <li>
