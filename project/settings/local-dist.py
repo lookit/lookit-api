@@ -18,5 +18,3 @@ EMAIL_FROM_ADDRESS = "lookit.robot@some.domain"
 EMAIL_BACKEND = (
     f"django.core.mail.backends.{'console' if DEBUG else 'smtp'}.EmailBackend"
 )
-
-# SESSION_COOKIE_SECURE= False # For local debugging
