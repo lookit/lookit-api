@@ -63,7 +63,7 @@ class ResponseDataColumn(NamedTuple):
 
 
 # Columns for response downloads. Extractor functions expect Response instance
-response_columns = [
+RESPONSE_COLUMNS = [
     ResponseDataColumn(
         id="response__id",
         description="Short ID for this response",
@@ -402,7 +402,7 @@ response_columns = [
 ]
 
 # Columns for demographic data downloads. Extractor functions expect Response values dict, rather than instance.
-demographic_columns = [
+DEMOGRAPHIC_COLUMNS = [
     ResponseDataColumn(
         id="response__uuid",
         description=(
@@ -605,30 +605,30 @@ demographic_columns = [
 ]
 
 # Which headers from the response data summary should go in the child data downloads
-child_csv_headers = [
+CHILD_CSV_HEADERS = [
     col.id
-    for col in response_columns
+    for col in RESPONSE_COLUMNS
     if col.id.startswith("child__") or col.id.startswith("participant__")
 ]
 
-identifiable_data_headers = [col.id for col in response_columns if col.identifiable]
+IDENTIFIABLE_DATA_HEADERS = [col.id for col in RESPONSE_COLUMNS if col.identifiable]
 
 
 def get_response_headers(selected_header_ids, all_available_header_ids):
     """
     Select and order the appropriate headers to include in a file download.
     selected_headers is a list of headers to select from the optional header ids; all_available_headers is a set.
-    Will put standard headers in the order defined in response_columns, then any remaining headers from
+    Will put standard headers in the order defined in RESPONSE_COLUMNS, then any remaining headers from
     all_available_headers. Optional headers not in selected_headers are removed.
     """
     unselected_optional_ids = [
         col.id
-        for col in response_columns
+        for col in RESPONSE_COLUMNS
         if col.optional and col.id not in selected_header_ids
     ]
     selected_standard_header_ids = [
         col.id
-        for col in response_columns[0:-2]
+        for col in RESPONSE_COLUMNS[0:-2]
         if col.id not in unselected_optional_ids
     ]
     return selected_standard_header_ids + sorted(
@@ -645,7 +645,7 @@ def get_demographic_headers(selected_header_ids=None):
         selected_header_ids = []
     return [
         col.id
-        for col in demographic_columns
+        for col in DEMOGRAPHIC_COLUMNS
         if col.id in selected_header_ids or not col.optional
     ]
 
@@ -1053,7 +1053,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             # Info needed for table display of individual responses
             this_resp_data = {
                 col.id: col.extractor(resp)
-                for col in response_columns
+                for col in RESPONSE_COLUMNS
                 if col.id in columns_included_in_table
             }
             this_resp_data["date_created"] = str(resp.date_created)
@@ -1064,7 +1064,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
                     "value": col.extractor(resp),
                     "description": col.description,
                 }
-                for col in response_columns
+                for col in RESPONSE_COLUMNS
                 if col.id in columns_included_in_summary
             ]
             this_resp_data["videos"] = resp.videos.values("pk", "full_name")
@@ -1076,7 +1076,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
                 )
             response_data.append(this_resp_data)
         context["response_data"] = response_data
-        context["data_options"] = [col for col in response_columns if col.optional]
+        context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]
         context["can_view_regular_responses"] = self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_RESPONSE_DATA, context["study"]
         )
@@ -1117,20 +1117,20 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             "_frames"
             if data_type == "json"
             else "_identifiable"
-            if any([option in identifiable_data_headers for option in header_options])
+            if any([option in IDENTIFIABLE_DATA_HEADERS for option in header_options])
             else "",
             extension,
         )
 
         if data_type == "json":
             cleaned_data = json.dumps(
-                construct_response_dictionary(resp, response_columns, header_options),
+                construct_response_dictionary(resp, RESPONSE_COLUMNS, header_options),
                 indent="\t",
                 default=str,
             )
         elif data_type == "csv":
             row_data = flatten_dict(
-                {col.id: col.extractor(resp) for col in response_columns}
+                {col.id: col.extractor(resp) for col in RESPONSE_COLUMNS}
             )
             header_list = get_response_headers(header_options, row_data.keys())
             output, writer = csv_dict_output_and_writer(header_list)
@@ -1401,7 +1401,7 @@ class StudyResponsesAll(
         context["n_responses"] = (
             context["study"].responses_for_researcher(self.request.user).count()
         )
-        context["data_options"] = [col for col in response_columns if col.optional]
+        context["data_options"] = [col for col in RESPONSE_COLUMNS if col.optional]
         context["can_delete_preview_data"] = self.request.user.has_study_perms(
             StudyPermission.DELETE_ALL_PREVIEW_DATA, context["study"]
         )
@@ -1469,7 +1469,7 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
             chunk = "[\n"
         chunk += ",\n".join(
             json.dumps(
-                construct_response_dictionary(resp, response_columns, header_options),
+                construct_response_dictionary(resp, RESPONSE_COLUMNS, header_options),
                 indent="\t",  # Use tab rather than spaces to make file smaller (ex. 60MB -> 25MB)
                 default=str,
             )
@@ -1491,7 +1491,7 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
             + (
                 "-identifiable"
                 if any(
-                    [option in identifiable_data_headers for option in header_options]
+                    [option in IDENTIFIABLE_DATA_HEADERS for option in header_options]
                 )
                 else ""
             ),
@@ -1524,7 +1524,7 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:
                 row_data = flatten_dict(
-                    {col.id: col.extractor(resp) for col in response_columns}
+                    {col.id: col.extractor(resp) for col in RESPONSE_COLUMNS}
                 )
                 # Add any new headers from this session
                 headers = headers | set(row_data.keys())
@@ -1541,7 +1541,7 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
             + (
                 "-identifiable"
                 if any(
-                    [option in identifiable_data_headers for option in header_options]
+                    [option in IDENTIFIABLE_DATA_HEADERS for option in header_options]
                 )
                 else ""
             ),
@@ -1561,7 +1561,7 @@ class StudyResponsesDictCSV(CanViewStudyResponsesMixin, View):
         Builds CSV file contents for data dictionary corresponding to the overview CSV
         """
 
-        descriptions = {col.id: col.description for col in response_columns}
+        descriptions = {col.id: col.description for col in RESPONSE_COLUMNS}
         header_list = get_response_headers(
             optional_headers_selected_ids, descriptions.keys()
         )
@@ -1603,15 +1603,15 @@ class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
                 row_data = flatten_dict(
                     {
                         col.id: col.extractor(resp)
-                        for col in response_columns
-                        if col.id in child_csv_headers
+                        for col in RESPONSE_COLUMNS
+                        if col.id in CHILD_CSV_HEADERS
                     }
                 )
                 if row_data["child__global_id"] not in child_list:
                     child_list.append(row_data["child__global_id"])
                     session_list.append(row_data)
 
-        output, writer = csv_dict_output_and_writer(child_csv_headers)
+        output, writer = csv_dict_output_and_writer(CHILD_CSV_HEADERS)
         writer.writerows(session_list)
         cleaned_data = output.getvalue()
 
@@ -1637,8 +1637,8 @@ class StudyChildrenDictCSV(CanViewStudyResponsesMixin, View):
 
         all_descriptions = [
             {"column": col.id, "description": col.description}
-            for col in response_columns
-            if col.id in child_csv_headers
+            for col in RESPONSE_COLUMNS
+            if col.id in CHILD_CSV_HEADERS
         ]
         output, writer = csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
@@ -1755,7 +1755,7 @@ class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
                     json.dumps(
                         construct_response_dictionary(
                             resp,
-                            demographic_columns,
+                            DEMOGRAPHIC_COLUMNS,
                             header_options,
                             include_exp_data=False,
                         ),
@@ -1787,7 +1787,7 @@ class StudyDemographicsCSV(DemographicDownloadMixin, generic.list.ListView):
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:
-                row_data = {col.id: col.extractor(resp) for col in demographic_columns}
+                row_data = {col.id: col.extractor(resp) for col in DEMOGRAPHIC_COLUMNS}
                 participant_list.append(row_data)
         output, writer = csv_dict_output_and_writer(these_headers)
         writer.writerows(participant_list)
@@ -1813,7 +1813,7 @@ class StudyDemographicsDictCSV(DemographicDownloadMixin, generic.list.ListView):
 
         all_descriptions = [
             {"column": col.id, "description": col.description}
-            for col in demographic_columns
+            for col in DEMOGRAPHIC_COLUMNS
             if col.id in these_headers
         ]
         output, writer = csv_dict_output_and_writer(["column", "description"])
