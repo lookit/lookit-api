@@ -1,4 +1,4 @@
-<a class="{% if current_page == 'participant-update' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:participant-update' %}"><strong>Account information</strong><br> Change your name, email, or password.</a>
+<a class="{% if current_page == 'manage-account' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'accounts:manage-account' %}"><strong>Account Information</strong><br> Change your name, email, password, or 2FA settings.</a>
 <a class="{% if current_page == 'demographic-update' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:demographic-data-update' %}"><strong>Demographic Survey</strong><br>Tell us more about yourself.</a>
 <a class="{% if current_page == 'children-list' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:children-list' %}"><strong>Children Information</strong><br>Add or edit participant information.</a>
 <a class="{% if current_page == 'email-preferences' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:email-preferences' %}"><strong>Email Preferences</strong><br>Edit when you can be contacted.</a>

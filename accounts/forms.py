@@ -2,11 +2,9 @@ import datetime
 
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
-from django.contrib.auth.forms import (
-    AuthenticationForm,
-    PasswordChangeForm,
-    UserCreationForm,
-)
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import PasswordChangeForm as DjangoPasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -37,7 +35,7 @@ class TOTPField(forms.CharField):
     def widget_attrs(self, widget):
         """Override - used to update widget attrs in Field initializer."""
         attrs = super().widget_attrs(widget)
-        return {**attrs, "placeholder": "123456"}
+        return {**attrs, "placeholder": "123456", "style": "width: 50%;"}
 
 
 class TOTPCheckForm(forms.Form):
@@ -189,14 +187,11 @@ class ParticipantSignupForm(UserCreationForm):
         )
 
 
-class ParticipantUpdateForm(forms.ModelForm):
+class AccountUpdateForm(forms.ModelForm):
     nickname = forms.CharField(required=True, max_length=255)
 
     def __init__(self, *args, **kwargs):
-        if "user" in kwargs:
-            kwargs.pop("user")
         super().__init__(*args, **kwargs)
-        instance = getattr(self, "instance", None)
         self.fields["username"].widget.attrs.pop("autofocus", None)
 
     class Meta:
@@ -205,7 +200,7 @@ class ParticipantUpdateForm(forms.ModelForm):
         labels = {"username": "Email address"}
 
 
-class ParticipantPasswordForm(PasswordChangeForm):
+class PasswordChangeForm(DjangoPasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["old_password"].widget.attrs.pop("autofocus", None)

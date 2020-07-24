@@ -1,0 +1,109 @@
+{% extends 'web/base.html' %}
+{% load bootstrap3 %}
+{% block title %}Update account information{% endblock %}
+
+{% block flash %}
+  {% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+      {{ form.non_field_errors }}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block content %}
+    <div class='lookit-row lookit-page-title'>
+        <h2 class='container'>My Account</h2>
+    </div>
+    {% bootstrap_messages %}
+    <div class="container">
+        <div class="row account-edit">
+            <div class="col-md-4 mb-lg ">
+                {% include 'accounts/_account-navigation.html' with current_page="manage-account" %}
+            </div>
+            <div class="col-md-8">
+                <div class="panel-heading">
+                    <h1 class="panel-title">Account Information</h1>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {% bootstrap_form update_account_form %}
+                            {% buttons %}
+                                <div class="pull-right">
+                                    <button type="submit"
+                                            name="form-handle"
+                                            value="update-account"
+                                            class="btn btn-success">
+                                        Save
+                                    </button>
+                                </div>
+                            {% endbuttons %}
+                        </form>
+                    </div>
+                </div>
+                <div class="panel-heading">
+                    <h1 class="panel-title"> Change Your Password </h1>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {% bootstrap_form change_password_form %}
+                            {% buttons %}
+                                <div class="pull-right">
+                                    <button name="form-handle"
+                                            value="change-password"
+                                            type="submit"
+                                            class="btn btn-success">
+                                        Save
+                                    </button>
+                                </div>
+                            {% endbuttons %}
+                        </form>
+                    </div>
+                </div>
+                <div class="panel-heading">
+                    <h1 class="panel-title">Manage Two-Factor Authentication</h1>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        {% if otp %}  {# if we have OTP, enable reset or  #}
+                        <form method="POST">
+                            {% csrf_token %}
+
+                            {% if otp.activated %}  {# enable reset of OTP #}
+                                <p>
+                                    If you'd like, you can turn two-factor authentication off here. Just enter your
+                                    one-time password here, hit submit, and it'll get deleted for you!
+                                </p>
+                            {% else %}
+                                <div class="col-md-4">
+                                    {{ otp.get_svg_qr_code | safe }}
+                                </div>
+                                <p>
+                                    It looks like you were in the middle of setting up two factor authentication,
+                                    but didn't complete the process. You can capture the QR code here, verify with
+                                    a one-time password, and finish the process.
+                                </p>
+                            {% endif %}
+                            {% bootstrap_form otp_check_form %}
+                            {% buttons %}
+                                <div class="pull-right">
+                                    <button name="form-handle"
+                                            value="{% if otp.activated %}de{% endif %}activate-otp"
+                                            type="submit"
+                                            class="btn btn-success">
+                                        Submit
+                                    </button>
+                                </div>
+                            {% endbuttons %}
+                        </form>
+                        {% else %}  {# if we don't have OTP, link to 2FA setup directly. #}
+                            <a href="{% url "accounts:2fa-setup" %}">Set up Two-Factor Authentication</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

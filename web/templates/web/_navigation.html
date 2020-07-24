@@ -18,9 +18,7 @@
       {% else %}
         <a class="navbar-brand" href="{% url 'web:home' %}">Lookit </a>
       {% endif %}
-      
-      
-      
+
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -34,26 +32,10 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
         <ul class="nav navbar-nav navbar-right">
           {% if user.is_authenticated %}
-            {% if user.otp %}
-                <p class="navbar-text"
-                   data-toggle="tooltip"
-                   data-placement="bottom"
-                   title="If you need to re-set your 2FA, please contact lookit-tech@mit.edu">
-                    {% if request.session.using_2FA is True %}
-                        <span class="label label-success">Logged in with 2FA</span>
-                    {% else %}
-                        <span class="label label-warning">2FA enabled</span>
-                    {% endif %}
-                </p>
-            {% else %}
-                <li>
-                    <a href="{% url 'accounts:2fa-setup' %}">Set up 2FA</a>
-                </li>
-            {% endif %}
             {% if user.is_researcher %}
-              <li><a href="{% url 'web:participant-update' %}">Participant account</a></li>
+              <li><a href="{% url 'accounts:manage-account' %}">Account Management</a></li>
             {% else %}
-              <li><a href="{% url 'web:participant-update' %}">Hi {{ user.nickname }}</a></li>
+              <li><a href="{% url 'accounts:manage-account' %}">Hi {{ user.nickname }}</a></li>
             {% endif %}
             <li><a href="{% url 'logout' %}">Logout</a></li>
           {% else %}

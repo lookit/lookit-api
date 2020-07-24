@@ -112,7 +112,7 @@ class GoogleAuthenticatorTOTP(models.Model):
                     self.secret, name=self.user.username, issuer_name=self.issuer
                 ),
                 image_factory=SvgPathImage,
-                box_size=30,
+                box_size=10,
             ).save(stream)
 
             content = stream.getvalue().decode()
