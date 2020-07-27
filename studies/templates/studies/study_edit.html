@@ -72,7 +72,6 @@
                         <form id="study-details-form" action="" enctype="multipart/form-data"
                               method="post">{% csrf_token %}
                             {% include "studies/_study_fields.html" with form=form study=study %}
-                            {% bootstrap_field form.structure %}
                             
                             <div class="form-group">
                                 <label class="control-label" for="id_study_type">Experiment runner type</label>

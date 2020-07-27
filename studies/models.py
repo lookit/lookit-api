@@ -267,6 +267,8 @@ class Study(models.Model):
         null=True,
     )
     structure = DateTimeAwareJSONField(default=default_study_structure)
+    use_generator = models.BooleanField(default=False)
+    generator = models.TextField(default="")
     display_full_screen = models.BooleanField(default=True)
     exit_url = models.URLField(default="")
     state = models.CharField(

@@ -193,17 +193,21 @@ class StudyUpdateView(
     # UserPassesTestMixin.get_test_func()
     test_func = user_can_edit_study
 
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        initial = super().get_initial()
-        structure = self.object.structure
-        if structure:
-            # Ensures that json displayed in edit form is valid json w/ double quotes,
-            # so incorrect json is not saved back into the db
-            initial["structure"] = json.dumps(structure)
-        return initial
+    # Rely on form validation to make sure structure is valid JSON; don't load/dump so we
+    # preserve formatting and ordering.
+    #
+    # def get_initial(self):
+    #    """
+    #    Returns the initial data to use for forms on this view.
+    #    """
+    #    initial = super().get_initial()
+    #
+    #    structure = self.object.structure
+    #    if structure:
+    #       # Ensures that json displayed in edit form is valid json w/ double quotes,
+    #       # so incorrect json is not saved back into the db
+    #       initial["structure"] = json.dumps(structure)
+    #    return initial
 
     def post(self, request, *args, **kwargs):
         """
@@ -211,6 +215,7 @@ class StudyUpdateView(
         """
         study = self.get_object()
 
+        # TODO: why is this not in the form's clean function?
         target_study_type_id = int(self.request.POST["study_type"])
         target_study_type = StudyType.objects.get(id=target_study_type_id)
 
