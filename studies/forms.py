@@ -81,10 +81,44 @@ class LabApprovalForm(ModelForm):
 class StudyForm(ModelForm):
     """Base form for creating or editing a study"""
 
+    # Rather than having extra (non-model) form fields for the protocol & generator, we
+    # could alternately add generator, use_generator, protocol as actual model fields, and
+    # use them here to construct the structure. (At that point we should really have separate
+    # fields for fields & sequence too.) That would avoid awkwardly having to separate the JSON
+    # into separate form fields in init, but at the expense of (a) planning on eventual
+    # different models to represent protocols per study type, likely such that each study has
+    # a nullable relation for lookit_runner_protocol, jspsych_runner_protocol, etc. pointing to the
+    # appropriate instance if any and (b) more involved migrations. The nice thing about this
+    # approach is that structure becomes an internally-used field only (for passing to
+    # experiment/preview proxy) and the values to display in the form fields don't need to be recoverable
+    # from it - e.g.
+
+    # Wait - we may not need to shove everything into the structure. In that case it definitely
+    # makes sense to just add fields for now; we may need to separate them out in the future.
+
+    # Eventually when we support other experiment runner types (labjs, jspsych, etc.)
+    # we may do one of the following:
+    # - separate the 'study protocol specification' fields into their own
+    # form which collects various information and cleans it and sets a single 'structure' object,
+    # with the selected
+
     structure = forms.CharField(
         label="Protocol configuration",
         widget=AceOverlayWidget(
             mode="json",
+            wordwrap=True,
+            theme="textmate",
+            width="100%",
+            height="100%",
+            showprintmargin=False,
+        ),
+        required=False,
+    )
+
+    generator = forms.CharField(
+        label="Protocol generator",
+        widget=AceOverlayWidget(
+            mode="javascript",
             wordwrap=True,
             theme="textmate",
             width="100%",
@@ -128,7 +162,8 @@ class StudyForm(ModelForm):
                 "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
 
-        return json_data
+        # Store the original structure, not the version loaded as json, to preserve formatting/ordering
+        return structure
 
     def clean_criteria_expression(self):
         criteria_expression = self.cleaned_data["criteria_expression"]
@@ -161,6 +196,8 @@ class StudyForm(ModelForm):
             "public",
             "shared_preview",
             "structure",
+            "generator",
+            "use_generator",
             "criteria_expression",
             "study_type",
         ]
@@ -174,6 +211,7 @@ class StudyForm(ModelForm):
             "shared_preview": "Share preview - Allow other Lookit researchers to preview your study and give feedback?",
             "study_type": "Experiment Runner Type",
             "compensation_description": "Compensation",
+            "use_generator": "Use protocol generator (advanced)",
         }
         widgets = {
             "short_description": Textarea(attrs={"rows": 2}),

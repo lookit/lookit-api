@@ -59,7 +59,6 @@
               <div class="panel-body">
                 <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% include "studies/_study_fields.html" with form=form %}
-                    {% bootstrap_field form.structure %}
                     {% bootstrap_field form.study_type %}
                     {% include "studies/_study_type.html" with types=types create=1 %}
 
