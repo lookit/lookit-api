@@ -119,7 +119,7 @@ def system_setup(c, verbose=False):
             run('echo "===>brew {}"'.format(MESSAGE_FAILED))
 
     if PLATFORM == "Darwin":
-        if run("brew tap homebrew/cask", hide=not verbose).ok:
+        if run("brew tap homebrew/cask", hide=not verbose, warn=True).ok:
             run('echo "===>homebrew/cask is installed"')
         else:
             run('echo "===>homebrew/cask is not working."')
