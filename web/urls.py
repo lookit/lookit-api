@@ -7,7 +7,6 @@ app_name = "web"
 
 urlpatterns = [
     path("signup/", views.ParticipantSignupView.as_view(), name="participant-signup"),
-    path("account/", views.ParticipantUpdateView.as_view(), name="participant-update"),
     path(
         "account/demographics/",
         views.DemographicDataUpdateView.as_view(),

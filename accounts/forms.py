@@ -153,14 +153,11 @@ class ResearcherRegistrationForm(UserCreationForm):
 class ParticipantSignupForm(UserCreationForm):
     nickname = forms.CharField(required=True, max_length=255)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
-        self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
-
     def save(self, commit=True):
-        user = super(UserCreationForm, self).save(commit=False)
+        user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+        # TODO: `active` default shouldn't be False - we'll need a migration
+        #   to have True instead, and then we can drop this custom `save` method.
         user.is_active = True
         if commit:
             user.save()
@@ -169,18 +166,6 @@ class ParticipantSignupForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "nickname")
-        exclude = (
-            "user_permissions",
-            "groups",
-            "_identicon",
-            "labs",
-            "is_active",
-            "is_staff",
-            "is_superuser",
-            "last_login",
-            "middle_name",
-            "last_name",
-        )
 
 
 class AccountUpdateForm(forms.ModelForm):

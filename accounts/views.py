@@ -39,18 +39,21 @@ class LoginWithRedirectToTwoFactorAuthView(LoginView):
             return super().get_success_url()
 
 
-class TwoFactorAuthLoginView(LoginView):
+class TwoFactorAuthLoginView(UserPassesTestMixin, LoginView):
     """Semi-optional two-factor authentication login.
 
-    Researchers *must* have 2FA enabled; it's optional for participants.
-
-    Since a user *must* be logged in prior to activating 2FA, the fact that we
-    require researchers to use 2FA puts us in a bit of a catch 22 unless
-    we can basically log the user in anyway while restricting all views
-    that would require full researcher login credentials.
+    Researchers must have 2FA activated and verified prior to viewing
+    /exp/ pages. Participants are precluded from visiting this page.
     """
 
     form_class = TOTPCheckForm
+
+    def user_is_researcher_or_staff(self):
+        return getattr(self.request.user, "is_researcher") or getattr(
+            self.request.user, "is_staff"
+        )
+
+    test_func = user_is_researcher_or_staff
 
     def form_valid(self, form):
         """Override base functionality to skip auth part.
@@ -134,15 +137,19 @@ class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         self.request.session[TWO_FACTOR_AUTH_SESSION_KEY] = True
         return super().form_valid(form)
 
-    def check_otp_presence(self):
+    def check_researcher_status_and_otp_presence(self):
         """Guard function.
 
-        1) Don't let the user see the QR code if they've had a chance to set up OTP
+        1) Make sure they're a researcher.
+        2) Don't let the user see the QR code if they've had a chance to set up OTP
            already.
-        2) If they're just checking their OTP code, let the request through.
+        3) If they're just checking their OTP code, let the request through.
         """
         user: User = self.request.user
         method: str = self.request.method
+
+        if not user.is_researcher:
+            return False
 
         if method == "GET":
             # If the user has TOTP set up already, then they shouldn't be able to
@@ -155,7 +162,7 @@ class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         else:
             return False
 
-    test_func = check_otp_presence
+    test_func = check_researcher_status_and_otp_presence
 
 
 class AccountManagementView(LoginRequiredMixin, generic.TemplateView):

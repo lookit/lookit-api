@@ -1,6 +1,7 @@
 import datetime
 from unittest.mock import Mock, patch
 
+from django.contrib.flatpages.models import FlatPage
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sites.models import Site
 from django.http import HttpRequest
@@ -19,7 +20,10 @@ from studies.models import Lab, Study, StudyType
 class AuthenticationTestCase(TestCase):
     def setUp(self):
         self.researcher_email = "test@test.com"
+        self.participant_email = "tom@myspace.com"
         self.test_password = "testpassword20chars"
+
+        # Researcher setup
         self.researcher = G(
             User,
             username=self.researcher_email,
@@ -28,14 +32,27 @@ class AuthenticationTestCase(TestCase):
             nickname="Lab Researcher",
         )
         self.researcher.set_password(self.test_password)
+        self.otp = G(GoogleAuthenticatorTOTP, user=self.researcher, activated=True)
         self.researcher.save()
 
-        self.fake_session_key = "D34DB33F"
+        # Participant Setup
+        self.participant = G(
+            User,
+            username=self.participant_email,
+            is_active=True,
+            is_researcher=False,
+            nickname="MySpace Tom",
+        )
+        self.participant.set_password(self.test_password)
+        self.participant.save()
 
-        # Enable login to work
+        # Site fixture enabling login
         self.fake_site = G(Site, id=1)
 
-        self.otp = G(GoogleAuthenticatorTOTP, user=self.researcher, activated=True)
+        # FlatPage fixture enabling login redirect to work.
+        self.home_page = G(FlatPage, url="/")
+        self.home_page.sites.add(self.fake_site)
+        self.home_page.save()
 
     def test_researcher_registration_flow(self):
         response = self.client.post(
@@ -156,6 +173,53 @@ class AuthenticationTestCase(TestCase):
         self.assertIsNot(
             response.wsgi_request.session.get(TWO_FACTOR_AUTH_SESSION_KEY), True
         )
+
+        # Cleanup, patch over messages as RequestFactory doesn't know about
+        # middleware
+        with patch("django.contrib.messages.api.add_message", autospec=True):
+            self.client.logout()
+
+    def test_participant_login(self):
+        response = self.client.post(
+            # TODO: Technically, we shouldn't have to add the "next" query param
+            #   to emulate the login link. However, this breaks the test due to
+            #   the fact that settings.LOGIN_REDIRECT_URL targets /exp/. This is
+            #   generally not a problem for the web application, as users will click
+            #   the login link rather than entering via URL. We should change the
+            #   environment variable in both environments handled by lookit-orchestrator
+            #   before getting rid of this query parameter.
+            reverse("login"),
+            {
+                "username": self.participant_email,
+                "password": self.test_password,
+                "next": "/",
+            },
+            follow=True,
+        )
+        self.assertTrue(response.status_code == 200)
+        # Same as with researcher, we shouldn't have the 2FA session key
+        self.assertFalse(response.wsgi_request.session[TWO_FACTOR_AUTH_SESSION_KEY])
+        self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
+
+        # Cleanup, patch over messages as RequestFactory doesn't know about
+        # middleware
+        with patch("django.contrib.messages.api.add_message", autospec=True):
+            self.client.logout()
+
+    def test_participant_no_access_to_2fa_views(self):
+        self.client.force_login(self.participant)
+
+        # No 2FA setup possible
+        response = self.client.get(reverse("accounts:2fa-setup"))
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.get(reverse("accounts:2fa-login"))
+        self.assertEqual(response.status_code, 403)
+
+        # Cleanup, patch over messages as RequestFactory doesn't know about
+        # middleware
+        with patch("django.contrib.messages.api.add_message", autospec=True):
+            self.client.logout()
 
 
 class UserModelTestCase(TestCase):
