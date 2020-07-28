@@ -76,7 +76,8 @@ INSTALLED_APPS = [
     # at the bottom so overriding form widget templates have a fallback -
     # See https://stackoverflow.com/a/46836189
     "django.forms",
-    "django.contrib.admin",
+    # "django.contrib.admin",
+    "project.apps.TwoFactorAuthProtectedAdminConfig",
     "allauth.socialaccount",
     "allauth.account",
 ]

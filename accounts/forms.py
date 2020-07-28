@@ -70,11 +70,7 @@ class TOTPCheckForm(forms.Form):
 
 
 class TOTPLoginForm(AuthenticationForm):
-    """DEPRECATED
-
-    We are now doing 2-step login form process. Keeping this until we're 100% sure
-    we don't want any of this code.
-    """
+    """Only used for Administrator Login, where 2FA is always required."""
 
     error_messages = {
         "invalid_login": _(
@@ -86,8 +82,8 @@ class TOTPLoginForm(AuthenticationForm):
         "inactive": _("This account is inactive."),
     }
 
-    auth_code = TOTPField(  # Do not require otp code in login views.
-        label="Two Factor Auth Code", help_text="6 digit one-time code", required=False
+    auth_code = TOTPField(
+        label="Two Factor Auth Code", help_text="6 digit one-time code"
     )
 
     def clean(self):

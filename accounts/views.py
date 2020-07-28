@@ -27,12 +27,12 @@ class LoginWithRedirectToTwoFactorAuthView(LoginView):
         otp: GoogleAuthenticatorTOTP = getattr(user, "otp")
         if otp and otp.activated:
             return reverse("accounts:2fa-login")
-        elif user.is_researcher:
+        elif user.is_researcher or user.is_staff:
             messages.warning(
                 self.request,
-                "If you're a researcher, you'll want to set up 2FA with us. "
-                "Please complete the Two-Factor Auth setup below and you'll "
-                "be on your way!",
+                "If you're a researcher or Lookit staff, you'll want to set up "
+                "2FA with us. Please complete the Two-Factor Auth setup below "
+                "and you'll be on your way!",
             )
             return reverse("accounts:2fa-setup")
         else:

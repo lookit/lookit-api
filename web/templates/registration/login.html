@@ -29,7 +29,10 @@
             </form>
 
             {# Assumes you setup the password_reset view in your URLconf #}
-            <p class="text-center"><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+            {% if not request.user.is_authenticated %}
+                {# This conditional block is so we can use the this template for 2FA as well #}
+                <p class="text-center"><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+            {% endif %}
             <p class="text-center"><strong>New to Lookit?</strong> <a href="{% url 'web:participant-signup' %}"> Register your family! </a></p>
           </div>
         </div>
