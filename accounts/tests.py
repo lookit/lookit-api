@@ -138,15 +138,16 @@ class AuthenticationTestCase(TestCase):
             self.client.logout()
 
     def test_researcher_2fa_login_success(self):
-        # This is done without OTP.
-        self.client.force_login(self.researcher)
+        self.client.login(username=self.researcher_email, password=self.test_password)
         # Test that we can actually see the page
+        self.assertTrue(self.researcher.is_authenticated)
+        otp = self.researcher.otp
         response = self.client.get(reverse("accounts:2fa-login"))
         self.assertEqual(response.status_code, 200)
         # Test that we can send a correctly formatted POST request to it.
         response = self.client.post(
             reverse("accounts:2fa-login"),
-            {"otp_code": self.otp.provider.now()},
+            {"otp_code": otp.provider.now()},
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -158,7 +159,7 @@ class AuthenticationTestCase(TestCase):
             self.client.logout()
 
     def test_researcher_2fa_login_fail(self):
-        self.client.force_login(self.researcher)
+        self.client.login(username=self.researcher_email, password=self.test_password)
         two_factor_auth_url = reverse("accounts:2fa-login")
         # Test a bad auth code
         response = self.client.post(
