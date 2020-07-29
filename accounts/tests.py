@@ -22,6 +22,7 @@ class AuthenticationTestCase(TestCase):
         self.researcher_email = "test@test.com"
         self.participant_email = "tom@myspace.com"
         self.test_password = "testpassword20chars"
+        self.base32_secret = "GNKVX3Y2U6BKTVKU"
 
         # Researcher setup
         self.researcher = G(
@@ -33,7 +34,7 @@ class AuthenticationTestCase(TestCase):
         )
         self.researcher.set_password(self.test_password)
         self.otp = GoogleAuthenticatorTOTP.objects.create(
-            user=self.researcher, activated=True
+            user=self.researcher, secret=self.base32_secret, activated=True
         )
         self.researcher.save()
 
@@ -55,6 +56,8 @@ class AuthenticationTestCase(TestCase):
         self.home_page = G(FlatPage, url="/")
         self.home_page.sites.add(self.fake_site)
         self.home_page.save()
+        print(self.otp.secret)
+        print(self.researcher.otp.secret)
 
     def test_researcher_registration_flow(self):
         response = self.client.post(
@@ -84,6 +87,8 @@ class AuthenticationTestCase(TestCase):
         self.assertTrue(response.wsgi_request.session[TWO_FACTOR_AUTH_SESSION_KEY])
         self.assertEqual(response.redirect_chain, [("/exp/studies/", 302)])
         self.assertEqual(response.status_code, 200)
+        print(self.otp.secret)
+        print(self.researcher.otp.secret)
 
     def test_2fa_flow_wrong_otp_reload_page(self):
         response = self.client.post(
@@ -112,6 +117,8 @@ class AuthenticationTestCase(TestCase):
         # Should have reloaded the page with the same QR code
         self.assertNotIn(TWO_FACTOR_AUTH_SESSION_KEY, response.wsgi_request.session)
         self.assertEqual(old_qr_svg, new_qr_svg)
+        print(self.otp.secret)
+        print(self.researcher.otp.secret)
 
     def test_researcher_login_redirect_to_2FA_verification(self):
         response = self.client.post(
@@ -124,6 +131,8 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(
             response.redirect_chain, [(reverse("accounts:2fa-login"), 302)]
         )
+        print(self.otp.secret)
+        print(self.researcher.otp.secret)
 
     def test_researcher_regular_login_cannot_access_exp_views(self):
         self.client.login(
@@ -136,6 +145,8 @@ class AuthenticationTestCase(TestCase):
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
+        print(self.otp.secret)
+        print(self.researcher.otp.secret)
         with patch("django.contrib.messages.api.add_message", autospec=True):
             self.client.logout()
 
@@ -154,6 +165,8 @@ class AuthenticationTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual((reverse("exp:study-list"), 302), response.redirect_chain[-1])
+        print(self.otp.secret)
+        print(self.researcher.otp.secret)
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
@@ -176,6 +189,8 @@ class AuthenticationTestCase(TestCase):
         self.assertIsNot(
             response.wsgi_request.session.get(TWO_FACTOR_AUTH_SESSION_KEY), True
         )
+        print(self.otp.secret)
+        print(self.researcher.otp.secret)
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
