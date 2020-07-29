@@ -165,7 +165,7 @@ class AuthenticationTestCase(TestCase):
             two_factor_auth_url, {"otp_code": str(int(self.otp.provider.now()) + 1)},
         )
 
-        # We just reloaded the page...
+        # We just reloaded the page, so we should get a 200
         self.assertEqual(response.status_code, 200)
         # There are form errors...
         self.assertNotEqual(len(response.context["form"].errors), 0)
