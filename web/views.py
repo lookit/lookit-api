@@ -104,12 +104,14 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
     Allows a participant to update their name and password -
     extra code in this view because there are multiple forms on this page.
+
+    DEPRECATED: Now using
     """
 
-    template_name = "web/participant-update.html"
+    template_name = "web/account-update.html"
     model = User
-    form_class = forms.ParticipantUpdateForm
-    second_form_class = forms.ParticipantPasswordForm
+    form_class = forms.AccountUpdateForm
+    second_form_class = forms.PasswordChangeForm
 
     def get_context_data(self, **kwargs):
         """
@@ -153,7 +155,7 @@ class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
         return kwargs
 
     def form_invalid(self, **kwargs):
-        return self.render(self.get_context_data(**kwargs))
+        return self.render_to_response(self.get_context_data(**kwargs))
 
     def post(self, request, *args, **kwargs):
         """

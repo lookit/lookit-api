@@ -1,10 +1,7 @@
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-from accounts.signals import (
-    post_migrate_create_flatpages,
-    post_migrate_create_social_app,
-)
+from accounts.signals import post_migrate_create_flatpages
 
 
 class AccountsConfig(AppConfig):

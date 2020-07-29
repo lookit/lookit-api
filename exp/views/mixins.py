@@ -32,7 +32,7 @@ class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
                     "In order to access experimenter pages, you must have two-factor "
                     "authentication enabled, and have logged in with your OTP key.",
                 )
-                return redirect("accounts:login")
+                return redirect("accounts:2fa-login")
         else:
             return HttpResponseForbidden(
                 f"Unauthorized: {user} is not a Researcher account."

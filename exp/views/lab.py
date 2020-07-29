@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.db.models import Q
-from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
@@ -314,8 +313,6 @@ class LabMembersView(
             )
         if action == "reset_password":
             self.send_reset_password_email(researcher)
-        if action == "resend_confirmation":
-            self.send_resend_confirmation_email(researcher)
 
         return HttpResponseRedirect(
             reverse("exp:lab-members", kwargs={"pk": self.object.id})
@@ -323,37 +320,18 @@ class LabMembersView(
 
     def send_reset_password_email(self, researcher):
         """
-        Send reset_password email to researcher (not a real password reset email,
-        just directs to OSF).
+        Send reset_password email to researcher./
         """
         context = {
             "researcher_name": researcher.get_short_name(),
             "lab_name": self.get_object().name,
             "login_url": self.login_url,
         }
-        subject = "Reset OSF password to login to Lookit"
+        subject = "Reset password to login to Lookit"
         send_mail.delay("reset_password", subject, researcher.username, **context)
         messages.success(
             self.request, f"Reset password email sent to {researcher.username}."
         )
-        return
-
-    def send_resend_confirmation_email(self, researcher):
-        """
-        Send resend_confirmation_email to researcher (not a real confirmation email,
-        just directs to OSF).
-        """
-        context = {
-            "researcher_name": researcher.get_short_name(),
-            "lab_name": self.get_object().name,
-            "login_url": self.login_url,
-        }
-        subject = "Confirm OSF account to login to Lookit"
-        send_mail.delay("resend_confirmation", subject, researcher.username, **context)
-        messages.success(
-            self.request, f"Confirmation email resent to {researcher.username}."
-        )
-        return
 
 
 class LabUpdateView(
