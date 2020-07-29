@@ -150,7 +150,10 @@ class AuthenticationTestCase(TestCase):
         # Test that we can send a correctly formatted POST request to it.
         response = self.client.post(
             reverse("accounts:2fa-login"),
-            {"otp_code": otp.provider.now(), "next": reverse("exp:study-list")},
+            # TODO: See comment below about "next" query param and
+            #   settings.LOGIN_REDIRECT_URL. We are also going to hardcode
+            #   TwoFactorAuthLoginView for now to go straight to `exp:study-list`.
+            {"otp_code": otp.provider.now()},
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -189,9 +192,10 @@ class AuthenticationTestCase(TestCase):
             #   to emulate the login link. However, this breaks the test due to
             #   the fact that settings.LOGIN_REDIRECT_URL targets /exp/. This is
             #   generally not a problem for the web application, as users will click
-            #   the login link rather than entering via URL. We should change the
-            #   environment variable in both environments handled by lookit-orchestrator
-            #   before getting rid of this query parameter.
+            #   the login link (which explicitly hardcodes next as "/") rather than
+            #   entering via URL. We should change the environment variable in both
+            #   environments handled by lookit-orchestrator before getting rid of this
+            #   query parameter.
             reverse("login"),
             {
                 "username": self.participant_email,
