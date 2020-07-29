@@ -56,8 +56,6 @@ class AuthenticationTestCase(TestCase):
         self.home_page = G(FlatPage, url="/")
         self.home_page.sites.add(self.fake_site)
         self.home_page.save()
-        print(self.otp.secret)
-        print(self.researcher.otp.secret)
 
     def test_researcher_registration_flow(self):
         response = self.client.post(
@@ -87,8 +85,6 @@ class AuthenticationTestCase(TestCase):
         self.assertTrue(response.wsgi_request.session[TWO_FACTOR_AUTH_SESSION_KEY])
         self.assertEqual(response.redirect_chain, [("/exp/studies/", 302)])
         self.assertEqual(response.status_code, 200)
-        print(self.otp.secret)
-        print(self.researcher.otp.secret)
 
     def test_2fa_flow_wrong_otp_reload_page(self):
         response = self.client.post(
@@ -117,8 +113,6 @@ class AuthenticationTestCase(TestCase):
         # Should have reloaded the page with the same QR code
         self.assertNotIn(TWO_FACTOR_AUTH_SESSION_KEY, response.wsgi_request.session)
         self.assertEqual(old_qr_svg, new_qr_svg)
-        print(self.otp.secret)
-        print(self.researcher.otp.secret)
 
     def test_researcher_login_redirect_to_2FA_verification(self):
         response = self.client.post(
@@ -131,8 +125,6 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(
             response.redirect_chain, [(reverse("accounts:2fa-login"), 302)]
         )
-        print(self.otp.secret)
-        print(self.researcher.otp.secret)
 
     def test_researcher_regular_login_cannot_access_exp_views(self):
         self.client.login(
@@ -145,8 +137,6 @@ class AuthenticationTestCase(TestCase):
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
-        print(self.otp.secret)
-        print(self.researcher.otp.secret)
         with patch("django.contrib.messages.api.add_message", autospec=True):
             self.client.logout()
 
@@ -155,6 +145,8 @@ class AuthenticationTestCase(TestCase):
         # Test that we can actually see the page
         self.assertTrue(self.researcher.is_authenticated)
         otp = self.researcher.otp
+        print(f"OTP Provider @ now: {otp.provider.at(datetime.datetime.now())}")
+        print(f"OTP Provider now func: {otp.provider.now()}")
         response = self.client.get(reverse("accounts:2fa-login"))
         self.assertEqual(response.status_code, 200)
         # Test that we can send a correctly formatted POST request to it.
@@ -165,8 +157,6 @@ class AuthenticationTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual((reverse("exp:study-list"), 302), response.redirect_chain[-1])
-        print(self.otp.secret)
-        print(self.researcher.otp.secret)
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
@@ -189,8 +179,6 @@ class AuthenticationTestCase(TestCase):
         self.assertIsNot(
             response.wsgi_request.session.get(TWO_FACTOR_AUTH_SESSION_KEY), True
         )
-        print(self.otp.secret)
-        print(self.researcher.otp.secret)
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
