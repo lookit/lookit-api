@@ -17,9 +17,9 @@
         <h1 class="panel-title">Create Participant Account</h1>
       </div>
       <div class="panel-body">
-        <p class="alert alert-warning">
-            This form is for registering <strong><em>families only</em></strong>. If you wish to register as a researcher,
-            please use <a href="{% url 'accounts:researcher-registration' %}">this form</a> instead.
+        <p class="alert alert-info">
+            Create a family account to start participating in Lookit studies!
+            (To register as a researcher, please use <a href="{% url 'accounts:researcher-registration' %}">this form</a> instead.)
         </p>
         <form method="POST" action="">{% csrf_token %}
           {% bootstrap_form form %}
@@ -32,7 +32,6 @@
           </div>
           {% endbuttons %}
         </form>
-        <p class="text-center"><strong>Register as a </strong> <a href="{% url 'accounts:researcher-registration' %}">researcher</a> instead?</p>
     </div>
   </div>
 </div>
