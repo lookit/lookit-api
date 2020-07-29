@@ -144,16 +144,16 @@ class AuthenticationTestCase(TestCase):
         self.client.login(username=self.researcher_email, password=self.test_password)
         # Test that we can actually see the page
         self.assertTrue(self.researcher.is_authenticated)
-        otp = self.researcher.otp
         response = self.client.get(reverse("accounts:2fa-login"))
         self.assertEqual(response.status_code, 200)
+        next_url = response.context["next"]
+        self.assertEqual(next_url, reverse("exp:study-list"))
         # Test that we can send a correctly formatted POST request to it.
+        # Also, fully mimic posting form from the page itself by carrying `next`
+        # through.
         response = self.client.post(
             reverse("accounts:2fa-login"),
-            # TODO: See comment below about "next" query param and
-            #   settings.LOGIN_REDIRECT_URL. We are also going to hardcode
-            #   TwoFactorAuthLoginView for now to go straight to `exp:study-list`.
-            {"otp_code": otp.provider.now()},
+            {"otp_code": self.otp.provider.now(), "next": next_url},
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
@@ -188,14 +188,8 @@ class AuthenticationTestCase(TestCase):
 
     def test_participant_login(self):
         response = self.client.post(
-            # TODO: Technically, we shouldn't have to add the "next" query param
-            #   to emulate the login link. However, this breaks the test due to
-            #   the fact that settings.LOGIN_REDIRECT_URL targets /exp/. This is
-            #   generally not a problem for the web application, as users will click
-            #   the login link (which explicitly hardcodes next as "/") rather than
-            #   entering via URL. We should change the environment variable in both
-            #   environments handled by lookit-orchestrator before getting rid of this
-            #   query parameter.
+            # Pretend that we have already gotten the page ("next" is loaded into
+            # template context for us already, and it becomes part of the form)
             reverse("login"),
             {
                 "username": self.participant_email,

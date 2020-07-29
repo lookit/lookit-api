@@ -232,7 +232,7 @@ BASE_URL = os.environ.get(
     "BASE_URL", "https://localhost:8000"
 )  # default to ember base url
 
-LOGIN_REDIRECT_URL = os.environ.get("LOGIN_REDIRECT_URL", "https://localhost:8000/exp/")
+LOGIN_REDIRECT_URL = "web:home"
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get("ACCOUNT_LOGOUT_REDIRECT_URL", "/api/")
 LOGOUT_REDIRECT_URL = "web:home"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"

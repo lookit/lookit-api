@@ -64,12 +64,9 @@ class TwoFactorAuthLoginView(UserPassesTestMixin, LoginView):
         self.request.session[TWO_FACTOR_AUTH_SESSION_KEY] = True
         return HttpResponseRedirect(self.get_success_url())
 
-    def get_success_url(self) -> str:
-        """For now, we'll just always go straight to exp:study-list.
-
-        TODO: Honor `next` param?
-        """
-        return reverse("exp:study-list")
+    def get_redirect_url(self) -> str:
+        """Have a good default for experimenters - the study list."""
+        return super().get_redirect_url() or reverse("exp:study-list")
 
 
 class ResearcherRegistrationView(generic.CreateView):
