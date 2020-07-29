@@ -63,6 +63,11 @@ class TOTPCheckForm(forms.Form):
         if self.otp.verify(otp_code):
             return otp_code
         else:
+            print(
+                "OTP CODE INVALID: \n"
+                f"expected: {self.otp.provider.at(datetime.datetime.now())}\n"
+                f"got: {otp_code}\n"
+            )
             raise forms.ValidationError(
                 "Invalid OTP Code. Make sure that you type the 6 digit number "
                 "exactly, and that you do so quickly (within the 30 second window)!"

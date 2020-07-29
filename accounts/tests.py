@@ -145,18 +145,16 @@ class AuthenticationTestCase(TestCase):
         # Test that we can actually see the page
         self.assertTrue(self.researcher.is_authenticated)
         otp = self.researcher.otp
-        print(f"OTP Provider @ now: {otp.provider.at(datetime.datetime.now())}")
-        print(f"OTP Provider now func: {otp.provider.now()}")
         response = self.client.get(reverse("accounts:2fa-login"))
         self.assertEqual(response.status_code, 200)
         # Test that we can send a correctly formatted POST request to it.
         response = self.client.post(
             reverse("accounts:2fa-login"),
-            {"otp_code": otp.provider.now()},
+            {"otp_code": otp.provider.now(), "next": reverse("exp:study-list")},
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual((reverse("exp:study-list"), 302), response.redirect_chain[-1])
+        self.assertEqual(response.redirect_chain[-1], (reverse("exp:study-list"), 302))
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
