@@ -130,6 +130,8 @@ class ResearcherRegistrationForm(UserCreationForm):
         # Don't autofill passwords, in the interest of security.
         self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
         self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
+        self.fields["given_name"].required = True
+        self.fields["family_name"].required = True
 
     def save(self, commit=True):
         """Just flip the active and researcher flags."""
