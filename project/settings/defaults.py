@@ -76,7 +76,10 @@ INSTALLED_APPS = [
     # at the bottom so overriding form widget templates have a fallback -
     # See https://stackoverflow.com/a/46836189
     "django.forms",
-    "django.contrib.admin",
+    # "django.contrib.admin",
+    "project.apps.TwoFactorAuthProtectedAdminConfig",
+    "allauth.socialaccount",
+    "allauth.account",
 ]
 
 MIDDLEWARE = [
@@ -223,46 +226,16 @@ SITE_NAME = os.environ.get("SITE_NAME", "Lookit")
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 # base url for experiments, should be GCS bucket in prod
-EXPERIMENT_BASE_URL = os.environ.get(
-    "EXPERIMENT_BASE_URL",
-    "https://storage.googleapis.com/io-osf-lookit-staging2/experiments/",
-)  # default to ember base url
+EXPERIMENT_BASE_URL = os.environ.get("EXPERIMENT_BASE_URL")
 
 BASE_URL = os.environ.get(
     "BASE_URL", "https://localhost:8000"
 )  # default to ember base url
-OSF_URL = os.environ.get(
-    "OSF_URL", "https://staging.osf.io/"
-)  # default osf url used for oauth
 
-LOGIN_REDIRECT_URL = os.environ.get("LOGIN_REDIRECT_URL", "https://localhost:8000/exp/")
+LOGIN_REDIRECT_URL = "web:home"
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get("ACCOUNT_LOGOUT_REDIRECT_URL", "/api/")
 LOGOUT_REDIRECT_URL = "web:home"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-SOCIALACCOUNT_ADAPTER = "osf_oauth2_adapter.views.OSFOAuth2Adapter"
-SOCIALACCOUNT_PROVIDERS = {
-    "osf": {
-        "METHOD": "oauth2",
-        "SCOPE": ["osf.users.email_read", "osf.users.profile_read"],
-        "AUTH_PARAMS": {"access_type": "offline"},
-        # 'FIELDS': [
-        #     'id',
-        #     'email',
-        #     'name',
-        #     'first_name',
-        #     'last_name',
-        #     'verified',
-        #     'locale',
-        #     'timezone',
-        #     'link',
-        #     'gender',
-        #     'updated_time'],
-        # 'EXCHANGE_TOKEN': True,
-        # 'LOCALE_FUNC': 'path.to.callable',
-        # 'VERIFIED_EMAIL': False,
-        # 'VERSION': 'v2.4'
-    }
-}
 
 
 # Configuration for cross-site requests
@@ -357,12 +330,3 @@ CELERY_TASK_ROUTES = {
     "studies.helpers.send_mail": {"queue": "email"},
 }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
-OSF_OAUTH_CLIENT_ID = os.environ.get(
-    "OSF_OAUTH_CLIENT_ID", "3518b74e12584abf9e48565ff6aee6f3"
-)
-OSF_OAUTH_SECRET = os.environ.get(
-    "OSF_OAUTH_SECRET", "vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU"
-)
-
-JAMDB_AUTH_TOKEN = os.environ.get("JAMDB_AUTH_TOKEN", "")

@@ -17,16 +17,27 @@ Including another URLconf
 from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.urls import urlpatterns as auth_urls
 from django.urls import path
 from django.views.generic.base import RedirectView
+from more_itertools import locate
 
 from accounts import urls as accounts_urls
+from accounts.views import LoginWithRedirectToTwoFactorAuthView
 from api import urls as api_urls
 from exp import urls as exp_urls
 from project import settings
 from web import urls as web_urls
 
 favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
+
+# Don't want to depend on the login always being the first view...
+# plus we REALLY should be using more_itertools :)
+login_path_index = next(locate(auth_urls, lambda patt: patt.name == "login"))
+auth_urls[login_path_index] = path(
+    "login/", LoginWithRedirectToTwoFactorAuthView.as_view(), name="login"
+)
+
 
 urlpatterns = [
     path("favicon.ico", favicon_view),
@@ -35,6 +46,9 @@ urlpatterns = [
     path("exp/", include(exp_urls)),
     path("", include(accounts_urls)),
     path("", include(web_urls)),
+    # Default auth views need to be put here so that the url reverses
+    # will map properly.
+    path("", include(auth_urls)),
 ]
 
 if settings.DEBUG:
