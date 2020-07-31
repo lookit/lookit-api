@@ -86,7 +86,7 @@ class GoogleAuthenticatorTOTP(models.Model):
     https://github.com/google/google-authenticator/wiki/Key-Uri-Format
     """
 
-    issuer = "Lookit"
+    issuer = f"Lookit-{settings.ENVIRONMENT}"
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

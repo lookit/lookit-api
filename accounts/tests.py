@@ -120,7 +120,7 @@ class AuthenticationTestCase(TestCase):
             {"username": self.researcher_email, "password": self.test_password},
             follow=True,
         )
-        self.assertTrue(response.status_code == 200)
+        self.assertEqual(response.status_code, 200)
         self.assertNotIn(TWO_FACTOR_AUTH_SESSION_KEY, response.wsgi_request.session)
         self.assertEqual(
             response.redirect_chain, [(reverse("accounts:2fa-login"), 302)]
@@ -177,9 +177,7 @@ class AuthenticationTestCase(TestCase):
         # There are form errors...
         self.assertNotEqual(len(response.context["form"].errors), 0)
         # And the session key isn't set.
-        self.assertIsNot(
-            response.wsgi_request.session.get(TWO_FACTOR_AUTH_SESSION_KEY), True
-        )
+        self.assertFalse(response.wsgi_request.session.get(TWO_FACTOR_AUTH_SESSION_KEY))
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware

@@ -9,10 +9,7 @@ TWO_FACTOR_AUTH_SESSION_KEY = "using_2FA"
 
 
 class TwoFactorAuthenticationBackend(ModelBackend):
-    """Grabs a regular user, but checks OTP as well as password.
-
-    DEPRECATED
-    """
+    """Grabs a regular user, but checks OTP as well as password."""
 
     def authenticate(
         self,
