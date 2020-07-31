@@ -102,11 +102,8 @@
                                     <td> {{ video.created_at }} </td>
                                 {% endtimezone %}
                                 <td>
-                                    <form method="POST" action="{% url 'exp:study-response-video-download' pk=study.id video=video.pk%}"> {% csrf_token %}
-                                        <button name="download" type="submit" class="btn btn-primary btn-sm">
-                                            Download
-                                        </button>
-                                    </form>
+                                    <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
+                                       class="btn btn-primary btn-sm"> Download </a>
                                 </td>
                             </tr>
                         {% empty %}

@@ -205,16 +205,13 @@
             <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
                 {% for video in response.videos %}
                 <div class="row pt-xs">
-
-                    <form method="POST" action="{% url 'exp:study-response-video-download' pk=study.id video=video.pk%}"> {% csrf_token %}
-                        <div class="col-xs-12 col-md-8">
-                            {{ video.display_name|wordwrap:45 }}
-                        </div>
-                        <div class="col-xs-12 col-md-4">
-                            <button formtarget="_blank" rel="noreferrer noopener" name="view" type="submit" class="btn btn-primary btn-sm"> View </button>
-                            <button name="download" type="submit" class="btn btn-primary btn-sm"> Download </button>
-                        </div>
-                    </form>
+                    <div class="col-xs-12 col-md-8">
+                        {{ video.display_name|wordwrap:45 }}
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <a target="_blank" rel="noreferrer noopener" href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view" class="btn btn-primary btn-sm"> View </a>
+                        <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download" class="btn btn-primary btn-sm"> Download </a>
+                    </div>
                 </div>
                 {% empty %}
                 <p><em> Expect a delay of a few minutes for videos to be available for download. </em></p>

@@ -1,8 +1,8 @@
+from functools import cached_property
 from typing import Optional
 
 import requests
 from django.conf import settings
-
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Model
@@ -43,13 +43,9 @@ class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
 
 
 class StudyLookupMixin:
-
-    study = None
-
-    def get_study(self):
-        if self.study is None:
-            self.study = get_object_or_404(Study, pk=self.kwargs.get("pk"))
-        return self.study
+    @cached_property
+    def study(self):
+        return get_object_or_404(Study, pk=self.kwargs.get("pk"))
 
 
 class CanViewStudyResponsesMixin(
@@ -60,7 +56,7 @@ class CanViewStudyResponsesMixin(
 
     def can_view_responses(self):
         user = self.request.user
-        study = self.get_study()
+        study = self.study
 
         return user.is_researcher and (
             user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, study)

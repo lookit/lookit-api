@@ -2,7 +2,8 @@ import io
 import json
 import types
 import zipfile
-from typing import NamedTuple
+from functools import cached_property
+from typing import List, NamedTuple, Set, Union
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -401,7 +402,8 @@ RESPONSE_COLUMNS = [
     ),
 ]
 
-# Columns for demographic data downloads. Extractor functions expect Response values dict, rather than instance.
+# Columns for demographic data downloads. Extractor functions expect Response values dict,
+# rather than instance.
 DEMOGRAPHIC_COLUMNS = [
     ResponseDataColumn(
         id="response__uuid",
@@ -611,21 +613,35 @@ CHILD_CSV_HEADERS = [
     if col.id.startswith("child__") or col.id.startswith("participant__")
 ]
 
-IDENTIFIABLE_DATA_HEADERS = [col.id for col in RESPONSE_COLUMNS if col.identifiable]
+IDENTIFIABLE_DATA_HEADERS = {col.id for col in RESPONSE_COLUMNS if col.identifiable}
 
 
-def get_response_headers(selected_header_ids, all_available_header_ids):
+def get_response_headers(
+    selected_header_ids: Union[Set, List], all_available_header_ids: Set
+) -> List:
+    """Get ordered list of response headers for download.
+
+    Select and order the appropriate headers to include in a file download, based on
+    which optional headers are selected and which headers are available.
+
+    Args:
+        selected_header_ids: which optional headers to include (corresponding to id values in
+            RESPONSE_COLUMNS). Headers that are specified as optional in RESPONSE_COLUMNS will
+            only be included if listed in selected_header_ids.
+
+        all_available_header_ids: all header ids we have data for. Any header ids that are in
+            this set but not in RESPONSE_COLUMNS will be added to the end of the output list.
+
+    Returns:
+        List of headers to include, consisting of the following in order:
+        1) Headers in RESPONSE_COLUMNS, in order, omitting any that are optional and were not selected
+        2) Extra headers from all_available_header_ids not included in (1), in alpha order
     """
-    Select and order the appropriate headers to include in a file download.
-    selected_headers is a list of headers to select from the optional header ids; all_available_headers is a set.
-    Will put standard headers in the order defined in RESPONSE_COLUMNS, then any remaining headers from
-    all_available_headers. Optional headers not in selected_headers are removed.
-    """
-    unselected_optional_ids = [
+    unselected_optional_ids = {
         col.id
         for col in RESPONSE_COLUMNS
         if col.optional and col.id not in selected_header_ids
-    ]
+    }
     selected_standard_header_ids = [
         col.id
         for col in RESPONSE_COLUMNS[0:-2]
@@ -635,14 +651,26 @@ def get_response_headers(selected_header_ids, all_available_header_ids):
         list(
             all_available_header_ids
             - set(selected_standard_header_ids)
-            - set(unselected_optional_ids)
+            - unselected_optional_ids
         )
     )
 
 
 def get_demographic_headers(selected_header_ids=None):
+    """Get ordered list of demographic headers for download.
+
+    Args:
+        selected_header_ids(set or list): which optional headers to include (corresponding
+            to id values in DEMOGRAPHIC_COLUMNS).
+
+    Returns:
+        Ordered list of headers to include in download
+
+        Headers are id values from DEMOGRAPHIC_COLUMNS in order, omitting any that are optional
+        and were not included in selected_header_ids.
+    """
     if selected_header_ids is None:
-        selected_header_ids = []
+        selected_header_ids = {}
     return [
         col.id
         for col in DEMOGRAPHIC_COLUMNS
@@ -654,7 +682,7 @@ def construct_response_dictionary(
     resp, columns, optional_headers, include_exp_data=True
 ):
     if optional_headers is None:
-        optional_headers = []
+        optional_headers = {}
     resp_dict = {}
     for col in columns:
         if col.id in optional_headers or not col.optional:
@@ -709,7 +737,7 @@ def get_frame_data(resp):
 
     # Next add all data in exp_data
     event_prefix = "eventTimings."
-    for (frame_id, frame_data) in resp["exp_data"].items():
+    for frame_id, frame_data in resp["exp_data"].items():
         for (key, value) in flatten_dict(frame_data).items():
             # Process event data separately and include event_number within frame
             if key.startswith(event_prefix):
@@ -731,7 +759,7 @@ def get_frame_data(resp):
             elif key == "birthDate" and frame_data.get("frameType", None) == "EXIT":
                 continue
                 # Omit empty generatedProperties values from CSV
-            elif key == "generatedProperties" and not (value):
+            elif key == "generatedProperties" and not value:
                 continue
                 # For all other data, create a regular entry with frame_id and no event #
             else:
@@ -921,7 +949,7 @@ class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
     ordering = "id"
 
     def get_queryset(self):
-        study = self.get_study()
+        study = self.study
         return study.responses_for_researcher(self.request.user).order_by(
             self.get_ordering()
         )
@@ -933,7 +961,7 @@ class DemographicDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
     ordering = "id"
 
     def get_queryset(self):
-        study = self.get_study()
+        study = self.study
         return (
             study.responses_for_researcher(self.request.user)
             .order_by(self.get_ordering())
@@ -978,7 +1006,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
 
     def get_ordering(self):
         """
-        Determine sort field and order. Sorting on id actually sorts on user id, not response id.
+        Determine sort field and order. Sorting on id actually sorts on child id, not response id.
         Sorting on status, actually sorts on 'completed' field, where we are alphabetizing
         "in progress" and "completed"
         """
@@ -1011,7 +1039,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
-        context["study"] = study = self.get_study()
+        context["study"] = study = self.study
         paginated_responses = context["object_list"]
         columns_included_in_summary = [
             "response__id",
@@ -1108,8 +1136,8 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         except ObjectDoesNotExist:
             raise SuspiciousOperation
 
-        study = self.get_study()
-        header_options = self.request.POST.getlist("data_options")
+        study = self.study
+        header_options = set(self.request.POST.getlist("data_options"))
         extension = "json" if data_type == "json" else "csv"
         filename = "{}_{}{}.{}".format(
             study_name_for_files(study.name),
@@ -1117,7 +1145,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             "_frames"
             if data_type == "json"
             else "_identifiable"
-            if any([option in IDENTIFIABLE_DATA_HEADERS for option in header_options])
+            if IDENTIFIABLE_DATA_HEADERS & header_options
             else "",
             extension,
         )
@@ -1151,20 +1179,18 @@ class StudyResponseVideoAttachment(
     """
 
     raise_exception = True
-    video = None
 
-    def get_video(self):
+    @cached_property
+    def video(self):
         # Only select the video from consented videos for this study
-        if self.video is None:
-            self.video = self.get_study().videos_for_consented_responses.get(
-                pk=self.kwargs.get("video")
-            )
-        return self.video
+        return self.study.videos_for_consented_responses.get(
+            pk=self.kwargs.get("video")
+        )
 
     def can_view_this_video(self):
         user = self.request.user
-        study = self.get_study()
-        video = self.get_video()
+        study = self.study
+        video = self.video
 
         return user.is_researcher and (
             (
@@ -1179,11 +1205,11 @@ class StudyResponseVideoAttachment(
 
     test_func = can_view_this_video
 
-    def post(self, request, *args, **kwargs):
-        video = self.get_video()
+    def get(self, request, *args, **kwargs):
+        video = self.video
         download_url = video.download_url
 
-        if "download" in self.request.POST:
+        if self.request.GET.get("mode") == "download":
             response = HttpResponse(download_url, content_type="video/mp4")
             response["Content-Disposition"] = 'attachment; filename="{}"'.format(
                 video.filename
@@ -1200,7 +1226,7 @@ class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
 
     def user_can_edit_feedback(self):
         user = self.request.user
-        study = self.get_study()
+        study = self.study
         # First check user has permission to be editing feedback from this study at all
         if not user.is_researcher and user.has_study_perms(
             StudyPermission.EDIT_STUDY_FEEDBACK, study
@@ -1235,7 +1261,7 @@ class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
         """
         form_data = self.request.POST
         user = self.request.user
-        study = self.get_study()
+        study = self.study
 
         feedback_id = form_data.get("feedback_id", None)
         comment = form_data.get("comment", "")
@@ -1483,18 +1509,12 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
 
     def render_to_response(self, context):
         paginator = context["paginator"]
-        study = self.get_study()
-        header_options = self.request.GET.getlist("data_options")
+        study = self.study
+        header_options = set(self.request.GET.getlist("data_options"))
         filename = "{}_{}.json".format(
             study_name_for_files(study.name),
             "all-responses"
-            + (
-                "-identifiable"
-                if any(
-                    [option in IDENTIFIABLE_DATA_HEADERS for option in header_options]
-                )
-                else ""
-            ),
+            + ("-identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
         )
 
         response = StreamingHttpResponse(
@@ -1515,7 +1535,7 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
 
     def render_to_response(self, context):
         paginator = context["paginator"]
-        study = self.get_study()
+        study = self.study
 
         headers = set()
         session_list = []
@@ -1527,9 +1547,9 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
                     {col.id: col.extractor(resp) for col in RESPONSE_COLUMNS}
                 )
                 # Add any new headers from this session
-                headers = headers | set(row_data.keys())
+                headers = headers | row_data.keys()
                 session_list.append(row_data)
-        header_options = self.request.GET.getlist("data_options")
+        header_options = set(self.request.GET.getlist("data_options"))
         header_list = get_response_headers(header_options, headers)
         output, writer = csv_dict_output_and_writer(header_list)
         writer.writerows(session_list)
@@ -1538,13 +1558,7 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
         filename = "{}_{}.csv".format(
             study_name_for_files(study.name),
             "all-responses"
-            + (
-                "-identifiable"
-                if any(
-                    [option in IDENTIFIABLE_DATA_HEADERS for option in header_options]
-                )
-                else ""
-            ),
+            + ("-identifiable" if IDENTIFIABLE_DATA_HEADERS & header_options else ""),
         )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
@@ -1574,7 +1588,7 @@ class StudyResponsesDictCSV(CanViewStudyResponsesMixin, View):
         return output.getvalue()
 
     def get(self, request, *args, **kwargs):
-        study = self.get_study()
+        study = self.study
         header_options = self.request.GET.getlist("data_options")
         cleaned_data = self.build_summary_dict_csv(header_options)
         filename = "{}_{}.csv".format(
@@ -1592,7 +1606,7 @@ class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
 
     def render_to_response(self, context):
         paginator = context["paginator"]
-        study = self.get_study()
+        study = self.study
 
         child_list = []
         session_list = []
@@ -1645,7 +1659,7 @@ class StudyChildrenDictCSV(CanViewStudyResponsesMixin, View):
         return output.getvalue()
 
     def get(self, request, *args, **kwargs):
-        study = self.get_study()
+        study = self.study
         cleaned_data = self.build_child_dict_csv()
         filename = "{}_{}.csv".format(
             study_name_for_files(study.name), "all-children-dict"
@@ -1662,7 +1676,7 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
     # with the data dict.
     def render_to_response(self, context):
         paginator = context["paginator"]
-        study = self.get_study()
+        study = self.study
 
         zipped_file = io.BytesIO()  # import io
         with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
@@ -1694,7 +1708,7 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
 
     def get(self, request, *args, **kwargs):
 
-        study = self.get_study()
+        study = self.study
         filename = "{}_{}_{}".format(
             study_name_for_files(study.name), study.uuid, "all-frames-dict"
         )
@@ -1702,7 +1716,7 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
         build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
         messages.success(
             request,
-            f"A frame data dictionary for {self.get_study().name} is being generated. You will be emailed a link when it's completed.",
+            f"A frame data dictionary for {study.name} is being generated. You will be emailed a link when it's completed.",
         )
         return HttpResponseRedirect(
             reverse("exp:study-responses-all", kwargs=self.kwargs)
@@ -1743,7 +1757,7 @@ class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
     """
 
     def render_to_response(self, context):
-        study = self.get_study()
+        study = self.study
         header_options = self.request.GET.getlist("demo_options")
 
         json_responses = []
@@ -1778,18 +1792,18 @@ class StudyDemographicsCSV(DemographicDownloadMixin, generic.list.ListView):
     """
 
     def render_to_response(self, context):
-        study = self.get_study()
+        study = self.study
         paginator = context["paginator"]
-        header_options = self.request.GET.getlist("demo_options")
+        header_options = set(self.request.GET.getlist("demo_options"))
 
         participant_list = []
-        these_headers = get_demographic_headers(header_options)
+        headers_for_download = get_demographic_headers(header_options)
         for page_num in paginator.page_range:
             page_of_responses = paginator.page(page_num)
             for resp in page_of_responses:
                 row_data = {col.id: col.extractor(resp) for col in DEMOGRAPHIC_COLUMNS}
                 participant_list.append(row_data)
-        output, writer = csv_dict_output_and_writer(these_headers)
+        output, writer = csv_dict_output_and_writer(headers_for_download)
         writer.writerows(participant_list)
         cleaned_data = output.getvalue()
 
@@ -1808,21 +1822,20 @@ class StudyDemographicsDictCSV(DemographicDownloadMixin, generic.list.ListView):
     """
 
     def render_to_response(self, context):
-        header_options = self.request.GET.getlist("demo_options")
-        these_headers = get_demographic_headers(header_options)
+        header_options = set(self.request.GET.getlist("demo_options"))
+        headers_for_download = get_demographic_headers(header_options)
 
         all_descriptions = [
             {"column": col.id, "description": col.description}
             for col in DEMOGRAPHIC_COLUMNS
-            if col.id in these_headers
+            if col.id in headers_for_download
         ]
         output, writer = csv_dict_output_and_writer(["column", "description"])
         writer.writerows(all_descriptions)
         cleaned_data = output.getvalue()
 
         filename = "{}_{}.csv".format(
-            study_name_for_files(self.get_study().name),
-            "all-demographic-snapshots-dict",
+            study_name_for_files(self.study.name), "all-demographic-snapshots-dict",
         )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
@@ -1836,7 +1849,7 @@ class StudyCollisionCheck(ResponseDownloadMixin, View):
     """
 
     def get(self, request, *args, **kwargs):
-        study = self.get_study()
+        study = self.study
         responses = (
             study.consented_responses.order_by("id")
             .select_related("child", "child__user", "study")
@@ -1899,12 +1912,18 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
         return self.request.GET.get("sort", "-created_at") or "-created_at"
 
     def get_queryset(self):
+        """Fetches all consented videos this user has access to.
+
+        Returns:
+            QuerySet: all videos from this study where response has been marked as
+            consented and response is of a type (preview/actual data) that user can view
+
+        Todo:
+            * use a helper (e.g. in queries) select_videos_for_user to fetch the
+            appropriate videos here and in build_zipfile_of_videos - deferring for the moment
+            to work out dependencies.
         """
-            Fetches all consented videos this user has access to.
-            TODO: use a helper (e.g. in queries) select_videos_for_user to fetch the appropriate videos here
-            and in build_zipfile_of_videos - deferring for the moment to work out dependencies.
-        """
-        study = self.get_study()
+        study = self.study
         videos = study.videos_for_consented_responses
         if not self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_RESPONSE_DATA, study
@@ -1926,7 +1945,7 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
         """
         context = super().get_context_data(**kwargs)
         context["match"] = self.request.GET.get("match", "")
-        context["study"] = self.get_study()
+        context["study"] = self.study
         return context
 
     def post(self, request, *args, **kwargs):
@@ -1935,7 +1954,7 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
         """
         match = self.request.GET.get("match", "")
         orderby = self.get_ordering()
-        study = self.get_study()
+        study = self.study
 
         if self.request.POST.get("all-attachments"):
             build_zipfile_of_videos.delay(

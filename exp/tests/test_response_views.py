@@ -614,7 +614,7 @@ class ResponseDataDownloadTestCase(TestCase):
             self.assertNotEqual(data[0]["participant"][header], "")
         # # Check that the remaining headers ARE NOT present
         for header in self.child_labels_json_2:
-            self.assertNotIn(header, data[0]["child"].keys())
+            self.assertNotIn(header, data[0]["child"])
         for header in self.participant_labels_json_2:
             self.assertNotIn(header, data[0]["participant"].keys())
         # Check that some *data* is present as expect: parent, but not child names
@@ -1149,24 +1149,24 @@ class ResponseDataDownloadTestCase(TestCase):
 
     def test_get_appropriate_individual_responses_as_researcher(self):
         self.client.force_login(self.study_reader)
-        response = self.client.get(
-            reverse("exp:study-responses-list", kwargs={"pk": self.study.pk})
-        )
-        content = response.content.decode("utf-8")
-
-        matches = re.finditer('data-response-uuid="(.*)"', content)
         n_matches = 0
-        for m in matches:
-            n_matches += 1
-            this_response_uuid = m.group(1)
-            response = Response.objects.get(uuid=this_response_uuid)
-            self.assertEqual(response.study.pk, self.study.pk)
-            self.assertTrue(response.has_valid_consent)
-        self.assertTrue(
-            n_matches == self.n_responses + self.n_previews
-            or (n_matches == 10 and (self.n_responses + self.n_previews) > 10)
-        )
 
+        n_pages = (self.n_responses + self.n_previews) // 10 + 1
+
+        for page_number in range(1, n_pages + 1):
+            response = self.client.get(
+                f"{reverse('exp:study-responses-list', kwargs={'pk': self.study.pk})}?page={page_number}"
+            )
+            content = response.content.decode("utf-8")
+            matches = re.finditer('data-response-uuid="(.*)"', content)
+            for m in matches:
+                n_matches += 1
+                this_response_uuid = m.group(1)
+                response = Response.objects.get(uuid=this_response_uuid)
+                self.assertEqual(response.study.pk, self.study.pk)
+                self.assertTrue(response.has_valid_consent)
+
+        self.assertEqual(n_matches, self.n_responses + self.n_previews)
         self.assertNotIn(self.poison_string, content)
 
     def test_get_appropriate_individual_responses_as_previewer(self):
@@ -1185,9 +1185,9 @@ class ResponseDataDownloadTestCase(TestCase):
             self.assertEqual(response.study.pk, self.study.pk)
             self.assertTrue(response.has_valid_consent)
             self.assertTrue(response.is_preview)
-        self.assertTrue(
-            n_matches == self.n_previews or (n_matches == 10 and self.n_previews > 10)
-        )
+
+        # Assumes n_previews fit on one page
+        self.assertEqual(n_matches, self.n_previews)
 
     # TODO: test individual file downloads from response-list
     #       * cannot get response from another study,
