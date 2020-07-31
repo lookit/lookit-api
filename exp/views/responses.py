@@ -1011,12 +1011,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         "in progress" and "completed"
         """
         orderby = self.request.GET.get("sort", "id")
-        reverse = "-" in orderby
-        if "id" in orderby:
-            orderby = "-child__id" if reverse else "child__id"
-        if "status" in orderby:
-            orderby = "completed" if reverse else "-completed"
-        return orderby
+        return orderby.replace("id", "child__id").replace("status", "completed")
 
     def get_queryset(self):
         return (
