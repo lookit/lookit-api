@@ -95,6 +95,7 @@ class GoogleAuthenticatorTOTP(models.Model):
         primary_key=True,
     )
     secret = models.CharField(max_length=16, db_index=True, default=pyotp.random_base32)
+    activated = models.BooleanField(default=False)
 
     @property
     def provider(self):
@@ -111,7 +112,7 @@ class GoogleAuthenticatorTOTP(models.Model):
                     self.secret, name=self.user.username, issuer_name=self.issuer
                 ),
                 image_factory=SvgPathImage,
-                box_size=30,
+                box_size=10,
             ).save(stream)
 
             content = stream.getvalue().decode()
@@ -154,13 +155,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         super(User, self).__init__(*args, **kwargs)
         if self.id:
             setattr(self, f"__original_groups", self.groups.all())
-
-    @cached_property
-    def osf_profile_url(self):
-        try:
-            return self.socialaccount_set.first().extra_data["data"]["links"]["html"]
-        except AttributeError:
-            return "#"
 
     @property
     def identicon(self):
@@ -586,7 +580,6 @@ class Message(models.Model):
     def send_as_email(self):
         context = {
             "base_url": settings.BASE_URL,
-            "osf_url": settings.OSF_URL,
             "custom_message": mark_safe(self.body),
         }
 
