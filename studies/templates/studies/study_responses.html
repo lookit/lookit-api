@@ -223,7 +223,7 @@
         </div>
         <div class="col-md-6 col-xs-12">
 
-             <form method="POST"> {% csrf_token %}
+             <form method="GET" action="{% url 'exp:study-responses-single-download' pk=study.pk %}"> {% csrf_token %}
                 <div class="well">
                     <input id="response-id-for-download" type="hidden" name="response_id" value=0 />
 
@@ -243,10 +243,10 @@
                             <option value="framedata">CSV frame data</option>
                         </select>
                         <span class="input-group-btn">
-                                <button name="download-individual-data" type="submit" class='btn mb-sm btn-primary'>
-                                    Download response
-                                </button>
-                            </span>
+                            <button name="download-individual-data" type="submit" class='btn mb-sm btn-primary'>
+                                Download response
+                            </button>
+                        </span>
                     </div>
                 </div>
             </form>

@@ -55,6 +55,7 @@ from exp.views import (
     StudyResponsesList,
     StudyResponseSubmitFeedback,
     StudyResponseVideoAttachment,
+    StudySingleResponseDownload,
     StudyUpdateView,
 )
 
@@ -94,6 +95,11 @@ urlpatterns = [
         "studies/<int:pk>/responses/",
         StudyResponsesList.as_view(),
         name="study-responses-list",
+    ),
+    path(
+        "studies/<int:pk>/responses/download/",
+        StudySingleResponseDownload.as_view(),
+        name="study-responses-single-download",
     ),
     path(
         "studies/<int:pk>/responses/feedback/",

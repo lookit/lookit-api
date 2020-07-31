@@ -1120,19 +1120,25 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             vid_name.split(study_uuid + "_")[1].split("_" + response_uuid + "_")
         )
 
-    def post(self, *args, **kwargs):
-        data_type = self.request.POST.get("data-type-selector", None)
+
+class StudySingleResponseDownload(ResponseDownloadMixin, View):
+    """
+    Download a single study response in the selected format with selected headers.
+    """
+
+    def get(self, *args, **kwargs):
+        data_type = self.request.GET.get("data-type-selector", None)
         if data_type not in ["json", "csv", "framedata"]:
             raise SuspiciousOperation
 
-        response_id = self.request.POST.get("response_id", None)
+        response_id = self.request.GET.get("response_id", None)
         try:
             resp = self.get_queryset().get(pk=response_id)
         except ObjectDoesNotExist:
             raise SuspiciousOperation
 
         study = self.study
-        header_options = set(self.request.POST.getlist("data_options"))
+        header_options = set(self.request.GET.getlist("data_options"))
         extension = "json" if data_type == "json" else "csv"
         filename = "{}_{}{}.{}".format(
             study_name_for_files(study.name),
@@ -1145,6 +1151,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             extension,
         )
 
+        cleaned_data = ""
         if data_type == "json":
             cleaned_data = json.dumps(
                 construct_response_dictionary(resp, RESPONSE_COLUMNS, header_options),
