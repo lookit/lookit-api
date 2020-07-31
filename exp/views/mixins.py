@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Model
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
