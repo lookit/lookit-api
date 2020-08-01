@@ -1,6 +1,9 @@
 import datetime
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
+from django.contrib.flatpages.models import FlatPage
+from django.contrib.sessions.backends.db import SessionStore
+from django.contrib.sites.models import Site
 from django.http import HttpRequest
 from django.test import TestCase
 from django.urls import reverse
@@ -17,7 +20,11 @@ from studies.models import Lab, Study, StudyType
 class AuthenticationTestCase(TestCase):
     def setUp(self):
         self.researcher_email = "test@test.com"
+        self.participant_email = "tom@myspace.com"
         self.test_password = "testpassword20chars"
+        self.base32_secret = "GNKVX3Y2U6BKTVKU"
+
+        # Researcher setup
         self.researcher = G(
             User,
             username=self.researcher_email,
@@ -26,9 +33,29 @@ class AuthenticationTestCase(TestCase):
             nickname="Lab Researcher",
         )
         self.researcher.set_password(self.test_password)
+        self.otp = GoogleAuthenticatorTOTP.objects.create(
+            user=self.researcher, secret=self.base32_secret, activated=True
+        )
         self.researcher.save()
 
-        self.otp = G(GoogleAuthenticatorTOTP, user=self.researcher)
+        # Participant Setup
+        self.participant = G(
+            User,
+            username=self.participant_email,
+            is_active=True,
+            is_researcher=False,
+            nickname="MySpace Tom",
+        )
+        self.participant.set_password(self.test_password)
+        self.participant.save()
+
+        # Site fixture enabling login
+        self.fake_site = G(Site, id=1)
+
+        # FlatPage fixture enabling login redirect to work.
+        self.home_page = G(FlatPage, url="/")
+        self.home_page.sites.add(self.fake_site)
+        self.home_page.save()
 
     def test_researcher_registration_flow(self):
         response = self.client.post(
@@ -87,28 +114,112 @@ class AuthenticationTestCase(TestCase):
         self.assertNotIn(TWO_FACTOR_AUTH_SESSION_KEY, response.wsgi_request.session)
         self.assertEqual(old_qr_svg, new_qr_svg)
 
-    def test_researcher_login(self):
-        mock_request = Mock(HttpRequest)
-        mock_request.session = {}
-        success = self.client.login(
-            request=mock_request,
-            username=self.researcher_email,
-            password=self.test_password,
-            auth_code=self.otp.provider.now(),
+    def test_researcher_login_redirect_to_2FA_verification(self):
+        response = self.client.post(
+            reverse("login"),
+            {"username": self.researcher_email, "password": self.test_password},
+            follow=True,
         )
-        self.assertTrue(success)
-
-    def test_researcher_login_no_authcode(self):
-        success = self.client.login(
-            username=self.researcher_email, password=self.test_password, auth_code="",
-        )
-        self.assertTrue(success)
-
-    def test_qr_view_not_blocked_after_otp_creation(self):
-        # This is done without OTP.
-        self.client.force_login(self.researcher)
-        response = self.client.get(reverse("accounts:2fa-setup"))
         self.assertEqual(response.status_code, 200)
+        self.assertNotIn(TWO_FACTOR_AUTH_SESSION_KEY, response.wsgi_request.session)
+        self.assertEqual(
+            response.redirect_chain, [(reverse("accounts:2fa-login"), 302)]
+        )
+
+    def test_researcher_regular_login_cannot_access_exp_views(self):
+        self.client.login(
+            username=self.researcher_email, password=self.test_password,
+        )
+        response = self.client.get(reverse("exp:study-list"), follow=True)
+        self.assertEqual(
+            response.redirect_chain, [(reverse("accounts:2fa-login"), 302)]
+        )
+
+        # Cleanup, patch over messages as RequestFactory doesn't know about
+        # middleware
+        with patch("django.contrib.messages.api.add_message", autospec=True):
+            self.client.logout()
+
+    def test_researcher_2fa_login_success(self):
+        self.client.login(username=self.researcher_email, password=self.test_password)
+        # Test that we can actually see the page
+        self.assertTrue(self.researcher.is_authenticated)
+        response = self.client.get(reverse("accounts:2fa-login"))
+        self.assertEqual(response.status_code, 200)
+        next_url = response.context["next"]
+        self.assertEqual(next_url, reverse("exp:study-list"))
+        # Test that we can send a correctly formatted POST request to it.
+        # Also, fully mimic posting form from the page itself by carrying `next`
+        # through.
+        response = self.client.post(
+            reverse("accounts:2fa-login"),
+            {"otp_code": self.otp.provider.now(), "next": next_url},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain[-1], (reverse("exp:study-list"), 302))
+
+        # Cleanup, patch over messages as RequestFactory doesn't know about
+        # middleware
+        with patch("django.contrib.messages.api.add_message", autospec=True):
+            self.client.logout()
+
+    def test_researcher_2fa_login_fail(self):
+        self.client.login(username=self.researcher_email, password=self.test_password)
+        two_factor_auth_url = reverse("accounts:2fa-login")
+        # Test a bad auth code
+        response = self.client.post(
+            two_factor_auth_url, {"otp_code": str(int(self.otp.provider.now()) + 1)},
+        )
+
+        # We just reloaded the page, so we should get a 200
+        self.assertEqual(response.status_code, 200)
+        # There are form errors...
+        self.assertNotEqual(len(response.context["form"].errors), 0)
+        # And the session key isn't set.
+        self.assertFalse(response.wsgi_request.session.get(TWO_FACTOR_AUTH_SESSION_KEY))
+
+        # Cleanup, patch over messages as RequestFactory doesn't know about
+        # middleware
+        with patch("django.contrib.messages.api.add_message", autospec=True):
+            self.client.logout()
+
+    def test_participant_login(self):
+        response = self.client.post(
+            # Pretend that we have already gotten the page ("next" is loaded into
+            # template context for us already, and it becomes part of the form)
+            reverse("login"),
+            {
+                "username": self.participant_email,
+                "password": self.test_password,
+                "next": "/",
+            },
+            follow=True,
+        )
+        self.assertTrue(response.status_code == 200)
+        # Same as with researcher, we shouldn't have the 2FA session key
+        self.assertFalse(response.wsgi_request.session[TWO_FACTOR_AUTH_SESSION_KEY])
+        self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
+
+        # Cleanup, patch over messages as RequestFactory doesn't know about
+        # middleware
+        with patch("django.contrib.messages.api.add_message", autospec=True):
+            self.client.logout()
+
+    def test_participant_no_access_to_2fa_views(self):
+        self.client.force_login(self.participant)
+
+        # No 2FA setup possible
+        response = self.client.get(reverse("accounts:2fa-setup"))
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.get(reverse("accounts:2fa-login"))
+        self.assertEqual(response.status_code, 403)
+
+        # Cleanup, patch over messages as RequestFactory doesn't know about
+        # middleware
+        with patch("django.contrib.messages.api.add_message", autospec=True):
+            self.client.logout()
 
 
 class UserModelTestCase(TestCase):

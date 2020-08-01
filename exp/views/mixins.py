@@ -5,8 +5,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.db.models import Model
 from django.http.request import HttpRequest
-from django.http.response import HttpResponseForbidden
+from django.http.response import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic.detail import SingleObjectMixin
 from guardian.mixins import LoginRequiredMixin
 
@@ -34,9 +35,16 @@ class ExperimenterLoginRequiredMixin(LoginRequiredMixin):
                 )
                 return redirect("accounts:2fa-login")
         else:
-            return HttpResponseForbidden(
-                f"Unauthorized: {user} is not a Researcher account."
-            )
+            if user.is_authenticated:
+                return HttpResponseForbidden(
+                    f"Researcher account required to see Experimenter app."
+                )
+            else:
+                messages.info(
+                    request,
+                    "Please sign in with your researcher account to see Experimenter app.",
+                )
+                return HttpResponseRedirect(reverse("login"))
 
 
 class SingleObjectParsimoniousQueryMixin(SingleObjectMixin):

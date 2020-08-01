@@ -86,7 +86,7 @@ class GoogleAuthenticatorTOTP(models.Model):
     https://github.com/google/google-authenticator/wiki/Key-Uri-Format
     """
 
-    issuer = "Lookit"
+    issuer = f"Lookit-{settings.ENVIRONMENT}"
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -112,7 +112,7 @@ class GoogleAuthenticatorTOTP(models.Model):
                     self.secret, name=self.user.username, issuer_name=self.issuer
                 ),
                 image_factory=SvgPathImage,
-                box_size=30,
+                box_size=10,
             ).save(stream)
 
             content = stream.getvalue().decode()

@@ -2,11 +2,9 @@ import datetime
 
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
-from django.contrib.auth.forms import (
-    AuthenticationForm,
-    PasswordChangeForm,
-    UserCreationForm,
-)
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import PasswordChangeForm as DjangoPasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -37,7 +35,7 @@ class TOTPField(forms.CharField):
     def widget_attrs(self, widget):
         """Override - used to update widget attrs in Field initializer."""
         attrs = super().widget_attrs(widget)
-        return {**attrs, "placeholder": "123456"}
+        return {**attrs, "placeholder": "123456", "style": "width: 50%;"}
 
 
 class TOTPCheckForm(forms.Form):
@@ -72,11 +70,7 @@ class TOTPCheckForm(forms.Form):
 
 
 class TOTPLoginForm(AuthenticationForm):
-    """DEPRECATED
-
-    We are now doing 2-step login form process. Keeping this until we're 100% sure
-    we don't want any of this code.
-    """
+    """Only used for Administrator Login, where 2FA is always required."""
 
     error_messages = {
         "invalid_login": _(
@@ -88,8 +82,8 @@ class TOTPLoginForm(AuthenticationForm):
         "inactive": _("This account is inactive."),
     }
 
-    auth_code = TOTPField(  # Do not require otp code in login views.
-        label="Two Factor Auth Code", help_text="6 digit one-time code", required=False
+    auth_code = TOTPField(
+        label="Two Factor Auth Code", help_text="6 digit one-time code"
     )
 
     def clean(self):
@@ -136,6 +130,8 @@ class ResearcherRegistrationForm(UserCreationForm):
         # Don't autofill passwords, in the interest of security.
         self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
         self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
+        self.fields["given_name"].required = True
+        self.fields["family_name"].required = True
 
     def save(self, commit=True):
         """Just flip the active and researcher flags."""
@@ -159,14 +155,11 @@ class ResearcherRegistrationForm(UserCreationForm):
 class ParticipantSignupForm(UserCreationForm):
     nickname = forms.CharField(required=True, max_length=255)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
-        self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
-
     def save(self, commit=True):
-        user = super(UserCreationForm, self).save(commit=False)
+        user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+        # TODO: `active` default shouldn't be False - we'll need a migration
+        #   to have True instead, and then we can drop this custom `save` method.
         user.is_active = True
         if commit:
             user.save()
@@ -175,28 +168,13 @@ class ParticipantSignupForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "nickname")
-        exclude = (
-            "user_permissions",
-            "groups",
-            "_identicon",
-            "labs",
-            "is_active",
-            "is_staff",
-            "is_superuser",
-            "last_login",
-            "middle_name",
-            "last_name",
-        )
 
 
-class ParticipantUpdateForm(forms.ModelForm):
+class AccountUpdateForm(forms.ModelForm):
     nickname = forms.CharField(required=True, max_length=255)
 
     def __init__(self, *args, **kwargs):
-        if "user" in kwargs:
-            kwargs.pop("user")
         super().__init__(*args, **kwargs)
-        instance = getattr(self, "instance", None)
         self.fields["username"].widget.attrs.pop("autofocus", None)
 
     class Meta:
@@ -205,7 +183,7 @@ class ParticipantUpdateForm(forms.ModelForm):
         labels = {"username": "Email address"}
 
 
-class ParticipantPasswordForm(PasswordChangeForm):
+class PasswordChangeForm(DjangoPasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["old_password"].widget.attrs.pop("autofocus", None)

@@ -15,6 +15,7 @@ import os
 from django.contrib.messages import constants as messages
 
 MODE = "prod"  # Overridden by local settings.
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -76,7 +77,8 @@ INSTALLED_APPS = [
     # at the bottom so overriding form widget templates have a fallback -
     # See https://stackoverflow.com/a/46836189
     "django.forms",
-    "django.contrib.admin",
+    # "django.contrib.admin",
+    "project.apps.TwoFactorAuthProtectedAdminConfig",
     "allauth.socialaccount",
     "allauth.account",
 ]
@@ -231,7 +233,7 @@ BASE_URL = os.environ.get(
     "BASE_URL", "https://localhost:8000"
 )  # default to ember base url
 
-LOGIN_REDIRECT_URL = os.environ.get("LOGIN_REDIRECT_URL", "https://localhost:8000/exp/")
+LOGIN_REDIRECT_URL = "web:home"
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get("ACCOUNT_LOGOUT_REDIRECT_URL", "/api/")
 LOGOUT_REDIRECT_URL = "web:home"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"

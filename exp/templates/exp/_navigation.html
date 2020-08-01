@@ -37,25 +37,12 @@
             </li>
             
             <li role="separator" class="divider-vertical"></li>
-            {% if request.user.otp %}
-                {# Assume session var is set - otherwise, we wouldn't be able to access this view. #}
-                <p class="navbar-text"
-                   data-toggle="tooltip"
-                   data-placement="bottom"
-                   title="If you need to re-set your 2FA, please contact lookit-tech@mit.edu">
-
-                    <span class="label label-success">Logged in with 2FA</span>
-                </p>
-            {% else %}
-                <li>
-                    <a href="{% url 'accounts:2fa-setup' %}">Set up 2FA</a>
-                </li>
-            {% endif %}
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     {{ request.user.identicon_small_html }} {{ request.user.get_short_name }} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
+                    <li><a href="{% url 'accounts:manage-account' %}">Manage Account</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 </ul>
             </li>
@@ -68,8 +55,3 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-->
 </nav>
-<script type="application/javascript">
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    });
-</script>

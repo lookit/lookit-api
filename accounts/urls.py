@@ -1,7 +1,7 @@
-from django.conf.urls import include
 from django.urls import path
 
 from accounts.views import (
+    AccountManagementView,
     ResearcherRegistrationView,
     TwoFactorAuthLoginView,
     TwoFactorAuthSetupView,
@@ -18,4 +18,5 @@ urlpatterns = [
     ),
     path("2fa-setup/", TwoFactorAuthSetupView.as_view(), name="2fa-setup"),
     path("2fa-login/", TwoFactorAuthLoginView.as_view(), name="2fa-login"),
+    path("account/manage/", AccountManagementView.as_view(), name="manage-account"),
 ]
