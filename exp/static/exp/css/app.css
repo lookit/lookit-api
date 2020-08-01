@@ -484,7 +484,7 @@ a:hover.build-study-link {
     width: 100%;
 }
 
-#study-details-form .code-container {
+#structure-container .code-container, #generator-container .code-container {
     max-height: 10em;
 }
 
