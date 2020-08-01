@@ -197,18 +197,20 @@ class StudyUpdateView(
     # Rely on form validation to make sure structure is valid JSON; don't load/dump so we
     # preserve formatting and ordering.
     #
-    # def get_initial(self):
-    #    """
-    #    Returns the initial data to use for forms on this view.
-    #    """
-    #    initial = super().get_initial()
-    #
-    #    structure = self.object.structure
-    #    if structure:
-    #       # Ensures that json displayed in edit form is valid json w/ double quotes,
-    #       # so incorrect json is not saved back into the db
-    #       initial["structure"] = json.dumps(structure)
-    #    return initial
+    def get_initial(self):
+        """
+       Returns the initial data to use for forms on this view.
+       """
+        initial = super().get_initial()
+
+        # Display for editing the exact text that was used to generate the structure, if available.
+        structure = self.object.structure
+        if structure:
+            if "exact_text" in structure:
+                initial["structure"] = structure["exact_text"]
+            else:
+                initial["structure"] = json.dumps(structure)
+        return initial
 
     def post(self, request, *args, **kwargs):
         """
