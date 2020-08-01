@@ -13,6 +13,9 @@ STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-man
 PROTOCOL_CONFIG_HELP_LINK = (
     "https://lookit.readthedocs.io/en/develop/researchers-create-experiment.html"
 )
+PROTOCOL_GENERATOR_HELP_LINK = (
+    "https://lookit.readthedocs.io/en/develop/researchers-protocol-generators.html"
+)
 
 
 class ResponseForm(ModelForm):
@@ -81,26 +84,13 @@ class LabApprovalForm(ModelForm):
 class StudyForm(ModelForm):
     """Base form for creating or editing a study"""
 
-    # Rather than having extra (non-model) form fields for the protocol & generator, we
-    # could alternately add generator, use_generator, protocol as actual model fields, and
-    # use them here to construct the structure. (At that point we should really have separate
-    # fields for fields & sequence too.) That would avoid awkwardly having to separate the JSON
-    # into separate form fields in init, but at the expense of (a) planning on eventual
-    # different models to represent protocols per study type, likely such that each study has
-    # a nullable relation for lookit_runner_protocol, jspsych_runner_protocol, etc. pointing to the
-    # appropriate instance if any and (b) more involved migrations. The nice thing about this
-    # approach is that structure becomes an internally-used field only (for passing to
-    # experiment/preview proxy) and the values to display in the form fields don't need to be recoverable
-    # from it - e.g.
-
-    # Wait - we may not need to shove everything into the structure. In that case it definitely
-    # makes sense to just add fields for now; we may need to separate them out in the future.
-
     # Eventually when we support other experiment runner types (labjs, jspsych, etc.)
     # we may do one of the following:
     # - separate the 'study protocol specification' fields into their own
     # form which collects various information and cleans it and sets a single 'structure' object,
     # with the selected
+    # - creating a model to represent each study type, likely such that each study has a nullable
+    # relation for lookit_runner_protocol, jspsych_runner_protocol, etc.
 
     structure = forms.CharField(
         label="Protocol configuration",
@@ -153,17 +143,20 @@ class StudyForm(ModelForm):
         return cleaned_data
 
     def clean_structure(self):
-        structure = self.cleaned_data["structure"]
+        structure_text = self.cleaned_data["structure"]
 
+        # Parse edited text representation of structure object, and additionally store the
+        # exact text (so user can organize frames, parameters, etc. for readability)
         try:
-            json_data = json.loads(structure)  # loads string as json
+            json_data = json.loads(structure_text)  # loads string as json
+            json_data["exact_text"] = structure_text
         except:
             raise forms.ValidationError(
                 "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
 
-        # Store the original structure, not the version loaded as json, to preserve formatting/ordering
-        return structure
+        # Store the object which includes the exact text (not just the text)
+        return json_data
 
     def clean_criteria_expression(self):
         criteria_expression = self.cleaned_data["criteria_expression"]
@@ -253,6 +246,11 @@ class StudyForm(ModelForm):
                 "Provide a relational expression indicating any criteria for eligibility besides the age range specified below."
                 "For more information on how to structure criteria expressions, please visit our "
                 f"<a href={CRITERIA_EXPRESSION_HELP_LINK}>documentation</a>."
+            ),
+            "generator": (
+                "Write a Javascript function that returns a study protocol object with 'frames' and "
+                "'sequence' keys. This allows more flexible randomization and dependence on past sessions in "
+                f"complex cases. See <a href={PROTOCOL_GENERATOR_HELP_LINK}>documentation</a> for details."
             ),
         }
 
