@@ -60,7 +60,7 @@ class MessageAdmin(GuardedModelAdmin):
 
 class TOTPAdmin(GuardedModelAdmin):
     list_display = ("user",)
-    search_fields = ("user__username", "user__nickname")
+    search_fields = ("user__username", "user__family_name")
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("user")

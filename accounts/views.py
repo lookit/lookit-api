@@ -92,19 +92,13 @@ class ResearcherRegistrationView(generic.CreateView):
         return resp
 
     def get_success_url(self) -> str:
-        """Researchers to 2FA setup, Participants go to demographic data update.
+        """Researchers go to 2FA setup after they finish regular registration.
 
         Leverage the fact that `ModelFormMixin.form_valid` sets `self.object = form.save()`
         prior to calling the super() method (`FormMixin.form_valid`), which actually does
         the work of constructing the HttpRedirectResponse for us.
         """
-        user: User = getattr(self, "object")
-        view_target = (
-            "accounts:2fa-setup"
-            if user.is_researcher
-            else "web:demographic-data-update"
-        )
-        return reverse(view_target)
+        return reverse("accounts:2fa-setup")
 
 
 class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
