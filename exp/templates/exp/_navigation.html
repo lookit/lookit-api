@@ -42,10 +42,8 @@
                     {{ request.user.identicon_small_html }} {{ request.user.get_short_name }} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    {% if request.user.osf_profile_url != '#' %}
-                        <li><a target="_blank" href="{{ request.user.osf_profile_url }}">OSF Profile</a></li>
-                    {% endif %}
-                    <li><a href="{% url 'logout' %}?next=/exp/">Logout</a></li>
+                    <li><a href="{% url 'accounts:manage-account' %}">Manage Account</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
                 </ul>
             </li>
         {% else %} {# /if request.user.is_authenticated #}

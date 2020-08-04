@@ -89,13 +89,10 @@
                                href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='active' %}">Active</a>
                         </li>
                         <li><a class='dropdown-item'
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='paused' %}">Paused</a>
+                        </li>
+                        <li><a class='dropdown-item'
                                href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='submitted' %}">Submitted</a>
-                        </li>
-                        <li><a class='dropdown-item'
-                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='created' %}">Created</a>
-                        </li>
-                        <li><a class='dropdown-item'
-                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='deactivated' %}">Deactivated</a>
                         </li>
                         <li><a class='dropdown-item'
                                href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='myStudies' %}">My

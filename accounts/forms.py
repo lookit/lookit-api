@@ -2,9 +2,13 @@ import datetime
 
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
-from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import PasswordChangeForm as DjangoPasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
+from accounts.backends import two_factor_auth_backend
 from accounts.models import Child, DemographicData, User
 
 
@@ -14,17 +18,148 @@ class UserForm(forms.ModelForm):
         exclude = ("password",)
 
 
+class TOTPField(forms.CharField):
+    max_length = 6
+    min_length = 6
+    default_error_messages = {
+        "invalid": _(
+            "Enter a valid 6-digit one-time password from Google Authenticator"
+        ),
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            max_length=self.max_length, min_length=self.min_length, *args, **kwargs
+        )
+
+    def widget_attrs(self, widget):
+        """Override - used to update widget attrs in Field initializer."""
+        attrs = super().widget_attrs(widget)
+        return {**attrs, "placeholder": "123456", "style": "width: 50%;"}
+
+
+class TOTPCheckForm(forms.Form):
+    """Checks OTP codes.
+
+    Should only appear in LoginView-derived classes, where the `request` object
+    is set in view kwargs.
+    """
+
+    otp_code = TOTPField(label="Enter your one-time password (OTP code).")
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop("request")
+        self.request = request
+        self.otp = getattr(request.user, "otp")
+        super().__init__(*args, **kwargs)
+
+    def get_user(self):
+        """User is already technically logged in."""
+        return self.request.user
+
+    def clean_otp_code(self):
+        """Validation check on OTP code."""
+        otp_code = self.cleaned_data["otp_code"]
+        if self.otp.verify(otp_code):
+            return otp_code
+        else:
+            raise forms.ValidationError(
+                "Invalid OTP Code. Make sure that you type the 6 digit number "
+                "exactly, and that you do so quickly (within the 30 second window)!"
+            )
+
+
+class TOTPLoginForm(AuthenticationForm):
+    """Only used for Administrator Login, where 2FA is always required."""
+
+    error_messages = {
+        "invalid_login": _(
+            "Please enter a correct %(username)s and password. Note that email "
+            "and password fields may be case-sensitive. "
+            "If you have turned on two-factor authentication, you will need "
+            "a one-time password (OTP code) from Google Authenticator as well. "
+        ),
+        "inactive": _("This account is inactive."),
+    }
+
+    auth_code = TOTPField(
+        label="Two Factor Auth Code", help_text="6 digit one-time code"
+    )
+
+    def clean(self):
+        """Hook that gets run after all the fields are cleaned.
+
+        Note: we are technically breaking LSP here since this is changing the
+            functionality of the superclass rather than extending it, but
+            AuthenticationForm is so dang close to what we want that it's ok
+            to bend the rules a little bit.
+        """
+        username = self.cleaned_data.get("username")
+        password = self.cleaned_data.get("password")
+
+        # Auth code is "Optional" in the sense that TwoFactorAuthenticationBackend
+        # will just flip a `using_2FA` flag as a signal to later requests - without
+        # this flag, Experimenters will be blocked from experimenter views.
+        auth_code = self.cleaned_data.get("auth_code")
+
+        if username is not None and password:
+            # Don't need ObjectPermissionBackend - just cut to the chase.
+            self.user_cache = two_factor_auth_backend.authenticate(
+                self.request, username=username, password=password, auth_code=auth_code
+            )
+
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+            else:
+                # Set the backend path as django.contrib.auth.authenticate would usually,
+                # django.contrib.auth.login needs to know. This MUST also match the
+                # class name listed in settings.AUTHENTICATION_BACKENDS in order for
+                # AuthenticationMiddleware's request processor to work correctly, see:
+                # https://github.com/django/django/blob/master/django/contrib/auth/__init__.py#L179
+                self.user_cache.backend = (
+                    "accounts.backends.TwoFactorAuthenticationBackend"
+                )
+                self.confirm_login_allowed(self.user_cache)
+
+        return self.cleaned_data
+
+
+class ResearcherRegistrationForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Don't autofill passwords, in the interest of security.
+        self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
+        self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
+        self.fields["given_name"].required = True
+        self.fields["family_name"].required = True
+
+    def save(self, commit=True):
+        """Just flip the active and researcher flags."""
+        user = super().save(commit=False)
+        user.is_active = True
+        user.is_researcher = True
+        if commit:
+            user.save()
+        return user
+
+    class Meta:
+        model = User
+        fields = ("username", "nickname", "given_name", "family_name")
+        labels = {
+            "username": "Email address",
+            "given_name": "Given Name",
+            "family_name": "Family Name",
+        }
+
+
 class ParticipantSignupForm(UserCreationForm):
     nickname = forms.CharField(required=True, max_length=255)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["password1"].widget.attrs["autocomplete"] = "new-password"
-        self.fields["password2"].widget.attrs["autocomplete"] = "new-password"
-
     def save(self, commit=True):
-        user = super(UserCreationForm, self).save(commit=False)
+        user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+        # TODO: `active` default shouldn't be False - we'll need a migration
+        #   to have True instead, and then we can drop this custom `save` method.
         user.is_active = True
         if commit:
             user.save()
@@ -33,28 +168,13 @@ class ParticipantSignupForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "nickname")
-        exclude = (
-            "user_permissions",
-            "groups",
-            "_identicon",
-            "labs",
-            "is_active",
-            "is_staff",
-            "is_superuser",
-            "last_login",
-            "middle_name",
-            "last_name",
-        )
 
 
-class ParticipantUpdateForm(forms.ModelForm):
+class AccountUpdateForm(forms.ModelForm):
     nickname = forms.CharField(required=True, max_length=255)
 
     def __init__(self, *args, **kwargs):
-        if "user" in kwargs:
-            kwargs.pop("user")
         super().__init__(*args, **kwargs)
-        instance = getattr(self, "instance", None)
         self.fields["username"].widget.attrs.pop("autofocus", None)
 
     class Meta:
@@ -63,7 +183,7 @@ class ParticipantUpdateForm(forms.ModelForm):
         labels = {"username": "Email address"}
 
 
-class ParticipantPasswordForm(PasswordChangeForm):
+class PasswordChangeForm(DjangoPasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["old_password"].widget.attrs.pop("autofocus", None)

@@ -35,10 +35,7 @@ class LabAdmin(GuardedModelAdmin):
     search_fields = ["name", "institution", "principal_investigator_name"]
     raw_id_fields = ("guest_group", "readonly_group", "member_group", "admin_group")
     list_filter = ("approved_to_test",)
-    filter_horizontal = (
-        "researchers",
-        "requested_researchers",
-    )
+    filter_horizontal = ("researchers", "requested_researchers")
 
 
 class ResponseAdmin(GuardedModelAdmin):
@@ -52,10 +49,7 @@ class ResponseAdmin(GuardedModelAdmin):
         "withdrawn",
         "is_preview",
     )
-    raw_id_fields = (
-        "child",
-        "demographic_snapshot",
-    )
+    raw_id_fields = ("child", "demographic_snapshot")
     empty_value_display = "None"
     list_filter = ("study",)
     date_hierarchy = "date_created"
@@ -96,10 +90,7 @@ class VideoAdmin(GuardedModelAdmin):
     # Use raw_id_fields to avoid a large number of queries to display every possible
     # option for response & study in the update form, which was making it impossible
     # to use on staging/production. (
-    raw_id_fields = (
-        "response",
-        "study",
-    )
+    raw_id_fields = ("response", "study")
     date_hierarchy = "created_at"
     search_fields = ["uuid", "full_name"]
 

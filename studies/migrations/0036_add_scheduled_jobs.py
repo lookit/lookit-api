@@ -5,8 +5,6 @@ from __future__ import unicode_literals
 from django.db import migrations
 from django.db.models import Q
 
-from web.views import Q
-
 two_am_crontab_schedule_dict = dict(
     minute="0", hour="2", day_of_week="*", day_of_month="*", month_of_year="*"
 )

@@ -6,8 +6,11 @@ from django.test import TestCase
 # - can only GET authenticated, can only get/post own, can post update to own
 # TODO: ParticipantUpdateView
 # - check can update password, can update participant, can only get own data
+# - check if invalid data sent (e.g. user with that email already exists), reloads page & no update
 # TODO: ChildrenListView
-# - check all own children are there, check can add child, can only see own children
+# - check all own children are there, can only see own children
+# - check can add child
+# - check if invalid data sent, reloads page & does not create child
 # TODO: ChildUpdateView
 # - check can get but only for own child, check can change name, check cannot change DOB
 # TODO: ParticipantEmailPreferencesView

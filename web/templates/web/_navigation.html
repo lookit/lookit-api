@@ -1,5 +1,4 @@
 {% load bootstrap3 %}
-
 <nav class="navbar-default navbar-static-top">
   <div class="container">
     <div class="navbar-header">
@@ -19,9 +18,7 @@
       {% else %}
         <a class="navbar-brand" href="{% url 'web:home' %}">Lookit </a>
       {% endif %}
-      
-      
-      
+
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -36,9 +33,9 @@
         <ul class="nav navbar-nav navbar-right">
           {% if user.is_authenticated %}
             {% if user.is_researcher %}
-              <li><a href="{% url 'web:participant-update' %}">Participant account</a></li>
+              <li><a href="{% url 'accounts:manage-account' %}">My Account</a></li>
             {% else %}
-              <li><a href="{% url 'web:participant-update' %}">Hi {{ user.nickname }}</a></li>
+              <li><a href="{% url 'accounts:manage-account' %}">Hi {{ user.nickname }}</a></li>
             {% endif %}
             <li><a href="{% url 'logout' %}">Logout</a></li>
           {% else %}
@@ -50,3 +47,8 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-->
 </nav>
+<script type="application/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+</script>

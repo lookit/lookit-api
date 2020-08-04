@@ -9,9 +9,20 @@ from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
+from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, User
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
+
+
+class Force2FAClient(Client):
+    """For convenience, let's just pretend everyone is two-factor auth'd."""
+
+    @property
+    def session(self):
+        _session = super().session
+        _session[TWO_FACTOR_AUTH_SESSION_KEY] = True
+        return _session
 
 
 # Run celery tasks right away, but don't catch errors from them. The relevant tasks for
@@ -20,7 +31,7 @@ from studies.permissions import LabPermission, StudyPermission
 @override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
 class ResponseViewsTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
+        self.client = Force2FAClient()
 
         self.study_admin = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 1"
@@ -117,10 +128,10 @@ class ResponseViewsTestCase(TestCase):
     def test_cannot_see_any_study_views_unauthenticated(self):
         for url in self.all_study_views_urls:
             page = self.client.get(url)
-            self.assertEqual(
+            self.assertNotEqual(
                 page.status_code,
-                302,
-                "Unauthenticated user not redirected from study view: " + url,
+                200,
+                "Unauthenticated user can see study view: " + url,
             )
 
     def test_can_see_study_preview_detail_as_other_researcher_if_shared(self):
