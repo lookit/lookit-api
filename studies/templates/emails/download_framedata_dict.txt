@@ -2,6 +2,6 @@ Dear {{ user.given_name }},
 
 Your frame data dictionary has been created and is ready for download.
 
-{{signed_url}}
+{{signed_url|safe}}
 
 For security reasons this link will only work for 1 day. If you need to access this archive after 1 day you will have to rebuild it in experimenter.

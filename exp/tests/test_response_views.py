@@ -2,6 +2,7 @@ import csv
 import datetime
 import io
 import json
+import re
 
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -163,10 +164,6 @@ class ResponseViewsTestCase(TestCase):
                 "exp:study-hashed-id-collision-check", kwargs={"pk": self.study.pk}
             ),
             reverse(
-                "exp:study-responses-download-frame-data-csv",
-                kwargs={"pk": self.study.pk},
-            ),
-            reverse(
                 "exp:study-responses-download-frame-data-dict-csv",
                 kwargs={"pk": self.study.pk},
             ),
@@ -244,7 +241,9 @@ class ResponseViewsTestCase(TestCase):
 
     def test_cannot_delete_preview_data_as_unassociated_researcher(self):
         self.client.force_login(self.other_researcher)
-        url = reverse("exp:study-responses-all", kwargs={"pk": self.study.pk})
+        url = reverse(
+            "exp:study-delete-preview-responses", kwargs={"pk": self.study.pk}
+        )
         response = self.client.post(url, {})
         self.assertEqual(
             response.status_code,
@@ -258,7 +257,9 @@ class ResponseViewsTestCase(TestCase):
 
     def test_delete_preview_data(self):
         self.client.force_login(self.study_admin)
-        url = reverse("exp:study-responses-all", kwargs={"pk": self.study.pk})
+        url = reverse(
+            "exp:study-delete-preview-responses", kwargs={"pk": self.study.pk}
+        )
         self.assertEqual(
             self.study.responses.filter(is_preview=True).count(), self.n_previews
         )
@@ -276,6 +277,9 @@ class ResponseDataDownloadTestCase(TestCase):
         self.study_reader = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 2"
         )
+        self.study_previewer = G(
+            User, is_active=True, is_researcher=True, given_name="Researcher 3"
+        )
         self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT")
         self.study = G(
@@ -286,8 +290,19 @@ class ResponseDataDownloadTestCase(TestCase):
             name="Test Study",
             lab=self.lab,
         )
+        self.other_study = G(
+            Study,
+            creator=self.study_reader,
+            shared_preview=False,
+            study_type=self.study_type,
+            name="Test Study 2",
+            lab=self.lab,
+        )
 
         self.study.researcher_group.user_set.add(self.study_reader)
+        self.study.design_group.user_set.add(self.study_previewer)
+        self.other_study.researcher_group.user_set.add(self.study_reader)
+        self.other_study.design_group.user_set.add(self.study_previewer)
 
         self.children_for_participants = []
         self.demo_snapshots_for_participants = []
@@ -369,9 +384,59 @@ class ResponseDataDownloadTestCase(TestCase):
                 for child in these_children
             ]
 
-        # Confirm consent for all responses
-        self.n_previews = children_per_participant * n_participants
-        self.n_responses = children_per_participant * n_participants * 2
+        # Add real but not preview response from an additional participant
+        self.non_preview_participant = G(
+            User, is_active=True, nickname="non-preview-participant"
+        )
+        self.non_preview_child = G(
+            Child,
+            user=self.non_preview_participant,
+            given_name="non-preview-child",
+            birthday=datetime.date.today() - datetime.timedelta(366),
+        )
+        self.non_preview_demo = G(
+            DemographicData,
+            user=self.non_preview_participant,
+            languages_spoken_at_home="Swahili",
+        )
+        self.non_preview_resp = G(
+            Response,
+            child=self.non_preview_child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-video-setup": {"frameType": "DEFAULT"},
+                "2-my-consent-frame": {
+                    "frameType": "CONSENT",
+                    "someField": "non-preview-data",
+                },
+            },
+            demographic_snapshot=self.non_preview_demo,
+        )
+
+        # Add a response to a different study which shouldn't be included in self.study responses
+        self.other_study_response = G(
+            Response,
+            child=self.children_for_participants[0][0],
+            study=self.other_study,
+            completed=True,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-video-setup": {"frameType": "DEFAULT"},
+                "2-my-consent-frame": {
+                    "frameType": "CONSENT",
+                    "someField": "different-study",
+                },
+            },
+            demographic_snapshot=self.demo_snapshots_for_participants[0],
+        )
+
+        # Confirm consent for all responses above
         self.consent_rulings = [
             G(
                 ConsentRuling,
@@ -379,19 +444,66 @@ class ResponseDataDownloadTestCase(TestCase):
                 action="accepted",
                 arbiter=self.study_reader,
             )
-            for response in self.responses + self.preview_responses
+            for response in self.responses
+            + self.preview_responses
+            + [self.non_preview_resp, self.other_study_response]
         ]
 
+        # Add unconsented response from additional participant
+        self.poison_string = (
+            "no-one-should-see-this"  # phrase that shouldn't be in any downloads
+        )
+        self.unconsented_participant = G(
+            User, is_active=True, nickname=self.poison_string
+        )
+        self.unconsented_child = G(
+            Child,
+            user=self.unconsented_participant,
+            given_name=self.poison_string,
+            birthday=datetime.date.today() - datetime.timedelta(366),
+        )
+        self.unconsented_demo = G(
+            DemographicData,
+            user=self.unconsented_participant,
+            languages_spoken_at_home=self.poison_string,
+        )
+        self.unconsented_resp = G(
+            Response,
+            child=self.non_preview_child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-video-setup": {"frameType": "DEFAULT"},
+                "2-my-consent-frame": {
+                    "frameType": "CONSENT",
+                    "data": self.poison_string,
+                },
+            },
+            demographic_snapshot=self.unconsented_demo,
+        )
+
+        # How many responses do we expect?
+        self.n_previews = children_per_participant * n_participants
+        self.n_responses = children_per_participant * n_participants * 2 + 1
+
+        self.n_preview_children = children_per_participant * n_participants
+        self.n_total_children = children_per_participant * n_participants + 1
+
+        self.n_preview_participants = n_participants
+        self.n_total_participants = n_participants + 1
+
         # Build a few complementary sets of options for fields to include in downloads
-        self.age_optionset_1 = ["rounded"]
-        self.child_optionset_1 = ["globalchild", "gender", "conditions", "parent"]
-        self.labels_1 = [
-            "child_age_rounded",
-            "child_global_id",
-            "child_gender",
-            "child_condition_list",
-            "participant_nickname",
+        self.age_optionset_1 = ["child__age_rounded"]
+        self.child_optionset_1 = [
+            "child__global_id",
+            "child__gender",
+            "child__condition_list",
+            "participant__nickname",
         ]
+        self.optionset_1 = self.age_optionset_1 + self.child_optionset_1
         self.child_labels_json_1 = [
             "global_id",
             "gender",
@@ -399,23 +511,15 @@ class ResponseDataDownloadTestCase(TestCase):
             "age_rounded",
         ]
         self.participant_labels_json_1 = ["nickname"]
-        self.age_optionset_2 = ["exact", "birthday"]
+        self.age_optionset_2 = ["child__age_in_days", "child__birthday"]
         self.child_optionset_2 = [
-            "name",
-            "gestage",
-            "languages",
-            "addl",
-            "globalparent",
+            "child__name",
+            "child__age_at_birth",
+            "child__language_list",
+            "child__additional_information",
+            "participant__global_id",
         ]
-        self.labels_2 = [
-            "child_age_in_days",
-            "child_birthday",
-            "child_name",
-            "child_age_at_birth",
-            "child_language_list",
-            "child_additional_information",
-            "participant_global_id",
-        ]
+        self.optionset_2 = self.age_optionset_2 + self.child_optionset_2
         self.child_labels_json_2 = [
             "age_in_days",
             "birthday",
@@ -434,13 +538,7 @@ class ResponseDataDownloadTestCase(TestCase):
 
     def test_get_appropriate_fields_in_csv_downloads_set1(self):
         self.client.force_login(self.study_reader)
-        query_string = urlencode(
-            {
-                "ageoptions": self.age_optionset_1,
-                "childoptions": self.child_optionset_1,
-            },
-            doseq=True,
-        )
+        query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
         content = response.content.decode("utf-8")
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
@@ -453,14 +551,14 @@ class ResponseDataDownloadTestCase(TestCase):
             "Unexpected number of response rows in CSV download",
         )
         # Check that the appropriate specifically-requested headers ARE present
-        for header in self.labels_1:
+        for header in self.optionset_1:
             self.assertIn(
                 header,
                 csv_headers,
                 f"Downloaded summary CSV file is missing header {header}",
             )
         # Check that the remaining headers ARE NOT present
-        for header in self.labels_2:
+        for header in self.optionset_2:
             self.assertNotIn(
                 header,
                 csv_headers,
@@ -485,6 +583,11 @@ class ResponseDataDownloadTestCase(TestCase):
             content,
             "Child birthdate was included in CSV when not selected as download field",
         )
+        self.assertNotIn(
+            self.poison_string,
+            content,
+            "Data from unconsented response included in download!",
+        )
         # Check that the filename is appropriately titled - because parent name is present
         self.assertRegex(
             response.get("Content-Disposition"),
@@ -493,15 +596,9 @@ class ResponseDataDownloadTestCase(TestCase):
 
     def test_get_appropriate_fields_in_json_downloads(self):
         self.client.force_login(self.study_reader)
-        query_string = urlencode(
-            {
-                "ageoptions": self.age_optionset_1,
-                "childoptions": self.child_optionset_1,
-            },
-            doseq=True,
-        )
+        query_string = urlencode({"data_options": self.optionset_1}, doseq=True)
         response = self.client.get(f"{self.response_summary_json_url}?{query_string}")
-        content = response.content.decode("utf-8")
+        content = b"".join(response.streaming_content).decode("utf-8")
         data = json.loads(content)
 
         # Check that we have the expected number of responses
@@ -517,12 +614,15 @@ class ResponseDataDownloadTestCase(TestCase):
             self.assertNotEqual(data[0]["participant"][header], "")
         # # Check that the remaining headers ARE NOT present
         for header in self.child_labels_json_2:
-            self.assertEqual(data[0]["child"][header], "")
+            self.assertNotIn(header, data[0]["child"])
         for header in self.participant_labels_json_2:
-            self.assertEqual(data[0]["participant"][header], "")
+            self.assertNotIn(header, data[0]["participant"].keys())
         # Check that some *data* is present as expect: parent, but not child names
         for row in data:
-            self.assertIn(row["participant"]["nickname"], self.participant_names)
+            self.assertIn(
+                row["participant"]["nickname"],
+                self.participant_names + [self.non_preview_participant.nickname],
+            )
         self.assertNotIn(
             "ChildGivenName",
             content,
@@ -535,6 +635,11 @@ class ResponseDataDownloadTestCase(TestCase):
             content,
             "Child birthdate was included in JSON when not selected as download field",
         )
+        self.assertNotIn(
+            self.poison_string,
+            content,
+            "Data from unconsented response included in download!",
+        )
         # Check that the filename is appropriately titled - because parent name is present
         self.assertRegex(
             response.get("Content-Disposition"),
@@ -544,13 +649,7 @@ class ResponseDataDownloadTestCase(TestCase):
 
     def test_get_appropriate_fields_in_csv_downloads_set2(self):
         self.client.force_login(self.study_reader)
-        query_string = urlencode(
-            {
-                "ageoptions": self.age_optionset_2,
-                "childoptions": self.child_optionset_2,
-            },
-            doseq=True,
-        )
+        query_string = urlencode({"data_options": self.optionset_2}, doseq=True)
         response = self.client.get(f"{self.response_summary_url}?{query_string}")
         content = response.content.decode("utf-8")
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
@@ -563,14 +662,14 @@ class ResponseDataDownloadTestCase(TestCase):
             "Unexpected number of response rows in CSV download",
         )
         # Check that the appropriate specifically-requested headers ARE present
-        for header in self.labels_2:
+        for header in self.optionset_2:
             self.assertIn(
                 header,
                 csv_headers,
                 f"Downloaded summary CSV file is missing header {header}",
             )
         # Check that the remaining headers ARE NOT present
-        for header in self.labels_1:
+        for header in self.optionset_1:
             self.assertNotIn(
                 header,
                 csv_headers,
@@ -689,12 +788,12 @@ class ResponseDataDownloadTestCase(TestCase):
         csv_headers = csv_body.pop(0)
 
         exit_survey_headers = [
-            "response_uuid",
-            "response_withdrawn",
-            "response_parent_feedback",
-            "response_video_privacy",
-            "response_databrary",
-            "response_birthdate_difference",
+            "response__uuid",
+            "response__withdrawn",
+            "response__parent_feedback",
+            "response__video_privacy",
+            "response__databrary",
+            "response__birthdate_difference",
         ]
         exit_survey_headers_columns = {}
 
@@ -706,42 +805,43 @@ class ResponseDataDownloadTestCase(TestCase):
             )
             exit_survey_headers_columns[header] = csv_headers.index(header)
 
-        # Now check that the actual values are correct in a few cases
+        # Now check that the actual values are correct in a few cases. Add two to existing
+        # known responses for ones added in this test.
         self.assertEqual(self.n_responses + self.n_previews + 2, len(csv_body))
 
         withdrawn_response_line = [
             line
             for line in csv_body
-            if line[exit_survey_headers_columns["response_uuid"]]
+            if line[exit_survey_headers_columns["response__uuid"]]
             == str(withdrawn_response.uuid)
         ][0]
         self.assertEqual(
-            withdrawn_response_line[exit_survey_headers_columns["response_withdrawn"]],
+            withdrawn_response_line[exit_survey_headers_columns["response__withdrawn"]],
             "True",
             "Withdrawn response was not marked as response in CSV summary!",
         )
         self.assertEqual(
             withdrawn_response_line[
-                exit_survey_headers_columns["response_parent_feedback"]
+                exit_survey_headers_columns["response__parent_feedback"]
             ],
             "this was fun but my older child was reciting top secret prime numbers",
             "Parent feedback was not correctly inserted in CSV summary",
         )
         self.assertEqual(
             withdrawn_response_line[
-                exit_survey_headers_columns["response_video_privacy"]
+                exit_survey_headers_columns["response__video_privacy"]
             ],
             "private",
             "Video privacy level was not correctly inserted in CSV summary",
         )
         self.assertEqual(
-            withdrawn_response_line[exit_survey_headers_columns["response_databrary"]],
+            withdrawn_response_line[exit_survey_headers_columns["response__databrary"]],
             "yes",
             "Databrary consent was not correctly inserted in CSV summary",
         )
         self.assertEqual(
             withdrawn_response_line[
-                exit_survey_headers_columns["response_birthdate_difference"]
+                exit_survey_headers_columns["response__birthdate_difference"]
             ],
             "17",
             "Birthdate difference was not correctly inserted in CSV summary",
@@ -750,28 +850,32 @@ class ResponseDataDownloadTestCase(TestCase):
         incomplete_response_line = [
             line
             for line in csv_body
-            if line[exit_survey_headers_columns["response_uuid"]]
+            if line[exit_survey_headers_columns["response__uuid"]]
             == str(incomplete_response.uuid)
         ][0]
         self.assertEqual(
-            incomplete_response_line[exit_survey_headers_columns["response_withdrawn"]],
+            incomplete_response_line[
+                exit_survey_headers_columns["response__withdrawn"]
+            ],
             "False",
             "Incomplete response was not marked as non-withdrawn",
         )
         self.assertEqual(
             incomplete_response_line[
-                exit_survey_headers_columns["response_parent_feedback"]
+                exit_survey_headers_columns["response__parent_feedback"]
             ],
             "",
         )
         self.assertEqual(
             incomplete_response_line[
-                exit_survey_headers_columns["response_video_privacy"]
+                exit_survey_headers_columns["response__video_privacy"]
             ],
             "",
         )
         self.assertEqual(
-            incomplete_response_line[exit_survey_headers_columns["response_databrary"]],
+            incomplete_response_line[
+                exit_survey_headers_columns["response__databrary"]
+            ],
             "",
         )
 
@@ -813,7 +917,7 @@ class ResponseDataDownloadTestCase(TestCase):
         )
 
         json_response = self.client.get(self.response_summary_json_url)
-        content = json_response.content.decode("utf-8")
+        content = b"".join(json_response.streaming_content).decode("utf-8")
         data = json.loads(content)
 
         exit_survey_headers = [
@@ -823,7 +927,6 @@ class ResponseDataDownloadTestCase(TestCase):
             "databrary",
             "birthdate_difference",
         ]
-
         this_response = [
             r for r in data if r["response"]["uuid"] == str(withdrawn_response.uuid)
         ][0]
@@ -846,8 +949,254 @@ class ResponseDataDownloadTestCase(TestCase):
         self.assertEqual(this_response["response"]["video_privacy"], "private")
         self.assertEqual(this_response["response"]["databrary"], "yes")
         self.assertEqual(this_response["response"]["birthdate_difference"], 17)
+        self.assertEqual(this_response["consent"]["ruling"], "accepted")
 
-    # TODO: add test for study-demographics-download-csv, checking for global ID inclusion
-    # TODO: add test for study-responses-children-summary-csv
-    # TODO: add test of study response downloads with large responses and with large
-    #       number of responses
+    def test_get_appropriate_children_in_child_csv_as_previewer(self):
+        self.client.force_login(self.study_previewer)
+        csv_response = self.client.get(
+            reverse(
+                "exp:study-responses-children-summary-csv", kwargs={"pk": self.study.pk}
+            )
+        )
+        content = csv_response.content.decode("utf-8")
+        csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
+        csv_body = list(csv_reader)
+        csv_headers = csv_body.pop(0)
+        self.assertEqual(len(csv_body), self.n_preview_children)
+        self.assertNotIn(
+            self.poison_string,
+            content,
+            "Data from unconsented response included in child file download!",
+        )
+        self.assertNotIn(
+            "non-preview-child",
+            content,
+            "Data from child who provided only non-preview response available to previewer!",
+        )
+
+    def test_get_appropriate_children_in_child_csv_as_researcher(self):
+        self.client.force_login(self.study_reader)
+        csv_response = self.client.get(
+            reverse(
+                "exp:study-responses-children-summary-csv", kwargs={"pk": self.study.pk}
+            )
+        )
+        content = csv_response.content.decode("utf-8")
+        csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
+        csv_body = list(csv_reader)
+        csv_headers = csv_body.pop(0)
+        self.assertEqual(len(csv_body), self.n_total_children)
+        self.assertNotIn(
+            self.poison_string,
+            content,
+            "Data from unconsented response included in child file download!",
+        )
+        self.assertIn(
+            "non-preview-child",
+            content,
+            "Data from child who provided consented non-preview response not available to researcher",
+        )
+
+    def test_get_study_demographics_view_as_researcher(self):
+        # Check indicated number of responses is correct for all-response permissions
+        self.client.force_login(self.study_reader)
+        response = self.client.get(
+            reverse("exp:study-demographics", kwargs={"pk": self.study.pk})
+        )
+        content = response.content.decode("utf-8")
+        self.assertIn(
+            f"{self.n_previews + self.n_responses} snapshot",
+            content,
+            "Incorrect number of responses indicated on study demographics view for researcher",
+        )
+
+    def test_get_study_demographics_view_as_previewer(self):
+        # Check indicated number of responses is correct for preview-data-only permissions
+        self.client.force_login(self.study_previewer)
+        response = self.client.get(
+            reverse("exp:study-demographics", kwargs={"pk": self.study.pk})
+        )
+        content = response.content.decode("utf-8")
+        self.assertIn(
+            f"{self.n_previews} snapshot",
+            content,
+            "Incorrect number of responses indicated on study demographics view for previewer",
+        )
+        self.assertIn(
+            "(Based on your permissions, only snapshots from preview responses are included.)",
+            content,
+            "Missing expected signaling to user that only preview data is shown on demographics view",
+        )
+        pass
+
+    def test_get_appropriate_participants_in_demographic_csv_as_researcher(self):
+        self.client.force_login(self.study_reader)
+        csv_response = self.client.get(
+            reverse("exp:study-demographics-download-csv", kwargs={"pk": self.study.pk})
+        )
+        content = csv_response.content.decode("utf-8")
+        csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
+        csv_body = list(csv_reader)
+        csv_headers = csv_body.pop(0)
+
+        participant_id_col = csv_headers.index("participant__hashed_id")
+        participant_ids = [line[participant_id_col] for line in csv_body]
+        unique_participant_ids = list(set(participant_ids))
+        self.assertEqual(len(csv_body), self.n_previews + self.n_responses)
+        self.assertEqual(len(unique_participant_ids), self.n_total_participants)
+
+        self.assertNotIn(
+            self.poison_string,
+            content,
+            "Data from unconsented response included in demographic file download!",
+        )
+        self.assertIn(
+            "Swahili",
+            content,
+            "Data from participant who provided consented non-preview response not available to researcher",
+        )
+
+    def test_get_appropriate_participants_in_demographic_csv_as_previewer(self):
+        self.client.force_login(self.study_previewer)
+        csv_response = self.client.get(
+            reverse("exp:study-demographics-download-csv", kwargs={"pk": self.study.pk})
+        )
+        content = csv_response.content.decode("utf-8")
+        csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
+        csv_body = list(csv_reader)
+        csv_headers = csv_body.pop(0)
+
+        participant_id_col = csv_headers.index("participant__hashed_id")
+        participant_ids = [line[participant_id_col] for line in csv_body]
+        unique_participant_ids = list(set(participant_ids))
+        self.assertEqual(len(csv_body), self.n_previews)
+        self.assertEqual(len(unique_participant_ids), self.n_preview_participants)
+
+        self.assertNotIn(
+            self.poison_string,
+            content,
+            "Data from unconsented response included in demographic file download!",
+        )
+        self.assertNotIn(
+            "non-preview-participant",
+            content,
+            "Data from participant who provided only non-preview response available to previewer!",
+        )
+
+    def test_get_appropriate_fields_in_demographic_csv(self):
+        self.client.force_login(self.study_reader)
+        demographic_csv_url = reverse(
+            "exp:study-demographics-download-csv", kwargs={"pk": self.study.pk}
+        )
+
+        # With participant__global_id selected, should be in header and participant uuid included in file
+        query_string = urlencode(
+            {"demo_options": ["participant__global_id"]}, doseq=True
+        )
+        csv_response = self.client.get(f"{demographic_csv_url}?{query_string}")
+        content = csv_response.content.decode("utf-8")
+        csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
+        csv_body = list(csv_reader)
+        csv_headers = csv_body.pop(0)
+        self.assertIn("participant__global_id", csv_headers)
+        self.assertIn(str(self.participants[0].uuid), content)
+
+        # Without participant__global_id selected, should not be in header and data should not be included
+        query_string = urlencode({"demo_options": []}, doseq=True)
+        csv_response = self.client.get(f"{demographic_csv_url}?{query_string}")
+        content = csv_response.content.decode("utf-8")
+        csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
+        csv_body = list(csv_reader)
+        csv_headers = csv_body.pop(0)
+        self.assertNotIn("participant__global_id", csv_headers)
+        self.assertNotIn(str(self.participants[0].uuid), content)
+
+    def test_get_appropriate_fields_in_demographic_json(self):
+        self.client.force_login(self.study_reader)
+        demographic_json_url = reverse(
+            "exp:study-demographics-download-json", kwargs={"pk": self.study.pk}
+        )
+
+        # With participant__global_id selected, this info is included
+        query_string = urlencode(
+            {"demo_options": ["participant__global_id"]}, doseq=True
+        )
+        response = self.client.get(f"{demographic_json_url}?{query_string}")
+        content = response.content.decode("utf-8")
+        data = json.loads(content)
+        for demo in data:
+            self.assertIn("global_id", demo["participant"])
+            self.assertEqual(
+                demo["participant"]["global_id"],
+                str(
+                    Response.objects.get(uuid=demo["response"]["uuid"]).child.user.uuid
+                ),
+            )
+
+        # Without participant__global_id selected, this info is absent
+        query_string = urlencode({"demo_options": []}, doseq=True)
+        response = self.client.get(f"{demographic_json_url}?{query_string}")
+        content = response.content.decode("utf-8")
+        data = json.loads(content)
+        for demo in data:
+            self.assertNotIn("global_id", demo["participant"])
+            self.assertNotIn(
+                str(
+                    Response.objects.get(uuid=demo["response"]["uuid"]).child.user.uuid
+                ),
+                content,
+            )
+
+    def test_get_appropriate_individual_responses_as_researcher(self):
+        self.client.force_login(self.study_reader)
+        n_matches = 0
+
+        n_pages = (self.n_responses + self.n_previews) // 10 + 1
+
+        for page_number in range(1, n_pages + 1):
+            response = self.client.get(
+                f"{reverse('exp:study-responses-list', kwargs={'pk': self.study.pk})}?page={page_number}"
+            )
+            content = response.content.decode("utf-8")
+            matches = re.finditer('data-response-uuid="(.*)"', content)
+            for m in matches:
+                n_matches += 1
+                this_response_uuid = m.group(1)
+                response = Response.objects.get(uuid=this_response_uuid)
+                self.assertEqual(response.study.pk, self.study.pk)
+                self.assertTrue(response.has_valid_consent)
+
+        self.assertEqual(n_matches, self.n_responses + self.n_previews)
+        self.assertNotIn(self.poison_string, content)
+
+    def test_get_appropriate_individual_responses_as_previewer(self):
+        self.client.force_login(self.study_previewer)
+        response = self.client.get(
+            reverse("exp:study-responses-list", kwargs={"pk": self.study.pk})
+        )
+        content = response.content.decode("utf-8")
+
+        matches = re.finditer('data-response-uuid="(.*)"', content)
+        n_matches = 0
+        for m in matches:
+            n_matches += 1
+            this_response_uuid = m.group(1)
+            response = Response.objects.get(uuid=this_response_uuid)
+            self.assertEqual(response.study.pk, self.study.pk)
+            self.assertTrue(response.has_valid_consent)
+            self.assertTrue(response.is_preview)
+
+        # Assumes n_previews fit on one page
+        self.assertEqual(n_matches, self.n_previews)
+
+    # TODO: test individual file downloads from response-list
+    #       * cannot get response from another study,
+    #       * cannot get real data if only preview perms
+    #       * cannot get unconsented data
+    #       check correct fields included, as for all-response downloads
+    # TODO: test can submit feedback only w correct perms and only for responses to this study
+    #       (path: "study-response-submit-feedback" (pk))
+    # TODO: test appropriate list of videos shows up in videos views (video from this study, no
+    #       video from another study, no non-preview video wo perms).
+    # TODO: Check can download/view video pk from appropriate set only.
+    #       (path: "study-response-video-download" (pk, video))

@@ -73,46 +73,24 @@
             {% if active == 'all' %}
                 <form id="data-options" method="GET">
                 {% if n_responses %}
-                    <p> Data about {{ n_responses }} response{{ n_responses|pluralize}} are available. </p>
+                    <p> Data about {{ n_responses }} response{{ n_responses|pluralize}} are available.
+                    {% if can_view_regular_responses and not can_view_preview_responses%}
+                        <span><em>(Based on your permissions, no preview responses are included.)</em></span>
+                    {% endif %}
+                    {% if not can_view_regular_responses and can_view_preview_responses%}
+                        <span><em>(Based on your permissions, only preview responses are included.)</em></span>
+                    {% endif %}
+                    </p>
                 {% else %}
                     <p> There are no responses with confirmed consent yet. Once there are responses with confirmed consent, data will be available for download. Data dictionaries for the overview and child data files are available for planning analyses.</p>
                 {% endif %}
                     <p> The following options allow you to download files with the minimal identifying information needed for your analysis. Names and birthdates are available for download as needed, but must be redacted prior to publication. Files with names, global IDs, birthdates, exact ages at participation, or "additional info" fields are marked as identifiable in the filename.</p>
                     <div class="row">
-                
-                        <div class="col-xs-6">
-                        
-                            <p>Participant age data to include with responses:</p>
-
-                            {% for option in ageoptions %}
-                            <div>
-                                <input id="include-age-{{option.id}}"
-                                        name="ageoptions"
-                                        type="checkbox"
-                                        value="{{option.id}}"
-                                        {% if option.default %} checked {% endif %}
-                                        >
-                                <label for="include-age-{{option.id}}">
-                                    {{option.name}}
-                                </label>
+                        <div class="col-xs-12">
+                            <p>Participant data to include with responses:</p>
+                            <div class="three-column-list">
+                                {% include 'studies/_data_options.html' with data_options=data_options %}
                             </div>
-                            {% endfor %} 
-                        </div>
-                        <div class="col-xs-6">
-                            <p>Other participant data to include with responses:</p>
-                            {% for option in childoptions %}
-                            <div>
-                                <input id="include-child-{{option.id}}"
-                                        name="childoptions"
-                                        type="checkbox"
-                                        value="{{option.id}}"
-                                        {% if option.default %} checked {% endif %}
-                                        >
-                                <label for="include-child-{{option.id}}">
-                                    {{option.name}}
-                                </label>
-                            </div>
-                            {% endfor %}
                         </div>
                     </div>
                     <hr>
@@ -177,12 +155,6 @@
                         </div>
                         <div class="col-md-5 col-sm-6">
                             <div class='pull-right download-button'> 
-                                Data (all responses)
-                                <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
-                                    <span> <i class="fa fa-download"></i> (CSV)</span>
-                                </a>
-                            </div>
-                            <div class='pull-right download-button'> 
                                 Data (one file per response)
                                 <a id='download-frame-data-csv' class='btn btn-primary' href="{% url 'exp:study-responses-download-frame-data-zip-csv' pk=study.id %}" {% if not n_responses %} disabled {% endif %}>
                                     <span> <i class="fa fa-download"></i> (ZIP, CSVs)</span>
@@ -242,7 +214,7 @@
                 </form>
                 <hr>
                 {% if can_delete_preview_data %}
-                    <form method="POST"> {% csrf_token %}
+                    <form method="POST" action="{% url 'exp:study-delete-preview-responses' pk=study.id %}"> {% csrf_token %}
                         <div class="row">
                             <div class="col-md-7 col-sm-6">
                                 Tool: Delete preview data
@@ -250,7 +222,7 @@
                             </div>
                             <div class="col-md-5 col-sm-6">
                                 <div class='pull-right download-button'>
-                                    <button id='delete-preview-data' class='btn btn-primary' type="submit" action="">
+                                    <button id='delete-preview-data' class='btn btn-primary' type="submit">
                                         <span> Delete all preview data </span>
                                     </button>
                                 </div>
@@ -269,9 +241,9 @@
 
                     <div>
                         <input id="include-participant-global"
-                                name="demooptions"
+                                name="demo_options"
                                 type="checkbox"
-                                value="globalparent"
+                                value="participant__global_id"
                                 >
                         <label for="include-participant-global">
                             Include participant global IDs
@@ -282,11 +254,19 @@
             
                     <div class="row">
                         <div class="col-md-7 col-sm-6">
+                            <p>
                             {% if n_responses %}
-                                <p> Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}}) </p>
+                                Demographic data ({{ n_responses }} snapshot{{ n_responses|pluralize}})
                             {% else %}
-                                <p> There are no responses with confirmed consent yet. Once there are responses with confirmed consent, associated demographic data will be available for download. A data dictionary is available for planning analyses.</p>
+                                There are no responses with confirmed consent yet. Once there are responses with confirmed consent, associated demographic data will be available for download. A data dictionary is available for planning analyses.
                             {% endif %}
+                            {% if can_view_regular_responses and not can_view_preview_responses%}
+                                <span><em> (Based on your permissions, no snapshots from preview responses are included.)</em></span>
+                            {% endif %}
+                            {% if not can_view_regular_responses and can_view_preview_responses%}
+                                <span><em> (Based on your permissions, only snapshots from preview responses are included.)</em></span>
+                            {% endif %}
+                            </p>
                             <p class="help-text"> Each response is associated with a demographic data snapshot that captures the state of the participant's demographic survey at the time of the response. You may use this data to check on demographics of your study population, for instance to check how representative your sample is with respect to parental education, and may report your findings in aggregate. 
                             </p>
                             <p class="help-text">Important: this data must never be published in conjunction with study video such that it would be possible to link the two - e.g., to determine that the person pictured has an approximate family income of $50K or lives in Iowa. At minimum, this likely means redacting all response and participant identifiers from the downloaded demographic file if publishing raw data.</p>

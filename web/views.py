@@ -124,7 +124,9 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         """
         If form invalid, add child form needs to be open when page reloads.
         """
-        return self.render(self.get_context_data(form=form, form_hidden=False))
+        return self.render_to_response(
+            self.get_context_data(form=form, form_hidden=False)
+        )
 
     def form_valid(self, form):
         """

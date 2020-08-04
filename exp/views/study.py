@@ -10,13 +10,14 @@ from django.db.models.functions import Lower
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
+from django.views.generic.detail import SingleObjectMixin
 from revproxy.views import ProxyView
 
 from accounts.models import Child, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.views.mixins import (
     ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol,
     StudyTypeMixin,
 )
 from project import settings
@@ -162,7 +163,7 @@ class StudyUpdateView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     StudyTypeMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
     """
@@ -170,9 +171,9 @@ class StudyUpdateView(
     Also allows you to update the study status.
     """
 
+    model = Study
     template_name = "studies/study_edit.html"
     form_class = StudyEditForm
-    model = Study
     raise_exception = True
 
     def user_can_edit_study(self):
@@ -321,7 +322,7 @@ class StudyDetailView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
     generic.DetailView,
 ):
     """
@@ -329,8 +330,8 @@ class StudyDetailView(
     view study logs, manage study researchers, and change a study's state.
     """
 
-    template_name = "studies/study_detail.html"
     model = Study
+    template_name = "studies/study_detail.html"
     raise_exception = True
 
     def user_can_see_or_edit_study_details(self):
@@ -342,7 +343,7 @@ class StudyDetailView(
         """
         user = self.request.user
         method = self.request.method
-        study = self.object = self.get_object()
+        study = self.get_object()
 
         if not user.is_researcher:
             return False
@@ -651,7 +652,8 @@ class StudyDetailView(
 class StudyBuildView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
+    SingleObjectMixin,
     generic.RedirectView,
 ):
     """
@@ -659,8 +661,8 @@ class StudyBuildView(
     to build, and then triggers a build.
     """
 
-    http_method_names = ["post"]
     model = Study
+    http_method_names = ["post"]
     slug_url_kwarg = "uuid"
     slug_field = "uuid"
 
@@ -686,7 +688,7 @@ class StudyBuildView(
         study = self.get_object()
         study.is_building = True
         study.save(update_fields=["is_building"])
-        ember_build_and_gcp_deploy.delay(study.uuid, request.user.uuid)
+        ember_build_and_gcp_deploy.delay(study.uuid, self.request.user.uuid)
         messages.success(
             request,
             f"Scheduled experiment runner build for {study.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
@@ -695,7 +697,10 @@ class StudyBuildView(
 
 
 class StudyPreviewDetailView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.DetailView,
 ):
 
     queryset = Study.objects.all()
