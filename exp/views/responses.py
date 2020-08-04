@@ -1148,7 +1148,6 @@ class StudySingleResponseDownload(ResponseDownloadMixin, View):
             extension,
         )
 
-        cleaned_data = ""
         if data_type == "json":
             cleaned_data = json.dumps(
                 construct_response_dictionary(resp, RESPONSE_COLUMNS, header_options),
@@ -1165,6 +1164,8 @@ class StudySingleResponseDownload(ResponseDownloadMixin, View):
             cleaned_data = output.getvalue()
         elif data_type == "framedata":
             cleaned_data = build_single_response_framedata_csv(resp)
+        else:
+            raise SuspiciousOperation
         response = HttpResponse(cleaned_data, content_type="text/{}".format(extension))
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
         return response
@@ -1358,7 +1359,8 @@ class StudyResponsesConsentManager(
                     },
                 }
 
-                # TODO: Upgrade to Django 2.x and use json_script.
+        # TODO: Use json_script template tag to create JSON that can be used in Javascript
+        #       (see https://docs.djangoproject.com/en/3.0/ref/templates/builtins/#json-script)
         context["response_key_value_store"] = json.dumps(response_key_value_store)
 
         return context
