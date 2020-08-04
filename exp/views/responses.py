@@ -31,6 +31,7 @@ from accounts.utils import (
 from exp.utils import (
     RESPONSE_PAGE_SIZE,
     csv_dict_output_and_writer,
+    csv_namedtuple_writer,
     flatten_dict,
     round_age,
     round_ages_from_birthdays,
@@ -659,7 +660,7 @@ def get_response_headers(
     )
 
 
-def get_demographic_headers(selected_header_ids=None):
+def get_demographic_headers(selected_header_ids=None) -> List[str]:
     """Get ordered list of demographic headers for download.
 
     Args:
@@ -703,7 +704,47 @@ def construct_response_dictionary(
     return resp_dict
 
 
-def get_frame_data(resp):
+class FrameDataRow(NamedTuple):
+    response_uuid: str
+    child_hashed_id: str
+    frame_id: str
+    event_number: str
+    key: str
+    value: str
+
+
+FRAME_DATA_HEADER_DESCRIPTIONS = {
+    "response_uuid": "Unique identifier for this response; can be matched to summary data and video filenames",
+    "child_hashed_id": (
+        "Hashed identifier for the child associated with this response; can be matched to summary data "
+        "child_hashed_id. This random ID may be published directly; it is specific to this study. If you "
+        "need to match children across multiple studies, use the child_global_id."
+    ),
+    "frame_id": (
+        "Identifier for the particular frame responsible for this data; matches up to an element in the "
+        "response_sequence in the summary data file"
+    ),
+    "event_number": (
+        "Index of the event responsible for this data, if this is an event. Indexes start from 0 within each "
+        "frame (and within global data) within each response. Blank for non-event data."
+    ),
+    "key": "Label for a piece of data collected during this frame - for example, 'formData.child_favorite_animal'",
+    "value": "Value of the data associated with this key (of the indexed event if applicable) - for example, 'giraffe'",
+}
+
+
+def get_frame_data(resp: Union[Response, Dict]) -> List[FrameDataRow]:
+    """Get list of data stored in response's exp_data and global_event_timings fields.
+
+    Args:
+        resp(Response or dict): response data to process. If dict, must contain fields
+            child__uuid, study__uuid, study__salt, study__hash_digits, uuid, exp_data, and
+            global_event_timings.
+
+    Returns:
+        List of FrameDataRows each representing a single piece of data from global_event_timings or
+        exp_data. Descriptions of each field of the FrameDataRow are given in FRAME_DATA_HEADER_DESCRIPTIONS.
+    """
 
     if type(resp) is not dict:
         resp = {
@@ -716,7 +757,7 @@ def get_frame_data(resp):
             "global_event_timings": resp.global_event_timings,
         }
 
-    frame_data_dicts = []
+    frame_data_tuples = []
     child_hashed_id = hash_id(
         resp["child__uuid"],
         resp["study__uuid"],
@@ -727,15 +768,15 @@ def get_frame_data(resp):
     # First add all of the global event timings as events with frame_id "global"
     for (iEvent, event) in enumerate(resp["global_event_timings"]):
         for (key, value) in event.items():
-            frame_data_dicts.append(
-                {
-                    "child_hashed_id": child_hashed_id,
-                    "response_uuid": str(resp["uuid"]),
-                    "frame_id": "global",
-                    "key": key,
-                    "event_number": str(iEvent),
-                    "value": value,
-                }
+            frame_data_tuples.append(
+                FrameDataRow(
+                    child_hashed_id=child_hashed_id,
+                    response_uuid=str(resp["uuid"]),
+                    frame_id="global",
+                    key=key,
+                    event_number=str(iEvent),
+                    value=value,
+                )
             )
 
     # Next add all data in exp_data
@@ -745,15 +786,15 @@ def get_frame_data(resp):
             # Process event data separately and include event_number within frame
             if key.startswith(event_prefix):
                 key_pieces = key.split(".")
-                frame_data_dicts.append(
-                    {
-                        "child_hashed_id": child_hashed_id,
-                        "response_uuid": str(resp["uuid"]),
-                        "frame_id": frame_id,
-                        "key": ".".join(key_pieces[2:]),
-                        "event_number": str(key_pieces[1]),
-                        "value": value,
-                    }
+                frame_data_tuples.append(
+                    FrameDataRow(
+                        child_hashed_id=child_hashed_id,
+                        response_uuid=str(resp["uuid"]),
+                        frame_id=frame_id,
+                        key=".".join(key_pieces[2:]),
+                        event_number=str(key_pieces[1]),
+                        value=value,
+                    )
                 )
                 # omit frameType values from CSV
             elif key == "frameType":
@@ -766,63 +807,21 @@ def get_frame_data(resp):
                 continue
                 # For all other data, create a regular entry with frame_id and no event #
             else:
-                frame_data_dicts.append(
-                    {
-                        "child_hashed_id": child_hashed_id,
-                        "response_uuid": str(resp["uuid"]),
-                        "frame_id": frame_id,
-                        "key": key,
-                        "event_number": "",
-                        "value": value,
-                    }
+                frame_data_tuples.append(
+                    FrameDataRow(
+                        child_hashed_id=child_hashed_id,
+                        response_uuid=str(resp["uuid"]),
+                        frame_id=frame_id,
+                        key=key,
+                        event_number="",
+                        value=value,
+                    )
                 )
 
-    headers = [
-        (
-            "response_uuid",
-            "Unique identifier for this response; can be matched to summary data and video filenames",
-        ),
-        (
-            "child_hashed_id",
-            (
-                "Hashed identifier for the child associated with this response; can be matched to summary data "
-                "child_hashed_id. This random ID may be published directly; it is specific to this study. If you "
-                "need to match children across multiple studies, use the child_global_id."
-            ),
-        ),
-        (
-            "frame_id",
-            (
-                "Identifier for the particular frame responsible for this data; matches up to an element in the "
-                "response_sequence in the summary data file"
-            ),
-        ),
-        (
-            "event_number",
-            (
-                "Index of the event responsible for this data, if this is an event. Indexes start from 0 within each "
-                "frame (and within global data) within each response."
-            ),
-        ),
-        (
-            "key",
-            "Label for a piece of data collected during this frame - for example, 'formData.child_favorite_animal'",
-        ),
-        (
-            "value",
-            "Value of the data associated with this key (of the indexed event if applicable) - for example, 'giraffe'",
-        ),
-    ]
-
-    return {
-        "data": frame_data_dicts,
-        "data_headers": [header for (header, description) in headers],
-        "header_descriptions": headers,
-    }
+    return frame_data_tuples
 
 
 def build_framedata_dict_csv(writer, responses):
-
     response_paginator = Paginator(responses, RESPONSE_PAGE_SIZE)
     unique_frame_ids = set()
     event_keys = set()
@@ -831,25 +830,22 @@ def build_framedata_dict_csv(writer, responses):
     for page_num in response_paginator.page_range:
         page_of_responses = response_paginator.page(page_num)
         for resp in page_of_responses:
-            this_resp_data = get_frame_data(resp)["data"]
-            these_ids = [
-                d["frame_id"].partition("-")[2]
+            this_resp_data = get_frame_data(resp)
+            these_ids = {
+                d.frame_id.partition("-")[2]
                 for d in this_resp_data
-                if not d["frame_id"] == "global"
-            ]
-            event_keys = event_keys | set(
-                [d["key"] for d in this_resp_data if d["event_number"] != ""]
-            )
-            unique_frame_ids = unique_frame_ids | set(these_ids)
+                if not d.frame_id == "global"
+            }
+            event_keys = event_keys | {
+                d.key for d in this_resp_data if d.event_number != ""
+            }
+            unique_frame_ids = unique_frame_ids | these_ids
             for frame_id in these_ids:
-                these_keys = set(
-                    [
-                        d["key"]
-                        for d in this_resp_data
-                        if d["frame_id"].partition("-")[2] == frame_id
-                        and d["event_number"] == ""
-                    ]
-                )
+                these_keys = {
+                    d.key
+                    for d in this_resp_data
+                    if d.frame_id.partition("-")[2] == frame_id and d.event_number == ""
+                }
                 if frame_id in unique_frame_keys_dict:
                     unique_frame_keys_dict[frame_id] = (
                         unique_frame_keys_dict[frame_id] | these_keys
@@ -858,11 +854,10 @@ def build_framedata_dict_csv(writer, responses):
                     unique_frame_keys_dict[frame_id] = these_keys
 
     # Start with general descriptions of high-level headers (child_id, response_id, etc.)
-    header_descriptions = get_frame_data(resp)["header_descriptions"]
     writer.writerows(
         [
             {"column": header, "description": description}
-            for (header, description) in header_descriptions
+            for (header, description) in FRAME_DATA_HEADER_DESCRIPTIONS.items()
         ]
     )
     writer.writerow(
@@ -939,14 +934,13 @@ def build_single_response_framedata_csv(response):
     """
 
     this_resp_data = get_frame_data(response)
-    output, writer = csv_dict_output_and_writer(this_resp_data["data_headers"])
-    writer.writerows(this_resp_data["data"])
+    output, writer = csv_namedtuple_writer(FrameDataRow)
+    writer.writerows(this_resp_data)
 
     return output.getvalue()
 
 
 class ResponseDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
-
     model = Response
     paginate_by = 10
     ordering = "id"
@@ -1332,7 +1326,6 @@ class StudyResponsesConsentManager(
             page_of_responses = paginator.page(page_num)
             # two jobs - generate statistics and populate k/v store.
             for response in page_of_responses:
-
                 response_json = response_key_value_store[str(response["uuid"])] = {}
 
                 response["uuid"] = str(response.pop("uuid"))
@@ -1452,7 +1445,6 @@ class StudyDeletePreviewResponses(
     SingleObjectMixin,
     View,
 ):
-
     queryset = Study.objects.all()
 
     def user_can_delete_preview_data(self):
@@ -1712,7 +1704,6 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
     """
 
     def get(self, request, *args, **kwargs):
-
         study = self.study
         filename = "{}_{}_{}".format(
             study_name_for_files(study.name), study.uuid, "all-frames-dict"
