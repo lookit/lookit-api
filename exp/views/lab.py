@@ -8,13 +8,11 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
+from django.views.generic.detail import SingleObjectMixin
 
 from accounts.models import User
 from exp.mixins.paginator_mixin import PaginatorMixin
-from exp.views.mixins import (
-    ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
-)
+from exp.views.mixins import ExperimenterLoginRequiredMixin, SingleObjectFetchProtocol
 from project import settings
 from studies.forms import LabApprovalForm, LabForm
 from studies.helpers import send_mail
@@ -23,7 +21,10 @@ from studies.permissions import LabPermission, SiteAdminGroup
 
 
 class LabDetailView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectFetchProtocol[Lab],
+    generic.DetailView,
 ):
     """
     LabDetailView shows information about a lab and provides links to request to join,
@@ -75,7 +76,7 @@ class LabDetailView(
 class LabMembersView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Lab],
     PaginatorMixin,
     generic.DetailView,
 ):
@@ -337,14 +338,13 @@ class LabMembersView(
 class LabUpdateView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Lab],
     generic.UpdateView,
 ):
     """
     LabUpdateView allows updating lab metadata.
     """
 
-    queryset = Lab.objects.all()
     template_name = "studies/lab_update.html"
     model = Lab
     raise_exception = True
@@ -373,15 +373,13 @@ class LabUpdateView(
 
 
 class LabCreateView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.CreateView,
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.CreateView,
 ):
     """
     LabCreateView allows creating a new lab.
     """
 
+    object: Lab
     template_name = "studies/lab_create.html"
     form_class = LabForm
     model = Lab
@@ -434,7 +432,8 @@ class LabCreateView(
 class LabMembershipRequestView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Lab],
+    SingleObjectMixin,
     generic.RedirectView,
 ):
 

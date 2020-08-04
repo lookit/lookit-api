@@ -1,9 +1,8 @@
 import io
 import json
-import types
 import zipfile
 from functools import cached_property
-from typing import List, NamedTuple, Set, Union
+from typing import Callable, Dict, KeysView, List, NamedTuple, Set, Union
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -20,6 +19,7 @@ from django.http import (
 from django.shortcuts import redirect, reverse
 from django.views import generic
 from django.views.generic.base import View
+from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
 from accounts.utils import (
@@ -39,7 +39,7 @@ from exp.utils import (
 from exp.views.mixins import (
     CanViewStudyResponsesMixin,
     ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol,
     StudyLookupMixin,
 )
 from studies.models import Feedback, Response, Study, Video
@@ -56,7 +56,9 @@ class ResponseDataColumn(NamedTuple):
     # sub-dictionary for JSON data.
     id: str
     description: str  # Description for data dictionary
-    extractor: types.LambdaType  # Function to extract value from response instance or dict
+    extractor: Callable[
+        [Union[Response, Dict]], Union[str, List]
+    ]  # Function to extract value from response instance or dict
     optional: bool = False  # is a column the user checks a box to include?
     name: str = ""  # used in template form for optional columns
     include_by_default: bool = False  # whether to initially check checkbox for field
@@ -392,7 +394,7 @@ RESPONSE_COLUMNS = [
             "RESEARCHERS: EXPAND THIS SECTION BASED ON YOUR INDIVIDUAL STUDY. Each set of "
             "response_conditions.N.(...) fields give information about condition assignment during a particular "
             "frame of this study. response_conditions.0.frameName is the frame ID (corresponding to a value in "
-            "response_sequence) where the randomization occured. Additional fields such as "
+            "response_sequence) where the randomization occurred. Additional fields such as "
             "response_conditions.0.conditionNum depend on the specific randomizer frames used in this study."
         ),
         extractor=lambda resp: [
@@ -617,7 +619,8 @@ IDENTIFIABLE_DATA_HEADERS = {col.id for col in RESPONSE_COLUMNS if col.identifia
 
 
 def get_response_headers(
-    selected_header_ids: Union[Set, List], all_available_header_ids: Set
+    selected_header_ids: Union[Set, List],
+    all_available_header_ids: Union[Set, KeysView],
 ) -> List:
     """Get ordered list of response headers for download.
 
@@ -1284,7 +1287,7 @@ class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
 class StudyResponsesConsentManager(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
     generic.DetailView,
 ):
     """Manage consent videos from here: approve or reject as evidence of informed consent."""
@@ -1410,7 +1413,7 @@ class StudyResponsesConsentManager(
 
 
 class StudyResponsesAll(
-    CanViewStudyResponsesMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
+    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView,
 ):
     """
     StudyResponsesAll shows a variety of download options for response and child data
@@ -1445,11 +1448,11 @@ class StudyResponsesAll(
 class StudyDeletePreviewResponses(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
+    SingleObjectMixin,
     View,
 ):
 
-    model = Study
     queryset = Study.objects.all()
 
     def user_can_delete_preview_data(self):
@@ -1509,7 +1512,7 @@ class StudyResponsesJSON(ResponseDownloadMixin, generic.list.ListView):
             chunk += ",\n"
         return chunk
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **response_kwargs):
         paginator = context["paginator"]
         study = self.study
         header_options = set(self.request.GET.getlist("data_options"))
@@ -1535,7 +1538,7 @@ class StudyResponsesCSV(ResponseDownloadMixin, generic.list.ListView):
     Hitting this URL downloads a summary of all study responses in CSV format.
     """
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **response_kwargs):
         paginator = context["paginator"]
         study = self.study
 
@@ -1606,7 +1609,7 @@ class StudyChildrenCSV(ResponseDownloadMixin, generic.list.ListView):
     Hitting this URL downloads a summary of all children who participated in CSV format.
     """
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **response_kwargs):
         paginator = context["paginator"]
         study = self.study
 
@@ -1676,7 +1679,7 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
 
     # TODO: with large files / many responses generation can take a while. Should generate asynchronously along
     # with the data dict.
-    def render_to_response(self, context):
+    def render_to_response(self, context, **response_kwargs):
         paginator = context["paginator"]
         study = self.study
 
@@ -1726,7 +1729,7 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
 
 
 class StudyDemographics(
-    CanViewStudyResponsesMixin, SingleObjectParsimoniousQueryMixin, generic.DetailView
+    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView,
 ):
     """
     StudyDemographics view shows participant demographic snapshots associated
@@ -1758,7 +1761,7 @@ class StudyDemographicsJSON(DemographicDownloadMixin, generic.list.ListView):
     Hitting this URL downloads all participant demographics in JSON format.
     """
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **response_kwargs):
         study = self.study
         header_options = self.request.GET.getlist("demo_options")
 
@@ -1793,7 +1796,7 @@ class StudyDemographicsCSV(DemographicDownloadMixin, generic.list.ListView):
     Hitting this URL downloads all participant demographics in CSV format.
     """
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **response_kwargs):
         study = self.study
         paginator = context["paginator"]
         header_options = set(self.request.GET.getlist("demo_options"))
@@ -1823,7 +1826,7 @@ class StudyDemographicsDictCSV(DemographicDownloadMixin, generic.list.ListView):
     Does not depend on any actual data.
     """
 
-    def render_to_response(self, context):
+    def render_to_response(self, context, **response_kwargs):
         header_options = set(self.request.GET.getlist("demo_options"))
         headers_for_download = get_demographic_headers(header_options)
 
