@@ -79,8 +79,8 @@ INSTALLED_APPS = [
     "django.forms",
     # "django.contrib.admin",
     "project.apps.TwoFactorAuthProtectedAdminConfig",
-    "allauth.socialaccount",
-    "allauth.account",
+    # "allauth.socialaccount",
+    # "allauth.account",
 ]
 
 MIDDLEWARE = [
