@@ -217,7 +217,6 @@ class Study(models.Model):
         "name",
         "short_description",
         "long_description",
-        "criteria",
         "duration",
         "contact_info",
         "image",
