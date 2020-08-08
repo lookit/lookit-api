@@ -196,8 +196,8 @@ class StudyForm(ModelForm):
         max_age_days = self.cleaned_data.get("max_age_days")
         max_age_months = self.cleaned_data.get("max_age_months")
         max_age_years = self.cleaned_data.get("max_age_years")
-        if (min_age_years + min_age_months / 12 + min_age_days / 365) > (
-            max_age_years + max_age_months / 12 + max_age_days / 365
+        if (min_age_years * 365 + min_age_months * 30 + min_age_days) > (
+            max_age_years * 365 + max_age_months * 30 + max_age_days
         ):
             raise forms.ValidationError(
                 "The maximum age must be greater than the minimum age."
