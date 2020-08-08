@@ -55,6 +55,12 @@ class ResponseViewsTestCase(TestCase):
         self.approved_lab = G(Lab, name="MIT", approved_to_test=True)
         self.unapproved_lab = G(Lab, name="Harvard", approved_to_test=True)
 
+        self.generator_function_string = (
+            "function(child, pastSessions) {return {frames: {}, sequence: []};}"
+        )
+        self.structure_string = (
+            "some exact text that should be displayed in place of the loaded structure"
+        )
         self.study = G(
             Study,
             image=SimpleUploadedFile(
@@ -64,12 +70,19 @@ class ResponseViewsTestCase(TestCase):
             creator=self.study_admin,
             shared_preview=False,
             study_type=self.study_type,
+            public=True,
             name="Test Study",
             lab=self.approved_lab,
+            short_description="original short_description",
             structure={
                 "frames": {"frame-a": {}, "frame-b": {}},
                 "sequence": ["frame-a", "frame-b"],
+                "exact_text": self.structure_string,
             },
+            use_generator=False,
+            generator=self.generator_function_string,
+            criteria_expression="",
+            exit_url="https://lookit.mit.edu/studies/history",
             metadata={
                 "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
                 "last_known_player_sha": "fakecommitsha",
@@ -193,7 +206,7 @@ class ResponseViewsTestCase(TestCase):
             page.status_code, [403, 405], "GET method allowed on study build view"
         )
 
-    def test_build_study_as_rsearcher_outside_lab(self):
+    def test_build_study_as_researcher_outside_lab(self):
         self.client.force_login(self.other_researcher)
         page = self.client.post(self.study_build_url, {})
         self.assertEqual(
@@ -280,6 +293,35 @@ class ResponseViewsTestCase(TestCase):
             self.study.built, "Study built field not True following study build"
         )
 
+    def test_study_edit_displays_generator(self):
+        self.client.force_login(self.lab_researcher)
+        url = reverse("exp:study-edit", kwargs={"pk": self.study.id})
+        assign_perm(
+            StudyPermission.WRITE_STUDY_DETAILS.prefixed_codename,
+            self.lab_researcher,
+            self.study,
+        )
+        response = self.client.get(url)
+        content = response.content.decode("utf-8")
+        self.assertEqual(
+            response.status_code, 200, "Study edit view returns invalid response",
+        )
+        self.assertIn(
+            self.generator_function_string,
+            content,
+            "Generator function not rendered in editor on study edit page",
+        )
+        self.assertIn(
+            self.structure_string,
+            content,
+            "Exact text representation of structure not displayed on study edit page",
+        )
+        self.assertNotIn(
+            "frame-a",
+            content,
+            "internal structure displayed on study edit page instead of just exact text",
+        )
+
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
     def test_study_edit_change_study_type(self, mock_validate):
         mock_validate.return_value = {"fake": "metadata"}, []
@@ -301,6 +343,9 @@ class ResponseViewsTestCase(TestCase):
             "Study edit returns invalid response when editing study type",
         )
         updated_study = Study.objects.get(id=self.study.id)
+        self.assertEqual(
+            updated_study.study_type, self.other_study_type, "Study type not updated",
+        )
         self.assertFalse(
             updated_study.built,
             "Study build was not invalidated after editing study type",
