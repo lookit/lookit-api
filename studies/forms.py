@@ -2,6 +2,7 @@ import json
 
 from ace_overlay.widgets import AceOverlayWidget
 from django import forms
+from django.db.models import Q
 from django.forms import ModelForm, Textarea
 
 from accounts.queries import compile_expression
@@ -180,14 +181,6 @@ class StudyForm(ModelForm):
         initial=DEFAULT_GENERATOR,
     )
 
-    def __init__(self, *args, **kwargs):
-        # Limit lab options to labs this user is a member of
-        user = kwargs.pop("user")
-        super().__init__(*args, **kwargs)
-        self.fields["lab"].queryset = user.labs.filter(
-            id__in=user.labs_user_can_create_study_in()
-        )
-
     def clean(self):
         cleaned_data = super().clean()
         min_age_days = self.cleaned_data.get("min_age_days")
@@ -316,7 +309,7 @@ class StudyEditForm(StudyForm):
     """Form for editing study"""
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.get("user")
+        user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         self.fields["study_type"].help_text = STUDY_TYPE_HELP_TEXT_EDIT
@@ -328,6 +321,11 @@ class StudyEditForm(StudyForm):
             self.fields["lab"].help_text = (
                 "Which lab this study will be affiliated with. Be careful changing the lab of an existing study: "
                 "this will affect who can view and edit the study."
+            )
+            # Limit labs to change to: current lab, or labs this user is a member of & can create studies in
+            self.fields["lab"].queryset = user.labs.filter(
+                Q(id__in=user.labs_user_can_create_study_in())
+                | (Q(uuid=self.instance.lab.uuid))
             )
         else:
             # Ensure we display the current lab on the edit form, even if user isn't part of this lab (which
@@ -343,6 +341,11 @@ class StudyCreateForm(StudyForm):
     """Form for creating a new study"""
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_INITIAL
         self.fields["study_type"].help_text = STUDY_TYPE_HELP_TEXT_INITIAL
+        # Limit initial lab options to labs this user is a member of & can create studies in
+        self.fields["lab"].queryset = user.labs.filter(
+            id__in=user.labs_user_can_create_study_in()
+        )
