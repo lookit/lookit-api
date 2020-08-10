@@ -100,7 +100,7 @@ def cleanup_docker_images():
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_zipfile_of_videos(
-    self, filename, study_uuid, orderby, match, requesting_user_uuid, consent_only=False
+    self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
     from studies.models import Study
     from accounts.models import User
@@ -120,6 +120,7 @@ def build_zipfile_of_videos(
         StudyPermission.READ_STUDY_PREVIEW_DATA, study
     ):
         video_qs = video_qs.filter(response__is_preview=False)
+
     if match:
         video_qs = video_qs.filter(full_name__contains=match)
 

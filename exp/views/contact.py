@@ -7,10 +7,7 @@ from django.views import generic
 
 from accounts.models import Message, User
 from accounts.utils import hash_id
-from exp.views.mixins import (
-    ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
-)
+from exp.views.mixins import ExperimenterLoginRequiredMixin, SingleObjectFetchProtocol
 from studies.models import Study
 from studies.permissions import StudyPermission
 
@@ -18,7 +15,7 @@ from studies.permissions import StudyPermission
 class StudyParticipantContactView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
     generic.DetailView,
 ):
     """

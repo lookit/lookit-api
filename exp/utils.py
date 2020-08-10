@@ -34,6 +34,13 @@ def flatten_dict(d):
     return dict(items)
 
 
+def csv_namedtuple_writer(named_tuple_class):
+    output = io.StringIO()
+    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC,)
+    writer.writerow(named_tuple_class._fields)
+    return output, writer
+
+
 def csv_dict_output_and_writer(header_list):
     output = io.StringIO()
     writer = csv.DictWriter(

@@ -148,10 +148,7 @@ def add_researcher_to_labs(sender, **kwargs):
     Add researchers to default labs upon initial creation. Note will need to add researchers
     to labs if turning a participant account into a researcher account.
     """
-    user, created = (
-        kwargs["instance"],
-        kwargs["created"],
-    )
+    user, created = (kwargs["instance"], kwargs["created"])
     # Note: if new researcher creation will involve setting saving first,
     # # then editing, will need to add groups at that point too.
     if user.is_researcher and created:

@@ -1,8 +1,12 @@
 import base64
+import functools
 import hashlib
 import uuid
+from io import BytesIO
+from typing import Union
 
 import pydenticon
+import pyotp
 from bitfield import BitField
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -21,6 +25,8 @@ from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 from multiselectfield import MultiSelectField
+from qrcode import make as make_qrcode
+from qrcode.image.svg import SvgPathImage
 
 from accounts.queries import BitfieldQuerySet
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
@@ -73,6 +79,47 @@ class Organization(models.Model):
         ordering = ["name"]
 
 
+class GoogleAuthenticatorTOTP(models.Model):
+    """OTP Secret model for time-based OTP.
+
+    Currently, we only support Google authenticator format. Please see:
+    https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+    """
+
+    issuer = f"Lookit-{settings.ENVIRONMENT}"
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="_otp",
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    secret = models.CharField(max_length=16, db_index=True, default=pyotp.random_base32)
+    activated = models.BooleanField(default=False)
+
+    @property
+    def provider(self):
+        return pyotp.TOTP(self.secret)
+
+    def verify(self, auth_code: str) -> bool:
+        """Verifies the provided one-time password."""
+        return self.provider.verify(auth_code)
+
+    def get_svg_qr_code(self) -> str:
+        with BytesIO() as stream:
+            make_qrcode(
+                pyotp.utils.build_uri(
+                    self.secret, name=self.user.username, issuer_name=self.issuer
+                ),
+                image_factory=SvgPathImage,
+                box_size=10,
+            ).save(stream)
+
+            content = stream.getvalue().decode()
+
+        return content
+
+
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = "username"
     uuid = models.UUIDField(
@@ -109,13 +156,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         if self.id:
             setattr(self, f"__original_groups", self.groups.all())
 
-    @cached_property
-    def osf_profile_url(self):
-        try:
-            return self.socialaccount_set.first().extra_data["data"]["links"]["html"]
-        except AttributeError:
-            return "#"
-
     @property
     def identicon(self):
         if not self._identicon:
@@ -140,6 +180,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def identicon_html(self):
         return mark_safe(f'<img src="{str(self.identicon)}" width="64" />')
+
+    @property
+    def otp(self) -> Union[GoogleAuthenticatorTOTP, None]:
+        return getattr(self, "_otp", None)
 
     @property
     def slug(self):
@@ -536,7 +580,6 @@ class Message(models.Model):
     def send_as_email(self):
         context = {
             "base_url": settings.BASE_URL,
-            "osf_url": settings.OSF_URL,
             "custom_message": mark_safe(self.body),
         }
 

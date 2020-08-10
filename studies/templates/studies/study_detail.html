@@ -512,9 +512,9 @@
                                 {% for log in logs %}
                                     <div class="row pb-sm">
                                         <div class="col-sm-3">
-                                            {% timezone request.user.time_zone %}
+                                            {% localtime on %}
                                                 {{ log.created_at }}
-                                            {% endtimezone %}
+                                            {% endlocaltime %}
                                         </div>
                                         <div class="col-sm-3">
                                             Study
