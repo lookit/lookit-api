@@ -308,8 +308,7 @@ class StudyForm(ModelForm):
 class StudyEditForm(StudyForm):
     """Form for editing study"""
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user")
+    def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         self.fields["study_type"].help_text = STUDY_TYPE_HELP_TEXT_EDIT
@@ -340,8 +339,7 @@ class StudyEditForm(StudyForm):
 class StudyCreateForm(StudyForm):
     """Form for creating a new study"""
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user")
+    def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_INITIAL
         self.fields["study_type"].help_text = STUDY_TYPE_HELP_TEXT_INITIAL
