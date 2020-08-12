@@ -1066,7 +1066,6 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             "response__status",
             "response__completed",
             "response__is_preview",
-            "response__date_created",
         ]
         response_data = []
         for resp in paginated_responses:
@@ -1076,7 +1075,8 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
                 for col in RESPONSE_COLUMNS
                 if col.id in columns_included_in_table
             }
-            this_resp_data["date_created"] = str(resp.date_created)
+            # Exception - store actual date object for date created
+            this_resp_data["response__date_created"] = resp.date_created
             # info needed for summary table shown at right
             this_resp_data["summary"] = [
                 {
