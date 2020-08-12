@@ -177,7 +177,12 @@ class StudyUpdateView(
     raise_exception = True
 
     def user_can_edit_study(self):
-        """Test predicate for the study editing view."""
+        """Test predicate for the study editing view.
+
+        Returns:
+            True if this user can edit this Study, False otherwise
+
+        """
         user: User = self.request.user  # Weird that PyCharm can't figure out the type?
         study = self.get_object()
 
@@ -194,16 +199,20 @@ class StudyUpdateView(
     # UserPassesTestMixin.get_test_func()
     test_func = user_can_edit_study
 
-    # Rely on form validation to make sure structure is valid JSON; don't load/dump so we
-    # preserve formatting and ordering.
-    #
     def get_initial(self):
-        """
-       Returns the initial data to use for forms on this view.
-       """
-        initial = super().get_initial()
+        """Get initial data for the study update form.
 
-        # Display for editing the exact text that was used to generate the structure, if available.
+        Provides the exact_text stored in the structure field as the initial
+        value to edit, to preserve ordering and formatting from user's standpoint.
+
+        Returns:
+            A dictionary containing initial data for the form
+
+        """
+        initial = super().get_initial()
+        # For editing, display the exact text that was used to generate the structure,
+        # if available. We rely on form validation to make sure structure["exact_text"]
+        # is valid JSON.
         structure = self.object.structure
         if structure:
             if "exact_text" in structure:
