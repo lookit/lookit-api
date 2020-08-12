@@ -4,9 +4,11 @@ import zipfile
 from functools import cached_property
 from typing import Callable, Dict, KeysView, List, NamedTuple, Set, Union
 
+import requests
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
+from django.core.files import File
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import (
@@ -1210,9 +1212,11 @@ class StudyResponseVideoAttachment(
         download_url = video.download_url
 
         if self.request.GET.get("mode") == "download":
-            response = HttpResponse(download_url, content_type="video/mp4")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(
-                video.filename
+            r = requests.get(download_url)
+            response = FileResponse(
+                File.open(io.BytesIO(r.content)),
+                filename=video.filename,
+                as_attachment=True,
             )
             return response
 
