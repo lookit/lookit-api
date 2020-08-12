@@ -13,23 +13,31 @@
 
     // Display an error if generator is not a valid JS function. Returns 0 if no errors, 1 if errors.
     function validateGenerator(code) {
-        var $errorDisplay = $('#validation-error-generator');
-        $errorDisplay.hide();
+
+        const $errorToDisplay = $('<div id="clientside-generator-validation-message" class="help-block"></div>');
+        const $generatorField = $('#id_generator').closest('.form-group');
+        $generatorField.removeClass('has-error');
+        $('#clientside-generator-validation-message').remove();
+
         try {
-            var generator = Function(code)();
+            Function(code)();
             try {
-                var generatorFn = Function('return ' + code)();
+                const generatorFn = Function('return ' + code)();
                 if (typeof generatorFn !== 'function') {
                     throw new Error();
                 }
             } catch (error) {
-                $errorDisplay.text('Warning: Generator function does not evaluate to a single function. Generator will be disabled if this value is saved.');
-                $errorDisplay.show();
+                $errorToDisplay
+                    .text('Warning: Generator function does not evaluate to a single function. Generator will be disabled if this value is saved.')
+                    .insertBefore($generatorField.children().last());
+                $generatorField.addClass('has-error');
                 return 1;
             }
         } catch (error) {
-            $errorDisplay.text('Warning: Invalid Javascript. Generator will be disabled if this value is saved.');
-            $errorDisplay.show();
+            $errorToDisplay
+                .text('Warning: Invalid Javascript. Generator will be disabled if this value is saved.')
+                .insertBefore($generatorField.children().last());
+            $generatorField.addClass('has-error');
             return 1;
         }
         return 0;
@@ -37,13 +45,17 @@
 
     // Display an error if structure is not a valid JSON string. Returns 0 if no errors, 1 if errors.
     function validateStructure(code) {
-        var $errorDisplay = $('#validation-error-structure');
-        $errorDisplay.hide();
+        const $errorToDisplay = $('<div id="clientside-protocol-validation-message" class="help-block"></div>');
+        const $protocolField = $('#id_structure').closest('.form-group');
+        $protocolField.removeClass('has-error');
+        $('#clientside-protocol-validation-message').remove();
         try {
-            var struct = JSON.parse(code);
+            JSON.parse(code);
         } catch (error) {
-            $errorDisplay.text('Warning: Invalid JSON.');
-            $errorDisplay.show();
+            $errorToDisplay
+                .text('Warning: Invalid JSON.')
+                .insertBefore($protocolField.children().last());
+            $protocolField.addClass('has-error');
             return 1;
         }
         return 0;
@@ -62,27 +74,27 @@
         });
 
         // Validate generator function upon closing its editor
-        $("#generator-container .ace-overlay .save, #generator-container .ace-overlay .cancel").bind("click", function (event) {
+        $("#generator-container .ace-overlay .save, #generator-container .ace-overlay .cancel").bind("click", function () {
             // data field 'editor' bound to editor but only while editor is open
-            var code = $('#generator-container .ace-overlay').data('editor').getValue();
+            const code = $('#generator-container .ace-overlay').data('editor').getValue();
             validateGenerator(code);
         });
 
         // Validate structure function upon closing its editor
-        $("#structure-container .ace-overlay .save, #generator-container .ace-overlay .cancel").bind("click", function (event) {
+        $("#structure-container .ace-overlay .save, #generator-container .ace-overlay .cancel").bind("click", function () {
             // data field 'editor' bound to editor but only while editor is open
-            var code = $('#structure-container .ace-overlay').data('editor').getValue();
+            const code = $('#structure-container .ace-overlay').data('editor').getValue();
             validateStructure(code);
         });
 
-        // Use ctrl-S to save study from either editor.
-        $(".ace-overlay .edit").bind("click", function (event) {
-            var $aceOverlay = $(this).closest('.ace-overlay')
-            var editor = $aceOverlay.data('editor');
+        // Use ctrl-S to close editor from either editor.
+        $(".ace-overlay .edit").bind("click", function () {
+            const $aceOverlay = $(this).closest('.ace-overlay')
+            const editor = $aceOverlay.data('editor');
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {win: 'Ctrl-S', mac: 'Command-S'},
-                exec: function(editor) {
+                exec: function() {
                     $aceOverlay.find('.save').click();
                     // Could also consider triggering save button on broader form
                 },
@@ -91,10 +103,11 @@
         });
 
         // Upon submit, unset use generator if generator function is invalid
-        $("#create-study-button, #save-button").bind("click", function(event) {
+        $("#create-study-button, #save-button").bind("click", function() {
             if (validateGenerator($('#id_generator').val())) {
-                $('#id_use_generator').prop("checked", false);
-                $('#id_use_generator')[0].value = false;
+                const $useGeneratorCheckbox = $('#id_use_generator');
+                $useGeneratorCheckbox.prop("checked", false);
+                $useGeneratorCheckbox[0].value = false;
             }
         });
 
@@ -122,7 +135,7 @@
             <label class="control-label" for="id_min_age_years"><em>Year(s)</em></label>
             <select name="min_age_years" class="form-control" title="" id="id_min_age_years">
                 {% for x, y in form.fields.min_age_years.choices %}
-                    <option value="{{ x }}"{% if study.min_age_years == x %} selected{% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.min_age_years == x %} selected {% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -142,7 +155,7 @@
             <label class="control-label" for="id_min_age_days"><em>Day(s)</em></label>
             <select class="form-control" id="id_min_age_days" name="min_age_days" title="">
                 {% for x, y in form.fields.min_age_days.choices %}
-                    <option value="{{ x }}"{% if study.min_age_days == x %} selected{% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.min_age_days == x %} selected {% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -157,7 +170,7 @@
             <label class="control-label" for="id_max_age_years"><em>Year(s)</em></label>
             <select name="max_age_years" class="form-control" title="" id="id_max_age_years">
                 {% for x, y in form.fields.max_age_years.choices %}
-                    <option value="{{ x }}"{% if study.max_age_years == x %} selected{% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.max_age_years == x %} selected {% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -167,7 +180,7 @@
             <label class="control-label" for="id_max_age_months"><em>Month(s)</em></label>
             <select class="form-control" id="id_max_age_months" name="max_age_months" title="">
                 {% for x, y in form.fields.max_age_months.choices %}
-                    <option value="{{ x }}"{% if study.max_age_months == x %} selected{% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.max_age_months == x %} selected {% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -177,7 +190,7 @@
             <label class="control-label" for="id_max_age_days"><em>Day(s)</em></label>
             <select class="form-control" id="id_max_age_days" name="max_age_days" title="">
                 {% for x, y in form.fields.max_age_days.choices %}
-                    <option value="{{ x }}"{% if study.max_age_days == x %} selected{% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.max_age_days == x %} selected {% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -188,10 +201,8 @@
 {% bootstrap_field form.lab %}
 <div id="structure-container">
     {% bootstrap_field form.structure %}
-    <p class="form-validation-error" id="validation-error-structure"> </p>
 </div>
 {% bootstrap_field form.use_generator %}
 <div id="generator-container">
     {% bootstrap_field form.generator %}
-    <p class="form-validation-error" id="validation-error-generator"> </p>
 </div>

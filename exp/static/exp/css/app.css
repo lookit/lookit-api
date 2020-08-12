@@ -533,10 +533,6 @@ a:hover.build-study-link {
     max-width: 50em;
 }
 
-p.form-validation-error {
-    color: red;
-}
-
 /* Participant Detail */
 .child-name {
     background-color: #F5F5F5;
