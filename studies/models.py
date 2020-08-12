@@ -214,6 +214,8 @@ class Study(models.Model):
 
     MONITORING_FIELDS = [
         "structure",
+        "generator",
+        "use_generator",
         "name",
         "short_description",
         "long_description",
@@ -719,7 +721,8 @@ def check_modification_of_approved_study(
 
     build_changed_metadata = update_fields is not None and "metadata" in update_fields
 
-    # Special treatment for metadata field.
+    # Special treatment for metadata and structure fields which may have superficial
+    # changes that shouldn't be treated as actual changes
     important_fields_changed = False
     for field, (current, new) in field_transitions.items():
         if (
@@ -728,10 +731,15 @@ def check_modification_of_approved_study(
             and not current.get("last_known_player_sha", None)
         ):
             continue  # Skip, since we're technically just encoding the most recent SHA.
-        else:
-            if new != current:
-                important_fields_changed = True
-                break
+        if (
+            field == "structure"
+            and current.get("frames") == new.get("frames")
+            and current.get("sequence") == new.get("sequence")
+        ):
+            continue  # Skip, since the actual JSON content is the same - only exact_text changing
+        if new != current:
+            important_fields_changed = True
+            break
 
     if instance.state in approved_states and important_fields_changed:
         instance.state = "rejected"
