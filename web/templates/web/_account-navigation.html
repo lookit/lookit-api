@@ -1,5 +1,0 @@
-{% load i18n %}
-<a class="{% if current_page == 'participant-update' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:participant-update' %}"><strong>{% trans "Account information" %}</strong><br>{% trans "Change your name, email, or password."%}</a>
-<a class="{% if current_page == 'demographic-update' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:demographic-data-update' %}"><strong>{% trans "Demographic Survey" %}</strong><br>{% trans "Tell us more about yourself." %}</a>
-<a class="{% if current_page == 'children-list' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:children-list' %}"><strong>{% trans "Children Information" %}</strong><br>{% trans "Add or edit participant information." %}</a>
-<a class="{% if current_page == 'email-preferences' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:email-preferences' %}"><strong>{% trans "Email Preferences" %}</strong><br>{% trans "Edit when you can be contacted." %}</a>

@@ -5,7 +5,7 @@ from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import get_template
 
 from project.celery import app
-from project.settings import BASE_URL, EMAIL_FROM_ADDRESS, OSF_URL
+from project.settings import BASE_URL, EMAIL_FROM_ADDRESS
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,6 @@ def send_mail(
     :kwargs: Context vars for the email template
     """
     context["base_url"] = BASE_URL
-    context["osf_url"] = OSF_URL
 
     text_content = get_template("emails/{}.txt".format(template_name)).render(context)
     html_content = get_template("emails/{}.html".format(template_name)).render(context)

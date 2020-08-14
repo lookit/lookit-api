@@ -1,7 +1,7 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}{% trans "Signup" %}{% endblock %}
+{% block title %}Sign up to participate{% endblock %}
 
 {% block flash %}
   {% bootstrap_messages %}
@@ -15,9 +15,13 @@
   <div class="container pt-md">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h1 class="panel-title">Create Account</h1>
+        <h1 class="panel-title">Create Participant Account</h1>
       </div>
       <div class="panel-body">
+        <p class="alert alert-info">
+            Create a family account to start participating in Lookit studies!
+            (To register as a researcher, please use <a href="{% url 'accounts:researcher-registration' %}">this form</a> instead.)
+        </p>
         <form method="POST" action="">{% csrf_token %}
           {% bootstrap_form form %}
           {% buttons %}
