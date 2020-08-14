@@ -53,7 +53,6 @@ class ResponseViewsTestCase(TestCase):
         self.study_type = G(StudyType, name="default", id=1)
         self.other_study_type = G(StudyType, name="other", id=2)
         self.approved_lab = G(Lab, name="MIT", approved_to_test=True)
-        self.unapproved_lab = G(Lab, name="Harvard", approved_to_test=True)
 
         self.generator_function_string = (
             "function(child, pastSessions) {return {frames: {}, sequence: []};}"
