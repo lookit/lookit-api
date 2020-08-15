@@ -70,8 +70,12 @@ class StudyViewsTestCase(TestCase):
         self.study = G(
             Study,
             image=SimpleUploadedFile(
-                name="small.gif", content=small_gif, content_type="image/gif"
-            ),
+                name="fake_image.png",
+                content=open(
+                    f"{settings.BASE_DIR}{settings.STATIC_URL}images/pacifier.png", "rb"
+                ).read(),
+                content_type="image/png",
+            ),  # we could also pass fill_nullable_fields=True
             # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
             creator=self.study_admin,
             shared_preview=False,
