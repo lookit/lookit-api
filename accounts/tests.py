@@ -1111,3 +1111,5 @@ class ParticipantViewsTestCase(TestCase):
             content,
             "Study designer does not see participant in participant list",
         )
+
+# TODO: add tests of determining eligibility more broadly (using age range + criteria)
