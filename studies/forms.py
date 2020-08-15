@@ -117,6 +117,12 @@ class LabForm(ModelForm):
             "description",
             "irb_contact_info",
         ]
+        help_texts = {
+            "contact_email": (
+                "This will be the reply-to address when you contact participants, so make sure it is a monitored "
+                "address or list that lab members can access."
+            )
+        }
 
 
 class LabApprovalForm(ModelForm):
