@@ -139,9 +139,9 @@
                         {% if not request.user.is_authenticated %}
                             <a class="btn btn-lg btn-default" href="{% url 'login' %}">{% trans "Log in to participate" %}</a>
                         {% elif not children %}
-                            <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to {% if preview_mode %} preview {% else %} participate {% endif %}" %}</a>
+                            <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %} %}</a>
                         {% elif not has_demographic %}
-                            <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">{% trans "Complete demographic survey to {% if preview_mode %} preview {% else %} participate {% endif %}" %}</a>
+                            <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">{% trans "Complete demographic survey to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}" %}</a>
                         {% else %}
                         <div class="form-group">
                         <form method="POST">{% csrf_token %}
