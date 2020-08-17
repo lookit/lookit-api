@@ -4,9 +4,11 @@ import zipfile
 from functools import cached_property
 from typing import Callable, Dict, KeysView, List, NamedTuple, Set, Union
 
+import requests
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousOperation
+from django.core.files import File
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import (
@@ -1066,7 +1068,6 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             "response__status",
             "response__completed",
             "response__is_preview",
-            "response__date_created",
         ]
         response_data = []
         for resp in paginated_responses:
@@ -1076,7 +1077,8 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
                 for col in RESPONSE_COLUMNS
                 if col.id in columns_included_in_table
             }
-            this_resp_data["date_created"] = str(resp.date_created)
+            # Exception - store actual date object for date created
+            this_resp_data["response__date_created"] = resp.date_created
             # info needed for summary table shown at right
             this_resp_data["summary"] = [
                 {
@@ -1210,9 +1212,11 @@ class StudyResponseVideoAttachment(
         download_url = video.download_url
 
         if self.request.GET.get("mode") == "download":
-            response = HttpResponse(download_url, content_type="video/mp4")
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(
-                video.filename
+            r = requests.get(download_url)
+            response = FileResponse(
+                File.open(io.BytesIO(r.content)),
+                filename=video.filename,
+                as_attachment=True,
             )
             return response
 
