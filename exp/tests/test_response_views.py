@@ -11,6 +11,7 @@ from django_dynamic_fixture import G
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, User
+from accounts.utils import hash_id
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType
 
 
@@ -1166,8 +1167,26 @@ class ResponseDataDownloadTestCase(TestCase):
                 self.assertEqual(response.study.pk, self.study.pk)
                 self.assertTrue(response.has_valid_consent)
 
+                # Also check values are displayed in table
+                hashed_child_id = hash_id(
+                    response.child.uuid,
+                    self.study.uuid,
+                    self.study.salt,
+                    self.study.hash_digits,
+                )
+                self.assertIn(f"<td>{hashed_child_id}</td>", content)
+                self.assertIn(f"<td>{str(this_response_uuid)[:8]}", content)
+                response_date = response.date_created.astimezone()
+                # Generate start of date representation matching Django template tag usage
+                formatted_date = (
+                    f"{response_date.strftime('%m').lstrip('0')}/"
+                    f"{response_date.strftime('%d/%Y').lstrip('0')} "
+                    f"{response_date.strftime('%I:%M').lstrip('0')}"
+                )
+                self.assertIn(f"<td>{formatted_date}", content)
+            self.assertNotIn(self.poison_string, content)
+
         self.assertEqual(n_matches, self.n_responses + self.n_previews)
-        self.assertNotIn(self.poison_string, content)
 
     def test_get_appropriate_individual_responses_as_previewer(self):
         self.client.force_login(self.study_previewer)
