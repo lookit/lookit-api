@@ -205,6 +205,8 @@ class StudyUpdateView(
         Provides the exact_text stored in the structure field as the initial
         value to edit, to preserve ordering and formatting from user's standpoint.
 
+        Provides the initial value of the generator function if current value is empty.
+
         Returns:
             A dictionary containing initial data for the form
 
@@ -219,6 +221,8 @@ class StudyUpdateView(
                 initial["structure"] = structure["exact_text"]
             else:
                 initial["structure"] = json.dumps(structure)
+        if not (type(self.object.generator) is str and self.object.generator.strip()):
+            initial["generator"] = StudyEditForm.base_fields["generator"].initial
         return initial
 
     def post(self, request, *args, **kwargs):
