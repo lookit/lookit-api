@@ -1,17 +1,17 @@
 Dear {{ user.nickname }},
 
-We're writing to invite you and your children to participate in the study "{{ study.name }}" that {{ study.lab.name }} is running on Lookit!
+We're writing to invite you and your child{% if children|length > 1 %}ren{% endif %} to participate in the study "{{ study.name }}" that {{ study.lab.name }} is running on Lookit!
 
-Who:
+Who: {{study.criteria}}
 {% for child in children %}- {{ child.given_name }}
 {% endfor %}
 What happens: {{ study.short_description }}
 
 Why: {{ study.long_description }}
 
-Compensation: {{ study.compensation_description|default_if_none:"This is a volunteer-based study."}}
+Compensation: {{ study.compensation_description|default:"This is a volunteer-based study."}}
 
-You and your child can participate any time you want by going to "{{ study.name }}" on Lookit ({{ base_url }}{% url 'exp:study-detail' pk=study.id %}). If you have any questions, please reply to this email or contact the study PI.
+You and your child can participate any time you want by going to "{{ study.name }}" on Lookit ({{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}). If you have any questions, please reply to this email to contact the lab.
 
 We hope to see you soon, and thanks for contributing to the science of how kids learn and grow!
 

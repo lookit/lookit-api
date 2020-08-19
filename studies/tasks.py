@@ -11,7 +11,7 @@ import zipfile
 from io import StringIO
 from itertools import starmap
 from operator import attrgetter, itemgetter
-from typing import NamedTuple
+from typing import Generator, NamedTuple
 
 import boto3
 import docker
@@ -186,6 +186,12 @@ def _segmented_by_study(validated_groups):
         yield user, dict(map_reduce(child_study_pairs, itemgetter(1), itemgetter(0)))
 
 
+def acquire_announcement_email_targets() -> Generator:
+    return _segmented_by_study(
+        _validated(_deserialized(_grouped_by_user(potential_message_targets())))
+    )
+
+
 @app.task
 def send_announcement_emails():
     """Send study announcement emails to users with eligible children.
@@ -197,9 +203,7 @@ def send_announcement_emails():
     targeted children such that those child-study pairs will be excluded from the next
     (daily) round of potential targets.
     """
-    targets = _segmented_by_study(
-        _validated(_deserialized(_grouped_by_user(potential_message_targets())))
-    )
+    targets = acquire_announcement_email_targets()
 
     for user, study_child_mapping in targets:
         # Only choose one study at a time (at random - no ordering).

@@ -595,7 +595,7 @@ class Message(models.Model):
         Side Effects:
             Creates a corresponding message object in the database.
         """
-        subject = f"New study available on Lookit: {study.name}"
+        subject = create_subject_for_study_notification(study, children)
         context = {
             "base_url": settings.BASE_URL,
             "user": user,
@@ -617,7 +617,7 @@ class Message(models.Model):
             text_content,
             settings.EMAIL_FROM_ADDRESS,
             [user.username],
-            cc=[study.lab.contact_email],
+            reply_to=[study.lab.contact_email],
         )
         email.attach_alternative(html_content, "text/html")
         email.send()
@@ -655,3 +655,19 @@ class Message(models.Model):
 
         self.email_sent_timestamp = now()  # will use UTC now (see USE_TZ in settings)
         self.save()
+
+
+def create_subject_for_study_notification(study, children):
+    latter_half = f' invited to take part in "{study.name}" on Lookit!'
+    child_names = [child.given_name for child in children]
+
+    if (num_children := len(child_names)) == 1:
+        first_half = child_names[0] + " is"
+    elif num_children == 2:
+        first_half = " and ".join(child_names) + " are"
+    elif num_children > 2:
+        first_half = ", ".join(child_names[:-1]) + f", and {child_names[-1]} are"
+    else:
+        raise RuntimeError("Need at least one child for notification messages")
+
+    return first_half + latter_half
