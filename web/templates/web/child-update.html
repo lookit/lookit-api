@@ -1,7 +1,7 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}{% trans "Child" } - {{child.given_name}}{% endblock %}
+{% block title %}{% trans "Child" %} - {{child.given_name}}{% endblock %}
 
 
 {% block flash %}
@@ -23,7 +23,7 @@
             </div>
             <div class="col-md-8">
                 <div class="pull-right">
-                    <a href="{% url 'web:children-list' %}" class="btn btn-primary"> {% bootstrap_icon "caret" %} Back to Children List </a>
+                    <a href="{% url 'web:children-list' %}" class="btn btn-primary"> {% bootstrap_icon "caret" %} {% trans "Back to Children List" %} </a>
                 </div>
                 <div id="add-child-form" style="display:{% if form_hidden %} none {% else %} inline {% endif %}">
                     <div class="panel-heading">
@@ -41,7 +41,7 @@
                                   {% trans "Delete" %}
                               </button>
                               <div class="pull-right">
-                                  <a class="btn btn-default" href="{% url 'web:children-list' %}"> Cancel </a>
+                                  <a class="btn btn-default" href="{% url 'web:children-list' %}"> {% trans "Cancel" %} </a>
                                   <button type="submit" class="btn btn-success">
                                      {% trans "Save" %}
                                   </button>

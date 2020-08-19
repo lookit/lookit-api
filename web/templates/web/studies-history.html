@@ -104,7 +104,7 @@
                                                                                     type="button">
                                                                                 <span class="glyphicon glyphicon-arrow-right"
                                                                                       aria-hidden="true"></span> Next
-                                                                                Video (<span class="video-number">1</span>/{{ videos | length }})
+                                                                                {% trans "Video" %} (<span class="video-number">1</span>/{{ videos | length }})
                                                                             </button>
                                                                         {% else %}
                                                                             <i aria-hidden="true"
@@ -130,13 +130,13 @@
                                                                                 {% endif %}
                                                                             </dd>
                                                                             {% if response.feedback.all %}
-                                                                                <dt>Feedback</dt>
+                                                                                <dt>{% trans "Feedback" %}</dt>
                                                                                 <dd>
                                                                                     <ul>	                                                                     
                                                                                         {% for feedback in response.feedback.all %}	                                                                          
                                                                                             <li class="response-feedback"> {{ feedback.comment }} </li>
                                                                                         {% empty %}	                                                     
-                                                                                            <span class="response-feedback-none"><em>None</em></span>
+                                                                                            <span class="response-feedback-none"><em>{% trans "None" %}</em></span>
                                                                                         {% endfor %}	                                                                    
                                                                                     </ul>
                                                                                 </dd>
