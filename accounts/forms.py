@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from accounts.backends import two_factor_auth_backend
 from accounts.models import Child, DemographicData, User
 
-from django.utils.translation import gettext_lazy as _
+
 
 class UserForm(forms.ModelForm):
     class Meta:

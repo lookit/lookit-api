@@ -50,7 +50,7 @@
             if (ineligibleBasedOnAge > 0) { // Too old
                 document.getElementById('too-old').style.display = 'inline-block';
             } else if (ineligibleBasedOnAge < 0 && !ineligibleBasedOnCriteria) { // Too young, but otherwise eligible
-                $('#wait-until').text(moment.duration(-ineligibleBasedOnAge, "days").humanize() + ' until ' + moment(moment()._d).add(-ineligibleBasedOnAge, 'days').format("dddd, MMMM Do YYYY") + ' when ');
+                $('#wait-until').text(moment.duration(-ineligibleBasedOnAge, {% trans "days"%}).humanize() + {% trans ' until '%} + moment(moment()._d).add(-ineligibleBasedOnAge, {% trans 'days'%} ).format("dddd, MMMM Do YYYY") + {% trans ' when '%});
                 document.getElementById('too-young').style.display = 'inline-block';
             } else if (ineligibleBasedOnCriteria) {
                 document.getElementById('criteria-not-met').style.display = 'inline-block';
