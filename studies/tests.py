@@ -19,6 +19,8 @@ TARGET_EMAIL_TEMPLATE = """Dear Charlie,
 We're writing to invite you and your children to participate in the study "The Most Fake Study Ever" that MIT is running on Lookit!
 
 Who: Children who have stopped believing in Santa in the past 6 months.
+
+This may include:
 - Moe
 - Curly
 

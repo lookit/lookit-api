@@ -1,8 +1,10 @@
 Dear {{ user.nickname }},
 
-We're writing to invite you and your child{% if children|length > 1 %}ren{% endif %} to participate in the study "{{ study.name }}" that {{ study.lab.name }} is running on Lookit!
+We're writing to invite you and your child{{ children|length|pluralize:"ren" }} to participate in the study "{{ study.name }}" that {{ study.lab.name }} is running on Lookit!
 
 Who: {{study.criteria}}
+
+This may include:
 {% for child in children %}- {{ child.given_name }}
 {% endfor %}
 What happens: {{ study.short_description }}

@@ -1,10 +1,11 @@
 
 <p>Dear {{ user.nickname }},</p>
 
-<p>We're writing to invite you and your child{% if children|length > 1 %}ren{% endif %} to participate in the study "{{ study.name }}" that {{ study.lab.name }} is running on Lookit!</p>
+<p>We're writing to invite you and your child{{ children|length|pluralize:"ren" }} to participate in the study "{{ study.name }}" that {{ study.lab.name }} is running on Lookit!</p>
 
 <ul>
     <li>Who: {{ study.criteria }}
+        <p>This may include:</p>
         <ul>
             {% for child in children %}
                 <li>{{ child.given_name }}</li>
