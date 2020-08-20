@@ -2,9 +2,10 @@
 
 import ast
 import operator
-from datetime import date
+from datetime import date, timedelta
 from functools import reduce
 from itertools import chain
+from operator import attrgetter
 
 from django.db import models
 from django.db.models import F, Q
@@ -89,7 +90,34 @@ QUERY_DSL_PARSER = Lark(QUERY_GRAMMAR, parser="earley")
 
 
 def get_child_eligibility_for_study(child_obj, study_obj):
-    return get_child_eligibility(child_obj, study_obj.criteria_expression)
+    return _child_in_age_range_for_study(
+        child_obj, study_obj
+    ) and get_child_eligibility(child_obj, study_obj.criteria_expression)
+
+
+def _child_in_age_range_for_study(child, study):
+    """This is a loose estimate that doesn't account for the weirdness of time.
+
+    Should be good enough for notifications.
+    """
+    if not child.birthday:
+        return False
+
+    min_age_in_days_estimate = float(
+        (study.min_age_years * 12 * 30)
+        + (study.min_age_months * 30)
+        + study.min_age_days
+    )
+    latest_birthday = date.today() - timedelta(days=min_age_in_days_estimate)
+
+    max_age_in_days_estimate = float(
+        (study.max_age_years * 12 * 30)
+        + (study.max_age_months * 30)
+        + study.max_age_days
+    )
+    earliest_birthday = date.today() - timedelta(days=max_age_in_days_estimate)
+
+    return earliest_birthday <= child.birthday <= latest_birthday
 
 
 def get_child_eligibility(child_obj, criteria_expr):
