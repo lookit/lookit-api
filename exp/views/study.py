@@ -221,7 +221,7 @@ class StudyUpdateView(
                 initial["structure"] = structure["exact_text"]
             else:
                 initial["structure"] = json.dumps(structure)
-        if not (type(self.object.generator) is str and self.object.generator.strip()):
+        if not self.object.generator.strip():
             initial["generator"] = StudyEditForm.base_fields["generator"].initial
         return initial
 
