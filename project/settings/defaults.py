@@ -330,5 +330,6 @@ CELERY_TASK_ROUTES = {
     "studies.tasks.delete_video_from_cloud": {"queue": "cleanup"},
     "studies.tasks.cleanup*": {"queue": "cleanup"},
     "studies.helpers.send_mail": {"queue": "email"},
+    "studies.tasks.send_announcement_emails": {"queue": "email"},
 }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
