@@ -21,8 +21,11 @@ pyinstrument = "==3.1.3"
 pyopenssl = "==19.1.0"
 python_dotenv = "==0.14.0"
 semantic-version = "==2.8.5"
+selenium = "*"
 watchdog = "==0.10.2"
+webdrivermanager = "*"
 werkzeug = "==1.0.1"
+
 
 [packages]
 # This should map on EXACTLY to defaults.txt!!!

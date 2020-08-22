@@ -2,11 +2,13 @@ import datetime
 
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
 
+import selenium
 from accounts.models import Child, DemographicData, User
 from project import settings
 from studies.models import Lab, Study, StudyType
@@ -405,6 +407,48 @@ class ParticipantStudyViewsTestCase(TestCase):
             .filter(uuid=self.public_inactive_study.uuid)
             .exists()
         )
+
+
+# Need to have geckodriver installed locally (Mac  `brew install geckodriver`)
+# -> not working locally due to MacOS version / command-line tools
+# https://stackoverflow.com/questions/41190989/how-do-i-install-geckodriver
+# Uses selenium, webdrivermanager
+# > webdrivermanager firefox chrome --linkpath /usr/local/bin
+
+
+@override_settings(DEBUG=True)
+class ParticipantExperienceTestCase(StaticLiveServerTestCase):
+    # fixtures = ['user-data.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.selenium = selenium.webdriver.Firefox()
+        cls.selenium.implicitly_wait(10)
+        site = Site.objects.create(domain=cls.live_server_url, name="Lookit")
+        site.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super().tearDownClass()
+
+    def test_login(self):
+        self.selenium.get(f"{self.live_server_url}/login/")
+        username_input = self.selenium.find_element_by_name("username")
+        username_input.send_keys("testuser@gmail.com")
+        password_input = self.selenium.find_element_by_name("password")
+        password_input.send_keys("secret")
+        self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
+
+        # from selenium.webdriver.support.wait import WebDriverWait
+        # timeout = 2
+        # ...
+        # self.selenium.find_element_by_xpath('//input[@value="Log in"]').click()
+        # Wait until the response is received
+        # WebDriverWait(self.selenium, timeout).until(
+        #    lambda driver: driver.find_element_by_tag_name('body'))
 
 
 # TODO: StudyDetailView
