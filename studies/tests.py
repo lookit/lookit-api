@@ -16,13 +16,11 @@ from studies.tasks import (
 
 TARGET_EMAIL_TEMPLATE = """Dear Charlie,
 
-We're writing to invite you and your children to participate in the study "The Most Fake Study Ever" that MIT is running on Lookit!
+We're writing to invite you and your children Moe and Curly to participate in the study "The Most Fake Study Ever" on Lookit! This study is run by the ECCL at MIT.
+
+More details about the study...
 
 Who: Children who have stopped believing in Santa in the past 6 months.
-
-This may include:
-- Moe
-- Curly
 
 What happens: How fast can your child hand-compute integrals?
 
@@ -30,11 +28,11 @@ Why: We are interested in seeing how fast your child can hand-compute integrals.
 
 Compensation: You child will receive exactly $1 for each integral computed.
 
-You and your child can participate any time you want by going to "The Most Fake Study Ever" on Lookit ({base_url}/studies/{study_uuid}/). If you have any questions, please reply to this email to contact the lab.
+You and your child can participate any time you want by going to "The Most Fake Study Ever" on Lookit ({base_url}/studies/{study_uuid}/). If you have any questions, please reply to this email to reach the ECCL at faker@fakelab.com.
 
-We hope to see you soon, and thanks for contributing to the science of how kids learn and grow!
+Thanks for contributing to the science of how kids learn - we hope to see you soon!
 
--- The Lookit team
+-- the Lookit team
 """
 
 
@@ -51,7 +49,9 @@ class TestAnnouncementEmailFunctionality(TestCase):
         one_year_ago = date.today() - timedelta(days=365)
         four_years_ago = date.today() - timedelta(days=365 * 4)
 
-        self.fake_lab = G(Lab, name="MIT", contact_email="faker@fakelab.com")
+        self.fake_lab = G(
+            Lab, name="ECCL", institution="MIT", contact_email="faker@fakelab.com"
+        )
         self.study_one = G(
             Study,
             name="A Study that should never show up",
