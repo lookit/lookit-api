@@ -96,28 +96,27 @@ def get_child_eligibility_for_study(child_obj, study_obj):
 
 
 def _child_in_age_range_for_study(child, study):
-    """This is a loose estimate that doesn't account for the weirdness of time.
-
-    Should be good enough for notifications.
+    """Check if child in age range for study, using same age calculations as in study detail and response data.
     """
     if not child.birthday:
         return False
 
-    min_age_in_days_estimate = float(
-        (study.min_age_years * 12 * 30)
-        + (study.min_age_months * 30)
-        + study.min_age_days
+    # Age ranges are defined in DAYS, using shorthand of year = 365 days, month = 30 days,
+    # to provide a reliable actual unit of time rather than calendar "months" and "years" which vary in duration.
+    # See logic used in web/studies/study-detail.html to display eligibility to participant,
+    # help-text provided to researchers in studies/templates/studies/_study_fields.html,
+    # and documentation for researchers at
+    # https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#minimum-and-maximum-age-cutoffs
+    min_age_in_days_estimate = (
+        (study.min_age_years * 365) + (study.min_age_months * 30) + study.min_age_days
     )
-    latest_birthday = date.today() - timedelta(days=min_age_in_days_estimate)
 
-    max_age_in_days_estimate = float(
-        (study.max_age_years * 12 * 30)
-        + (study.max_age_months * 30)
-        + study.max_age_days
+    max_age_in_days_estimate = (
+        (study.max_age_years * 365) + (study.max_age_months * 30) + study.max_age_days
     )
-    earliest_birthday = date.today() - timedelta(days=max_age_in_days_estimate)
+    age_in_days = (date.today() - child.birthday).days
 
-    return earliest_birthday <= child.birthday <= latest_birthday
+    return min_age_in_days_estimate <= age_in_days <= max_age_in_days_estimate
 
 
 def get_child_eligibility(child_obj, criteria_expr):

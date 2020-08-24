@@ -12,7 +12,7 @@ from lark.exceptions import UnexpectedCharacters
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, GoogleAuthenticatorTOTP, User
-from accounts.queries import get_child_eligibility
+from accounts.queries import get_child_eligibility, get_child_eligibility_for_study
 from studies.fields import GESTATIONAL_AGE_CHOICES
 from studies.models import Lab, Study, StudyType
 
@@ -441,3 +441,219 @@ class CriteriaExpressionTestCase(TestCase):
                 self.gestational_age_range_condition,
             )
         )
+
+
+class EligibilityTestCase(TestCase):
+    def setUp(self):
+        self.study_type = G(StudyType, name="default", id=1)
+        self.lab = G(Lab, name="ECCL")
+        self.preschooler_study_with_criteria_and_age_range = G(
+            Study,
+            study_type=self.study_type,
+            lab=self.lab,
+            criteria_expression="multiple_birth AND gestational_age_in_weeks <= 30",
+            min_age_days=0,
+            min_age_months=0,
+            min_age_years=2,
+            max_age_days=0,
+            max_age_months=0,
+            max_age_years=4,
+        )
+
+        self.almost_one_study = G(
+            Study,
+            study_type=self.study_type,
+            lab=self.lab,
+            min_age_days=30,
+            min_age_months=11,
+            min_age_years=0,
+            max_age_days=0,
+            max_age_months=0,
+            max_age_years=1,
+        )
+
+        # Age range 360 - 365 days
+        self.almost_one_study = G(
+            Study,
+            study_type=self.study_type,
+            lab=self.lab,
+            min_age_days=30,
+            min_age_months=11,
+            min_age_years=0,
+            max_age_days=0,
+            max_age_months=0,
+            max_age_years=1,
+            criteria_expression="",
+        )
+
+        self.elementary_study = G(
+            Study,
+            study_type=self.study_type,
+            lab=self.lab,
+            min_age_days=15,
+            min_age_months=2,
+            min_age_years=5,
+            max_age_days=4,
+            max_age_months=8,
+            max_age_years=10,
+            criteria_expression="",
+        )
+
+        self.teenager_study = G(
+            Study,
+            study_type=self.study_type,
+            lab=self.lab,
+            min_age_days=3,
+            min_age_months=0,
+            min_age_years=15,
+            max_age_days=4,
+            max_age_months=0,
+            max_age_years=17,
+            criteria_expression="",
+        )
+
+        self.twin_preemie_baby = G(
+            Child,
+            existing_conditions=Child.existing_conditions.multiple_birth,
+            gender="m",
+            languages_spoken=Child.languages_spoken.en,
+            gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.twenty_six_weeks,
+            birthday=datetime.date.today() - datetime.timedelta(days=180),
+        )
+
+        self.twin_preemie_3yo = G(
+            Child,
+            existing_conditions=Child.existing_conditions.multiple_birth,
+            gender="m",
+            languages_spoken=Child.languages_spoken.en,
+            gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.twenty_six_weeks,
+            birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
+        )
+
+        self.twin_full_term_3yo = G(
+            Child,
+            existing_conditions=Child.existing_conditions.multiple_birth,
+            gender="m",
+            languages_spoken=Child.languages_spoken.en,
+            gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.thirty_nine_weeks,
+            birthday=datetime.date.today() - datetime.timedelta(days=3 * 365),
+        )
+
+        self.twin_preemie_4yo = G(
+            Child,
+            existing_conditions=Child.existing_conditions.multiple_birth,
+            gender="m",
+            languages_spoken=Child.languages_spoken.en,
+            gestational_age_at_birth=GESTATIONAL_AGE_CHOICES.twenty_six_weeks,
+            birthday=datetime.date.today() - datetime.timedelta(days=4 * 365 + 180),
+        )
+
+        self.unborn_child = G(
+            Child, birthday=datetime.date.today() + datetime.timedelta(days=30),
+        )
+
+    def test_criteria_expression_used(self):
+        self.assertTrue(
+            get_child_eligibility_for_study(
+                self.twin_preemie_3yo,
+                self.preschooler_study_with_criteria_and_age_range,
+            )
+        )
+        self.assertFalse(
+            get_child_eligibility_for_study(
+                self.twin_full_term_3yo,
+                self.preschooler_study_with_criteria_and_age_range,
+            )
+        )
+
+    def test_age_range_used(self):
+        self.assertFalse(
+            get_child_eligibility_for_study(
+                self.twin_preemie_baby,
+                self.preschooler_study_with_criteria_and_age_range,
+            )
+        )
+        self.assertTrue(
+            get_child_eligibility_for_study(
+                self.twin_preemie_3yo,
+                self.preschooler_study_with_criteria_and_age_range,
+            )
+        )
+        self.assertFalse(
+            get_child_eligibility_for_study(
+                self.twin_preemie_4yo,
+                self.preschooler_study_with_criteria_and_age_range,
+            )
+        )
+
+    def test_unborn_children_ineligible(self):
+        self.assertFalse(
+            get_child_eligibility_for_study(self.unborn_child, self.almost_one_study)
+        )
+        self.assertFalse(
+            get_child_eligibility_for_study(self.unborn_child, self.elementary_study)
+        )
+        self.assertFalse(
+            get_child_eligibility_for_study(self.unborn_child, self.teenager_study)
+        )
+
+    def test_age_range_bounds(self):
+        for study in [
+            self.almost_one_study,
+            self.elementary_study,
+            self.teenager_study,
+        ]:
+            lower_bound = float(
+                study.min_age_years * 365
+                + study.min_age_months * 30
+                + study.min_age_days
+            )
+            upper_bound = float(
+                study.max_age_years * 365
+                + study.max_age_months * 30
+                + study.max_age_days
+            )
+            self.assertFalse(
+                get_child_eligibility_for_study(
+                    G(
+                        Child,
+                        birthday=datetime.date.today()
+                        - datetime.timedelta(days=lower_bound - 1),
+                    ),
+                    study,
+                ),
+                "Child just below lower age bound is eligible",
+            )
+            self.assertTrue(
+                get_child_eligibility_for_study(
+                    G(
+                        Child,
+                        birthday=datetime.date.today()
+                        - datetime.timedelta(days=lower_bound),
+                    ),
+                    study,
+                ),
+                "Child at lower age bound is not eligible",
+            )
+            self.assertTrue(
+                get_child_eligibility_for_study(
+                    G(
+                        Child,
+                        birthday=datetime.date.today()
+                        - datetime.timedelta(days=upper_bound),
+                    ),
+                    study,
+                ),
+                f"Child at upper age bound ({upper_bound} days) is not eligible",
+            )
+            self.assertFalse(
+                get_child_eligibility_for_study(
+                    G(
+                        Child,
+                        birthday=datetime.date.today()
+                        - datetime.timedelta(days=upper_bound + 1),
+                    ),
+                    study,
+                ),
+                "Child just above upper age bound is eligible",
+            )

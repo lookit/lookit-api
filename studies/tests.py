@@ -16,13 +16,11 @@ from studies.tasks import (
 
 TARGET_EMAIL_TEMPLATE = """Dear Charlie,
 
-We're writing to invite you and your children to participate in the study "The Most Fake Study Ever" that MIT is running on Lookit!
+We're writing to invite you and your children Moe and Curly to participate in the study "The Most Fake Study Ever" on Lookit! This study is run by the ECCL at MIT.
+
+More details about the study...
 
 Who: Children who have stopped believing in Santa in the past 6 months.
-
-This may include:
-- Moe
-- Curly
 
 What happens: How fast can your child hand-compute integrals?
 
@@ -30,11 +28,11 @@ Why: We are interested in seeing how fast your child can hand-compute integrals.
 
 Compensation: You child will receive exactly $1 for each integral computed.
 
-You and your child can participate any time you want by going to "The Most Fake Study Ever" on Lookit ({base_url}/studies/{study_uuid}/). If you have any questions, please reply to this email to contact the lab.
+You and your child can participate any time you want by going to "The Most Fake Study Ever" on Lookit ({base_url}/studies/{study_uuid}/). If you have any questions, please reply to this email to reach the ECCL at faker@fakelab.com.
 
-We hope to see you soon, and thanks for contributing to the science of how kids learn and grow!
+Thanks for contributing to the science of how kids learn - we hope to see you soon!
 
--- The Lookit team
+-- the Lookit team
 """
 
 
@@ -51,7 +49,9 @@ class TestAnnouncementEmailFunctionality(TestCase):
         one_year_ago = date.today() - timedelta(days=365)
         four_years_ago = date.today() - timedelta(days=365 * 4)
 
-        self.fake_lab = G(Lab, name="MIT", contact_email="faker@fakelab.com")
+        self.fake_lab = G(
+            Lab, name="ECCL", institution="MIT", contact_email="faker@fakelab.com"
+        )
         self.study_one = G(
             Study,
             name="A Study that should never show up",
@@ -386,4 +386,62 @@ class TestAnnouncementEmailFunctionality(TestCase):
         # ... But no study one this time.
         self.assertDictEqual(
             study_child_mapping, {self.study_two: [self.child_two, self.child_three]},
+        )
+
+    def test_announcement_email_to_child_with_long_name(self):
+        # Family with a child with a long name
+        long_name_family = G(User, nickname="Mama", is_active=True)
+        long_name_child = G(
+            Child,
+            given_name="A" * 255,
+            user=long_name_family,
+            birthday=date.today() - timedelta(days=365),
+        )
+        short_name_child = G(
+            Child,
+            given_name="Joe",
+            user=long_name_family,
+            birthday=date.today() - timedelta(days=365),
+        )
+
+        message_object = Message.send_announcement_email(
+            long_name_family, self.study_two, [long_name_child, short_name_child],
+        )
+        self.assertEqual(
+            message_object.subject,
+            'Your children are invited to take part in "The Most Fake Study Ever" on Lookit!',
+        )
+
+    def test_announcement_email_about_study_with_long_name(self):
+        # Study with a long name
+        long_name_study = G(
+            Study,
+            name="A" * 255,
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff-2", content_type="image/png"
+            ),
+            criteria_expression="",
+            criteria="for toddlers",
+            public=True,
+            built=True,
+            lab=self.fake_lab,
+            # Age range between 11 months and 2 years - born a year ago should be fine.
+            min_age_years=0,
+            min_age_months=11,
+            min_age_days=0,
+            max_age_years=2,
+            max_age_months=0,
+            max_age_days=0,
+            short_description="How fast can your child hand-compute integrals?",
+            long_description="We are interested in seeing how fast your child can hand-compute integrals.",
+            compensation_description="You child will receive exactly $1 for each integral computed.",
+        )
+        long_name_study.state = "active"
+        long_name_study.save()
+        message_object = Message.send_announcement_email(
+            self.participant_two, long_name_study, [self.child_two]
+        )
+        self.assertEqual(
+            message_object.subject,
+            "Your child is invited to take part in a new study on Lookit!",
         )

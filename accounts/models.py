@@ -596,11 +596,13 @@ class Message(models.Model):
             Creates a corresponding message object in the database.
         """
         subject = create_subject_for_study_notification(study, children)
+        children_string = create_string_listing_children(children)
         context = {
             "base_url": settings.BASE_URL,
             "user": user,
             "study": study,
             "children": children,
+            "children_string": children_string,
         }
 
         text_content = get_template("emails/study_announcement.txt").render(context)
@@ -657,17 +659,41 @@ class Message(models.Model):
         self.save()
 
 
+def create_string_listing_children(children):
+    child_names = [child.given_name for child in children]
+    num_children = len(child_names)
+
+    if not num_children:
+        return ""
+    elif num_children == 1:
+        return child_names[0]
+    elif num_children == 2:
+        return " and ".join(child_names)
+    else:
+        return ", ".join(child_names[:-1]) + f", and {child_names[-1]}"
+
+
 def create_subject_for_study_notification(study, children):
     latter_half = f' invited to take part in "{study.name}" on Lookit!'
-    child_names = [child.given_name for child in children]
+    latter_half_short = f" invited to take part in a new study on Lookit!"
+    num_children = len(children)
+    children_string = create_string_listing_children(children)
 
-    if (num_children := len(child_names)) == 1:
-        first_half = child_names[0] + " is"
-    elif num_children == 2:
-        first_half = " and ".join(child_names) + " are"
-    elif num_children > 2:
-        first_half = ", ".join(child_names[:-1]) + f", and {child_names[-1]} are"
+    if num_children == 1:
+        first_half = children_string + " is"
+    elif num_children > 1:
+        first_half = children_string + " are"
     else:
         raise RuntimeError("Need at least one child for notification messages")
 
-    return first_half + latter_half
+    full_subject_line = first_half + latter_half
+
+    if len(full_subject_line) <= 255:
+        return full_subject_line
+
+    first_half_short = f"Your {'child is' if num_children == 1 else 'children are'}"
+    child_omitted_subject_line = first_half_short + latter_half
+    if len(child_omitted_subject_line) <= 255:
+        return child_omitted_subject_line
+
+    return first_half_short + latter_half_short
