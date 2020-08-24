@@ -250,6 +250,44 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
         # Child four would get notified for all studies, but doesn't because of user settings.
 
+        # Family with a child with a long name
+        self.long_name_family = G(User, nickname="Mama", is_active=True)
+        self.long_name_child = G(
+            Child,
+            given_name="sixteencharacter" * 16,
+            user=self.long_name_family,
+            birthday=one_year_ago,
+        )
+        self.short_name_child = G(
+            Child, given_name="Bob", user=self.long_name_family, birthday=one_year_ago
+        )
+
+        # Study with a long name
+        self.long_name_study = G(
+            Study,
+            name="A long study name " * 16,
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff-2", content_type="image/png"
+            ),
+            criteria_expression="",
+            criteria="for toddlers",
+            public=True,
+            built=True,
+            lab=self.fake_lab,
+            # Age range between 11 months and 2 years - born a year ago should be fine.
+            min_age_years=0,
+            min_age_months=11,
+            min_age_days=0,
+            max_age_years=2,
+            max_age_months=0,
+            max_age_days=0,
+            short_description="How fast can your child hand-compute integrals?",
+            long_description="We are interested in seeing how fast your child can hand-compute integrals.",
+            compensation_description="You child will receive exactly $1 for each integral computed.",
+        )
+        self.long_name_study.state = "active"
+        self.long_name_study.save()
+
     def test_potential_message_targets(self):
         targets = list(potential_message_targets())
         # Two targets for participant 1: three children for both studies. These
@@ -386,4 +424,24 @@ class TestAnnouncementEmailFunctionality(TestCase):
         # ... But no study one this time.
         self.assertDictEqual(
             study_child_mapping, {self.study_two: [self.child_two, self.child_three]},
+        )
+
+    def test_announcement_email_to_child_with_long_name(self):
+        message_object = Message.send_announcement_email(
+            self.long_name_family,
+            self.study_one,
+            [self.long_name_child, self.short_name_child],
+        )
+        self.assertEqual(
+            message_object.subject,
+            'Your children are invited to take part in "The Most Fake Study Ever" on Lookit!',
+        )
+
+    def test_announcement_email_about_study_with_long_name(self):
+        message_object = Message.send_announcement_email(
+            self.long_name_family, self.long_name_study, [self.short_name_child]
+        )
+        self.assertEqual(
+            message_object.subject,
+            "Bob is invited to take part in a new study on Lookit!",
         )

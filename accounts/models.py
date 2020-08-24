@@ -675,6 +675,7 @@ def create_string_listing_children(children):
 
 def create_subject_for_study_notification(study, children):
     latter_half = f' invited to take part in "{study.name}" on Lookit!'
+    latter_half_short = f" invited to take part in a new study on Lookit!"
     num_children = len(children)
     children_string = create_string_listing_children(children)
 
@@ -685,4 +686,14 @@ def create_subject_for_study_notification(study, children):
     else:
         raise RuntimeError("Need at least one child for notification messages")
 
-    return first_half + latter_half
+    full_subject_line = first_half + latter_half
+
+    if len(full_subject_line) <= 255:
+        return full_subject_line
+
+    first_half_short = f"Your {'child is' if num_children == 1 else 'children are'}"
+    child_omitted_subject_line = first_half_short + latter_half
+    if len(child_omitted_subject_line) <= 255:
+        return child_omitted_subject_line
+
+    return first_half_short + latter_half_short
