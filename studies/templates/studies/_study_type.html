@@ -97,12 +97,19 @@
                         }).done(function(data) {
                             $('#update-button').prop('disabled', false);
                             current_commit_date = data.commit.author.date;
-                            var files_changed = $.map(data.files, function(f) {return f.status + ': ' + f.filename}).join('<br>');
+                            let files_changed_list = $.map(data.files, function(f) {return f.status + ': ' + f.filename});
+                            if (files_changed_list.length > 10) {
+                                files_changed_list = files_changed_list.slice(0, 10);
+                                files_changed_list.push('...');
+                            }
+                            if (data.commit.message.length > 1200) {
+                                data.commit.message = data.commit.message.slice(0, 1200) + "...";
+                            }
                             var commit_description = `<p>Your study will use commit <a target="_blank" href="${data.html_url}">${data.sha}</a>:</p>` + 
                                 `<table><tr><th scope="row">Date</th><td>${data.commit.author.date}</td></tr>` + 
                                 `<tr><th scope="row">Author</th><td>${data.commit.author.name}</td></tr>` + 
                                 `<tr><th scope="row">Message</th><td>${data.commit.message}</td></tr>` +
-                                `<tr><th scope="row">Files changed</th><td>${files_changed}</td></tr></table>`
+                                `<tr><th scope="row">Files changed</th><td>${files_changed_list.join('<br>')}</td></tr></table>`
                            $commit_description.html(commit_description);
                         }).fail(function() {
                             var error_message = `<p> Error: Version ${current_sha} not found! </p>` + 
