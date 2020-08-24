@@ -101,6 +101,12 @@ def _child_in_age_range_for_study(child, study):
     if not child.birthday:
         return False
 
+    # Age ranges are defined in DAYS, using shorthand of year = 365 days, month = 30 days,
+    # to provide a reliable actual unit of time rather than calendar "months" and "years" which vary in duration.
+    # See logic used in web/studies/study-detail.html to display eligibility to participant,
+    # help-text provided to researchers in studies/templates/studies/_study_fields.html,
+    # and documentation for researchers at
+    # https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#minimum-and-maximum-age-cutoffs
     min_age_in_days_estimate = (
         (study.min_age_years * 365) + (study.min_age_months * 30) + study.min_age_days
     )

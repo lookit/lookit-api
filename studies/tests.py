@@ -250,14 +250,6 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
         # Child four would get notified for all studies, but doesn't because of user settings.
 
-        # Add a single child with a long name to the database; not eligible for any studies
-        G(
-            Child,
-            given_name="sixteencharacter" * 16,
-            user=self.participant_one,
-            birthday=date.today() + timedelta(days=365),
-        )
-
     def test_potential_message_targets(self):
         targets = list(potential_message_targets())
         # Two targets for participant 1: three children for both studies. These
@@ -401,19 +393,19 @@ class TestAnnouncementEmailFunctionality(TestCase):
         long_name_family = G(User, nickname="Mama", is_active=True)
         long_name_child = G(
             Child,
-            given_name="sixteencharacter" * 16,
+            given_name="A" * 255,
             user=long_name_family,
             birthday=date.today() - timedelta(days=365),
         )
         short_name_child = G(
             Child,
-            given_name="Bob",
+            given_name="Joe",
             user=long_name_family,
             birthday=date.today() - timedelta(days=365),
         )
 
         message_object = Message.send_announcement_email(
-            long_name_family, self.study_one, [long_name_child, short_name_child],
+            long_name_family, self.study_two, [long_name_child, short_name_child],
         )
         self.assertEqual(
             message_object.subject,
@@ -424,7 +416,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         # Study with a long name
         long_name_study = G(
             Study,
-            name="A long study name " * 16,
+            name="A" * 255,
             image=SimpleUploadedFile(
                 "fake_image.png", b"fake-stuff-2", content_type="image/png"
             ),
@@ -451,5 +443,5 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
         self.assertEqual(
             message_object.subject,
-            "Bob is invited to take part in a new study on Lookit!",
+            "Your child is invited to take part in a new study on Lookit!",
         )
