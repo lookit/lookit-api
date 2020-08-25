@@ -72,7 +72,6 @@
                         <form id="study-details-form" action="" enctype="multipart/form-data"
                               method="post">{% csrf_token %}
                             {% include "studies/_study_fields.html" with form=form study=study %}
-                            {% bootstrap_field form.structure %}
                             
                             <div class="form-group">
                                 <label class="control-label" for="id_study_type">Experiment runner type</label>
@@ -127,8 +126,9 @@
                                                             <ul>
                                                                 <li> whether the study is discoverable </li>
                                                                 <li> whether the preview is shared </li>
-                                                                <li> the minimum and maximum age </li>
+                                                                <li> the minimum and maximum age or criteria expression </li>
                                                                 <li> the participant eligibility description </li>
+                                                                <li> the <em>formatting</em> of your study protocol </li>
                                                             </ul>
                                                             then your study will stay in its {{ study.state }} state.
                                                         </p>

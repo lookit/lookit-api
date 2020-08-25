@@ -140,6 +140,8 @@ class ChildSerializer(UuidHyperlinkedModelSerializer):
             "gender",
             "age_at_birth",
             "additional_information",
+            "language_list",
+            "condition_list",
             "deleted",
             "former_lookit_profile_id",
             "pk",

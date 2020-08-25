@@ -12,7 +12,9 @@ from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group, Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
+from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
+from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
@@ -568,6 +570,7 @@ class Message(models.Model):
         User, on_delete=models.SET_NULL, db_index=True, null=True
     )
     recipients = models.ManyToManyField(User, related_name="messages")
+    children_of_interest = models.ManyToManyField(Child, related_name="notifications")
     subject = models.CharField(max_length=255)
     body = models.TextField()
     related_study = models.ForeignKey(
@@ -576,6 +579,56 @@ class Message(models.Model):
     email_sent_timestamp = models.DateTimeField(
         null=True, default=None
     )  # Timestamp serves as a truth check as well.
+
+    @classmethod
+    def send_announcement_email(cls, user: User, study, children):
+        """Send announcement emails for a given user and study.
+
+        Note: we don't use send_mail helper here as this should already be called
+            within a task.
+
+        Args:
+            user: The target User.
+            study: the target Study.
+            children: the target Child models for which these announcements are intended.
+
+        Side Effects:
+            Creates a corresponding message object in the database.
+        """
+        subject = create_subject_for_study_notification(study, children)
+        children_string = create_string_listing_children(children)
+        context = {
+            "base_url": settings.BASE_URL,
+            "user": user,
+            "study": study,
+            "children": children,
+            "children_string": children_string,
+        }
+
+        text_content = get_template("emails/study_announcement.txt").render(context)
+        html_content = get_template("emails/study_announcement.html").render(context)
+        announcement_message = cls.objects.create(
+            subject=subject, body=text_content, related_study=study,
+        )
+
+        announcement_message.recipients.add(user)
+        announcement_message.children_of_interest.add(*children)
+
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            settings.EMAIL_FROM_ADDRESS,
+            [user.username],
+            reply_to=[study.lab.contact_email],
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+
+        announcement_message.email_sent_timestamp = now()
+        announcement_message.save()
+
+        # Return for testing.
+        return announcement_message
 
     def send_as_email(self):
         context = {
@@ -604,3 +657,43 @@ class Message(models.Model):
 
         self.email_sent_timestamp = now()  # will use UTC now (see USE_TZ in settings)
         self.save()
+
+
+def create_string_listing_children(children):
+    child_names = [child.given_name for child in children]
+    num_children = len(child_names)
+
+    if not num_children:
+        return ""
+    elif num_children == 1:
+        return child_names[0]
+    elif num_children == 2:
+        return " and ".join(child_names)
+    else:
+        return ", ".join(child_names[:-1]) + f", and {child_names[-1]}"
+
+
+def create_subject_for_study_notification(study, children):
+    latter_half = f' invited to take part in "{study.name}" on Lookit!'
+    latter_half_short = f" invited to take part in a new study on Lookit!"
+    num_children = len(children)
+    children_string = create_string_listing_children(children)
+
+    if num_children == 1:
+        first_half = children_string + " is"
+    elif num_children > 1:
+        first_half = children_string + " are"
+    else:
+        raise RuntimeError("Need at least one child for notification messages")
+
+    full_subject_line = first_half + latter_half
+
+    if len(full_subject_line) <= 255:
+        return full_subject_line
+
+    first_half_short = f"Your {'child is' if num_children == 1 else 'children are'}"
+    child_omitted_subject_line = first_half_short + latter_half
+    if len(child_omitted_subject_line) <= 255:
+        return child_omitted_subject_line
+
+    return first_half_short + latter_half_short

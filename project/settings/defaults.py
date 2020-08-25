@@ -283,6 +283,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "_static"),)
 
 EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", "lookit.robot@some.domain")
+DEFAULT_FROM_EMAIL = EMAIL_FROM_ADDRESS  # for Django-generated password reset emails
 
 EMAIL_BACKEND = (
     "sgbackend.SendGridBackend"
@@ -329,5 +330,6 @@ CELERY_TASK_ROUTES = {
     "studies.tasks.delete_video_from_cloud": {"queue": "cleanup"},
     "studies.tasks.cleanup*": {"queue": "cleanup"},
     "studies.helpers.send_mail": {"queue": "email"},
+    "studies.tasks.send_announcement_emails": {"queue": "email"},
 }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
