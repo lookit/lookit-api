@@ -101,9 +101,9 @@
                                         <select id="sender-filter"
                                                 class="selectpicker form-control"
                                                 multiple>
-                                            {% for researcher in researchers %}
+                                            {% for researcher in senders %}
                                                 <option value="{{ researcher.uuid }}">
-                                                    {{ researcher.get_full_name }}
+                                                    {{ researcher.full_name }}
                                                 </option>
                                             {% endfor %}
                                         </select>
