@@ -61,6 +61,7 @@ WITH message_targets AS ( -- all valid user-child-study triplets
           AND public = true
     ) ss
     WHERE au.is_active = true
+      AND ac.deleted = false
       AND au.email_new_studies = true
         EXCEPT (
         SELECT DISTINCT ac.user_id,
