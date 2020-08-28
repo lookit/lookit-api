@@ -161,7 +161,12 @@ class TestAnnouncementEmailFunctionality(TestCase):
             ),
         ]
 
-        # (Eventually) excluded children - too old, too young, and unable to participate in studies
+        # Immediately excluded child - deleted. Will not be included in targets.
+        self.deleted_child = G(
+            Child, given_name="Deletey", user=self.participant_one, deleted=True
+        )
+
+        # Eventually excluded children - too old, too young, and unable to participate in studies
         # due to specific existing conditions.
 
         self.older_child = G(
