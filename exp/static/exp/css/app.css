@@ -7,15 +7,6 @@ body {
     font-size: 15px;
 }
 
-/* Who did this? */
-/*h1 {*/
-/*font-size: 32px;*/
-/*}*/
-
-/*h2 {*/
-/*font-size: 24px;*/
-/*}*/
-
 .center {
     text-align: center;
 }
@@ -345,6 +336,22 @@ div.download-button .btn {
     font-style: italic;
 }
 
+.two-column-list {
+    column-count: 2;
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+}
+
+.three-column-list {
+    column-count: 3;
+    -moz-column-count: 3;
+    -webkit-column-count: 3;
+}
+
+.response-summary td:first-child {
+    width: 30%;
+}
+
 /* Consent Manager */
 #list-of-responses {
     max-height: 300px; /* same height as video */
@@ -484,7 +491,7 @@ a:hover.build-study-link {
     width: 100%;
 }
 
-#study-details-form .code-container {
+#structure-container .code-container, #generator-container .code-container {
     max-height: 10em;
 }
 

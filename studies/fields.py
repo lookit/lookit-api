@@ -6,7 +6,7 @@ from model_utils import Choices
 CONDITIONS = (
     ("autism_spectrum_disorder", "Autism Spectrum Disorder"),
     ("deaf", "Deaf"),
-    ("hearing_impairment", "Hearing Impairment"),
+    ("hearing_impairment", "Hard of Hearing"),
     ("dyslexia", "Dyslexia"),
     ("multiple_birth", "Multiple Birth (twin, triplet, or higher order)"),
     # ("aspergers_syndrome", "Asperger's Syndrome"),

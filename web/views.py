@@ -1,12 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals, update_session_auth_hash
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from django.dispatch import receiver
-from django.http import Http404, HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils.translation import gettext as _
 from django.views import generic
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
@@ -102,89 +100,6 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         return context
 
 
-class ParticipantUpdateView(LoginRequiredMixin, generic.UpdateView):
-    """
-    Allows a participant to update their name and password -
-    extra code in this view because there are multiple forms on this page.
-    """
-
-    template_name = "web/participant-update.html"
-    model = User
-    form_class = forms.ParticipantUpdateForm
-    second_form_class = forms.ParticipantPasswordForm
-
-    def get_context_data(self, **kwargs):
-        """
-        Adds the context for form1 and form2 on the page - a little extra code due to the
-        two forms on the page.  The form that was not edited is unbound so data
-        is not validated.
-        """
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        if "participant_update" in self.request.POST and context.get("form2"):
-            context["form2"].is_bound = False
-        if "password_update" in self.request.POST:
-            context["form"].is_bound = False
-            context["form"].initial = {
-                "username": user.username,
-                "nickname": user.nickname,
-            }
-        if "form" not in context:
-            context["form"] = self.form_class(self.request.GET)
-        if "form2" not in context:
-            context["form2"] = self.second_form_class(self.request.POST)
-        return context
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
-    def get_success_url(self):
-        return reverse("web:participant-update")
-
-    def get_form_kwargs(self):
-        """
-        Returns the keyword arguments for instantiating the form. -
-        if updating password section, need the 'user' kwarg
-        """
-        kwargs = super().get_form_kwargs()
-        if "password_update" in self.request.POST:
-            kwargs["user"] = kwargs.pop("instance")
-        else:
-            if "user" in kwargs:
-                kwargs.pop("user")
-        return kwargs
-
-    def form_invalid(self, **kwargs):
-        return self.render(self.get_context_data(**kwargs))
-
-    def post(self, request, *args, **kwargs):
-        """
-        Returns the keyword arguments for instantiating the form. -
-        if updating password section, need the 'user' kwarg
-        """
-        self.object = self.get_object()
-        # Depending on the keywords in the POST, choose the participant update
-        # or the password update form.
-        if "participant_update" in request.POST:
-            form_class = self.get_form_class()
-            form_name = "form"
-        if "password_update" in request.POST:
-            form_class = self.second_form_class
-            form_name = "form2"
-
-        form = self.get_form(form_class)
-        if form.is_valid():
-            form.save()
-            messages.success(self.request, "Participant information saved.")
-            if form_name == "form2":
-                # If updating password, need to reauthenticate
-                update_session_auth_hash(self.request, form.user)
-                return HttpResponseRedirect(self.get_success_url())
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(**{form_name: form})
-
-
 class ChildrenListView(LoginRequiredMixin, generic.CreateView):
     """
     Allows user to view a list of current children and add children
@@ -209,7 +124,9 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         """
         If form invalid, add child form needs to be open when page reloads.
         """
-        return self.render(self.get_context_data(form=form, form_hidden=False))
+        return self.render_to_response(
+            self.get_context_data(form=form, form_hidden=False)
+        )
 
     def form_valid(self, form):
         """

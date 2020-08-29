@@ -15,6 +15,7 @@ import os
 from django.contrib.messages import constants as messages
 
 MODE = "prod"  # Overridden by local settings.
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -69,7 +70,6 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "sslserver",
     # our stuff
-    "osf_oauth2_adapter",
     "api",
     "web",
     "accounts",
@@ -78,11 +78,10 @@ INSTALLED_APPS = [
     # at the bottom so overriding form widget templates have a fallback -
     # See https://stackoverflow.com/a/46836189
     "django.forms",
-    "django.contrib.admin",
-    # at the bottom so overriding templates is possible
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
+    # "django.contrib.admin",
+    "project.apps.TwoFactorAuthProtectedAdminConfig",
+    # "allauth.socialaccount",
+    # "allauth.account",
 ]
 
 MIDDLEWARE = [
@@ -119,9 +118,10 @@ else:
 INTERNAL_IPS = ["127.0.0.1"]
 
 AUTHENTICATION_BACKENDS = (
+    "accounts.backends.TwoFactorAuthenticationBackend",
     "django.contrib.auth.backends.ModelBackend",  # this is default
     "guardian.backends.ObjectPermissionBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
+    # "allauth.account.auth_backends.AuthenticationBackend",
 )
 
 ROOT_URLCONF = "project.urls"
@@ -228,46 +228,16 @@ SITE_NAME = os.environ.get("SITE_NAME", "Lookit")
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 # base url for experiments, should be GCS bucket in prod
-EXPERIMENT_BASE_URL = os.environ.get(
-    "EXPERIMENT_BASE_URL",
-    "https://storage.googleapis.com/io-osf-lookit-staging2/experiments/",
-)  # default to ember base url
+EXPERIMENT_BASE_URL = os.environ.get("EXPERIMENT_BASE_URL")
 
 BASE_URL = os.environ.get(
     "BASE_URL", "https://localhost:8000"
 )  # default to ember base url
-OSF_URL = os.environ.get(
-    "OSF_URL", "https://staging.osf.io/"
-)  # default osf url used for oauth
 
-LOGIN_REDIRECT_URL = os.environ.get("LOGIN_REDIRECT_URL", "https://localhost:8000/exp/")
+LOGIN_REDIRECT_URL = "web:home"
 ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get("ACCOUNT_LOGOUT_REDIRECT_URL", "/api/")
 LOGOUT_REDIRECT_URL = "web:home"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-SOCIALACCOUNT_ADAPTER = "osf_oauth2_adapter.views.OSFOAuth2Adapter"
-SOCIALACCOUNT_PROVIDERS = {
-    "osf": {
-        "METHOD": "oauth2",
-        "SCOPE": ["osf.users.email_read", "osf.users.profile_read"],
-        "AUTH_PARAMS": {"access_type": "offline"},
-        # 'FIELDS': [
-        #     'id',
-        #     'email',
-        #     'name',
-        #     'first_name',
-        #     'last_name',
-        #     'verified',
-        #     'locale',
-        #     'timezone',
-        #     'link',
-        #     'gender',
-        #     'updated_time'],
-        # 'EXCHANGE_TOKEN': True,
-        # 'LOCALE_FUNC': 'path.to.callable',
-        # 'VERIFIED_EMAIL': False,
-        # 'VERSION': 'v2.4'
-    }
-}
 
 
 # Configuration for cross-site requests
@@ -314,6 +284,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "_static"),)
 
 EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", "lookit.robot@some.domain")
+DEFAULT_FROM_EMAIL = EMAIL_FROM_ADDRESS  # for Django-generated password reset emails
 
 EMAIL_BACKEND = (
     "sgbackend.SendGridBackend"
@@ -360,14 +331,6 @@ CELERY_TASK_ROUTES = {
     "studies.tasks.delete_video_from_cloud": {"queue": "cleanup"},
     "studies.tasks.cleanup*": {"queue": "cleanup"},
     "studies.helpers.send_mail": {"queue": "email"},
+    "studies.tasks.send_announcement_emails": {"queue": "email"},
 }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
-OSF_OAUTH_CLIENT_ID = os.environ.get(
-    "OSF_OAUTH_CLIENT_ID", "3518b74e12584abf9e48565ff6aee6f3"
-)
-OSF_OAUTH_SECRET = os.environ.get(
-    "OSF_OAUTH_SECRET", "vYlku3raTL5DnHZlkqCIaShmPVIl1nifsFJCNLxU"
-)
-
-JAMDB_AUTH_TOKEN = os.environ.get("JAMDB_AUTH_TOKEN", "")

@@ -10,13 +10,14 @@ from django.db.models.functions import Lower
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
+from django.views.generic.detail import SingleObjectMixin
 from revproxy.views import ProxyView
 
 from accounts.models import Child, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.views.mixins import (
     ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol,
     StudyTypeMixin,
 )
 from project import settings
@@ -162,7 +163,7 @@ class StudyUpdateView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     StudyTypeMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
     generic.UpdateView,
 ):
     """
@@ -170,13 +171,18 @@ class StudyUpdateView(
     Also allows you to update the study status.
     """
 
+    model = Study
     template_name = "studies/study_edit.html"
     form_class = StudyEditForm
-    model = Study
     raise_exception = True
 
     def user_can_edit_study(self):
-        """Test predicate for the study editing view."""
+        """Test predicate for the study editing view.
+
+        Returns:
+            True if this user can edit this Study, False otherwise
+
+        """
         user: User = self.request.user  # Weird that PyCharm can't figure out the type?
         study = self.get_object()
 
@@ -194,15 +200,29 @@ class StudyUpdateView(
     test_func = user_can_edit_study
 
     def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
+        """Get initial data for the study update form.
+
+        Provides the exact_text stored in the structure field as the initial
+        value to edit, to preserve ordering and formatting from user's standpoint.
+
+        Provides the initial value of the generator function if current value is empty.
+
+        Returns:
+            A dictionary containing initial data for the form
+
         """
         initial = super().get_initial()
+        # For editing, display the exact text that was used to generate the structure,
+        # if available. We rely on form validation to make sure structure["exact_text"]
+        # is valid JSON.
         structure = self.object.structure
         if structure:
-            # Ensures that json displayed in edit form is valid json w/ double quotes,
-            # so incorrect json is not saved back into the db
-            initial["structure"] = json.dumps(structure)
+            if "exact_text" in structure:
+                initial["structure"] = structure["exact_text"]
+            else:
+                initial["structure"] = json.dumps(structure)
+        if not self.object.generator.strip():
+            initial["generator"] = StudyEditForm.base_fields["generator"].initial
         return initial
 
     def post(self, request, *args, **kwargs):
@@ -211,6 +231,7 @@ class StudyUpdateView(
         """
         study = self.get_object()
 
+        # TODO: why is this not in the form's clean function?
         target_study_type_id = int(self.request.POST["study_type"])
         target_study_type = StudyType.objects.get(id=target_study_type_id)
 
@@ -321,7 +342,7 @@ class StudyDetailView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
     generic.DetailView,
 ):
     """
@@ -329,8 +350,8 @@ class StudyDetailView(
     view study logs, manage study researchers, and change a study's state.
     """
 
-    template_name = "studies/study_detail.html"
     model = Study
+    template_name = "studies/study_detail.html"
     raise_exception = True
 
     def user_can_see_or_edit_study_details(self):
@@ -342,7 +363,7 @@ class StudyDetailView(
         """
         user = self.request.user
         method = self.request.method
-        study = self.object = self.get_object()
+        study = self.get_object()
 
         if not user.is_researcher:
             return False
@@ -651,7 +672,8 @@ class StudyDetailView(
 class StudyBuildView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Study],
+    SingleObjectMixin,
     generic.RedirectView,
 ):
     """
@@ -659,8 +681,8 @@ class StudyBuildView(
     to build, and then triggers a build.
     """
 
-    http_method_names = ["post"]
     model = Study
+    http_method_names = ["post"]
     slug_url_kwarg = "uuid"
     slug_field = "uuid"
 
@@ -686,7 +708,7 @@ class StudyBuildView(
         study = self.get_object()
         study.is_building = True
         study.save(update_fields=["is_building"])
-        ember_build_and_gcp_deploy.delay(study.uuid, request.user.uuid)
+        ember_build_and_gcp_deploy.delay(study.uuid, self.request.user.uuid)
         messages.success(
             request,
             f"Scheduled experiment runner build for {study.name}. You will be emailed when it's completed. This may take up to 30 minutes.",
@@ -695,7 +717,10 @@ class StudyBuildView(
 
 
 class StudyPreviewDetailView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.DetailView,
 ):
 
     queryset = Study.objects.all()

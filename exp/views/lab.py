@@ -5,17 +5,14 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.db.models import Q
-from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
+from django.views.generic.detail import SingleObjectMixin
 
 from accounts.models import User
 from exp.mixins.paginator_mixin import PaginatorMixin
-from exp.views.mixins import (
-    ExperimenterLoginRequiredMixin,
-    SingleObjectParsimoniousQueryMixin,
-)
+from exp.views.mixins import ExperimenterLoginRequiredMixin, SingleObjectFetchProtocol
 from project import settings
 from studies.forms import LabApprovalForm, LabForm
 from studies.helpers import send_mail
@@ -24,7 +21,10 @@ from studies.permissions import LabPermission, SiteAdminGroup
 
 
 class LabDetailView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    SingleObjectFetchProtocol[Lab],
+    generic.DetailView,
 ):
     """
     LabDetailView shows information about a lab and provides links to request to join,
@@ -76,7 +76,7 @@ class LabDetailView(
 class LabMembersView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Lab],
     PaginatorMixin,
     generic.DetailView,
 ):
@@ -314,8 +314,6 @@ class LabMembersView(
             )
         if action == "reset_password":
             self.send_reset_password_email(researcher)
-        if action == "resend_confirmation":
-            self.send_resend_confirmation_email(researcher)
 
         return HttpResponseRedirect(
             reverse("exp:lab-members", kwargs={"pk": self.object.id})
@@ -323,50 +321,30 @@ class LabMembersView(
 
     def send_reset_password_email(self, researcher):
         """
-        Send reset_password email to researcher (not a real password reset email,
-        just directs to OSF).
+        Send reset_password email to researcher./
         """
         context = {
             "researcher_name": researcher.get_short_name(),
             "lab_name": self.get_object().name,
             "login_url": self.login_url,
         }
-        subject = "Reset OSF password to login to Lookit"
+        subject = "Reset password to login to Lookit"
         send_mail.delay("reset_password", subject, researcher.username, **context)
         messages.success(
             self.request, f"Reset password email sent to {researcher.username}."
         )
-        return
-
-    def send_resend_confirmation_email(self, researcher):
-        """
-        Send resend_confirmation_email to researcher (not a real confirmation email,
-        just directs to OSF).
-        """
-        context = {
-            "researcher_name": researcher.get_short_name(),
-            "lab_name": self.get_object().name,
-            "login_url": self.login_url,
-        }
-        subject = "Confirm OSF account to login to Lookit"
-        send_mail.delay("resend_confirmation", subject, researcher.username, **context)
-        messages.success(
-            self.request, f"Confirmation email resent to {researcher.username}."
-        )
-        return
 
 
 class LabUpdateView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Lab],
     generic.UpdateView,
 ):
     """
     LabUpdateView allows updating lab metadata.
     """
 
-    queryset = Lab.objects.all()
     template_name = "studies/lab_update.html"
     model = Lab
     raise_exception = True
@@ -395,15 +373,13 @@ class LabUpdateView(
 
 
 class LabCreateView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
-    generic.CreateView,
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.CreateView,
 ):
     """
     LabCreateView allows creating a new lab.
     """
 
+    object: Lab
     template_name = "studies/lab_create.html"
     form_class = LabForm
     model = Lab
@@ -456,7 +432,8 @@ class LabCreateView(
 class LabMembershipRequestView(
     ExperimenterLoginRequiredMixin,
     UserPassesTestMixin,
-    SingleObjectParsimoniousQueryMixin,
+    SingleObjectFetchProtocol[Lab],
+    SingleObjectMixin,
     generic.RedirectView,
 ):
 

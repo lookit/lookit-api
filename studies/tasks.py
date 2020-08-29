@@ -3,20 +3,28 @@ import datetime
 import hashlib
 import logging
 import os
+import random
 import shutil
 import tempfile
 import time
 import zipfile
 from io import StringIO
+from itertools import starmap
+from operator import attrgetter, itemgetter
+from typing import Generator, NamedTuple
 
 import boto3
 import docker
 import requests
 from celery.utils.log import get_task_logger
 from django.conf import settings
+from django.db import connection
 from django.utils import timezone
 from google.cloud import storage as gc_storage
+from more_itertools import chunked, first, flatten, groupby_transform, map_reduce
 
+from accounts.models import Child, Message, User
+from accounts.queries import get_child_eligibility_for_study
 from project.celery import app
 from studies.experiment_builder import EmberFrameplayerBuilder
 from studies.helpers import send_mail
@@ -37,6 +45,171 @@ handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
+
+MESSAGE_TARGET_QUERY = """
+WITH message_targets AS ( -- all valid user-child-study triplets
+    SELECT DISTINCT ac.user_id,
+                    ac.id as child_id,
+                    ss.study_id
+    FROM accounts_child ac
+             INNER JOIN accounts_user au on au.id = ac.user_id
+             CROSS JOIN (
+        SELECT id AS study_id
+        FROM studies_study
+        WHERE state = 'active'
+          AND public = true
+    ) ss
+    WHERE au.is_active = true
+      AND ac.deleted = false
+      AND au.email_new_studies = true
+        EXCEPT (
+        SELECT DISTINCT ac.user_id,
+                        sr.child_id,
+                        sr.study_id
+        FROM studies_response sr
+                 INNER JOIN accounts_child ac on sr.child_id = ac.id
+        WHERE sr.completed_consent_frame = true
+    )
+),
+     latest_study_notifications_for_children AS (
+         SELECT amr.user_id,
+                amcoi.child_id,
+                am.related_study_id,
+                MAX(am.email_sent_timestamp) as latest_sent_time
+         FROM accounts_message am
+                  INNER JOIN accounts_message_children_of_interest amcoi on am.id = amcoi.message_id
+                  INNER JOIN accounts_message_recipients amr on am.id = amr.message_id
+         WHERE (amr.user_id, amcoi.child_id, am.related_study_id) IN (SELECT * FROM message_targets)
+         GROUP BY amr.user_id, amcoi.child_id, am.related_study_id
+     )
+SELECT mt.user_id,
+       mt.child_id,
+       mt.study_id
+FROM message_targets mt
+         LEFT OUTER JOIN latest_study_notifications_for_children lsnfc
+                         ON lsnfc.user_id = mt.user_id
+                             AND lsnfc.child_id = mt.child_id
+                             AND lsnfc.related_study_id = mt.study_id
+WHERE lsnfc.latest_sent_time IS NULL
+ORDER BY mt.user_id, mt.child_id, mt.study_id;
+"""
+
+
+class MessageTarget(NamedTuple):
+    user_id: int
+    child_id: int
+    study_id: int
+
+
+def potential_message_targets(page_size: int = 2000):
+    """Enable us to stream from the database."""
+    with connection.cursor() as cursor:
+        cursor.execute(MESSAGE_TARGET_QUERY)
+        while page := cursor.fetchmany(page_size):
+            yield from starmap(MessageTarget, page)
+
+
+def _grouped_by_user(potential_targets):
+    """Groups users with their child-study notification pairs.
+
+    Note: Depends on sorted output (hence the ORDER BY in SQL) See:
+    https://more-itertools.readthedocs.io/en/stable/api.html#more_itertools.groupby_transform
+    """
+    get_user_id = attrgetter("user_id")
+    get_child_study_pair = attrgetter("child_id", "study_id")
+    yield from (
+        (
+            user_id,
+            tuple(pair),
+        )  # Apparently, valuefunc gets wrapped to return a map object?
+        for user_id, pair in groupby_transform(
+            potential_targets, keyfunc=get_user_id, valuefunc=get_child_study_pair,
+        )
+    )
+
+
+def _deserialized(user_grouped_targets, number_of_parents: int = 100):
+    """Fill out groups with real models.
+
+    In prod, we have about 1.42 children per parent, so limiting it to 100 parents or so
+    at a time should be fine.
+    """
+    from studies.models import Study
+
+    # Cache studies entirely upfront; let the generator hold on to them.
+    study_cache = {
+        study.id: study
+        for study in Study.objects.filter(state="active", public=True).select_related(
+            "lab"
+        )
+    }
+
+    # Go in batches sized by number of parents, fetch parents and children in one SELECT
+    # query (each) before yielding deserialized groups.
+    for group_list in chunked(user_grouped_targets, n=number_of_parents):
+        user_cache = {
+            user.id: user
+            for user in User.objects.filter(id__in=[group[0] for group in group_list])
+        }
+        child_cache = {
+            child.id: child
+            for child in Child.objects.filter(
+                id__in=flatten(list(map(first, group[1])) for group in group_list)
+            )
+        }
+
+        for user_id, child_study_pairs in group_list:
+            yield (
+                user_cache.get(user_id),
+                [
+                    (child_cache.get(child_id), study_cache.get(study_id))
+                    for child_id, study_id in child_study_pairs
+                ],
+            )
+
+
+def _validated(deserialized_groups):
+    """Yield only groups with targets that satisfy criteria for their respective studies."""
+    for user, child_study_pairs in deserialized_groups:
+        valid_message_targets = []
+        for pair in child_study_pairs:
+            child, study = pair
+            eligible = get_child_eligibility_for_study(child, study)
+            if eligible:
+                valid_message_targets.append(pair)
+        if valid_message_targets:
+            yield user, valid_message_targets
+
+
+def _segmented_by_study(validated_groups):
+    for user, child_study_pairs in validated_groups:
+        yield user, dict(map_reduce(child_study_pairs, itemgetter(1), itemgetter(0)))
+
+
+def acquire_announcement_email_targets() -> Generator:
+    return _segmented_by_study(
+        _validated(_deserialized(_grouped_by_user(potential_message_targets())))
+    )
+
+
+@app.task
+def send_announcement_emails():
+    """Send study announcement emails to users with eligible children.
+
+    We randomly choose one study (and set of eligible children) per family, per day
+    in order to rate-limit the # of messages any parent gets in a given week. After
+    the announcement email is sent, the message is saved down to the database and
+    marked in a join table (`accounts_message_children_of_interest`) along with the
+    targeted children such that those child-study pairs will be excluded from the next
+    (daily) round of potential targets.
+    """
+    targets = acquire_announcement_email_targets()
+
+    for user, study_child_mapping in targets:
+        # Only choose one study at a time (at random - no ordering).
+        study, child_list = random.choice(list(study_child_mapping.items()))
+        Message.send_announcement_email(user, study, child_list)
 
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
@@ -100,7 +273,7 @@ def cleanup_docker_images():
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_zipfile_of_videos(
-    self, filename, study_uuid, orderby, match, requesting_user_uuid, consent_only=False
+    self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
     from studies.models import Study
     from accounts.models import User
@@ -120,6 +293,7 @@ def build_zipfile_of_videos(
         StudyPermission.READ_STUDY_PREVIEW_DATA, study
     ):
         video_qs = video_qs.filter(response__is_preview=False)
+
     if match:
         video_qs = video_qs.filter(full_name__contains=match)
 

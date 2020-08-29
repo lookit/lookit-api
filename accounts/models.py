@@ -1,14 +1,20 @@
 import base64
+import functools
 import hashlib
 import uuid
+from io import BytesIO
+from typing import Union
 
 import pydenticon
+import pyotp
 from bitfield import BitField
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import Group, Permission, PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
+from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
+from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
@@ -21,6 +27,8 @@ from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
 from multiselectfield import MultiSelectField
+from qrcode import make as make_qrcode
+from qrcode.image.svg import SvgPathImage
 
 from accounts.queries import BitfieldQuerySet
 from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
@@ -73,6 +81,47 @@ class Organization(models.Model):
         ordering = ["name"]
 
 
+class GoogleAuthenticatorTOTP(models.Model):
+    """OTP Secret model for time-based OTP.
+
+    Currently, we only support Google authenticator format. Please see:
+    https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+    """
+
+    issuer = f"Lookit-{settings.ENVIRONMENT}"
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        related_name="_otp",
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    secret = models.CharField(max_length=16, db_index=True, default=pyotp.random_base32)
+    activated = models.BooleanField(default=False)
+
+    @property
+    def provider(self):
+        return pyotp.TOTP(self.secret)
+
+    def verify(self, auth_code: str) -> bool:
+        """Verifies the provided one-time password."""
+        return self.provider.verify(auth_code)
+
+    def get_svg_qr_code(self) -> str:
+        with BytesIO() as stream:
+            make_qrcode(
+                pyotp.utils.build_uri(
+                    self.secret, name=self.user.username, issuer_name=self.issuer
+                ),
+                image_factory=SvgPathImage,
+                box_size=10,
+            ).save(stream)
+
+            content = stream.getvalue().decode()
+
+        return content
+
+
 class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     USERNAME_FIELD = EMAIL_FIELD = "username"
     uuid = models.UUIDField(
@@ -109,13 +158,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         if self.id:
             setattr(self, f"__original_groups", self.groups.all())
 
-    @cached_property
-    def osf_profile_url(self):
-        try:
-            return self.socialaccount_set.first().extra_data["data"]["links"]["html"]
-        except AttributeError:
-            return "#"
-
     @property
     def identicon(self):
         if not self._identicon:
@@ -140,6 +182,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def identicon_html(self):
         return mark_safe(f'<img src="{str(self.identicon)}" width="64" />')
+
+    @property
+    def otp(self) -> Union[GoogleAuthenticatorTOTP, None]:
+        return getattr(self, "_otp", None)
 
     @property
     def slug(self):
@@ -524,6 +570,7 @@ class Message(models.Model):
         User, on_delete=models.SET_NULL, db_index=True, null=True
     )
     recipients = models.ManyToManyField(User, related_name="messages")
+    children_of_interest = models.ManyToManyField(Child, related_name="notifications")
     subject = models.CharField(max_length=255)
     body = models.TextField()
     related_study = models.ForeignKey(
@@ -533,10 +580,59 @@ class Message(models.Model):
         null=True, default=None
     )  # Timestamp serves as a truth check as well.
 
+    @classmethod
+    def send_announcement_email(cls, user: User, study, children):
+        """Send announcement emails for a given user and study.
+
+        Note: we don't use send_mail helper here as this should already be called
+            within a task.
+
+        Args:
+            user: The target User.
+            study: the target Study.
+            children: the target Child models for which these announcements are intended.
+
+        Side Effects:
+            Creates a corresponding message object in the database.
+        """
+        subject = create_subject_for_study_notification(study, children)
+        children_string = create_string_listing_children(children)
+        context = {
+            "base_url": settings.BASE_URL,
+            "user": user,
+            "study": study,
+            "children": children,
+            "children_string": children_string,
+        }
+
+        text_content = get_template("emails/study_announcement.txt").render(context)
+        html_content = get_template("emails/study_announcement.html").render(context)
+        announcement_message = cls.objects.create(
+            subject=subject, body=text_content, related_study=study,
+        )
+
+        announcement_message.recipients.add(user)
+        announcement_message.children_of_interest.add(*children)
+
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            settings.EMAIL_FROM_ADDRESS,
+            [user.username],
+            reply_to=[study.lab.contact_email],
+        )
+        email.attach_alternative(html_content, "text/html")
+        email.send()
+
+        announcement_message.email_sent_timestamp = now()
+        announcement_message.save()
+
+        # Return for testing.
+        return announcement_message
+
     def send_as_email(self):
         context = {
             "base_url": settings.BASE_URL,
-            "osf_url": settings.OSF_URL,
             "custom_message": mark_safe(self.body),
         }
 
@@ -561,3 +657,43 @@ class Message(models.Model):
 
         self.email_sent_timestamp = now()  # will use UTC now (see USE_TZ in settings)
         self.save()
+
+
+def create_string_listing_children(children):
+    child_names = [child.given_name for child in children]
+    num_children = len(child_names)
+
+    if not num_children:
+        return ""
+    elif num_children == 1:
+        return child_names[0]
+    elif num_children == 2:
+        return " and ".join(child_names)
+    else:
+        return ", ".join(child_names[:-1]) + f", and {child_names[-1]}"
+
+
+def create_subject_for_study_notification(study, children):
+    latter_half = f' invited to take part in "{study.name}" on Lookit!'
+    latter_half_short = f" invited to take part in a new study on Lookit!"
+    num_children = len(children)
+    children_string = create_string_listing_children(children)
+
+    if num_children == 1:
+        first_half = children_string + " is"
+    elif num_children > 1:
+        first_half = children_string + " are"
+    else:
+        raise RuntimeError("Need at least one child for notification messages")
+
+    full_subject_line = first_half + latter_half
+
+    if len(full_subject_line) <= 255:
+        return full_subject_line
+
+    first_half_short = f"Your {'child is' if num_children == 1 else 'children are'}"
+    child_omitted_subject_line = first_half_short + latter_half
+    if len(child_omitted_subject_line) <= 255:
+        return child_omitted_subject_line
+
+    return first_half_short + latter_half_short

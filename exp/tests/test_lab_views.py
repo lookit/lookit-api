@@ -3,9 +3,20 @@ from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
 
+from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import User
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission
+
+
+class Force2FAClient(Client):
+    """For convenience, let's just pretend everyone is two-factor auth'd."""
+
+    @property
+    def session(self):
+        _session = super().session
+        _session[TWO_FACTOR_AUTH_SESSION_KEY] = True
+        return _session
 
 
 # run celery .delay() tasks right away and propagate errors.
@@ -17,7 +28,7 @@ from studies.permissions import LabPermission
 @override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
 class LabViewsTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
+        self.client = Force2FAClient()
 
         self.lab = G(Lab, name="ECCL", institution="MIT", approved_to_test=False)
         self.lab2 = G(Lab, name="Second lab")

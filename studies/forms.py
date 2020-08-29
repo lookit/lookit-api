@@ -2,6 +2,7 @@ import json
 
 from ace_overlay.widgets import AceOverlayWidget
 from django import forms
+from django.db.models import Q
 from django.forms import ModelForm, Textarea
 
 from accounts.queries import compile_expression
@@ -12,6 +13,9 @@ CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/resear
 STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
 PROTOCOL_CONFIG_HELP_LINK = (
     "https://lookit.readthedocs.io/en/develop/researchers-create-experiment.html"
+)
+PROTOCOL_GENERATOR_HELP_LINK = (
+    "https://lookit.readthedocs.io/en/develop/researchers-protocol-generators.html"
 )
 
 
@@ -46,6 +50,59 @@ PROTOCOL_HELP_TEXT_EDIT = f"Configure frames to use in your study and specify th
 
 PROTOCOL_HELP_TEXT_INITIAL = f"{PROTOCOL_HELP_TEXT_EDIT}  You can leave the default for now and come back to this later."
 
+DEFAULT_GENERATOR = """function generateProtocol(child, pastSessions) {
+    /*
+     * Generate the protocol for this study.
+     * 
+     * @param {Object} child 
+     *    The child currently participating in this study. Includes fields: 
+     *      givenName (string)
+     *      birthday (Date)
+     *      gender (string, 'm' / 'f' / 'o')
+     *      ageAtBirth (string, e.g. '25 weeks'. One of '40 or more weeks', 
+     *          '39 weeks' through '24 weeks', 'Under 24 weeks', or 
+     *          'Not sure or prefer not to answer')
+     *      additionalInformation (string)
+     *      languageList (string) space-separated list of languages child is 
+     *          exposed to (2-letter codes)
+     *      conditionList (string) space-separated list of conditions/characteristics
+     *          of child from registration form, as used in criteria expression
+     *          - e.g. "autism_spectrum_disorder deaf multiple_birth"
+     * 
+     *      Use child.get to access these fields: e.g., child.get('givenName') returns
+     *      the child's given name.
+     * 
+     * @param {!Array<Object>} pastSessions
+     *     List of past sessions for this child and this study, in reverse time order:
+     *     pastSessions[0] is THIS session, pastSessions[1] the previous session, 
+     *     back to pastSessions[pastSessions.length - 1] which has the very first 
+     *     session.
+     * 
+     *     Each session has the following fields, corresponding to values available
+     *     in Lookit:
+     * 
+     *     createdOn (Date)
+     *     conditions
+     *     expData
+     *     sequence
+     *     completed
+     *     globalEventTimings
+     *     completedConsentFrame (note - this list will include even "responses") 
+     *          where the user did not complete the consent form!
+     *     demographicSnapshot
+     *     isPreview
+     * 
+     * @return {Object} Protocol specification for Lookit study; object with 'frames' 
+     *    and 'sequence' keys.
+     */
+        var protocol = {
+            frames: {},
+            sequence: []
+        };
+        return protocol;
+    } 
+"""
+
 
 class LabForm(ModelForm):
     class Meta:
@@ -60,6 +117,12 @@ class LabForm(ModelForm):
             "description",
             "irb_contact_info",
         ]
+        help_texts = {
+            "contact_email": (
+                "This will be the reply-to address when you contact participants, so make sure it is a monitored "
+                "address or list that lab members can access."
+            )
+        }
 
 
 class LabApprovalForm(ModelForm):
@@ -81,6 +144,14 @@ class LabApprovalForm(ModelForm):
 class StudyForm(ModelForm):
     """Base form for creating or editing a study"""
 
+    # Eventually when we support other experiment runner types (labjs, jspsych, etc.)
+    # we may do one of the following:
+    # - separate the 'study protocol specification' fields into their own
+    # form which collects various information and cleans it and sets a single 'structure' object,
+    # with the selected
+    # - creating a model to represent each study type, likely such that each study has a nullable
+    # relation for lookit_runner_protocol, jspsych_runner_protocol, etc.
+
     structure = forms.CharField(
         label="Protocol configuration",
         widget=AceOverlayWidget(
@@ -94,13 +165,27 @@ class StudyForm(ModelForm):
         required=False,
     )
 
-    def __init__(self, *args, **kwargs):
-        # Limit lab options to labs this user is a member of
-        user = kwargs.pop("user")
-        super().__init__(*args, **kwargs)
-        self.fields["lab"].queryset = user.labs.filter(
-            id__in=user.labs_user_can_create_study_in()
-        )
+    # Define initial value here rather than providing actual default so that any updates don't
+    # require migrations: this isn't a true "default" value that would ever be used, but rather
+    # a helpful skeleton to guide the user
+    generator = forms.CharField(
+        label="Protocol generator",
+        widget=AceOverlayWidget(
+            mode="javascript",
+            wordwrap=True,
+            theme="textmate",
+            width="100%",
+            height="100%",
+            showprintmargin=False,
+        ),
+        required=False,
+        help_text=(
+            "Write a Javascript function that returns a study protocol object with 'frames' and "
+            "'sequence' keys. This allows more flexible randomization and dependence on past sessions in "
+            f"complex cases. See <a href={PROTOCOL_GENERATOR_HELP_LINK}>documentation</a> for details."
+        ),
+        initial=DEFAULT_GENERATOR,
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -110,8 +195,8 @@ class StudyForm(ModelForm):
         max_age_days = self.cleaned_data.get("max_age_days")
         max_age_months = self.cleaned_data.get("max_age_months")
         max_age_years = self.cleaned_data.get("max_age_years")
-        if (min_age_years + min_age_months / 12 + min_age_days / 365) > (
-            max_age_years + max_age_months / 12 + max_age_days / 365
+        if (min_age_years * 365 + min_age_months * 30 + min_age_days) > (
+            max_age_years * 365 + max_age_months * 30 + max_age_days
         ):
             raise forms.ValidationError(
                 "The maximum age must be greater than the minimum age."
@@ -119,15 +204,19 @@ class StudyForm(ModelForm):
         return cleaned_data
 
     def clean_structure(self):
-        structure = self.cleaned_data["structure"]
+        structure_text = self.cleaned_data["structure"]
 
+        # Parse edited text representation of structure object, and additionally store the
+        # exact text (so user can organize frames, parameters, etc. for readability)
         try:
-            json_data = json.loads(structure)  # loads string as json
+            json_data = json.loads(structure_text)  # loads string as json
+            json_data["exact_text"] = structure_text
         except:
             raise forms.ValidationError(
                 "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
 
+        # Store the object which includes the exact text (not just the text)
         return json_data
 
     def clean_criteria_expression(self):
@@ -161,6 +250,8 @@ class StudyForm(ModelForm):
             "public",
             "shared_preview",
             "structure",
+            "generator",
+            "use_generator",
             "criteria_expression",
             "study_type",
         ]
@@ -174,6 +265,7 @@ class StudyForm(ModelForm):
             "shared_preview": "Share preview - Allow other Lookit researchers to preview your study and give feedback?",
             "study_type": "Experiment Runner Type",
             "compensation_description": "Compensation",
+            "use_generator": "Use protocol generator (advanced)",
         }
         widgets = {
             "short_description": Textarea(attrs={"rows": 2}),
@@ -222,8 +314,7 @@ class StudyForm(ModelForm):
 class StudyEditForm(StudyForm):
     """Form for editing study"""
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.get("user")
+    def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         self.fields["study_type"].help_text = STUDY_TYPE_HELP_TEXT_EDIT
@@ -235,6 +326,11 @@ class StudyEditForm(StudyForm):
             self.fields["lab"].help_text = (
                 "Which lab this study will be affiliated with. Be careful changing the lab of an existing study: "
                 "this will affect who can view and edit the study."
+            )
+            # Limit labs to change to: current lab, or labs this user is a member of & can create studies in
+            self.fields["lab"].queryset = user.labs.filter(
+                Q(id__in=user.labs_user_can_create_study_in())
+                | (Q(uuid=self.instance.lab.uuid))
             )
         else:
             # Ensure we display the current lab on the edit form, even if user isn't part of this lab (which
@@ -249,7 +345,11 @@ class StudyEditForm(StudyForm):
 class StudyCreateForm(StudyForm):
     """Form for creating a new study"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_INITIAL
         self.fields["study_type"].help_text = STUDY_TYPE_HELP_TEXT_INITIAL
+        # Limit initial lab options to labs this user is a member of & can create studies in
+        self.fields["lab"].queryset = user.labs.filter(
+            id__in=user.labs_user_can_create_study_in()
+        )
