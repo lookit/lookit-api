@@ -155,7 +155,7 @@ def install_dependencies(c, verbose=False):
 
     """
 
-    run("echo '***INSTALLING ALL DEPENDENCIES***'")
+    run("echo '*** INSTALLING ALL DEPENDENCIES ***'")
 
     if run("pipenv install --dev", hide=not verbose, warn=True).ok:
         run('echo "===>all dependencies {}"'.format(MESSAGE_OK))
@@ -235,7 +235,7 @@ def rabbitmq(c, verbose=False):
 
     """
 
-    run("echo '***INSTALLING RabbitMq***'")
+    run("echo '*** INSTALLING RabbitMq ***'")
     if PLATFORM == "Linux":
         # Rabbimq requires recent versions of erlang, which may not be available in the Debian and ubuntu distributions
         run(
@@ -444,7 +444,7 @@ def postgresql(c, verbose=False):
         invoke postgresql or invoke postgresql --verbose
 
     """
-    run("echo '***INSTALLING Postgresql***'")
+    run("echo '*** INSTALLING Postgresql ***'")
     if PLATFORM == "Linux":
         if run("command -v psql", warn=True, hide=not verbose):
             run("echo '===>postgresql {}'".format(MESSAGE_ALREADY_INSTALLED))
@@ -521,7 +521,7 @@ def ssl_certificate(c, verbose=False):
         invoke ssl-certificate or invoke ssl-certificate --verbose
 
     """
-    run("echo '***Setting HTTPS for local development***'")
+    run("echo '*** Setting HTTPS for local development ***'")
     if PLATFORM == "Linux":
         if run("command -v mkcert", warn=True, hide=not verbose).ok:
             run('echo "===>mkcert {}"'.format(MESSAGE_ALREADY_INSTALLED))
@@ -590,7 +590,7 @@ def ngrok(c, verbose=False):
         invoke ngrok or invoke ngrok --version 
 
     """
-    run("echo '***Installing Ngrok***'")
+    run("echo '*** Installing Ngrok ***'")
 
     if PLATFORM == "Linux":
         if run("command -v ngrok", warn=True, hide=not verbose):
