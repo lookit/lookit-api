@@ -97,7 +97,7 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar", "shells", "sslserver"]
+    INSTALLED_APPS += ["debug_toolbar", "shells"]
     MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
         "pyinstrument.middleware.ProfilerMiddleware",
