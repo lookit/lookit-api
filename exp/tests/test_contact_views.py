@@ -21,6 +21,8 @@ class Force2FAClient(Client):
 
 
 # Run celery tasks right away, but don't catch errors from them.
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+@override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
 class ContactViewTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
