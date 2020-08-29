@@ -1,7 +1,7 @@
 import datetime
 
 from django.contrib.sites.models import Site
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
