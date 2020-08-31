@@ -35,7 +35,7 @@
         <ul class="nav navbar-nav navbar-right">
           {% if user.is_authenticated %}
             {% if user.is_researcher %}
-              <li><a href="{% url 'accounts:manage-account' %}">{% trans "My Account"%}</a></li>
+              <li><a href="{% url 'accounts:manage-account' %}">{% trans "My Account" %}</a></li>
             {% else %}
               <li><a href="{% url 'accounts:manage-account' %}">{% trans "Hi" %} {{ user.nickname }}</a></li>
             {% endif %}

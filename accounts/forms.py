@@ -12,7 +12,6 @@ from accounts.backends import two_factor_auth_backend
 from accounts.models import Child, DemographicData, User
 
 
-
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
@@ -169,6 +168,10 @@ class ParticipantSignupForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "nickname")
+        labels = {
+            "username": _("Email address"),
+            "nickname": _("Nickname"),
+        }
 
 
 class AccountUpdateForm(forms.ModelForm):
@@ -205,10 +208,16 @@ class EmailPreferencesForm(forms.ModelForm):
             "email_response_questions",
         )
         labels = {
-            "email_next_session": _("It's time for another session of a study we are currently participating in"),
+            "email_next_session": _(
+                "It's time for another session of a study we are currently participating in"
+            ),
             "email_new_studies": _("A new study is available for one of my children"),
-            "email_study_updates": _("There's an update about a study we participated in (for example, results are published)"),
-            "email_response_questions": _("A researcher has questions about my individual responses (for example, if I report a technical problem during the study)"),
+            "email_study_updates": _(
+                "There's an update about a study we participated in (for example, results are published)"
+            ),
+            "email_response_questions": _(
+                "A researcher has questions about my individual responses (for example, if I report a technical problem during the study)"
+            ),
         }
 
 
@@ -244,7 +253,9 @@ class DemographicDataForm(forms.ModelForm):
         )
 
         help_texts = {
-            "child_birthdays": _("Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."),
+            "child_birthdays": _(
+                "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
+            ),
             "number_of_books": _("Numerical answers only - a rough guess is fine!"),
         }
 
@@ -252,20 +263,36 @@ class DemographicDataForm(forms.ModelForm):
             "country": _("What country do you live in?"),
             "state": _("What state do you live in?"),
             "density": _("How would you describe the area where you live?"),
-            "languages_spoken_at_home": _( "What language(s) does your family speak at home?"),
+            "languages_spoken_at_home": _(
+                "What language(s) does your family speak at home?"
+            ),
             "number_of_children": _("How many children do you have?"),
             "child_birthdays": _("For each child, please enter his or her birthdate:"),
-            "number_of_guardians": _("How many parents/guardians do your children live with?"),
-            "race_identification": _("What category(ies) does your family identify as?"),
+            "number_of_guardians": _(
+                "How many parents/guardians do your children live with?"
+            ),
+            "race_identification": _(
+                "What category(ies) does your family identify as?"
+            ),
             "age": _("What is your age?"),
             "gender": _("What is your gender?"),
-            "education_level": _("What is the highest level of education you've completed?"),
-            "spouse_education_level": _("What is the highest level of education your spouse has completed?"),
-            "annual_income": _("What is your approximate family yearly income (in US dollars)?"),
-            "number_of_books": _("About how many children's books are there in your home?"),
+            "education_level": _(
+                "What is the highest level of education you've completed?"
+            ),
+            "spouse_education_level": _(
+                "What is the highest level of education your spouse has completed?"
+            ),
+            "annual_income": _(
+                "What is your approximate family yearly income (in US dollars)?"
+            ),
+            "number_of_books": _(
+                "About how many children's books are there in your home?"
+            ),
             "additional_comments": _("Anything else you'd like us to know?"),
             "lookit_referrer": _("How did you hear about Lookit?"),
-            "number_of_guardians_explanation": _("If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."),
+            "number_of_guardians_explanation": _(
+                "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
+            ),
         }
 
         widgets = {
@@ -279,7 +306,9 @@ class DemographicDataForm(forms.ModelForm):
 class ChildForm(forms.ModelForm):
     birthday = forms.DateField(
         widget=forms.DateInput(attrs={"class": "datepicker"}),
-        help_text=_("This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."),
+        help_text=_(
+            "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
+        ),
     )
 
     def clean_birthday(self):
@@ -303,16 +332,27 @@ class ChildForm(forms.ModelForm):
         labels = {
             "given_name": _("First Name"),
             "birthday": _("Birthday"),
+            "gender": _("Gender"),
             "gestational_age_at_birth": _("Gestational Age at Birth"),
-            "additional_information": _("Any additional information you'd like us to know"),
+            "additional_information": _(
+                "Any additional information you'd like us to know"
+            ),
             "existing_conditions": _("Characteristics and conditions"),
-            "languages_spoken": _("Languages this child is exposed to at home, school, or with another caregiver."),
+            "languages_spoken": _(
+                "Languages this child is exposed to at home, school, or with another caregiver."
+            ),
         }
 
         help_texts = {
-            "given_name": _("This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."),
-            "additional_information": _("For instance, diagnosed developmental disorders or vision or hearing problems"),
-            "gestational_age_at_birth": _("Please round down to the nearest full week of pregnancy completed"),
+            "given_name": _(
+                "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+            ),
+            "additional_information": _(
+                "For instance, diagnosed developmental disorders or vision or hearing problems"
+            ),
+            "gestational_age_at_birth": _(
+                "Please round down to the nearest full week of pregnancy completed"
+            ),
         }
 
         widgets = {
@@ -343,15 +383,24 @@ class ChildUpdateForm(forms.ModelForm):
         labels = {
             "given_name": _("First Name"),
             "birthday": _("Birthday"),
+            "gender": _("Gender"),
             "gestational_age_at_birth": _("Gestational Age at Birth"),
-            "additional_information": _("Any additional information you'd like us to know"),
+            "additional_information": _(
+                "Any additional information you'd like us to know"
+            ),
             "existing_conditions": _("Characteristics and conditions"),
-            "languages_spoken": _("Languages this child is exposed to at home, school, or with another caregiver."),
+            "languages_spoken": _(
+                "Languages this child is exposed to at home, school, or with another caregiver."
+            ),
         }
 
         help_texts = {
-            "given_name": _("This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."),
-            "additional_information": _("For instance, diagnosed developmental disorders or vision or hearing problems"),
+            "given_name": _(
+                "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+            ),
+            "additional_information": _(
+                "For instance, diagnosed developmental disorders or vision or hearing problems"
+            ),
         }
 
         widgets = {

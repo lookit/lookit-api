@@ -139,9 +139,9 @@
                         {% if not request.user.is_authenticated %}
                             <a class="btn btn-lg btn-default" href="{% url 'login' %}">{% trans "Log in to participate" %}</a>
                         {% elif not children %}
-                            <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to {% if preview_mode %} preview {% else %} participate {% endif %}" %}</a>
+                            <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %} %}</a>
                         {% elif not has_demographic %}
-                            <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">{% trans "Complete demographic survey to {% if preview_mode %} preview {% else %} participate {% endif %}" %}</a>
+                            <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">{% trans "Complete demographic survey to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}" %}</a>
                         {% else %}
                         <div class="form-group">
                         <form method="POST">{% csrf_token %}
@@ -164,7 +164,7 @@
                             {% if preview_mode and not object.built %}
                                 <a class="btn btn-lg btn-default" href="{% url 'exp:study-detail' object.pk %}">{% trans "Build experiment runner to preview" %}</a>
                             {% else %} 
-                                <button type="submit" disabled class="btn-lg btn-primary" id="participate-button"> {% if preview_mode %} {% trans Preview %} {% else %} {% trans "Participate" %} {% endif %} now! </button>
+                                <button type="submit" disabled class="btn-lg btn-primary" id="participate-button"> {% if preview_mode %} {% trans Preview %} {% else %} {% trans "Participate" %} {% endif %} {% trans "now" %}! </button>
                                 {% if preview_mode %}<p>{% trans "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to." %}</p> {% endif %}
                             {% endif %}
                         </form>
