@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     "rest_framework_json_api",
     "storages",
     "django_celery_beat",
-    "sslserver",
     # our stuff
     "api",
     "web",
@@ -97,7 +96,7 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar", "shells"]
+    INSTALLED_APPS += ["debug_toolbar", "shells", "sslserver"]
     MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
         "pyinstrument.middleware.ProfilerMiddleware",
