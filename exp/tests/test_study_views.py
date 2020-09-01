@@ -62,15 +62,16 @@ class ResponseViewsTestCase(TestCase):
         self.structure_string = (
             "some exact text that should be displayed in place of the loaded structure"
         )
+        small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04"
+            b"\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02"
+            b"\x02\x4c\x01\x00\x3b"
+        )
         self.study = G(
             Study,
             image=SimpleUploadedFile(
-                name="fake_image.png",
-                content=open(
-                    f"{settings.BASE_DIR}{settings.STATIC_URL}images/pacifier.png", "rb"
-                ).read(),
-                content_type="image/png",
-            ),  # we could also pass fill_nullable_fields=True
+                name="small.gif", content=small_gif, content_type="image/gif"
+            ),
             # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
             creator=self.study_admin,
             shared_preview=False,
