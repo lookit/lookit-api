@@ -49,7 +49,7 @@ def system_setup(c, verbose=False):
     """System-setup invoke task.
     
     This func installs pipenv, brew, docutils, and celery.
-    This func also sets the debug to False in a local setting file for serving locally.
+    This func also sets the debug to True in a local setting file for serving locally.
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
@@ -77,11 +77,11 @@ def system_setup(c, verbose=False):
 
         if run("pip install {}".format(package), hide=not verbose, warn=True).ok:
 
-            run('echo "===>{} {}"'.format(package, MESSAGE_OK))
+            run('echo "===> {} {}"'.format(package, MESSAGE_OK))
 
         else:
 
-            run('echo "===>{} {}"'.format(package, MESSAGE_FAILED))
+            run('echo "===> {} {}"'.format(package, MESSAGE_FAILED))
 
     # installing linuxbrew
     if PLATFORM == "Linux":
@@ -114,21 +114,21 @@ def system_setup(c, verbose=False):
             "sudo apt-get install build-essential curl git", hide=not verbose, warn=True
         )
         if run("command -v brew", hide=not verbose, warn=True).ok:
-            run('echo "===>brew {}"'.format(MESSAGE_OK))
+            run('echo "===> brew {}"'.format(MESSAGE_OK))
         else:
-            run('echo "===>brew {}"'.format(MESSAGE_FAILED))
+            run('echo "===> brew {}"'.format(MESSAGE_FAILED))
 
     if PLATFORM == "Darwin":
         if run("brew tap homebrew/cask", hide=not verbose, warn=True).ok:
-            run('echo "===>homebrew/cask is installed"')
+            run('echo "===> homebrew/cask is installed"')
         else:
-            run('echo "===>homebrew/cask is not working."')
+            run('echo "===> homebrew/cask is not working."')
 
     # creating a local setting file
     if run(
         'touch project/settings/local.py && echo "DEBUG=True" > project/settings/local.py'
     ).ok:
-        run('echo "===>Successfully configured settings for local development"')
+        run('echo "===> Successfully configured settings for local development"')
 
 
 @task
@@ -158,9 +158,9 @@ def install_dependencies(c, verbose=False):
     run("echo '*** INSTALLING ALL DEPENDENCIES ***'")
 
     if run("pipenv install --dev", hide=not verbose, warn=True).ok:
-        run('echo "===>all dependencies {}"'.format(MESSAGE_OK))
+        run('echo "===> all dependencies {}"'.format(MESSAGE_OK))
     else:
-        run('echo "===>some dependencies {}"'.format(MESSAGE_FAILED))
+        run('echo "===> some dependencies {}"'.format(MESSAGE_FAILED))
 
 
 @task
@@ -190,9 +190,9 @@ def pygraphviz(c, verbose=False):
     if PLATFORM == "Linux":
         # Installing pygraphviz
         if run("sudo pip install pygraphviz", hide=not verbose, warn=True).ok:
-            run('echo "===>pygraphviz {}"'.format(MESSAGE_OK))
+            run('echo "===> pygraphviz {}"'.format(MESSAGE_OK))
         else:
-            run('echo "===>pygraphviz {}"'.format(MESSAGE_FAILED))
+            run('echo "===> pygraphviz {}"'.format(MESSAGE_FAILED))
 
     elif PLATFORM == "Darwin":
 
@@ -204,16 +204,16 @@ def pygraphviz(c, verbose=False):
             hide=not verbose,
             warn=True,
         ).ok:
-            run('echo "===>pygraphviz {}"'.format(MESSAGE_OK))
+            run('echo "===> pygraphviz {}"'.format(MESSAGE_OK))
         else:
-            run('echo "===>pygraphviz {}"'.format(MESSAGE_FAILED))
+            run('echo "===> pygraphviz {}"'.format(MESSAGE_FAILED))
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
 
 @task
 def rabbitmq(c, verbose=False):
-    """Rabbitmq invoke task. 
+    """Rabbitmq invoke task.
 
     This func installs rabbitmq and creates users and queues for the API.
 
@@ -235,7 +235,7 @@ def rabbitmq(c, verbose=False):
 
     """
 
-    run("echo '*** INSTALLING RabbitMq ***'")
+    run("echo '*** INSTALLING RabbitMQ ***'")
     if PLATFORM == "Linux":
         # Rabbimq requires recent versions of erlang, which may not be available in the Debian and ubuntu distributions
         run(
@@ -304,10 +304,10 @@ def rabbitmq(c, verbose=False):
             warn=True,
             hide=not verbose,
         ).ok:
-            run('echo "===>erlang {}"'.format(MESSAGE_OK))
+            run('echo "===> erlang {}"'.format(MESSAGE_OK))
         else:
             run(
-                'echo "Warning: Attempt to update Erlang failed. Rabbitmq has a requirement version of Erlang. Please, check and install it manually."'
+                'echo "Warning: Attempt to update Erlang failed. RabbitMQ has a requirement version of Erlang. Please, check and install it manually."'
             )
 
         # Installing rabbitmq from packagecloud
@@ -357,18 +357,18 @@ def rabbitmq(c, verbose=False):
             hide=not verbose,
         )
         if run("rabbitmqadmin list queues", warn=True, hide=not verbose).ok:
-            run('echo "===>rabbitmq {}"'.format(MESSAGE_OK))
+            run('echo "===> rabbitmq {}"'.format(MESSAGE_OK))
         else:
-            run('echo "===>rabbitmq {}"'.format(MESSAGE_FAILED))
+            run('echo "===> rabbitmq {}"'.format(MESSAGE_FAILED))
 
     elif PLATFORM == "Darwin":
         if run("command -v rabbitmqctl", hide=not verbose, warn=True):
-            run("echo '===>rabbitMq {}'".format(MESSAGE_ALREADY_INSTALLED))
+            run("echo '===> RabbitMQ {}'".format(MESSAGE_ALREADY_INSTALLED))
         else:
             if run("brew install rabbitmq").ok:
-                run('echo "===>rabbitmq {}"'.format(MESSAGE_OK))
+                run('echo "===> RabbitMQ {}"'.format(MESSAGE_OK))
             else:
-                run('echo "===>rabbitmq {}"'.format(MESSAGE_FAILED))
+                run('echo "===> RabbitMQ {}"'.format(MESSAGE_FAILED))
         run("sudo rabbitmq server", warn=True, hide=not verbose)
         run("sudo rabbitmqctl add_user lookit-admin admin", warn=True, hide=not verbose)
         run(
@@ -447,7 +447,7 @@ def postgresql(c, verbose=False):
     run("echo '*** INSTALLING Postgresql ***'")
     if PLATFORM == "Linux":
         if run("command -v psql", warn=True, hide=not verbose):
-            run("echo '===>postgresql {}'".format(MESSAGE_ALREADY_INSTALLED))
+            run("echo '===> postgresql {}'".format(MESSAGE_ALREADY_INSTALLED))
 
         else:
             if run(
@@ -455,45 +455,45 @@ def postgresql(c, verbose=False):
                 warn=True,
                 hide=not verbose,
             ).ok:
-                run('echo "===>postgresql {}"'.format(MESSAGE_OK))
+                run('echo "===> postgresql {}"'.format(MESSAGE_OK))
             else:
-                run('echo "===>postgres {}"'.format(MESSAGE_FAILED))
+                run('echo "===> postgres {}"'.format(MESSAGE_FAILED))
         if run("service postgresql start", warn=True, hide=not verbose).ok:
-            run('echo "=====>postgresql successfully started!"')
+            run('echo "=====> postgresql successfully started!"')
         else:
-            run('echo "=====>postgresql failed to start!"')
+            run('echo "=====> postgresql failed to start!"')
         res = run("createdb lookit", warn=True, hide=not verbose)
         if res.exited == 0:
             run('echo "Database Successfully created!"')
         else:
             run('echo "Database already existed"')
         if run("python manage.py migrate", warn=True, hide=not verbose).ok:
-            run('echo "====>Migrated Django models to lookit db"')
+            run('echo "====> Migrated Django models to lookit db"')
         else:
-            run('echo "====>Migration failed"')
+            run('echo "====> Migration failed"')
     elif PLATFORM == "Darwin":
         if run("command -v psql", warn=True, hide=not verbose):
-            run("echo '===>postgresql {}'".format(MESSAGE_ALREADY_INSTALLED))
+            run("echo '===> postgresql {}'".format(MESSAGE_ALREADY_INSTALLED))
         else:
             if run("brew install postgresql", warn=True, hide=not verbose).ok:
-                run('echo "===>postgresql {}"'.format(MESSAGE_OK))
+                run('echo "===> postgresql {}"'.format(MESSAGE_OK))
             else:
-                run('echo "===>postgresql {}"'.format(MESSAGE_FAILED))
+                run('echo "===> postgresql {}"'.format(MESSAGE_FAILED))
 
         if run("brew services start postgresql", warn=True, hide=not verbose).ok:
-            run('echo "=====>postgresql successfully started!"')
+            run('echo "=====> postgresql successfully started!"')
         else:
-            run('echo "=====>postgresql failed to start!"')
+            run('echo "=====> postgresql failed to start!"')
         res = run("createdb lookit", warn=True, hide=not verbose)
         if res.exited == 0:
-            run('echo "=====>Database "lookit" Successfully created!"')
+            run('echo "=====> Database "lookit" Successfully created!"')
         else:
-            run('echo "=====>Database "lookit" already existed"')
+            run('echo "=====> Database "lookit" already existed"')
 
         if run("python manage.py migrate", warn=True, hide=not verbose).ok:
-            run('echo "====>Migrated Django models to lookit db"')
+            run('echo "====> Migrated Django models to lookit db"')
         else:
-            run('echo "====>Migration failed"')
+            run('echo "====> Migration failed"')
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
@@ -524,7 +524,7 @@ def ssl_certificate(c, verbose=False):
     run("echo '*** Setting HTTPS for local development ***'")
     if PLATFORM == "Linux":
         if run("command -v mkcert", warn=True, hide=not verbose).ok:
-            run('echo "===>mkcert {}"'.format(MESSAGE_ALREADY_INSTALLED))
+            run('echo "===> mkcert {}"'.format(MESSAGE_ALREADY_INSTALLED))
         else:
             if run("brew install mkcert", warn=True, hide=not verbose).ok:
                 run(
@@ -533,9 +533,9 @@ def ssl_certificate(c, verbose=False):
                     hide=not verbose,
                 )
                 run("mkcert -install", warn=True, hide=not verbose)
-                run('echo "===>mkcert {}"'.format(MESSAGE_OK))
+                run('echo "===> mkcert {}"'.format(MESSAGE_OK))
             else:
-                run('echo "===>mkcert {}"'.format(MESSAGE_FAILED))
+                run('echo "===> mkcert {}"'.format(MESSAGE_FAILED))
         run("mkdir certs", warn=True, hide=not verbose)
         if run(
             "cd certs && mkcert local_lookit.mit.edu", warn=True, hide=not verbose
@@ -545,24 +545,24 @@ def ssl_certificate(c, verbose=False):
             run('echo "certificates {}"'.format(MESSAGE_FAILED))
     elif PLATFORM == "Darwin":
         if run("command -v mkcert", warn=True, hide=not verbose).ok:
-            run('echo "===>mkcert {}"'.format(MESSAGE_ALREADY_INSTALLED))
+            run('echo "===> mkcert {}"'.format(MESSAGE_ALREADY_INSTALLED))
         else:
             if run("brew install mkcert", warn=True, hide=not verbose).ok:
                 run("mkcert -install", warn=True, hide=not verbose)
-                run('echo "===>mkcert {}"'.format(MESSAGE_OK))
+                run('echo "===> mkcert {}"'.format(MESSAGE_OK))
             else:
-                run('echo "===>mkcert {}"'.format(MESSAGE_FAILED))
+                run('echo "===> mkcert {}"'.format(MESSAGE_FAILED))
         run("mkdir certs", warn=True, hide=not verbose)
         if run(
             "cd certs && mkcert local_lookit.mit.edu", warn=True, hide=not verbose
         ).ok:
             run(
-                'echo "=====>certificates successfully created at {}/certs"'.format(
+                'echo "=====> certificates successfully created at {}/certs"'.format(
                     os.getcwd()
                 )
             )
         else:
-            run('echo "=====>certificates {}"'.format(MESSAGE_FAILED))
+            run('echo "=====> certificates {}"'.format(MESSAGE_FAILED))
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
@@ -594,7 +594,7 @@ def ngrok(c, verbose=False):
 
     if PLATFORM == "Linux":
         if run("command -v ngrok", warn=True, hide=not verbose):
-            run('echo "===>Ngrok {}"'.format(MESSAGE_ALREADY_INSTALLED))
+            run('echo "===> Ngrok {}"'.format(MESSAGE_ALREADY_INSTALLED))
         else:
             run("cd / && mkdir downloads", warn=True, hide=not verbose)
             run(
@@ -606,15 +606,15 @@ def ngrok(c, verbose=False):
             run("ln -s /downloads/ngrok /usr/bin/ngrok", warn=True, hide=not verbose)
 
             if run("ngrok", warn=True, hide=not verbose):
-                run('echo "===>Ngrok {}"'.format(MESSAGE_OK))
+                run('echo "===> Ngrok {}"'.format(MESSAGE_OK))
             else:
-                run('echo "===>Ngrok {}"'.format(MESSAGE_FAILED))
+                run('echo "===> Ngrok {}"'.format(MESSAGE_FAILED))
 
     elif PLATFORM == "Darwin":
         if run("command -v ngrok", hide=not verbose, warn=True).ok:
-            run('echo "===>ngrok {}"'.format(MESSAGE_OK))
+            run('echo "===> ngrok {}"'.format(MESSAGE_OK))
         else:
-            run('echo "===>ngrok {}"'.format(MESSAGE_FAILED))
+            run('echo "===> ngrok {}"'.format(MESSAGE_FAILED))
 
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
@@ -648,7 +648,7 @@ def docker(c, verbose=False):
         # Install Docker
         # Install key dependencies first
         if run("command -v docker", hide=not verbose, warn=True).ok:
-            run('echo "===>docker {}"'.format(MESSAGE_ALREADY_INSTALLED))
+            run('echo "===> docker {}"'.format(MESSAGE_ALREADY_INSTALLED))
         else:
             run(
                 "apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common",
@@ -678,9 +678,9 @@ def docker(c, verbose=False):
                 )
 
                 if run("docker", hide=not verbose, warn=True).ok:
-                    run('echo "===>docker {}"'.format(MESSAGE_OK))
+                    run('echo "===> docker {}"'.format(MESSAGE_OK))
                 else:
-                    run('echo "===>docker {}"'.format(MESSAGE_FAILED))
+                    run('echo "===> docker {}"'.format(MESSAGE_FAILED))
             elif "Ubuntu" in str(res):
                 run(
                     "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
@@ -699,20 +699,20 @@ def docker(c, verbose=False):
                 run("apt install docker-ce", hide=not verbose, warn=True)
 
                 if run("docker", hide=not verbose, warn=True).ok:
-                    run('echo "===>docker {}"'.format(MESSAGE_OK))
+                    run('echo "===> docker {}"'.format(MESSAGE_OK))
                 else:
-                    run('echo "===>docker {}"'.format(MESSAGE_FAILED))
+                    run('echo "===> docker {}"'.format(MESSAGE_FAILED))
             else:
                 run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
     elif PLATFORM == "Darwin":
         if run("command -v docker", hide=not verbose, warn=True).ok:
-            run('echo "===>docker {}"'.format(MESSAGE_ALREADY_INSTALLED))
+            run('echo "===> docker {}"'.format(MESSAGE_ALREADY_INSTALLED))
         else:
             if run("brew cask install docker", hide=not verbose, warn=True).ok:
-                run('echo "===>docker {}"'.format(MESSAGE_OK))
+                run('echo "===> docker {}"'.format(MESSAGE_OK))
             else:
-                run('echo "===>docker {}"'.format(MESSAGE_FAILED))
+                run('echo "===> docker {}"'.format(MESSAGE_FAILED))
         run("open /Applications/Docker.app")
 
     else:
