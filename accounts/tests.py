@@ -237,6 +237,22 @@ class UserModelTestCase(TestCase):
         self.participant = G(
             User, is_active=True, is_researcher=False, nickname="Participant"
         )
+
+        # Site fixture enabling login
+        self.fake_site = G(Site, id=1)
+
+        # FlatPage fixture enabling login redirect to work.
+        self.home_page = G(FlatPage, url="/")
+        self.home_page.sites.add(self.fake_site)
+        self.home_page.save()
+
+        self.test_password = "testpassword20chars"
+        self.bad_email_user = G(
+            User, is_active=True, is_researcher=False, username="MiXeDcAsE@gmAiL.CoM"
+        )
+        self.bad_email_user.set_password(self.test_password)
+        self.bad_email_user.save()
+
         self.lab = G(Lab, name="MIT", approved_to_test=True)
         self.study = G(Study, name="Test Study", lab=self.lab, built=True)
 
@@ -249,6 +265,25 @@ class UserModelTestCase(TestCase):
 
     def test_unaffiliated_researcher_cannot_create_study(self):
         self.assertFalse(self.unaffiliated_researcher.can_create_study())
+
+    def test_create_user_lowercases_username(self):
+        # TODO: Do we actually use `create_user` anywhere?
+        new_user = User.objects.create_user("BAD.EMAIL@GMAIL.COM")
+        self.assertEqual(new_user.username, "bad.email@gmail.com")
+
+    def test_case_insensitive_login(self):
+        # Test that login is case-insensitive
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "mixedcase@gmail.com",
+                "password": self.test_password,
+                "next": "/",
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
 
 
 class CriteriaExpressionTestCase(TestCase):
