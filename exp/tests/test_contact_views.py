@@ -1,7 +1,8 @@
 import datetime
+from unittest.mock import patch
 
 from django.contrib.sites.models import Site
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
@@ -20,9 +21,6 @@ class Force2FAClient(Client):
         return _session
 
 
-# Run celery tasks right away, but don't catch errors from them.
-@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-@override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
 class ContactViewTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
@@ -242,7 +240,8 @@ class ContactViewTestCase(TestCase):
             "Researcher4", content, "Extra researcher's name in rendered contact view"
         )
 
-    def test_can_post_message_to_participants(self):
+    @patch("studies.helpers.send_mail.delay")
+    def test_can_post_message_to_participants(self, mock_send_mail):
         self.client.force_login(self.researcher_with_perm)
         response = self.client.post(
             self.contact_url,
@@ -254,7 +253,20 @@ class ContactViewTestCase(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
+        # Ensure message sent to participants 0, 1, 2
+        mock_send_mail.assert_called_once()
+        self.assertEqual(
+            mock_send_mail.call_args.args, ("custom_email", "test email", [])
+        )
+        self.assertEqual(
+            mock_send_mail.call_args.kwargs["bcc"],
+            [p.username for p in self.participants[0:3]],
+        )
+        self.assertEqual(
+            mock_send_mail.call_args.kwargs["from_email"], self.study.lab.contact_email
+        )
 
+        # And that appropriate message object created
         self.assertTrue(Message.objects.filter(subject="test email").exists())
         new_message = Message.objects.get(subject="test email")
         self.assertEqual(new_message.body, "some content")
@@ -263,7 +275,8 @@ class ContactViewTestCase(TestCase):
             set(self.participants[0:3]),
         )
 
-    def test_message_not_posted_to_non_participant(self):
+    @patch("studies.helpers.send_mail.delay")
+    def test_message_not_posted_to_non_participant(self, mock_send_mail):
         self.client.force_login(self.researcher_with_perm)
         response = self.client.post(
             self.contact_url,
@@ -275,10 +288,20 @@ class ContactViewTestCase(TestCase):
             follow=True,
         )
         self.assertEqual(response.status_code, 200)
+        # Ensure message sent only to participant 3, not participant 4 (who did not participate in this study)
+        mock_send_mail.assert_called_once()
+        self.assertEqual(
+            mock_send_mail.call_args.args,
+            ("custom_email", "test email", [self.participants[3].username]),
+        )
+        self.assertEqual(mock_send_mail.call_args.kwargs["bcc"], [])
+        self.assertEqual(
+            mock_send_mail.call_args.kwargs["from_email"], self.study.lab.contact_email
+        )
 
+        # And that appropriate message object created
         self.assertTrue(Message.objects.filter(subject="test email").exists())
         new_message = Message.objects.get(subject="test email")
-        # Ensure message sent only to participant 3, not participant 4 (who did not participate in this study)
         self.assertEqual(
             {participant for participant in new_message.recipients.all()},
             {self.participants[3]},
