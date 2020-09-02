@@ -271,12 +271,26 @@ class UserModelTestCase(TestCase):
         new_user = User.objects.create_user("BAD.EMAIL@GMAIL.COM")
         self.assertEqual(new_user.username, "bad.email@gmail.com")
 
-    def test_case_insensitive_login(self):
+    def test_case_insensitive_login_with_mixed_case_in_db(self):
         # Test that login is case-insensitive
         response = self.client.post(
             reverse("login"),
             {
                 "username": "mixedcase@gmail.com",
+                "password": self.test_password,
+                "next": "/",
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
+
+    def test_case_insensitive_login_with_mixed_case_in_request(self):
+        # Test that login is case-insensitive
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "Mixedcase@gmail.COM",
                 "password": self.test_password,
                 "next": "/",
             },
