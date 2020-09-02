@@ -11,14 +11,20 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 from django.contrib.messages import constants as messages
+from dotenv import load_dotenv
 
-MODE = "prod"  # Overridden by local settings.
+# Load .env variables here, *before* setting remaining values, so that e.g. DEBUG from .env is used to
+# determine other values. Note this will not overwrite any system-level environment variables (e.g. in .bashrc)
+env_path = Path(__file__).resolve().parents[1] / ".env"
+load_dotenv(dotenv_path=env_path, verbose=True)
+
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # root path for ember builds
 EMBER_BUILD_ROOT_PATH = os.path.join(BASE_DIR, "../ember_build")
 
@@ -234,10 +240,9 @@ BASE_URL = os.environ.get(
 )  # default to ember base url
 
 LOGIN_REDIRECT_URL = "web:home"
-ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get("ACCOUNT_LOGOUT_REDIRECT_URL", "/api/")
+ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get("ACCOUNT_LOGOUT_REDIRECT_URL", "/login/")
 LOGOUT_REDIRECT_URL = "web:home"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-
 
 # Configuration for cross-site requests
 CORS_ORIGIN_ALLOW_ALL = bool(os.environ.get("CORS_ORIGIN_ALLOW_ALL", True))

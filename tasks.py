@@ -125,10 +125,14 @@ def system_setup(c, verbose=False):
             run('echo "===> homebrew/cask is not working."')
 
     # creating a local setting file
-    if run(
-        'touch project/settings/local.py && echo "DEBUG=True" > project/settings/local.py'
-    ).ok:
-        run('echo "===> Successfully configured settings for local development"')
+    if run("test -f .env", warn=True).ok:
+        run(
+            "echo '===> Settings file .env already exists; not overwriting. Check that .env contains any necessary values from env_dist.'"
+        )
+    else:
+        run(
+            "cp env_dist .env && echo '===> Created local settings file .env based on env-dist'"
+        )
 
 
 @task
@@ -356,6 +360,11 @@ def rabbitmq(c, verbose=False):
             warn=True,
             hide=not verbose,
         )
+        run(
+            "sudo rabbitmqadmin declare queue  --vhost=/ name=cleanup",
+            warn=True,
+            hide=not verbose,
+        )
         if run("rabbitmqadmin list queues", warn=True, hide=not verbose).ok:
             run('echo "===> rabbitmq {}"'.format(MESSAGE_OK))
         else:
@@ -413,6 +422,11 @@ def rabbitmq(c, verbose=False):
         )
         run(
             "sudo rabbitmqadmin declare queue  --vhost=/ name=builds",
+            warn=True,
+            hide=not verbose,
+        )
+        run(
+            "sudo rabbitmqadmin declare queue  --vhost=/ name=cleanup",
             warn=True,
             hide=not verbose,
         )
