@@ -11,15 +11,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-from pathlib import Path
 
 from django.contrib.messages import constants as messages
-from dotenv import load_dotenv
-
-# Load .env variables here, *before* setting remaining values, so that e.g. DEBUG from .env is used to
-# determine other values. Note this will not overwrite any system-level environment variables (e.g. in .bashrc)
-env_path = Path(__file__).resolve().parents[1] / ".env"
-load_dotenv(dotenv_path=env_path, verbose=True)
 
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
