@@ -1,6 +1,7 @@
 import datetime
 from unittest.mock import Mock, patch
 
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sites.models import Site
@@ -247,6 +248,10 @@ class UserModelTestCase(TestCase):
         self.home_page.save()
 
         self.test_password = "testpassword20chars"
+
+        # This represents the old format, of which we have plenty in the DB. We are
+        # leaving these untouched, while both preventing duplicate account creation
+        # and allowing case-insensitive login.
         self.bad_email_user = G(
             User, is_active=True, is_researcher=False, username="MiXeDcAsE@gmAiL.CoM"
         )
@@ -272,7 +277,6 @@ class UserModelTestCase(TestCase):
         self.assertEqual(new_user.username, "bad.email@gmail.com")
 
     def test_case_insensitive_login_with_mixed_case_in_db(self):
-        # Test that login is case-insensitive
         response = self.client.post(
             reverse("login"),
             {
@@ -286,7 +290,6 @@ class UserModelTestCase(TestCase):
         self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
 
     def test_case_insensitive_login_with_mixed_case_in_request(self):
-        # Test that login is case-insensitive
         response = self.client.post(
             reverse("login"),
             {
@@ -298,6 +301,25 @@ class UserModelTestCase(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
+
+    def test_no_duplicate_registrations_case_insensitive(self):
+        response = self.client.post(
+            reverse("accounts:researcher-registration"),
+            {
+                "username": "mixedcasE@gmail.com",
+                "password1": self.test_password,
+                "password2": self.test_password,
+                "given_name": "Should",
+                "family_name": "Not",
+                "nickname": "Be Allowed",
+            },
+            follow=True,
+        )
+
+        user = response.context["user"]
+
+        self.assertTrue(user.is_anonymous)
+        self.assertFalse(user.is_authenticated)
 
 
 class CriteriaExpressionTestCase(TestCase):
