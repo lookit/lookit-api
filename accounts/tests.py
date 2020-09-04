@@ -1,6 +1,7 @@
 import datetime
 from unittest.mock import Mock, patch
 
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sites.models import Site
@@ -249,6 +250,26 @@ class UserModelTestCase(TestCase):
         self.participant = G(
             User, is_active=True, is_researcher=False, nickname="Participant"
         )
+
+        # Site fixture enabling login
+        self.fake_site = G(Site, id=1)
+
+        # FlatPage fixture enabling login redirect to work.
+        self.home_page = G(FlatPage, url="/")
+        self.home_page.sites.add(self.fake_site)
+        self.home_page.save()
+
+        self.test_password = "testpassword20chars"
+
+        # This represents the old format, of which we have plenty in the DB. We are
+        # leaving these untouched, while both preventing duplicate account creation
+        # and allowing case-insensitive login.
+        self.bad_email_user = G(
+            User, is_active=True, is_researcher=False, username="MiXeDcAsE@gmAiL.CoM"
+        )
+        self.bad_email_user.set_password(self.test_password)
+        self.bad_email_user.save()
+
         self.lab = G(Lab, name="MIT", approved_to_test=True)
         self.study = G(Study, name="Test Study", lab=self.lab, built=True)
 
@@ -261,6 +282,56 @@ class UserModelTestCase(TestCase):
 
     def test_unaffiliated_researcher_cannot_create_study(self):
         self.assertFalse(self.unaffiliated_researcher.can_create_study())
+
+    def test_create_user_lowercases_username(self):
+        # TODO: Do we actually use `create_user` anywhere?
+        new_user = User.objects.create_user("BAD.EMAIL@GMAIL.COM")
+        self.assertEqual(new_user.username, "bad.email@gmail.com")
+
+    def test_case_insensitive_login_with_mixed_case_in_db(self):
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "mixedcase@gmail.com",
+                "password": self.test_password,
+                "next": "/",
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
+
+    def test_case_insensitive_login_with_mixed_case_in_request(self):
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "Mixedcase@gmail.COM",
+                "password": self.test_password,
+                "next": "/",
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
+
+    def test_no_duplicate_registrations_case_insensitive(self):
+        response = self.client.post(
+            reverse("accounts:researcher-registration"),
+            {
+                "username": "mixedcasE@gmail.com",
+                "password1": self.test_password,
+                "password2": self.test_password,
+                "given_name": "Should",
+                "family_name": "Not",
+                "nickname": "Be Allowed",
+            },
+            follow=True,
+        )
+
+        user = response.context["user"]
+
+        self.assertTrue(user.is_anonymous)
+        self.assertFalse(user.is_authenticated)
 
 
 class CriteriaExpressionTestCase(TestCase):

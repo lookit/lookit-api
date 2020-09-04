@@ -42,11 +42,16 @@ from studies.permissions import (
 
 
 class UserManager(BaseUserManager):
+    def get_by_natural_key(self, username):
+        return self.get(**{self.model.USERNAME_FIELD + "__iexact": username})
+
     def create_user(self, username, password=None):
         if not username:
             raise ValueError("Users must have a username")
 
-        user = self.model(username=self.normalize_email(username), is_active=True)
+        user = self.model(
+            username=self.normalize_email(username).lower(), is_active=True
+        )
 
         user.set_password(password)
         user.save(using=self._db)
