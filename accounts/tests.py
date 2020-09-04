@@ -179,6 +179,12 @@ class AuthenticationTestCase(TestCase):
         # And the session key isn't set.
         self.assertFalse(response.wsgi_request.session.get(TWO_FACTOR_AUTH_SESSION_KEY))
 
+        # We can't access exp views
+        response = self.client.get(reverse("exp:study-list"), follow=True)
+        self.assertEqual(
+            response.redirect_chain, [(reverse("accounts:2fa-login"), 302)]
+        )
+
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
         with patch("django.contrib.messages.api.add_message", autospec=True):
@@ -200,6 +206,12 @@ class AuthenticationTestCase(TestCase):
         # Same as with researcher, we shouldn't have the 2FA session key
         self.assertFalse(response.wsgi_request.session[TWO_FACTOR_AUTH_SESSION_KEY])
         self.assertEqual(response.redirect_chain, [(reverse("web:home"), 302)])
+
+        # Logged-in user is available
+        user = response.wsgi_request.user
+        self.assertFalse(user.is_anonymous)
+        self.assertTrue(user.is_authenticated)
+        self.assertEqual(user.username, self.participant_email)
 
         # Cleanup, patch over messages as RequestFactory doesn't know about
         # middleware
