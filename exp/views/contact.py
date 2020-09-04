@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.utils.text import slugify
@@ -133,8 +134,7 @@ class StudyParticipantContactView(
         """
         study = self.get_object()
 
-        # TODO: implement checks on these being in the list of study participants &
-        # appropriate for this message type
+        # TODO: consider modeling message type and checking recipients have opted in
         participant_uuids = request.POST.getlist("recipients")
         subject = request.POST["subject"]
         body = request.POST["body"]
@@ -144,8 +144,9 @@ class StudyParticipantContactView(
         )
 
         # TODO: Check into the performance of .iterator() with some real load testing
+        # Limit recipients to this study's participants
         outgoing_message.recipients.add(
-            *User.objects.filter(uuid__in=participant_uuids).iterator()
+            *study.participants.filter(uuid__in=participant_uuids).iterator()
         )
 
         outgoing_message.send_as_email()
