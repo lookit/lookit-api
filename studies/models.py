@@ -1,4 +1,5 @@
 import logging
+import re
 import uuid
 from datetime import datetime
 
@@ -10,6 +11,7 @@ from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import SuspiciousFileOperation
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
@@ -1144,11 +1146,26 @@ class Video(models.Model):
     @classmethod
     def check_and_parse_pipe_payload(cls, pipe_payload: str):
         """Confirm that pipe payload is in expected format and extract study, response, etc."""
+        
+        # Check that new_full_name is a reasonable thing to rename to (e.g., no * or / characters)
+        if not pipe_payload or not re.match("^[A-Za-z0-9-._]+$", pipe_payload):
+            raise SuspiciousFileOperation(
+                f"Attempt to create an invalid file on S3: {new_full_name}"
+            )
+            
+        try:
+            _, study_uuid, frame_id, response_uuid, timestamp, _ = pipe_payload.split(
+                "_"
+            )
+        except ValueError as err:
+            raise SuspiciousFileOperation(
+                f"Attempt to create video file on S3 with unexpected format: {new_full_name}."
+            )
+        
         consent_type_label = "consent-"
         marked_as_consent = pipe_payload.startswith(consent_type_label)
         if marked_as_consent:
             pipe_payload = pipe_payload[len(consent_type_label) :]
-
         try:
             _, study_uuid, frame_id, response_uuid, timestamp, _ = pipe_payload.split(
                 "_"
@@ -1194,6 +1211,17 @@ class Video(models.Model):
         ) = cls.check_and_parse_pipe_payload(data["payload"])
 
         old_pipe_name = f"{data['videoName']}.{data['type'].lower()}"
+        # Check that old_pipe_name is a reasonable filename and that it doesn't fit the pattern used for already-renamed
+        # files. Don't hard-code more detailed expectations of the Pipe ID format here though.
+        if (not re.match("^[A-Za-z0-9-.]+$", old_pipe_name)) or re.match(
+            "^videoStream", old_pipe_name
+        ) or re.match(
+            "^consent-videoStream", old_pipe_name
+        )::
+            raise SuspiciousFileOperation(
+                f"Attempt to rename the following invalid filename on S3: {old_pipe_name}"
+            )
+        
         new_full_name = f"{pipe_payload}.{data['type'].lower()}"
         throwaway_jpg_name = f"{data['videoName']}.jpg"
 
@@ -1240,6 +1268,7 @@ class Video(models.Model):
             response=response,
             is_consent_footage=is_consent_footage,
         )
+
 
     @cached_property
     def filename(self):

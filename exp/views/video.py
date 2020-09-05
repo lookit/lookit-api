@@ -2,10 +2,12 @@ import ast
 import base64
 import hashlib
 import hmac
+import re
 import urllib.parse
 
 from botocore.exceptions import ClientError
 from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -58,12 +60,9 @@ class RenameVideoView(View):
             d["data"]["s3UploadStatus"] == "upload success"
         ):  # Go ahead and move the file
 
-            new_name = d["data"]["payload"]
-
-            if not new_name:  # Make sure we don't have an empty payload string
-                return HttpResponseForbidden()
-
             try:
+                # from_pipe_payload handles checking old/new filenames and will raise SuspiciousOperation if invalid,
+                # leading to HttpResponseBadRequest
                 video_obj = Video.from_pipe_payload(d)
                 return HttpResponse(
                     (d["data"]["videoName"] + " --> " + video_obj.filename)
