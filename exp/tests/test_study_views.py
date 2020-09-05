@@ -1,4 +1,5 @@
 import datetime
+import json
 from unittest import skip
 from unittest.mock import patch
 
@@ -11,6 +12,7 @@ from guardian.shortcuts import assign_perm
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, User
+from project import settings
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
@@ -60,11 +62,16 @@ class ResponseViewsTestCase(TestCase):
         self.structure_string = (
             "some exact text that should be displayed in place of the loaded structure"
         )
+        small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04"
+            b"\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02"
+            b"\x02\x4c\x01\x00\x3b"
+        )
         self.study = G(
             Study,
             image=SimpleUploadedFile(
-                "fake_image.png", b"fake-stuff", content_type="image/png"
-            ),  # we could also pass fill_nullable_fields=True
+                name="small.gif", content=small_gif, content_type="image/gif"
+            ),
             # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
             creator=self.study_admin,
             shared_preview=False,
@@ -335,11 +342,16 @@ class ResponseViewsTestCase(TestCase):
         data = model_to_dict(self.study)
         data["study_type"] = 2  # Other study type
         data["comments"] = "Changing the study type"
-        response = self.client.post(url, data)
+        data["structure"] = json.dumps(data["structure"])
+        response = self.client.post(url, data, follow=True)
         self.assertEqual(
             response.status_code,
             200,
             "Study edit returns invalid response when editing study type",
+        )
+        self.assertEqual(
+            response.redirect_chain,
+            [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
         updated_study = Study.objects.get(id=self.study.id)
         self.assertEqual(
@@ -369,11 +381,16 @@ class ResponseViewsTestCase(TestCase):
         data = model_to_dict(self.study)
         data["metadata"] = new_metadata
         data["comments"] = "Changed experiment runner version"
-        response = self.client.post(url, data)
+        data["structure"] = json.dumps(data["structure"])
+        response = self.client.post(url, data, follow=True)
         self.assertEqual(
             response.status_code,
             200,
             "Study edit returns invalid response when editing metadata",
+        )
+        self.assertEqual(
+            response.redirect_chain,
+            [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
         updated_study = Study.objects.get(id=self.study.id)
         self.assertFalse(
@@ -394,13 +411,19 @@ class ResponseViewsTestCase(TestCase):
             self.study,
         )
         data = model_to_dict(self.study)
-        data["structure"] = {"frames": {"frame-c": {}}, "sequence": ["frame-c"]}
+        data["structure"] = json.dumps(
+            {"frames": {"frame-c": {}}, "sequence": ["frame-c"]}
+        )
         data["comments"] = "Changed protocol"
-        response = self.client.post(url, data)
+        response = self.client.post(url, data, follow=True)
         self.assertEqual(
             response.status_code,
             200,
             "Study edit returns invalid response when editing metadata",
+        )
+        self.assertEqual(
+            response.redirect_chain,
+            [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
         updated_study = Study.objects.get(id=self.study.id)
         self.assertTrue(
