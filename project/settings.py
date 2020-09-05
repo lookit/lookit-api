@@ -11,15 +11,16 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 from django.contrib.messages import constants as messages
 
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Build paths inside the project as str(Path(BASE_DIR, ...).resolve()) or os.path.join(BASE_DIR, ...)
+BASE_DIR = str((Path(__file__) / "..").resolve())
 # root path for ember builds
-EMBER_BUILD_ROOT_PATH = os.path.join(BASE_DIR, "../ember_build")
+EMBER_BUILD_ROOT_PATH = str(Path(BASE_DIR, "..", "ember_build").resolve())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
