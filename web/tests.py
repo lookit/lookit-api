@@ -7,10 +7,10 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
+from selenium import webdriver
 
 import selenium
 from accounts.models import Child, DemographicData, User
-from project import settings
 from studies.models import Lab, Study, StudyType
 
 
@@ -448,23 +448,23 @@ class ParticipantExperienceTestCase(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.selenium = selenium.webdriver.Firefox()
-        cls.selenium.implicitly_wait(10)
+        cls.browser = webdriver.Firefox()
+        cls.browser.implicitly_wait(10)
         site = Site.objects.create(domain=cls.live_server_url, name="Lookit")
         site.save()
 
     @classmethod
     def tearDownClass(cls):
-        cls.selenium.quit()
+        cls.browser.quit()
         super().tearDownClass()
 
     def test_login(self):
-        self.selenium.get(f"{self.live_server_url}/login/")
-        username_input = self.selenium.find_element_by_name("username")
+        self.browser.get(f"{self.live_server_url}/login/")
+        username_input = self.browser.find_element_by_name("username")
         username_input.send_keys("testuser@gmail.com")
-        password_input = self.selenium.find_element_by_name("password")
+        password_input = self.browser.find_element_by_name("password")
         password_input.send_keys("secret")
-        self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
+        self.browser.find_element_by_xpath('//button[@type="submit"]').click()
 
         # from selenium.webdriver.support.wait import WebDriverWait
         # timeout = 2
