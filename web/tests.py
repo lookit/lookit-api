@@ -197,6 +197,30 @@ class ParticipantAccountViewsTestCase(TestCase):
         self.assertTrue(response.wsgi_request.user.is_anonymous)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
+    def test_no_duplicate_registrations_case_insensitive(self):
+        response = self.client.post(
+            reverse("web:participant-signup"),
+            {
+                "username": self.participant_email.upper(),
+                "password1": self.valid_password,
+                "password2": self.valid_password,
+                "nickname": "PARTICIPANT WHO IS SHOUTING",
+            },
+            follow=True,
+        )
+        # There are form errors...
+        self.assertIn("username", response.context["form"].errors)
+        self.assertIn(
+            "User with this Email address already exists.",
+            response.context["form"].errors["username"],
+        )
+        # We stayed on the same page
+        self.assertEqual(response.redirect_chain, [])
+        self.assertEqual(response.status_code, 200)
+        # And user isn't logged in
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+
     def test_participant_login_required_views_unauthenticated(self):
         login_required_views = [
             "web:demographic-data-update",
