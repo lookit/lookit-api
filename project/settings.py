@@ -11,16 +11,16 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 from django.contrib.messages import constants as messages
 
-MODE = "prod"  # Overridden by local settings.
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Build paths inside the project as str(Path(BASE_DIR, ...).resolve()) or os.path.join(BASE_DIR, ...).
+BASE_DIR = str((Path(__file__) / "..").resolve())
 # root path for ember builds
-EMBER_BUILD_ROOT_PATH = os.path.join(BASE_DIR, "../ember_build")
+EMBER_BUILD_ROOT_PATH = str(Path(BASE_DIR, "..", "ember_build").resolve())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -234,10 +234,9 @@ BASE_URL = os.environ.get(
 )  # default to ember base url
 
 LOGIN_REDIRECT_URL = "web:home"
-ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get("ACCOUNT_LOGOUT_REDIRECT_URL", "/api/")
+ACCOUNT_LOGOUT_REDIRECT_URL = os.environ.get("ACCOUNT_LOGOUT_REDIRECT_URL", "/login/")
 LOGOUT_REDIRECT_URL = "web:home"
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-
 
 # Configuration for cross-site requests
 CORS_ORIGIN_ALLOW_ALL = bool(os.environ.get("CORS_ORIGIN_ALLOW_ALL", True))
@@ -311,9 +310,9 @@ EMBER_ADDONS_REPO = os.environ.get(
 )  # leave for compatibility with previous migrations
 EMBER_ADDONS_BRANCH = os.environ.get("EMBER_ADDONS_BRANCH", "master")
 
-RABBITMQ_USERNAME = os.environ.get("RABBITMQ_USERNAME", "guest")
-RABBITMQ_PASSWORD = os.environ.get("RABBITMQ_PASSWORD", "guest")
 RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "localhost")
+RABBITMQ_USERNAME = os.environ.get("RABBITMQ_USERNAME", "lookit-admin")
+RABBITMQ_PASSWORD = os.environ.get("RABBITMQ_PASSWORD", "admin")
 RABBITMQ_PORT = os.environ.get("RABBITMQ_PORT", "5672")
 RABBITMQ_VHOST = os.environ.get("RABBITMQ_VHOST", "/")
 

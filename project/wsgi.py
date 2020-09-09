@@ -15,7 +15,6 @@ if os.environ.get("GEVENT") == "1":
 
     patch_psycopg()
 
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
 
 application = get_wsgi_application()
