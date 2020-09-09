@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-import sys
 from pathlib import Path
 
 from django.contrib.messages import constants as messages
@@ -19,8 +18,7 @@ from django.contrib.messages import constants as messages
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
 # Build paths inside the project as str(Path(BASE_DIR, ...).resolve()) or os.path.join(BASE_DIR, ...).
-# Avoiding using Path(__file__, "/") because __file__ may behave unexpectedly on Windows
-BASE_DIR = str((Path(sys.argv[0])).resolve())
+BASE_DIR = str((Path(__file__) / "..").resolve())
 # root path for ember builds
 EMBER_BUILD_ROOT_PATH = str(Path(BASE_DIR, "..", "ember_build").resolve())
 
