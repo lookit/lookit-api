@@ -260,9 +260,6 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     GS_PROJECT_ID = os.environ.get("GS_PROJECT_ID", "")
 
     GS_PRIVATE_BUCKET_NAME = os.environ.get("GS_PRIVATE_BUCKET_NAME", "")
-
-    # See https://github.com/lookit/lookit-api/issues/570
-    GS_FILE_OVERWRITE = False
 else:
     # we know nothing about cloud storage
     print(
