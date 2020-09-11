@@ -328,7 +328,7 @@ def _upload_in_serial(local_path, storage):
         for filename in files:
             full_path = os.path.join(root_directory, filename)
             with open(full_path, mode="rb") as f:
-                remote_path = full_path.split("../ember_build/deployments/")[1]
+                remote_path = full_path.split("/ember_build/deployments/")[1]
                 storage.save(remote_path, File(f))
 
 
