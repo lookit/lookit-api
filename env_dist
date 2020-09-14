@@ -1,0 +1,69 @@
+# NOTE: env-dist is a sample .env file distributed with lookit-api for local development. To USE these settings, copy
+# them to a file named .env and make any changes needed. This is done for you during the `invoke setup` task.
+
+# Run in DEBUG mode locally. This gives access to the Django debug toolbar among other things. (Note that if DEBUG is
+# false, some different choices are made in settings.py; you may want to review those and ensure you have the relevant
+# dependencies installed.)
+DEBUG=True
+
+# Site settings
+ALLOWED_HOSTS=localhost
+BASE_URL=https://localhost:8000
+CORS_ORIGIN_ALLOW_ALL=True
+ENVIRONMENT=develop
+EXPERIMENT_BASE_URL=https://localhost:4200
+SITE_DOMAIN=localhost:8000
+SITE_NAME=Lookit
+
+# GCP settings for building/deploying studies; bundling video; bundling data downloads. Leave
+# GOOGLE_APPLICATION_CREDENTIALS blank or don't define to skip using. If you need to test functionality involving
+# uploading files to Google Cloud storage, you can create a project with two buckets: GS_BUCKET_NAME for experiment
+# builds, and GS_PRIVATE_BUCKET_NAME for data/video files. Provide the full path to a .json credentials file as
+# GOOGLE_APPLICATION_CREDENTIALS.
+GOOGLE_APPLICATION_CREDENTIALS=
+GS_BUCKET_NAME=
+GS_PRIVATE_BUCKET_NAME=
+GS_PROJECT_ID=
+
+# Directory in which to (locally) build experiments before sending to GCP
+EXPERIMENT_LOCATION=experiments
+
+# Settings for participant video storage. To actually access video locally, you would also need to
+# (1) Run ember-lookit-frameplayer locally and configure it to send video to Lookit's dev environment on Pipe, or to
+#     your own Pipe account
+# (2) Create (if using your own Pipe account) or request (if using Lookit's) a webhook on the Pipe dev environment to
+#     hit your local lookit-api server's /exp/renamevideo, which you can expose e.g. using ngrok. A webhook key is used
+#     by lookit-api to authenticate requests from Pipe upon completing video upload. Get this value from your Pipe
+#     account or request from Lookit if using Lookit's dev environment on Pipe and set PIPE_WEBHOOK_KEY below.
+# (3) Create (if using your own Pipe account and sending video to your own S3 bucket) or request (if using Lookit's
+#     Pipe account and sending video to the Lookit dev bucket) AWS credentials to be able to access the bucket, and set
+#     them up locally on your system using the AWS command line tools. Set the BUCKET_NAME to your bucket.
+BUCKET_NAME=
+PIPE_WEBHOOK_KEY=
+
+# Default repo and branch to use for experiment runner
+EMBER_EXP_PLAYER_BRANCH=master
+EMBER_EXP_PLAYER_REPO=https://github.com/lookit/ember-lookit-frameplayer
+
+# RabbitMQ settings. These are set up during the invoke task rabbitmq; only change if you have configured rabbitmq
+# differently yourself.
+RABBITMQ_HOST=localhost
+RABBITMQ_PASSWORD=admin
+RABBITMQ_PORT=5672
+RABBITMQ_USERNAME=lookit-admin
+RABBITMQ_VHOST=/
+
+# PostgreSQL settings. By default Postgres is configured to have a superuser called postgres with no password.
+# If you want to use a different user, or if you have configured a password for the postgres user, set it here.
+# To check these credentials, you can run `psql --db <DB_NAME> --user <DB_USER>` at the command line and make sure
+# you can log in using DB_PASSWORD.
+DB_NAME=lookit
+DB_HOST=127.0.0.1
+DB_PASSWORD=" "
+DB_PORT=5432
+DB_USER=postgres
+
+# Email settings for emails to researchers/participants. By default we just print "emails" to the console. To use
+# smtp instead, you would also define EMAIL_HOST_USER and EMAIL_HOST_PASSWORD.
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+EMAIL_FROM_ADDRESS=lookit.robot@some.domain

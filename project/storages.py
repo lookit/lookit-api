@@ -24,6 +24,8 @@ class LookitStaticStorage(LookitGoogleCloudStorage):
 
 class LookitMediaStorage(LookitGoogleCloudStorage):
     location = settings.MEDIAFILES_LOCATION
+    # See https://github.com/lookit/lookit-api/issues/570
+    file_overwrite = False
 
 
 class LookitExperimentStorage(LookitGoogleCloudStorage):
