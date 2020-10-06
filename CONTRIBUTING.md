@@ -7,9 +7,14 @@ Here are some guidelines we'd like you to follow:
 * [Requests](#requests)
 * [Developer Guidelines](#developer-guidelines)
     * [Local Development](#local-development)
-    * [Source Control](#source-control)
-    * [Localization](#localization)
-    * [Releases](#releases)
+    * [Outside Contributor Guidelines](#outside-contributors)
+        * [Forking](#forking)
+        * [Localization](#localization)
+    * [Core Contributor Guidelines](#core-contributors)
+        * [Git Flow](#git-flow)
+            * [Stay on the CLI](#cli-workflow)
+        * [Releases](#releases)
+            * [How to Release](#how-to-release)
 * [Contact Us](#contact)
 
 ## Code of Conduct
@@ -30,9 +35,8 @@ take action, removing issues, comments, and PRs or blocking accounts as deemed a
 ## <a name="requests"></a> Questions, Bugs, and Features
 
 ### Got a Question or Problem?
-Do not open issues for general support questions as we want to keep GitHub issues for bug reports
-and feature requests. We have an existing process for diagnosing/triaging issues and generating new
-feature requests from user input, and it starts with [Slack][slack].
+For general questions about the platform, you should head over to our [Slack workspace][slack] - if you haven't joined
+already, you can find out how to do so [here][slack-docs].
 
 ### Found an Issue or Bug?
 If you find a bug in the source code, you can help us by [submitting an issue][bug-report]. Please follow the included 
@@ -105,28 +109,71 @@ variables and push-button functionality.
 
 If you just want to hack on the API or UIs, you only need to boot up Postgres and the web server (process #1):
 ```bash
-brew services start postgresql  # Or `service postgresql start` if you're on linux
+invoke postgresql
 ./manage.py runserver           # Alternatively, `python manage.py runserver`
 ```
-
-If you you want to run with local HTTPS (allowing webhook processing of videos), you'll need `runserver_plus` installed
-(should be in your virtual environment already if you ran `pipenv install --dev`) and a directory with cert files:
+Note that this bare-minimum setup __won't__ allow you to kick off any offline tasks (i.e., sending emails and building
+studies) from the UI. If you want to test offline jobs, you'll need to boot up RabbitMQ (needed for all offline tasks) 
+and Docker (needed for experiment builds only); finally starting the celery worker itself to consume messages from the
+message queue:
 ```bash
-./manage.py runserver_plus --nopin --cert-file ${PATH_TO_YOUR_CERTFILE}
-```
-
-If you want to hack on experiment building, you'll need to boot up RabbitMQ and Docker first, and finally the celery 
-worker itself:
-```bash
-open /Applications/Docker.app                                        # If you're on Linux, just `docker`
+invoke docker
 rabbitmq-server                                                      # You may need `sudo` for this
 celery worker --app=project --loglevel=INFO -Q builds,email,cleanup
 ```
 
-### Source Control
+Serving with HTTPS will allow you to do two additional things:
+1. Process videos with the Pipe webhook
+2. Communicate with your locally served instance of ember-lookit-frameplayer (if you have configured it to serve in 
+HTTPS - not default, but recommended).
 
-#### Workflow
-We use a slightly modified [Git Flow][git-flow] process; as such, we highly recommend that contributors read this 
+To serve with HTTPS, you'll need `runserver_plus` installed (should be in your virtual environment already if you ran 
+`pipenv install --dev`) and a directory with cert files:
+```bash
+./manage.py runserver_plus --nopin --cert-file ${PATH_TO_YOUR_CERTFILE}
+```
+
+### Outside Contributors
+If you are _not_ on the Lookit core team, this section is for you!
+
+#### Forking
+While core contributors will work directly on the original repo, outside contributors will need to maintain their own 
+fork of Lookit while working on new features for (or fixing bugs for) the platform. We recommend reading this handy
+[guide on forking][forking-workflow-walkthrough] if you are not familiar with this workflow. GitHub's own [`hub` 
+utility][hub-oss-contrib] will make your life a lot easier in this regard by abstracting over some of the steps; you 
+can find the installation instructions [here][hub-install] (or, if you like to live on the cutting-edge, try out 
+GitHub's [shiny new CLI][github-cli]).
+
+One additional note: when you submit a PR, you'll want to target the `develop` branch (if you forget, no biggie - we 
+can change that on the PR for you prior to merging any of your work).
+
+#### Localization
+At the moment, we have very rudimentary i18n and l10n processes - nothing like the sophisticated pipeline you might see
+at a big company. You'll first want to read [Django's documentation][django-i18n] on i18n and l10n to understand how 
+Django apps deliver translated strings. In summary:
+
+1. **Developers** will designate new strings for internationalization using `gettext` and `gettext_lazy` in code and
+   `{% translate %}` tags in templates (currently, this is generally limited to _participant-facing_ strings). As their
+   forks and/or feature branches are merged back into `develop`, these strings will become available for compilation
+   into message files.
+2. **Translators** will merge these upstream changes from `origin/develop` back into their respective forks.
+    * `git fetch upstream && git merge upstream/develop` should be run frequently to surface new strings.
+3. **Translators** will then run `./manage.py makemessages` to generate any necessary message snippets and their 
+   containing `.po` files.
+4. **Translators** will then fill in the requisite translations generated from the previous command, before committing
+   and creating a PR.
+
+As it's a system based on trust, translators will be notified ahead of time when the core team is about to cut a new
+release. This way, they can get in any last-minute translations.
+
+### Core Contributors
+***If you are part of Lookit's core development team,*** you should adhere to the processes laid out here.
+
+If you're not on the core team, you may still want to adopt some of the practices laid out here - read on if you're
+curious!
+
+#### Git Flow
+We use a slightly modified [Git Flow][git-flow] process; as such, we highly recommend that core contributors read this 
 [Git Flow cheatsheet][git-flow-cheatsheet] to understand what each branch type is used for and how the workflow manages
 multiple changes and releases in progress at once. In short: 
 
@@ -157,15 +204,7 @@ There are a few additional practices we adhere to when contributing to Lookit:
    the default strategy of `--no-ff` merges ([configured][merge-methods-github] in GitHub), you can press the merge
    button or issue a local `git flow ... finish` without *ever* having to force push. 
 
-#### Forking
-While core contributors will work directly on the original repo, outside contributors will need to maintain their own 
-fork of Lookit while working on new features for (or fixing bugs for) the platform. We recommend reading this handy
-[guide on forking][forking-workflow-walkthrough] if you are not familiar with this workflow. GitHub's own [`hub` 
-utility][hub-oss-contrib] will make your life a lot easier in this regard by abstracting over some of the steps; you 
-can find the installation instructions [here][hub-install] (or, if you like to live on the cutting-edge, try out 
-GitHub's [shiny new CLI][github-cli]).
-
-#### Staying on the Command Line
+##### <a name="cli-workflow"></a> Staying on the Command Line
 If you have `hub` and `gitflow-avh` installed, you should be able to work entirely from the command line - even when
 working with a PR of a published feature/bugfix branch.
 
@@ -186,18 +225,7 @@ Since GitHub considers a PR "Merged" as soon as the commits in the PR branch are
 long as the commits are not modified in any way - not a problem if you never rebase or amend remote commits!), you can 
 just issue a `git flow ... finish` command to do the necessary merges, tag pushes, and branch cleanup.
 
-### Localization
-At the moment, we have very rudimentary i18n and l10n processes - nothing like the sophisticated pipeline you might see
-at a big company. It's a system based on trust:
-
-1. Code contributors and reviewers are trusted to enforce internationalization of strings where appropriate.
-2. Translators are expected to keep their `feature` branches up-to-date with `develop`. 
-3. Translators should keep their `.po` files up to date by running `./manage.py makemessages` whenever `develop` is 
-   merged back into their `feature` branch. 
-3. Translators will be notified ahead of time when releases are about to cut so that they can get in any last-minute 
-   translations.
-
-### Releases
+#### Releases
 We deploy Lookit services on Google Kubernetes Engine; the CI/CD pipeline is defined over in the [Lookit Orchestrator 
 repo][lookit-orchestrator]. A GitHub integration with GCP allows us to trigger builds upon commit to either the `master`
 or `develop` branch; deploying to staging and production (respectively).
@@ -211,7 +239,7 @@ and should only ever add the following changes:
 - Changelog updates (manually authored)
 - The occasional cherry-picked commit from a Localization branch.
 
-#### How to Release
+##### How to Release
 
 **If you want to do releases, it's critical that you carefully read the section below**.
 The tooling we have put together enforces a strict adherence to Semantic Versioning. If you understand how Semantic
@@ -250,6 +278,7 @@ restrictions on the workflow.
 
 ## Contact
 Rico Rodriguez, Lead Software Engineer ([rrodrigu@mit.edu](mailto:rrodrigu@mit.edu))
+
 Kim Scott, Lookit Project Head ([kimscott@mit.edu](mailto:kimscott@mit.edu))
 
 
@@ -263,6 +292,7 @@ Kim Scott, Lookit Project Head ([kimscott@mit.edu](mailto:kimscott@mit.edu))
 [scoping-request]: https://github.com/lookit/lookit-api/issues/new?assignees=&labels=Scoping&template=scoping.md&title=
 [developer-request]: https://github.com/lookit/lookit-api/issues/new?assignees=&labels=Developer&template=developer-issue.md&title=
 [slack]: https://lookit-mit.slack.com
+[slack-docs]: https://lookit.readthedocs.io/en/develop/researchers-start-here.html#a-join-the-slack-workspace
 [git-flow]: https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow
 [git-flow-cheatsheet]: http://danielkummer.github.io/git-flow-cheatsheet/
 [git-flow-avh]: https://github.com/petervanderdoes/gitflow-avh
@@ -273,4 +303,5 @@ Kim Scott, Lookit Project Head ([kimscott@mit.edu](mailto:kimscott@mit.edu))
 [git-flow-vanilla-equivalent]: https://gist.github.com/JamesMGreene/cdd0ac49f90c987e45ac
 [pipe]: https://addpipe.com/
 [pipe-add-webhook]: https://addpipe.com/webhooks
+[django-i18n]: https://docs.djangoproject.com/en/dev/topics/i18n/
 
