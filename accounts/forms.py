@@ -4,12 +4,40 @@ from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import PasswordChangeForm as DjangoPasswordChangeForm
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.core.exceptions import ValidationError
+from django.forms import EmailField
 from django.utils.translation import gettext_lazy as _
 
 from accounts.backends import two_factor_auth_backend
 from accounts.models import Child, DemographicData, User
+
+
+class ForceLowercaseEmailField(EmailField):
+    def to_python(self, value):
+        return super().to_python(value).lower()
+
+
+class LowercaseUsernameUserCreationForm(UserCreationForm):
+    def clean(self):
+        """Check DB for case-insensitive matches on username.
+
+        TODO: Consider using a migration to render this code obsolete.
+        """
+        cleaned_data = super().clean()
+        username = cleaned_data.get("username")
+        user_model_class = type(self.instance)
+
+        try:
+            user_model_class.objects.get_by_natural_key(username)
+            raise ValidationError("A user with this username already exists!")
+        except user_model_class.DoesNotExist:
+            pass
+
+        return cleaned_data
+
+    class Meta(UserCreationForm.Meta):
+        field_classes = {"username": ForceLowercaseEmailField}
 
 
 class UserForm(forms.ModelForm):
@@ -124,7 +152,7 @@ class TOTPLoginForm(AuthenticationForm):
         return self.cleaned_data
 
 
-class ResearcherRegistrationForm(UserCreationForm):
+class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Don't autofill passwords, in the interest of security.
@@ -142,7 +170,7 @@ class ResearcherRegistrationForm(UserCreationForm):
             user.save()
         return user
 
-    class Meta:
+    class Meta(LowercaseUsernameUserCreationForm.Meta):
         model = User
         fields = ("username", "nickname", "given_name", "family_name")
         labels = {
@@ -152,7 +180,7 @@ class ResearcherRegistrationForm(UserCreationForm):
         }
 
 
-class ParticipantSignupForm(UserCreationForm):
+class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
     nickname = forms.CharField(required=True, max_length=255)
 
     def save(self, commit=True):
@@ -165,7 +193,7 @@ class ParticipantSignupForm(UserCreationForm):
             user.save()
         return user
 
-    class Meta:
+    class Meta(LowercaseUsernameUserCreationForm.Meta):
         model = User
         fields = ("username", "nickname")
         labels = {
@@ -183,6 +211,7 @@ class AccountUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
+        field_classes = {"username": ForceLowercaseEmailField}
         fields = ("username", "nickname")
         labels = {"username": _("Email address")}
 

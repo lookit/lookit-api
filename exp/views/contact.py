@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.utils.text import slugify
@@ -87,8 +88,10 @@ class StudyParticipantContactView(
         ctx["previous_messages"] = [
             {
                 "sender": {
-                    "uuid": message.sender.uuid,
-                    "full_name": message.sender.get_full_name(),
+                    "uuid": message.sender.uuid if message.sender else None,
+                    "full_name": message.sender.get_full_name()
+                    if message.sender
+                    else "<None>",
                 },
                 "subject": message.subject,
                 "recipients": [
@@ -105,7 +108,23 @@ class StudyParticipantContactView(
             for message in previous_messages
         ]
 
-        ctx["researchers"] = self.get_researchers()
+        # Populate options for 'sender' filter with existing senders' uuid & full name.
+        # These may not line up with researchers who currently have perms to send email (e.g.,
+        # when emails have been sent by an RA who has since left the lab), and in some cases
+        # a sender may be null because the account has been deleted or because the message was sent
+        # automatically by Lookit.
+
+        sender_ids = previous_messages.values_list("sender", flat=True)
+        senders = User.objects.filter(id__in=sender_ids).order_by("family_name")
+        ctx["senders"] = (
+            [
+                {"uuid": sender.uuid, "full_name": sender.get_full_name}
+                for sender in senders
+            ]
+            + [{"uuid": None, "full_name": "None"}]
+            if None in sender_ids
+            else []
+        )
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -115,8 +134,7 @@ class StudyParticipantContactView(
         """
         study = self.get_object()
 
-        # TODO: implement checks on these being in the list of study participants &
-        # appropriate for this message type
+        # TODO: consider modeling message type and checking recipients have opted in
         participant_uuids = request.POST.getlist("recipients")
         subject = request.POST["subject"]
         body = request.POST["body"]
@@ -126,8 +144,9 @@ class StudyParticipantContactView(
         )
 
         # TODO: Check into the performance of .iterator() with some real load testing
+        # Limit recipients to this study's participants
         outgoing_message.recipients.add(
-            *User.objects.filter(uuid__in=participant_uuids).iterator()
+            *study.participants.filter(uuid__in=participant_uuids).iterator()
         )
 
         outgoing_message.send_as_email()
@@ -136,8 +155,3 @@ class StudyParticipantContactView(
         return HttpResponseRedirect(
             reverse("exp:study-participant-contact", kwargs=dict(pk=study.pk))
         )
-
-    def get_researchers(self):
-        """Pulls researchers that can contact participants."""
-        study = self.get_object()
-        return study.users_with_study_perms(StudyPermission.CONTACT_STUDY_PARTICIPANTS)
