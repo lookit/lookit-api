@@ -1,0 +1,1341 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: MBAH_studiespage\n"
+"Language: tr\n"
+
+#: accounts/forms.py:64
+msgid "Email address"
+msgstr "Email adresi"
+
+#: accounts/forms.py:88
+msgid "It's time for another session of a study we are currently participating in"
+msgstr "Şu anda katıldığımız çalışmanın başka bir oturumunun zamanı geldi"
+
+#: accounts/forms.py:89
+msgid "A new study is available for one of my children"
+msgstr "Yeni çalışma çocuklarımdan biri için uygun"
+
+#: accounts/forms.py:90
+msgid "There's an update about a study we participated in (for example, results are published)"
+msgstr "Katıldığımız bir çalışma ile ilgili bir gelişme mevcut(örneğin, sonuçlar yayınlandı)"
+
+#: accounts/forms.py:91
+msgid "A researcher has questions about my individual responses (for example, if I report a technical problem during the study)"
+msgstr "Araştırmacının bireysel yanıtlarımla ilgili soruları var (örneğin, çalışma esnasında teknik bir problemi rapor edersem)"
+
+#: accounts/forms.py:99 accounts/forms.py:139
+msgid "What category(ies) does your family identify as?"
+msgstr "Hangi kategori(ler) ailenizi tanımlıyor?"
+
+#: accounts/forms.py:127
+msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
+msgstr "Virgülle ayrılmış listeyi giriniz: YYYY-AA-GG, YYYY-AA-GG, ..."
+
+#: accounts/forms.py:128
+msgid "Numerical answers only - a rough guess is fine!"
+msgstr "Yalnızca sayısal cevaplar- kabaca bir tahmin uygundur!"
+
+#: accounts/forms.py:132
+msgid "What country do you live in?"
+msgstr "Hangi ülkede yaşıyorsunuz?"
+
+#: accounts/forms.py:133
+msgid "What state do you live in?"
+msgstr "Hangi ilde yaşıyorsunuz?"
+
+#: accounts/forms.py:134
+msgid "How would you describe the area where you live?"
+msgstr "Yaşadığınız bölgeyi nasıl tanımlarsınız?"
+
+#: accounts/forms.py:135
+msgid "What language(s) does your family speak at home?"
+msgstr "Aileniz evinizde hangi dil(ler)i konuşuyor?"
+
+#: accounts/forms.py:136
+msgid "How many children do you have?"
+msgstr "Kaç tane çocuğunuz var?"
+
+#: accounts/forms.py:137
+msgid "For each child, please enter his or her birthdate:"
+msgstr "Lütfen her bir çocuğunuzun doğum tarihini girin: "
+
+#: accounts/forms.py:138
+msgid "How many parents/guardians do your children live with?"
+msgstr "Çocuğunuz kaç ebeveyn/bakıcı ile birlikte yaşıyor?"
+
+#: accounts/forms.py:140
+msgid "What is your age?"
+msgstr "Yaşınız kaç?"
+
+#: accounts/forms.py:141
+msgid "What is your gender?"
+msgstr "Cinsiyetiniz nedir?"
+
+#: accounts/forms.py:142
+msgid "What is the highest level of education you've completed?"
+msgstr "Tamamladığınız en yüksek eğitim seviyesi nedir?"
+
+#: accounts/forms.py:143
+msgid "What is the highest level of education your spouse has completed?"
+msgstr "Eşinizin tamamladığı en yüksek eğitim seviyesi nedir?"
+
+#: accounts/forms.py:144
+msgid "What is your approximate family yearly income (in US dollars)?"
+msgstr "Ailenizin yıllık geliri ortalama ne kadar (Türk Lirası)?"
+
+#: accounts/forms.py:145
+msgid "About how many children's books are there in your home?"
+msgstr "Evinizde tahmini kaç tane çocuk kitabı var?"
+
+#: accounts/forms.py:146
+msgid "Anything else you'd like us to know?"
+msgstr "Bilmemizi istediğiniz başka bir şey var mı?"
+
+#: accounts/forms.py:147
+msgid "How did you hear about Lookit?"
+msgstr "Lookit'den nasıl haberdar oldunuz?"
+
+#: accounts/forms.py:148
+msgid "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
+msgstr "Eğer cevabınız ortak velayet düzenlemelerine veya seyahatlere göre değişiyorsa, lütfen çocuğunuzun genellikle birlikte yaşadığı ebeveyn/bakıcı sayısını belirtin veya açıklayın."
+
+#: accounts/forms.py:162
+msgid "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
+msgstr "Bu, çocuğunuzun çalışmaya katıldığında tam olarak kaç yaşında olduğunu anlamamızı sağlar. Çocukların doğum tarihlerini veya okuyucunun doğum tarihini hesaplamasını sağlayacak bilgileri asla yayınlamayız."
+
+#: accounts/forms.py:168
+msgid "Birthdays cannot be in the future."
+msgstr "Doğum tarihi gelecek bir zamanda olamaz."
+
+#: accounts/forms.py:184 accounts/forms.py:224
+msgid "First Name"
+msgstr "İsim"
+
+#: accounts/forms.py:185 accounts/forms.py:225
+#: accounts/templates/accounts/participant_detail.html:38
+#: web/templates/web/children-list.html:112
+msgid "Birthday"
+msgstr "Doğum tarihi"
+
+#: accounts/forms.py:186 accounts/forms.py:226
+#: accounts/templates/accounts/participant_detail.html:62
+msgid "Gestational Age at Birth"
+msgstr "Doğumdaki Gebelik Dönemi"
+
+#: accounts/forms.py:187 accounts/forms.py:227
+msgid "Any additional information you'd like us to know"
+msgstr "Bilmemizi istediğiniz başka ek bilgi"
+
+#: accounts/forms.py:188 accounts/forms.py:228
+msgid "Characteristics and conditions"
+msgstr "Özellikler ve şartlar"
+
+#: accounts/forms.py:189 accounts/forms.py:229
+msgid "Languages this child is exposed to at home, school, or with another caregiver."
+msgstr "Bu çocuğun evde, okulda veya başka bir bakıcıdan maruz kaldığı diller."
+
+#: accounts/forms.py:193 accounts/forms.py:233
+msgid "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+msgstr "Bu, belirli bir çalışmaya katılması için doğru çocuğu seçmenizi sağlar. Takma ad veya baş harfler de uygundur! Çocuğunuzun ismini size gönderdiğimiz emaile ekleyebiliriz (örneğin, \"Merve için uygun olan yeni bir çalışma var!\") ama isimleri asla yayınlamayız veya araştırmalarımızda kullanmayız."
+
+#: accounts/forms.py:194 accounts/forms.py:234
+msgid "For instance, diagnosed developmental disorders or vision or hearing problems"
+msgstr "Örneğin, tanı almış gelişimsel bozukluklar ya da görme veya işitme problemleri"
+
+#: accounts/forms.py:195
+msgid "Please round down to the nearest full week of pregnancy completed"
+msgstr "Lütfen hamilelik haftasını tamamlanan en yakın tam haftaya yuvarlayın"
+
+#: accounts/migrations/0041_add_existing_conditions.py:12
+#: accounts/models.py:250 studies/fields.py:136
+msgid "Not sure or prefer not to answer"
+msgstr "Emin değilim veya cevap vermemeyi tercih ediyorum"
+
+#: accounts/migrations/0041_add_existing_conditions.py:13
+#: accounts/models.py:251 studies/fields.py:137
+msgid "Under 24 weeks"
+msgstr "24 haftanın altında"
+
+#: accounts/migrations/0041_add_existing_conditions.py:14
+#: accounts/models.py:252 studies/fields.py:138
+msgid "24 weeks"
+msgstr "24 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:15
+#: accounts/models.py:253 studies/fields.py:139
+msgid "25 weeks"
+msgstr "25 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:16
+#: accounts/models.py:254 studies/fields.py:140
+msgid "26 weeks"
+msgstr "26 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:17
+#: accounts/models.py:255 studies/fields.py:141
+msgid "27 weeks"
+msgstr "27 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:18
+#: accounts/models.py:256 studies/fields.py:142
+msgid "28 weeks"
+msgstr "28 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:19
+#: accounts/models.py:257 studies/fields.py:143
+msgid "29 weeks"
+msgstr "29 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:20
+#: accounts/models.py:258 studies/fields.py:144
+msgid "30 weeks"
+msgstr "30 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:21
+#: accounts/models.py:259 studies/fields.py:145
+msgid "31 weeks"
+msgstr "31 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:22
+#: accounts/models.py:260 studies/fields.py:146
+msgid "32 weeks"
+msgstr "32 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:23
+#: accounts/models.py:261 studies/fields.py:147
+msgid "33 weeks"
+msgstr "33 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:24
+#: accounts/models.py:262 studies/fields.py:148
+msgid "34 weeks"
+msgstr "34 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:25
+#: accounts/models.py:263 studies/fields.py:149
+msgid "35 weeks"
+msgstr "35 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:26
+#: accounts/models.py:264 studies/fields.py:150
+msgid "36 weeks"
+msgstr "36 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:27
+#: accounts/models.py:265 studies/fields.py:151
+msgid "37 weeks"
+msgstr "37 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:28
+#: accounts/models.py:266 studies/fields.py:152
+msgid "38 weeks"
+msgstr "38 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:29
+#: accounts/models.py:267 studies/fields.py:153
+msgid "39 weeks"
+msgstr "39 hafta"
+
+#: accounts/migrations/0041_add_existing_conditions.py:30
+#: accounts/models.py:268 studies/fields.py:154
+msgid "40 or more weeks"
+msgstr "40 veya daha fazla hafta"
+
+#: accounts/models.py:66
+msgid "Can View Organization"
+msgstr "Organizasyonu Görüntüleyebilir"
+
+#: accounts/models.py:67
+msgid "Can Edit Organization"
+msgstr "Organizasyonu Düzenleyebilir"
+
+#: accounts/models.py:68
+msgid "Can Create Organization"
+msgstr "Organizasyon Oluşturabilir"
+
+#: accounts/models.py:69
+msgid "Can Remove Organization"
+msgstr "Organizasyonu Kaldırabilir"
+
+#: accounts/models.py:70
+msgid "Can View Experimenter"
+msgstr "Deneyciyi Görüntüleyebilir"
+
+#: accounts/models.py:71
+msgid "Can View Analytics"
+msgstr "Analitikleri Görüntüleyebilir"
+
+#: accounts/models.py:228
+msgid "Can Create User"
+msgstr "Kullanıcı Yaratabilir"
+
+#: accounts/models.py:229
+msgid "Can View User"
+msgstr "Kullanıcı Görüntüleyebilir"
+
+#: accounts/models.py:230
+msgid "Can Edit User"
+msgstr "Kullanıcıyı Düzenleyebilir"
+
+#: accounts/models.py:231
+msgid "Can Remove User"
+msgstr "Kullanıcıyı Kaldırabilir"
+
+#: accounts/models.py:232
+msgid "Can View User Permissions"
+msgstr "Kullanıcı İzinlerini Görüntüleyebilir"
+
+#: accounts/models.py:233
+msgid "Can Edit User Permissions"
+msgstr "Kullanıcı İzinlerini Düzenleyebilir"
+
+#: accounts/models.py:234
+msgid "Can Read All User Data"
+msgstr "Bütün Kullanıcıların Verilerini Okuyabilir"
+
+#: accounts/models.py:235
+msgid "Can Read User Usernames"
+msgstr "Kullanıcıların Kullanıcı adlarını Okuyabilir"
+
+#: accounts/models.py:242 accounts/models.py:345
+msgid "male"
+msgstr "erkek"
+
+#: accounts/models.py:243 accounts/models.py:346
+msgid "female"
+msgstr "kadın"
+
+#: accounts/models.py:244 accounts/models.py:347
+msgid "other"
+msgstr "diğer"
+
+#: accounts/models.py:245 accounts/models.py:348 accounts/models.py:424
+msgid "prefer not to answer"
+msgstr "cevaplamamayı tercih ediyorum"
+
+#: accounts/models.py:335
+msgid "White"
+msgstr "Beyaz"
+
+#: accounts/models.py:336
+msgid "Hispanic, Latino, or Spanish origin"
+msgstr "Hispanik, Latin veya İspanyol kökenli"
+
+#: accounts/models.py:337
+msgid "Black or African American"
+msgstr "Siyahi veya Afrikalı Amerikalı"
+
+#: accounts/models.py:338
+msgid "Asian"
+msgstr "Asyalı"
+
+#: accounts/models.py:339
+msgid "American Indian or Alaska Native"
+msgstr "Amerikan Yerlisi veya Alaska Yerlisi"
+
+#: accounts/models.py:340
+msgid "Middle Eastern or North African"
+msgstr "Orta Doğulu veya Kuzey Afrikalı"
+
+#: accounts/models.py:341
+msgid "Native Hawaiian or Other Pacific Islander"
+msgstr "Hawaiian Yerlisi veya Diğer Pasifik Adasından"
+
+#: accounts/models.py:342
+msgid "Another race, ethnicity, or origin"
+msgstr "Başka bir ırk, etnisite veya köken"
+
+#: accounts/models.py:351 accounts/models.py:360
+msgid "some or attending high school"
+msgstr "Lise terk veya lise öğrencisi"
+
+#. @Neslıhan, do we have an equıvalent to hıgh school dıploma lıke GED in Turkey? I translated as "high school diploma or equivalent"
+#: accounts/models.py:352 accounts/models.py:361
+msgid "high school diploma or GED"
+msgstr "Lise diploması veya muadili"
+
+#: accounts/models.py:353 accounts/models.py:362
+msgid "some or attending college"
+msgstr "Üniversite terk veya üniversite öğrencisi"
+
+#: accounts/models.py:354 accounts/models.py:363
+msgid "2-year college degree"
+msgstr "İki yıllık üniversite mezunu"
+
+#: accounts/models.py:355 accounts/models.py:364
+msgid "4-year college degree"
+msgstr "Dört yıllık üniversite mezunu"
+
+#. again, will revise after seeing the context
+#: accounts/models.py:356 accounts/models.py:365
+msgid "some or attending graduate or professional school"
+msgstr "Yüksek lisans veya meslek yüksekokulu terk veya öğrencisi"
+
+#. Professioal degree?
+#: accounts/models.py:357 accounts/models.py:366
+msgid "graduate or professional degree"
+msgstr "Yüksek lisans veya meslek yüksekokulu mezunu"
+
+#. I would translate "I don't have a spouse or partner"
+#: accounts/models.py:367
+msgid "not applicable - no spouse or partner"
+msgstr "geçersiz - eş veya partnerim yok"
+
+#: accounts/models.py:370 accounts/models.py:401
+msgid "0"
+msgstr "0"
+
+#: accounts/models.py:371 accounts/models.py:398
+msgid "1"
+msgstr "1"
+
+#: accounts/models.py:372 accounts/models.py:398
+msgid "2"
+msgstr "2"
+
+#: accounts/models.py:373
+msgid "3"
+msgstr "3"
+
+#: accounts/models.py:374
+msgid "4"
+msgstr "4"
+
+#: accounts/models.py:375
+msgid "5"
+msgstr "5"
+
+#: accounts/models.py:376
+msgid "6"
+msgstr "6"
+
+#: accounts/models.py:377
+msgid "7"
+msgstr "7"
+
+#: accounts/models.py:378
+msgid "8"
+msgstr "8"
+
+#: accounts/models.py:379
+msgid "9"
+msgstr "9"
+
+#: accounts/models.py:380
+msgid "10"
+msgstr "10"
+
+#: accounts/models.py:381
+msgid "More than 10"
+msgstr "11"
+
+#: accounts/models.py:384
+msgid "under 18"
+msgstr "18 yaş altı"
+
+#: accounts/models.py:385
+msgid "18-21"
+msgstr "18-21"
+
+#: accounts/models.py:386
+msgid "22-24"
+msgstr "22-24"
+
+#: accounts/models.py:387
+msgid "25-29"
+msgstr "25-29"
+
+#: accounts/models.py:388
+msgid "30-34"
+msgstr "30-34"
+
+#: accounts/models.py:389
+msgid "35-39"
+msgstr "35-39"
+
+#: accounts/models.py:390
+msgid "40-44"
+msgstr "40-44"
+
+#: accounts/models.py:391
+msgid "45-49"
+msgstr "45-49"
+
+#: accounts/models.py:392
+msgid "50-59"
+msgstr "50-59"
+
+#: accounts/models.py:393
+msgid "60-69"
+msgstr "60-69"
+
+#: accounts/models.py:394
+msgid "70 or over"
+msgstr "70 veya üstü"
+
+#: accounts/models.py:398
+msgid "3 or more"
+msgstr "3 veya daha fazla"
+
+#: accounts/models.py:398
+msgid "varies"
+msgstr "değişiyor"
+
+#: accounts/models.py:402
+msgid "5000"
+msgstr "5000"
+
+#: accounts/models.py:403
+msgid "10000"
+msgstr "10000"
+
+#: accounts/models.py:404
+msgid "15000"
+msgstr "15000"
+
+#: accounts/models.py:405
+msgid "20000"
+msgstr "20000"
+
+#: accounts/models.py:406
+msgid "30000"
+msgstr "30000"
+
+#: accounts/models.py:407
+msgid "40000"
+msgstr "40000"
+
+#: accounts/models.py:408
+msgid "50000"
+msgstr "50000"
+
+#: accounts/models.py:409
+msgid "60000"
+msgstr "60000"
+
+#: accounts/models.py:410
+msgid "70000"
+msgstr "70000"
+
+#: accounts/models.py:411
+msgid "80000"
+msgstr "80000"
+
+#: accounts/models.py:412
+msgid "90000"
+msgstr "90000"
+
+#: accounts/models.py:413
+msgid "100000"
+msgstr "100000"
+
+#: accounts/models.py:414
+msgid "110000"
+msgstr "110000"
+
+#: accounts/models.py:415
+msgid "120000"
+msgstr "120000"
+
+#: accounts/models.py:416
+msgid "130000"
+msgstr "130000"
+
+#: accounts/models.py:417
+msgid "140000"
+msgstr "140000"
+
+#: accounts/models.py:418
+msgid "150000"
+msgstr "150000"
+
+#: accounts/models.py:419
+msgid "160000"
+msgstr "160000"
+
+#: accounts/models.py:420
+msgid "170000"
+msgstr "170000"
+
+#: accounts/models.py:421
+msgid "180000"
+msgstr "180000"
+
+#: accounts/models.py:422
+msgid "190000"
+msgstr "190000"
+
+#: accounts/models.py:423
+msgid "over 200000"
+msgstr "200000 üstü"
+
+#: accounts/models.py:427
+msgid "urban"
+msgstr "kentsel"
+
+#: accounts/models.py:427
+msgid "suburban"
+msgstr "banliyö"
+
+#: accounts/models.py:427
+msgid "rural"
+msgstr "kırsal"
+
+#. we dont have states in Turkey. So I prefer to use a word equivalent to the word region
+#: accounts/models.py:477
+msgid "Select a State"
+msgstr "Bölge Seçiniz"
+
+#: accounts/templates/account/local_user_exists.html:7
+#: accounts/templates/account/local_user_exists.html:13
+#: accounts/templates/account/login_errored_cancelled.html:7
+#: accounts/templates/account/login_errored_cancelled.html:13
+msgid "Login Unsuccessful"
+msgstr "Giriş Başarısız"
+
+#: accounts/templates/account/local_user_exists.html:16
+msgid "A Lookit study participant exists with the email address for your OSF user account. Create an OSF user with a different email address and try logging into Experimenter with that. "
+msgstr "OSF kullanıcı hesabınız için kullandığınız email adresi ile bir Lookit çalışması katılımcısı mevcuttur. Farklı bir email adresi ile bir OSF kullanıcısı oluşturun ve Deneyci'ye bununla oturum açmayı deneyin."
+
+#: accounts/templates/account/local_user_exists.html:19
+msgid "If this should not have occurred and the issue persists, please report it to <a href="
+msgstr "Eğer bunun olmaması gerekiyorsa ve problem devam ediyorsa lütfen <a href='a rapor ediniz."
+
+#: accounts/templates/account/local_user_exists.html:22
+#: accounts/templates/account/login_errored_cancelled.html:19
+msgid "Return to Experimenter"
+msgstr "Deneyci'ye geri dön"
+
+#: accounts/templates/account/login.html:7
+msgid "Sign In"
+msgstr "Oturum aç"
+
+#: accounts/templates/account/login.html:13
+#: web/templates/registration/login.html:25
+#: web/templates/web/_navigation.html:47
+msgid "Login"
+msgstr "Giriş yap"
+
+#: accounts/templates/account/login.html:20
+msgid "\n"
+"          Please sign in to the Open Science Framework or register for an account and sign in below.\n"
+"      </p>\n"
+"      <p>\n"
+"        By using or requesting access to Lookit, you agree that you have read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</a>.\n"
+"        "
+msgstr "\n"
+"	Lütfen Open Science Framework'te oturum açın ya da bir hesap için kaydolun ve aşağıdan oturum açın.\n"
+"</p>\n"
+"<p>\n"
+"Lookit'i kullanarak veya erişim talep ederek, <a href=\"/termsofuse/\" target=\"_blank\">Terms of Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</a> i okuyup kabul ettiğinizi onaylamış olursunuz."
+
+#: accounts/templates/account/login_errored_cancelled.html:16
+msgid "If this should not have occurred and the issue persists, please report it to <a href=\"mailto:support@osf.io\">support@osf.io</a>"
+msgstr "Eğer bunun olmaması gerekiyorsa ve problem devam ediyorsa lütfen <a href=\"mailto:support@osf.io\">support@osf.io</a>'a rapor ediniz."
+
+#: accounts/templates/accounts/participant_detail.html:15
+msgid "All Participants"
+msgstr "Tüm Katılımcılar"
+
+#: accounts/templates/accounts/participant_detail.html:23
+msgid "Participant ID"
+msgstr "Katılımcı ID"
+
+#: accounts/templates/accounts/participant_detail.html:24
+msgid "Last Active:"
+msgstr "Son aktif olma:"
+
+#: accounts/templates/accounts/participant_detail.html:25
+msgid "Participant global ID:"
+msgstr "Katılımcı global ID"
+
+#: accounts/templates/accounts/participant_detail.html:31
+#: web/templates/web/children-list.html:105
+msgid "Children"
+msgstr "Çocuk"
+
+#: accounts/templates/accounts/participant_detail.html:46
+msgid "Age"
+msgstr "Yaş"
+
+#: accounts/templates/accounts/participant_detail.html:54
+msgid "Gender"
+msgstr "Cinsiyet"
+
+#: accounts/templates/accounts/participant_detail.html:70
+msgid "Additional Info"
+msgstr "Ek Bilgi"
+
+#: accounts/templates/accounts/participant_detail.html:79
+msgid "No children profiles registered!"
+msgstr "Kayıtlı çocuk profili yok."
+
+#: accounts/templates/accounts/participant_detail.html:83
+msgid "Latest Demographic Data"
+msgstr "Son Demografik Veri"
+
+#: accounts/templates/accounts/participant_detail.html:86
+msgid "Country"
+msgstr "Ülke"
+
+#: accounts/templates/accounts/participant_detail.html:94
+msgid "State"
+msgstr "Bölge"
+
+#: accounts/templates/accounts/participant_detail.html:102
+msgid "Area description"
+msgstr "Bölge tarifi"
+
+#: accounts/templates/accounts/participant_detail.html:110
+msgid "Languages Spoken at Home"
+msgstr "Evde konuşulan diller"
+
+#: accounts/templates/accounts/participant_detail.html:118
+msgid "Number of Children"
+msgstr "Çocuk sayısı"
+
+#: accounts/templates/accounts/participant_detail.html:126
+msgid "Children current ages"
+msgstr "Çocukların güncel yaşları"
+
+#. @Neslıhan
+#. When I translate it like this, it looks like ''nanny'' instead of ''guardian''. Do we have a better word for this context?
+#: accounts/templates/accounts/participant_detail.html:134
+msgid "Number of Guardians"
+msgstr "Bakıcı sayısı"
+
+#: accounts/templates/accounts/participant_detail.html:142
+msgid "Explanation for Guardians:"
+msgstr "Bakıcılar için Açıklama:"
+
+#: accounts/templates/accounts/participant_detail.html:150
+msgid "Race"
+msgstr "Irk"
+
+#: accounts/templates/accounts/participant_list.html:37
+#: accounts/templates/accounts/participant_list.html:58
+msgid "Nickname"
+msgstr "Kullanıcı adı"
+
+#: exp/templates/exp/dashboard.html:17
+msgid "Dashboard"
+msgstr "Gösterge Paneli"
+
+#: studies/fields.py:45
+msgid "Twin"
+msgstr "İkiz"
+
+#: studies/fields.py:46
+msgid "Triplet"
+msgstr "Üçüz"
+
+#: studies/fields.py:47
+msgid "Quadruplet"
+msgstr "Dördüz"
+
+#: studies/fields.py:48
+msgid "Quintuplet"
+msgstr "Beşiz"
+
+#: studies/fields.py:49
+msgid "Sextuplet"
+msgstr "Altız"
+
+#: studies/fields.py:50
+msgid "Septuplet"
+msgstr "Yediz"
+
+#: studies/fields.py:51
+msgid "Octuplet"
+msgstr "Sekiziz"
+
+#: studies/fields.py:124
+msgid "Not answered"
+msgstr "Cevaplanmadı"
+
+#: studies/fields.py:125
+msgid "Other"
+msgstr "Diğer"
+
+#: studies/fields.py:126
+msgid "Male"
+msgstr "Erkek"
+
+#: studies/fields.py:127
+msgid "Female"
+msgstr "Kadın"
+
+#: studies/models.py:113
+msgid "The Users who belong to this Lab. A user in this lab will be able to create studies associated with this Lab and can be added to this Lab's studies."
+msgstr "Bu Lab'a ait olan kullanıcılar. Bu Labdaki kullanıcı, lab ile bağlantılı çalışmalar yaratabilecek ve bu Lab'ın çalışmalarına eklenebilecektir."
+
+#: studies/models.py:122
+msgid "The Users who have requested to join this Lab."
+msgstr "Bu Lab'a katılmayı talep eden kullanıcılar"
+
+#: web/templates/registration/logged_out.html:6
+msgid "You've successfully logged out."
+msgstr "Başarılı bir şekilde çıkış yaptınız."
+
+#: web/templates/registration/login.html:8
+#: web/templates/web/studies-history.html:9
+#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
+msgid "Your username and password didn't match. Please try again."
+msgstr "Kullanıcı adınız ve şifreniz eşleşmedi. Lütfen tekrar deneyiniz."
+
+#: web/templates/registration/login.html:18
+msgid "Participant Login"
+msgstr "Katılımcı üye girişi"
+
+#: web/templates/registration/login.html:32
+msgid "Forgot password?"
+msgstr "Şifremi unuttum?"
+
+#: web/templates/registration/login.html:33
+msgid "Looking for "
+msgstr "Şunu arıyorum"
+
+#: web/templates/registration/login.html:33
+msgid "researcher login"
+msgstr "Araştırmacı üye girişi"
+
+#. @Sho context?
+#: web/templates/registration/login.html:33
+msgid "instead?"
+msgstr "onun yerine?"
+
+#: web/templates/registration/login.html:34
+msgid "New to Lookit?"
+msgstr "Lookit'te yeni misiniz?"
+
+#: web/templates/registration/login.html:34
+msgid "Create an account!"
+msgstr "Hesap oluştur!"
+
+#: web/templates/registration/password_change_done.html:11
+msgid "Password changed"
+msgstr "Şifre değiştirildi"
+
+#: web/templates/registration/password_change_done.html:15
+msgid "Your password was changed."
+msgstr "Şifreniz değiştirildi."
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Documentation"
+msgstr "Belgeler"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Change password"
+msgstr "Şifreyi değiştir"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Log out"
+msgstr "Çıkış yap"
+
+#: web/templates/registration/password_change_form.html:7
+#: web/templates/web/home.html:3 web/templates/web/home.html:7
+msgid "Home"
+msgstr "Anasayfa"
+
+#: web/templates/registration/password_change_form.html:8
+msgid "Password change"
+msgstr "Şifre değiştirme"
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the error below."
+msgstr "Lütfen aşağıdaki hatayı düzeltiniz."
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the errors below."
+msgstr "Lütfen aşağıdaki hataları düzeltiniz."
+
+#: web/templates/registration/password_change_form.html:26
+msgid "Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly."
+msgstr "Lütfen güvenlik için eski şifrenizi girin ve daha sonra yeni şifrenizi doğru yazdığınızı onaylayabilmemiz için iki kez girin."
+
+#: web/templates/registration/password_change_form.html:54
+#: web/templates/registration/password_reset_confirm.html:31
+msgid "Change my password"
+msgstr "Şifremi değiştir"
+
+#. @Hasan i think we should use "sıfırlama" like most of the Turkish websites
+#: web/templates/registration/password_reset_complete.html:11
+msgid "Password reset complete"
+msgstr "Şifre sıfırlama tamamlandı"
+
+#: web/templates/registration/password_reset_complete.html:15
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr "Şifreniz oluşturuldu. Şimdi giriş yapabilirsiniz."
+
+#: web/templates/registration/password_reset_complete.html:17
+msgid "Log in"
+msgstr "Giriş yap"
+
+#: web/templates/registration/password_reset_confirm.html:11
+msgid "Password reset confirmation"
+msgstr "Şifre sıfırlama onayı"
+
+#: web/templates/registration/password_reset_confirm.html:17
+msgid "Please enter your new password twice so we can verify you typed it in correctly."
+msgstr "Lütfen doğru yazdığınızı onaylayabilmemiz için yeni şifrenizi iki kez giriniz."
+
+#: web/templates/registration/password_reset_confirm.html:23
+msgid "New password:"
+msgstr "Yeni şifre:"
+
+#: web/templates/registration/password_reset_confirm.html:28
+msgid "Confirm password:"
+msgstr "Şifrenizi onaylayın:"
+
+#: web/templates/registration/password_reset_confirm.html:37
+msgid "The password reset link was invalid, possibly because it has already been used.  Please request a new password reset."
+msgstr "Şifre sıfırlama bağlantısı geçersizdir çünkü muhtemelen daha önce kullanıldı. Lütfen yeni bir şifre sıfırlama isteği gönderin."
+
+#: web/templates/registration/password_reset_done.html:15
+msgid "We've emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly."
+msgstr "Şifrenizi sıfırlamanız için gerekli yönergeleri email adresinize gönderdik. Eğer girdiğiniz email adresi ile bir hesap mevcutsa, kısa bir süre içinde posta kutunuzda olması gerekiyor."
+
+#. @Hasan Turkish version of Gmail uses "spam" but adding "gereksiz" with slash mark seems useful
+#: web/templates/registration/password_reset_done.html:17
+msgid "If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder."
+msgstr "Email'i almadıysanız lütfen kayıt yaptığınız email adresini yazdığınızdan emin olun ve e-posta adresinizin spam/gereksiz klasörünü kontrol edin."
+
+#: web/templates/registration/password_reset_email.html:2
+msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
+msgstr "Bu emaili alıyorsunuz çünkü %(site_name) adresindeki hesabınız için şifrenizi sıfırlama talebinde bulundunuz."
+
+#: web/templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "Lütfen bir sonraki sayfaya gidin ve yeni bir şifre seçin:"
+
+#: web/templates/registration/password_reset_email.html:8
+msgid "Your username, in case you've forgotten:"
+msgstr "Kullanıcı adınız, unuttuysanız:"
+
+#: web/templates/registration/password_reset_email.html:10
+msgid "Thanks for using our site!"
+msgstr "Sitemizi kullandığınız için teşekkürler!"
+
+#: web/templates/registration/password_reset_email.html:12
+msgid "The %(site_name)s team"
+msgstr "%(site_name)nın takımı"
+
+#. @Hasan i would use "yönerge" but "talimat" is also fine
+#: web/templates/registration/password_reset_form.html:15
+msgid "Forgotten your password? Enter your email address below, and we'll email instructions for setting a new one."
+msgstr "Şifrenizi mi unuttunuz? Aşağıya e-mailinizi girin, size yeni bir şifre belirlemeniz için yönergeleri mail atalım."
+
+#: web/templates/registration/password_reset_form.html:21
+msgid "Email address:"
+msgstr "Email adresi:"
+
+#: web/templates/registration/password_reset_form.html:24
+msgid "Reset my password"
+msgstr "Şifremi sıfırla"
+
+#: web/templates/web/_account-navigation.html:2
+msgid "Account information"
+msgstr "Hesap bilgisi"
+
+#: web/templates/web/_account-navigation.html:2
+msgid "Change your name, email, or password."
+msgstr "İsminizi, email adresinizi veya şifrenizi değiştirin."
+
+#: web/templates/web/_account-navigation.html:3
+msgid "Demographic Survey"
+msgstr "Demografik Anket"
+
+#: web/templates/web/_account-navigation.html:3
+msgid "Tell us more about yourself."
+msgstr "Bize biraz daha kendinizden bahsedin."
+
+#: web/templates/web/_account-navigation.html:4
+msgid "Children Information"
+msgstr "Çocuk Bilgisi"
+
+#: web/templates/web/_account-navigation.html:4
+msgid "Add or edit participant information."
+msgstr "Katılımcı bilgisi ekle veya düzenle"
+
+#: web/templates/web/_account-navigation.html:5
+#: web/templates/web/participant-email-preferences.html:4
+msgid "Email Preferences"
+msgstr "Email tercihleri"
+
+#: web/templates/web/_account-navigation.html:5
+msgid "Edit when you can be contacted."
+msgstr "İletişime geçilebileceğiniz zamanları düzenle"
+
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
+msgid "Lookit"
+msgstr "Lookit"
+
+#: web/templates/web/_navigation.html:17
+msgid "Experimenter"
+msgstr "Deneyci"
+
+#: web/templates/web/_navigation.html:30 web/templates/web/studies-list.html:4
+msgid "Studies"
+msgstr "Çalışmalar"
+
+#: web/templates/web/_navigation.html:31
+msgid "FAQ"
+msgstr "SSS"
+
+#: web/templates/web/_navigation.html:32
+msgid "The Scientists"
+msgstr "Bilim insanları"
+
+#: web/templates/web/_navigation.html:33
+msgid "Resources"
+msgstr "Kaynaklar"
+
+#: web/templates/web/_navigation.html:40
+msgid "Participant account"
+msgstr "Katılımcı hesabı"
+
+#: web/templates/web/_navigation.html:42
+msgid "Hi"
+msgstr "Merhaba"
+
+#: web/templates/web/_navigation.html:44
+msgid "Logout"
+msgstr "Çıkış yapma"
+
+#: web/templates/web/_navigation.html:46
+msgid "Sign up"
+msgstr "Kayıt ol"
+
+#: web/templates/web/child-update.html:4
+#: web/templates/web/studies-history.html:116
+msgid "Child"
+msgstr "Çocuk"
+
+#: web/templates/web/child-update.html:16
+#: web/templates/web/children-list.html:67
+#: web/templates/web/demographic-data-update.html:78
+#: web/templates/web/participant-email-preferences.html:16
+#: web/templates/web/participant-update.html:15
+msgid "My Account"
+msgstr "Hesabım"
+
+#: web/templates/web/child-update.html:31
+msgid "Update"
+msgstr "Güncelle"
+
+#: web/templates/web/child-update.html:41
+msgid "Delete"
+msgstr "Sil"
+
+#: web/templates/web/child-update.html:46
+#: web/templates/web/demographic-data-update.html:102
+#: web/templates/web/participant-email-preferences.html:38
+#: web/templates/web/participant-update.html:35
+#: web/templates/web/participant-update.html:54
+msgid "Save"
+msgstr "Kaydet"
+
+#: web/templates/web/children-list.html:40
+msgid "Empty birthday"
+msgstr "Doğum tarihi boş"
+
+#: web/templates/web/children-list.html:47
+msgid " day"
+msgstr "gün"
+
+#: web/templates/web/children-list.html:47
+msgid " days"
+msgstr "günler"
+
+#: web/templates/web/children-list.html:49
+msgid " month"
+msgstr "ay"
+
+#: web/templates/web/children-list.html:49
+msgid " months"
+msgstr "aylar"
+
+#: web/templates/web/children-list.html:51
+msgid " year"
+msgstr "yıl"
+
+#: web/templates/web/children-list.html:51
+msgid " years"
+msgstr "yıllar"
+
+#: web/templates/web/children-list.html:61
+#: web/templates/web/children-list.html:77
+#: web/templates/web/children-list.html:82
+#: web/templates/web/children-list.html:94
+msgid "Add Child"
+msgstr "Çocuk Ekle"
+
+#: web/templates/web/children-list.html:61
+#: web/templates/web/children-list.html:77
+msgid "Hide Form"
+msgstr "Formu Gizle"
+
+#: web/templates/web/children-list.html:92
+#: web/templates/web/demographic-data-update.html:100
+#: web/templates/web/participant-email-preferences.html:36
+#: web/templates/web/participant-update.html:33
+#: web/templates/web/participant-update.html:52
+msgid "Cancel"
+msgstr "İptal et"
+
+#: web/templates/web/children-list.html:111
+msgid "Name"
+msgstr "İsim"
+
+#: web/templates/web/children-list.html:121
+msgid "Update child"
+msgstr "Çocuk bilgisini güncelle"
+
+#: web/templates/web/children-list.html:128
+msgid "No child profiles registered!"
+msgstr "Hiçbir çocuk profili kaydedilmedi!"
+
+#: web/templates/web/demographic-data-update.html:4
+msgid "Update demographics"
+msgstr "Demografikleri güncelle"
+
+#: web/templates/web/demographic-data-update.html:89
+msgid "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning."
+msgstr "Internet tabanlı deneyleri geliştirmemizin bir nedeni çalışmalarımızda daha çok aile çeşidini temsil edebilmektir. Bu sorulara vereceğiniz cevaplar bizim hangi hedef kitleye ulaştığımızı ve aynı zamanda birden çok dili konuşmak veya kendinden büyük kardeş sahibi olmak gibi faktörlerin çocukların öğrenmesini nasıl etkilediğini anlamamızı sağlayacak."
+
+#: web/templates/web/demographic-data-update.html:90
+msgid "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video."
+msgstr "Çalışma videolarınızın bilimsel veya tanıtım amaçlı kullanılmasına izin verseniz bile, demografik bilgileriniz asla videonuzla bağlantılı olarak yayınlanmaz."
+
+#: web/templates/web/participant-email-preferences.html:27
+msgid "I would like to be contacted when:"
+msgstr "Şu durumda iletişime geçilmesini isterim:"
+
+#: web/templates/web/participant-signup.html:4
+msgid "Signup"
+msgstr "Kaydol"
+
+#: web/templates/web/participant-signup.html:24
+msgid "By clicking 'Create Account', I agree that I have read and accepted the "
+msgstr "'Hesap Oluştur' a tıklayarak, şunu okuduğumu ve kabul ettiğimi kabul ediyorum"
+
+#: web/templates/web/participant-signup.html:24
+msgid "Privacy Statement"
+msgstr "Gizlilik Bildirimi"
+
+#: web/templates/web/participant-signup.html:27
+msgid "Create Account"
+msgstr "Hesap oluştur"
+
+#: web/templates/web/participant-update.html:4
+msgid "Update account information"
+msgstr "Hesap bilgisini güncelle"
+
+#: web/templates/web/participant-update.html:25
+msgid "Account Information"
+msgstr "Hesap Bilgisi"
+
+#: web/templates/web/participant-update.html:44
+msgid "Change Your Password"
+msgstr "Şifreni değiştir"
+
+#: web/templates/web/studies-history.html:4
+#: web/templates/web/studies-history.html:27
+msgid "Past Studies"
+msgstr "Geçmiş Çalışmalar"
+
+#: web/templates/web/studies-history.html:16
+#: web/templates/web/studies-list.html:16
+msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
+msgstr "Hesabınızın bu sayfaya erişimi yok. Lütfen devam etmek için erişimi olan bir hesapla giriş yapınız."
+
+#: web/templates/web/studies-history.html:18
+#: web/templates/web/studies-list.html:18
+msgid "Please login to see this page."
+msgstr "Lütfen bu sayfayı görmek için giriş yapınız."
+
+#: web/templates/web/studies-history.html:34
+#: web/templates/web/studies-list.html:38
+msgid "Current studies"
+msgstr "Mevcut çalışmalar"
+
+#: web/templates/web/studies-history.html:37
+#: web/templates/web/studies-list.html:41
+msgid "Your past studies"
+msgstr "Geçmiş çalışmalarınız"
+
+#: web/templates/web/studies-history.html:50
+msgid "Here you can view your studies and see comments left by researchers:"
+msgstr "Burada çalışmalarınızı görüntüleyebilir ve araştırmacılar tarafından yapılan yorumları görebilirsiniz."
+
+#: web/templates/web/studies-history.html:67
+msgid "Study Thumbnail"
+msgstr "Çalışma Örnek Resmi"
+
+#: web/templates/web/studies-history.html:79
+msgid "Eligibility:"
+msgstr "Uygunluk:"
+
+#: web/templates/web/studies-history.html:80
+msgid "Contact:"
+msgstr "İletişim:"
+
+#: web/templates/web/studies-history.html:81
+msgid "Still collecting data?"
+msgstr "Hala veri toplanıyor mu?"
+
+#: web/templates/web/studies-history.html:81
+msgid "Yes"
+msgstr "Evet"
+
+#: web/templates/web/studies-history.html:81
+msgid "No"
+msgstr "Hayır"
+
+#: web/templates/web/studies-history.html:82
+msgid "Compensation: "
+msgstr "Ödeme:"
+
+#: web/templates/web/studies-history.html:87
+msgid "Study Responses"
+msgstr "Çalışma Yanıtları"
+
+#: web/templates/web/studies-history.html:118
+msgid "Date"
+msgstr "Tarih"
+
+#: web/templates/web/studies-history.html:120
+msgid "Consent status"
+msgstr "Onay durumu"
+
+#: web/templates/web/studies-history.html:123
+msgid "Approved"
+msgstr "Onaylandı"
+
+#. @Neslihan here we also need to agree on the translatıon of 'consent'
+#: web/templates/web/studies-history.html:123
+msgid "Your consent video was reviewed by a researcher and is valid."
+msgstr "Onay videonuz araştırmacı tarafından değerlendirilmiş ve geçerli bulunmuştur."
+
+#: web/templates/web/studies-history.html:125
+msgid "Pending"
+msgstr "Beklemede"
+
+#: web/templates/web/studies-history.html:125
+msgid "Your consent video has not yet been reviewed by a researcher."
+msgstr "Onay videonuz henüz araştırmacı tarafından değerlendirilmedi."
+
+#: web/templates/web/studies-history.html:127
+msgid "Invalid"
+msgstr "Geçersiz"
+
+#: web/templates/web/studies-history.html:127
+msgid "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers."
+msgstr "Onay videonuz ile ilgili teknik bir problem yaşandı veya video onay beyanınızı yüksek sesle okuduğunuzu göstermedi. Bu oturumdaki diğer verileriniz çalışmadaki araştırmacılar tarafından görüntülenemeyecek veya kullanılamayacak."
+
+#: web/templates/web/studies-history.html:129
+msgid "No information about consent video review status."
+msgstr "Onay videosunun değerlendirilme durumuyla ilgili bilgi bulunmuyor."
+
+#: web/templates/web/studies-history.html:154
+msgid "You have not yet participated in any studies."
+msgstr "Henüz herhangi bir çalışmaya katılmadınız."
+
+#: web/templates/web/studies-list.html:32
+msgid "Current Studies"
+msgstr "Mevcut Çalışmalar"
+
+#: web/templates/web/studies-list.html:53
+msgid "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate."
+msgstr "Katılmak için Chrome veya Firefox çalıştıran dizüstü veya masaüstü bir bilgisayara (mobil cihaz değil) ihtiyacınız olacağına lütfen dikkat ediniz."
+
+#: web/templates/web/studies-list.html:80
+msgid "See details"
+msgstr "Detayları gör"
+
+#: web/templates/web/studies-list.html:87
+msgid "We are not running any studies at this time!"
+msgstr "Şu anda herhangi bir çalışma yürütmüyoruz!"
+
+#: web/templates/web/studies-list.html:93
+msgid "Looking for more ways to contribute to research from home? Check out <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> for even more studies!"
+msgstr "Araştırmalara evden katkıda bulunmanın daha fazla yollarını mı arıyorsunuz? Daha çok çalışma için <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> sitesine göz atın."
+
+#: web/templates/web/study-detail.html:93
+msgid "Study overview"
+msgstr "Çalışma tanıtımı"
+
+#: web/templates/web/study-detail.html:96
+msgid "Back to list"
+msgstr "Listeye geri dön"
+
+#: web/templates/web/study-detail.html:112
+msgid "Eligibility criteria"
+msgstr "Uygunluk kriterleri"
+
+#: web/templates/web/study-detail.html:116
+msgid "Duration"
+msgstr "Süre"
+
+#: web/templates/web/study-detail.html:121
+msgid "Compensation"
+msgstr "Ödeme"
+
+#: web/templates/web/study-detail.html:126
+msgid "What happens"
+msgstr "Ne oluyor"
+
+#: web/templates/web/study-detail.html:130
+msgid "What we're studying"
+msgstr "Ne çalışıyoruz"
+
+#. @Hasan i think Lookit cannot fill the dots you left. So I would use "şunlar tarafından yürütülmektedir:" to allow site to complete sentence properly
+#: web/templates/web/study-detail.html:134
+msgid "This study is conducted by"
+msgstr "Bu çalışma şu kişiler tarafından yürütülmektedir"
+
+#: web/templates/web/study-detail.html:138
+msgid "Would you like to participate in this study?"
+msgstr "Bu çalışmaya katılmak ister misiniz?"
+
+#: web/templates/web/study-detail.html:140
+msgid "Log in to participate"
+msgstr "Katılmak için giriş yapın:"
+
+#: web/templates/web/study-detail.html:148
+msgid "Select a child:"
+msgstr "Çocuk seçin:"
+
+#: web/templates/web/study-detail.html:150
+msgid "None Selected"
+msgstr "Hiçbiri seçilmedi"
+
+#. @Sho what is the example sentence ın Englısh wıth the code ınserted ınbetween?
+#: web/templates/web/study-detail.html:161
+msgid "Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research!"
+msgstr "Çocuğunuz bu çalışma için önerilen yaş aralığından küçük. Eğer çocuğunuz uygun yaş aralığına gelene kadar <span id='wait-until'>until</span> bekleyebilirseniz, toplanan veriyi araştırmamızda kullanabileceğiz."
+
+#: web/templates/web/study-detail.html:162
+msgid "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research."
+msgstr "Çocuğunuz bu çalışma için önerilen yaş aralığından büyük. İsterseniz çalışmayı yine de deneyebilirsiniz ancak toplanan veriyi araştırmamızda kullanamayacağız."
+
+#: web/templates/web/study-detail.html:163
+msgid "Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers"
+msgstr "Çocuğunuz bu çalışma için belirlenen uygunluk kriterlerini karşılamıyor. İsterseniz çalışmayı yine de deneyebilirsiniz ancak toplanan veriyi araştırmamızda kullanamayacağız. Lütfen çalışma araştırmacıları ile irtibata geçiniz."
+
+#: web/templates/web/study-detail.html:165
+msgid "Build experiment runner to preview"
+msgstr "Önizleme için deney oynatıcısını oluşturun."
+
+#: web/templates/web/study-detail.html:167
+msgid "Participate"
+msgstr "Katıl"
+
+#: web/templates/web/study-detail.html:168
+msgid "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to."
+msgstr "Çalışma protokolünü güncellediğinizde ne olacağını kolayca görmek için yukarıdaki butonun size göndereceği bağlantıyı yer imi çubuğuna ekleyin."
+

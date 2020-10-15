@@ -16,6 +16,7 @@ from accounts.models import Child, DemographicData, User
 from project import settings
 from studies.models import Response, Study, Video
 
+from django.utils.translation import gettext_lazy as _
 
 @receiver(signals.user_logged_out)
 def on_user_logged_out(sender, request, **kwargs):
@@ -41,7 +42,7 @@ class ParticipantSignupView(generic.CreateView):
         login(
             self.request, new_user, backend="django.contrib.auth.backends.ModelBackend"
         )
-        messages.success(self.request, "Participant created.")
+        messages.success(self.request, _("Participant created."))
         return resp
 
     def get_success_url(self):
@@ -66,7 +67,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         self.object.user = self.request.user
         self.object.previous = self.request.user.latest_demographics or None
         self.object.save()
-        messages.success(self.request, "Demographic data saved.")
+        messages.success(self.request, _("Demographic data saved."))
         return resp
 
     def get_initial(self):
@@ -134,7 +135,7 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         """
         user = self.request.user
         form.instance.user = user
-        messages.success(self.request, "Child added.")
+        messages.success(self.request, _("Child added."))
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -170,9 +171,9 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
             child = self.get_object()
             child.deleted = True
             child.save()
-            messages.success(self.request, "Child deleted.")
+            messages.success(self.request, _("Child deleted."))
             return HttpResponseRedirect(self.get_success_url())
-        messages.success(self.request, "Child updated.")
+        messages.success(self.request, _("Child updated."))
         return super().post(request, *args, **kwargs)
 
 
@@ -195,7 +196,7 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         """
         Adds success message
         """
-        messages.success(self.request, "Email preferences saved.")
+        messages.success(self.request, _("Email preferences saved."))
         return super().form_valid(form)
 
 
@@ -289,8 +290,7 @@ class StudyDetailView(generic.DetailView):
             return super().dispatch(request)
         else:
             return HttpResponseForbidden(
-                f'The study "{study.name}" is not currently collecting data - the study is either completed or paused. '
-                f"If you think this is an error, please contact {study.contact_info}"
+                _("The study %s is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact %s")%(study.name,study.contact_info)
             )
 
 

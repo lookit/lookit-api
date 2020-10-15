@@ -1,12 +1,13 @@
 {% load bootstrap3 %}
 {% load static %}
+{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{% block title %}{{ flatpage.title }}{% endblock %} &mdash; Lookit</title>
+    <title>{% block title %}{{ flatpage.title }}{% endblock %} &mdash; {% trans "Lookit" %}</title>
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
@@ -49,14 +50,14 @@
 				<div class="row">
 					<div class="col-md-1"><img src="https://storage.googleapis.com/lookit-production/static/images/nsf.gif"></div>
 					<div class="col-md-8 funding-statement">
-						This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation.
+						{% trans "This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation." %}
 					</div>
 					
 					<div class="col-md-3 footer-resources">
 						<ul>
-						<li><a href="/privacy/">Privacy</a></li>
-						<li><a href="/contact_us/">Contact us</a></li>
-						<li>Connect:
+						<li><a href="/privacy/">{% trans "Privacy" %}</a></li>
+						<li><a href="/contact_us/">{% trans "Contact us" %}</a></li>
+						<li>{% trans "Connect" %}:
 						<a href="https://www.facebook.com/lookit.mit.edu" target="_blank"><i class="fa fa-facebook fa-lg social-link"></i> </a>
 						<a href="https://www.instagram.com/babiesoflookit/" target="_blank"><i class="fa fa-instagram fa-lg social-link"></i> </a>
 						</li>

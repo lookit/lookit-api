@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
+{% load i18n %}
 {% load bootstrap3 %}
-{% block title %}Update demographics{% endblock %}
+{% block title %}{% trans "Update demographics" %}{% endblock %}
 
 {% block flash %}
   {% if form.non_field_errors %}
@@ -74,7 +75,7 @@
         }
     </script>
     <div class='lookit-row lookit-page-title'>
-        <h2 class='container'>My Account</h2>
+        <h2 class='container'>{% trans "My Account" %}</h2>
     </div>
     {% bootstrap_messages %}
     <div class="container">
@@ -85,11 +86,8 @@
             <div class="col-md-8">
                 <div class="panel-heading">
                   <h1 class="panel-title">
-                      <p> One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research.
-                      Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking
-                      multiple languages or having older siblings affect children's learning. </p>
-                      <p> Even if you allow your study videos to be published
-                      for scientific or publicity purposes, your demographic information is never published in conjunction with your video. </p>
+                      <p>{% trans "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning." %}</p>
+                      <p>{% trans "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video." %}</p>
                   </h1>
 
                 </div>
@@ -99,9 +97,9 @@
                       {% bootstrap_form form %}
                       {% buttons %}
                       <div class="pull-right">
-                          <a class="btn btn-default" href="{% url 'web:demographic-data-update' %}"> Cancel </a>
+                          <a class="btn btn-default" href="{% url 'web:demographic-data-update' %}"> {% trans "Cancel" %} </a>
                           <button type="submit" class="btn btn-success">
-                             Save
+                             {% trans "Save" %}
                           </button>
                       </div>
                       {% endbuttons %}
