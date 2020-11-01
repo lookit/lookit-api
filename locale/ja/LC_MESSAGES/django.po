@@ -1,49 +1,33 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-22 09:49+0100\n"
-"PO-Revision-Date: 2020-07-20 14:26+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: MBAH_studiespage\n"
+"Language: ja\n"
 
 #: accounts/forms.py:64
 msgid "Email address"
 msgstr "メールアドレス"
 
 #: accounts/forms.py:88
-msgid ""
-"It's time for another session of a study we are currently participating in"
-msgstr "現在参加している勉強会の続きの時間になりました"
+msgid "It's time for another session of a study we are currently participating in"
+msgstr "参加されている研究の続きの時間です"
 
 #: accounts/forms.py:89
 msgid "A new study is available for one of my children"
-msgstr "子供の一人に新しい勉強ができました。"
+msgstr "私の子供ができる新しい研究があります"
 
+#. Shall I put the period "。" at the end of a sentence even when the original English sentence does not have a period?
 #: accounts/forms.py:90
-msgid ""
-"There's an update about a study we participated in (for example, results are "
-"published)"
-msgstr "参加した研究の更新があります（例えば、結果が公開されています）。"
+#, fuzzy
+msgid "There's an update about a study we participated in (for example, results are published)"
+msgstr "参加した研究の更新があります（例えば、結果が公開されています）"
 
 #: accounts/forms.py:91
-msgid ""
-"A researcher has questions about my individual responses (for example, if I "
-"report a technical problem during the study)"
-msgstr ""
-"研究者が私の個別対応に疑問を持つ（例えば、研究中に技術的な問題を報告した場合"
-"など"
+msgid "A researcher has questions about my individual responses (for example, if I report a technical problem during the study)"
+msgstr "研究者が私の回答に質問がある（例えば、研究中に技術的な問題を報告した場合）"
 
 #: accounts/forms.py:99 accounts/forms.py:139
 msgid "What category(ies) does your family identify as?"
@@ -51,16 +35,15 @@ msgstr "あなたの家族はどのようなカテゴリーに属しています
 
 #: accounts/forms.py:127
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
-msgstr ""
-"カンマ区切りのリストとして入力してください。YYYY-MM-DD, YYYY-MM-DD, ..."
+msgstr "カンマ区切りのリストとして入力してください。YYYY-MM-DD, YYYY-MM-DD, ..."
 
 #: accounts/forms.py:128
 msgid "Numerical answers only - a rough guess is fine!"
-msgstr "数値回答のみ～大まかな推測でOK!"
+msgstr "数値で回答してください。大まかな推測で構いません！"
 
 #: accounts/forms.py:132
 msgid "What country do you live in?"
-msgstr "どこの国に住んでいるの？"
+msgstr "どこの国に住んでいますか？"
 
 #: accounts/forms.py:133
 msgid "What state do you live in?"
@@ -68,82 +51,71 @@ msgstr "あなたはどの州に住んでいますか？"
 
 #: accounts/forms.py:134
 msgid "How would you describe the area where you live?"
-msgstr "住んでいる地域をどのように表現しますか？"
+msgstr "住んでいる地域をどんなところですか？"
 
 #: accounts/forms.py:135
 msgid "What language(s) does your family speak at home?"
-msgstr "ご家庭では何語を話しますか？"
+msgstr "ご家庭は何語を話しますか？"
 
 #: accounts/forms.py:136
 msgid "How many children do you have?"
-msgstr "子供は何人いるの？"
+msgstr "お子さんは何人いますか？"
 
 #: accounts/forms.py:137
 msgid "For each child, please enter his or her birthdate:"
-msgstr "お子様一人一人の生年月日をご記入ください。"
+msgstr "お子さん一人一人の生年月日を記入してください。"
 
 #: accounts/forms.py:138
 msgid "How many parents/guardians do your children live with?"
-msgstr "あなたのお子さんは何人の親御さん・保護者の方と一緒に暮らしていますか？"
+msgstr "お子さんは、ご両親（またはその他の保護者）何人と一緒に暮らしていますか？"
 
 #: accounts/forms.py:140
 msgid "What is your age?"
-msgstr "年齢。"
+msgstr "あなたの年齢はおいくつですか？"
 
 #: accounts/forms.py:141
 msgid "What is your gender?"
-msgstr "性別は何ですか？"
+msgstr "あなたの性別は何ですか？"
 
 #: accounts/forms.py:142
 msgid "What is the highest level of education you've completed?"
-msgstr "最高レベルの学歴は？"
+msgstr "あなたの最終学歴は何ですか？"
 
 #: accounts/forms.py:143
 msgid "What is the highest level of education your spouse has completed?"
-msgstr "配偶者の最高学歴は？"
+msgstr "配偶者の方の最終学歴は何ですか？"
 
 #: accounts/forms.py:144
 msgid "What is your approximate family yearly income (in US dollars)?"
-msgstr "おおよそのご家族の年収（ドル建て）は？"
+msgstr "ご家族の年収（米ドルで）はいくらぐらいでしょうか？"
 
 #: accounts/forms.py:145
 msgid "About how many children's books are there in your home?"
-msgstr "あなたの家には児童書が何冊あるかについて。"
+msgstr "あなたの家には児童書が何冊程度ありますか？"
 
 #: accounts/forms.py:146
 msgid "Anything else you'd like us to know?"
-msgstr "他に何か知っておいてほしいことは？"
+msgstr "何か他に私たちが知っておくべきことはありますか？"
 
 #: accounts/forms.py:147
 msgid "How did you hear about Lookit?"
-msgstr "Lookitをどうやって知りましたか？"
+msgstr "Lookitをどのように知りましたか？"
 
 #: accounts/forms.py:148
-msgid ""
-"If the answer varies due to shared custody arrangements or travel, please "
-"enter the number of parents/guardians your children are usually living with "
-"or explain."
-msgstr ""
-"共有親権の取り決めや旅行などで回答が異なる場合は、子どもが普段一緒に暮らして"
-"いる親・保護者の人数を記入するか、説明してください。"
+msgid "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
+msgstr "共同親権に関する取り決めや旅行などによって回答が変わる場合は、子どもが普段一緒に暮らしている親・保護者の人数を記入するか、説明してください。"
 
 #: accounts/forms.py:162
-msgid ""
-"This lets us figure out exactly how old your child is when they participate "
-"in a study. We never publish children's birthdates or information that would "
-"allow a reader to calculate the birthdate."
-msgstr ""
-"これにより、調査に参加したときに、あなたの子供が何歳であるかを正確に把握する"
-"ことができます。子供の誕生日や、読者が誕生日を計算できるような情報は絶対に公"
-"開しません。"
+msgid "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
+msgstr "こちらは、調査参加時にお子さんが何歳であったかを正確に把握するためです。お子さんの誕生日や、誕生日を計算できるような情報は決して公開しません。"
 
 #: accounts/forms.py:168
 msgid "Birthdays cannot be in the future."
-msgstr "誕生日は未来ではありえない。"
+msgstr "誕生日が未来の日付になっています。"
 
 #: accounts/forms.py:184 accounts/forms.py:224
 msgid "First Name"
-msgstr "名"
+msgstr "お名前"
 
 #: accounts/forms.py:185 accounts/forms.py:225
 #: accounts/templates/accounts/participant_detail.html:38
@@ -154,47 +126,36 @@ msgstr "誕生日"
 #: accounts/forms.py:186 accounts/forms.py:226
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
-msgstr "出生時の妊娠年齢"
+msgstr "出産時の妊娠期間"
 
 #: accounts/forms.py:187 accounts/forms.py:227
 msgid "Any additional information you'd like us to know"
-msgstr "他に何か知っておいてほしいことは？"
+msgstr "何か他に私たちが知っておくべきことはありますか？"
 
 #: accounts/forms.py:188 accounts/forms.py:228
 msgid "Characteristics and conditions"
 msgstr "特徴と条件"
 
 #: accounts/forms.py:189 accounts/forms.py:229
-msgid ""
-"Languages this child is exposed to at home, school, or with another "
-"caregiver."
-msgstr "この子が家庭、学校、または他の保育者と一緒にいるときに接する言語。"
+msgid "Languages this child is exposed to at home, school, or with another caregiver."
+msgstr "家庭や学校、または他の保護者と一緒にいる際に、このお子さんが触れる言語。"
 
 #: accounts/forms.py:193 accounts/forms.py:233
-msgid ""
-"This lets you select the correct child to participate in a particular study. "
-"A nickname or initials are fine! We may include your child's name in email "
-"to you (for instance, \"There's a new study available for Molly!\") but will "
-"never publish names or use them in our research."
-msgstr ""
-"これにより、特定の研究に参加する正しい子供を選択することができます。ニック"
-"ネームやイニシャルでも構いません。あなたへのメールにお子さんの名前を記載する"
-"ことがありますが（例えば、「モリーのための新しい研究があります！」など）、名"
-"前を公表したり、研究に使用したりすることはありません。"
+msgid "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+msgstr "こちらは、研究に参加できるお子さんを選択するためです。あだ名やイニシャルでも構いません。あなたへのメールにお子さんの名前を記載することはありますが（例えば、「まりちゃんのための新しい研究があります！」など）、名前を公表したり、研究に使用したりすることはありません。"
 
 #: accounts/forms.py:194 accounts/forms.py:234
-msgid ""
-"For instance, diagnosed developmental disorders or vision or hearing problems"
-msgstr "例えば、発達障害や視力・聴力に問題があると診断された場合"
+msgid "For instance, diagnosed developmental disorders or vision or hearing problems"
+msgstr "例えば、診断を受けた発達障害、視力・聴力の問題"
 
 #: accounts/forms.py:195
 msgid "Please round down to the nearest full week of pregnancy completed"
-msgstr "妊娠完了週数に近いものに切り捨ててください。"
+msgstr "数字を切り捨てて、妊娠週数に最も近いものにしてください"
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
 #: accounts/models.py:250 studies/fields.py:136
 msgid "Not sure or prefer not to answer"
-msgstr "わからない、または答えたくない"
+msgstr "わからりません／答えたくないありません"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
 #: accounts/models.py:251 studies/fields.py:137
@@ -209,7 +170,7 @@ msgstr "24週"
 #: accounts/migrations/0041_add_existing_conditions.py:15
 #: accounts/models.py:253 studies/fields.py:139
 msgid "25 weeks"
-msgstr "25週間"
+msgstr "25週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:16
 #: accounts/models.py:254 studies/fields.py:140
@@ -224,7 +185,7 @@ msgstr "27週"
 #: accounts/migrations/0041_add_existing_conditions.py:18
 #: accounts/models.py:256 studies/fields.py:142
 msgid "28 weeks"
-msgstr "28週間"
+msgstr "28週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:19
 #: accounts/models.py:257 studies/fields.py:143
@@ -234,7 +195,7 @@ msgstr "29週"
 #: accounts/migrations/0041_add_existing_conditions.py:20
 #: accounts/models.py:258 studies/fields.py:144
 msgid "30 weeks"
-msgstr "30週間"
+msgstr "30週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:21
 #: accounts/models.py:259 studies/fields.py:145
@@ -634,22 +595,12 @@ msgid "Login Unsuccessful"
 msgstr "ログイン失敗"
 
 #: accounts/templates/account/local_user_exists.html:16
-msgid ""
-"A Lookit study participant exists with the email address for your OSF user "
-"account. Create an OSF user with a different email address and try logging "
-"into Experimenter with that. "
-msgstr ""
-"OSFユーザーアカウントのメールアドレスを持つLookit研究参加者が存在します。別の"
-"メールアドレスでOSFユーザーを作成し、そのメールアドレスでExperimenterにログイ"
-"ンしてみてください。"
+msgid "A Lookit study participant exists with the email address for your OSF user account. Create an OSF user with a different email address and try logging into Experimenter with that. "
+msgstr "OSFユーザーアカウントのメールアドレスを持つLookit研究参加者が存在します。別のメールアドレスでOSFユーザーを作成し、そのメールアドレスでExperimenterにログインしてみてください。"
 
 #: accounts/templates/account/local_user_exists.html:19
-msgid ""
-"If this should not have occurred and the issue persists, please report it to "
-"<a href="
-msgstr ""
-"この問題が発生していないはずなのに問題が解決しない場合は、<a href=<a href=<a "
-"href=<a href=<a href=<a href=<a href=<a>）まで報告してください。"
+msgid "If this should not have occurred and the issue persists, please report it to <a href="
+msgstr "この問題が発生していないはずなのに問題が解決しない場合は、<a href=<a href=<a href=<a href=<a href=<a href=<a href=<a>）まで報告してください。"
 
 #: accounts/templates/account/local_user_exists.html:22
 #: accounts/templates/account/login_errored_cancelled.html:19
@@ -667,38 +618,23 @@ msgid "Login"
 msgstr "ログイン"
 
 #: accounts/templates/account/login.html:20
-msgid ""
-"\n"
-"          Please sign in to the Open Science Framework or register for an "
-"account and sign in below.\n"
+msgid "\n"
+"          Please sign in to the Open Science Framework or register for an account and sign in below.\n"
 "      </p>\n"
 "      <p>\n"
-"        By using or requesting access to Lookit, you agree that you have "
-"read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of "
-"Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</a>.\n"
+"        By using or requesting access to Lookit, you agree that you have read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</a>.\n"
 "        "
-msgstr ""
-"\n"
-"          オープンサイエンスフレームワークにサインインするか、アカウント登録"
-"をして下記よりサインインしてください。\n"
+msgstr "\n"
+"          オープンサイエンスフレームワークにサインインするか、アカウント登録をして下記よりサインインしてください。\n"
 "      </p>\n"
 "      <p>\n"
-"        Lookitを使用またはアクセスを要求することで、利用者は<a href=\"/"
-"termsofuse/\" target=\"_blank\">利用規約</a>と<a href=\"/privacy/\" target="
-"\"_blank\">プライバシーポリシーを</a>読み、これに同意したことになります。\n"
+"        Lookitを使用またはアクセスを要求することで、利用者は<a href=\"/termsofuse/\" target=\"_blank\">利用規約</a>と<a href=\"/privacy/\" target=\"_blank\">プライバシーポリシーを</a>読み、これに同意したことになります。\n"
 "        "
 
 #: accounts/templates/account/login_errored_cancelled.html:16
 #, fuzzy
-#| msgid ""
-#| "If this should not have occurred and the issue persists, please report it "
-#| "to <a href=\"mailto:support@osf.io\">support@osf.io"
-msgid ""
-"If this should not have occurred and the issue persists, please report it to "
-"<a href=\"mailto:support@osf.io\">support@osf.io</a>"
-msgstr ""
-"この問題が発生していないはずなのに問題が解決しない場合は、<a href=\"mailto:"
-"support@osf.io\">support@osf.io</a> まで報告してください。"
+msgid "If this should not have occurred and the issue persists, please report it to <a href=\"mailto:support@osf.io\">support@osf.io</a>"
+msgstr "この問題が発生していないはずなのに問題が解決しない場合は、<a href=\"mailto:support@osf.io\">support@osf.io</a> まで報告してください。"
 
 #: accounts/templates/accounts/participant_detail.html:15
 msgid "All Participants"
@@ -780,7 +716,7 @@ msgstr "人種"
 #: accounts/templates/accounts/participant_list.html:37
 #: accounts/templates/accounts/participant_list.html:58
 msgid "Nickname"
-msgstr ""
+msgstr "ユーザー名"
 
 #: exp/templates/exp/dashboard.html:17
 msgid "Dashboard"
@@ -831,12 +767,8 @@ msgid "Female"
 msgstr "女性"
 
 #: studies/models.py:113
-msgid ""
-"The Users who belong to this Lab. A user in this lab will be able to create "
-"studies associated with this Lab and can be added to this Lab's studies."
-msgstr ""
-"この研究室に所属するユーザーです。本研究室に所属するユーザーは、本研究室に関"
-"連する研究を作成することができ、本研究室の研究に追加することができます。"
+msgid "The Users who belong to this Lab. A user in this lab will be able to create studies associated with this Lab and can be added to this Lab's studies."
+msgstr "この研究室に所属するユーザーです。本研究室に所属するユーザーは、本研究室に関連する研究を作成することができ、本研究室の研究に追加することができます。"
 
 #: studies/models.py:122
 msgid "The Users who have requested to join this Lab."
@@ -878,7 +810,7 @@ msgstr "ルキット"
 
 #: web/templates/registration/login.html:34
 msgid "Create an account!"
-msgstr "アカウント作成"
+msgstr "アカウントを作成する"
 
 #: web/templates/registration/password_change_done.html:11
 msgid "Password changed"
@@ -886,15 +818,15 @@ msgstr "パスワードが変更されました"
 
 #: web/templates/registration/password_change_done.html:15
 msgid "Your password was changed."
-msgstr "パスワードが変更されていました。"
+msgstr "パスワードが変更されました。"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Documentation"
-msgstr "ドキュメント"
+msgstr "概要"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Change password"
-msgstr "パスワードの変更"
+msgstr "パスワードを変更する"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Log out"
@@ -911,28 +843,24 @@ msgstr "パスワードの変更"
 
 #: web/templates/registration/password_change_form.html:21
 msgid "Please correct the error below."
-msgstr "下記のエラーの修正をお願いします。"
+msgstr "以下のエラーを訂正してください。"
 
 #: web/templates/registration/password_change_form.html:21
 msgid "Please correct the errors below."
-msgstr "以下、誤りの訂正をお願いします。"
+msgstr "以下のエラーを訂正してください。"
 
 #: web/templates/registration/password_change_form.html:26
-msgid ""
-"Please enter your old password, for security's sake, and then enter your new "
-"password twice so we can verify you typed it in correctly."
-msgstr ""
-"セキュリティのために古いパスワードを入力し、新しいパスワードを2回入力してくだ"
-"さい。"
+msgid "Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly."
+msgstr "セキュリティのために以前のパスワードを入力し、新しいパスワードを２回入力してください。"
 
 #: web/templates/registration/password_change_form.html:54
 #: web/templates/registration/password_reset_confirm.html:31
 msgid "Change my password"
-msgstr "パスワードの変更"
+msgstr "パスワードを変更する"
 
 #: web/templates/registration/password_reset_complete.html:11
 msgid "Password reset complete"
-msgstr "パスワードリセットの確認"
+msgstr "パスワードのリセットが完了しました。"
 
 #: web/templates/registration/password_reset_complete.html:15
 msgid "Your password has been set.  You may go ahead and log in now."
@@ -947,10 +875,8 @@ msgid "Password reset confirmation"
 msgstr "パスワードリセットの確認"
 
 #: web/templates/registration/password_reset_confirm.html:17
-msgid ""
-"Please enter your new password twice so we can verify you typed it in "
-"correctly."
-msgstr "新しいパスワードを2回入力してください。"
+msgid "Please enter your new password twice so we can verify you typed it in correctly."
+msgstr "新しいパスワードを２回入力してください。"
 
 #: web/templates/registration/password_reset_confirm.html:23
 msgid "New password:"
@@ -961,37 +887,20 @@ msgid "Confirm password:"
 msgstr "パスワードの確認："
 
 #: web/templates/registration/password_reset_confirm.html:37
-msgid ""
-"The password reset link was invalid, possibly because it has already been "
-"used.  Please request a new password reset."
-msgstr ""
-"パスワードリセットのリンクが無効になっています。  新しいパスワードリセットを"
-"リクエストしてください。"
+msgid "The password reset link was invalid, possibly because it has already been used.  Please request a new password reset."
+msgstr "パスワードリセットのリンクが無効になっています。  新しいパスワードリセットをリクエストしてください。"
 
 #: web/templates/registration/password_reset_done.html:15
-msgid ""
-"We've emailed you instructions for setting your password, if an account "
-"exists with the email you entered. You should receive them shortly."
-msgstr ""
-"入力されたメールにアカウントが存在する場合は、パスワードの設定方法をメールで"
-"お知らせしています。まもなくメールが届きます。"
+msgid "We've emailed you instructions for setting your password, if an account exists with the email you entered. You should receive them shortly."
+msgstr "入力されたメールにアカウントが存在する場合は、パスワードの設定方法をメールでお知らせしています。まもなくメールが届きます。"
 
 #: web/templates/registration/password_reset_done.html:17
-msgid ""
-"If you don't receive an email, please make sure you've entered the address "
-"you registered with, and check your spam folder."
-msgstr ""
-"メールが届かない場合は、登録したアドレスが入力されていることを確認し、迷惑"
-"メールフォルダをご確認ください。"
+msgid "If you don't receive an email, please make sure you've entered the address you registered with, and check your spam folder."
+msgstr "メールが届かない場合は、入力されたメールアドレスが登録時に使用したものであることを確認した上で、迷惑メールフォルダをご確認ください。"
 
 #: web/templates/registration/password_reset_email.html:2
-#, python-format
-msgid ""
-"You're receiving this email because you requested a password reset for your "
-"user account at %(site_name)s."
-msgstr ""
-"この電子メールを受信しているのは、%(site_name)s のユーザ・アカウントのパス"
-"ワードのリセットを要求したためです。"
+msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
+msgstr "この電子メールを受信しているのは、%(site_name)s のアカウントのパスワードのリセットが要求されたためです。"
 
 #: web/templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
@@ -999,22 +908,19 @@ msgstr "以下のページに移動し、新しいパスワードを選択して
 
 #: web/templates/registration/password_reset_email.html:8
 msgid "Your username, in case you've forgotten:"
-msgstr "ユーザー名をお忘れですか？こちらになります。"
+msgstr "ユーザー名をお忘れですか？お忘れの場合："
 
 #: web/templates/registration/password_reset_email.html:10
 msgid "Thanks for using our site!"
-msgstr "当社のサイトをご利用いただき、ありがとうございました"
+msgstr "私たちのウェブサイトをご利用いただき、ありがとうございます！"
 
 #: web/templates/registration/password_reset_email.html:12
-#, python-format
 msgid "The %(site_name)s team"
-msgstr "%(site_name) s チーム"
+msgstr "%(site_name) のチーム"
 
 #: web/templates/registration/password_reset_form.html:15
-msgid ""
-"Forgotten your password? Enter your email address below, and we'll email "
-"instructions for setting a new one."
-msgstr "パスワードをお忘れですか？下記にメールアドレスを入力してください。"
+msgid "Forgotten your password? Enter your email address below, and we'll email instructions for setting a new one."
+msgstr "パスワードをお忘れですか？以下にメールアドレスを入力してください。"
 
 #: web/templates/registration/password_reset_form.html:21
 msgid "Email address:"
@@ -1030,7 +936,7 @@ msgstr "口座情報"
 
 #: web/templates/web/_account-navigation.html:2
 msgid "Change your name, email, or password."
-msgstr "パスワードの変更"
+msgstr "氏名、メールアドレス、またはパスワードの変更"
 
 #: web/templates/web/_account-navigation.html:3
 msgid "Demographic Survey"
@@ -1191,26 +1097,12 @@ msgid "Update demographics"
 msgstr "最新の人口動態データ"
 
 #: web/templates/web/demographic-data-update.html:89
-msgid ""
-"One reason we are developing Internet-based experiments is to represent a "
-"more diverse group of families in our research. Your answers to these "
-"questions will help us understand what audience we reach, as well as how "
-"factors like speaking multiple languages or having older siblings affect "
-"children's learning."
-msgstr ""
-"インターネットを利用した実験を開発している理由の一つは、より多様な家族のグ"
-"ループを代表して研究を行うためです。これらの質問への回答は、私たちがどのよう"
-"な対象者に到達するのか、また、多言語を話すことや年上の兄弟がいることなどの要"
-"因が子どもの学習にどのような影響を与えるのかを理解するのに役立ちます。"
+msgid "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning."
+msgstr "インターネットを利用した実験を開発している理由の一つは、より多様な家族のグループを代表して研究を行うためです。これらの質問への回答は、私たちがどのような対象者に到達するのか、また、多言語を話すことや年上の兄弟がいることなどの要因が子どもの学習にどのような影響を与えるのかを理解するのに役立ちます。"
 
 #: web/templates/web/demographic-data-update.html:90
-msgid ""
-"Even if you allow your study videos to be published for scientific or "
-"publicity purposes, your demographic information is never published in "
-"conjunction with your video."
-msgstr ""
-"科学や宣伝目的で学習動画の公開を許可したとしても、デモグラフィック情報が動画"
-"と連動して公開されることはありません。"
+msgid "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video."
+msgstr "科学や宣伝目的で学習動画の公開を許可したとしても、デモグラフィック情報が動画と連動して公開されることはありません。"
 
 #: web/templates/web/participant-email-preferences.html:27
 msgid "I would like to be contacted when:"
@@ -1221,11 +1113,8 @@ msgid "Signup"
 msgstr "新規登録"
 
 #: web/templates/web/participant-signup.html:24
-msgid ""
-"By clicking 'Create Account', I agree that I have read and accepted the "
-msgstr ""
-"アカウントを作成する」をクリックすることで、私は以下の内容を読み、同意したも"
-"のとします。"
+msgid "By clicking 'Create Account', I agree that I have read and accepted the "
+msgstr "に同意して頂けましたら、「アカウントを作成する」をクリックしてください。"
 
 #: web/templates/web/participant-signup.html:24
 msgid "Privacy Statement"
@@ -1233,7 +1122,7 @@ msgstr "個人情報保護方針"
 
 #: web/templates/web/participant-signup.html:27
 msgid "Create Account"
-msgstr "アカウント作成"
+msgstr "アカウントを作成する"
 
 #: web/templates/web/participant-update.html:4
 msgid "Update account information"
@@ -1245,7 +1134,7 @@ msgstr "アカウント情報"
 
 #: web/templates/web/participant-update.html:44
 msgid "Change Your Password"
-msgstr "パスワードの変更"
+msgstr "パスワードを変更する"
 
 #: web/templates/web/studies-history.html:4
 #: web/templates/web/studies-history.html:27
@@ -1254,12 +1143,8 @@ msgstr "これまでの研究"
 
 #: web/templates/web/studies-history.html:16
 #: web/templates/web/studies-list.html:16
-msgid ""
-"Your account doesn't have access to this page. To proceed, please login with "
-"an account that has access."
-msgstr ""
-"あなたのアカウントにはこのページへのアクセス権がありません。先に進むには、ア"
-"クセスできるアカウントでログインしてください。"
+msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
+msgstr "あなたのアカウントにはこのページへのアクセス権がありません。先に進むには、アクセスできるアカウントでログインしてください。"
 
 #: web/templates/web/studies-history.html:18
 #: web/templates/web/studies-list.html:18
@@ -1278,9 +1163,7 @@ msgstr "あなたの過去の研究"
 
 #: web/templates/web/studies-history.html:50
 msgid "Here you can view your studies and see comments left by researchers:"
-msgstr ""
-"ここでは、あなたの研究を閲覧したり、研究者が残したコメントを見ることができま"
-"す。"
+msgstr "ここでは、あなたの研究を閲覧したり、研究者が残したコメントを見ることができます。"
 
 #: web/templates/web/studies-history.html:67
 msgid "Study Thumbnail"
@@ -1343,14 +1226,8 @@ msgid "Invalid"
 msgstr "無効"
 
 #: web/templates/web/studies-history.html:127
-msgid ""
-"There was a technical problem with your consent video, or it did not show "
-"you reading the consent statement out loud. Your other data from this "
-"session will not be viewed or used by the study researchers."
-msgstr ""
-"同意のビデオに技術的な問題があったか、同意文を読み上げている様子が表示されま"
-"せんでした。このセッションからのあなたの他のデータは、研究者によって閲覧また"
-"は使用されることはありません。"
+msgid "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers."
+msgstr "同意のビデオに技術的な問題があったか、同意文を読み上げている様子が表示されませんでした。このセッションからのあなたの他のデータは、研究者によって閲覧または使用されることはありません。"
 
 #: web/templates/web/studies-history.html:129
 msgid "No information about consent video review status."
@@ -1365,12 +1242,8 @@ msgid "Current Studies"
 msgstr "現在の研究"
 
 #: web/templates/web/studies-list.html:53
-msgid ""
-"Please note you'll need a laptop or desktop computer (not a mobile device) "
-"running Chrome or Firefox to participate."
-msgstr ""
-"参加には、ChromeまたはFirefoxが動作するノートパソコンまたはデスクトップパソコ"
-"ン（モバイル機器ではありません）が必要となりますのでご注意ください。"
+msgid "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate."
+msgstr "参加には、ChromeまたはFirefoxが動作するノートパソコンまたはデスクトップパソコン（モバイル機器ではありません）が必要となりますのでご注意ください。"
 
 #: web/templates/web/studies-list.html:80
 msgid "See details"
@@ -1381,14 +1254,8 @@ msgid "We are not running any studies at this time!"
 msgstr "今のところ勉強はしていません!"
 
 #: web/templates/web/studies-list.html:93
-msgid ""
-"Looking for more ways to contribute to research from home? Check out <a href="
-"\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer "
-"noopener\">Children Helping Science</a> for even more studies!"
-msgstr ""
-"自宅で研究に貢献する方法をお探しですか?<a href=\"https://"
-"childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener"
-"\">Children Helping Science</a>では、さらに多くの研究をご覧いただけます。"
+msgid "Looking for more ways to contribute to research from home? Check out <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> for even more studies!"
+msgstr "自宅で研究に貢献する方法をお探しですか?<a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a>では、さらに多くの研究をご覧いただけます。"
 
 #: web/templates/web/study-detail.html:93
 msgid "Study overview"
@@ -1439,33 +1306,16 @@ msgid "None Selected"
 msgstr "None Selected"
 
 #: web/templates/web/study-detail.html:161
-msgid ""
-"Your child is still younger than the recommended age range for this study. "
-"If you can wait <span id='wait-until'>until</span> he or she is old enough, "
-"we'll be able to use the collected data in our research!"
-msgstr ""
-"あなたのお子さんは、この研究のために推奨されている年齢範囲よりもまだ若いで"
-"す。お子さんが十分な年齢になる<span id='wait-until'>まで</span>待っていただけ"
-"れば、収集したデータを研究に使用することができます"
+msgid "Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research!"
+msgstr "あなたのお子さんは、この研究のために推奨されている年齢範囲よりもまだ若いです。お子さんが十分な年齢になる<span id='wait-until'>まで</span>待っていただければ、収集したデータを研究に使用することができます"
 
 #: web/templates/web/study-detail.html:162
-msgid ""
-"Your child is older than the recommended age range for this study. You're "
-"welcome to try the study anyway, but we won't be able to use the collected "
-"data in our research."
-msgstr ""
-"あなたのお子さんは、この研究の推奨年齢範囲よりも年齢が高いです。この研究を"
-"やってみるのは大歓迎ですが、収集したデータを研究に使うことはできません。"
+msgid "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research."
+msgstr "あなたのお子さんは、この研究の推奨年齢範囲よりも年齢が高いです。この研究をやってみるのは大歓迎ですが、収集したデータを研究に使うことはできません。"
 
 #: web/templates/web/study-detail.html:163
-msgid ""
-"Your child does not meet the eligibility criteria listed for this study. "
-"You're welcome to try the study anyway, but we won't be able to use the "
-"collected data in our research. Please contact the study researchers"
-msgstr ""
-"あなたのお子さんは、この研究のために記載されている資格基準を満たしていませ"
-"ん。この研究をお試しいただくことは歓迎しますが、収集したデータを研究に使用す"
-"ることはできません。研究者に連絡してください。"
+msgid "Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers"
+msgstr "あなたのお子さんは、この研究のために記載されている資格基準を満たしていません。この研究をお試しいただくことは歓迎しますが、収集したデータを研究に使用することはできません。研究者に連絡してください。"
 
 #: web/templates/web/study-detail.html:165
 msgid "Build experiment runner to preview"
@@ -1476,9 +1326,6 @@ msgid "Participate"
 msgstr "参加する"
 
 #: web/templates/web/study-detail.html:168
-msgid ""
-"For an easy way to see what happens as you update your study protocol, "
-"bookmark the URL the button above sends you to."
-msgstr ""
-"勉強のプロトコルを更新するとどうなるかを簡単に確認するには、上のボタンをク"
-"リックして送信されるURLをブックマークしてください。"
+msgid "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to."
+msgstr "勉強のプロトコルを更新するとどうなるかを簡単に確認するには、上のボタンをクリックして送信されるURLをブックマークしてください。"
+
