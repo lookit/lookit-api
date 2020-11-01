@@ -315,7 +315,7 @@ msgstr "אַחֵר"
 
 #: accounts/models.py:245 accounts/models.py:348 accounts/models.py:424
 msgid "prefer not to answer"
-msgstr "מעדיף שלא לענות"
+msgstr "מעדיפ/ה שלא לענות"
 
 #: accounts/models.py:335
 msgid "White"
@@ -335,7 +335,7 @@ msgstr "אסייתי"
 
 #: accounts/models.py:339
 msgid "American Indian or Alaska Native"
-msgstr "אינדיאנים אמריקאים או ילידי אלסקה"
+msgstr "אינדיאני אמריקאים או יליד אלסקה"
 
 #: accounts/models.py:340
 msgid "Middle Eastern or North African"
@@ -475,7 +475,7 @@ msgstr "70 ומעלה"
 
 #: accounts/models.py:398
 msgid "3 or more"
-msgstr "3 ומעלה"
+msgstr "3 או יותר"
 
 #: accounts/models.py:398
 msgid "varies"
@@ -700,7 +700,7 @@ msgstr "גיל הילדים כרגע"
 
 #: accounts/templates/accounts/participant_detail.html:134
 msgid "Number of Guardians"
-msgstr "מספר שומרים"
+msgstr "מספר אפוטרופסים"
 
 #: accounts/templates/accounts/participant_detail.html:142
 msgid "Explanation for Guardians:"
@@ -788,7 +788,7 @@ msgstr "כניסת משתתפים"
 
 #: web/templates/registration/login.html:32
 msgid "Forgot password?"
-msgstr "שכחת ססמא?"
+msgstr "שכחת סיסמה?"
 
 #: web/templates/registration/login.html:33
 msgid "Looking for "
@@ -824,7 +824,7 @@ msgstr "תיעוד"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Change password"
-msgstr "שנה סיסמא"
+msgstr "לשנות סיסמה"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Log out"
@@ -967,11 +967,11 @@ msgstr "Lookit"
 
 #: web/templates/web/_navigation.html:17
 msgid "Experimenter"
-msgstr "נסיין"
+msgstr "נסיינ/ית"
 
 #: web/templates/web/_navigation.html:30 web/templates/web/studies-list.html:4
 msgid "Studies"
-msgstr "לימודים"
+msgstr "מחקרים"
 
 #: web/templates/web/_navigation.html:31
 msgid "FAQ"
@@ -999,7 +999,7 @@ msgstr "להתנתק"
 
 #: web/templates/web/_navigation.html:46
 msgid "Sign up"
-msgstr "הירשם"
+msgstr "להרשם"
 
 #: web/templates/web/child-update.html:4
 #: web/templates/web/studies-history.html:116
@@ -1084,7 +1084,7 @@ msgstr "שֵׁם"
 
 #: web/templates/web/children-list.html:121
 msgid "Update child"
-msgstr "עדכן ילד"
+msgstr "לעדכן ילד/ה"
 
 #: web/templates/web/children-list.html:128
 msgid "No child profiles registered!"
@@ -1092,7 +1092,7 @@ msgstr "לא נרשמו פרופילי ילדים!"
 
 #: web/templates/web/demographic-data-update.html:4
 msgid "Update demographics"
-msgstr "עדכן דמוגרפיה"
+msgstr "לעדכן דמוגרפיה"
 
 #: web/templates/web/demographic-data-update.html:89
 msgid "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning."
@@ -1177,7 +1177,7 @@ msgstr "איש קשר:"
 
 #: web/templates/web/studies-history.html:81
 msgid "Still collecting data?"
-msgstr "עדיין אוסף נתונים?"
+msgstr "עדיין אוספים נתונים?"
 
 #: web/templates/web/studies-history.html:81
 msgid "Yes"
@@ -1193,7 +1193,7 @@ msgstr "תמורה: "
 
 #: web/templates/web/studies-history.html:87
 msgid "Study Responses"
-msgstr "תגובות לימוד"
+msgstr "תגובות מחקר"
 
 #: web/templates/web/studies-history.html:118
 msgid "Date"
@@ -1317,7 +1317,7 @@ msgstr "ילדכם אינו עומד בקריטריוני הזכאות המפו�
 
 #: web/templates/web/study-detail.html:165
 msgid "Build experiment runner to preview"
-msgstr "בנה רץ ניסויים לתצוגה מקדימה"
+msgstr "בנו מריץ ניסויים לתצוגה מקדימה"
 
 #: web/templates/web/study-detail.html:167
 msgid "Participate"
