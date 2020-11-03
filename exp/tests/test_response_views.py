@@ -12,7 +12,7 @@ from django_dynamic_fixture import G
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, User
 from accounts.utils import hash_id
-from studies.models import ConsentRuling, Lab, Response, Study, StudyType
+from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
 
 class Force2FAClient(Client):
@@ -231,6 +231,30 @@ class ResponseViewsTestCase(TestCase):
             self.assertIn(
                 page.status_code, [200, 302], "Unexpected status code for " + url
             )
+
+    def test_can_see_video_attachments_as_study_researcher(self):
+        self.client.force_login(self.study_reader)
+        # Add a video for each response
+        self.videos = [
+            G(
+                Video,
+                frame_id="2-my-consent-frame",
+                full_name=f"videoStream_{self.study.uuid}_2-my-consent-frame_{resp.uuid}_1594823856933_{resp.pk}",
+                pipe_name=f"7WHkjNhHt741R4lpMsDzTGBgCqBfkC{resp.pk}.mp4",
+                study=self.study,
+                response=resp,
+                is_consent_footage=True,
+            )
+            for resp in self.responses
+        ]
+        page = self.client.get(
+            reverse("exp:study-attachments", kwargs={"pk": self.study.pk})
+        )
+        self.assertIn(
+            page.status_code,
+            [200, 302],
+            "Unexpected status code for video attachments page",
+        )
 
     def test_can_see_response_views_as_study_admin(self):
         self.client.force_login(self.study_admin)
