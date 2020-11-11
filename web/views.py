@@ -5,6 +5,7 @@ from django.db.models import Prefetch
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
@@ -16,7 +17,6 @@ from accounts.models import Child, DemographicData, User
 from project import settings
 from studies.models import Response, Study, Video
 
-from django.utils.translation import gettext_lazy as _
 
 @receiver(signals.user_logged_out)
 def on_user_logged_out(sender, request, **kwargs):
@@ -290,7 +290,10 @@ class StudyDetailView(generic.DetailView):
             return super().dispatch(request)
         else:
             return HttpResponseForbidden(
-                _("The study %s is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact %s")%(study.name,study.contact_info)
+                _(
+                    "The study %s is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact %s"
+                )
+                % (study.name, study.contact_info)
             )
 
 

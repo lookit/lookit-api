@@ -335,5 +335,4 @@ CELERY_TASK_ROUTES = {
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__name__))
-LOCALE_PATHS = ( os.path.join(SITE_ROOT, 'locale'), )
-
+LOCALE_PATHS = (os.path.join(SITE_ROOT, "locale"),)
