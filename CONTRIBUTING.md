@@ -247,16 +247,16 @@ Versioning works, then the behavior of the tools will not confuse you. If you ha
 "what is build metadata?", or articulating what constitutes a prerelease, then you will probably be baffled by the
 restrictions on the workflow.
 
-1. `git flow release start $(invoke new-release --kind "major")`
+1. `git flow release start $(invoke new-version --kind "major")`
     - `invoke new-release` updates the VERSION file and echoes back the new version. There are three mutually exclusive
-      options for `invoke new release`, each appropriate for a different situation during the release cycle.
+      options for `invoke new-version`, each appropriate for a different situation during the release cycle.
         * `--kind`: `major`, `minor`, or `patch`. When creating a release branch, you'll be using this most often.
         * `--pre`: Rarely, after starting a release branch, you want to deploy it to the staging environment for QA.
           in this situation, you should **absolutely not call it in the context of the `git flow` tools**, since they
           automate a workflow of merging _all_ release branches back into master and develop at the same time. I cannot
           emphasize this enough - ***Do NOT, ever, under any circumstance, merge a prerelease branch into master!***
           Instead, do the remote merge with develop manually:
-            - `invoke new-release --pre alpha`: Pre-releases proceed from *alpha*, to *beta*, to *rc* ("Release
+            - `invoke new-version --pre alpha`: Pre-releases proceed from *alpha*, to *beta*, to *rc* ("Release
             Candidate"). You can iterate on a prerelease by just calling the command again; it'll go from something like
             `1.2.1-beta.1` to `1.2.1-beta.2`. You can't go backwards - if you try to create a new alpha release after a
             beta, the tool will quit and print an error message.
