@@ -27,6 +27,7 @@ Attributes:
 import os
 import platform
 
+import semantic_version
 from invoke import run, task
 
 PLATFORM = platform.system()
@@ -42,6 +43,18 @@ SERVE_HTTP_SERVER = "python manage.py runserver"
 SERVE_NGROK = "ngrok http https://127.0.0.1:8000"
 BASE_DIR = os.getcwd()
 PATH_TO_CERTS = os.path.join(BASE_DIR, "certs")
+
+# Versioning
+# - Segment
+MAJOR = "major"
+MINOR = "minor"
+PATCH = "patch"
+VERSION_TAGS = (MAJOR, MINOR, PATCH)
+# - Pre-release
+ALPHA = "alpha"
+BETA = "beta"
+RELEASE_CANDIDATE = "rc"
+PRE_RELEASE_TAGS = (ALPHA, BETA, RELEASE_CANDIDATE)
 
 
 @task
@@ -834,3 +847,74 @@ def setup(c):
 
     """
     pass
+
+
+@task
+def new_version(context, kind="", pre="", build="", dry_run=False):
+    """Semantic Versioning automation.
+
+    Leverages builder pattern afforded by `semantic_version.Version` objects.
+
+    Args:
+        context: Context-aware API wrapper & state-passing object.
+        kind: What kind of version bump we're doing. Choices are as follows:
+            `major`: use when public API changes
+            `minor`: use when a new feature/enhancement is included
+            `patch`: use when a bug is fixed or non-functional change is added
+        pre: If this is a prerelease (release on dev), then the type should be provided here.
+            `alpha`: Alpha; work in progress
+            `beta`: Beta; ready for testing
+            `rc`: Release Candidate; ready for final check up prior to deployment.
+        build: If something has changed in the CI pipeline and we are attempting to trigger a new
+            CI/CD run, you should run with this flag and pass a space-separated string of build
+            information (you probably want to associate a commit with this, as well).
+        dry_run: Defaults to False. Whether or not to write to the VERSION file.
+
+    Returns:
+        None
+
+    Side Effects:
+        Prints a newly updated version to stdout if `--dry-run` is false, and
+        writes that version to the `VERSION` file in the root of the project.
+    """
+    with open("VERSION") as version_file:
+        release_version = semantic_version.Version(version_file.read())
+
+    # Simple version bumps are straightforward.
+    if (kind := kind.lower()) and kind in VERSION_TAGS:
+        release_version = getattr(release_version, f"next_{kind}")()
+
+    # Pre-releases must proceed in order (alpha before beta, beta before release candidate)
+    # and format of (kind: str, iteration: int) is enforced.
+    elif (pre := pre.lower()) and pre in PRE_RELEASE_TAGS:
+        previous_prerelease = release_version.prerelease
+        # If there's current prerelease info, bump the associated number
+        if previous_prerelease:
+            # Assume (type, number) structure
+            previous_pre, previous_iteration = previous_prerelease
+            if pre == previous_pre:
+                next_iteration = str(int(previous_iteration) + 1)
+            elif PRE_RELEASE_TAGS.index(pre) > PRE_RELEASE_TAGS.index(previous_pre):
+                next_iteration = "1"
+            else:  # Invalid progression
+                raise SystemExit("Pre-releases must proceed alpha -> beta -> rc")
+        else:  # Otherwise, start at 1.
+            next_iteration = "1"
+
+        release_version.prerelease = (pre, next_iteration)
+
+    # Build information just gets tacked on - it's information for pretty much developers
+    # only, and as such can be arbitrary.
+    elif build:
+        release_version.build = tuple(build.split(" "))
+
+    else:
+        raise SystemExit("Must provide --kind, --pre, or --build.")
+
+    release_output: str = str(release_version)
+
+    if not dry_run:
+        with open("VERSION", "w") as version_file:
+            version_file.write(release_output)
+
+    print(release_output)
