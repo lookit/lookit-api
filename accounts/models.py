@@ -648,7 +648,7 @@ class Message(models.Model):
             to_email_list = recipient_email_list
             bcc_email_list = []
         else:
-            to_email_list = []
+            to_email_list = [settings.EMAIL_FROM_ADDRESS]
             bcc_email_list = recipient_email_list
 
         send_mail.delay(
