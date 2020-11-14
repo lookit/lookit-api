@@ -340,6 +340,12 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
 
     def dispatch(self, request, *args, **kwargs):
 
+        # Give participant 4 days from starting any study before session times out, to allow for cases where the
+        # parent does instructions etc. but then waits until a convenient time to do the actual test with the
+        # child.
+        if not request.user.is_researcher:
+            request.session.set_expiry(60 * 60 * 24 * 4)
+
         _, _, study_uuid, _, _, *rest = request.path.split("/")
         path = f"{study_uuid}/{'/'.join(rest)}"
         if not rest:
