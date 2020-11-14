@@ -8,7 +8,7 @@ from django.forms.models import model_to_dict
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django_dynamic_fixture import G
-from guardian.shortcuts import assign_perm
+from guardian.shortcuts import assign_perm, get_objects_for_user
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, User
@@ -452,7 +452,13 @@ class ResponseViewsTestCase(TestCase):
             ),
             "New researcher able to create studies in demo lab",
         )
-        self.assertEqual(new_researcher.labs_user_can_create_study_in().count(), 1)
+        self.assertEqual(
+            get_objects_for_user(
+                new_researcher,
+                LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename,
+            ).count(),
+            1,
+        )
 
     def test_create_study_buttons_shown_if_allowed(self):
         self.client.force_login(self.lab_researcher)

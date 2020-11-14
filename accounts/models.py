@@ -241,13 +241,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
             ]
         )
 
-    def labs_user_can_create_study_in(self):
-        return self.labs.filter(
-            id__in=get_objects_for_user(
-                self, LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename
-            ).only("id")
-        )
-
     def has_any_perms(self, perm_list, obj=None):
         """
         Returns True if the user has ANY of the specified permissions. If
