@@ -185,7 +185,7 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            self.password1.help_text='dummy help'
+            self.fields.password1.help_text='dummy help'
 
     def save(self, commit=True):
         user = super().save(commit=False)
