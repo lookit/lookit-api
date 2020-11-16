@@ -187,7 +187,6 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            print('Nickname set up 2')
             
             # Make sure these are in the translation files
             # They could be removed if django catches up with its own translation of these phrasesß
