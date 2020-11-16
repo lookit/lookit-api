@@ -451,7 +451,8 @@ class ChildUpdateForm(forms.ModelForm):
 
         widgets = {
             "existing_conditions": BitFieldCheckboxSelectMultiple(
-                attrs={"class": "column-checkbox"}
+                attrs={"class": "column-checkbox"},
+                choices=CONDITIONS
             ),
             "languages_spoken": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
