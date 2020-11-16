@@ -349,6 +349,7 @@ class DemographicDataForm(forms.ModelForm):
 class ChildForm(forms.ModelForm):
     birthday = forms.DateField(
         widget=forms.DateInput(attrs={"class": "datepicker"}),
+        label=_('Birthday'),
         help_text=_(
             "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
         ),
@@ -374,7 +375,7 @@ class ChildForm(forms.ModelForm):
 
         labels = {
             "given_name": _("First Name"),
-            "birthday": _("Birthday test"),
+            "birthday": _("Birthday"),
             "gender": _("Gender"),
             "gestational_age_at_birth": _("Gestational Age at Birth"),
             "additional_information": _(
@@ -425,7 +426,7 @@ class ChildUpdateForm(forms.ModelForm):
 
         labels = {
             "given_name": _("First Name"),
-            "birthday": _("Birthday test2"),
+            "birthday": _("Birthday"),
             "gender": _("Gender"),
             "gestational_age_at_birth": _("Gestational Age at Birth"),
             "additional_information": _(
