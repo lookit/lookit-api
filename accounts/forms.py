@@ -189,6 +189,7 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
             
             # Ensure this is translated now
             self.fields['nickname'].label=_('Nickname')
+            print("Nickname is " + _('Nickname'))
 
             # Make sure these are in the translation files
             # They could be removed if django catches up with its own translation of these phrasesß
