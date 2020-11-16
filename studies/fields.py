@@ -3,12 +3,12 @@ from django.utils.translation import gettext_lazy as _
 from model_utils import Choices
 
 # Conditions and Multiple birth are bitfield, NOT choices!
-CONDITIONS = [
-    ["autism_spectrum_disorder", _("Autism Spectrum Disorder")],
-    ["deaf", _("Deaf")],
-    ["hearing_impairment", _("Hard of Hearing")],
-    ["dyslexia", _("Dyslexia")],
-    ["multiple_birth", _("Multiple Birth (twin, triplet, or higher order)")],
+CONDITIONS = (
+    ("autism_spectrum_disorder", _("Autism Spectrum Disorder")),
+    ("deaf", _("Deaf")),
+    ("hearing_impairment", _("Hard of Hearing")),
+    ("dyslexia", _("Dyslexia")),
+    ("multiple_birth", _("Multiple Birth (twin, triplet, or higher order)")),
     # ("aspergers_syndrome", "Asperger's Syndrome"),
     # ("down_syndrome", "Down Syndrome"),
     # ("williams_syndrome", "Williams Syndrome"),
@@ -37,7 +37,7 @@ CONDITIONS = [
     # ("adopted", "Adopted"),
     # ("has_older_sibling", "Has at least one older sibling"),
     # ("has_younger_sibling", "Has at least one younger sibling"),
-]
+)
 
 
 # Keeping for now, though this will probably not be needed.
