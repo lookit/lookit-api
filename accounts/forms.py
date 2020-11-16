@@ -411,7 +411,7 @@ class ChildUpdateForm(forms.ModelForm):
 
         labels = {
             "given_name": _("First Name"),
-            "birthday": _("Birthday"),
+            "birthday": _("Birthday test2"),
             "gender": _("Gender"),
             "gestational_age_at_birth": _("Gestational Age at Birth"),
             "additional_information": _(
