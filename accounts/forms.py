@@ -185,15 +185,16 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            print(self.fields['password1'].help_text)
-            x='Your password must contain at least 16 characters.'
-
-            password_validator_translations=[ _(x),
+            
+            # Make sure these are in the translation files
+            password_validator_translations=[
                 _('Your password can’t be too similar to your other personal information.'),
-            ]
-
+                _('Your password must contain at least 16 characters.'),
+                _('Your password can’t be a commonly used password.'),
+                _('Your password can’t be entirely numeric.')]
+            
             # for item in password_validator_translations:
-            #     self.fields['password1'].help_text.replace(item,item + 'xyz') 
+            # self.fields['password1'].help_text=_(self.fields['password1'].help_text)
 
     def save(self, commit=True):
         user = super().save(commit=False)
