@@ -181,9 +181,11 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
 
 
 class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
-    nickname = forms.CharField(required=True, max_length=255)
-    
-    password1.help_text=_('test me here')
+    nickname = forms.CharField(required=True, max_length=255) 
+
+    def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            password1.help_text='dummy help'
 
     def save(self, commit=True):
         user = super().save(commit=False)
