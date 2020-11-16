@@ -6,10 +6,10 @@ class LoginRequiredMixin(guardian.mixins.LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         lang=get_language_from_request(request, check_path=True)
         if lang:
-            print('Switching login URL from this %s'%self.login_url))
-            if self.login_url[:(2+len(lang))]~='/' + lang +'/':
+            print('Switching login URL from this %s'%self.login_url)
+            if not self.login_url[:(2+len(lang))] == ('/' + lang +'/'):
                 self.login_url='/' + lang + self.login_url
-            print(' to this %s'%self.login_url))
+            print(' to this %s'%self.login_url)
         return super().dispatch(request, *args, **kwargs)
 
 
