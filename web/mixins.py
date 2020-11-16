@@ -1,6 +1,9 @@
 import guardian
 
 class LoginRequiredMixin(guardian.mixins.LoginRequiredMixin):
-   print('Hello')
-   pass
+   
+   def dispatch(self, request, *args, **kwargs):
+       print(request)
+       super().dispatch(request, *args, **kwargs)
+   
 
