@@ -225,7 +225,8 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
     model = Study
 
     # i18n for redirect
-    login_url = '/' + get_language() + '/login.html'
+    def get_login_url(self):
+        return '/' + get_language() + '/login'
 
     def get_queryset(self):
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
