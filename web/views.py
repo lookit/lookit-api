@@ -7,9 +7,9 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views import generic
 from django_countries import countries
-from django.utils.translation import get_language
 
-from guardian.mixins import LoginRequiredMixin
+from web.mixins import LoginRequiredMixin
+
 from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
 
@@ -223,10 +223,6 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
 
     template_name = "web/studies-history.html"
     model = Study
-
-    # i18n for redirect
-    def get_login_url(self):
-        return '/' + get_language() + '/login'
 
     def get_queryset(self):
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
