@@ -33,7 +33,7 @@ class ParticipantSignupView(generic.CreateView):
     template_name = "web/participant-signup.html"
     model = User
     form_class = forms.ParticipantSignupForm
-
+    
     def form_valid(self, form):
         resp = super().form_valid(form)
         new_user = authenticate(
@@ -292,7 +292,7 @@ class StudyDetailView(generic.DetailView):
             return super().dispatch(request)
         else:
             return HttpResponseForbidden(
-                _("The study %s is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact %s")%(study.name,study.contact_info)
+                _(f"The study {study.name} is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact {study.contact_info}")
             )
 
 

@@ -183,6 +183,12 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
 class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
     nickname = forms.CharField(required=True, max_length=255)
 
+    # Fix i18n on password help text
+    def __init__(self):
+        super(self)
+        print(self.password1)
+        self.password1.help_text="testing stuff"
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
