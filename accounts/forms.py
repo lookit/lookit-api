@@ -182,7 +182,7 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
 
 
 class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
-    nickname = forms.CharField(required=True, max_length=255) 
+    nickname = forms.CharField(required=True, max_length=255, label=_("Nickname")) 
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
