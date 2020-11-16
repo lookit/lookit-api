@@ -182,11 +182,14 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
 
 
 class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
-    nickname = forms.CharField(required=True, max_length=255, label=_("Nickname")) 
+    nickname = forms.CharField(required=True, max_length=255) 
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             
+            # Ensure this is translated now
+            self.fields['nickname'].label=_('Nickname')
+
             # Make sure these are in the translation files
             # They could be removed if django catches up with its own translation of these phrasesß
             password_validator_translations=[
