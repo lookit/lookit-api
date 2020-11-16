@@ -185,7 +185,7 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
 
     # Fix i18n on password help text
     def __init__(self):
-        super(self)
+        super()
         print(self.password1)
         self.password1.help_text="testing stuff"
 
