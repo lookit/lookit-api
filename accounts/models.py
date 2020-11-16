@@ -142,7 +142,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     given_name = models.CharField(max_length=255, blank=True)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
-    nickname = models.CharField(max_length=255, blank=True, verbose_name=_("Nickname"))
+    nickname = models.CharField(max_length=255, blank=True, verbose_name=_("llNickname"))
     _identicon = models.TextField(verbose_name="identicon")
     time_zone = models.CharField(max_length=255)
     locale = models.CharField(max_length=255)
