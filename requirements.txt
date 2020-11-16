@@ -1,2 +1,4 @@
+gunicorn
+django-heroku
 -r ./requirements/defaults.txt
 -r ./requirements/dev.txt
