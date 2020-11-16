@@ -34,7 +34,7 @@
            <div class="btn-group">
                <div class="btn-group">
                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    {% trans "yyNickname" %} <span class="caret"></span>
+                    {% trans "Nickname" %} <span class="caret"></span>
                  </button>
                  <ul class="dropdown-menu" role="menu">
                    <li> <a aria-label="Sort ascending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}">Sort A-Z</a></li>
@@ -55,7 +55,7 @@
    </div> 
    <div class="row mt-xl visible-md visible-lg visible-xl">
        <div class="col-md-2 col-md-offset-1">
-           <strong> {% trans "qqNickname" %} </strong>
+           <strong> {% trans "Nickname" %} </strong>
            <a class="pl-sm" aria-label="Sort ascending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
            <a aria-label="Sort descending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-nickname' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
        </div>

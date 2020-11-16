@@ -182,7 +182,7 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
 
 
 class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
-    nickname = forms.CharField(required=True, max_length=255, label='aaNickname') 
+    nickname = forms.CharField(required=True, max_length=255, label='Nickname') 
     
 
     def __init__(self, *args, **kwargs):
@@ -211,7 +211,7 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
         fields = ("username", "nickname")
         labels = {
             "username": _("Email address"),
-            "nickname": _("xxNickname"),
+            "nickname": _("Nickname"),
         }
 
 
