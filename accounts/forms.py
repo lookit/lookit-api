@@ -187,6 +187,7 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
             super().__init__(*args, **kwargs)
             
             # Make sure these are in the translation files
+            # They could be removed if django catches up with its own translation of these phrasesß
             password_validator_translations=[
                 _('Your password can’t be too similar to your other personal information.'),
                 _('Your password must contain at least 16 characters.'),
