@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-16 17:52+0000\n"
+"POT-Creation-Date: 2020-11-16 19:25+0000\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,31 +26,31 @@ msgstr ""
 msgid "This account is inactive."
 msgstr ""
 
-#: accounts/forms.py:200 accounts/forms.py:216
+#: accounts/forms.py:205 accounts/forms.py:221
 msgid "Email address"
 msgstr "כתובת מייל"
 
-#: accounts/forms.py:201 accounts/templates/accounts/participant_list.html:37
+#: accounts/forms.py:206 accounts/templates/accounts/participant_list.html:37
 #: accounts/templates/accounts/participant_list.html:58
 msgid "Nickname"
 msgstr "כינוי"
 
-#: accounts/forms.py:241
+#: accounts/forms.py:246
 msgid ""
 "It's time for another session of a study we are currently participating in"
 msgstr "הגיע הזמן למפגש נוסף של המחקר שאנחנו משתתפים בו כרגע"
 
-#: accounts/forms.py:243
+#: accounts/forms.py:248
 msgid "A new study is available for one of my children"
 msgstr "מחקר חדש זמין לאחד מילדי"
 
-#: accounts/forms.py:245
+#: accounts/forms.py:250
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
 msgstr "יש עדכון לגבי מחקר שהשתתפנו בו (למשל, התפרסמו תוצאות)"
 
-#: accounts/forms.py:248
+#: accounts/forms.py:253
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
@@ -58,79 +58,79 @@ msgstr ""
 "יש לחוקרים שאלה לגבי אחת התגובות שלי (למשל, אם דיווחתי על תקלה טכנית במהלך "
 "המחקר)"
 
-#: accounts/forms.py:257 accounts/forms.py:304
+#: accounts/forms.py:262 accounts/forms.py:309
 msgid "What category(ies) does your family identify as?"
 msgstr "איזה קטגוריה (או קטגוריות) מתאימה למשפחה שלך?"
 
-#: accounts/forms.py:286
+#: accounts/forms.py:291
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr "יש להכניס כרשימה המופרדת על ידי פסיקים: YYYY-MM-DD, YYYY-MM-DD..."
 
-#: accounts/forms.py:288
+#: accounts/forms.py:293
 msgid "Numerical answers only - a rough guess is fine!"
 msgstr "תשובות מספריות בלבד - זה בסדר לתת הערכה גסה!"
 
-#: accounts/forms.py:292
+#: accounts/forms.py:297
 msgid "What country do you live in?"
 msgstr "באיזו ארץ אתם חיים?"
 
-#: accounts/forms.py:293
+#: accounts/forms.py:298
 msgid "What state do you live in?"
 msgstr "באיזו מדינה אתם חיים?"
 
-#: accounts/forms.py:294
+#: accounts/forms.py:299
 msgid "How would you describe the area where you live?"
 msgstr "איך הייתם מתארים את האיזור בו אתם חיים?"
 
-#: accounts/forms.py:296
+#: accounts/forms.py:301
 msgid "What language(s) does your family speak at home?"
 msgstr "איזה שפה (או שפות) המשפחה שלכם מדברת בבית?"
 
-#: accounts/forms.py:298
+#: accounts/forms.py:303
 msgid "How many children do you have?"
 msgstr "כמה ילדים יש לך?"
 
-#: accounts/forms.py:299
+#: accounts/forms.py:304
 msgid "For each child, please enter his or her birthdate:"
 msgstr "לגבי כל ילד או ילדה, אנא הקלידו את יום ההולדת שלו או שלה:"
 
-#: accounts/forms.py:301
+#: accounts/forms.py:306
 msgid "How many parents/guardians do your children live with?"
 msgstr "עם כמה הורים/אפוטרופסים חיים ילדכם?"
 
-#: accounts/forms.py:306
+#: accounts/forms.py:311
 msgid "What is your age?"
 msgstr "מה גילך?"
 
-#: accounts/forms.py:307
+#: accounts/forms.py:312
 msgid "What is your gender?"
 msgstr "מה מגדרך?"
 
-#: accounts/forms.py:309
+#: accounts/forms.py:314
 msgid "What is the highest level of education you've completed?"
 msgstr "מהי רמת ההשכלה הגבוהה ביותר שהשלמת?"
 
-#: accounts/forms.py:312
+#: accounts/forms.py:317
 msgid "What is the highest level of education your spouse has completed?"
 msgstr "מהי רמת ההשכלה הגבוהה ביותר שהשלימ/ה בן/בת זוגך?"
 
-#: accounts/forms.py:315
+#: accounts/forms.py:320
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "מהי בערך רמת ההכנסה השנתית של משפחתך?"
 
-#: accounts/forms.py:318
+#: accounts/forms.py:323
 msgid "About how many children's books are there in your home?"
 msgstr "בערך כמה ספרי ילדים יש בבית?"
 
-#: accounts/forms.py:320
+#: accounts/forms.py:325
 msgid "Anything else you'd like us to know?"
 msgstr "עוד משהו שתרצו שנדע?"
 
-#: accounts/forms.py:321
+#: accounts/forms.py:326
 msgid "How did you hear about Lookit?"
 msgstr "איך שמעתם על לוקיט?"
 
-#: accounts/forms.py:323
+#: accounts/forms.py:328
 msgid ""
 "If the answer varies due to shared custody arrangements or travel, please "
 "enter the number of parents/guardians your children are usually living with "
@@ -139,7 +139,7 @@ msgstr ""
 "אם התשובה משתנה עקב הסדרי משמורת משותפים או נסיעות, אנא הכניסו את מספר "
 "ההורים / האפוטרופוסים שילדיכם מתגוררים איתם בדרך כלל או הסבירו."
 
-#: accounts/forms.py:339
+#: accounts/forms.py:344
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
 "in a study. We never publish children's birthdates or information that would "
@@ -148,45 +148,45 @@ msgstr ""
 "זה מאפשר לנו להבין בדיוק בן כמה ילדך כשהוא משתתף במחקר. אנו אף פעם לא "
 "מפרסמים תאריכי לידה של ילדים או מידע שיאפשר לקורא לחשב את תאריך הלידה."
 
-#: accounts/forms.py:346
+#: accounts/forms.py:351
 msgid "Birthdays cannot be in the future."
 msgstr "ימי הולדת לא יכולים להיות בעתיד."
 
-#: accounts/forms.py:362 accounts/forms.py:413
+#: accounts/forms.py:367 accounts/forms.py:418
 msgid "First Name"
 msgstr "שם פרטי"
 
-#: accounts/forms.py:363
+#: accounts/forms.py:368
 #, fuzzy
 #| msgid "Birthday"
 msgid "Birthday test"
 msgstr "יום הולדת"
 
-#: accounts/forms.py:364 accounts/forms.py:415
+#: accounts/forms.py:369 accounts/forms.py:420
 #: accounts/templates/accounts/participant_detail.html:54
 msgid "Gender"
 msgstr "מגדר"
 
-#: accounts/forms.py:365 accounts/forms.py:416
+#: accounts/forms.py:370 accounts/forms.py:421
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
 msgstr "גיל הריון בלידה"
 
-#: accounts/forms.py:367 accounts/forms.py:418
+#: accounts/forms.py:372 accounts/forms.py:423
 msgid "Any additional information you'd like us to know"
 msgstr "כל מידע נוסף שתרצו שנדע"
 
-#: accounts/forms.py:369 accounts/forms.py:420
+#: accounts/forms.py:374 accounts/forms.py:425
 msgid "Characteristics and conditions"
 msgstr "מאפיינים ותנאים"
 
-#: accounts/forms.py:371 accounts/forms.py:422
+#: accounts/forms.py:376 accounts/forms.py:427
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr "שפות שילד זה נחשף אליהן בבית, בבית הספר או אצל מטפל אחר."
 
-#: accounts/forms.py:377 accounts/forms.py:428
+#: accounts/forms.py:382 accounts/forms.py:433
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
@@ -197,16 +197,16 @@ msgstr ""
 "הם בסדר! אנו עשויים לכלול את שמו של ילדך במייל אליכם (למשל, \"יש מחקר חדש "
 "זמין עבור יונתן!\") אך לעולם לא נפרסם שמות ולא נשתמש בהם במחקר שלנו."
 
-#: accounts/forms.py:380 accounts/forms.py:431
+#: accounts/forms.py:385 accounts/forms.py:436
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr "למשל, הפרעות התפתחות מאובחנות או בעיות ראייה או שמיעה"
 
-#: accounts/forms.py:383
+#: accounts/forms.py:388
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr "אנא עגלו מטה לשבוע המלא של הריון שהושלם"
 
-#: accounts/forms.py:414
+#: accounts/forms.py:419
 #, fuzzy
 #| msgid "Birthday"
 msgid "Birthday test2"
@@ -1843,10 +1843,11 @@ msgid "Email preferences saved."
 msgstr "העדפות דוא\"ל"
 
 #: web/views.py:295
-#, python-format
+#, python-brace-format
 msgid ""
-"The study %s is not currently collecting data - the study is either "
-"completed or paused. If you think this is an error, please contact %s"
+"The study {study.name} is not currently collecting data - the study is "
+"either completed or paused. If you think this is an error, please contact "
+"{study.contact_info}"
 msgstr ""
 
 #~ msgid "Login Unsuccessful"

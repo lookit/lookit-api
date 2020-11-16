@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-16 17:52+0000\n"
+"POT-Creation-Date: 2020-11-16 19:25+0000\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,27 +26,27 @@ msgstr ""
 msgid "This account is inactive."
 msgstr ""
 
-#: accounts/forms.py:200 accounts/forms.py:216
+#: accounts/forms.py:205 accounts/forms.py:221
 msgid "Email address"
 msgstr "Indirizzo email"
 
-#: accounts/forms.py:201 accounts/templates/accounts/participant_list.html:37
+#: accounts/forms.py:206 accounts/templates/accounts/participant_list.html:37
 #: accounts/templates/accounts/participant_list.html:58
 msgid "Nickname"
 msgstr "Soprannome"
 
-#: accounts/forms.py:241
+#: accounts/forms.py:246
 msgid ""
 "It's time for another session of a study we are currently participating in"
 msgstr ""
 "È il momento per un'altra sessione di uno studio a cui stiamo attualmente "
 "partecipando"
 
-#: accounts/forms.py:243
+#: accounts/forms.py:248
 msgid "A new study is available for one of my children"
 msgstr "È disponibile un nuovo studio per uno dei miei figli"
 
-#: accounts/forms.py:245
+#: accounts/forms.py:250
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
@@ -54,7 +54,7 @@ msgstr ""
 "C'è un aggiornamento su uno studio a cui abbiamo partecipato (ad esempio: i "
 "risultati vengono pubblicati)"
 
-#: accounts/forms.py:248
+#: accounts/forms.py:253
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
@@ -62,79 +62,79 @@ msgstr ""
 "Un ricercatore ha domande sulle mie risposte individuali (ad esempio: se "
 "segnalo un problema tecnico durante lo studio)"
 
-#: accounts/forms.py:257 accounts/forms.py:304
+#: accounts/forms.py:262 accounts/forms.py:309
 msgid "What category(ies) does your family identify as?"
 msgstr "In quale categoria(e) si identifica la tua famiglia?"
 
-#: accounts/forms.py:286
+#: accounts/forms.py:291
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr "Inserisci come elenco separato da virgole: AAAA-MM-GG, AAAA-MM-GG, ..."
 
-#: accounts/forms.py:288
+#: accounts/forms.py:293
 msgid "Numerical answers only - a rough guess is fine!"
 msgstr "Solo risposte numeriche: un'ipotesi approssimativa va bene!"
 
-#: accounts/forms.py:292
+#: accounts/forms.py:297
 msgid "What country do you live in?"
 msgstr "In quale stato vivi?"
 
-#: accounts/forms.py:293
+#: accounts/forms.py:298
 msgid "What state do you live in?"
 msgstr "In quale regione vivi?"
 
-#: accounts/forms.py:294
+#: accounts/forms.py:299
 msgid "How would you describe the area where you live?"
 msgstr "Come descriveresti la zona in cui vivi?"
 
-#: accounts/forms.py:296
+#: accounts/forms.py:301
 msgid "What language(s) does your family speak at home?"
 msgstr "Che lingua (e) parla la tua famiglia a casa?"
 
-#: accounts/forms.py:298
+#: accounts/forms.py:303
 msgid "How many children do you have?"
 msgstr "Quanti figli hai?"
 
-#: accounts/forms.py:299
+#: accounts/forms.py:304
 msgid "For each child, please enter his or her birthdate:"
 msgstr "Per ogni bambino, inserisci la sua data di nascita:"
 
-#: accounts/forms.py:301
+#: accounts/forms.py:306
 msgid "How many parents/guardians do your children live with?"
 msgstr "Con quanti genitori / tutori convivono i tuoi figli?"
 
-#: accounts/forms.py:306
+#: accounts/forms.py:311
 msgid "What is your age?"
 msgstr "Quanti anni hai?"
 
-#: accounts/forms.py:307
+#: accounts/forms.py:312
 msgid "What is your gender?"
 msgstr "Qual è il tuo genere?"
 
-#: accounts/forms.py:309
+#: accounts/forms.py:314
 msgid "What is the highest level of education you've completed?"
 msgstr "Qual è il livello di istruzione più alto che hai completato?"
 
-#: accounts/forms.py:312
+#: accounts/forms.py:317
 msgid "What is the highest level of education your spouse has completed?"
 msgstr "Qual è il livello di istruzione più alto completato dal tuo coniuge?"
 
-#: accounts/forms.py:315
+#: accounts/forms.py:320
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "Qual è il tuo reddito annuo familiare approssimativo (in Euro)?"
 
-#: accounts/forms.py:318
+#: accounts/forms.py:323
 msgid "About how many children's books are there in your home?"
 msgstr "Quanti libri per bambini ci sono in casa tua?"
 
-#: accounts/forms.py:320
+#: accounts/forms.py:325
 msgid "Anything else you'd like us to know?"
 msgstr "C'è qualcos'altro che vorresti farci sapere?"
 
-#: accounts/forms.py:321
+#: accounts/forms.py:326
 msgid "How did you hear about Lookit?"
 msgstr "Come hai saputo di Lookit?"
 
-#: accounts/forms.py:323
+#: accounts/forms.py:328
 msgid ""
 "If the answer varies due to shared custody arrangements or travel, please "
 "enter the number of parents/guardians your children are usually living with "
@@ -144,7 +144,7 @@ msgstr ""
 "viaggio, inserisci il numero di genitori / tutori con cui vivono "
 "abitualmente i tuoi figli o spiega."
 
-#: accounts/forms.py:339
+#: accounts/forms.py:344
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
 "in a study. We never publish children's birthdates or information that would "
@@ -155,39 +155,39 @@ msgstr ""
 "o informazioni che consentirebbero a un lettore di calcolare la data di "
 "nascita."
 
-#: accounts/forms.py:346
+#: accounts/forms.py:351
 msgid "Birthdays cannot be in the future."
 msgstr "I compleanni non possono essere in futuro."
 
-#: accounts/forms.py:362 accounts/forms.py:413
+#: accounts/forms.py:367 accounts/forms.py:418
 msgid "First Name"
 msgstr "Nome di battesimo"
 
-#: accounts/forms.py:363
+#: accounts/forms.py:368
 #, fuzzy
 #| msgid "Birthday"
 msgid "Birthday test"
 msgstr "Data di nascita"
 
-#: accounts/forms.py:364 accounts/forms.py:415
+#: accounts/forms.py:369 accounts/forms.py:420
 #: accounts/templates/accounts/participant_detail.html:54
 msgid "Gender"
 msgstr "Genere"
 
-#: accounts/forms.py:365 accounts/forms.py:416
+#: accounts/forms.py:370 accounts/forms.py:421
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
 msgstr "Età gestazionale alla nascita"
 
-#: accounts/forms.py:367 accounts/forms.py:418
+#: accounts/forms.py:372 accounts/forms.py:423
 msgid "Any additional information you'd like us to know"
 msgstr "Qualsiasi informazione aggiuntiva che desideri farci sapere"
 
-#: accounts/forms.py:369 accounts/forms.py:420
+#: accounts/forms.py:374 accounts/forms.py:425
 msgid "Characteristics and conditions"
 msgstr "Caratteristiche e condizioni"
 
-#: accounts/forms.py:371 accounts/forms.py:422
+#: accounts/forms.py:376 accounts/forms.py:427
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
@@ -195,7 +195,7 @@ msgstr ""
 "Lingue a cui questo bambino è esposto a casa, a scuola o con un altro "
 "caregiver."
 
-#: accounts/forms.py:377 accounts/forms.py:428
+#: accounts/forms.py:382 accounts/forms.py:433
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
@@ -208,20 +208,20 @@ msgstr ""
 "nuovo studio disponibile per Maria!\") Ma non pubblicheremo mai nomi né li "
 "utilizzeremo nella nostra ricerca."
 
-#: accounts/forms.py:380 accounts/forms.py:431
+#: accounts/forms.py:385 accounts/forms.py:436
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr ""
 "Ad esempio, disturbi dello sviluppo diagnosticati o problemi alla vista o "
 "all'udito"
 
-#: accounts/forms.py:383
+#: accounts/forms.py:388
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr ""
 "Si prega di arrotondare per difetto alla settimana intera di gravidanza "
 "completata più vicina"
 
-#: accounts/forms.py:414
+#: accounts/forms.py:419
 #, fuzzy
 #| msgid "Birthday"
 msgid "Birthday test2"
@@ -1878,10 +1878,11 @@ msgid "Email preferences saved."
 msgstr "preferenze email"
 
 #: web/views.py:295
-#, python-format
+#, python-brace-format
 msgid ""
-"The study %s is not currently collecting data - the study is either "
-"completed or paused. If you think this is an error, please contact %s"
+"The study {study.name} is not currently collecting data - the study is "
+"either completed or paused. If you think this is an error, please contact "
+"{study.contact_info}"
 msgstr ""
 
 #~ msgid "Login Unsuccessful"
