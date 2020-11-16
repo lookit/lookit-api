@@ -186,11 +186,9 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            
-            # Ensure this is translated now
-            self.fields['nickname'].label=_('Nickname')
-            print("Nickname is " + _('Nickname'))
 
+            print("Nickname check")
+            
             # Make sure these are in the translation files
             # They could be removed if django catches up with its own translation of these phrasesß
             password_validator_translations=[
@@ -198,9 +196,6 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
                 _('Your password must contain at least 16 characters.'),
                 _('Your password can’t be a commonly used password.'),
                 _('Your password can’t be entirely numeric.')]
-            
-            # for item in password_validator_translations:
-            # self.fields['password1'].help_text=_(self.fields['password1'].help_text)
 
     def save(self, commit=True):
         user = super().save(commit=False)
