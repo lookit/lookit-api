@@ -33,8 +33,6 @@ class ParticipantSignupView(generic.CreateView):
     template_name = "web/participant-signup.html"
     model = User
     form_class = forms.ParticipantSignupForm
-    
-    print('Nickname set up 3')
 
     def form_valid(self, form):
         resp = super().form_valid(form)
