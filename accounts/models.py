@@ -18,7 +18,6 @@ from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
-from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
@@ -40,6 +39,7 @@ from studies.permissions import (
     StudyPermission,
 )
 
+from django.utils.translation import gettext_lazy as _
 
 class UserManager(BaseUserManager):
     def get_by_natural_key(self, username):
@@ -137,12 +137,12 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         models.CharField(max_length=255), blank=True, default=list
     )
     username = models.EmailField(
-        unique=True, verbose_name="Email address~", db_index=True
+        unique=True, verbose_name=_("Email address"), db_index=True
     )
     given_name = models.CharField(max_length=255, blank=True)
     middle_name = models.CharField(max_length=255, blank=True)
     family_name = models.CharField(max_length=255)
-    nickname = models.CharField(max_length=255, blank=True)
+    nickname = models.CharField(max_length=255, blank=True, verbose_name=_("Nickname"))
     _identicon = models.TextField(verbose_name="identicon")
     time_zone = models.CharField(max_length=255)
     locale = models.CharField(max_length=255)
