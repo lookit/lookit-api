@@ -192,8 +192,8 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
                 _('Your password can’t be too similar to your other personal information.'),
             ]
 
-            for item in password_validator_translations:
-                self.fields['password1'].help_text.replace(item,item + 'xyz') 
+            # for item in password_validator_translations:
+            #     self.fields['password1'].help_text.replace(item,item + 'xyz') 
 
     def save(self, commit=True):
         user = super().save(commit=False)
