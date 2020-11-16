@@ -4,6 +4,7 @@ class LoginRequiredMixin(guardian.mixins.LoginRequiredMixin):
    
    def dispatch(self, request, *args, **kwargs):
        print(self.redirect_field_name)
+       print(request.path)
        print(args)
        print(kwargs)
        print('Found this %s'% request.POST.get('next',''))
