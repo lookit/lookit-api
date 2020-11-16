@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from accounts.backends import two_factor_auth_backend
 from accounts.models import Child, DemographicData, User
 
+from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 
 class ForceLowercaseEmailField(EmailField):
     def to_python(self, value):
@@ -401,7 +402,8 @@ class ChildForm(forms.ModelForm):
 
         widgets = {
             "existing_conditions": BitFieldCheckboxSelectMultiple(
-                attrs={"class": "column-checkbox"}
+                attrs={"class": "column-checkbox"}, 
+                choices=CONDITIONS          # Be explicit about CHOICES here so that translation takes place now
             ),
             "languages_spoken": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
