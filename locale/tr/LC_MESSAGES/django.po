@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-16 19:43+0000\n"
+"POT-Creation-Date: 2020-11-16 19:49+0000\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,29 +26,41 @@ msgstr ""
 msgid "This account is inactive."
 msgstr ""
 
-#: accounts/forms.py:192
+#: accounts/forms.py:191
 msgid "Your password can’t be too similar to your other personal information."
 msgstr ""
 
-#: accounts/forms.py:212 accounts/forms.py:228
+#: accounts/forms.py:192
+msgid "Your password must contain at least 16 characters."
+msgstr ""
+
+#: accounts/forms.py:193
+msgid "Your password can’t be a commonly used password."
+msgstr ""
+
+#: accounts/forms.py:194
+msgid "Your password can’t be entirely numeric."
+msgstr ""
+
+#: accounts/forms.py:213 accounts/forms.py:229
 msgid "Email address"
 msgstr "Email adresi"
 
-#: accounts/forms.py:213 accounts/templates/accounts/participant_list.html:37
+#: accounts/forms.py:214 accounts/templates/accounts/participant_list.html:37
 #: accounts/templates/accounts/participant_list.html:58
 msgid "Nickname"
 msgstr "Kullanıcı adı"
 
-#: accounts/forms.py:253
+#: accounts/forms.py:254
 msgid ""
 "It's time for another session of a study we are currently participating in"
 msgstr "Şu anda katıldığımız çalışmanın başka bir oturumunun zamanı geldi"
 
-#: accounts/forms.py:255
+#: accounts/forms.py:256
 msgid "A new study is available for one of my children"
 msgstr "Yeni çalışma çocuklarımdan biri için uygun"
 
-#: accounts/forms.py:257
+#: accounts/forms.py:258
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
@@ -56,7 +68,7 @@ msgstr ""
 "Katıldığımız bir çalışma ile ilgili bir gelişme mevcut(örneğin, sonuçlar "
 "yayınlandı)"
 
-#: accounts/forms.py:260
+#: accounts/forms.py:261
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
@@ -64,79 +76,79 @@ msgstr ""
 "Araştırmacının bireysel yanıtlarımla ilgili soruları var (örneğin, çalışma "
 "esnasında teknik bir problemi rapor edersem)"
 
-#: accounts/forms.py:269 accounts/forms.py:316
+#: accounts/forms.py:270 accounts/forms.py:317
 msgid "What category(ies) does your family identify as?"
 msgstr "Hangi kategori(ler) ailenizi tanımlıyor?"
 
-#: accounts/forms.py:298
+#: accounts/forms.py:299
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr "Virgülle ayrılmış listeyi giriniz: YYYY-AA-GG, YYYY-AA-GG, ..."
 
-#: accounts/forms.py:300
+#: accounts/forms.py:301
 msgid "Numerical answers only - a rough guess is fine!"
 msgstr "Yalnızca sayısal cevaplar- kabaca bir tahmin uygundur!"
 
-#: accounts/forms.py:304
+#: accounts/forms.py:305
 msgid "What country do you live in?"
 msgstr "Hangi ülkede yaşıyorsunuz?"
 
-#: accounts/forms.py:305
+#: accounts/forms.py:306
 msgid "What state do you live in?"
 msgstr "Hangi ilde yaşıyorsunuz?"
 
-#: accounts/forms.py:306
+#: accounts/forms.py:307
 msgid "How would you describe the area where you live?"
 msgstr "Yaşadığınız bölgeyi nasıl tanımlarsınız?"
 
-#: accounts/forms.py:308
+#: accounts/forms.py:309
 msgid "What language(s) does your family speak at home?"
 msgstr "Aileniz evinizde hangi dil(ler)i konuşuyor?"
 
-#: accounts/forms.py:310
+#: accounts/forms.py:311
 msgid "How many children do you have?"
 msgstr "Kaç tane çocuğunuz var?"
 
-#: accounts/forms.py:311
+#: accounts/forms.py:312
 msgid "For each child, please enter his or her birthdate:"
 msgstr "Lütfen her bir çocuğunuzun doğum tarihini girin: "
 
-#: accounts/forms.py:313
+#: accounts/forms.py:314
 msgid "How many parents/guardians do your children live with?"
 msgstr "Çocuğunuz kaç ebeveyn/bakıcı ile birlikte yaşıyor?"
 
-#: accounts/forms.py:318
+#: accounts/forms.py:319
 msgid "What is your age?"
 msgstr "Yaşınız kaç?"
 
-#: accounts/forms.py:319
+#: accounts/forms.py:320
 msgid "What is your gender?"
 msgstr "Cinsiyetiniz nedir?"
 
-#: accounts/forms.py:321
+#: accounts/forms.py:322
 msgid "What is the highest level of education you've completed?"
 msgstr "Tamamladığınız en yüksek eğitim seviyesi nedir?"
 
-#: accounts/forms.py:324
+#: accounts/forms.py:325
 msgid "What is the highest level of education your spouse has completed?"
 msgstr "Eşinizin tamamladığı en yüksek eğitim seviyesi nedir?"
 
-#: accounts/forms.py:327
+#: accounts/forms.py:328
 msgid "What is your approximate family yearly income (in US dollars)?"
 msgstr "Ailenizin yıllık geliri ortalama ne kadar (Türk Lirası)?"
 
-#: accounts/forms.py:330
+#: accounts/forms.py:331
 msgid "About how many children's books are there in your home?"
 msgstr "Evinizde tahmini kaç tane çocuk kitabı var?"
 
-#: accounts/forms.py:332
+#: accounts/forms.py:333
 msgid "Anything else you'd like us to know?"
 msgstr "Bilmemizi istediğiniz başka bir şey var mı?"
 
-#: accounts/forms.py:333
+#: accounts/forms.py:334
 msgid "How did you hear about Lookit?"
 msgstr "Lookit'den nasıl haberdar oldunuz?"
 
-#: accounts/forms.py:335
+#: accounts/forms.py:336
 msgid ""
 "If the answer varies due to shared custody arrangements or travel, please "
 "enter the number of parents/guardians your children are usually living with "
@@ -146,7 +158,7 @@ msgstr ""
 "değişiyorsa, lütfen çocuğunuzun genellikle birlikte yaşadığı ebeveyn/bakıcı "
 "sayısını belirtin veya açıklayın."
 
-#: accounts/forms.py:351
+#: accounts/forms.py:352
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
 "in a study. We never publish children's birthdates or information that would "
@@ -156,45 +168,45 @@ msgstr ""
 "anlamamızı sağlar. Çocukların doğum tarihlerini veya okuyucunun doğum "
 "tarihini hesaplamasını sağlayacak bilgileri asla yayınlamayız."
 
-#: accounts/forms.py:358
+#: accounts/forms.py:359
 msgid "Birthdays cannot be in the future."
 msgstr "Doğum tarihi gelecek bir zamanda olamaz."
 
-#: accounts/forms.py:374 accounts/forms.py:425
+#: accounts/forms.py:375 accounts/forms.py:426
 msgid "First Name"
 msgstr "İsim"
 
-#: accounts/forms.py:375
+#: accounts/forms.py:376
 #, fuzzy
 #| msgid "Birthday"
 msgid "Birthday test"
 msgstr "Doğum tarihi"
 
-#: accounts/forms.py:376 accounts/forms.py:427
+#: accounts/forms.py:377 accounts/forms.py:428
 #: accounts/templates/accounts/participant_detail.html:54
 msgid "Gender"
 msgstr "Cinsiyet"
 
-#: accounts/forms.py:377 accounts/forms.py:428
+#: accounts/forms.py:378 accounts/forms.py:429
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
 msgstr "Doğumdaki Gebelik Dönemi"
 
-#: accounts/forms.py:379 accounts/forms.py:430
+#: accounts/forms.py:380 accounts/forms.py:431
 msgid "Any additional information you'd like us to know"
 msgstr "Bilmemizi istediğiniz başka ek bilgi"
 
-#: accounts/forms.py:381 accounts/forms.py:432
+#: accounts/forms.py:382 accounts/forms.py:433
 msgid "Characteristics and conditions"
 msgstr "Özellikler ve şartlar"
 
-#: accounts/forms.py:383 accounts/forms.py:434
+#: accounts/forms.py:384 accounts/forms.py:435
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr "Bu çocuğun evde, okulda veya başka bir bakıcıdan maruz kaldığı diller."
 
-#: accounts/forms.py:389 accounts/forms.py:440
+#: accounts/forms.py:390 accounts/forms.py:441
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
@@ -206,18 +218,18 @@ msgstr ""
 "emaile ekleyebiliriz (örneğin, \"Merve için uygun olan yeni bir çalışma var!"
 "\") ama isimleri asla yayınlamayız veya araştırmalarımızda kullanmayız."
 
-#: accounts/forms.py:392 accounts/forms.py:443
+#: accounts/forms.py:393 accounts/forms.py:444
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr ""
 "Örneğin, tanı almış gelişimsel bozukluklar ya da görme veya işitme "
 "problemleri"
 
-#: accounts/forms.py:395
+#: accounts/forms.py:396
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr "Lütfen hamilelik haftasını tamamlanan en yakın tam haftaya yuvarlayın"
 
-#: accounts/forms.py:426
+#: accounts/forms.py:427
 #, fuzzy
 #| msgid "Birthday"
 msgid "Birthday test2"
