@@ -97,12 +97,10 @@ msgid "What state do you live in?"
 msgstr "¿En qué provincia viven?"
 
 #: accounts/forms.py:307
-#, fuzzy
 msgid "How would you describe the area where you live?"
 msgstr "¿Cómo describirían el área donde viven?"
 
 #: accounts/forms.py:309
-#, fuzzy
 msgid "What language(s) does your family speak at home?"
 msgstr "¿Qué idiomas habla su familia cuando está en casa?"
 
@@ -180,7 +178,6 @@ msgid "First Name"
 msgstr "Nombre"
 
 #: accounts/forms.py:376
-#, fuzzy
 #| msgid "Birthday"
 msgid "Birthday test"
 msgstr "Cumpleaños"
@@ -204,7 +201,6 @@ msgid "Characteristics and conditions"
 msgstr "Características y condiciones"
 
 #: accounts/forms.py:384 accounts/forms.py:435
-#, fuzzy
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
@@ -237,7 +233,6 @@ msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr "Redondea a la semana completa de embarazo completada más cercana"
 
 #: accounts/forms.py:427
-#, fuzzy
 #| msgid "Birthday"
 msgid "Birthday test2"
 msgstr "Cumpleaños"
@@ -799,7 +794,6 @@ msgid "Area description"
 msgstr "Descripción del área"
 
 #: accounts/templates/accounts/participant_detail.html:110
-#, fuzzy
 msgid "Languages Spoken at Home"
 msgstr "Idiomas que se hablan en casa"
 
@@ -816,7 +810,6 @@ msgid "Number of Guardians"
 msgstr "Número de tutores/as"
 
 #: accounts/templates/accounts/participant_detail.html:142
-#, fuzzy
 msgid "Explanation for Guardians:"
 msgstr "Explicación sobre tutores/as: "
 
@@ -925,7 +918,6 @@ msgid "German"
 msgstr ""
 
 #: studies/fields.py:69
-#, fuzzy
 #| msgid "Duration"
 msgid "Gujarati"
 msgstr "Duración"
@@ -1039,7 +1031,6 @@ msgid "Romanian"
 msgstr ""
 
 #: studies/fields.py:97
-#, fuzzy
 #| msgid "Asian"
 msgid "Russian"
 msgstr "Asiático/a"
@@ -1113,7 +1104,6 @@ msgid "Yoruba"
 msgstr ""
 
 #: studies/fields.py:115
-#, fuzzy
 #| msgid "Yes"
 msgid "Yue"
 msgstr "Sí"
@@ -1169,7 +1159,6 @@ msgid "Privacy"
 msgstr ""
 
 #: web/templates/flatpages/default.html:59
-#, fuzzy
 #| msgid "Contact:"
 msgid "Contact us"
 msgstr "Contacto:"
@@ -1185,7 +1174,6 @@ msgstr "Ha cerrado la sesión correctamente."
 #: web/templates/registration/login.html:8
 #: web/templates/web/studies-history.html:9
 #: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
-#, fuzzy
 #| msgid "Your username and password didn't match. Please try again."
 msgid "Your login credentials didn't work. Please try again."
 msgstr "Su nombre de usuario y contraseña no coinciden. Inténtelo de nuevo."
@@ -1302,13 +1290,11 @@ msgstr ""
 "contraseña."
 
 #: web/templates/registration/password_reset_done.html:11
-#, fuzzy
 #| msgid "Password reset complete"
 msgid "Password reset link sent"
 msgstr "Restablecimiento de contraseña completado"
 
 #: web/templates/registration/password_reset_done.html:15
-#, fuzzy
 #| msgid ""
 #| "We've emailed you instructions for setting your password, if an account "
 #| "exists with the email you entered. You should receive them shortly."
@@ -1321,7 +1307,6 @@ msgstr ""
 "Debería recibirlas en breve."
 
 #: web/templates/registration/password_reset_done.html:17
-#, fuzzy
 #| msgid ""
 #| "If you don't receive an email, please make sure you've entered the "
 #| "address you registered with, and check your spam folder."
@@ -1364,7 +1349,6 @@ msgid "The %(site_name)s team"
 msgstr "El equipo de% (site_name) s"
 
 #: web/templates/registration/password_reset_form.html:11
-#, fuzzy
 #| msgid "Password reset complete"
 msgid "Password reset"
 msgstr "Restablecimiento de contraseña completado"
@@ -1423,7 +1407,6 @@ msgid "Child"
 msgstr "Niño"
 
 #: web/templates/web/child-update.html:26
-#, fuzzy
 #| msgid "Back to list"
 msgid "Back to Children List"
 msgstr "Volver a la lista"
@@ -1528,7 +1511,6 @@ msgid "I would like to be contacted when:"
 msgstr "Me gustaría ser contactado/a cuando:"
 
 #: web/templates/web/participant-signup.html:18
-#, fuzzy
 #| msgid "Participant account"
 msgid "Create Participant Account"
 msgstr "Cuenta del participante"
@@ -1546,7 +1528,6 @@ msgid "this form"
 msgstr ""
 
 #: web/templates/web/participant-signup.html:23
-#, fuzzy
 #| msgid "instead?"
 msgid "instead"
 msgstr "¿en lugar?"
@@ -1724,7 +1705,6 @@ msgstr ""
 "más estudios!"
 
 #: web/templates/web/study-detail.html:53
-#, fuzzy
 #| msgid " days"
 msgid "days"
 msgstr " dias"
@@ -1758,7 +1738,6 @@ msgid "Compensation"
 msgstr "Compensación"
 
 #: web/templates/web/study-detail.html:126
-#, fuzzy
 msgid "What happens"
 msgstr "Qué sucede"
 
@@ -1779,7 +1758,6 @@ msgid "Log in to participate"
 msgstr "Inicie sesión para participar"
 
 #: web/templates/web/study-detail.html:142
-#, fuzzy
 #| msgid "No child profiles registered!"
 msgid "Add child profile to "
 msgstr "¡No hay perfiles de niños/as registrados/as!"
@@ -1791,13 +1769,11 @@ msgstr ""
 
 #: web/templates/web/study-detail.html:142
 #: web/templates/web/study-detail.html:144
-#, fuzzy
 #| msgid "Participate"
 msgid "participate"
 msgstr "Participar"
 
 #: web/templates/web/study-detail.html:144
-#, fuzzy
 #| msgid "Demographic Survey"
 msgid "Complete demographic survey to "
 msgstr "Encuesta demográfica"
@@ -1862,19 +1838,16 @@ msgstr ""
 "estudio, guarde la URL a la que le envía el botón de arriba."
 
 #: web/views.py:47
-#, fuzzy
 #| msgid "Participant account"
 msgid "Participant created."
 msgstr "Cuenta del participante"
 
 #: web/views.py:72
-#, fuzzy
 #| msgid "Demographic Survey"
 msgid "Demographic data saved."
 msgstr "Encuesta demográfica"
 
 #: web/views.py:140
-#, fuzzy
 #| msgid "Children"
 msgid "Child added."
 msgstr "Niños/as"
@@ -1888,7 +1861,6 @@ msgid "Child updated."
 msgstr ""
 
 #: web/views.py:201
-#, fuzzy
 #| msgid "Email Preferences"
 msgid "Email preferences saved."
 msgstr "Preferencias de correo electrónico"
