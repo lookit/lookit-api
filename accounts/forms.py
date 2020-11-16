@@ -187,8 +187,6 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
 
-            print("Nickname check")
-            
             # Make sure these are in the translation files
             # They could be removed if django catches up with its own translation of these phrasesß
             password_validator_translations=[
@@ -212,7 +210,7 @@ class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
         fields = ("username", "nickname")
         labels = {
             "username": _("Email address"),
-            "nickname": _("Nickname"),
+            "nickname": _("xxNickname"),
         }
 
 
