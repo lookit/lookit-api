@@ -4,10 +4,11 @@ from ace_overlay.widgets import AceOverlayWidget
 from django import forms
 from django.db.models import Q
 from django.forms import ModelForm, Textarea
+from guardian.shortcuts import get_objects_for_user
 
 from accounts.queries import compile_expression
 from studies.models import Lab, Response, Study
-from studies.permissions import StudyPermission
+from studies.permissions import LabPermission, StudyPermission
 
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
 STUDY_TYPE_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-manage-studies.html#editing-study-type"
@@ -328,10 +329,16 @@ class StudyEditForm(StudyForm):
                 "this will affect who can view and edit the study."
             )
             # Limit labs to change to: current lab, or labs this user is a member of & can create studies in
-            self.fields["lab"].queryset = user.labs.filter(
-                Q(id__in=user.labs_user_can_create_study_in())
+            self.fields["lab"].queryset = Lab.objects.filter(
+                Q(
+                    id__in=get_objects_for_user(
+                        user,
+                        LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename,
+                    ).only("id")
+                )
                 | (Q(uuid=self.instance.lab.uuid))
             )
+
         else:
             # Ensure we display the current lab on the edit form, even if user isn't part of this lab (which
             # isn't technically possible the way permissions are set up, but in principle options should be
@@ -350,6 +357,8 @@ class StudyCreateForm(StudyForm):
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_INITIAL
         self.fields["study_type"].help_text = STUDY_TYPE_HELP_TEXT_INITIAL
         # Limit initial lab options to labs this user is a member of & can create studies in
-        self.fields["lab"].queryset = user.labs.filter(
-            id__in=user.labs_user_can_create_study_in()
+        self.fields["lab"].queryset = Lab.objects.filter(
+            id__in=get_objects_for_user(
+                user, LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename
+            ).only("id")
         )
