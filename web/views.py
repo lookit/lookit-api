@@ -338,8 +338,16 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
 
     test_func = user_can_participate
 
-    def dispatch(self, request, *args, **kwargs):
+    def setup(self, request, *args, **kwargs):
+        # Give participant 4 days from starting any study before session times out, to allow for cases where the
+        # parent does instructions etc. but then waits until a convenient time to do the actual test with the
+        # child. This will measure "inactivity" but since we're not saving the session on each request it will
+        # effectively expire after 4 days regardless of activity (renewed each time this view is accessed)
+        if not request.user.is_anonymous and not request.user.is_researcher:
+            request.session.set_expiry(60 * 60 * 24 * 4)
+        return super().setup(request, *args, **kwargs)
 
+    def dispatch(self, request, *args, **kwargs):
         _, _, study_uuid, _, _, *rest = request.path.split("/")
         path = f"{study_uuid}/{'/'.join(rest)}"
         if not rest:
