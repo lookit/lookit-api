@@ -10,7 +10,8 @@ from accounts.models import Child, Message, User
 from studies.models import Lab, Response, Study
 from studies.tasks import (
     MessageTarget,
-    acquire_announcement_email_targets,
+    acquire_potential_announcement_email_targets,
+    limit_email_targets,
     potential_message_targets,
 )
 
@@ -122,7 +123,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         # Study four is active, but not public
         self.study_four = G(
             Study,
-            name="A Paused study",
+            name="A Private study",
             image=SimpleUploadedFile(
                 "fake_image.png", b"fake-stuff", content_type="image/png"
             ),  # we could also pass fill_nullable_fields=True
@@ -319,7 +320,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
 
     def test_target_creation_e2e(self):
-        targets = list(acquire_announcement_email_targets())
+        targets = list(acquire_potential_announcement_email_targets())
 
         self.assertEqual(len(targets), 1)
 
@@ -333,6 +334,69 @@ class TestAnnouncementEmailFunctionality(TestCase):
                 self.study_one: [self.child_three],
                 self.study_two: [self.child_two, self.child_three],
             },
+        )
+
+    def test_target_emails_limited_to_max_per_study(self):
+
+        # Add a study with 5 eligible children (ages 10-12, no overlap with existing studies) in different families
+        school_age_study = G(
+            Study,
+            name="A study for preschoolers",
+            image=SimpleUploadedFile(
+                "fake_image.png", b"fake-stuff", content_type="image/png"
+            ),  # we could also pass fill_nullable_fields=True
+            criteria_expression="",
+            public=True,
+            built=True,
+            lab=self.fake_lab,
+            min_age_years=10,
+            min_age_months=0,
+            min_age_days=0,
+            max_age_years=12,
+            max_age_months=0,
+            max_age_days=0,
+        )
+        school_age_study.state = "active"
+        school_age_study.save()
+        eleven_years_ago = date.today() - timedelta(days=365 * 11)
+        for i in range(5):
+            G(Child, user=G(User, is_active=True), birthday=eleven_years_ago)
+
+        # Limit to max of one family getting email per study
+        targets = list(
+            limit_email_targets(acquire_potential_announcement_email_targets(), 1)
+        )
+        # One email should be to participant 2 about either study 1 or study 2.
+        # Another email should be to one of our new participants about preschool_study.
+        self.assertEqual(len(targets), 2)
+        target_studies = [target[1] for target in targets]
+        self.assertIn(school_age_study, target_studies)
+        self.assertTrue(
+            self.study_one in target_studies or self.study_two in target_studies
+        )
+
+        # Limit to max of 3 families getting email per study
+        targets = list(
+            limit_email_targets(acquire_potential_announcement_email_targets(), 3)
+        )
+        # Should still be just one email to participant 2 about study 1 or 2, but also 3 emails about preschool_study
+        self.assertEqual(len(targets), 4)
+        target_studies = [target[1] for target in targets]
+        self.assertEqual(target_studies.count(school_age_study), 3)
+        self.assertTrue(
+            self.study_one in target_studies or self.study_two in target_studies
+        )
+
+        # Limit to max of 6 families getting email per study
+        targets = list(
+            limit_email_targets(acquire_potential_announcement_email_targets(), 6)
+        )
+        # Should still be just one email to participant 2 about study 1 or 2, but also 5 emails about preschool_study
+        self.assertEqual(len(targets), 6)
+        target_studies = [target[1] for target in targets]
+        self.assertEqual(target_studies.count(school_age_study), 5)
+        self.assertTrue(
+            self.study_one in target_studies or self.study_two in target_studies
         )
 
     def test_correct_message_structure(self):
@@ -381,7 +445,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             self.participant_two, self.study_one, [self.child_three]
         )
         # New targets should have only study two targets
-        targets = list(acquire_announcement_email_targets())
+        targets = list(acquire_potential_announcement_email_targets())
 
         # First level is the same - it's the same user...
         self.assertEqual(len(targets), 1)

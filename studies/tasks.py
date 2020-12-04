@@ -8,6 +8,7 @@ import shutil
 import tempfile
 import time
 import zipfile
+from collections import Counter
 from io import StringIO
 from itertools import starmap
 from operator import attrgetter, itemgetter
@@ -94,6 +95,7 @@ FROM message_targets mt
 WHERE lsnfc.latest_sent_time IS NULL
 ORDER BY mt.user_id, mt.child_id, mt.study_id;
 """
+MAX_EMAILS_PER_STUDY = 50
 
 
 class MessageTarget(NamedTuple):
@@ -187,10 +189,49 @@ def _segmented_by_study(validated_groups):
         yield user, dict(map_reduce(child_study_pairs, itemgetter(1), itemgetter(0)))
 
 
-def acquire_announcement_email_targets() -> Generator:
+def acquire_potential_announcement_email_targets() -> Generator:
     return _segmented_by_study(
         _validated(_deserialized(_grouped_by_user(potential_message_targets())))
     )
+
+
+def limit_email_targets(
+    potential_targets_segmented_by_study, max_emails_per_study
+) -> Generator:
+    """Reduces number of targets so users get <= 1 email and studies get <= max_emails_per_study.
+
+    This is done AFTER deserializing to actual model objects so that we've already checked eligibility;
+    otherwise we'd have to select a random sample of families to MAYBE email if they turn out to be
+    eligible each time. """
+
+    from studies.models import Study
+
+    # Iterate through generator with actual models to build a list of IDs
+    all_user_study_children_tuples = []
+    for user, study_child_mapping in potential_targets_segmented_by_study:
+        study, child_list = random.choice(list(study_child_mapping.items()))
+        all_user_study_children_tuples.append(
+            (user.id, study.id, [child.id for child in child_list])
+        )
+
+    # Randomly select the first <= N study-user pairs for each study. We don't want to just yield the first N per study
+    # because then we'll always invite some families to participate first, others later
+    random.shuffle(all_user_study_children_tuples)
+    study_counts = Counter()
+    email_user_study_children_tuples = []
+    for (user_id, study_id, child_id_list) in all_user_study_children_tuples:
+        if study_counts[study_id] >= max_emails_per_study:
+            continue
+        email_user_study_children_tuples.append((user_id, study_id, child_id_list))
+        study_counts[study_id] += 1
+
+    # Now fetch the actual objects again
+    for (user_id, study_id, child_id_list) in email_user_study_children_tuples:
+        yield (
+            User.objects.get(id=user_id),
+            Study.objects.get(id=study_id),
+            [Child.objects.get(id=child_id) for child_id in child_id_list],
+        )
 
 
 @app.task
@@ -204,11 +245,12 @@ def send_announcement_emails():
     targeted children such that those child-study pairs will be excluded from the next
     (daily) round of potential targets.
     """
-    targets = acquire_announcement_email_targets()
 
-    for user, study_child_mapping in targets:
-        # Only choose one study at a time (at random - no ordering).
-        study, child_list = random.choice(list(study_child_mapping.items()))
+    targets = limit_email_targets(
+        acquire_potential_announcement_email_targets(), MAX_EMAILS_PER_STUDY
+    )
+
+    for user, study, child_list in targets:
         Message.send_announcement_email(user, study, child_list)
 
 
