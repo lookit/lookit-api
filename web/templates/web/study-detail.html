@@ -164,7 +164,7 @@
                             {% if preview_mode and not object.built %}
                                 <a class="btn btn-lg btn-default" href="{% url 'exp:study-detail' object.pk %}">{% trans "Build experiment runner to preview" %}</a>
                             {% else %} 
-                                <button type="submit" disabled class="btn-lg btn-primary" id="participate-button"> {% if preview_mode %} {% trans Preview %} {% else %} {% trans "Participate" %} {% endif %} {% trans "now" %}! </button>
+                                <button type="submit" disabled class="btn-lg btn-primary" id="participate-button"> {% if preview_mode %} {% trans "Preview" %} {% else %} {% trans "Participate" %} {% endif %} {% trans "now" %}! </button>
                                 {% if preview_mode %}<p>{% trans "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to." %}</p> {% endif %}
                             {% endif %}
                         </form>
