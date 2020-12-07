@@ -1,21 +1,21 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
-{% block title %}Past Studies{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Past Studies" %}{% endblock %}
 
 {% block flash %}
     {% if form.errors %}
         <div class="alert alert-danger" role="alert">
-            <p>Your login credentials didn't work. Please try again.</p>
+            <p>{% trans "Your login credentials didn't work. Please try again." %}</p>
         </div>
     {% endif %}
 
     {% if next %}
         <div class="alert alert-danger" role="alert">
             {% if user.is_authenticated %}
-                <p>Your account doesn't have access to this page. To proceed,
-                    please login with an account that has access.</p>
+                <p>{% trans "Your account doesn't have access to this page. To proceed, please login with an account that has access." %}</p>
             {% else %}
-                <p>Please login to see this page.</p>
+                <p>{% trans "Please login to see this page." %}</p>
             {% endif %}
         </div>
     {% endif %}
@@ -24,17 +24,17 @@
     <div>
         <div class="lookit-row lookit-page-title">
             <div class="container">
-                <h2>Past Studies</h2>
+                <h2>{% trans "Past Studies" %}</h2>
             </div>
         </div>
         {% bootstrap_messages %}
         <div class="container">
             <ul class="pt-sm nav nav-tabs">
                 <li>
-                    <a href="{% url 'web:studies-list' %}">Current studies</a>
+                    <a href="{% url 'web:studies-list' %}">{% trans "Current studies" %}</a>
                 </li>
                 <li class="active">
-                    <a href="{% url 'web:studies-history' %}">Your past studies</a>
+                    <a href="{% url 'web:studies-history' %}">{% trans "Your past studies" %}</a>
                 </li>
             </ul>
         </div>
@@ -47,7 +47,7 @@
                         <div id="past-studies">
                             {% if object_list %}
                                 <div class="row study-detail-caption mb-lg">
-                                    Here you can view your studies and see comments left by researchers:
+                                    {% trans "Here you can view your studies and see comments left by researchers:" %}
                                 </div>
                             {% endif %}
                             <div class="row">
@@ -64,7 +64,7 @@
                                                                 <p class="image-block">
                                                                     <img class="study-list-thumbnail"
                                                                          height="150" width="auto"
-                                                                         alt="Study Thumbnail"
+                                                                         alt='{% trans "Study Thumbnail" %}'
                                                                          src="{{ study.image.url }}">
                                                                 </p>
                                                             {% else %}
@@ -76,15 +76,15 @@
                                                         <div class="study-feedback-description-wrapper">
                                                             {{ study.short_description }}
                                                             <div class="pt-sm">
-                                                                <strong>Eligibility:</strong> {{ study.criteria }}<br>
-                                                                <strong>Contact:</strong> {{study.contact_info}} <br>
-                                                                <strong>Still collecting data?</strong> {% if study.state == 'active' %} Yes {% else %} No {% endif %} <br>
-                                                                {% if study.compensation_description %} <strong>Compensation: </strong>{{study.compensation_description}}  {% endif %}
+                                                                <strong>{% trans "Eligibility:" %}</strong> {{ study.criteria }}<br>
+                                                                <strong>{% trans "Contact:" %}</strong> {{study.contact_info}} <br>
+                                                                <strong>{% trans "Still collecting data?" %}</strong> {% if study.state == 'active' %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %} <br>
+                                                                {% if study.compensation_description %} <strong>{% trans "Compensation: " %}</strong>{{study.compensation_description}}  {% endif %}
                                                                 
                                                             </div>
                                                         </div>
                                                     </div><!-- Responses -->
-                                                    <h4 class="study-feedback-label">Study Responses</h4>
+                                                    <h4 class="study-feedback-label">{% trans "Study Responses" %}</h4>
                                                     <section class="session-media-boxes">
                                                         {% for response in study.responses.all %}
                                                             {% with videos=response.videos.all %}
@@ -104,7 +104,7 @@
                                                                                     type="button">
                                                                                 <span class="glyphicon glyphicon-arrow-right"
                                                                                       aria-hidden="true"></span> Next
-                                                                                Video (<span class="video-number">1</span>/{{ videos | length }})
+                                                                                {% trans "Video" %} (<span class="video-number">1</span>/{{ videos | length }})
                                                                             </button>
                                                                         {% else %}
                                                                             <i aria-hidden="true"
@@ -113,30 +113,30 @@
                                                                     </div>
                                                                     <div class="media-body">
                                                                         <dl class="dl-horizontal">
-                                                                            <dt>Child</dt>
+                                                                            <dt>{% trans "Child" %}</dt>
                                                                             <dd>{{ response.child.given_name }}</dd>
-                                                                            <dt>Date</dt>
+                                                                            <dt>{% trans "Date" %}</dt>
                                                                             <dd>{{ response.date_created }}</dd>
-                                                                            <dt>Consent status</dt>
+                                                                            <dt>{% trans "Consent status" %}</dt>
                                                                             <dd>
                                                                                 {% if response.most_recent_ruling == 'accepted' %}
-                                                                                    Approved <br> Your consent video was reviewed by a researcher and is valid.
+                                                                                    {% trans "Approved" %} <br> {% trans "Your consent video was reviewed by a researcher and is valid." %}
                                                                                 {% elif response.most_recent_ruling == 'pending' %}
-                                                                                    Pending <br> Your consent video has not yet been reviewed by a researcher.
+                                                                                    {% trans "Pending" %} <br> {% trans "Your consent video has not yet been reviewed by a researcher." %}
                                                                                 {% elif response.most_recent_ruling == 'rejected' %}
-                                                                                    Invalid <br> There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers.
+                                                                                    {% trans "Invalid" %} <br> {% trans "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers." %}
                                                                                 {% else %}
-                                                                                    No information about consent video review status.
+                                                                                    {% trans "No information about consent video review status." %}
                                                                                 {% endif %}
                                                                             </dd>
                                                                             {% if response.feedback.all %}
-                                                                                <dt>Feedback</dt>
+                                                                                <dt>{% trans "Feedback" %}</dt>
                                                                                 <dd>
                                                                                     <ul>	                                                                     
                                                                                         {% for feedback in response.feedback.all %}	                                                                          
                                                                                             <li class="response-feedback"> {{ feedback.comment }} </li>
                                                                                         {% empty %}	                                                     
-                                                                                            <span class="response-feedback-none"><em>None</em></span>
+                                                                                            <span class="response-feedback-none"><em>{% trans "None" %}</em></span>
                                                                                         {% endfor %}	                                                                    
                                                                                     </ul>
                                                                                 </dd>
@@ -151,7 +151,7 @@
                                             </div>
                                         </div>
                                     {% empty %}
-                                        <p><em> You have not yet participated in any studies. </em></p>
+                                        <p><em> {% trans "You have not yet participated in any studies." %} </em></p>
                                     {% endfor %}
                                 </div>
                             </div>

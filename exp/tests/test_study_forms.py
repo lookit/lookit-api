@@ -2,10 +2,12 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import TestCase
 from django_dynamic_fixture import G
+from guardian.shortcuts import assign_perm
 
 from accounts.models import User
 from studies.forms import StudyCreateForm, StudyEditForm
 from studies.models import Lab, Study, StudyType
+from studies.permissions import LabPermission, StudyPermission
 
 
 class StudyFormTestCase(TestCase):
@@ -276,3 +278,143 @@ class StudyFormTestCase(TestCase):
             "Select a valid choice. That choice is not one of the available choices.",
             form.errors["lab"],
         )
+
+    def test_lab_options_as_superuser(self):
+        data = model_to_dict(self.study)
+        su = G(
+            User,
+            is_active=True,
+            is_researcher=True,
+            given_name="super researcher",
+            is_superuser=True,
+        )
+
+        create_form = StudyCreateForm(data=data, user=su)
+        self.assertFalse(
+            create_form.fields["lab"].disabled,
+            "Lab selection is disabled on study create form for superuser",
+        )
+        self.assertEqual(
+            create_form.fields["lab"].queryset.count(),
+            Lab.objects.count(),
+            "Superuser does not have all labs available in study create form",
+        )
+        self.assertNotIn("lab", create_form.errors)
+
+        edit_form = StudyEditForm(data=data, instance=self.study, user=su)
+        self.assertFalse(
+            edit_form.fields["lab"].disabled,
+            "Lab selection is disabled on study edit form for superuser",
+        )
+        self.assertEqual(
+            edit_form.fields["lab"].queryset.count(),
+            Lab.objects.count(),
+            "Superuser does not have all labs available in study edit form",
+        )
+        self.assertNotIn("lab", edit_form.errors)
+
+    def test_lab_options_as_user_with_sitewide_perm(self):
+        data = model_to_dict(self.study)
+        admin = G(
+            User, is_active=True, is_researcher=True, given_name="super researcher",
+        )
+        assign_perm(LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename, admin)
+        self.main_lab.member_group.user_set.add(
+            admin
+        )  # Make a member of the study's lab
+        self.study.design_group.user_set.add(
+            admin
+        )  # Allowed to edit this study in general (not necessarily lab)
+
+        # If can create study in any lab, should see all labs as options when creating NEW study
+        create_form = StudyCreateForm(data=data, user=admin)
+        self.assertFalse(
+            create_form.fields["lab"].disabled,
+            "Lab selection is disabled on study create form for user with permission to create study in any lab",
+        )
+        self.assertEqual(
+            create_form.fields["lab"].queryset.count(),
+            Lab.objects.count(),
+            "User with permission to create study in any lab does not have all labs available in study create form",
+        )
+        self.assertNotIn("lab", create_form.errors)
+
+        # If can create study in any lab, should only see all labs as options when EDITING if has perm to change lab
+        edit_form = StudyEditForm(data=data, instance=self.study, user=admin)
+        self.assertTrue(
+            edit_form.fields["lab"].disabled,
+            "Lab selection is enabled on study edit form for user with permission to create study in any lab, but not permission to edit lab for this study",
+        )
+        self.assertEqual(
+            edit_form.fields["lab"].queryset.count(),
+            1,
+            "User without permission to edit lab for this study should only have one option for lab on study edit form",
+        )
+        self.assertNotIn("lab", edit_form.errors)
+
+        assign_perm(StudyPermission.CHANGE_STUDY_LAB.codename, admin, self.study)
+        edit_form = StudyEditForm(data=data, instance=self.study, user=admin)
+        self.assertFalse(
+            edit_form.fields["lab"].disabled,
+            "Lab selection is disabled on study edit form for user with permission to change lab",
+        )
+        self.assertEqual(
+            edit_form.fields["lab"].queryset.count(),
+            Lab.objects.count(),
+            "User with permission to change lab for a study and to create study in lab does not see all labs as options to edit",
+        )
+
+    def test_lab_options_as_user_who_can_create_studies_in_two_labs(self):
+        data = model_to_dict(self.study)
+        researcher = G(
+            User, is_active=True, is_researcher=True, given_name="super researcher",
+        )
+        assign_perm(
+            LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename,
+            researcher,
+            self.main_lab,
+        )
+        assign_perm(
+            LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename,
+            researcher,
+            self.second_lab,
+        )
+        self.main_lab.member_group.user_set.add(
+            researcher
+        )  # Make a member of the study's lab
+        self.study.design_group.user_set.add(
+            researcher
+        )  # Allowed to edit this study in general (not necessarily lab)
+
+        # If can create study in two labs + Sandbox, should see three labs as options when creating NEW study
+        create_form = StudyCreateForm(data=data, user=researcher)
+        self.assertFalse(
+            create_form.fields["lab"].disabled,
+            "Lab selection is disabled on study create form for user with permission to create study in two labs",
+        )
+        self.assertEqual(
+            create_form.fields["lab"].queryset.count(),
+            3,
+            "User with permission to create study in any two labs does not see two labs as options when creating study",
+        )
+        self.assertIn(self.main_lab, create_form.fields["lab"].queryset)
+        self.assertIn(self.second_lab, create_form.fields["lab"].queryset)
+        self.assertNotIn(self.other_lab, create_form.fields["lab"].queryset)
+        self.assertNotIn("lab", create_form.errors)
+
+        # If can create study in two labs + Sandbox, and can edit this study's lab, should only see 3 options when editing
+        assign_perm(StudyPermission.CHANGE_STUDY_LAB.codename, researcher, self.study)
+        edit_form = StudyEditForm(data=data, instance=self.study, user=researcher)
+        self.assertFalse(
+            edit_form.fields["lab"].disabled,
+            "Lab selection is disabled on study edit form for user with permission to change lab",
+        )
+        self.assertEqual(
+            edit_form.fields["lab"].queryset.count(),
+            3,
+            "User with permission to change lab for a study and to create study in three labs does not see three labs as options to edit",
+        )
+        self.assertIn(self.main_lab, edit_form.fields["lab"].queryset)
+        self.assertIn(self.second_lab, edit_form.fields["lab"].queryset)
+        self.assertNotIn(self.other_lab, edit_form.fields["lab"].queryset)
+        self.assertNotIn("lab", edit_form.errors)

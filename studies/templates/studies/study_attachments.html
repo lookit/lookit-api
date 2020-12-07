@@ -98,9 +98,7 @@
                         {% for video in video_list %}
                             <tr>
                                 <td><span class="small">{{ video.full_name }} </span></td>
-                                {% timezone request.user.time_zone %}
-                                    <td> {{ video.created_at }} </td>
-                                {% endtimezone %}
+                                    <td> {{ video.created_at|date:"n/j/Y g:i A"|default:"N/A" }} </td>
                                 <td>
                                     <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
                                        class="btn btn-primary btn-sm"> Download </a>

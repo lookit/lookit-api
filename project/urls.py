@@ -15,6 +15,7 @@ Including another URLconf
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 from django.conf.urls import include
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.urls import urlpatterns as auth_urls
@@ -39,7 +40,7 @@ auth_urls[login_path_index] = path(
 )
 
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     path("favicon.ico", favicon_view),
     path("__CTRL__/", admin.site.urls),
     path("api/", include((api_urls, "api"))),
@@ -49,7 +50,8 @@ urlpatterns = [
     # Default auth views need to be put here so that the url reverses
     # will map properly.
     path("", include(auth_urls)),
-]
+    prefix_default_language=False,
+)
 
 if settings.DEBUG:
     import debug_toolbar

@@ -5,6 +5,7 @@ from django.db.models import Prefetch
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
@@ -41,7 +42,7 @@ class ParticipantSignupView(generic.CreateView):
         login(
             self.request, new_user, backend="django.contrib.auth.backends.ModelBackend"
         )
-        messages.success(self.request, "Participant created.")
+        messages.success(self.request, _("Participant created."))
         return resp
 
     def get_success_url(self):
@@ -66,7 +67,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         self.object.user = self.request.user
         self.object.previous = self.request.user.latest_demographics or None
         self.object.save()
-        messages.success(self.request, "Demographic data saved.")
+        messages.success(self.request, _("Demographic data saved."))
         return resp
 
     def get_initial(self):
@@ -134,7 +135,7 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         """
         user = self.request.user
         form.instance.user = user
-        messages.success(self.request, "Child added.")
+        messages.success(self.request, _("Child added."))
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -170,9 +171,9 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
             child = self.get_object()
             child.deleted = True
             child.save()
-            messages.success(self.request, "Child deleted.")
+            messages.success(self.request, _("Child deleted."))
             return HttpResponseRedirect(self.get_success_url())
-        messages.success(self.request, "Child updated.")
+        messages.success(self.request, _("Child updated."))
         return super().post(request, *args, **kwargs)
 
 
@@ -195,7 +196,7 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         """
         Adds success message
         """
-        messages.success(self.request, "Email preferences saved.")
+        messages.success(self.request, _("Email preferences saved."))
         return super().form_valid(form)
 
 
@@ -289,8 +290,10 @@ class StudyDetailView(generic.DetailView):
             return super().dispatch(request)
         else:
             return HttpResponseForbidden(
-                f'The study "{study.name}" is not currently collecting data - the study is either completed or paused. '
-                f"If you think this is an error, please contact {study.contact_info}"
+                _(
+                    "The study %s is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact %s"
+                )
+                % (study.name, study.contact_info)
             )
 
 
@@ -335,8 +338,16 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
 
     test_func = user_can_participate
 
-    def dispatch(self, request, *args, **kwargs):
+    def setup(self, request, *args, **kwargs):
+        # Give participant 4 days from starting any study before session times out, to allow for cases where the
+        # parent does instructions etc. but then waits until a convenient time to do the actual test with the
+        # child. This will measure "inactivity" but since we're not saving the session on each request it will
+        # effectively expire after 4 days regardless of activity (renewed each time this view is accessed)
+        if not request.user.is_anonymous and not request.user.is_researcher:
+            request.session.set_expiry(60 * 60 * 24 * 4)
+        return super().setup(request, *args, **kwargs)
 
+    def dispatch(self, request, *args, **kwargs):
         _, _, study_uuid, _, _, *rest = request.path.split("/")
         path = f"{study_uuid}/{'/'.join(rest)}"
         if not rest:

@@ -20,6 +20,7 @@ pygraphviz = "==1.5"
 pyinstrument = "==3.1.3"
 pyopenssl = "==19.1.0"
 python_dotenv = "==0.14.0"
+semantic-version = "==2.8.5"
 watchdog = "==0.10.2"
 werkzeug = "==1.0.1"
 

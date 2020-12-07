@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
-{% block title %}Email Preferences{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Email Preferences" %}{% endblock %}
 
 
 {% block flash %}
@@ -12,7 +13,7 @@
 {% endblock %}
 {% block content %}
     <div class='lookit-row lookit-page-title'>
-        <h2 class='container'>My Account</h2>
+        <h2 class='container'>{% trans "My Account" %}</h2>
     </div>
     {% bootstrap_messages %}
     <div class="container">
@@ -23,7 +24,7 @@
             <div class="col-md-8">
                 <div class="panel-heading">
                   <h1 class="panel-title">
-                    I would like to be contacted when:
+                    {% trans "I would like to be contacted when:" %}
                   </h1>
                 </div>
                 <div class="panel panel-default">
@@ -32,9 +33,9 @@
                           {% bootstrap_form form %}
                           {% buttons %}
                           <div class="pull-right">
-                              <a class="btn btn-default" href="{% url 'web:email-preferences' %}"> Cancel </a>
+                              <a class="btn btn-default" href="{% url 'web:email-preferences' %}"> {% trans "Cancel" %} </a>
                               <button name="password_update" type="submit" class="btn btn-success">
-                                 Save
+                                 {% trans "Save" %}
                               </button>
                           </div>
                           {% endbuttons %}

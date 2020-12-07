@@ -256,7 +256,8 @@ class ContactViewTestCase(TestCase):
         # Ensure message sent to participants 0, 1, 2
         mock_send_mail.assert_called_once()
         self.assertEqual(
-            mock_send_mail.call_args.args, ("custom_email", "test email", [])
+            mock_send_mail.call_args.args,
+            ("custom_email", "test email", ["lookit.robot@some.domain"]),
         )
         self.assertEqual(
             mock_send_mail.call_args.kwargs["bcc"],
