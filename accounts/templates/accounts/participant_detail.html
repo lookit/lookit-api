@@ -126,7 +126,7 @@
                     <b> {% trans "Children current ages" %}: </b>
                 </div>
                 <div class="col-xs-7">
-                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday | timesince|default:"N/A"}}{% if not forloop.last %}; {% endif %}{% empty %}{% trans No Response %}{% endfor %}
+                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday | timesince|default:"N/A"}}{% if not forloop.last %}; {% endif %}{% empty %}{% trans "No Response" %}{% endfor %}
                 </div>
             </div>
             <div class="row">
