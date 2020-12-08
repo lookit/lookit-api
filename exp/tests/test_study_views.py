@@ -31,7 +31,7 @@ class Force2FAClient(Client):
 # this case involve S3/GCP access which we're not testing.
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
 @override_settings(CELERY_TASK_EAGER_PROPAGATES=True)
-class ResponseViewsTestCase(TestCase):
+class StudyViewsTestCase(TestCase):
     def setUp(self):
         self.client = Force2FAClient()
 
