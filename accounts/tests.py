@@ -5,17 +5,19 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sites.models import Site
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpRequest
 from django.test import TestCase
+from django.test.client import Client
 from django.urls import reverse
 from django_dynamic_fixture import G
 from lark.exceptions import UnexpectedCharacters
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
-from accounts.models import Child, GoogleAuthenticatorTOTP, User
+from accounts.models import Child, DemographicData, GoogleAuthenticatorTOTP, User
 from accounts.queries import get_child_eligibility, get_child_eligibility_for_study
 from studies.fields import GESTATIONAL_AGE_CHOICES
-from studies.models import Lab, Response, Study, StudyType, Video
+from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
 
 class AuthenticationTestCase(TestCase):
@@ -865,3 +867,247 @@ class EligibilityTestCase(TestCase):
                 ),
                 "Child just above upper age bound is eligible",
             )
+
+
+class Force2FAClient(Client):
+    """For convenience when testing experimenter views, let's just pretend everyone is two-factor auth'd."""
+
+    @property
+    def session(self):
+        _session = super().session
+        _session[TWO_FACTOR_AUTH_SESSION_KEY] = True
+        return _session
+
+
+class ParticipantViewsTestCase(TestCase):
+    def setUp(self):
+        self.client = Force2FAClient()
+
+        self.study_admin = G(
+            User, is_active=True, is_researcher=True, given_name="Researcher 1"
+        )
+        self.study_designer = G(
+            User, is_active=True, is_researcher=True, given_name="Researcher 2"
+        )
+        self.other_researcher = G(
+            User, is_active=True, is_researcher=True, given_name="Researcher 3"
+        )
+
+        self.study_type = G(StudyType, name="default", id=1)
+        self.lab = G(Lab, name="MIT", approved_to_test=True)
+
+        small_gif = (
+            b"\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04"
+            b"\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02"
+            b"\x02\x4c\x01\x00\x3b"
+        )
+        self.study = G(
+            Study,
+            image=SimpleUploadedFile(
+                name="small.gif", content=small_gif, content_type="image/gif"
+            ),
+            # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
+            creator=self.study_admin,
+            shared_preview=True,
+            study_type=self.study_type,
+            public=True,
+            name="Test Study",
+            lab=self.lab,
+            short_description="original short_description",
+            structure={
+                "frames": {"frame-a": {}, "frame-b": {}},
+                "sequence": ["frame-a", "frame-b"],
+                "exact_text": "some exact text",
+            },
+            use_generator=False,
+            generator="",
+            criteria_expression="",
+            exit_url="https://lookit.mit.edu/studies/history",
+            metadata={
+                "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
+                "last_known_player_sha": "fakecommitsha",
+            },
+            built=True,
+        )
+        self.study.admin_group.user_set.add(self.study_admin)
+        self.study.design_group.user_set.add(self.study_designer)
+        self.lab.researchers.add(self.study_designer)
+        self.lab.researchers.add(self.study_admin)
+
+        self.nonparticipant = G(
+            User, is_active=True, is_researcher=False, nickname="Mommy"
+        )
+        self.nonparticipant_child = G(
+            Child,
+            user=self.nonparticipant,
+            given_name="Newborn",
+            birthday=datetime.date.today() - datetime.timedelta(14),
+        )
+
+        self.participant = G(User, is_active=True, is_researcher=False, nickname="Dada")
+        self.participant_child = G(
+            Child,
+            user=self.participant,
+            given_name="Actual participant",
+            birthday=datetime.date.today() - datetime.timedelta(14),
+        )
+        self.participant_other_child = G(
+            Child,
+            user=self.participant,
+            given_name="Child who has not participated",
+            birthday=datetime.date.today() - datetime.timedelta(14),
+        )
+
+        self.demo_snapshot = G(DemographicData, user=self.participant, density="urban")
+        self.unconsented_response_from_participant = G(
+            Response,
+            child=self.participant_child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-video-setup": {"frameType": "DEFAULT"},
+                "2-my-consent-frame": {"frameType": "CONSENT"},
+            },
+            demographic_snapshot=self.demo_snapshot,
+        )
+        self.consented_response = G(
+            Response,
+            child=self.participant_child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-video-setup": {"frameType": "DEFAULT"},
+                "2-my-consent-frame": {"frameType": "CONSENT"},
+            },
+            demographic_snapshot=self.demo_snapshot,
+        )
+        self.consent_ruling = G(
+            ConsentRuling,
+            response=self.consented_response,
+            action="accepted",
+            arbiter=self.study_admin,
+        )
+
+    def test_cannot_see_participant_detail_unauthenticated(self):
+        url = reverse("exp:participant-detail", kwargs={"pk": self.participant.pk})
+        page = self.client.get(url)
+        self.assertNotEqual(
+            page.status_code,
+            200,
+            "Unauthenticated user can see participant detail view: " + url,
+        )
+
+    def test_cannot_see_participant_detail_as_participant(self):
+        url = reverse("exp:participant-detail", kwargs={"pk": self.participant.pk})
+        self.client.force_login(self.participant)
+        page = self.client.get(url)
+        self.assertNotEqual(
+            page.status_code,
+            200,
+            "Participant can see participant detail view: " + url,
+        )
+
+    def test_cannot_see_participant_detail_unless_participated(self):
+        url = reverse("exp:participant-detail", kwargs={"pk": self.nonparticipant.pk})
+        self.client.force_login(self.study_admin)
+        page = self.client.get(url)
+        self.assertNotEqual(
+            page.status_code,
+            200,
+            "Study admin can see participant detail view for someone who did not participate in their study: "
+            + url,
+        )
+
+    def test_cannot_see_participant_detail_as_study_designer(self):
+        url = reverse("exp:participant-detail", kwargs={"pk": self.participant.pk})
+        self.client.force_login(self.study_designer)
+        page = self.client.get(url)
+        self.assertNotEqual(
+            page.status_code,
+            200,
+            "Study designer can see participant detail view: " + url,
+        )
+
+    def test_can_see_participant_detail_as_study_admin(self):
+        url = reverse("exp:participant-detail", kwargs={"pk": self.participant.pk})
+        self.client.force_login(self.study_admin)
+        page = self.client.get(url)
+        self.assertEqual(
+            page.status_code,
+            200,
+            "Study admin cannot see participant detail view: " + url,
+        )
+
+        content = page.content.decode("utf-8")
+        self.assertIn(
+            "Actual participant",
+            content,
+            "Participant child not on participant detail page",
+        )
+        self.assertIn(
+            "urban", content, "Demographic info not on participant detail page"
+        )
+        self.assertNotIn(
+            "Child who has not participated",
+            content,
+            "Participant child's sibling on participant detail page but has not participated",
+        )
+
+    def test_cannot_see_participant_list_unauthenticated(self):
+        url = reverse("exp:participant-list")
+        page = self.client.get(url)
+        self.assertNotEqual(
+            page.status_code,
+            200,
+            "Unauthenticated user can see participant list view: " + url,
+        )
+
+    def test_cannot_see_participant_list_as_participant(self):
+        url = reverse("exp:participant-list")
+        self.client.force_login(self.participant)
+        page = self.client.get(url)
+        self.assertNotEqual(
+            page.status_code, 200, "Participant can see participant list view: " + url,
+        )
+
+    def test_can_see_participant_list_as_researcher(self):
+        url = reverse("exp:participant-list")
+        self.client.force_login(self.study_designer)
+        page = self.client.get(url)
+        self.assertEqual(
+            page.status_code,
+            200,
+            "Researcher cannot see participant list view: " + url,
+        )
+        content = page.content.decode("utf-8")
+        self.assertNotIn(
+            "Mommy", content, "Study designer sees non-participant in participant list"
+        )
+        self.assertNotIn(
+            "Dada", content, "Study designer sees participant in participant list"
+        )
+
+    def test_only_see_participants_in_participant_list(self):
+        url = reverse("exp:participant-list")
+        self.client.force_login(self.study_admin)
+        page = self.client.get(url)
+        self.assertEqual(
+            page.status_code,
+            200,
+            "Researcher cannot see participant list view: " + url,
+        )
+        content = page.content.decode("utf-8")
+        self.assertNotIn(
+            "Mommy", content, "Study admin sees non-participant in participant list"
+        )
+        self.assertIn(
+            "Dada",
+            content,
+            "Study designer does not see participant in participant list",
+        )
