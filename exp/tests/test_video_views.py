@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Feedback, Lab, Response, Study, StudyType
+from studies.models import Feedback, Lab, Response, Study, StudyType, Video
 
 
 class RenameVideoTestCase(APITestCase):
@@ -57,3 +57,90 @@ class RenameVideoTestCase(APITestCase):
             content_type="application/x-www-form-urlencoded",
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
+
+
+class CheckPipeProcessingTestCase(TestCase):
+    def setUp(self):
+        self.lab = G(Lab, name="MIT", approved_to_test=True)
+        self.study_type = G(StudyType, name="default", id=1)
+        self.study_creator = G(User, is_active=True, is_researcher=True)
+        self.study = G(
+            Study,
+            creator=self.study_creator,
+            shared_preview=False,
+            study_type=self.study_type,
+            name="Test Study",
+            lab=self.lab,
+        )
+        self.participant = G(User, is_active=True, given_name="Mom")
+        self.child = G(Child, user=self.participant, given_name="Molly")
+        self.response = G(
+            Response,
+            child=self.child,
+            study=self.study,
+            completed=False,
+            completed_consent_frame=True,
+            sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
+            exp_data={
+                "0-video-config": {"frameType": "DEFAULT"},
+                "1-video-setup": {"frameType": "DEFAULT"},
+                "2-my-consent-frame": {"frameType": "CONSENT"},
+            },
+        )
+
+    def test_valid_payload_parses(self):
+        initial_payload = f"videoStream_{self.study.uuid}_3-test-trial_{self.response.uuid}_10349395959_359"
+        (
+            marked_as_consent,
+            payload,
+            study,
+            frame_id,
+            response,
+            timestamp,
+        ) = Video.check_and_parse_pipe_payload(initial_payload)
+
+        self.assertFalse(marked_as_consent)
+        self.assertEqual(payload, initial_payload)
+        self.assertEqual(study.id, self.study.id)
+        self.assertEqual(response.id, self.response.id)
+        self.assertEqual(frame_id, "3-test-trial")
+        self.assertEqual(timestamp, "10349395959")
+
+    def test_consent_flag_detected_in_payload(self):
+        initial_payload = f"consent-videoStream_{self.study.uuid}_3-test-trial_{self.response.uuid}_10349395959_359"
+        (
+            marked_as_consent,
+            payload,
+            study,
+            frame_id,
+            response,
+            timestamp,
+        ) = Video.check_and_parse_pipe_payload(initial_payload)
+
+        self.assertTrue(marked_as_consent)
+        self.assertEqual(
+            payload,
+            f"videoStream_{self.study.uuid}_3-test-trial_{self.response.uuid}_10349395959_359",
+        )
+        self.assertEqual(study.id, self.study.id)
+        self.assertEqual(response.id, self.response.id)
+        self.assertEqual(frame_id, "3-test-trial")
+        self.assertEqual(timestamp, "10349395959")
+
+    def test_payload_referencing_fake_study_errors(self):
+        initial_payload = f"videoStream_{self.response.uuid}_3-test-trial_{self.response.uuid}_10349395959_359"
+        self.assertRaises(
+            Study.DoesNotExist, Video.check_and_parse_pipe_payload, initial_payload
+        )
+
+    def test_payload_referencing_fake_response_errors(self):
+        initial_payload = f"videoStream_{self.study.uuid}_3-test-trial_{self.study.uuid}_10349395959_359"
+        self.assertRaises(
+            Response.DoesNotExist, Video.check_and_parse_pipe_payload, initial_payload
+        )
+
+    def test_payload_too_many_underscores_errors(self):
+        initial_payload = f"videoStream_{self.study.uuid}_3_test_trial_{self.response.uuid}_10349395959_359"
+        self.assertRaises(
+            ValueError, Video.check_and_parse_pipe_payload, initial_payload
+        )
