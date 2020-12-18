@@ -1142,15 +1142,59 @@ class Video(models.Model):
     is_consent_footage = models.BooleanField(default=False, db_index=True)
 
     @classmethod
+    def check_and_parse_pipe_payload(cls, pipe_payload: str):
+        """Confirm that pipe payload is in expected format and extract study, response, etc."""
+        consent_type_label = "consent-"
+        marked_as_consent = pipe_payload.startswith(consent_type_label)
+        if marked_as_consent:
+            pipe_payload = pipe_payload[len(consent_type_label) :]
+
+        try:
+            _, study_uuid, frame_id, response_uuid, timestamp, _ = pipe_payload.split(
+                "_"
+            )
+        except ValueError:
+            logger.error(
+                f"Could not parse video filename {pipe_payload} to extract study and response"
+            )
+            raise
+
+        try:
+            study = Study.objects.get(uuid=study_uuid)
+        except Study.DoesNotExist as ex:
+            logger.error(f"Study with uuid {study_uuid} does not exist. {ex}")
+            raise
+
+        try:
+            response = Response.objects.get(uuid=response_uuid)
+        except Response.DoesNotExist as ex:
+            logger.error(f"Response with uuid {response_uuid} does not exist. {ex}")
+            raise
+
+        return marked_as_consent, pipe_payload, study, frame_id, response, timestamp
+
+    @classmethod
     def from_pipe_payload(cls, pipe_response_dict: dict):
         """Factory method for use in the Pipe webhook.
 
         Note that this is taking over previous attachment_helpers functionality, which means that it's doing the
         file renaming as well. Keeping this logic inline makes more sense because it's the only place where we do it.
         """
+
         data = pipe_response_dict["data"]
+
+        # Confirm payload is in expected format and references real study, response - errors if not and will not rename
+        (
+            marked_as_consent,
+            pipe_payload,
+            study,
+            frame_id,
+            response,
+            timestamp,
+        ) = cls.check_and_parse_pipe_payload(data["payload"])
+
         old_pipe_name = f"{data['videoName']}.{data['type'].lower()}"
-        new_full_name = f"{data['payload']}.{data['type'].lower()}"
+        new_full_name = f"{pipe_payload}.{data['type'].lower()}"
         throwaway_jpg_name = f"{data['videoName']}.jpg"
 
         # No way to directly rename in boto3, so copy and delete original (this is dumb, but let's get it working)
@@ -1160,7 +1204,9 @@ class Video(models.Model):
                 CopySource=(settings.BUCKET_NAME + "/" + old_pipe_name)
             )
         except ClientError:  # old_name_full not found!
-            logger.error("Amazon S3 couldn't find the video for this Pipe ID.")
+            logger.error(
+                f"Amazon S3 couldn't find the video for Pipe ID {old_pipe_name} in bucket {settings.BUCKET_NAME}"
+            )
             raise
         else:  # Go on to remove the originals
             orig_video = S3_RESOURCE.Object(settings.BUCKET_NAME, old_pipe_name)
@@ -1168,40 +1214,32 @@ class Video(models.Model):
             # remove the .jpg thumbnail.
             S3_RESOURCE.Object(settings.BUCKET_NAME, throwaway_jpg_name).delete()
 
-        if "PREVIEW_DATA_DISREGARD" in new_full_name:
-            # early exit, since we are not saving an object in the database.
-            return None
-        else:
-            _, study_uuid, frame_id, response_uuid, timestamp, _ = new_full_name.split(
-                "_"
-            )
+        # Determine whether this is consent footage based on payload and/or response data.
+        # TODO: move to only using payload info about whether this is consent footage. We only have frame data in
+        # exp_data once that's saved to the db after completing the frame, whereas the video may be uploaded sooner
+        # (especially for consent videos which are reviewed by the participant). To avoid this race condition newer
+        # versions of the frameplayer send a payload marked 'consent-<videoname>' for consent videos. See
+        # https://github.com/lookit/lookit-api/issues/598. However, we don't want to remove the check for frameType
+        # before everyone's using a recent version of the frameplayer that marks consent footage in the payload,
+        # as then NOTHING would get marked as consent footage in those studies - whereas the current solution works
+        # >95% of the time.
+        is_consent_footage = (
+            marked_as_consent
+            or response.exp_data.get(frame_id, {}).get("frameType", "") == "CONSENT"
+        )
 
-            # Once we've completed the renaming, we can create our nice db object.
-            try:
-                study = Study.objects.get(uuid=study_uuid)
-            except Study.DoesNotExist as ex:
-                logger.error(f"Study with uuid {study_uuid} does not exist. {ex}")
-                raise
-
-            try:
-                response = Response.objects.get(uuid=response_uuid)
-            except Response.DoesNotExist as ex:
-                logger.error(f"Response with uuid {response_uuid} does not exist. {ex}")
-                raise
-
-            frame_type = response.exp_data.get(frame_id, {}).get("frameType", "")
-
-            return cls.objects.create(
-                pipe_name=old_pipe_name,
-                pipe_numeric_id=data["id"],
-                s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=pytz.utc),
-                frame_id=frame_id,
-                size=data["size"],
-                full_name=new_full_name,
-                study=study,
-                response=response,
-                is_consent_footage=(frame_type == "CONSENT"),
-            )
+        # Once we've completed the renaming, create our db object referencing it
+        return cls.objects.create(
+            pipe_name=old_pipe_name,
+            pipe_numeric_id=data["id"],
+            s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=pytz.utc),
+            frame_id=frame_id,
+            size=data["size"],
+            full_name=new_full_name,
+            study=study,
+            response=response,
+            is_consent_footage=is_consent_footage,
+        )
 
     @cached_property
     def filename(self):

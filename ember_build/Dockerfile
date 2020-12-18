@@ -1,4 +1,4 @@
-FROM node:8-slim
+FROM node:10-slim
 
 # For GOSU details see https://github.com/tianon/gosu/blob/master/INSTALL.md
 RUN set -eux; \
