@@ -2,18 +2,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-16 19:49+0000\n"
+"POT-Creation-Date: 2021-01-11 07:10-0500\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 
-#: accounts/forms.py:54
+#: accounts/forms.py:55
 msgid "Enter a valid 6-digit one-time password from Google Authenticator"
 msgstr ""
 
-#: accounts/forms.py:105
+#: accounts/forms.py:106
 #, python-format
 msgid ""
 "Please enter a correct %(username)s and password. Note that email and "
@@ -22,31 +22,32 @@ msgid ""
 "Authenticator as well. "
 msgstr ""
 
-#: accounts/forms.py:110
+#: accounts/forms.py:111
 msgid "This account is inactive."
 msgstr ""
 
-#: accounts/forms.py:191
+#: accounts/forms.py:194
 msgid "Your password can’t be too similar to your other personal information."
 msgstr ""
 
-#: accounts/forms.py:192
+#: accounts/forms.py:195
 msgid "Your password must contain at least 16 characters."
 msgstr ""
 
-#: accounts/forms.py:193
+#: accounts/forms.py:196
 msgid "Your password can’t be a commonly used password."
 msgstr ""
 
-#: accounts/forms.py:194
+#: accounts/forms.py:197
 msgid "Your password can’t be entirely numeric."
 msgstr ""
 
-#: accounts/forms.py:213 accounts/forms.py:229
+#: accounts/forms.py:213 accounts/forms.py:229 accounts/models.py:140
 msgid "Email address"
 msgstr "メールアドレス"
 
-#: accounts/forms.py:214 accounts/templates/accounts/participant_list.html:37
+#: accounts/forms.py:214 accounts/models.py:145
+#: accounts/templates/accounts/participant_list.html:37
 #: accounts/templates/accounts/participant_list.html:58
 msgid "Nickname"
 msgstr "ユーザー名"
@@ -157,7 +158,13 @@ msgstr ""
 "共同親権に関する取り決めや旅行などによって回答が変わる場合は、子どもが普段一"
 "緒に暮らしている親・保護者の人数を記入するか、説明してください。"
 
-#: accounts/forms.py:352
+#: accounts/forms.py:351 accounts/forms.py:377 accounts/forms.py:429
+#: accounts/templates/accounts/participant_detail.html:38
+#: web/templates/web/children-list.html:112
+msgid "Birthday"
+msgstr "誕生日"
+
+#: accounts/forms.py:353
 msgid ""
 "This lets us figure out exactly how old your child is when they participate "
 "in a study. We never publish children's birthdates or information that would "
@@ -166,46 +173,40 @@ msgstr ""
 "こちらは、調査参加時にお子さんが何歳であったかを正確に把握するためです。お子"
 "さんの誕生日や、誕生日を計算できるような情報は決して公開しません。"
 
-#: accounts/forms.py:359
+#: accounts/forms.py:360
 msgid "Birthdays cannot be in the future."
 msgstr "誕生日が未来の日付になっています。"
 
-#: accounts/forms.py:375 accounts/forms.py:426
+#: accounts/forms.py:376 accounts/forms.py:428
 msgid "First Name"
 msgstr "お名前"
 
-#: accounts/forms.py:376
-#, fuzzy
-#| msgid "Birthday"
-msgid "Birthday test"
-msgstr "誕生日"
-
-#: accounts/forms.py:377 accounts/forms.py:428
+#: accounts/forms.py:378 accounts/forms.py:430
 #: accounts/templates/accounts/participant_detail.html:54
 msgid "Gender"
 msgstr "性別"
 
-#: accounts/forms.py:378 accounts/forms.py:429
+#: accounts/forms.py:379 accounts/forms.py:431
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
 msgstr "出産時の妊娠期間"
 
-#: accounts/forms.py:380 accounts/forms.py:431
+#: accounts/forms.py:381 accounts/forms.py:433
 msgid "Any additional information you'd like us to know"
 msgstr "何か他に私たちが知っておくべきことはありますか？"
 
-#: accounts/forms.py:382 accounts/forms.py:433
+#: accounts/forms.py:383 accounts/forms.py:435
 msgid "Characteristics and conditions"
 msgstr "特徴と条件"
 
-#: accounts/forms.py:384 accounts/forms.py:435
+#: accounts/forms.py:385 accounts/forms.py:437
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr ""
 "家庭や学校、または他の保護者と一緒にいる際に、このお子さんが触れる言語。"
 
-#: accounts/forms.py:390 accounts/forms.py:441
+#: accounts/forms.py:391 accounts/forms.py:443
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
@@ -217,20 +218,14 @@ msgstr ""
 "ば、「まりちゃんのための新しい研究があります！」など）、名前を公表したり、研"
 "究に使用したりすることはありません。"
 
-#: accounts/forms.py:393 accounts/forms.py:444
+#: accounts/forms.py:394 accounts/forms.py:446
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr "例えば、診断を受けた発達障害、視力・聴力の問題"
 
-#: accounts/forms.py:396
+#: accounts/forms.py:397
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr "数字を切り捨てて、妊娠週数に最も近いものにしてください"
-
-#: accounts/forms.py:427
-#, fuzzy
-#| msgid "Birthday"
-msgid "Birthday test2"
-msgstr "誕生日"
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
 #: accounts/models.py:301 studies/fields.py:135
@@ -709,16 +704,17 @@ msgstr "連絡可能な時間帯を編集します。"
 msgid "My Account"
 msgstr "マイアカウント"
 
-#: accounts/templates/accounts/account-update.html:45
-msgid "Change Your Password"
-msgstr "パスワードを変更する"
-
+#: accounts/templates/accounts/account-update.html:37
 #: accounts/templates/accounts/account-update.html:58
 #: web/templates/web/child-update.html:46
 #: web/templates/web/demographic-data-update.html:102
 #: web/templates/web/participant-email-preferences.html:38
 msgid "Save"
 msgstr "保存"
+
+#: accounts/templates/accounts/account-update.html:45
+msgid "Change Your Password"
+msgstr "パスワードを変更する"
 
 #: accounts/templates/accounts/account-update.html:68
 msgid "Manage Two-Factor Authentication"
@@ -754,11 +750,6 @@ msgstr "参加者アカウント"
 #: web/templates/web/children-list.html:105
 msgid "Children"
 msgstr "子供"
-
-#: accounts/templates/accounts/participant_detail.html:38
-#: web/templates/web/children-list.html:112
-msgid "Birthday"
-msgstr "誕生日"
 
 #: accounts/templates/accounts/participant_detail.html:46
 msgid "Age"
@@ -1868,6 +1859,16 @@ msgid ""
 "either completed or paused. If you think this is an error, please contact "
 "{study.contact_info}"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Birthday"
+#~ msgid "Birthday test"
+#~ msgstr "誕生日"
+
+#, fuzzy
+#~| msgid "Birthday"
+#~ msgid "Birthday test2"
+#~ msgstr "誕生日"
 
 #~ msgid "Login Unsuccessful"
 #~ msgstr "ログイン失敗"
