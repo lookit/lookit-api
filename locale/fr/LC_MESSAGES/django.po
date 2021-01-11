@@ -1,0 +1,1681 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: MBAH_studiespage\n"
+"Language: fr\n"
+
+#: accounts/forms.py:213 accounts/forms.py:229
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+#: accounts/forms.py:254
+msgid "It's time for another session of a study we are currently participating in"
+msgstr "Il est temps de participer à une autre session pour l'une de nos études"
+
+#: accounts/forms.py:256
+msgid "A new study is available for one of my children"
+msgstr "Une nouvelle étude est disponible pour l'un de mes enfants"
+
+#: accounts/forms.py:258
+msgid "There's an update about a study we participated in (for example, results are published)"
+msgstr "Il y a une mise à jour concernant une étude à laquelle nous avons participé (par exemple, les résultats ont été publiés)"
+
+#: accounts/forms.py:261
+msgid "A researcher has questions about my individual responses (for example, if I report a technical problem during the study)"
+msgstr "Un chercheur a des questions concernant mes réponses individuelles (par exemple, si je signale un problème technique pendant l'étude)"
+
+#: accounts/forms.py:270 accounts/forms.py:317
+msgid "What category(ies) does your family identify as?"
+msgstr "À quelle(s) catégorie(s) votre famille correspond-elle ?"
+
+#: accounts/forms.py:299
+msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
+msgstr "Saisir sous forme de liste séparée par des virgules: AAAA-MM-JJ, AAAA-MM-JJ, ..."
+
+#: accounts/forms.py:301
+msgid "Numerical answers only - a rough guess is fine!"
+msgstr "Réponses numériques uniquement - une estimation approximative est suffisante !"
+
+#: accounts/forms.py:305
+msgid "What country do you live in?"
+msgstr "Dans quel pays habitez-vous ?"
+
+#: accounts/forms.py:306
+msgid "What state do you live in?"
+msgstr "Dans quel état habitez-vous ?"
+
+#: accounts/forms.py:307
+msgid "How would you describe the area where you live?"
+msgstr "Comment décririez-vous la région dans laquelle vous vivez?"
+
+#: accounts/forms.py:309
+msgid "What language(s) does your family speak at home?"
+msgstr "Quelle(s) langue(s) votre famille parle-t-elle à la maison?"
+
+#: accounts/forms.py:311
+msgid "How many children do you have?"
+msgstr "Combien d'enfants avez-vous?"
+
+#: accounts/forms.py:312
+msgid "For each child, please enter his or her birthdate:"
+msgstr "Pour chaque enfant, veuillez saisir sa date de naissance :"
+
+#: accounts/forms.py:314
+msgid "How many parents/guardians do your children live with?"
+msgstr "Avec combien de parents / tuteurs vos enfants vivent-ils?"
+
+#: accounts/forms.py:319
+msgid "What is your age?"
+msgstr "Quel âge avez-vous?"
+
+#: accounts/forms.py:320
+msgid "What is your gender?"
+msgstr "Quel est votre sexe?"
+
+#: accounts/forms.py:322
+msgid "What is the highest level of education you've completed?"
+msgstr "Quel est le niveau d'études le plus élevé que vous avez obtenu ?"
+
+#: accounts/forms.py:325
+msgid "What is the highest level of education your spouse has completed?"
+msgstr "Quel est le niveau d'études le plus élevé obtenu par votre conjoint?"
+
+#: accounts/forms.py:328
+msgid "What is your approximate family yearly income (in US dollars)?"
+msgstr "Quel est approximativement votre revenu familial annuel (en euros) ?"
+
+#: accounts/forms.py:331
+msgid "About how many children's books are there in your home?"
+msgstr "Environ combien y a-t-il de livres pour enfants dans votre foyer ?"
+
+#: accounts/forms.py:333
+msgid "Anything else you'd like us to know?"
+msgstr "Y a-t-il autre chose que vous aimeriez nous transmettre ?"
+
+#: accounts/forms.py:334
+msgid "How did you hear about Lookit?"
+msgstr "Comment avez-vous entendu parler de Lookit ?"
+
+#: accounts/forms.py:336
+msgid "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
+msgstr "Si la réponse varie en raison d'ententes de garde partagée ou de voyages, veuillez saisir le nombre de parents / tuteurs avec lesquels vos enfants vivent habituellement (ou expliquer)."
+
+#: accounts/forms.py:352
+msgid "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
+msgstr "Cela nous permet de déterminer l'âge exact de votre enfant lorsqu'il participe à une étude. Nous ne publions jamais les dates de naissance des enfants ou quelque information qui permettrait à un lecteur de les calculer."
+
+#: accounts/forms.py:359
+msgid "Birthdays cannot be in the future."
+msgstr "La date d'anniversaire ne peut se situer dans le futur."
+
+#: accounts/forms.py:375 accounts/forms.py:426
+msgid "First Name"
+msgstr "Prénom"
+
+#: accounts/templates/accounts/participant_detail.html:38
+#: web/templates/web/children-list.html:112
+msgid "Birthday"
+msgstr "Date de naissance"
+
+#: accounts/forms.py:378 accounts/forms.py:429
+#: accounts/templates/accounts/participant_detail.html:62
+msgid "Gestational Age at Birth"
+msgstr "Âge gestationnel à la naissance"
+
+#: accounts/forms.py:380 accounts/forms.py:431
+msgid "Any additional information you'd like us to know"
+msgstr "Toute information supplémentaire que vous souhaitez nous transmettre"
+
+#: accounts/forms.py:382 accounts/forms.py:433
+msgid "Characteristics and conditions"
+msgstr "Caractéristiques et conditions"
+
+#: accounts/forms.py:384 accounts/forms.py:435
+msgid "Languages this child is exposed to at home, school, or with another caregiver."
+msgstr "Langues auxquelles cet enfant est exposé à la maison, à l'école ou avec un autre proche."
+
+#: accounts/forms.py:390 accounts/forms.py:441
+msgid "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+msgstr "Cela vous permet de sélectionner le bon enfant pour participer à une étude donnée. Un surnom ou des initiales sont suffisants ! Nous pouvons inclure le nom de votre enfant dans les e-mails qui vous sont adressés (par exemple, \"Une nouvelle étude est disponible pour Manon !\") mais ne publierons jamais les noms ni ne les utiliserons dans nos recherches."
+
+#: accounts/forms.py:393 accounts/forms.py:444
+msgid "For instance, diagnosed developmental disorders or vision or hearing problems"
+msgstr "Par exemple, des troubles du développement diagnostiqués ou des problèmes de vision ou d'audition"
+
+#: accounts/forms.py:396
+msgid "Please round down to the nearest full week of pregnancy completed"
+msgstr "Veuillez arrondir à la semaine complète de grossesse la plus proche"
+
+#: accounts/migrations/0041_add_existing_conditions.py:12
+#: accounts/models.py:301 studies/fields.py:135
+msgid "Not sure or prefer not to answer"
+msgstr "Je ne suis pas sûr(e) ou préfère ne pas répondre"
+
+#: accounts/migrations/0041_add_existing_conditions.py:13
+#: accounts/models.py:302 studies/fields.py:136
+msgid "Under 24 weeks"
+msgstr "Moins de 24 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:14
+#: accounts/models.py:303 studies/fields.py:137
+msgid "24 weeks"
+msgstr "24 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:15
+#: accounts/models.py:304 studies/fields.py:138
+msgid "25 weeks"
+msgstr "25 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:16
+#: accounts/models.py:305 studies/fields.py:139
+msgid "26 weeks"
+msgstr "26 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:17
+#: accounts/models.py:306 studies/fields.py:140
+msgid "27 weeks"
+msgstr "27 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:18
+#: accounts/models.py:307 studies/fields.py:141
+msgid "28 weeks"
+msgstr "28 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:19
+#: accounts/models.py:308 studies/fields.py:142
+msgid "29 weeks"
+msgstr "29 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:20
+#: accounts/models.py:309 studies/fields.py:143
+msgid "30 weeks"
+msgstr "30 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:21
+#: accounts/models.py:310 studies/fields.py:144
+msgid "31 weeks"
+msgstr "31 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:22
+#: accounts/models.py:311 studies/fields.py:145
+msgid "32 weeks"
+msgstr "32 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:23
+#: accounts/models.py:312 studies/fields.py:146
+msgid "33 weeks"
+msgstr "33 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:24
+#: accounts/models.py:313 studies/fields.py:147
+msgid "34 weeks"
+msgstr "34 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:25
+#: accounts/models.py:314 studies/fields.py:148
+msgid "35 weeks"
+msgstr "35 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:26
+#: accounts/models.py:315 studies/fields.py:149
+msgid "36 weeks"
+msgstr "36 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:27
+#: accounts/models.py:316 studies/fields.py:150
+msgid "37 weeks"
+msgstr "37 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:28
+#: accounts/models.py:317 studies/fields.py:151
+msgid "38 weeks"
+msgstr "38 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:29
+#: accounts/models.py:318 studies/fields.py:152
+msgid "39 weeks"
+msgstr "39 semaines"
+
+#: accounts/migrations/0041_add_existing_conditions.py:30
+#: accounts/models.py:319 studies/fields.py:153
+msgid "40 or more weeks"
+msgstr "40 semaines ou plus"
+
+#: accounts/models.py:79
+msgid "Can View Organization"
+msgstr "Peut consulter l'organisation"
+
+#: accounts/models.py:80
+msgid "Can Edit Organization"
+msgstr "Peut modifier l'organisation"
+
+#: accounts/models.py:81
+msgid "Can Create Organization"
+msgstr "Peut créer une organisation"
+
+#: accounts/models.py:82
+msgid "Can Remove Organization"
+msgstr "Peut supprimer l'organisation"
+
+#: accounts/models.py:83
+msgid "Can View Experimenter"
+msgstr "Peut consulter Experimenter"
+
+#: accounts/models.py:84
+msgid "Can View Analytics"
+msgstr "Peut consulter les analyses"
+
+#: accounts/models.py:279
+msgid "Can Create User"
+msgstr "Peut créer un utilisateur"
+
+#: accounts/models.py:280
+msgid "Can View User"
+msgstr "Peut consulter l'utilisateur"
+
+#: accounts/models.py:281
+msgid "Can Edit User"
+msgstr "Peut modifier l'utilisateur"
+
+#: accounts/models.py:282
+msgid "Can Remove User"
+msgstr "Peut supprimer l'utilisateur"
+
+#: accounts/models.py:283
+msgid "Can View User Permissions"
+msgstr "Peut consulter les autorisations des utilisateurs"
+
+#: accounts/models.py:284
+msgid "Can Edit User Permissions"
+msgstr "Peut modifier les autorisations des utilisateurs"
+
+#: accounts/models.py:285
+msgid "Can Read All User Data"
+msgstr "Peut lire toutes les données utilisateur"
+
+#: accounts/models.py:286
+msgid "Can Read User Usernames"
+msgstr "Peut lire les noms d'utilisateur"
+
+#: accounts/models.py:293 accounts/models.py:396
+msgid "male"
+msgstr "masculin"
+
+#: accounts/models.py:294 accounts/models.py:397
+msgid "female"
+msgstr "féminin"
+
+#: accounts/models.py:295 accounts/models.py:398
+msgid "other"
+msgstr "autre"
+
+#: accounts/models.py:296 accounts/models.py:399 accounts/models.py:475
+msgid "prefer not to answer"
+msgstr "préfère ne pas répondre"
+
+#: accounts/models.py:386
+msgid "White"
+msgstr "Blanc"
+
+#: accounts/models.py:387
+msgid "Hispanic, Latino, or Spanish origin"
+msgstr "Origine hispanique, latine ou espagnole"
+
+#: accounts/models.py:388
+msgid "Black or African American"
+msgstr "Noir ou afro-américain"
+
+#: accounts/models.py:389
+msgid "Asian"
+msgstr "Asiatique"
+
+#: accounts/models.py:390
+msgid "American Indian or Alaska Native"
+msgstr "Amérindien ou natif de l'Alaska"
+
+#: accounts/models.py:391
+msgid "Middle Eastern or North African"
+msgstr "Moyen-Orient ou Afrique du Nord"
+
+#: accounts/models.py:392
+msgid "Native Hawaiian or Other Pacific Islander"
+msgstr "Natif d'Hawaï ou insulaire d'une autre île du Pacifique"
+
+#: accounts/models.py:393
+msgid "Another race, ethnicity, or origin"
+msgstr "Autre ethnie ou origine"
+
+#: accounts/models.py:402 accounts/models.py:411
+msgid "some or attending high school"
+msgstr "a fréquenté ou fréquentant le lycée"
+
+#: accounts/models.py:403 accounts/models.py:412
+msgid "high school diploma or GED"
+msgstr "Baccalauréat ou équivalent"
+
+#: accounts/models.py:404 accounts/models.py:413
+msgid "some or attending college"
+msgstr "a fréquenté ou fréquentant l'uiversité"
+
+#: accounts/models.py:405 accounts/models.py:414
+msgid "2-year college degree"
+msgstr "Licence ou diplôme équivalent à Bac+3"
+
+#: accounts/models.py:406 accounts/models.py:415
+msgid "4-year college degree"
+msgstr "Master ou diplôme équivalent à Bac+5"
+
+#: accounts/models.py:407 accounts/models.py:416
+msgid "some or attending graduate or professional school"
+msgstr "a préparé ou préparant un master, un doctorat ou un diplôme professionnel"
+
+#: accounts/models.py:408 accounts/models.py:417
+msgid "graduate or professional degree"
+msgstr "master, doctorat ou diplôme professionnel"
+
+#: accounts/models.py:418
+msgid "not applicable - no spouse or partner"
+msgstr "non applicable - pas de conjoint ou partenaire"
+
+#: accounts/models.py:421 accounts/models.py:452
+msgid "0"
+msgstr "0"
+
+#: accounts/models.py:422 accounts/models.py:449
+msgid "1"
+msgstr "1"
+
+#: accounts/models.py:423 accounts/models.py:449
+msgid "2"
+msgstr "2"
+
+#: accounts/models.py:424
+msgid "3"
+msgstr "3"
+
+#: accounts/models.py:425
+msgid "4"
+msgstr "4"
+
+#: accounts/models.py:426
+msgid "5"
+msgstr "5"
+
+#: accounts/models.py:427
+msgid "6"
+msgstr "6"
+
+#: accounts/models.py:428
+msgid "7"
+msgstr "7"
+
+#: accounts/models.py:429
+msgid "8"
+msgstr "8"
+
+#: accounts/models.py:430
+msgid "9"
+msgstr "9"
+
+#: accounts/models.py:431
+msgid "10"
+msgstr "10"
+
+#: accounts/models.py:432
+msgid "More than 10"
+msgstr "Plus que 10"
+
+#: accounts/models.py:435
+msgid "under 18"
+msgstr "moins de 18 ans"
+
+#: accounts/models.py:436
+msgid "18-21"
+msgstr "18-21"
+
+#: accounts/models.py:437
+msgid "22-24"
+msgstr "22-24"
+
+#: accounts/models.py:438
+msgid "25-29"
+msgstr "25-29"
+
+#: accounts/models.py:439
+msgid "30-34"
+msgstr "30-34"
+
+#: accounts/models.py:440
+msgid "35-39"
+msgstr "35-39"
+
+#: accounts/models.py:441
+msgid "40-44"
+msgstr "40-44"
+
+#: accounts/models.py:442
+msgid "45-49"
+msgstr "45-49"
+
+#: accounts/models.py:443
+msgid "50-59"
+msgstr "50-59"
+
+#: accounts/models.py:444
+msgid "60-69"
+msgstr "60-69"
+
+#: accounts/models.py:445
+msgid "70 or over"
+msgstr "70 ans et plus"
+
+#: accounts/models.py:449
+msgid "3 or more"
+msgstr "3 et plus"
+
+#: accounts/models.py:449
+msgid "varies"
+msgstr "varie"
+
+#: accounts/models.py:453
+msgid "5000"
+msgstr "5000"
+
+#: accounts/models.py:454
+msgid "10000"
+msgstr "10 000"
+
+#: accounts/models.py:455
+msgid "15000"
+msgstr "15 000"
+
+#: accounts/models.py:456
+msgid "20000"
+msgstr "20 000"
+
+#: accounts/models.py:457
+msgid "30000"
+msgstr "30 000"
+
+#: accounts/models.py:458
+msgid "40000"
+msgstr "40 000"
+
+#: accounts/models.py:459
+msgid "50000"
+msgstr "50 000"
+
+#: accounts/models.py:460
+msgid "60000"
+msgstr "60 000"
+
+#: accounts/models.py:461
+msgid "70000"
+msgstr "70 000"
+
+#: accounts/models.py:462
+msgid "80000"
+msgstr "80 000"
+
+#: accounts/models.py:463
+msgid "90000"
+msgstr "90 000"
+
+#: accounts/models.py:464
+msgid "100000"
+msgstr "100 000"
+
+#: accounts/models.py:465
+msgid "110000"
+msgstr "110 000"
+
+#: accounts/models.py:466
+msgid "120000"
+msgstr "120 000"
+
+#: accounts/models.py:467
+msgid "130000"
+msgstr "130 000"
+
+#: accounts/models.py:468
+msgid "140000"
+msgstr "140 000"
+
+#: accounts/models.py:469
+msgid "150000"
+msgstr "150 000"
+
+#: accounts/models.py:470
+msgid "160000"
+msgstr "160 000"
+
+#: accounts/models.py:471
+msgid "170000"
+msgstr "170 000"
+
+#: accounts/models.py:472
+msgid "180000"
+msgstr "180 000"
+
+#: accounts/models.py:473
+msgid "190000"
+msgstr "190 000"
+
+#: accounts/models.py:474
+msgid "over 200000"
+msgstr "plus de 200 000"
+
+#: accounts/models.py:478
+msgid "urban"
+msgstr "urbain"
+
+#: accounts/models.py:478
+msgid "suburban"
+msgstr "de banlieue"
+
+#: accounts/models.py:478
+msgid "rural"
+msgstr "rural"
+
+#: accounts/models.py:528
+msgid "Select a State"
+msgstr "Sélectionner un département"
+
+#: web/templates/registration/login.html:18
+#: web/templates/registration/login.html:25
+#: web/templates/web/_navigation.html:45
+msgid "Login"
+msgstr "S'identifier"
+
+#: accounts/templates/accounts/participant_detail.html:15
+msgid "All Participants"
+msgstr "Tous les participants"
+
+#: accounts/templates/accounts/participant_detail.html:23
+msgid "Participant ID"
+msgstr "ID de participant"
+
+#: accounts/templates/accounts/participant_detail.html:24
+msgid "Last Active:"
+msgstr "Dernière activité :"
+
+#: accounts/templates/accounts/participant_detail.html:25
+msgid "Participant global ID:"
+msgstr "ID global du participant :"
+
+#: accounts/templates/accounts/participant_detail.html:31
+#: web/templates/web/children-list.html:105
+msgid "Children"
+msgstr "Enfants"
+
+#: accounts/templates/accounts/participant_detail.html:46
+msgid "Age"
+msgstr "Âge"
+
+#: accounts/forms.py:377 accounts/forms.py:428
+#: accounts/templates/accounts/participant_detail.html:54
+msgid "Gender"
+msgstr "Sexe"
+
+#: accounts/templates/accounts/participant_detail.html:70
+msgid "Additional Info"
+msgstr "Information additionnelle"
+
+#: accounts/templates/accounts/participant_detail.html:79
+msgid "No children profiles registered!"
+msgstr "Aucun profil enfant enregistré !"
+
+#: accounts/templates/accounts/participant_detail.html:83
+msgid "Latest Demographic Data"
+msgstr "Dernières données démographiques"
+
+#: accounts/templates/accounts/participant_detail.html:86
+msgid "Country"
+msgstr "Pays"
+
+#: accounts/templates/accounts/participant_detail.html:94
+msgid "State"
+msgstr "Etat"
+
+#: accounts/templates/accounts/participant_detail.html:102
+msgid "Area description"
+msgstr "Description de la zone"
+
+#: accounts/templates/accounts/participant_detail.html:110
+msgid "Languages Spoken at Home"
+msgstr "Langues parlées à la maison"
+
+#: accounts/templates/accounts/participant_detail.html:118
+msgid "Number of Children"
+msgstr "Nombre d'enfants"
+
+#: accounts/templates/accounts/participant_detail.html:126
+msgid "Children current ages"
+msgstr "Âge actuel des enfants"
+
+#: accounts/templates/accounts/participant_detail.html:134
+msgid "Number of Guardians"
+msgstr "Nombre de tuteurs"
+
+#: accounts/templates/accounts/participant_detail.html:142
+msgid "Explanation for Guardians:"
+msgstr "Dans la situation où il y aurait des tuteurs en plus des parents, pourriez-vous décrire brièvement la situation ?"
+
+#: accounts/templates/accounts/participant_detail.html:150
+msgid "Race"
+msgstr "Ethnicité"
+
+#: accounts/forms.py:214 accounts/templates/accounts/participant_list.html:37
+#: accounts/templates/accounts/participant_list.html:58
+msgid "Nickname"
+msgstr "Surnom"
+
+#: exp/templates/exp/dashboard.html:16
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: studies/fields.py:45
+msgid "Twin"
+msgstr "Jumeau"
+
+#: studies/fields.py:46
+msgid "Triplet"
+msgstr "Triplé"
+
+#: studies/fields.py:47
+msgid "Quadruplet"
+msgstr "Quadruplé"
+
+#: studies/fields.py:48
+msgid "Quintuplet"
+msgstr "Quintuplé"
+
+#: studies/fields.py:49
+msgid "Sextuplet"
+msgstr "Sextuplet"
+
+#: studies/fields.py:50
+msgid "Septuplet"
+msgstr "Septuplet"
+
+#: studies/fields.py:51
+msgid "Octuplet"
+msgstr "Octuplet"
+
+#: studies/fields.py:123
+msgid "Not answered"
+msgstr "Non répondu"
+
+#: studies/fields.py:124
+msgid "Other"
+msgstr "Autre"
+
+#: studies/fields.py:125
+msgid "Male"
+msgstr "Masculin"
+
+#: studies/fields.py:126
+msgid "Female"
+msgstr "Féminin"
+
+#: studies/models.py:113
+msgid "The Users who belong to this Lab. A user in this lab will be able to create studies associated with this Lab and can be added to this Lab's studies."
+msgstr "Les utilisateurs qui appartiennent à ce laboratoire. Un utilisateur de ce laboratoire pourra créer des études associées à ce laboratoire et pourra être ajouté aux études de ce laboratoire."
+
+#: studies/models.py:122
+msgid "The Users who have requested to join this Lab."
+msgstr "Les utilisateurs qui ont demandé à rejoindre ce laboratoire."
+
+#: web/templates/registration/logged_out.html:6
+msgid "You've successfully logged out."
+msgstr "Vous vous êtes déconnecté avec succès."
+
+#: web/templates/registration/login.html:34
+msgid "Forgot password?"
+msgstr "Mot de passe oublié ?"
+
+#: web/templates/registration/login.html:36
+msgid "New to Lookit?"
+msgstr "Nouveau sur Lookit ?"
+
+#: web/templates/registration/password_change_done.html:11
+msgid "Password changed"
+msgstr "Mot de passe changé"
+
+#: web/templates/registration/password_change_done.html:15
+msgid "Your password was changed."
+msgstr "Votre mot de passe a été changé."
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Documentation"
+msgstr "Documentation"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Change password"
+msgstr "Changer le mot de passe"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Log out"
+msgstr "Se déconnecter"
+
+#: web/templates/registration/password_change_form.html:7
+#: web/templates/web/home.html:3 web/templates/web/home.html:7
+msgid "Home"
+msgstr "Accueil"
+
+#: web/templates/registration/password_change_form.html:8
+msgid "Password change"
+msgstr "Changement de mot de passe"
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the error below."
+msgstr "Veuillez corriger l'erreur ci-dessous."
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the errors below."
+msgstr "Veuillez corriger les erreurs ci-dessous."
+
+#: web/templates/registration/password_change_form.html:26
+msgid "Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly."
+msgstr "Pour des raisons de sécurité, veuillez entrer votre ancien mot de passe ; puis entrez votre nouveau mot de passe deux fois afin que nous puissions vérifier que vous l'avez saisi correctement."
+
+#: web/templates/registration/password_change_form.html:54
+#: web/templates/registration/password_reset_confirm.html:31
+msgid "Change my password"
+msgstr "Changer mon mot de passe"
+
+#: web/templates/registration/password_reset_complete.html:11
+msgid "Password reset complete"
+msgstr "Réinitialisation du mot de passe terminée"
+
+#: web/templates/registration/password_reset_complete.html:15
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr "Votre mot de passe a été défini. Vous pouvez à présent continuer et vous connecter."
+
+#: web/templates/registration/password_reset_complete.html:17
+msgid "Log in"
+msgstr "S'identifier"
+
+#: web/templates/registration/password_reset_confirm.html:11
+msgid "Password reset confirmation"
+msgstr "Confirmation de réinitialisation du mot de passe"
+
+#: web/templates/registration/password_reset_confirm.html:17
+msgid "Please enter your new password twice so we can verify you typed it in correctly."
+msgstr "Veuillez saisir votre nouveau mot de passe deux fois afin que nous puissions vérifier que vous l'avez saisi correctement."
+
+#: web/templates/registration/password_reset_confirm.html:23
+msgid "New password:"
+msgstr "Nouveau mot de passe :"
+
+#: web/templates/registration/password_reset_confirm.html:28
+msgid "Confirm password:"
+msgstr "Confirmez le mot de passe :"
+
+#: web/templates/registration/password_reset_confirm.html:37
+msgid "The password reset link was invalid, possibly because it has already been used.  Please request a new password reset."
+msgstr "Le lien de réinitialisation du mot de passe n'était pas valide, probablement parce qu'il a déjà été utilisé. Veuillez demander une nouvelle réinitialisation du mot de passe."
+
+#: web/templates/registration/password_reset_email.html:2
+msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
+msgstr "Vous recevez cet e-mail car vous avez demandé la réinitialisation du mot de passe de votre compte utilisateur à %(site_name)s."
+
+#: web/templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "Veuillez vous rendre sur la page suivante et choisir un nouveau mot de passe:"
+
+#: web/templates/registration/password_reset_email.html:8
+msgid "Your username, in case you've forgotten:"
+msgstr "Votre nom d'utilisateur, au cas où vous l'auriez oublié :"
+
+#: web/templates/registration/password_reset_email.html:10
+msgid "Thanks for using our site!"
+msgstr "Merci d'utiliser notre site !"
+
+#: web/templates/registration/password_reset_email.html:12
+msgid "The %(site_name)s team"
+msgstr "L'équipe de %(site_name)s"
+
+#: web/templates/registration/password_reset_form.html:15
+msgid "Forgotten your password? Enter your email address below, and we'll email instructions for setting a new one."
+msgstr "Mot de passe oublié ? Entrez votre adresse e-mail ci-dessous, et nous vous enverrons par e-mail des instructions pour en définir un nouveau."
+
+#: web/templates/registration/password_reset_form.html:21
+msgid "Email address:"
+msgstr "Adresse e-mail :"
+
+#: web/templates/registration/password_reset_form.html:24
+msgid "Reset my password"
+msgstr "Réinitialiser mon mot de passe"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Demographic Survey"
+msgstr "Enquête démographique"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Tell us more about yourself."
+msgstr "Dites-nous en plus à propos de vous."
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Children Information"
+msgstr "Informations sur les enfants"
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Add or edit participant information."
+msgstr "Ajoutez ou modifiez les informations des participants."
+
+#: accounts/templates/accounts/_account-navigation.html:5
+#: web/templates/web/participant-email-preferences.html:4
+msgid "Email Preferences"
+msgstr "Préférences de messagerie"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+msgid "Edit when you can be contacted."
+msgstr "Modifiez quand vous pouvez être contacté."
+
+#: web/templates/flatpages/default.html:10
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
+#: web/templates/web/base.html:10
+msgid "Lookit"
+msgstr "Lookit"
+
+#: web/templates/web/_navigation.html:17
+msgid "Experimenter"
+msgstr "Experimenter"
+
+#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
+msgid "Studies"
+msgstr "Études"
+
+#: web/templates/web/_navigation.html:29
+msgid "FAQ"
+msgstr "FAQ"
+
+#: web/templates/web/_navigation.html:30
+msgid "The Scientists"
+msgstr "Les scientifiques"
+
+#: web/templates/web/_navigation.html:31
+msgid "Resources"
+msgstr "Ressources"
+
+#: web/templates/web/_navigation.html:40
+msgid "Hi"
+msgstr "Salut"
+
+#: web/templates/web/_navigation.html:42
+msgid "Logout"
+msgstr "Se déconnecter"
+
+#: web/templates/web/_navigation.html:44
+msgid "Sign up"
+msgstr "S'inscrire"
+
+#: web/templates/web/child-update.html:4
+#: web/templates/web/studies-history.html:116
+msgid "Child"
+msgstr "Enfant"
+
+#: accounts/templates/accounts/account-update.html:14
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
+#: web/templates/web/children-list.html:67
+#: web/templates/web/demographic-data-update.html:78
+#: web/templates/web/participant-email-preferences.html:16
+msgid "My Account"
+msgstr "Mon compte"
+
+#: web/templates/web/child-update.html:31
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: web/templates/web/child-update.html:41
+msgid "Delete"
+msgstr "Supprimer"
+
+#: accounts/templates/accounts/account-update.html:58
+#: web/templates/web/child-update.html:46
+#: web/templates/web/demographic-data-update.html:102
+#: web/templates/web/participant-email-preferences.html:38
+msgid "Save"
+msgstr "Enregistrer"
+
+#: web/templates/web/children-list.html:40
+msgid "Empty birthday"
+msgstr "Anniversaire vide"
+
+#: web/templates/web/children-list.html:47
+msgid " day"
+msgstr " journée"
+
+#: web/templates/web/children-list.html:47
+msgid " days"
+msgstr " journées"
+
+#: web/templates/web/children-list.html:49
+msgid " month"
+msgstr " mois"
+
+#: web/templates/web/children-list.html:49
+msgid " months"
+msgstr " mois"
+
+#: web/templates/web/children-list.html:51
+msgid " year"
+msgstr " an"
+
+#: web/templates/web/children-list.html:51
+msgid " years"
+msgstr " années"
+
+#: web/templates/web/children-list.html:61
+#: web/templates/web/children-list.html:77
+#: web/templates/web/children-list.html:82
+#: web/templates/web/children-list.html:94
+msgid "Add Child"
+msgstr "Ajouter un enfant"
+
+#: web/templates/web/children-list.html:61
+#: web/templates/web/children-list.html:77
+msgid "Hide Form"
+msgstr "Masquer le formulaire"
+
+#: web/templates/web/child-update.html:44
+#: web/templates/web/children-list.html:92
+#: web/templates/web/demographic-data-update.html:100
+#: web/templates/web/participant-email-preferences.html:36
+msgid "Cancel"
+msgstr "Annuler"
+
+#: web/templates/web/children-list.html:111
+msgid "Name"
+msgstr "Nom"
+
+#: web/templates/web/children-list.html:121
+msgid "Update child"
+msgstr "Mettre à jour l'enfant"
+
+#: web/templates/web/children-list.html:128
+msgid "No child profiles registered!"
+msgstr "Aucun profil enfant enregistré !"
+
+#: web/templates/web/demographic-data-update.html:4
+msgid "Update demographics"
+msgstr "Mettre à jour les données démographiques"
+
+#: web/templates/web/demographic-data-update.html:89
+msgid "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning."
+msgstr "L'une des raisons pour lesquelles nous développons des expériences sur Internet est d'obtenir un groupe plus diversifié de familles dans nos recherches. Vos réponses à ces questions nous aideront à comprendre quel public nous touchons, ainsi que la façon dont certains facteurs comme parler plusieurs langues ou avoir des frères et sœurs plus âgés affectent l'apprentissage des enfants."
+
+#: web/templates/web/demographic-data-update.html:90
+msgid "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video."
+msgstr "Même si vous autorisez la publication de vos vidéos à des fins scientifiques ou publicitaires, vos informations démographiques ne sont jamais publiées en même temps que votre vidéo."
+
+#: web/templates/web/participant-email-preferences.html:27
+msgid "I would like to be contacted when:"
+msgstr "Je souhaite être contacté lorsque :"
+
+#: web/templates/web/participant-signup.html:28
+msgid "By clicking 'Create Account', I agree that I have read and accepted the "
+msgstr "En cliquant sur 'Créer un compte', j'accepte d'avoir lu et accepté le "
+
+#: web/templates/web/participant-signup.html:28
+msgid "Privacy Statement"
+msgstr "Politique de confidentialité"
+
+#: web/templates/web/participant-signup.html:31
+msgid "Create Account"
+msgstr "Créer un compte"
+
+#: accounts/templates/accounts/_account-navigation.html:2
+#: accounts/templates/accounts/account-update.html:24
+msgid "Account Information"
+msgstr "Information sur le compte"
+
+#: accounts/templates/accounts/account-update.html:45
+msgid "Change Your Password"
+msgstr "Changez votre mot de passe"
+
+#: web/templates/web/studies-history.html:4
+#: web/templates/web/studies-history.html:27
+msgid "Past Studies"
+msgstr "Études antérieures"
+
+#: web/templates/web/studies-history.html:16
+#: web/templates/web/studies-list.html:16
+msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
+msgstr "Votre compte n'a pas accès à cette page. Pour continuer, veuillez vous connecter avec un compte qui y a accès."
+
+#: web/templates/web/studies-history.html:18
+#: web/templates/web/studies-list.html:18
+msgid "Please login to see this page."
+msgstr "Veuillez vous connecter pour voir cette page."
+
+#: web/templates/web/studies-history.html:34
+#: web/templates/web/studies-list.html:38
+msgid "Current studies"
+msgstr "Études actuelles"
+
+#: web/templates/web/studies-history.html:37
+#: web/templates/web/studies-list.html:41
+msgid "Your past studies"
+msgstr "Vos études antérieures"
+
+#: web/templates/web/studies-history.html:50
+msgid "Here you can view your studies and see comments left by researchers:"
+msgstr "Ici, vous pouvez consulter vos études et voir les commentaires laissés par les chercheurs :"
+
+#: web/templates/web/studies-history.html:67
+msgid "Study Thumbnail"
+msgstr "Vignette d'étude"
+
+#: web/templates/web/studies-history.html:79
+msgid "Eligibility:"
+msgstr "Eligibilité :"
+
+#: web/templates/web/studies-history.html:80
+msgid "Contact:"
+msgstr "Contact :"
+
+#: web/templates/web/studies-history.html:81
+msgid "Still collecting data?"
+msgstr "Vous continuez à collecter des données?"
+
+#: web/templates/web/studies-history.html:81
+msgid "Yes"
+msgstr "Oui"
+
+#: web/templates/web/studies-history.html:81
+msgid "No"
+msgstr "Non"
+
+#: web/templates/web/studies-history.html:82
+msgid "Compensation: "
+msgstr "Compensation: "
+
+#: web/templates/web/studies-history.html:87
+msgid "Study Responses"
+msgstr "Réponses de l'étude"
+
+#: web/templates/web/studies-history.html:118
+msgid "Date"
+msgstr "Date"
+
+#: web/templates/web/studies-history.html:120
+msgid "Consent status"
+msgstr "Statut du consentement"
+
+#: web/templates/web/studies-history.html:123
+msgid "Approved"
+msgstr "Approuvé"
+
+#: web/templates/web/studies-history.html:123
+msgid "Your consent video was reviewed by a researcher and is valid."
+msgstr "Votre vidéo de consentement a été examinée par un chercheur et est valide."
+
+#: web/templates/web/studies-history.html:125
+msgid "Pending"
+msgstr "En attente"
+
+#: web/templates/web/studies-history.html:125
+msgid "Your consent video has not yet been reviewed by a researcher."
+msgstr "Votre vidéo de consentement n'a pas encore été examinée par un chercheur."
+
+#: web/templates/web/studies-history.html:127
+msgid "Invalid"
+msgstr "Invalide"
+
+#: web/templates/web/studies-history.html:127
+msgid "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers."
+msgstr "Il y avait un problème technique avec votre vidéo de consentement, ou elle ne montrait pas que vous lisiez la déclaration de consentement à voix haute. Vos autres données de cette session ne seront ni consultées ni utilisées par les chercheurs de l'étude."
+
+#: web/templates/web/studies-history.html:129
+msgid "No information about consent video review status."
+msgstr "Aucune information sur l'état de l'examen de la vidéo de consentement."
+
+#: web/templates/web/studies-history.html:154
+msgid "You have not yet participated in any studies."
+msgstr "Vous n'avez encore participé à aucune étude."
+
+#: web/templates/web/studies-list.html:32
+msgid "Current Studies"
+msgstr "Études actuelles"
+
+#: web/templates/web/studies-list.html:53
+msgid "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate."
+msgstr "Veuillez noter que pour participer vous aurez besoin d'un ordinateur portable ou de bureau (pas d'un appareil mobile) pouvant lancer Chrome ou Firefox."
+
+#: web/templates/web/studies-list.html:80
+msgid "See details"
+msgstr "Voir les détails"
+
+#: web/templates/web/studies-list.html:87
+msgid "We are not running any studies at this time!"
+msgstr "Nous ne menons aucune étude pour le moment!"
+
+#: web/templates/web/studies-list.html:93
+msgid "Looking for more ways to contribute to research from home? Check out <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> for even more studies!"
+msgstr "Vous cherchez d'autres façons de contribuer à la recherche depuis chez vous ? Consultez <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> pour encore plus d'études!"
+
+#: web/templates/web/study-detail.html:93
+msgid "Study overview"
+msgstr "Aperçu de l'étude"
+
+#: web/templates/web/study-detail.html:96
+msgid "Back to list"
+msgstr "Retour à la liste"
+
+#: web/templates/web/study-detail.html:112
+msgid "Eligibility criteria"
+msgstr "Critère d'éligibilité"
+
+#: web/templates/web/study-detail.html:116
+msgid "Duration"
+msgstr "Durée"
+
+#: web/templates/web/study-detail.html:121
+msgid "Compensation"
+msgstr "Compensation"
+
+#: web/templates/web/study-detail.html:126
+msgid "What happens"
+msgstr "Ce qu'il se passe"
+
+#: web/templates/web/study-detail.html:130
+msgid "What we're studying"
+msgstr "Ce que nous étudions"
+
+#: web/templates/web/study-detail.html:134
+msgid "This study is conducted by"
+msgstr "Cette étude est menée par"
+
+#: web/templates/web/study-detail.html:138
+msgid "Would you like to participate in this study?"
+msgstr "Souhaitez-vous participer à cette étude ?"
+
+#: web/templates/web/study-detail.html:140
+msgid "Log in to participate"
+msgstr "Connectez-vous pour participer"
+
+#: web/templates/web/study-detail.html:148
+msgid "Select a child:"
+msgstr "Sélectionnez un enfant :"
+
+#: web/templates/web/study-detail.html:150
+msgid "None Selected"
+msgstr "Aucune sélection"
+
+#: web/templates/web/study-detail.html:161
+msgid "Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research!"
+msgstr "Votre enfant est encore trop jeune pour la tranche d'âge recommandée pour cette étude. Si vous pouvez attendre <span id = 'wait-until'> jusqu'à </span> ce qu'il ou elle soit assez vieux, nous pourrons utiliser les données collectées dans notre recherche!"
+
+#: web/templates/web/study-detail.html:162
+msgid "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research."
+msgstr "Votre enfant est plus âgé que la tranche d'âge recommandée pour cette étude. Vous êtes les bienvenu(e)s pour participer quand même à l'étude, mais nous ne pourrons pas utiliser les données collectées dans notre recherche."
+
+#: web/templates/web/study-detail.html:163
+msgid "Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers"
+msgstr "Votre enfant ne répond pas aux critères d'éligibilité énumérés pour cette étude. Vous êtes les bienvenu(e)s pour participer quand même à l'étude, mais nous ne pourrons pas utiliser les données collectées dans notre recherche. Veuillez contacter les chercheurs de l'étude en question"
+
+#: web/templates/web/study-detail.html:165
+msgid "Build experiment runner to preview"
+msgstr "Créer un module d'expérience pour la prévisualisation"
+
+#: web/templates/web/study-detail.html:167
+msgid "Participate"
+msgstr "Participer"
+
+#: web/templates/web/study-detail.html:168
+msgid "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to."
+msgstr "Pour voir facilement ce qui se passe lorsque vous mettez à jour votre protocole d'étude, ajoutez à vos favoris l'URL à laquelle le bouton ci-dessus vous renvoie."
+
+#: accounts/forms.py:54
+msgid "Enter a valid 6-digit one-time password from Google Authenticator"
+msgstr "Saisir un mot de passe valide à usage unique de 6 chiffres depuis Google Authenticator"
+
+#: accounts/forms.py:105
+msgid "Please enter a correct %(username)s and password. Note that email and password fields may be case-sensitive. If you have turned on two-factor authentication, you will need a one-time password (OTP code) from Google Authenticator as well. "
+msgstr "Veuillez entrer un %(username)s et un mot de passe corrects. Notez que les champs pour l'email et le mot de passe peuvent être sensibles à la casse. Si vous avez activé l'authentification à deux facteurs, vous aurez également besoin d'un mot de passe à usage unique (code OTP) depuis Google Authenticator."
+
+#: accounts/forms.py:110
+msgid "This account is inactive."
+msgstr "Ce compte est inactif."
+
+#: accounts/forms.py:191
+msgid "Your password can’t be too similar to your other personal information."
+msgstr "Votre mot de passe ne doit pas être trop similaire à vos autres informations personnelles."
+
+#: accounts/forms.py:192
+msgid "Your password must contain at least 16 characters."
+msgstr "Votre mot de passe doit contenir au moins 16 caractères."
+
+#: accounts/forms.py:193
+msgid "Your password can’t be a commonly used password."
+msgstr "Votre mot de passe ne peut pas être un mot de passe couramment utilisé."
+
+#: accounts/forms.py:194
+msgid "Your password can’t be entirely numeric."
+msgstr "Votre mot de passe ne peut pas être entièrement numérique (chiffres)."
+
+#: accounts/forms.py:376
+msgid "Birthday test"
+msgstr "Test d'anniversaire"
+
+#: accounts/forms.py:427
+msgid "Birthday test2"
+msgstr "Test 2 d'anniversaire"
+
+#: accounts/templates/accounts/_account-navigation.html:2
+msgid "Change your login credentials and/or nickname."
+msgstr "Modifiez vos identifiants et/ou votre pseudonyme."
+
+#: accounts/templates/accounts/account-update.html:68
+msgid "Manage Two-Factor Authentication"
+msgstr "Gérer l'authentification à deux facteurs"
+
+#: accounts/templates/accounts/account-update.html:83
+msgid "If you'd like, you can turn two-factor authentication off here. Just enter your one-time password here, hit submit, and it'll get deleted for you!"
+msgstr "Si vous le souhaitez, vous pouvez désactiver l'authentification à deux facteurs ici. Il vous suffit d'entrer votre mot de passe unique ici, de cliquer sur \"Envoyer\" et il sera supprimé pour vous !"
+
+#: accounts/templates/accounts/account-update.html:108
+msgid "Set up Two-Factor Authentication"
+msgstr "Configurer l'authentification à deux facteurs"
+
+#: studies/fields.py:7
+msgid "Autism Spectrum Disorder"
+msgstr "Troubles du spectre autistique"
+
+#: studies/fields.py:8
+msgid "Deaf"
+msgstr "Surdité"
+
+#: studies/fields.py:9
+msgid "Hard of Hearing"
+msgstr "Difficultés d'audition (malentendant)"
+
+#: studies/fields.py:10
+msgid "Dyslexia"
+msgstr "Dyslexie"
+
+#: studies/fields.py:11
+msgid "Multiple Birth (twin, triplet, or higher order)"
+msgstr "Naissance multiple (jumeaux, triplés ou autres)"
+
+#: studies/fields.py:57
+msgid "English"
+msgstr "Anglais"
+
+#: studies/fields.py:58
+msgid "Amharic"
+msgstr "Amharique"
+
+#: studies/fields.py:59
+msgid "Bengali"
+msgstr "Bengali"
+
+#: studies/fields.py:60
+msgid "Bhojpuri"
+msgstr "Bhodjpouri"
+
+#: studies/fields.py:61
+msgid "Burmese"
+msgstr "Birman"
+
+#: studies/fields.py:62
+msgid "Cebuano"
+msgstr "Cebuano"
+
+#: studies/fields.py:63
+msgid "Chhattisgarhi"
+msgstr "Chhattisgarhi"
+
+#: studies/fields.py:64
+msgid "Dutch"
+msgstr "Néerlandais"
+
+#: studies/fields.py:65
+msgid "Egyptian Spoken Arabic"
+msgstr "Arabe égyptien"
+
+#: studies/fields.py:66
+msgid "French"
+msgstr "Français"
+
+#: studies/fields.py:67
+msgid "Gan"
+msgstr "Gan"
+
+#: studies/fields.py:68
+msgid "German"
+msgstr "Allemand"
+
+#: studies/fields.py:69
+msgid "Gujarati"
+msgstr "Gujarati"
+
+#: studies/fields.py:70
+msgid "Hakka"
+msgstr "Hakka (Kejia)"
+
+#: studies/fields.py:71
+msgid "Hausa"
+msgstr "Haoussa (Hausa)"
+
+#: studies/fields.py:72
+msgid "Hindi"
+msgstr "Hindi"
+
+#: studies/fields.py:73
+msgid "Igbo"
+msgstr "Igbo"
+
+#: studies/fields.py:74
+msgid "Indonesian"
+msgstr "Indonésien"
+
+#: studies/fields.py:75
+msgid "Iranian Persian"
+msgstr "Persan iranien"
+
+#: studies/fields.py:76
+msgid "Italian"
+msgstr "Italien"
+
+#: studies/fields.py:77
+msgid "Japanese"
+msgstr "Japonais"
+
+#: studies/fields.py:78
+msgid "Javanese"
+msgstr "Javanais"
+
+#: studies/fields.py:79
+msgid "Jinyu"
+msgstr "Jin (Jinyu)"
+
+#: studies/fields.py:80
+msgid "Kannada"
+msgstr "Kannada"
+
+#: studies/fields.py:81
+msgid "Khmer"
+msgstr "Khmer"
+
+#: studies/fields.py:82
+msgid "Korean"
+msgstr "Coréen"
+
+#: studies/fields.py:83
+msgid "Magahi"
+msgstr "Magahi"
+
+#: studies/fields.py:84
+msgid "Maithili"
+msgstr "Maïthili"
+
+#: studies/fields.py:85
+msgid "Malay"
+msgstr "Malais"
+
+#: studies/fields.py:86
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: studies/fields.py:87
+msgid "Mandarin"
+msgstr "Mandarin"
+
+#: studies/fields.py:88
+msgid "Marathi"
+msgstr "Marathi (Marathe)"
+
+#: studies/fields.py:89
+msgid "Min Nan"
+msgstr "Minnan"
+
+#: studies/fields.py:90
+msgid "Moroccan Spoken Arabic"
+msgstr "Arabe marocain"
+
+#: studies/fields.py:91
+msgid "Northern Pashto"
+msgstr "Pachto du nord"
+
+#: studies/fields.py:92
+msgid "Northern Uzbek"
+msgstr "Ouzbek du nord "
+
+#: studies/fields.py:93
+msgid "Odia"
+msgstr "Odia"
+
+#: studies/fields.py:94
+msgid "Polish"
+msgstr "Polonais"
+
+#: studies/fields.py:95
+msgid "Portuguese"
+msgstr "Portugais"
+
+#: studies/fields.py:96
+msgid "Romanian"
+msgstr "Roumain"
+
+#: studies/fields.py:97
+msgid "Russian"
+msgstr "Russe"
+
+#: studies/fields.py:98
+msgid "Saraiki"
+msgstr "Saraiki"
+
+#: studies/fields.py:99
+msgid "Sindhi"
+msgstr "Sindhi "
+
+#: studies/fields.py:100
+msgid "Somali"
+msgstr "Somali"
+
+#: studies/fields.py:101
+msgid "Spanish"
+msgstr "Espagnol"
+
+#: studies/fields.py:102
+msgid "Sunda"
+msgstr "Soudanais"
+
+#: studies/fields.py:103
+msgid "Tagalog"
+msgstr "Tagalog (tagal)"
+
+#: studies/fields.py:104
+msgid "Tamil"
+msgstr "Tamoul (tamil)"
+
+#: studies/fields.py:105
+msgid "Telugu"
+msgstr "Télougou"
+
+#: studies/fields.py:106
+msgid "Thai"
+msgstr "Thailandais"
+
+#: studies/fields.py:107
+msgid "Turkish"
+msgstr "Turc"
+
+#: studies/fields.py:108
+msgid "Ukrainian"
+msgstr "Ukrainien"
+
+#: studies/fields.py:109
+msgid "Urdu"
+msgstr "Ourdou"
+
+#: studies/fields.py:110
+msgid "Vietnamese"
+msgstr "Vietnamien"
+
+#: studies/fields.py:111
+msgid "Western Punjabi"
+msgstr "Pendjabi occidental"
+
+#: studies/fields.py:112
+msgid "Wu"
+msgstr "Wu (wugniu , nggniu)"
+
+#: studies/fields.py:113
+msgid "Xiang Chinese"
+msgstr "Xiang (hunanais)"
+
+#: studies/fields.py:114
+msgid "Yoruba"
+msgstr "Yoruba"
+
+#: studies/fields.py:115
+msgid "Yue"
+msgstr "Yue"
+
+#: web/templates/flatpages/default.html:53
+msgid "This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation."
+msgstr "Ce document est basé sur des travaux soutenus par la National Science Foundation (NSF) dans le cadre des bourses 1429216 et 1823919 ; le Center for Brains, Minds and Machines (CBMM), financé par la bourse CCF-1231216 de la NSF STC, et par la Graduate Research Fellowship de la NSF dans le cadre de la bourse n° 1122374. Les opinions, résultats et conclusions ou recommandations exprimés dans ce document sont ceux des auteurs et ne reflètent pas nécessairement les vues de la National Science Foundation."
+
+#: web/templates/flatpages/default.html:58
+msgid "Privacy"
+msgstr "Politique de confidentialité"
+
+#: web/templates/flatpages/default.html:59
+msgid "Contact us"
+msgstr "Contactez-nous"
+
+#: web/templates/flatpages/default.html:60
+msgid "Connect"
+msgstr "Connexion"
+
+#: web/templates/registration/login.html:8
+#: web/templates/web/studies-history.html:9
+#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
+msgid "Your login credentials didn't work. Please try again."
+msgstr "Vos identifiants de connexion n'ont pas fonctionné. Veuillez réessayer."
+
+#: web/templates/registration/login.html:36
+msgid "Register your family!"
+msgstr "Enregistrez votre famille !"
+
+#: web/templates/registration/password_reset_done.html:11
+msgid "Password reset link sent"
+msgstr "Lien de réinitialisation du mot de passe envoyé"
+
+#: web/templates/registration/password_reset_done.html:15
+msgid "If an account exists with the email you entered, we've emailed instructions for resetting your password and you should receive them shortly."
+msgstr "Si un compte existe avec l'adresse e-mail que vous avez entré, nous vous avons envoyé par e-mail les instructions pour réinitialiser votre mot de passe et vous devriez les recevoir prochainement."
+
+#: web/templates/registration/password_reset_done.html:17
+msgid "If you don't receive an email, please check your spam folder and make sure you've entered the address you registered with. (You won't get an email unless there's already an account for that email address!)"
+msgstr "Si vous ne recevez pas d'e-mail, veuillez vérifier votre dossier de courrier indésirable et vous assurer que vous avez bien saisi l'adresse avec laquelle vous vous êtes inscrit. (Vous ne recevrez pas d'e-mail à moins qu'il y ait déjà un compte pour cette adresse e-mail !)."
+
+#: web/templates/registration/password_reset_form.html:11
+msgid "Password reset"
+msgstr "Réinitialisation du mot de passe"
+
+#: web/templates/web/child-update.html:26
+msgid "Back to Children List"
+msgstr "Retour à la liste des enfants"
+
+#: web/templates/web/participant-signup.html:18
+msgid "Create Participant Account"
+msgstr "Créer un compte participant"
+
+#: web/templates/web/participant-signup.html:22
+msgid "Create a family account to start participating in Lookit studies!"
+msgstr "Créez un compte famille pour commencer à participer aux études Lookit !"
+
+#: web/templates/web/participant-signup.html:23
+msgid "To register as a researcher, please use"
+msgstr "Pour vous inscrire en tant que chercheur, veuillez utiliser"
+
+#: web/templates/web/participant-signup.html:23
+msgid "this form"
+msgstr "ce formulaire"
+
+#: web/templates/web/participant-signup.html:23
+msgid "instead"
+msgstr "à la place"
+
+#: web/templates/web/studies-history.html:107
+msgid "Video"
+msgstr "Vidéo"
+
+#: web/templates/web/studies-history.html:133
+msgid "Feedback"
+msgstr "Commentaire"
+
+#: web/templates/web/studies-history.html:139
+msgid "None"
+msgstr "Aucun"
+
+#: web/templates/web/study-detail.html:53
+msgid "days"
+msgstr "jours"
+
+#: web/templates/web/study-detail.html:53
+msgid " until "
+msgstr "jusqu'à"
+
+#: web/templates/web/study-detail.html:53
+msgid " when "
+msgstr "quand"
+
+#: web/templates/web/study-detail.html:142
+msgid "Add child profile to "
+msgstr "Ajouter le profil de l'enfant à"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "preview"
+msgstr "aperçu"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "participate"
+msgstr "participer"
+
+#: web/templates/web/study-detail.html:144
+msgid "Complete demographic survey to "
+msgstr "Compléter l'enquête démographique pour"
+
+#: web/templates/web/study-detail.html:167
+msgid "now"
+msgstr "maintenant"
+
+#: web/views.py:47
+msgid "Participant created."
+msgstr "Participant créé."
+
+#: web/views.py:72
+msgid "Demographic data saved."
+msgstr "Données démographiques sauvegardées."
+
+#: web/views.py:140
+msgid "Child added."
+msgstr "Enfant ajouté."
+
+#: web/views.py:176
+msgid "Child deleted."
+msgstr "Enfant supprimé."
+
+#: web/views.py:178
+msgid "Child updated."
+msgstr "Enfant mis à jour."
+
+#: web/views.py:201
+msgid "Email preferences saved."
+msgstr "Préférences d'email sauvegardées"
+
+#: web/views.py:295
+msgid "The study {study.name} is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact {study.contact_info}"
+msgstr "L'étude {study.name} ne collecte pas de données actuellement - l'étude est soit terminée, soit en pause. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter {study.contact_info}"
+
