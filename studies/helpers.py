@@ -33,10 +33,13 @@ def send_mail(
 
     # For text version: replace images with [IMAGE] so they're not removed entirely
     context_plain_text = copy.deepcopy(context)
-    IMAGE_SCHEME = re.compile(r"<img .*?>", re.MULTILINE)
-    context_plain_text["custom_message"] = re.sub(
-        IMAGE_SCHEME, "[IMAGE]", context_plain_text["custom_message"]
-    )
+    # TODO: should eventually use a custom filter rather than striptags to preserve images in the
+    # custom_email template
+    if template_name == "custom_email" and "custom_message" in context_plain_text:
+        image_scheme = re.compile(r"<img .*?>", re.MULTILINE)
+        context_plain_text["custom_message"] = re.sub(
+            image_scheme, "[IMAGE]", context_plain_text["custom_message"]
+        )
 
     # Render into template
     text_content = get_template("emails/{}.txt".format(template_name)).render(
@@ -54,7 +57,7 @@ def send_mail(
 
     # For HTML version: Replace inline images with attachments referenced. See
     # https://gist.github.com/osantana/833045a89ccbc6fc50c1 for reference
-    INLINE_SCHEME = re.compile(
+    inline_scheme = re.compile(
         r' src="data:image/(?P<subtype>.*?);base64,(?P<path>.*?)" ?', re.MULTILINE
     )
     images_data = []
@@ -63,7 +66,7 @@ def send_mail(
         images_data.append((match.group("subtype"), match.group("path")))
         return ' src="cid:image-%05d" ' % (len(images_data),)
 
-    html_content = re.sub(INLINE_SCHEME, repl, html_content)
+    html_content = re.sub(inline_scheme, repl, html_content)
 
     for index, (subtype, data) in enumerate(images_data):
         image = MIMEImage(data, _subtype=subtype)
