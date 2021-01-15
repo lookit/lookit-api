@@ -1,3 +1,4 @@
+import base64
 import copy
 import logging
 import re
@@ -69,7 +70,7 @@ def send_mail(
     html_content = re.sub(inline_scheme, repl, html_content)
 
     for index, (subtype, data) in enumerate(images_data):
-        image = MIMEImage(data, _subtype=subtype)
+        image = MIMEImage(base64.b64decode(data), _subtype=subtype)
         image.add_header("Content-ID", "<image-%05d>" % (index + 1))
         email.attach(image)
 
