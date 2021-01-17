@@ -99,8 +99,10 @@ class LookitSendGridBackend(SendGridBackend):
             if isinstance(attachment, MIMEBase):
                 attach = Attachment()
 
-                # Don't re-encode; attachment.get_payload returns a base64-encoded string.
-                attach.set_content(attachment.get_payload())
+                # Re-encode into base64 to avoid newlines; then send JSON-serializable utf-8 format.
+                attach.set_content(
+                    str(base64.b64encode(attachment.get_payload(decode=True)), "utf-8")
+                )
 
                 # Add Content-ID header to allow use of images via src="cid:..."
                 content_id_values = attachment.get_all("Content-ID")
