@@ -286,7 +286,7 @@ EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", "lookit.robot@some.dom
 DEFAULT_FROM_EMAIL = EMAIL_FROM_ADDRESS  # for Django-generated password reset emails
 
 EMAIL_BACKEND = (
-    "sgbackend.SendGridBackend"
+    "project.sendgrid_backend.LookitSendGridBackend"
     if not DEBUG
     else "django.core.mail.backends.console.EmailBackend"
 )
