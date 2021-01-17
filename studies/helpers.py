@@ -34,7 +34,7 @@ def send_mail(
 
     # For text version: replace images with [IMAGE] so they're not removed entirely
     context_plain_text = copy.deepcopy(context)
-    # TODO: should eventually use a custom filter rather than striptags to preserve images in the
+    # TODO: use a custom filter rather than striptags to preserve image placeholders in the
     # custom_email template
     if template_name == "custom_email" and "custom_message" in context_plain_text:
         image_scheme = re.compile(r"<img .*?>", re.MULTILINE)
@@ -71,11 +71,15 @@ def send_mail(
 
     for index, (subtype, data) in enumerate(images_data):
         image = MIMEImage(base64.b64decode(data), _subtype=subtype)
-        image.add_header("Content-ID", "<image-%05d>" % (index + 1))
+        image_id = "image-%05d" % (index + 1)
+        image.add_header("Content-ID", image_id)
+        image.add_header("Content-Disposition", "inline")
+        image.add_header("Filename", image_id + "." + subtype)
         email.attach(image)
 
     email.attach_alternative(html_content, "text/html")
     email.send()
+    return email
 
 
 class FrameActionDispatcher(object):
