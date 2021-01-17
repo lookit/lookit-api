@@ -3,10 +3,12 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G
 from more_itertools import quantify
 
 from accounts.models import Child, Message, User
+from studies.helpers import send_mail
 from studies.models import Lab, Response, Study
 from studies.tasks import (
     MessageTarget,
@@ -42,9 +44,6 @@ class TestAnnouncementEmailFunctionality(TestCase):
     maxDiff = 2000  # In case we need to check the email body contents
 
     def setUp(self):
-        # TODO: the check_modification_of_approved_study signal will change the
-        #     study state to "rejected" if certain fields are changed, including
-        #     "image". This is annoying for tests - do we actually need that logic?
 
         five_months_ago = date.today() - timedelta(days=30 * 5)
         one_year_ago = date.today() - timedelta(days=365)
@@ -513,4 +512,57 @@ class TestAnnouncementEmailFunctionality(TestCase):
         self.assertEqual(
             message_object.subject,
             "Your child is invited to take part in a new study on Lookit!",
+        )
+
+
+class TestSendMail(TestCase):
+    def test_send_email_with_image(self):
+        email = send_mail(
+            "custom_email",
+            "Test email",
+            ["lookit-test-email@mit.edu"],
+            bcc=[],
+            from_email="lookit-bot@mit.edu",
+            base_url="https://lookit-staging.mit.edu/",
+            custom_message=mark_safe(
+                '<p>line 1<br></p><p><img style="width: 24px;" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCURXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgExAAIAAAAHAAAAWodpAAQAAAABAAAAYgAAAAAAAABIAAAAAQAAAEgAAAABUGljYXNhAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAEAAAAAD/7QA4UGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/8AAEQgAEAAYAwERAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/bAEMACAYGCAoKCAgICAkICAkICQgICQkIDQgIBwkdGh8eHRocHCAkLicgIiwjHBwoNyksMDE0NDQfJzk9ODI8LjM0Mv/bAEMBCQkJDQoNFQ0NFTIhECEyMjIyMjIyMjInJzIyJiYnJycmMiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJv/dAAQAA//aAAwDAQACEQMRAD8AyvBEcEer2e6B5QNzK6hmUcHj09+avELTQ5sHZ6vf/gHsN/qejR3tjo7eU93qFs7QKjM2GwSpyOMHa35VnpojsVOTi59EeKeK7e5jv7+WFGeJpFR2iy56DOQPp+laU6kF7r3PPxeGqz96Pws//9Cj4RlJaWG0jjf/AEVRJdzv8iuc8HHIODWE60VNOb0+83hhn7K1Na+el2/8jQX+0ZLe3jh1Ww/tC0tLm2nkE7TeUN3yZOBtYAHjHrVzrUpJuK1/LyN6OFxFHldZe7p/296HC3muXf2nZ9nignKyM08nmzSGXJyQCcEcn25p+zjZSvc5p1pzm4yja2i9Ef/Z" data-filename="small.jpg"></p><p>line 2<br></p>'
+            ),
+        )
+        self.assertEqual(email.subject, "Test email")
+        self.assertEqual(email.to, ["lookit-test-email@mit.edu"])
+        self.assertTrue(
+            email.body.startswith(
+                "line 1[IMAGE]line 2\n\nUpdate your email preferences here"
+            ),
+            "Email plain text does not have expected substitution of [IMAGE] for image tag",
+        )
+        self.assertEqual(
+            len(email.attachments), 1, "Email does not have one attachment"
+        )
+        self.assertEqual(
+            len(email.alternatives), 1, "Email does not have one HTML alternative"
+        )
+        self.assertEqual(
+            email.alternatives[0],
+            (
+                '\n<p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n\n\n<br>\n\n<a href="https://localhost:8000/account/email/"> Update your email preferences </a>\n',
+                "text/html",
+            ),
+        )
+        self.assertTrue(
+            email.attachments[0]._payload.startswith(
+                "/9j/4AAQSkZJRgABAQAASABIAAD/4QCURXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUA"
+            )
+        )
+        self.assertListEqual(
+            email.attachments[0]._headers,
+            [
+                ("Content-Type", "image/jpeg"),
+                ("MIME-Version", "1.0"),
+                ("Content-Transfer-Encoding", "base64"),
+                ("Content-ID", "image-00001"),
+                ("Content-Disposition", "inline"),
+                ("Filename", "image-00001.jpeg"),
+            ],
+            "Email image attachment does not have expected headers",
         )

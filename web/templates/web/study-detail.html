@@ -50,7 +50,6 @@
             if (ineligibleBasedOnAge > 0) { // Too old
                 document.getElementById('too-old').style.display = 'inline-block';
             } else if (ineligibleBasedOnAge < 0 && !ineligibleBasedOnCriteria) { // Too young, but otherwise eligible
-                $('#wait-until').text(moment.duration(-ineligibleBasedOnAge, {% trans "days"%}).humanize() + {% trans ' until '%} + moment(moment()._d).add(-ineligibleBasedOnAge, {% trans 'days'%} ).format("dddd, MMMM Do YYYY") + {% trans ' when '%});
                 document.getElementById('too-young').style.display = 'inline-block';
             } else if (ineligibleBasedOnCriteria) {
                 document.getElementById('criteria-not-met').style.display = 'inline-block';
@@ -149,7 +148,7 @@
                             <select id="child-dropdown" name="child_id" class="childDropdown" onchange="childSelected(this)">
                                 <option value=none >{% trans "None Selected" %}</option>
                                 {% for child in children %}
-                                    {% child_is_valid_for_study child object as child_is_eligible %}
+                                    {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
                                     <option onemptied=""
                                             value="{{child.uuid}}"
                                             data-birthdate="{{child.birthday|date:'c'}}"
@@ -158,9 +157,11 @@
                                     </option>
                                 {% endfor %}
                             </select>
-                            <p class="text-warning" style="display:none" id='too-young'>{% trans "Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research!" %} </p>
+                            <p class="text-warning" style="display:none" id='too-young'>{% trans "Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research!" %} </p>
             	            <p class="text-warning" style="display:none" id='too-old'>{% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research." %}</p>
-                            <p class="text-warning" style="display:none" id='criteria-not-met'>{% trans "Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers" %} {{ study.contact_info }} {% trans "if you feel this is in error."}</p>
+                            <p class="text-warning" style="display:none" id='criteria-not-met'>
+                                {% blocktrans with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktrans %}
+                            </p>
                             {% if preview_mode and not object.built %}
                                 <a class="btn btn-lg btn-default" href="{% url 'exp:study-detail' object.pk %}">{% trans "Build experiment runner to preview" %}</a>
                             {% else %} 
