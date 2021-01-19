@@ -15,6 +15,9 @@ from pathlib import Path
 
 from django.contrib.messages import constants as messages
 
+def gettext_noop(s):
+    return s
+
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
 # Build paths inside the project as str(Path(BASE_DIR, ...).resolve()) or os.path.join(BASE_DIR, ...).
@@ -218,6 +221,28 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Custom language list
+LANGUAGES = [
+    ('de', gettext_noop('German')),
+    ('en', gettext_noop('English')),
+    ('es', gettext_noop('Spanish')),
+    ('es-ar', gettext_noop('Argentinian Spanish')),
+    ('fr', gettext_noop('French')),
+    ('fr-ca', gettext_noop('Canadian French')),
+    ('he', gettext_noop('Hebrew')),
+    ('it', gettext_noop('Italian')),
+    ('ja', gettext_noop('Japanese')),
+    ('ko', gettext_noop('Korean')),
+    ('nb', gettext_noop('Norwegian Bokmål')),
+    ('pl', gettext_noop('Polish')),
+    ('pt', gettext_noop('Portuguese')),
+    ('pt-br', gettext_noop('Brazilian Portuguese')),
+    ('ro', gettext_noop('Romanian')),
+    ('ru', gettext_noop('Russian')),
+    ('tr', gettext_noop('Turkish')),
+    ('zh-hans', gettext_noop('Simplified Chinese')),
+] 
 
 SITE_ID = 1
 SITE_DOMAIN = os.environ.get("SITE_DOMAIN", "localhost:8000")
