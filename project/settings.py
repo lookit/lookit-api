@@ -34,8 +34,8 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", False))
-ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
+ DEBUG = bool(os.environ.get("DEBUG", False))
+ ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
 
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_AGE = 60 * 60 * 24  # One day in seconds
@@ -235,6 +235,7 @@ LANGUAGES = [
     ('ja', gettext_noop('Japanese')),
     ('ko', gettext_noop('Korean')),
     ('nb', gettext_noop('Norwegian Bokmål')),
+    ('nl', gettext_noop('Dutch')),
     ('pl', gettext_noop('Polish')),
     ('pt', gettext_noop('Portuguese')),
     ('pt-br', gettext_noop('Brazilian Portuguese')),

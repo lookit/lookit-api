@@ -1,0 +1,1686 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: MBAH_studiespage\n"
+"Language: nl\n"
+
+#: accounts/forms.py:213 accounts/forms.py:229
+msgid "Email address"
+msgstr "E-mailadres"
+
+#: accounts/forms.py:254
+msgid "It's time for another session of a study we are currently participating in"
+msgstr "Het is tijd voor een nieuwe sessie van een onderzoek waaraan we momenteel deelnemen"
+
+#: accounts/forms.py:256
+msgid "A new study is available for one of my children"
+msgstr "Er is een nieuwe studie beschikbaar voor een van mijn kinderen"
+
+#: accounts/forms.py:258
+msgid "There's an update about a study we participated in (for example, results are published)"
+msgstr "Er is een update over een onderzoek waaraan we hebben deelgenomen (de resultaten zijn bijvoorbeeld gepubliceerd)"
+
+#: accounts/forms.py:261
+msgid "A researcher has questions about my individual responses (for example, if I report a technical problem during the study)"
+msgstr "Een onderzoeker heeft vragen over mijn individuele antwoorden (bijvoorbeeld als ik tijdens het onderzoek een technisch probleem meld)"
+
+#. I need to see this sentence in context
+#: accounts/forms.py:270 accounts/forms.py:317
+msgid "What category(ies) does your family identify as?"
+msgstr "In welke categorie(ën) identificeert uw gezin zich?"
+
+#: accounts/forms.py:299
+msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
+msgstr "Voer in als een lijst door komma's gescheiden: JJJJ-MM-DD, JJJJ-MM-DD, ..."
+
+#: accounts/forms.py:301
+msgid "Numerical answers only - a rough guess is fine!"
+msgstr "Alleen numerieke antwoorden - een ruwe schatting is prima!"
+
+#: accounts/forms.py:305
+msgid "What country do you live in?"
+msgstr "In welk land woont u?"
+
+#: accounts/forms.py:306
+msgid "What state do you live in?"
+msgstr "In welke provincie woont u?"
+
+#: accounts/forms.py:307
+msgid "How would you describe the area where you live?"
+msgstr "Hoe zou u het gebied waarin u woont omschrijven?"
+
+#: accounts/forms.py:309
+msgid "What language(s) does your family speak at home?"
+msgstr "Welke taal / talen spreekt uw gezin thuis?"
+
+#: accounts/forms.py:311
+msgid "How many children do you have?"
+msgstr "Hoeveel kinderen heeft u?"
+
+#: accounts/forms.py:312
+msgid "For each child, please enter his or her birthdate:"
+msgstr "Geef voor elk kind zijn of haar geboortedatum op:"
+
+#: accounts/forms.py:314
+msgid "How many parents/guardians do your children live with?"
+msgstr "Bij hoeveel ouders / verzorgers wonen uw kinderen?"
+
+#: accounts/forms.py:319
+msgid "What is your age?"
+msgstr "Wat is uw leeftijd?"
+
+#: accounts/forms.py:320
+msgid "What is your gender?"
+msgstr "Wat is uw geslacht?"
+
+#: accounts/forms.py:322
+msgid "What is the highest level of education you've completed?"
+msgstr "Wat is de hoogste opleiding die u heeft afgerond?"
+
+#: accounts/forms.py:325
+msgid "What is the highest level of education your spouse has completed?"
+msgstr "Wat is de hoogste opleiding die uw echtgenoot/echtgenote/partner heeft afgerond?"
+
+#: accounts/forms.py:328
+msgid "What is your approximate family yearly income (in US dollars)?"
+msgstr "Wat is uw geschatte jaarlijkse gezinsinkomen (in euro's)?"
+
+#: accounts/forms.py:331
+msgid "About how many children's books are there in your home?"
+msgstr "Hoeveel kinderboeken zijn er ongeveer in uw huis?"
+
+#: accounts/forms.py:333
+msgid "Anything else you'd like us to know?"
+msgstr "Is er nog iets anders waarvan u wilt dat wij het weten?"
+
+#: accounts/forms.py:334
+msgid "How did you hear about Lookit?"
+msgstr "Hoe heeft u over Lookit gehoord?"
+
+#: accounts/forms.py:336
+msgid "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
+msgstr "Als het antwoord varieert vanwege regelingen voor gedeeld gezag of reizen, voer dan het aantal ouders / verzorgers in waar uw kinderen gewoonlijk mee samenwonen of leg de situatie uit."
+
+#: accounts/forms.py:352
+msgid "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
+msgstr "Zo kunnen we precies achterhalen hoe oud uw kind is wanneer het meedoet aan een studie. We publiceren nooit geboortegegevens van kinderen of informatie waarmee een lezer de geboortedatum kan berekenen."
+
+#: accounts/forms.py:359
+msgid "Birthdays cannot be in the future."
+msgstr "De geboortedatum kan niet in de toekomst liggen."
+
+#: accounts/forms.py:375 accounts/forms.py:426
+msgid "First Name"
+msgstr "Voornaam"
+
+#: accounts/templates/accounts/participant_detail.html:38
+#: web/templates/web/children-list.html:112
+msgid "Birthday"
+msgstr "Geboortedatum"
+
+#: accounts/forms.py:378 accounts/forms.py:429
+#: accounts/templates/accounts/participant_detail.html:62
+msgid "Gestational Age at Birth"
+msgstr "Zwangerschapsduur bij de geboorte"
+
+#: accounts/forms.py:380 accounts/forms.py:431
+msgid "Any additional information you'd like us to know"
+msgstr "Eventuele aanvullende informatie waarvan u wilt dat wij het weten"
+
+#: accounts/forms.py:382 accounts/forms.py:433
+msgid "Characteristics and conditions"
+msgstr "Kenmerken en voorwaarden"
+
+#: accounts/forms.py:384 accounts/forms.py:435
+msgid "Languages this child is exposed to at home, school, or with another caregiver."
+msgstr "Talen waaraan dit kind thuis, op school of bij een andere verzorger wordt blootgesteld."
+
+#: accounts/forms.py:390 accounts/forms.py:441
+msgid "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+msgstr "Hiermee kunt u het juiste kind selecteren om aan een bepaald onderzoek deel te nemen. Een bijnaam of initialen zijn prima! We kunnen de naam van uw kind opnemen in een e-mail naar u (bijvoorbeeld: \"Er is een nieuwe studie beschikbaar voor Julia!\"), maar we zullen nooit namen publiceren of ze gebruiken in ons onderzoek."
+
+#: accounts/forms.py:393 accounts/forms.py:444
+msgid "For instance, diagnosed developmental disorders or vision or hearing problems"
+msgstr "Bijvoorbeeld gediagnosticeerde ontwikkelingsstoornissen of zicht- of gehoorproblemen"
+
+#: accounts/forms.py:396
+msgid "Please round down to the nearest full week of pregnancy completed"
+msgstr "Rond af naar de dichtstbijzijnde volledige zwangerschapsweek"
+
+#: accounts/migrations/0041_add_existing_conditions.py:12
+#: accounts/models.py:301 studies/fields.py:135
+msgid "Not sure or prefer not to answer"
+msgstr "Weet niet zeker of beantwoord liever niet"
+
+#: accounts/migrations/0041_add_existing_conditions.py:13
+#: accounts/models.py:302 studies/fields.py:136
+msgid "Under 24 weeks"
+msgstr "Minder dan 24 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:14
+#: accounts/models.py:303 studies/fields.py:137
+msgid "24 weeks"
+msgstr "24 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:15
+#: accounts/models.py:304 studies/fields.py:138
+msgid "25 weeks"
+msgstr "25 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:16
+#: accounts/models.py:305 studies/fields.py:139
+msgid "26 weeks"
+msgstr "26 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:17
+#: accounts/models.py:306 studies/fields.py:140
+msgid "27 weeks"
+msgstr "27 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:18
+#: accounts/models.py:307 studies/fields.py:141
+msgid "28 weeks"
+msgstr "28 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:19
+#: accounts/models.py:308 studies/fields.py:142
+msgid "29 weeks"
+msgstr "29 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:20
+#: accounts/models.py:309 studies/fields.py:143
+msgid "30 weeks"
+msgstr "30 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:21
+#: accounts/models.py:310 studies/fields.py:144
+msgid "31 weeks"
+msgstr "31 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:22
+#: accounts/models.py:311 studies/fields.py:145
+msgid "32 weeks"
+msgstr "32 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:23
+#: accounts/models.py:312 studies/fields.py:146
+msgid "33 weeks"
+msgstr "33 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:24
+#: accounts/models.py:313 studies/fields.py:147
+msgid "34 weeks"
+msgstr "34 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:25
+#: accounts/models.py:314 studies/fields.py:148
+msgid "35 weeks"
+msgstr "35 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:26
+#: accounts/models.py:315 studies/fields.py:149
+msgid "36 weeks"
+msgstr "36 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:27
+#: accounts/models.py:316 studies/fields.py:150
+msgid "37 weeks"
+msgstr "37 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:28
+#: accounts/models.py:317 studies/fields.py:151
+msgid "38 weeks"
+msgstr "38 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:29
+#: accounts/models.py:318 studies/fields.py:152
+msgid "39 weeks"
+msgstr "39 weken"
+
+#: accounts/migrations/0041_add_existing_conditions.py:30
+#: accounts/models.py:319 studies/fields.py:153
+msgid "40 or more weeks"
+msgstr "40 weken of meer"
+
+#: accounts/models.py:79
+msgid "Can View Organization"
+msgstr "Kan organisatie bekijken"
+
+#: accounts/models.py:80
+msgid "Can Edit Organization"
+msgstr "Kan organisatie bewerken"
+
+#: accounts/models.py:81
+msgid "Can Create Organization"
+msgstr "Kan een organisatie creëren"
+
+#: accounts/models.py:82
+msgid "Can Remove Organization"
+msgstr "Kan organisatie verwijderen"
+
+#: accounts/models.py:83
+msgid "Can View Experimenter"
+msgstr "Kan onderzoeker bekijken"
+
+#: accounts/models.py:84
+msgid "Can View Analytics"
+msgstr "Kan analytics bekijken"
+
+#: accounts/models.py:279
+msgid "Can Create User"
+msgstr "Kan een gebruiker aanmaken"
+
+#: accounts/models.py:280
+msgid "Can View User"
+msgstr "Kan gebruiker bekijken"
+
+#: accounts/models.py:281
+msgid "Can Edit User"
+msgstr "Kan gebruiker bewerken"
+
+#: accounts/models.py:282
+msgid "Can Remove User"
+msgstr "Kan gebruiker verwijderen"
+
+#: accounts/models.py:283
+msgid "Can View User Permissions"
+msgstr "Kan gebruikersrechten bekijken"
+
+#: accounts/models.py:284
+msgid "Can Edit User Permissions"
+msgstr "Kan gebruikersrechten bewerken"
+
+#: accounts/models.py:285
+msgid "Can Read All User Data"
+msgstr "Kan alle gebruikersgegevens lezen"
+
+#: accounts/models.py:286
+msgid "Can Read User Usernames"
+msgstr "Kan gebruikersnamen lezen"
+
+#: accounts/models.py:293 accounts/models.py:396
+msgid "male"
+msgstr "man"
+
+#: accounts/models.py:294 accounts/models.py:397
+msgid "female"
+msgstr "vrouw"
+
+#: accounts/models.py:295 accounts/models.py:398
+msgid "other"
+msgstr "andere"
+
+#: accounts/models.py:296 accounts/models.py:399 accounts/models.py:475
+msgid "prefer not to answer"
+msgstr "beantwoord liever niet"
+
+#: accounts/models.py:386
+msgid "White"
+msgstr "Wit"
+
+#: accounts/models.py:387
+msgid "Hispanic, Latino, or Spanish origin"
+msgstr "Van Latijns-Amerikaanse, Latino of Spaanse afkomst"
+
+#: accounts/models.py:388
+msgid "Black or African American"
+msgstr "Zwart of Afro-Amerikaans"
+
+#: accounts/models.py:389
+msgid "Asian"
+msgstr "Aziatisch"
+
+#. Dutch does not have a word for Alaska Native
+#: accounts/models.py:390
+msgid "American Indian or Alaska Native"
+msgstr "Amerikaanse Indiaan of Alaska Native"
+
+#: accounts/models.py:391
+msgid "Middle Eastern or North African"
+msgstr "Midden-Oosters of Noord-Afrikaans"
+
+#: accounts/models.py:392
+msgid "Native Hawaiian or Other Pacific Islander"
+msgstr "Inheemse Hawaiiaan of andere Pacific Islander"
+
+#: accounts/models.py:393
+msgid "Another race, ethnicity, or origin"
+msgstr "Een andere etniciteit of afkomst"
+
+#: accounts/models.py:402 accounts/models.py:411
+msgid "some or attending high school"
+msgstr "enige tijd of nog steeds naar de middelbare school"
+
+#: accounts/models.py:403 accounts/models.py:412
+msgid "high school diploma or GED"
+msgstr "middelbare schooldiploma of equivalent"
+
+#: accounts/models.py:404 accounts/models.py:413
+msgid "some or attending college"
+msgstr "enige tijd of nog steeds naar de universiteit"
+
+#: accounts/models.py:405 accounts/models.py:414
+msgid "2-year college degree"
+msgstr "HBO of WO bachelor"
+
+#: accounts/models.py:406 accounts/models.py:415
+msgid "4-year college degree"
+msgstr "HBO of WO master"
+
+#: accounts/models.py:407 accounts/models.py:416
+msgid "some or attending graduate or professional school"
+msgstr "enige tijd of nog steeds naar een graduate of professionele school"
+
+#: accounts/models.py:408 accounts/models.py:417
+msgid "graduate or professional degree"
+msgstr "PhD of equivalente professionele graad"
+
+#: accounts/models.py:418
+msgid "not applicable - no spouse or partner"
+msgstr "niet van toepassing - geen echtgenoot/echtgenote of partner"
+
+#: accounts/models.py:421 accounts/models.py:452
+msgid "0"
+msgstr "0"
+
+#: accounts/models.py:422 accounts/models.py:449
+msgid "1"
+msgstr "1"
+
+#: accounts/models.py:423 accounts/models.py:449
+msgid "2"
+msgstr "2"
+
+#: accounts/models.py:424
+msgid "3"
+msgstr "3"
+
+#: accounts/models.py:425
+msgid "4"
+msgstr "4"
+
+#: accounts/models.py:426
+msgid "5"
+msgstr "5"
+
+#: accounts/models.py:427
+msgid "6"
+msgstr "6"
+
+#: accounts/models.py:428
+msgid "7"
+msgstr "7"
+
+#: accounts/models.py:429
+msgid "8"
+msgstr "8"
+
+#: accounts/models.py:430
+msgid "9"
+msgstr "9"
+
+#: accounts/models.py:431
+msgid "10"
+msgstr "10"
+
+#: accounts/models.py:432
+msgid "More than 10"
+msgstr "Meer dan 10"
+
+#: accounts/models.py:435
+msgid "under 18"
+msgstr "onder de 18"
+
+#: accounts/models.py:436
+msgid "18-21"
+msgstr "18-21"
+
+#: accounts/models.py:437
+msgid "22-24"
+msgstr "22-24"
+
+#: accounts/models.py:438
+msgid "25-29"
+msgstr "25-29"
+
+#: accounts/models.py:439
+msgid "30-34"
+msgstr "30-34"
+
+#: accounts/models.py:440
+msgid "35-39"
+msgstr "35-39"
+
+#: accounts/models.py:441
+msgid "40-44"
+msgstr "40-44"
+
+#: accounts/models.py:442
+msgid "45-49"
+msgstr "45-49"
+
+#: accounts/models.py:443
+msgid "50-59"
+msgstr "50-59"
+
+#: accounts/models.py:444
+msgid "60-69"
+msgstr "60-69"
+
+#: accounts/models.py:445
+msgid "70 or over"
+msgstr "70 of meer"
+
+#: accounts/models.py:449
+msgid "3 or more"
+msgstr "3 of meer"
+
+#: accounts/models.py:449
+msgid "varies"
+msgstr "varieert"
+
+#: accounts/models.py:453
+msgid "5000"
+msgstr "5000"
+
+#: accounts/models.py:454
+msgid "10000"
+msgstr "10000"
+
+#: accounts/models.py:455
+msgid "15000"
+msgstr "15000"
+
+#: accounts/models.py:456
+msgid "20000"
+msgstr "20000"
+
+#: accounts/models.py:457
+msgid "30000"
+msgstr "30000"
+
+#: accounts/models.py:458
+msgid "40000"
+msgstr "40000"
+
+#: accounts/models.py:459
+msgid "50000"
+msgstr "50000"
+
+#: accounts/models.py:460
+msgid "60000"
+msgstr "60000"
+
+#: accounts/models.py:461
+msgid "70000"
+msgstr "70000"
+
+#: accounts/models.py:462
+msgid "80000"
+msgstr "80000"
+
+#: accounts/models.py:463
+msgid "90000"
+msgstr "90000"
+
+#: accounts/models.py:464
+msgid "100000"
+msgstr "100000"
+
+#: accounts/models.py:465
+msgid "110000"
+msgstr "110000"
+
+#: accounts/models.py:466
+msgid "120000"
+msgstr "120000"
+
+#: accounts/models.py:467
+msgid "130000"
+msgstr "130000"
+
+#: accounts/models.py:468
+msgid "140000"
+msgstr "140000"
+
+#: accounts/models.py:469
+msgid "150000"
+msgstr "150000"
+
+#: accounts/models.py:470
+msgid "160000"
+msgstr "160000"
+
+#: accounts/models.py:471
+msgid "170000"
+msgstr "170000"
+
+#: accounts/models.py:472
+msgid "180000"
+msgstr "180000"
+
+#: accounts/models.py:473
+msgid "190000"
+msgstr "190000"
+
+#: accounts/models.py:474
+msgid "over 200000"
+msgstr "meer dan 200000"
+
+#: accounts/models.py:478
+msgid "urban"
+msgstr "stedelijk"
+
+#: accounts/models.py:478
+msgid "suburban"
+msgstr "buitenwijk"
+
+#: accounts/models.py:478
+msgid "rural"
+msgstr "landelijk"
+
+#: accounts/models.py:528
+msgid "Select a State"
+msgstr "Selecteer een provincie"
+
+#: web/templates/registration/login.html:18
+#: web/templates/registration/login.html:25
+#: web/templates/web/_navigation.html:45
+msgid "Login"
+msgstr "Log in"
+
+#: accounts/templates/accounts/participant_detail.html:15
+msgid "All Participants"
+msgstr "Alle deelnemers"
+
+#: accounts/templates/accounts/participant_detail.html:23
+msgid "Participant ID"
+msgstr "Deelnemer-ID"
+
+#: accounts/templates/accounts/participant_detail.html:24
+msgid "Last Active:"
+msgstr "Laatst actief:"
+
+#: accounts/templates/accounts/participant_detail.html:25
+msgid "Participant global ID:"
+msgstr "Globale ID deelnemer:"
+
+#: accounts/templates/accounts/participant_detail.html:31
+#: web/templates/web/children-list.html:105
+msgid "Children"
+msgstr "Kinderen"
+
+#: accounts/templates/accounts/participant_detail.html:46
+msgid "Age"
+msgstr "Leeftijd"
+
+#: accounts/forms.py:377 accounts/forms.py:428
+#: accounts/templates/accounts/participant_detail.html:54
+msgid "Gender"
+msgstr "Geslacht"
+
+#: accounts/templates/accounts/participant_detail.html:70
+msgid "Additional Info"
+msgstr "Extra informatie"
+
+#: accounts/templates/accounts/participant_detail.html:79
+msgid "No children profiles registered!"
+msgstr "Geen kinderprofielen geregistreerd!"
+
+#: accounts/templates/accounts/participant_detail.html:83
+msgid "Latest Demographic Data"
+msgstr "Laatste demografische gegevens"
+
+#: accounts/templates/accounts/participant_detail.html:86
+msgid "Country"
+msgstr "Land"
+
+#. State can be translated as "Staat" which was done now but also as "Provincie" which was done in a previous translation.
+#: accounts/templates/accounts/participant_detail.html:94
+msgid "State"
+msgstr "Provincie"
+
+#: accounts/templates/accounts/participant_detail.html:102
+msgid "Area description"
+msgstr "Gebiedsbeschrijving"
+
+#: accounts/templates/accounts/participant_detail.html:110
+msgid "Languages Spoken at Home"
+msgstr "Talen die thuis worden gesproken"
+
+#: accounts/templates/accounts/participant_detail.html:118
+msgid "Number of Children"
+msgstr "Aantal kinderen"
+
+#: accounts/templates/accounts/participant_detail.html:126
+msgid "Children current ages"
+msgstr "Huidige leeftijden kinderen"
+
+#: accounts/templates/accounts/participant_detail.html:134
+msgid "Number of Guardians"
+msgstr "Aantal ouders of voogden"
+
+#: accounts/templates/accounts/participant_detail.html:142
+msgid "Explanation for Guardians:"
+msgstr "Uitleg voor voogden:"
+
+#: accounts/templates/accounts/participant_detail.html:150
+msgid "Race"
+msgstr "Ras"
+
+#: accounts/forms.py:214 accounts/templates/accounts/participant_list.html:37
+#: accounts/templates/accounts/participant_list.html:58
+msgid "Nickname"
+msgstr "Bijnaam"
+
+#: exp/templates/exp/dashboard.html:16
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: studies/fields.py:45
+msgid "Twin"
+msgstr "Tweeling"
+
+#: studies/fields.py:46
+msgid "Triplet"
+msgstr "Drieling"
+
+#: studies/fields.py:47
+msgid "Quadruplet"
+msgstr "Vierling"
+
+#: studies/fields.py:48
+msgid "Quintuplet"
+msgstr "Vijfling"
+
+#: studies/fields.py:49
+msgid "Sextuplet"
+msgstr "Zesling"
+
+#: studies/fields.py:50
+msgid "Septuplet"
+msgstr "Zevenling"
+
+#: studies/fields.py:51
+msgid "Octuplet"
+msgstr "Achtling"
+
+#: studies/fields.py:123
+msgid "Not answered"
+msgstr "Niet geantwoord"
+
+#: studies/fields.py:124
+msgid "Other"
+msgstr "Andere"
+
+#: studies/fields.py:125
+msgid "Male"
+msgstr "Man"
+
+#: studies/fields.py:126
+msgid "Female"
+msgstr "Vrouw"
+
+#: studies/models.py:113
+msgid "The Users who belong to this Lab. A user in this lab will be able to create studies associated with this Lab and can be added to this Lab's studies."
+msgstr "De gebruikers die tot dit Lab behoren. Een gebruiker in dit Lab kan onderzoeken creëren die aan dit Lab zijn gekoppeld en kan aan de onderzoeken van dit Lab worden toegevoegd."
+
+#: studies/models.py:122
+msgid "The Users who have requested to join this Lab."
+msgstr "De gebruikers die hebben verzocht om lid te worden van dit Lab."
+
+#: web/templates/registration/logged_out.html:6
+msgid "You've successfully logged out."
+msgstr "U bent succesvol uitgelogd."
+
+#: web/templates/registration/login.html:34
+msgid "Forgot password?"
+msgstr "Wachtwoord vergeten?"
+
+#: web/templates/registration/login.html:36
+msgid "New to Lookit?"
+msgstr "Nieuw bij Lookit?"
+
+#: web/templates/registration/password_change_done.html:11
+msgid "Password changed"
+msgstr "Wachtwoord is veranderd"
+
+#: web/templates/registration/password_change_done.html:15
+msgid "Your password was changed."
+msgstr "Uw wachtwoord is veranderd."
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Documentation"
+msgstr "Documentatie"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Change password"
+msgstr "Wijzig wachtwoord"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Log out"
+msgstr "Uitloggen"
+
+#: web/templates/registration/password_change_form.html:7
+#: web/templates/web/home.html:3 web/templates/web/home.html:7
+msgid "Home"
+msgstr "Thuis"
+
+#: web/templates/registration/password_change_form.html:8
+msgid "Password change"
+msgstr "Wachtwoord verandering"
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the error below."
+msgstr "Corrigeer de onderstaande fout."
+
+#. Depends on context (could also mean: Gelieve de fouten hieronder corrigeren)
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the errors below."
+msgstr "Gelieve de onderstaande fouten corrigeren."
+
+#: web/templates/registration/password_change_form.html:26
+msgid "Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly."
+msgstr "Voer voor de veiligheid uw oude wachtwoord in en voer vervolgens uw nieuwe wachtwoord twee keer in, zodat we kunnen verifiëren dat u het correct hebt ingevoerd."
+
+#: web/templates/registration/password_change_form.html:54
+#: web/templates/registration/password_reset_confirm.html:31
+msgid "Change my password"
+msgstr "Verander mijn wachtwoord"
+
+#: web/templates/registration/password_reset_complete.html:11
+msgid "Password reset complete"
+msgstr "Wachtwoord opnieuw instellen voltooid"
+
+#: web/templates/registration/password_reset_complete.html:15
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr "Uw wachtwoord is ingesteld. U kunt nu doorgaan en inloggen."
+
+#: web/templates/registration/password_reset_complete.html:17
+msgid "Log in"
+msgstr "Log in"
+
+#: web/templates/registration/password_reset_confirm.html:11
+msgid "Password reset confirmation"
+msgstr "Bevestiging wachtwoord opnieuw instellen"
+
+#: web/templates/registration/password_reset_confirm.html:17
+msgid "Please enter your new password twice so we can verify you typed it in correctly."
+msgstr "Voer uw nieuwe wachtwoord twee keer in, zodat we kunnen verifiëren dat u het correct heeft ingevoerd."
+
+#: web/templates/registration/password_reset_confirm.html:23
+msgid "New password:"
+msgstr "Nieuw wachtwoord:"
+
+#: web/templates/registration/password_reset_confirm.html:28
+msgid "Confirm password:"
+msgstr "Bevestig wachtwoord:"
+
+#: web/templates/registration/password_reset_confirm.html:37
+msgid "The password reset link was invalid, possibly because it has already been used.  Please request a new password reset."
+msgstr "De link voor het opnieuw instellen van het wachtwoord was ongeldig, mogelijk omdat deze al is gebruikt. Vraag opnieuw een nieuw wachtwoord aan."
+
+#: web/templates/registration/password_reset_email.html:2
+msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
+msgstr "U ontvangt deze e-mail omdat u een verzoek hebt ingediend om het wachtwoord opnieuw in te stellen voor uw gebruikersaccount op% (site_name) s."
+
+#: web/templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "Ga naar de volgende pagina en kies een nieuw wachtwoord:"
+
+#: web/templates/registration/password_reset_email.html:8
+msgid "Your username, in case you've forgotten:"
+msgstr "Uw gebruikersnaam, voor het geval u het bent vergeten:"
+
+#: web/templates/registration/password_reset_email.html:10
+msgid "Thanks for using our site!"
+msgstr "Bedankt voor het gebruiken van onze site!"
+
+#: web/templates/registration/password_reset_email.html:12
+msgid "The %(site_name)s team"
+msgstr "Het % (site_name) s team"
+
+#: web/templates/registration/password_reset_form.html:15
+msgid "Forgotten your password? Enter your email address below, and we'll email instructions for setting a new one."
+msgstr "Je wachtwoord vergeten? Voer hieronder uw e-mailadres in en we e-mailen u instructies voor het instellen van een nieuw wachtwoord."
+
+#: web/templates/registration/password_reset_form.html:21
+msgid "Email address:"
+msgstr "E-mailadres:"
+
+#: web/templates/registration/password_reset_form.html:24
+msgid "Reset my password"
+msgstr "Reset mijn wachtwoord"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Demographic Survey"
+msgstr "Demografisch onderzoek"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Tell us more about yourself."
+msgstr "Vertel ons meer over uzelf."
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Children Information"
+msgstr "Informatie over kinderen"
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Add or edit participant information."
+msgstr "Deelnemersgegevens toevoegen of bewerken."
+
+#: accounts/templates/accounts/_account-navigation.html:5
+#: web/templates/web/participant-email-preferences.html:4
+msgid "Email Preferences"
+msgstr "E-mailvoorkeuren"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+msgid "Edit when you can be contacted."
+msgstr "Bewerk wanneer u gecontacteerd kunt worden."
+
+#: web/templates/flatpages/default.html:10
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
+#: web/templates/web/base.html:10
+msgid "Lookit"
+msgstr "Lookit"
+
+#: web/templates/web/_navigation.html:17
+msgid "Experimenter"
+msgstr "Onderzoeker"
+
+#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
+msgid "Studies"
+msgstr "Studies"
+
+#: web/templates/web/_navigation.html:29
+msgid "FAQ"
+msgstr "FAQ"
+
+#: web/templates/web/_navigation.html:30
+msgid "The Scientists"
+msgstr "De wetenschappers"
+
+#. Depending on context it could also be "Bronnen" instead of "middelen"
+#: web/templates/web/_navigation.html:31
+msgid "Resources"
+msgstr "Middelen"
+
+#: web/templates/web/_navigation.html:40
+msgid "Hi"
+msgstr "Hallo"
+
+#: web/templates/web/_navigation.html:42
+msgid "Logout"
+msgstr "Uitloggen"
+
+#: web/templates/web/_navigation.html:44
+msgid "Sign up"
+msgstr "Aanmelden"
+
+#: web/templates/web/child-update.html:4
+#: web/templates/web/studies-history.html:116
+msgid "Child"
+msgstr "Kind"
+
+#: accounts/templates/accounts/account-update.html:14
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
+#: web/templates/web/children-list.html:67
+#: web/templates/web/demographic-data-update.html:78
+#: web/templates/web/participant-email-preferences.html:16
+msgid "My Account"
+msgstr "Mijn account"
+
+#: web/templates/web/child-update.html:31
+msgid "Update"
+msgstr "Bijwerken"
+
+#: web/templates/web/child-update.html:41
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: accounts/templates/accounts/account-update.html:58
+#: web/templates/web/child-update.html:46
+#: web/templates/web/demographic-data-update.html:102
+#: web/templates/web/participant-email-preferences.html:38
+msgid "Save"
+msgstr "Opslaan"
+
+#: web/templates/web/children-list.html:40
+msgid "Empty birthday"
+msgstr "Lege verjaardag"
+
+#: web/templates/web/children-list.html:47
+msgid " day"
+msgstr " dag"
+
+#: web/templates/web/children-list.html:47
+msgid " days"
+msgstr " dagen"
+
+#: web/templates/web/children-list.html:49
+msgid " month"
+msgstr " maand"
+
+#: web/templates/web/children-list.html:49
+msgid " months"
+msgstr " maanden"
+
+#: web/templates/web/children-list.html:51
+msgid " year"
+msgstr " jaar"
+
+#: web/templates/web/children-list.html:51
+msgid " years"
+msgstr " jaren"
+
+#: web/templates/web/children-list.html:61
+#: web/templates/web/children-list.html:77
+#: web/templates/web/children-list.html:82
+#: web/templates/web/children-list.html:94
+msgid "Add Child"
+msgstr "Kind toevoegen"
+
+#: web/templates/web/children-list.html:61
+#: web/templates/web/children-list.html:77
+msgid "Hide Form"
+msgstr "Verberg formulier"
+
+#: web/templates/web/child-update.html:44
+#: web/templates/web/children-list.html:92
+#: web/templates/web/demographic-data-update.html:100
+#: web/templates/web/participant-email-preferences.html:36
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: web/templates/web/children-list.html:111
+msgid "Name"
+msgstr "Naam"
+
+#: web/templates/web/children-list.html:121
+msgid "Update child"
+msgstr "Update kind"
+
+#: web/templates/web/children-list.html:128
+msgid "No child profiles registered!"
+msgstr "Geen kinderprofielen geregistreerd!"
+
+#: web/templates/web/demographic-data-update.html:4
+msgid "Update demographics"
+msgstr "Update demografische gegevens"
+
+#: web/templates/web/demographic-data-update.html:89
+msgid "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning."
+msgstr "Een van de redenen waarom we op internet gebaseerde studies ontwikkelen, is om een diversere groep gezinnen in ons onderzoek te vertegenwoordigen. Uw antwoorden op deze vragen helpen ons te begrijpen welk publiek we bereiken en hoe factoren zoals het spreken van meerdere talen of het hebben van oudere broers en zussen het leren van kinderen beïnvloeden."
+
+#: web/templates/web/demographic-data-update.html:90
+msgid "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video."
+msgstr "Ook als u toestaat dat uw video's worden gepubliceerd voor wetenschappelijke of publiciteits doeleinden, wordt uw demografische informatie nooit samen met uw video gepubliceerd."
+
+#: web/templates/web/participant-email-preferences.html:27
+msgid "I would like to be contacted when:"
+msgstr "Ik wil dat er met mij contact wordt opgenomen als:"
+
+#: web/templates/web/participant-signup.html:28
+msgid "By clicking 'Create Account', I agree that I have read and accepted the "
+msgstr "Door op 'Account aanmaken' te klikken, ga ik ermee akkoord dat ik het "
+
+#: web/templates/web/participant-signup.html:28
+msgid "Privacy Statement"
+msgstr "Privacyverklaring"
+
+#: web/templates/web/participant-signup.html:31
+msgid "Create Account"
+msgstr "Maak een account aan"
+
+#: accounts/templates/accounts/_account-navigation.html:2
+#: accounts/templates/accounts/account-update.html:24
+msgid "Account Information"
+msgstr "Accountinformatie"
+
+#: accounts/templates/accounts/account-update.html:45
+msgid "Change Your Password"
+msgstr "Wijzig uw wachtwoord"
+
+#: web/templates/web/studies-history.html:4
+#: web/templates/web/studies-history.html:27
+msgid "Past Studies"
+msgstr "Eerdere studies"
+
+#: web/templates/web/studies-history.html:16
+#: web/templates/web/studies-list.html:16
+msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
+msgstr "Uw account heeft geen toegang tot deze pagina. Log in met een account dat toegang heeft om door te gaan."
+
+#: web/templates/web/studies-history.html:18
+#: web/templates/web/studies-list.html:18
+msgid "Please login to see this page."
+msgstr "Log in om deze pagina te zien."
+
+#: web/templates/web/studies-history.html:34
+#: web/templates/web/studies-list.html:38
+msgid "Current studies"
+msgstr "Huidige studies"
+
+#: web/templates/web/studies-history.html:37
+#: web/templates/web/studies-list.html:41
+msgid "Your past studies"
+msgstr "Je eerdere studies"
+
+#: web/templates/web/studies-history.html:50
+msgid "Here you can view your studies and see comments left by researchers:"
+msgstr "Hier kunt u uw studies bekijken en opmerkingen van onderzoekers zien:"
+
+#: web/templates/web/studies-history.html:67
+msgid "Study Thumbnail"
+msgstr "Bestudeer Thumbnail"
+
+#: web/templates/web/studies-history.html:79
+msgid "Eligibility:"
+msgstr "Geschiktheid:"
+
+#: web/templates/web/studies-history.html:80
+msgid "Contact:"
+msgstr "Contact:"
+
+#: web/templates/web/studies-history.html:81
+msgid "Still collecting data?"
+msgstr "Verzamelt u nog steeds gegevens?"
+
+#: web/templates/web/studies-history.html:81
+msgid "Yes"
+msgstr "Ja"
+
+#: web/templates/web/studies-history.html:81
+msgid "No"
+msgstr "Nee"
+
+#: web/templates/web/studies-history.html:82
+msgid "Compensation: "
+msgstr "Vergoeding: "
+
+#: web/templates/web/studies-history.html:87
+msgid "Study Responses"
+msgstr "Onderzoeksreacties"
+
+#: web/templates/web/studies-history.html:118
+msgid "Date"
+msgstr "Datum"
+
+#: web/templates/web/studies-history.html:120
+msgid "Consent status"
+msgstr "Toestemmingsstatus"
+
+#: web/templates/web/studies-history.html:123
+msgid "Approved"
+msgstr "Goedgekeurd"
+
+#: web/templates/web/studies-history.html:123
+msgid "Your consent video was reviewed by a researcher and is valid."
+msgstr "Uw toestemmingsvideo is beoordeeld door een onderzoeker en is geldig."
+
+#: web/templates/web/studies-history.html:125
+msgid "Pending"
+msgstr "In afwachting"
+
+#: web/templates/web/studies-history.html:125
+msgid "Your consent video has not yet been reviewed by a researcher."
+msgstr "Uw toestemmingsvideo is nog niet beoordeeld door een onderzoeker."
+
+#: web/templates/web/studies-history.html:127
+msgid "Invalid"
+msgstr "Ongeldig"
+
+#: web/templates/web/studies-history.html:127
+msgid "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers."
+msgstr "Er was een technisch probleem met uw toestemmingsvideo, of u hebt de toestemmingsverklaring niet hardop gelezen. Uw andere gegevens van deze sessie worden niet bekeken of gebruikt door de studieonderzoekers."
+
+#: web/templates/web/studies-history.html:129
+msgid "No information about consent video review status."
+msgstr "Geen informatie over de status van toestemming voor het beoordelen van video's."
+
+#: web/templates/web/studies-history.html:154
+msgid "You have not yet participated in any studies."
+msgstr "U hebt nog geen studies gedaan."
+
+#: web/templates/web/studies-list.html:32
+msgid "Current Studies"
+msgstr "Huidige studies"
+
+#: web/templates/web/studies-list.html:53
+msgid "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate."
+msgstr "Houd er rekening mee dat u een laptop of desktopcomputer (geen mobiele telefoon) met Chrome of Firefox nodig heeft om deel te nemen."
+
+#: web/templates/web/studies-list.html:80
+msgid "See details"
+msgstr "Zie de details"
+
+#: web/templates/web/studies-list.html:87
+msgid "We are not running any studies at this time!"
+msgstr "We voeren op dit moment geen studies uit!"
+
+#: web/templates/web/studies-list.html:93
+msgid "Looking for more ways to contribute to research from home? Check out <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> for even more studies!"
+msgstr "Op zoek naar meer manieren om bij te dragen aan onderzoek vanuit huis? Bekijk <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\"> Children Helping Science </a> voor nog meer studies!"
+
+#: web/templates/web/study-detail.html:93
+msgid "Study overview"
+msgstr "Studieoverzicht"
+
+#: web/templates/web/study-detail.html:96
+msgid "Back to list"
+msgstr "Terug naar lijst"
+
+#: web/templates/web/study-detail.html:112
+msgid "Eligibility criteria"
+msgstr "Geschiktheidscriteria"
+
+#: web/templates/web/study-detail.html:116
+msgid "Duration"
+msgstr "Duur"
+
+#: web/templates/web/study-detail.html:121
+msgid "Compensation"
+msgstr "Vergoeding"
+
+#: web/templates/web/study-detail.html:126
+msgid "What happens"
+msgstr "Wat gebeurt er"
+
+#: web/templates/web/study-detail.html:130
+msgid "What we're studying"
+msgstr "Wat we bestuderen"
+
+#: web/templates/web/study-detail.html:134
+msgid "This study is conducted by"
+msgstr "Dit onderzoek wordt uitgevoerd door"
+
+#: web/templates/web/study-detail.html:138
+msgid "Would you like to participate in this study?"
+msgstr "Wilt u deelnemen aan dit onderzoek?"
+
+#: web/templates/web/study-detail.html:140
+msgid "Log in to participate"
+msgstr "Log in om mee te doen"
+
+#: web/templates/web/study-detail.html:148
+msgid "Select a child:"
+msgstr "Selecteer een kind:"
+
+#: web/templates/web/study-detail.html:150
+msgid "None Selected"
+msgstr "Geen geselecteerd"
+
+#: web/templates/web/study-detail.html:161
+msgid "Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research!"
+msgstr "Uw kind is jonger dan de aanbevolen leeftijdscategorie voor dit onderzoek. Als u kunt wachten <span id = 'wait-till'> tot </span> hij of zij oud genoeg is, kunnen we dan de verzamelde data gebruiken in ons onderzoek!"
+
+#: web/templates/web/study-detail.html:162
+msgid "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research."
+msgstr "Uw kind is ouder dan de aanbevolen leeftijdscategorie voor dit onderzoek. U bent sowieso welkom om het onderzoek te proberen, maar we kunnen de verzamelde data niet gebruiken in ons onderzoek."
+
+#: web/templates/web/study-detail.html:163
+msgid "Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers"
+msgstr "Uw kind voldoet niet aan de criteria om in aanmerking te komen voor dit onderzoek. U bent sowieso welkom om het onderzoek te proberen, maar we kunnen de verzamelde data niet gebruiken in ons onderzoek. Neem dan contact op met de studieonderzoekers"
+
+#: web/templates/web/study-detail.html:165
+msgid "Build experiment runner to preview"
+msgstr "Bouw een experimentrunner om een voorbeeld te bekijken"
+
+#: web/templates/web/study-detail.html:167
+msgid "Participate"
+msgstr "Deelnemen"
+
+#: web/templates/web/study-detail.html:168
+msgid "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to."
+msgstr "Voor een gemakkelijke manier om te zien wat er gebeurt als u uw studieprotocol bijwerkt, kunt u een bladwijzer maken voor de URL waar de bovenstaande knop u naartoe stuurt."
+
+#: accounts/forms.py:54
+msgid "Enter a valid 6-digit one-time password from Google Authenticator"
+msgstr "Voer een geldig eenmalig wachtwoord van zes cijfers in van Google Authenticator"
+
+#: accounts/forms.py:105
+msgid "Please enter a correct %(username)s and password. Note that email and password fields may be case-sensitive. If you have turned on two-factor authentication, you will need a one-time password (OTP code) from Google Authenticator as well. "
+msgstr "Voer een correct % (gebruikersnaam)s en wachtwoord in. Houd er rekening mee dat e-mail- en wachtwoordvelden hoofdlettergevoelig kunnen zijn. Als je tweefactorauthenticatie hebt ingeschakeld, heb je ook een eenmalig wachtwoord (OTP-code) van Google Authenticator nodig. "
+
+#: accounts/forms.py:110
+msgid "This account is inactive."
+msgstr "Dit account is inactief."
+
+#: accounts/forms.py:191
+msgid "Your password can’t be too similar to your other personal information."
+msgstr "Uw wachtwoord mag niet te veel lijken op uw andere persoonlijke gegevens."
+
+#: accounts/forms.py:192
+msgid "Your password must contain at least 16 characters."
+msgstr "Uw wachtwoord moet minimaal 16 tekens bevatten."
+
+#: accounts/forms.py:193
+msgid "Your password can’t be a commonly used password."
+msgstr "Uw wachtwoord mag geen algemeen gebruikt wachtwoord zijn."
+
+#: accounts/forms.py:194
+msgid "Your password can’t be entirely numeric."
+msgstr "Uw wachtwoord mag niet volledig numeriek zijn."
+
+#: accounts/forms.py:376
+msgid "Birthday test"
+msgstr "Verjaardagstest"
+
+#: accounts/forms.py:427
+msgid "Birthday test2"
+msgstr "Verjaardagstest 2"
+
+#: accounts/templates/accounts/_account-navigation.html:2
+msgid "Change your login credentials and/or nickname."
+msgstr "Wijzig uw inloggegevens en / of bijnaam."
+
+#: accounts/templates/accounts/account-update.html:68
+msgid "Manage Two-Factor Authentication"
+msgstr "Beheer tweefactorauthenticatie"
+
+#: accounts/templates/accounts/account-update.html:83
+msgid "If you'd like, you can turn two-factor authentication off here. Just enter your one-time password here, hit submit, and it'll get deleted for you!"
+msgstr "Als je wilt, kun je tweefactorauthenticatie hier uitschakelen. Voer hier gewoon uw eenmalige wachtwoord in, druk op verzenden en het wordt voor u verwijderd!"
+
+#: accounts/templates/accounts/account-update.html:108
+msgid "Set up Two-Factor Authentication"
+msgstr "Stel tweefactorauthenticatie in"
+
+#: studies/fields.py:7
+msgid "Autism Spectrum Disorder"
+msgstr "Autismespectrumstoornis"
+
+#: studies/fields.py:8
+msgid "Deaf"
+msgstr "Doof"
+
+#: studies/fields.py:9
+msgid "Hard of Hearing"
+msgstr "Hardhorend"
+
+#: studies/fields.py:10
+msgid "Dyslexia"
+msgstr "Dyslexie"
+
+#: studies/fields.py:11
+msgid "Multiple Birth (twin, triplet, or higher order)"
+msgstr "Meervoudige geboorte (tweeling, drieling of hogere orde)"
+
+#: studies/fields.py:57
+msgid "English"
+msgstr "Engels"
+
+#: studies/fields.py:58
+msgid "Amharic"
+msgstr "Amhaars"
+
+#: studies/fields.py:59
+msgid "Bengali"
+msgstr "Bengaals"
+
+#: studies/fields.py:60
+msgid "Bhojpuri"
+msgstr "Bhojpuri"
+
+#: studies/fields.py:61
+msgid "Burmese"
+msgstr "Birmees"
+
+#: studies/fields.py:62
+msgid "Cebuano"
+msgstr "Cebuano"
+
+#: studies/fields.py:63
+msgid "Chhattisgarhi"
+msgstr "Chhattisgarhi"
+
+#: studies/fields.py:64
+msgid "Dutch"
+msgstr "Nederlands"
+
+#: studies/fields.py:65
+msgid "Egyptian Spoken Arabic"
+msgstr "Egyptisch gesproken Arabisch"
+
+#: studies/fields.py:66
+msgid "French"
+msgstr "Frans"
+
+#: studies/fields.py:67
+msgid "Gan"
+msgstr "Gan"
+
+#: studies/fields.py:68
+msgid "German"
+msgstr "Duits"
+
+#: studies/fields.py:69
+msgid "Gujarati"
+msgstr "Gujarati"
+
+#: studies/fields.py:70
+msgid "Hakka"
+msgstr "Hakka"
+
+#: studies/fields.py:71
+msgid "Hausa"
+msgstr "Hausa"
+
+#: studies/fields.py:72
+msgid "Hindi"
+msgstr "Hindi"
+
+#: studies/fields.py:73
+msgid "Igbo"
+msgstr "Igbo"
+
+#: studies/fields.py:74
+msgid "Indonesian"
+msgstr "Indonesisch"
+
+#: studies/fields.py:75
+msgid "Iranian Persian"
+msgstr "Iraanse Perzisch"
+
+#: studies/fields.py:76
+msgid "Italian"
+msgstr "Italiaans"
+
+#: studies/fields.py:77
+msgid "Japanese"
+msgstr "Japans"
+
+#: studies/fields.py:78
+msgid "Javanese"
+msgstr "Javaans"
+
+#: studies/fields.py:79
+msgid "Jinyu"
+msgstr "Jinyu"
+
+#: studies/fields.py:80
+msgid "Kannada"
+msgstr "Kannada"
+
+#: studies/fields.py:81
+msgid "Khmer"
+msgstr "Khmer"
+
+#: studies/fields.py:82
+msgid "Korean"
+msgstr "Koreaans"
+
+#: studies/fields.py:83
+msgid "Magahi"
+msgstr "Magahi"
+
+#: studies/fields.py:84
+msgid "Maithili"
+msgstr "Maithili"
+
+#: studies/fields.py:85
+msgid "Malay"
+msgstr "Maleis"
+
+#: studies/fields.py:86
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: studies/fields.py:87
+msgid "Mandarin"
+msgstr "Mandarijn"
+
+#: studies/fields.py:88
+msgid "Marathi"
+msgstr "Marathi"
+
+#: studies/fields.py:89
+msgid "Min Nan"
+msgstr "Min Nan"
+
+#: studies/fields.py:90
+msgid "Moroccan Spoken Arabic"
+msgstr "Marokkaans gesproken Arabisch"
+
+#: studies/fields.py:91
+msgid "Northern Pashto"
+msgstr "Noord-Pasjtoe"
+
+#: studies/fields.py:92
+msgid "Northern Uzbek"
+msgstr "Noord-Oezbeeks"
+
+#: studies/fields.py:93
+msgid "Odia"
+msgstr "Odia"
+
+#: studies/fields.py:94
+msgid "Polish"
+msgstr "Pools"
+
+#: studies/fields.py:95
+msgid "Portuguese"
+msgstr "Portugees"
+
+#: studies/fields.py:96
+msgid "Romanian"
+msgstr "Roemeens"
+
+#: studies/fields.py:97
+msgid "Russian"
+msgstr "Russisch"
+
+#: studies/fields.py:98
+msgid "Saraiki"
+msgstr "Saraiki"
+
+#: studies/fields.py:99
+msgid "Sindhi"
+msgstr "Sindhi"
+
+#: studies/fields.py:100
+msgid "Somali"
+msgstr "Somalisch"
+
+#: studies/fields.py:101
+msgid "Spanish"
+msgstr "Spaans"
+
+#: studies/fields.py:102
+msgid "Sunda"
+msgstr "Sunda"
+
+#: studies/fields.py:103
+msgid "Tagalog"
+msgstr "Tagalog"
+
+#: studies/fields.py:104
+msgid "Tamil"
+msgstr "Tamil"
+
+#: studies/fields.py:105
+msgid "Telugu"
+msgstr "Telugu"
+
+#: studies/fields.py:106
+msgid "Thai"
+msgstr "Thais"
+
+#: studies/fields.py:107
+msgid "Turkish"
+msgstr "Turks"
+
+#: studies/fields.py:108
+msgid "Ukrainian"
+msgstr "Oekraïens"
+
+#: studies/fields.py:109
+msgid "Urdu"
+msgstr "Urdu"
+
+#: studies/fields.py:110
+msgid "Vietnamese"
+msgstr "Vietnamees"
+
+#: studies/fields.py:111
+msgid "Western Punjabi"
+msgstr "West-Punjabi"
+
+#: studies/fields.py:112
+msgid "Wu"
+msgstr "Wu"
+
+#: studies/fields.py:113
+msgid "Xiang Chinese"
+msgstr "Xiang Chinees"
+
+#: studies/fields.py:114
+msgid "Yoruba"
+msgstr "Yoruba"
+
+#: studies/fields.py:115
+msgid "Yue"
+msgstr "Ja"
+
+#: web/templates/flatpages/default.html:53
+msgid "This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation."
+msgstr "Dit materiaal is gebaseerd op werk dat wordt ondersteund door de National Science Foundation (NSF) in het kader van subsidies 1429216 en 1823919; het Center for Brains, Minds and Machines (CBMM), gefinancierd door NSF STC award CCF-1231216, en door een NSF Graduate Research Fellowship onder Grant nr. 1122374. Alle meningen, bevindingen en conclusies of aanbevelingen in dit materiaal zijn die van de auteur(s) en geven niet noodzakelijk de mening van de National Science Foundation weer."
+
+#: web/templates/flatpages/default.html:58
+msgid "Privacy"
+msgstr "Privacy"
+
+#: web/templates/flatpages/default.html:59
+msgid "Contact us"
+msgstr "Neem contact met ons op"
+
+#: web/templates/flatpages/default.html:60
+msgid "Connect"
+msgstr "Verbind"
+
+#: web/templates/registration/login.html:8
+#: web/templates/web/studies-history.html:9
+#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
+msgid "Your login credentials didn't work. Please try again."
+msgstr "Uw inloggegevens werkten niet. Probeer het opnieuw."
+
+#: web/templates/registration/login.html:36
+msgid "Register your family!"
+msgstr "Registreer uw gezin!"
+
+#: web/templates/registration/password_reset_done.html:11
+msgid "Password reset link sent"
+msgstr "Link voor het opnieuw instellen van het wachtwoord verzonden"
+
+#: web/templates/registration/password_reset_done.html:15
+msgid "If an account exists with the email you entered, we've emailed instructions for resetting your password and you should receive them shortly."
+msgstr "Als er een account bestaat met het e-mailadres dat u heeft ingevoerd, hebben we instructies per e-mail gestuurd om uw wachtwoord opnieuw in te stellen. U ontvangt deze binnenkort."
+
+#: web/templates/registration/password_reset_done.html:17
+msgid "If you don't receive an email, please check your spam folder and make sure you've entered the address you registered with. (You won't get an email unless there's already an account for that email address!)"
+msgstr "Als u geen e-mail ontvangt, controleer dan uw spam-map en zorg ervoor dat u het adres hebt ingevoerd waarmee u zich heeft geregistreerd (U ontvangt geen e-mail tenzij er al een account voor dat e-mailadres is!)."
+
+#: web/templates/registration/password_reset_form.html:11
+msgid "Password reset"
+msgstr "Wachtwoord reset"
+
+#: web/templates/web/child-update.html:26
+msgid "Back to Children List"
+msgstr "Terug naar kinderlijst"
+
+#: web/templates/web/participant-signup.html:18
+msgid "Create Participant Account"
+msgstr "Maak een deelnemersaccount aan"
+
+#: web/templates/web/participant-signup.html:22
+msgid "Create a family account to start participating in Lookit studies!"
+msgstr "Maak een gezinsaccount aan om deel te nemen aan Lookit-onderzoeken!"
+
+#: web/templates/web/participant-signup.html:23
+msgid "To register as a researcher, please use"
+msgstr "Gebruik om u als onderzoeker te registreren"
+
+#: web/templates/web/participant-signup.html:23
+msgid "this form"
+msgstr "dit formulier"
+
+#: web/templates/web/participant-signup.html:23
+msgid "instead"
+msgstr "in plaats daarvan"
+
+#: web/templates/web/studies-history.html:107
+msgid "Video"
+msgstr "Video"
+
+#: web/templates/web/studies-history.html:133
+msgid "Feedback"
+msgstr "Feedback"
+
+#: web/templates/web/studies-history.html:139
+msgid "None"
+msgstr "Geen"
+
+#: web/templates/web/study-detail.html:53
+msgid "days"
+msgstr "dagen"
+
+#: web/templates/web/study-detail.html:53
+msgid " until "
+msgstr " tot "
+
+#: web/templates/web/study-detail.html:53
+msgid " when "
+msgstr " wanneer "
+
+#: web/templates/web/study-detail.html:142
+msgid "Add child profile to "
+msgstr "Voeg kindprofiel toe aan "
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "preview"
+msgstr "voorbeeld"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "participate"
+msgstr "deelnemen"
+
+#: web/templates/web/study-detail.html:144
+msgid "Complete demographic survey to "
+msgstr "Vul de demografische enquête in om "
+
+#: web/templates/web/study-detail.html:167
+msgid "now"
+msgstr "nu"
+
+#: web/views.py:47
+msgid "Participant created."
+msgstr "Deelnemer gemaakt."
+
+#: web/views.py:72
+msgid "Demographic data saved."
+msgstr "Demografische gegevens opgeslagen."
+
+#: web/views.py:140
+msgid "Child added."
+msgstr "Kind toegevoegd."
+
+#: web/views.py:176
+msgid "Child deleted."
+msgstr "Kind verwijderd."
+
+#: web/views.py:178
+msgid "Child updated."
+msgstr "Kind geüpdatet."
+
+#: web/views.py:201
+msgid "Email preferences saved."
+msgstr "E-mailvoorkeuren opgeslagen."
+
+#: web/views.py:295
+msgid "The study {study.name} is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact {study.contact_info}"
+msgstr "Het onderzoek {study.name} verzamelt momenteel geen gegevens - het onderzoek is voltooid of onderbroken. Als u denkt dat dit een fout is, neem dan contact op met {study.contact_info}"
+
