@@ -1,81 +1,38 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: MBAH_studiespage\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-11 07:10-0500\n"
-"Language: zh-Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
+"Project-Id-Version: MBAH_studiespage\n"
+"Language: zh-Hans\n"
 
-#: accounts/forms.py:55
-msgid "Enter a valid 6-digit one-time password from Google Authenticator"
-msgstr ""
-
-#: accounts/forms.py:106
-#, python-format
-msgid ""
-"Please enter a correct %(username)s and password. Note that email and "
-"password fields may be case-sensitive. If you have turned on two-factor "
-"authentication, you will need a one-time password (OTP code) from Google "
-"Authenticator as well. "
-msgstr ""
-
-#: accounts/forms.py:111
-msgid "This account is inactive."
-msgstr ""
-
-#: accounts/forms.py:194
-msgid "Your password can’t be too similar to your other personal information."
-msgstr ""
-
-#: accounts/forms.py:195
-msgid "Your password must contain at least 16 characters."
-msgstr ""
-
-#: accounts/forms.py:196
-msgid "Your password can’t be a commonly used password."
-msgstr ""
-
-#: accounts/forms.py:197
-msgid "Your password can’t be entirely numeric."
-msgstr ""
-
-#: accounts/forms.py:213 accounts/forms.py:229 accounts/models.py:140
+#: accounts/forms.py:213 accounts/forms.py:229
 msgid "Email address"
 msgstr "邮箱地址"
 
-#: accounts/forms.py:214 accounts/models.py:145
-#: accounts/templates/accounts/participant_list.html:37
-#: accounts/templates/accounts/participant_list.html:58
-msgid "Nickname"
-msgstr "昵称"
-
+#. I need more clarification for the first part of the sentence (it's time for another session of a study).
 #: accounts/forms.py:254
-msgid ""
-"It's time for another session of a study we are currently participating in"
+msgid "It's time for another session of a study we are currently participating in"
 msgstr "是时候进行本实验中的另一个部分了"
+""
 
 #: accounts/forms.py:256
 msgid "A new study is available for one of my children"
 msgstr "有一项新研究可供我的一位孩子参加"
 
 #: accounts/forms.py:258
-msgid ""
-"There's an update about a study we participated in (for example, results are "
-"published)"
+msgid "There's an update about a study we participated in (for example, results are published)"
 msgstr "我们曾经参加过的一项研究有了新的进展（例如：实验结果已发表）"
 
 #: accounts/forms.py:261
-msgid ""
-"A researcher has questions about my individual responses (for example, if I "
-"report a technical problem during the study)"
+msgid "A researcher has questions about my individual responses (for example, if I report a technical problem during the study)"
 msgstr "一位研究员对于我的个人反馈有疑问（例如：在研究中我反映了技术问题）"
 
 #: accounts/forms.py:270 accounts/forms.py:317
 msgid "What category(ies) does your family identify as?"
 msgstr "您认为您的家庭属于哪种类别？"
+""
 
 #: accounts/forms.py:299
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
@@ -146,78 +103,52 @@ msgid "How did you hear about Lookit?"
 msgstr "您是怎么了解到Lookit的？"
 
 #: accounts/forms.py:336
-msgid ""
-"If the answer varies due to shared custody arrangements or travel, please "
-"enter the number of parents/guardians your children are usually living with "
-"or explain."
-msgstr ""
-"如果监护人数量会因共同监护或旅行而有变动，请输入和您孩子平时一同居住的父母/监"
-"护人人数或做额外解释。"
+msgid "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
+msgstr "如果监护人数量会因共同监护或旅行而有变动，请输入和您孩子平时一同居住的父母/监护人人数或做额外解释。"
 
-#: accounts/forms.py:351 accounts/forms.py:377 accounts/forms.py:429
+#: accounts/forms.py:352
+msgid "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
+msgstr "这能帮助我们计算出您孩子参加研究时的确切年龄。我们从不公布儿童的出生日期或能让读者计算出生日期的信息。"
+
+#: accounts/forms.py:359
+msgid "Birthdays cannot be in the future."
+msgstr "生日不能为将来的时间。"
+
+#: accounts/forms.py:375 accounts/forms.py:426
+msgid "First Name"
+msgstr "名"
+
 #: accounts/templates/accounts/participant_detail.html:38
 #: web/templates/web/children-list.html:112
 msgid "Birthday"
 msgstr "出生日期"
 
-#: accounts/forms.py:353
-msgid ""
-"This lets us figure out exactly how old your child is when they participate "
-"in a study. We never publish children's birthdates or information that would "
-"allow a reader to calculate the birthdate."
-msgstr ""
-"这能帮助我们计算出您孩子参加研究时的确切年龄。我们从不公布儿童的出生日期或能"
-"让读者计算出生日期的信息。"
-
-#: accounts/forms.py:360
-msgid "Birthdays cannot be in the future."
-msgstr "生日不能为将来的时间。"
-
-#: accounts/forms.py:376 accounts/forms.py:428
-msgid "First Name"
-msgstr "名"
-
-#: accounts/forms.py:378 accounts/forms.py:430
-#: accounts/templates/accounts/participant_detail.html:54
-msgid "Gender"
-msgstr "性别"
-
-#: accounts/forms.py:379 accounts/forms.py:431
+#: accounts/forms.py:378 accounts/forms.py:429
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
 msgstr "出生时的胎龄"
 
-#: accounts/forms.py:381 accounts/forms.py:433
+#: accounts/forms.py:380 accounts/forms.py:431
 msgid "Any additional information you'd like us to know"
 msgstr "您想让我们知道的其他信息。"
 
-#: accounts/forms.py:383 accounts/forms.py:435
+#: accounts/forms.py:382 accounts/forms.py:433
 msgid "Characteristics and conditions"
 msgstr "特殊情况"
 
-#: accounts/forms.py:385 accounts/forms.py:437
-msgid ""
-"Languages this child is exposed to at home, school, or with another "
-"caregiver."
+#: accounts/forms.py:384 accounts/forms.py:435
+msgid "Languages this child is exposed to at home, school, or with another caregiver."
 msgstr "该儿童在家庭、学校或与其他照顾者在一起时所接触的语言。"
 
-#: accounts/forms.py:391 accounts/forms.py:443
-msgid ""
-"This lets you select the correct child to participate in a particular study. "
-"A nickname or initials are fine! We may include your child's name in email "
-"to you (for instance, \"There's a new study available for Molly!\") but will "
-"never publish names or use them in our research."
-msgstr ""
-"这可以让您选择正确的孩子来参加某项研究。昵称或拼音首字母也适用！我们可能会在"
-"电子邮件中使用您孩子的名字（例如，\"小明可以参加一项新的研究！\"），但绝不会"
-"在我们的研究中公布或使用姓名。"
+#: accounts/forms.py:390 accounts/forms.py:441
+msgid "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+msgstr "这可以让您选择正确的孩子来参加某项研究。昵称或拼音首字母也适用！我们可能会在电子邮件中使用您孩子的名字（例如，\"小明可以参加一项新的研究！\"），但绝不会在我们的研究中公布或使用姓名。"
 
-#: accounts/forms.py:394 accounts/forms.py:446
-msgid ""
-"For instance, diagnosed developmental disorders or vision or hearing problems"
+#: accounts/forms.py:393 accounts/forms.py:444
+msgid "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr "例如，被诊断为发育障碍，或有视力、听力问题。"
 
-#: accounts/forms.py:397
+#: accounts/forms.py:396
 msgid "Please round down to the nearest full week of pregnancy completed"
 msgstr "请将怀孕周数四舍五入到整数。"
 
@@ -656,73 +587,11 @@ msgstr "乡村"
 msgid "Select a State"
 msgstr "选择一个省份/自治区/直辖市/特别行政区"
 
-#: accounts/templates/accounts/_account-navigation.html:2
-#: accounts/templates/accounts/account-update.html:24
-msgid "Account Information"
-msgstr "账号信息"
-
-#: accounts/templates/accounts/_account-navigation.html:2
-msgid "Change your login credentials and/or nickname."
-msgstr ""
-
-#: accounts/templates/accounts/_account-navigation.html:3
-msgid "Demographic Survey"
-msgstr "人口调查"
-
-#: accounts/templates/accounts/_account-navigation.html:3
-msgid "Tell us more about yourself."
-msgstr "告诉我们更多关于你自己的事情。"
-
-#: accounts/templates/accounts/_account-navigation.html:4
-msgid "Children Information"
-msgstr "儿童信息"
-
-#: accounts/templates/accounts/_account-navigation.html:4
-msgid "Add or edit participant information."
-msgstr "添加或编辑参与者信息。"
-
-#: accounts/templates/accounts/_account-navigation.html:5
-#: web/templates/web/participant-email-preferences.html:4
-msgid "Email Preferences"
-msgstr "邮件偏好"
-
-#: accounts/templates/accounts/_account-navigation.html:5
-msgid "Edit when you can be contacted."
-msgstr "编辑时可以联系你。"
-
-#: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
-#: web/templates/web/children-list.html:67
-#: web/templates/web/demographic-data-update.html:78
-#: web/templates/web/participant-email-preferences.html:16
-msgid "My Account"
-msgstr "我的账号"
-
-#: accounts/templates/accounts/account-update.html:37
-#: accounts/templates/accounts/account-update.html:58
-#: web/templates/web/child-update.html:46
-#: web/templates/web/demographic-data-update.html:102
-#: web/templates/web/participant-email-preferences.html:38
-msgid "Save"
-msgstr "保存"
-
-#: accounts/templates/accounts/account-update.html:45
-msgid "Change Your Password"
-msgstr "修改您的密码"
-
-#: accounts/templates/accounts/account-update.html:68
-msgid "Manage Two-Factor Authentication"
-msgstr ""
-
-#: accounts/templates/accounts/account-update.html:83
-msgid ""
-"If you'd like, you can turn two-factor authentication off here. Just enter "
-"your one-time password here, hit submit, and it'll get deleted for you!"
-msgstr ""
-
-#: accounts/templates/accounts/account-update.html:108
-msgid "Set up Two-Factor Authentication"
-msgstr ""
+#: web/templates/registration/login.html:18
+#: web/templates/registration/login.html:25
+#: web/templates/web/_navigation.html:45
+msgid "Login"
+msgstr "登录"
 
 #: accounts/templates/accounts/participant_detail.html:15
 msgid "All Participants"
@@ -749,13 +618,18 @@ msgstr "儿童"
 msgid "Age"
 msgstr "年龄"
 
+#: accounts/forms.py:377 accounts/forms.py:428
+#: accounts/templates/accounts/participant_detail.html:54
+msgid "Gender"
+msgstr "性别"
+
 #: accounts/templates/accounts/participant_detail.html:70
 msgid "Additional Info"
 msgstr "其他信息"
 
 #: accounts/templates/accounts/participant_detail.html:79
 msgid "No children profiles registered!"
-msgstr "并未注册儿童档案!"
+msgstr "尚未注册儿童档案!"
 
 #: accounts/templates/accounts/participant_detail.html:83
 msgid "Latest Demographic Data"
@@ -797,29 +671,14 @@ msgstr "对监护人的解释"
 msgid "Race"
 msgstr "种族"
 
+#: accounts/forms.py:214 accounts/templates/accounts/participant_list.html:37
+#: accounts/templates/accounts/participant_list.html:58
+msgid "Nickname"
+msgstr "昵称"
+
 #: exp/templates/exp/dashboard.html:16
 msgid "Dashboard"
-msgstr "控制面板"
-
-#: studies/fields.py:7
-msgid "Autism Spectrum Disorder"
-msgstr ""
-
-#: studies/fields.py:8
-msgid "Deaf"
-msgstr ""
-
-#: studies/fields.py:9
-msgid "Hard of Hearing"
-msgstr ""
-
-#: studies/fields.py:10
-msgid "Dyslexia"
-msgstr ""
-
-#: studies/fields.py:11
-msgid "Multiple Birth (twin, triplet, or higher order)"
-msgstr ""
+msgstr "概要面板"
 
 #: studies/fields.py:45
 msgid "Twin"
@@ -849,248 +708,6 @@ msgstr "七胞胎"
 msgid "Octuplet"
 msgstr "八胞胎"
 
-#: studies/fields.py:57
-msgid "English"
-msgstr ""
-
-#: studies/fields.py:58
-msgid "Amharic"
-msgstr ""
-
-#: studies/fields.py:59
-msgid "Bengali"
-msgstr ""
-
-#: studies/fields.py:60
-msgid "Bhojpuri"
-msgstr ""
-
-#: studies/fields.py:61
-msgid "Burmese"
-msgstr ""
-
-#: studies/fields.py:62
-msgid "Cebuano"
-msgstr ""
-
-#: studies/fields.py:63
-msgid "Chhattisgarhi"
-msgstr ""
-
-#: studies/fields.py:64
-msgid "Dutch"
-msgstr ""
-
-#: studies/fields.py:65
-msgid "Egyptian Spoken Arabic"
-msgstr ""
-
-#: studies/fields.py:66
-msgid "French"
-msgstr ""
-
-#: studies/fields.py:67
-msgid "Gan"
-msgstr ""
-
-#: studies/fields.py:68
-msgid "German"
-msgstr ""
-
-#: studies/fields.py:69
-#, fuzzy
-#| msgid "Duration"
-msgid "Gujarati"
-msgstr "时长"
-
-#: studies/fields.py:70
-msgid "Hakka"
-msgstr ""
-
-#: studies/fields.py:71
-msgid "Hausa"
-msgstr ""
-
-#: studies/fields.py:72
-msgid "Hindi"
-msgstr ""
-
-#: studies/fields.py:73
-msgid "Igbo"
-msgstr ""
-
-#: studies/fields.py:74
-msgid "Indonesian"
-msgstr ""
-
-#: studies/fields.py:75
-msgid "Iranian Persian"
-msgstr ""
-
-#: studies/fields.py:76
-msgid "Italian"
-msgstr ""
-
-#: studies/fields.py:77
-msgid "Japanese"
-msgstr ""
-
-#: studies/fields.py:78
-msgid "Javanese"
-msgstr ""
-
-#: studies/fields.py:79
-msgid "Jinyu"
-msgstr ""
-
-#: studies/fields.py:80
-msgid "Kannada"
-msgstr ""
-
-#: studies/fields.py:81
-msgid "Khmer"
-msgstr ""
-
-#: studies/fields.py:82
-msgid "Korean"
-msgstr ""
-
-#: studies/fields.py:83
-msgid "Magahi"
-msgstr ""
-
-#: studies/fields.py:84
-msgid "Maithili"
-msgstr ""
-
-#: studies/fields.py:85
-msgid "Malay"
-msgstr ""
-
-#: studies/fields.py:86
-msgid "Malayalam"
-msgstr ""
-
-#: studies/fields.py:87
-msgid "Mandarin"
-msgstr ""
-
-#: studies/fields.py:88
-msgid "Marathi"
-msgstr ""
-
-#: studies/fields.py:89
-msgid "Min Nan"
-msgstr ""
-
-#: studies/fields.py:90
-msgid "Moroccan Spoken Arabic"
-msgstr ""
-
-#: studies/fields.py:91
-msgid "Northern Pashto"
-msgstr ""
-
-#: studies/fields.py:92
-msgid "Northern Uzbek"
-msgstr ""
-
-#: studies/fields.py:93
-msgid "Odia"
-msgstr ""
-
-#: studies/fields.py:94
-msgid "Polish"
-msgstr ""
-
-#: studies/fields.py:95
-msgid "Portuguese"
-msgstr ""
-
-#: studies/fields.py:96
-msgid "Romanian"
-msgstr ""
-
-#: studies/fields.py:97
-#, fuzzy
-#| msgid "Asian"
-msgid "Russian"
-msgstr "亚裔"
-
-#: studies/fields.py:98
-msgid "Saraiki"
-msgstr ""
-
-#: studies/fields.py:99
-msgid "Sindhi"
-msgstr ""
-
-#: studies/fields.py:100
-msgid "Somali"
-msgstr ""
-
-#: studies/fields.py:101
-msgid "Spanish"
-msgstr ""
-
-#: studies/fields.py:102
-msgid "Sunda"
-msgstr ""
-
-#: studies/fields.py:103
-msgid "Tagalog"
-msgstr ""
-
-#: studies/fields.py:104
-msgid "Tamil"
-msgstr ""
-
-#: studies/fields.py:105
-msgid "Telugu"
-msgstr ""
-
-#: studies/fields.py:106
-msgid "Thai"
-msgstr ""
-
-#: studies/fields.py:107
-msgid "Turkish"
-msgstr ""
-
-#: studies/fields.py:108
-msgid "Ukrainian"
-msgstr ""
-
-#: studies/fields.py:109
-msgid "Urdu"
-msgstr ""
-
-#: studies/fields.py:110
-msgid "Vietnamese"
-msgstr ""
-
-#: studies/fields.py:111
-msgid "Western Punjabi"
-msgstr ""
-
-#: studies/fields.py:112
-msgid "Wu"
-msgstr ""
-
-#: studies/fields.py:113
-msgid "Xiang Chinese"
-msgstr ""
-
-#: studies/fields.py:114
-msgid "Yoruba"
-msgstr ""
-
-#: studies/fields.py:115
-#, fuzzy
-#| msgid "Yes"
-msgid "Yue"
-msgstr "是"
-
 #: studies/fields.py:123
 msgid "Not answered"
 msgstr "未回答"
@@ -1108,65 +725,16 @@ msgid "Female"
 msgstr "女"
 
 #: studies/models.py:113
-msgid ""
-"The Users who belong to this Lab. A user in this lab will be able to create "
-"studies associated with this Lab and can be added to this Lab's studies."
-msgstr ""
-"属于本实验室的用户。本实验室的用户可以创建与本实验室相关联的研究，并可以添加"
-"到本实验室的研究中。"
+msgid "The Users who belong to this Lab. A user in this lab will be able to create studies associated with this Lab and can be added to this Lab's studies."
+msgstr "属于本实验室的用户。该用户可以创建或添加到附属于本实验室的研究中。"
 
 #: studies/models.py:122
 msgid "The Users who have requested to join this Lab."
-msgstr "申请加入本实验室的用户们。"
-
-#: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
-#: web/templates/web/base.html:10
-msgid "Lookit"
-msgstr "Lookit"
-
-#: web/templates/flatpages/default.html:53
-msgid ""
-"This material is based upon work supported by the National Science "
-"Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
-"Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an "
-"NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, "
-"findings, and conclusions or recommendations expressed in this material are "
-"those of the authors(s) and do not necessarily reflect the views of the "
-"National Science Foundation."
-msgstr ""
-
-#: web/templates/flatpages/default.html:58
-msgid "Privacy"
-msgstr ""
-
-#: web/templates/flatpages/default.html:59
-#, fuzzy
-#| msgid "Contact:"
-msgid "Contact us"
-msgstr "联系："
-
-#: web/templates/flatpages/default.html:60
-msgid "Connect"
-msgstr ""
+msgstr "申请加入本实验室的用户。"
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
 msgstr "您已经成功退出。"
-
-#: web/templates/registration/login.html:8
-#: web/templates/web/studies-history.html:9
-#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
-#, fuzzy
-#| msgid "Your username and password didn't match. Please try again."
-msgid "Your login credentials didn't work. Please try again."
-msgstr "您的用户名和密码不匹配。请重新尝试。"
-
-#: web/templates/registration/login.html:18
-#: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:45
-msgid "Login"
-msgstr "登录"
 
 #: web/templates/registration/login.html:34
 msgid "Forgot password?"
@@ -1175,10 +743,6 @@ msgstr "忘记密码？"
 #: web/templates/registration/login.html:36
 msgid "New to Lookit?"
 msgstr "Lookit新用户？"
-
-#: web/templates/registration/login.html:36
-msgid "Register your family!"
-msgstr ""
 
 #: web/templates/registration/password_change_done.html:11
 msgid "Password changed"
@@ -1190,7 +754,7 @@ msgstr "您的密码已被更改。"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Documentation"
-msgstr "文件资料"
+msgstr "文件批注"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Change password"
@@ -1218,12 +782,8 @@ msgid "Please correct the errors below."
 msgstr "请修正以下错误。"
 
 #: web/templates/registration/password_change_form.html:26
-msgid ""
-"Please enter your old password, for security's sake, and then enter your new "
-"password twice so we can verify you typed it in correctly."
-msgstr ""
-"出于安全考虑，请输入您的旧密码。为了让我们确认您输入正确，请输入您的新密码两"
-"次。"
+msgid "Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly."
+msgstr "出于安全考虑，请输入您的旧密码。为了让我们确认您输入了正确的新密码，请输入两次。"
 
 #: web/templates/registration/password_change_form.html:54
 #: web/templates/registration/password_reset_confirm.html:31
@@ -1236,7 +796,7 @@ msgstr "密码重置完成"
 
 #: web/templates/registration/password_reset_complete.html:15
 msgid "Your password has been set.  You may go ahead and log in now."
-msgstr "您的密码以设置成功。您可以继续操作并登录了。"
+msgstr "您的密码已设置成功。您可以重新登录了。"
 
 #: web/templates/registration/password_reset_complete.html:17
 msgid "Log in"
@@ -1247,10 +807,8 @@ msgid "Password reset confirmation"
 msgstr "密码重置确认"
 
 #: web/templates/registration/password_reset_confirm.html:17
-msgid ""
-"Please enter your new password twice so we can verify you typed it in "
-"correctly."
-msgstr "请输入两次新密码，以便我们确认您输入的密码是否正确。"
+msgid "Please enter your new password twice so we can verify you typed it in correctly."
+msgstr "为了让我们确认您输入了正确的新密码，请输入两次。"
 
 #: web/templates/registration/password_reset_confirm.html:23
 msgid "New password:"
@@ -1261,88 +819,72 @@ msgid "Confirm password:"
 msgstr "确认密码："
 
 #: web/templates/registration/password_reset_confirm.html:37
-msgid ""
-"The password reset link was invalid, possibly because it has already been "
-"used.  Please request a new password reset."
-msgstr "密码重置链接已失效，可能是因为已经被使用。  请请求重新设置密码。"
-
-#: web/templates/registration/password_reset_done.html:11
-#, fuzzy
-#| msgid "Password reset complete"
-msgid "Password reset link sent"
-msgstr "密码重置完成"
-
-#: web/templates/registration/password_reset_done.html:15
-#, fuzzy
-#| msgid ""
-#| "We've emailed you instructions for setting your password, if an account "
-#| "exists with the email you entered. You should receive them shortly."
-msgid ""
-"If an account exists with the email you entered, we've emailed instructions "
-"for resetting your password and you should receive them shortly."
-msgstr ""
-"如果您输入的邮箱已被注册，我们已经通过电子邮件向您发送了设置密码的说明。您应"
-"该很快就会收到。"
-
-#: web/templates/registration/password_reset_done.html:17
-#, fuzzy
-#| msgid ""
-#| "If you don't receive an email, please make sure you've entered the "
-#| "address you registered with, and check your spam folder."
-msgid ""
-"If you don't receive an email, please check your spam folder and make sure "
-"you've entered the address you registered with. (You won't get an email "
-"unless there's already an account for that email address!)"
-msgstr ""
-"如果您没有收到邮件，请确认您输入了您注册的地址，并检查您的垃圾邮件文件夹。"
+msgid "The password reset link was invalid, possibly because it has already been used.  Please request a new password reset."
+msgstr "密码重置链接已失效，可能是因为该链接已被使用。请再次请求重置密码。"
+""
 
 #: web/templates/registration/password_reset_email.html:2
-#, python-format
-msgid ""
-"You're receiving this email because you requested a password reset for your "
-"user account at %(site_name)s."
-msgstr ""
-"您之所以收到这封邮件，是因为您要求重新设置您在%(site_name)s的用户账户的密码。"
+msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
+msgstr "您收到这封邮件是因为您要求重新设置您在%(site_name)s的用户密码。"
 
 #: web/templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
-msgstr "请到以下页面选择一个新的密码。"
+msgstr "请到以下页面选择一个新的密码："
 
 #: web/templates/registration/password_reset_email.html:8
 msgid "Your username, in case you've forgotten:"
-msgstr "您的用户名，以免您忘记："
+msgstr "您的用户名："
 
 #: web/templates/registration/password_reset_email.html:10
 msgid "Thanks for using our site!"
 msgstr "感谢您使用我们的网站!"
 
 #: web/templates/registration/password_reset_email.html:12
-#, fuzzy, python-format
-#| msgid "The %(site_name)s team"
 msgid "The %(site_name)s team"
 msgstr "%(site_name)的团队"
 
-#: web/templates/registration/password_reset_form.html:11
-#, fuzzy
-#| msgid "Password reset complete"
-msgid "Password reset"
-msgstr "密码重置完成"
-
 #: web/templates/registration/password_reset_form.html:15
-msgid ""
-"Forgotten your password? Enter your email address below, and we'll email "
-"instructions for setting a new one."
-msgstr ""
-"忘记密码了？请在下方输入您的电子邮件地址，我们将通过电子邮件发送设置新密码的"
-"说明。"
+msgid "Forgotten your password? Enter your email address below, and we'll email instructions for setting a new one."
+msgstr "忘记密码了？请在下方输入您的电子邮件地址，我们将通过电子邮件发送设置新密码的步骤。"
 
 #: web/templates/registration/password_reset_form.html:21
 msgid "Email address:"
-msgstr "邮箱地址："
+msgstr "电子邮件地址："
 
 #: web/templates/registration/password_reset_form.html:24
 msgid "Reset my password"
 msgstr "重置我的密码"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Demographic Survey"
+msgstr "基本信息"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Tell us more about yourself."
+msgstr "让我们更加了解您。"
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Children Information"
+msgstr "儿童信息"
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Add or edit participant information."
+msgstr "添加或编辑参与者信息。"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+#: web/templates/web/participant-email-preferences.html:4
+msgid "Email Preferences"
+msgstr "电子邮件偏好"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+msgid "Edit when you can be contacted."
+msgstr "让我们了解什么情况下可以联系您。"
+
+#: web/templates/flatpages/default.html:10
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
+#: web/templates/web/base.html:10
+msgid "Lookit"
+msgstr "Lookit"
 
 #: web/templates/web/_navigation.html:17
 msgid "Experimenter"
@@ -1358,11 +900,11 @@ msgstr "常见问题解答"
 
 #: web/templates/web/_navigation.html:30
 msgid "The Scientists"
-msgstr "科学家们"
+msgstr "科学家团队"
 
 #: web/templates/web/_navigation.html:31
 msgid "Resources"
-msgstr "资源简介"
+msgstr "相关资源"
 
 #: web/templates/web/_navigation.html:40
 msgid "Hi"
@@ -1381,11 +923,13 @@ msgstr "创建账号"
 msgid "Child"
 msgstr "儿童"
 
-#: web/templates/web/child-update.html:26
-#, fuzzy
-#| msgid "Back to list"
-msgid "Back to Children List"
-msgstr "返回列表"
+#: accounts/templates/accounts/account-update.html:14
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
+#: web/templates/web/children-list.html:67
+#: web/templates/web/demographic-data-update.html:78
+#: web/templates/web/participant-email-preferences.html:16
+msgid "My Account"
+msgstr "我的账号"
 
 #: web/templates/web/child-update.html:31
 msgid "Update"
@@ -1395,24 +939,25 @@ msgstr "更新"
 msgid "Delete"
 msgstr "删除"
 
-#: web/templates/web/child-update.html:44
-#: web/templates/web/children-list.html:92
-#: web/templates/web/demographic-data-update.html:100
-#: web/templates/web/participant-email-preferences.html:36
-msgid "Cancel"
-msgstr "取消"
+#: accounts/templates/accounts/account-update.html:58
+#: web/templates/web/child-update.html:46
+#: web/templates/web/demographic-data-update.html:102
+#: web/templates/web/participant-email-preferences.html:38
+msgid "Save"
+msgstr "保存"
 
+#. Does it mean an empty birthday or the action to empty?
 #: web/templates/web/children-list.html:40
 msgid "Empty birthday"
 msgstr "清空生日"
 
 #: web/templates/web/children-list.html:47
 msgid " day"
-msgstr "日"
+msgstr "天"
 
 #: web/templates/web/children-list.html:47
 msgid " days"
-msgstr "天数"
+msgstr "天"
 
 #: web/templates/web/children-list.html:49
 msgid " month"
@@ -1424,11 +969,11 @@ msgstr "月"
 
 #: web/templates/web/children-list.html:51
 msgid " year"
-msgstr "年"
+msgstr "岁"
 
 #: web/templates/web/children-list.html:51
 msgid " years"
-msgstr "岁月"
+msgstr "岁"
 
 #: web/templates/web/children-list.html:61
 #: web/templates/web/children-list.html:77
@@ -1442,75 +987,44 @@ msgstr "添加儿童"
 msgid "Hide Form"
 msgstr "隐藏表格"
 
+#: web/templates/web/child-update.html:44
+#: web/templates/web/children-list.html:92
+#: web/templates/web/demographic-data-update.html:100
+#: web/templates/web/participant-email-preferences.html:36
+msgid "Cancel"
+msgstr "取消"
+
 #: web/templates/web/children-list.html:111
 msgid "Name"
 msgstr "姓名"
 
 #: web/templates/web/children-list.html:121
 msgid "Update child"
-msgstr "更新孩子"
+msgstr "更新儿童信息"
 
 #: web/templates/web/children-list.html:128
 msgid "No child profiles registered!"
-msgstr "没有注册儿童档案!"
+msgstr "尚未注册儿童档案!"
 
 #: web/templates/web/demographic-data-update.html:4
 msgid "Update demographics"
-msgstr "更新人口统计资料"
+msgstr "更新基本信息"
 
 #: web/templates/web/demographic-data-update.html:89
-msgid ""
-"One reason we are developing Internet-based experiments is to represent a "
-"more diverse group of families in our research. Your answers to these "
-"questions will help us understand what audience we reach, as well as how "
-"factors like speaking multiple languages or having older siblings affect "
-"children's learning."
-msgstr ""
-"我们开发基于互联网的实验的一个原因是为了在我们的研究中代表更多不同的家庭群"
-"体。您对这些问题的回答将帮助我们了解我们所接触到的受众，以及讲多种语言或有兄"
-"妹等因素如何影响孩子的学习。"
+msgid "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning."
+msgstr "我们开发互联网实验的一个原因是为了让更多不同的家庭群体参与到研究中。您的回答将帮助我们了解研究接触到的受众，以及讲多种语言或有哥哥姐姐等因素会如何影响孩子的学习。"
 
 #: web/templates/web/demographic-data-update.html:90
-msgid ""
-"Even if you allow your study videos to be published for scientific or "
-"publicity purposes, your demographic information is never published in "
-"conjunction with your video."
-msgstr ""
-"即使您允许出于科学或宣传目的发布您的研究视频，您的人口统计信息也不会与您的视"
-"频一起发布。"
+msgid "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video."
+msgstr "即使您允许我们以科学或宣传为目的发布您的研究视频，您的基本信息也不会和视频一起发布。"
 
 #: web/templates/web/participant-email-preferences.html:27
 msgid "I would like to be contacted when:"
-msgstr "我希望在以下时间与我联系："
-
-#: web/templates/web/participant-signup.html:18
-#, fuzzy
-#| msgid "Participant account"
-msgid "Create Participant Account"
-msgstr "参与者账户"
-
-#: web/templates/web/participant-signup.html:22
-msgid "Create a family account to start participating in Lookit studies!"
-msgstr ""
-
-#: web/templates/web/participant-signup.html:23
-msgid "To register as a researcher, please use"
-msgstr ""
-
-#: web/templates/web/participant-signup.html:23
-msgid "this form"
-msgstr ""
-
-#: web/templates/web/participant-signup.html:23
-#, fuzzy
-#| msgid "instead?"
-msgid "instead"
-msgstr "而不是？"
+msgstr "我愿意在以下情况收到通知："
 
 #: web/templates/web/participant-signup.html:28
-msgid ""
-"By clicking 'Create Account', I agree that I have read and accepted the "
-msgstr "点击 \"创建账户\"，即表示我已经阅读并接受了以下条款 "
+msgid "By clicking 'Create Account', I agree that I have read and accepted the "
+msgstr "点击 \"创建账号\"，即表示我已经阅读并接受以下条款 "
 
 #: web/templates/web/participant-signup.html:28
 msgid "Privacy Statement"
@@ -1520,17 +1034,24 @@ msgstr "隐私声明"
 msgid "Create Account"
 msgstr "创建账号"
 
+#: accounts/templates/accounts/_account-navigation.html:2
+#: accounts/templates/accounts/account-update.html:24
+msgid "Account Information"
+msgstr "账号信息"
+
+#: accounts/templates/accounts/account-update.html:45
+msgid "Change Your Password"
+msgstr "修改您的密码"
+
 #: web/templates/web/studies-history.html:4
 #: web/templates/web/studies-history.html:27
 msgid "Past Studies"
-msgstr "过去的研究"
+msgstr "参与过的研究"
 
 #: web/templates/web/studies-history.html:16
 #: web/templates/web/studies-list.html:16
-msgid ""
-"Your account doesn't have access to this page. To proceed, please login with "
-"an account that has access."
-msgstr "您的账户没有权限访问此页面。要继续，请使用有访问权限的账户登录。"
+msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
+msgstr "您的账号没有权限访问此页面。如需继续，请使用有访问权限的账号登录。"
 
 #: web/templates/web/studies-history.html:18
 #: web/templates/web/studies-list.html:18
@@ -1545,27 +1066,27 @@ msgstr "当前的研究"
 #: web/templates/web/studies-history.html:37
 #: web/templates/web/studies-list.html:41
 msgid "Your past studies"
-msgstr "您过去的研究"
+msgstr "您参与过的研究"
 
 #: web/templates/web/studies-history.html:50
 msgid "Here you can view your studies and see comments left by researchers:"
-msgstr "在这里，您可以查看您的研究，并查看研究人员留下的评论。"
+msgstr "您可以在此页面浏览参与过的研究，并查看研究人员留下的评论。"
 
 #: web/templates/web/studies-history.html:67
 msgid "Study Thumbnail"
-msgstr "学习缩略图"
+msgstr "研究封面"
 
 #: web/templates/web/studies-history.html:79
 msgid "Eligibility:"
-msgstr "资格："
+msgstr "参与资格："
 
 #: web/templates/web/studies-history.html:80
 msgid "Contact:"
-msgstr "联系："
+msgstr "联系方式："
 
 #: web/templates/web/studies-history.html:81
 msgid "Still collecting data?"
-msgstr "还在收集数据？"
+msgstr "是否还在招募？"
 
 #: web/templates/web/studies-history.html:81
 msgid "Yes"
@@ -1577,15 +1098,11 @@ msgstr "否"
 
 #: web/templates/web/studies-history.html:82
 msgid "Compensation: "
-msgstr "赔偿； "
+msgstr "报酬： "
 
 #: web/templates/web/studies-history.html:87
 msgid "Study Responses"
-msgstr "研究对策"
-
-#: web/templates/web/studies-history.html:107
-msgid "Video"
-msgstr ""
+msgstr "实验记录"
 
 #: web/templates/web/studies-history.html:118
 msgid "Date"
@@ -1593,15 +1110,15 @@ msgstr "日期"
 
 #: web/templates/web/studies-history.html:120
 msgid "Consent status"
-msgstr "同意状况"
+msgstr "同意书批准状态"
 
 #: web/templates/web/studies-history.html:123
 msgid "Approved"
-msgstr "已通过"
+msgstr "已批准"
 
 #: web/templates/web/studies-history.html:123
 msgid "Your consent video was reviewed by a researcher and is valid."
-msgstr "您的同意书视频经研究人员审核，是有效的。"
+msgstr "您的同意书视频经研究人员审核是有效的。"
 
 #: web/templates/web/studies-history.html:125
 msgid "Pending"
@@ -1609,48 +1126,31 @@ msgstr "处理中"
 
 #: web/templates/web/studies-history.html:125
 msgid "Your consent video has not yet been reviewed by a researcher."
-msgstr "您的同意书视频还没有被研究人员审核。"
+msgstr "您的同意书视频还未被研究人员审核。"
 
 #: web/templates/web/studies-history.html:127
 msgid "Invalid"
 msgstr "无效"
 
 #: web/templates/web/studies-history.html:127
-msgid ""
-"There was a technical problem with your consent video, or it did not show "
-"you reading the consent statement out loud. Your other data from this "
-"session will not be viewed or used by the study researchers."
-msgstr ""
-"您的同意书视频出现了技术问题，或者没有显示您大声阅读同意书声明。您在此环节的"
-"其他数据将不会被研究人员查看或使用。"
+msgid "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers."
+msgstr "您的同意书视频出现了技术问题，或没有记录到您朗读出声明。因此研究人员不会查看或使用您在本实验中提交的其他数据。"
 
 #: web/templates/web/studies-history.html:129
 msgid "No information about consent video review status."
-msgstr "没有关于同意书视频审查状态的信息"
-
-#: web/templates/web/studies-history.html:133
-msgid "Feedback"
-msgstr ""
-
-#: web/templates/web/studies-history.html:139
-msgid "None"
-msgstr ""
+msgstr "没有关于同意书视频批准状态的信息"
 
 #: web/templates/web/studies-history.html:154
 msgid "You have not yet participated in any studies."
-msgstr "您还没有参与任何研究。"
+msgstr "您尚未参与任何研究。"
 
 #: web/templates/web/studies-list.html:32
 msgid "Current Studies"
 msgstr "当前的研究"
 
 #: web/templates/web/studies-list.html:53
-msgid ""
-"Please note you'll need a laptop or desktop computer (not a mobile device) "
-"running Chrome or Firefox to participate."
-msgstr ""
-"请注意，您需要一台能运行Chrome或Firefox的笔记本电脑或台式电脑（不是移动设备）"
-"才能参加。"
+msgid "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate."
+msgstr "请注意，您需要一台能运行谷歌或火狐浏览器的笔记本电脑或台式电脑（非移动设备）才能参加。"
 
 #: web/templates/web/studies-list.html:80
 msgid "See details"
@@ -1661,28 +1161,8 @@ msgid "We are not running any studies at this time!"
 msgstr "我们目前没有进行任何研究!"
 
 #: web/templates/web/studies-list.html:93
-msgid ""
-"Looking for more ways to contribute to research from home? Check out <a href="
-"\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer "
-"noopener\">Children Helping Science</a> for even more studies!"
-msgstr ""
-"正在寻找更多在家为研究做贡献的方法？请查看 <a href=\"https://"
-"childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener"
-"\">Children Helping Science</a>，了解更多研究内容。"
-
-#: web/templates/web/study-detail.html:53
-#, fuzzy
-#| msgid " days"
-msgid "days"
-msgstr "天数"
-
-#: web/templates/web/study-detail.html:53
-msgid " until "
-msgstr ""
-
-#: web/templates/web/study-detail.html:53
-msgid " when "
-msgstr ""
+msgid "Looking for more ways to contribute to research from home? Check out <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> for even more studies!"
+msgstr "您想要寻找更多在家参与研究的机会吗？请查看 <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a>，了解更多研究内容。"
 
 #: web/templates/web/study-detail.html:93
 msgid "Study overview"
@@ -1694,7 +1174,7 @@ msgstr "返回列表"
 
 #: web/templates/web/study-detail.html:112
 msgid "Eligibility criteria"
-msgstr "合格标准"
+msgstr "参与资格"
 
 #: web/templates/web/study-detail.html:116
 msgid "Duration"
@@ -1702,19 +1182,19 @@ msgstr "时长"
 
 #: web/templates/web/study-detail.html:121
 msgid "Compensation"
-msgstr "补偿"
+msgstr "报酬"
 
 #: web/templates/web/study-detail.html:126
 msgid "What happens"
-msgstr "请问发生了什么"
+msgstr "实验步骤"
 
 #: web/templates/web/study-detail.html:130
 msgid "What we're studying"
-msgstr "我们正在研究的内容"
+msgstr "实验目的"
 
 #: web/templates/web/study-detail.html:134
 msgid "This study is conducted by"
-msgstr "本研究由以下机构进行"
+msgstr "研究负责人："
 
 #: web/templates/web/study-detail.html:138
 msgid "Would you like to participate in this study?"
@@ -1722,197 +1202,486 @@ msgstr "您是否愿意参加这项研究？"
 
 #: web/templates/web/study-detail.html:140
 msgid "Log in to participate"
-msgstr "登录参与"
-
-#: web/templates/web/study-detail.html:142
-#, fuzzy
-#| msgid "No child profiles registered!"
-msgid "Add child profile to "
-msgstr "没有注册儿童档案!"
-
-#: web/templates/web/study-detail.html:142
-#: web/templates/web/study-detail.html:144
-msgid "preview"
-msgstr ""
-
-#: web/templates/web/study-detail.html:142
-#: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Participate"
-msgid "participate"
-msgstr "参加"
-
-#: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Demographic Survey"
-msgid "Complete demographic survey to "
-msgstr "人口调查"
+msgstr "请登录后参与"
 
 #: web/templates/web/study-detail.html:148
 msgid "Select a child:"
-msgstr "选择一个孩子。"
+msgstr "选择一个孩子："
 
 #: web/templates/web/study-detail.html:150
 msgid "None Selected"
-msgstr "无选择"
+msgstr "未选择"
 
 #: web/templates/web/study-detail.html:161
-msgid ""
-"Your child is still younger than the recommended age range for this study. "
-"If you can wait <span id='wait-until'>until</span> he or she is old enough, "
-"we'll be able to use the collected data in our research!"
-msgstr ""
-"您的孩子仍然比这项研究的建议年龄范围要小。如果您能等待<span id='wait-until'>"
-"直到</span>他或她足够大，我们将能够在我们的研究中使用收集到的数据。"
+msgid "Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research!"
+msgstr "您的孩子比这项研究建议的年龄范围要小。如果您能等待<span id='wait-until'>直到</span>他或她满足年龄要求再来参加，我们将能在研究中使用您孩子的数据。"
 
 #: web/templates/web/study-detail.html:162
-msgid ""
-"Your child is older than the recommended age range for this study. You're "
-"welcome to try the study anyway, but we won't be able to use the collected "
-"data in our research."
-msgstr ""
-"您的孩子已经超过了这项研究的建议年龄范围。我们仍欢迎您尝试这项研究，但我们不"
-"能将收集的数据用于我们的研究。"
+msgid "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research."
+msgstr "您的孩子已经超过了这项研究建议的年龄范围。我们仍欢迎您尝试它，但我们不能将收集到的数据用于此研究。"
 
 #: web/templates/web/study-detail.html:163
-msgid ""
-"Your child does not meet the eligibility criteria listed for this study. "
-"You're welcome to try the study anyway, but we won't be able to use the "
-"collected data in our research. Please contact the study researchers"
-msgstr ""
-"您的孩子不符合本研究的资格标准。我们仍欢迎您尝试这项研究，但我们不能将收集的"
-"数据用于我们的研究。请联系研究人员"
+msgid "Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers"
+msgstr "您的孩子不符合本研究的参与资格。我们仍欢迎您尝试他，但我们不能将收集到的数据用于此研究。请联系研究负责人"
 
 #: web/templates/web/study-detail.html:165
 msgid "Build experiment runner to preview"
-msgstr "构建实验运行器来预览"
+msgstr "创建实验运行器来预览"
 
 #: web/templates/web/study-detail.html:167
 msgid "Participate"
 msgstr "参加"
 
+#: web/templates/web/study-detail.html:168
+msgid "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to."
+msgstr "请将上方按钮显示的网址加入书签，以便预览您更新后的研究。"
+
+#: accounts/forms.py:54
+msgid "Enter a valid 6-digit one-time password from Google Authenticator"
+msgstr "请输入来自谷歌身份验证器一次性的有效六位数密码"
+""
+
+#: accounts/forms.py:105
+msgid "Please enter a correct %(username)s and password. Note that email and password fields may be case-sensitive. If you have turned on two-factor authentication, you will need a one-time password (OTP code) from Google Authenticator as well. "
+msgstr "请输入正确的用户名和密码。请注意，电子邮件和密码字段会区分大小写。如果您启用了双重认证，则还需要谷歌身份验证器的一次性密码（OTP代码）。 "
+
+#: accounts/forms.py:110
+msgid "This account is inactive."
+msgstr "此账号尚未激活。"
+
+#: accounts/forms.py:191
+msgid "Your password can’t be too similar to your other personal information."
+msgstr "您的密码不能与您的个人信息过于相似。"
+
+#: accounts/forms.py:192
+msgid "Your password must contain at least 16 characters."
+msgstr "您的密码必须至少包含16个字符。"
+
+#: accounts/forms.py:193
+msgid "Your password can’t be a commonly used password."
+msgstr "您的密码不能为常见密码。"
+
+#: accounts/forms.py:194
+msgid "Your password can’t be entirely numeric."
+msgstr "您的密码不能全是数字。"
+
+#: accounts/forms.py:376
+msgid "Birthday test"
+msgstr "生日测试"
+
+#: accounts/forms.py:427
+msgid "Birthday test2"
+msgstr "生日测试2"
+
+#: accounts/templates/accounts/_account-navigation.html:2
+msgid "Change your login credentials and/or nickname."
+msgstr "更改您的登录信息和/或昵称。"
+
+#: accounts/templates/accounts/account-update.html:68
+msgid "Manage Two-Factor Authentication"
+msgstr "管理双重认证"
+
+#: accounts/templates/accounts/account-update.html:83
+msgid "If you'd like, you can turn two-factor authentication off here. Just enter your one-time password here, hit submit, and it'll get deleted for you!"
+msgstr "如需要，您可以在此处关闭双重认证。在这里输入您的一次性密码，点击提交，双重认证就会关闭。"
+
+#: accounts/templates/accounts/account-update.html:108
+msgid "Set up Two-Factor Authentication"
+msgstr "设置双重认证"
+
+#: studies/fields.py:7
+msgid "Autism Spectrum Disorder"
+msgstr "自闭症谱系障碍"
+
+#: studies/fields.py:8
+msgid "Deaf"
+msgstr "聋"
+
+#: studies/fields.py:9
+msgid "Hard of Hearing"
+msgstr "听力障碍"
+
+#: studies/fields.py:10
+msgid "Dyslexia"
+msgstr "阅读障碍"
+
+#: studies/fields.py:11
+msgid "Multiple Birth (twin, triplet, or higher order)"
+msgstr "多胎出生（双胞胎，三胞胎或更多）"
+
+#: studies/fields.py:57
+msgid "English"
+msgstr "英语"
+
+#: studies/fields.py:58
+msgid "Amharic"
+msgstr "阿姆哈拉语"
+
+#: studies/fields.py:59
+msgid "Bengali"
+msgstr "孟加拉语"
+
+#: studies/fields.py:60
+msgid "Bhojpuri"
+msgstr "博普里语"
+
+#: studies/fields.py:61
+msgid "Burmese"
+msgstr "缅甸语"
+
+#: studies/fields.py:62
+msgid "Cebuano"
+msgstr "宿雾语"
+
+#: studies/fields.py:63
+msgid "Chhattisgarhi"
+msgstr "恰蒂斯加里语"
+
+#: studies/fields.py:64
+msgid "Dutch"
+msgstr "荷兰语"
+
+#: studies/fields.py:65
+msgid "Egyptian Spoken Arabic"
+msgstr "埃及阿拉伯口语"
+
+#: studies/fields.py:66
+msgid "French"
+msgstr "法语"
+
+#: studies/fields.py:67
+msgid "Gan"
+msgstr "中文（赣方言）"
+
+#: studies/fields.py:68
+msgid "German"
+msgstr "德语"
+
+#: studies/fields.py:69
+msgid "Gujarati"
+msgstr "古吉拉特语"
+
+#: studies/fields.py:70
+msgid "Hakka"
+msgstr "中文（客家语）"
+
+#: studies/fields.py:71
+msgid "Hausa"
+msgstr "豪萨语"
+
+#: studies/fields.py:72
+msgid "Hindi"
+msgstr "印地语"
+
+#: studies/fields.py:73
+msgid "Igbo"
+msgstr "伊博语"
+
+#: studies/fields.py:74
+msgid "Indonesian"
+msgstr "印度尼西亚语"
+
+#: studies/fields.py:75
+msgid "Iranian Persian"
+msgstr "伊朗波斯语"
+
+#: studies/fields.py:76
+msgid "Italian"
+msgstr "意大利语"
+
+#: studies/fields.py:77
+msgid "Japanese"
+msgstr "日语"
+
+#: studies/fields.py:78
+msgid "Javanese"
+msgstr "爪哇语"
+
+#: studies/fields.py:79
+msgid "Jinyu"
+msgstr "中文（晋方言）"
+
+#: studies/fields.py:80
+msgid "Kannada"
+msgstr "卡纳达语"
+
+#: studies/fields.py:81
+msgid "Khmer"
+msgstr "高棉语"
+
+#: studies/fields.py:82
+msgid "Korean"
+msgstr "韩语"
+
+#: studies/fields.py:83
+msgid "Magahi"
+msgstr "马加伊语"
+
+#: studies/fields.py:84
+msgid "Maithili"
+msgstr "迈蒂利语"
+
+#: studies/fields.py:85
+msgid "Malay"
+msgstr "马来语"
+
+#: studies/fields.py:86
+msgid "Malayalam"
+msgstr "马拉雅拉姆语"
+
+#: studies/fields.py:87
+msgid "Mandarin"
+msgstr "中文（普通话）"
+
+#: studies/fields.py:88
+msgid "Marathi"
+msgstr "马拉地语"
+
+#: studies/fields.py:89
+msgid "Min Nan"
+msgstr "中文（闽南方言）"
+
+#: studies/fields.py:90
+msgid "Moroccan Spoken Arabic"
+msgstr "摩洛哥阿拉伯口语"
+
+#: studies/fields.py:91
+msgid "Northern Pashto"
+msgstr "北普什图语"
+
+#: studies/fields.py:92
+msgid "Northern Uzbek"
+msgstr "北乌兹别克语"
+
+#: studies/fields.py:93
+msgid "Odia"
+msgstr "奥里亚语"
+
+#: studies/fields.py:94
+msgid "Polish"
+msgstr "波兰语"
+
+#: studies/fields.py:95
+msgid "Portuguese"
+msgstr "葡萄牙语"
+
+#: studies/fields.py:96
+msgid "Romanian"
+msgstr "罗马尼亚语"
+
+#: studies/fields.py:97
+msgid "Russian"
+msgstr "俄语"
+
+#: studies/fields.py:98
+msgid "Saraiki"
+msgstr "西莱基语"
+
+#: studies/fields.py:99
+msgid "Sindhi"
+msgstr "信德语"
+
+#: studies/fields.py:100
+msgid "Somali"
+msgstr "索马里语"
+
+#: studies/fields.py:101
+msgid "Spanish"
+msgstr "西班牙语"
+
+#: studies/fields.py:102
+msgid "Sunda"
+msgstr "巽他语"
+
+#: studies/fields.py:103
+msgid "Tagalog"
+msgstr "塔加拉语"
+
+#: studies/fields.py:104
+msgid "Tamil"
+msgstr "泰米尔语"
+
+#: studies/fields.py:105
+msgid "Telugu"
+msgstr "泰卢固语"
+
+#: studies/fields.py:106
+msgid "Thai"
+msgstr "泰语"
+
+#: studies/fields.py:107
+msgid "Turkish"
+msgstr "土耳其语"
+
+#: studies/fields.py:108
+msgid "Ukrainian"
+msgstr "乌克兰语"
+
+#: studies/fields.py:109
+msgid "Urdu"
+msgstr "乌尔都语"
+
+#: studies/fields.py:110
+msgid "Vietnamese"
+msgstr "越南语"
+
+#: studies/fields.py:111
+msgid "Western Punjabi"
+msgstr "西旁遮普语"
+
+#: studies/fields.py:112
+msgid "Wu"
+msgstr "中文（吴方言）"
+
+#: studies/fields.py:113
+msgid "Xiang Chinese"
+msgstr "中文（湘方言）"
+
+#: studies/fields.py:114
+msgid "Yoruba"
+msgstr "约鲁巴语"
+
+#: studies/fields.py:115
+msgid "Yue"
+msgstr "粤语"
+
+#: web/templates/flatpages/default.html:53
+msgid "This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation."
+msgstr "本材料由美国国家科学基金会（NSF）下编号为1429216和1823919的基金，及由NSF STC的CCF-1231216奖金和由NSF研究生研究奖学金（No. 1122374）资助的脑、心智和机器中心（CBMM）所支持。本材料中所表达的任何观点、发现、结论或建议均来自作者，并不一定代表美国国家科学基金会（NSF）的观点。"
+
+#: web/templates/flatpages/default.html:58
+msgid "Privacy"
+msgstr "隐私"
+
+#: web/templates/flatpages/default.html:59
+msgid "Contact us"
+msgstr "联系我们"
+
+#: web/templates/flatpages/default.html:60
+msgid "Connect"
+msgstr "关注我们"
+
+#: web/templates/registration/login.html:8
+#: web/templates/web/studies-history.html:9
+#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
+msgid "Your login credentials didn't work. Please try again."
+msgstr "您的登录信息无效。请再次尝试。"
+
+#: web/templates/registration/login.html:36
+msgid "Register your family!"
+msgstr "为您的家人注册"
+
+#: web/templates/registration/password_reset_done.html:11
+msgid "Password reset link sent"
+msgstr "密码重置链接已发送"
+
+#: web/templates/registration/password_reset_done.html:15
+msgid "If an account exists with the email you entered, we've emailed instructions for resetting your password and you should receive them shortly."
+msgstr "如果您输入的邮箱已在Lookit注册过，我们已经通过邮件发送了有关重置密码的说明，您很快就会收到。"
+
+#: web/templates/registration/password_reset_done.html:17
+msgid "If you don't receive an email, please check your spam folder and make sure you've entered the address you registered with. (You won't get an email unless there's already an account for that email address!)"
+msgstr "如果您没有收到电子邮件，请检查您的垃圾邮件文件夹并确保您正确输入了注册Lookit账号时使用的邮箱。 （除非该邮箱已在Lookit注册，否则您不会收到电子邮件！）"
+
+#: web/templates/registration/password_reset_form.html:11
+msgid "Password reset"
+msgstr "重置密码"
+
+#: web/templates/web/child-update.html:26
+msgid "Back to Children List"
+msgstr "返回儿童列表"
+
+#: web/templates/web/participant-signup.html:18
+msgid "Create Participant Account"
+msgstr "创建参与者账号"
+
+#: web/templates/web/participant-signup.html:22
+msgid "Create a family account to start participating in Lookit studies!"
+msgstr "创建一个家庭帐户即可开始参与Lookit研究！"
+
+#: web/templates/web/participant-signup.html:23
+msgid "To register as a researcher, please use"
+msgstr "要注册为研究人员，请使用"
+
+#: web/templates/web/participant-signup.html:23
+msgid "this form"
+msgstr "这份表格"
+
+#: web/templates/web/participant-signup.html:23
+msgid "instead"
+msgstr ""
+
+#: web/templates/web/studies-history.html:107
+msgid "Video"
+msgstr "视频"
+
+#: web/templates/web/studies-history.html:133
+msgid "Feedback"
+msgstr "反馈"
+
+#: web/templates/web/studies-history.html:139
+msgid "None"
+msgstr "无"
+
+#: web/templates/web/study-detail.html:53
+msgid "days"
+msgstr "天"
+
+#: web/templates/web/study-detail.html:53
+msgid " until "
+msgstr " 直到 "
+
+#: web/templates/web/study-detail.html:53
+msgid " when "
+msgstr " 什么时候 "
+
+#: web/templates/web/study-detail.html:142
+msgid "Add child profile to "
+msgstr "将儿童档案添加到 "
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "preview"
+msgstr "预览"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "participate"
+msgstr "参与"
+
+#: web/templates/web/study-detail.html:144
+msgid "Complete demographic survey to "
+msgstr "完成基本信息以  "
+
 #: web/templates/web/study-detail.html:167
 msgid "now"
-msgstr ""
-
-#: web/templates/web/study-detail.html:168
-msgid ""
-"For an easy way to see what happens as you update your study protocol, "
-"bookmark the URL the button above sends you to."
-msgstr ""
-"为了方便查看您更新研究协议时发生的情况，请将上面按钮发送给您的网址加入书签。"
+msgstr "现在"
 
 #: web/views.py:47
-#, fuzzy
-#| msgid "Participant account"
 msgid "Participant created."
-msgstr "参与者账户"
+msgstr "参与者已创建。"
 
 #: web/views.py:72
-#, fuzzy
-#| msgid "Demographic Survey"
 msgid "Demographic data saved."
-msgstr "人口调查"
+msgstr "基本信息已保存。"
 
 #: web/views.py:140
-#, fuzzy
-#| msgid "Children"
 msgid "Child added."
-msgstr "儿童"
+msgstr "儿童档案已添加。"
 
 #: web/views.py:176
 msgid "Child deleted."
-msgstr ""
+msgstr "儿童档案已删除。"
 
 #: web/views.py:178
 msgid "Child updated."
-msgstr ""
+msgstr "儿童档案已更新。"
 
 #: web/views.py:201
-#, fuzzy
-#| msgid "Email Preferences"
 msgid "Email preferences saved."
-msgstr "邮件偏好"
+msgstr "电子邮件偏好已保存。"
 
 #: web/views.py:295
-#, python-brace-format
-msgid ""
-"The study {study.name} is not currently collecting data - the study is "
-"either completed or paused. If you think this is an error, please contact "
-"{study.contact_info}"
-msgstr ""
+msgid "The study {study.name} is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact {study.contact_info}"
+msgstr "{study.name}研究当前未在收集数据（研究已完成或已暂停）。若您认为这是一个错误信息，请联系{study.contact_info}"
 
-#~ msgid "Login Unsuccessful"
-#~ msgstr "登录失败"
-
-#~ msgid ""
-#~ "A Lookit study participant exists with the email address for your OSF "
-#~ "user account. Create an OSF user with a different email address and try "
-#~ "logging into Experimenter with that. "
-#~ msgstr ""
-#~ "您的OSF(open science framework)用户的电子邮件地址已被一位Lookit参与者注册"
-#~ "过。请使用一个不同的电子邮件地址来创建OSF用户，并尝试用此登录实验者账号。 "
-
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href="
-#~ msgstr ""
-#~ "如果这种情况不应该发生，但问题仍然存在，请将其报告给<a href='_blank></a>。"
-
-#~ msgid "Return to Experimenter"
-#~ msgstr "返回实验者界面"
-
-#~ msgid "Sign In"
-#~ msgstr "注册"
-
-#~ msgid ""
-#~ "\n"
-#~ "          Please sign in to the Open Science Framework or register for an "
-#~ "account and sign in below.\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "        By using or requesting access to Lookit, you agree that you have "
-#~ "read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of "
-#~ "Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</"
-#~ "a>.\n"
-#~ "        "
-#~ msgstr ""
-#~ "\n"
-#~ "          请登录开放科学框架或注册一个账户并在下方登录。\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "        通过使用或请求访问Lookit，您同意您已阅读并接受<a href=\"/"
-#~ "termsofuse/\" target=\"_blank\">使用条款</a>和<a href=\"/privacy/\" "
-#~ "target=\"_blank\">隐私声明</a>。\n"
-#~ "        "
-
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href=\"mailto:support@osf.io\">support@osf.io</a>"
-#~ msgstr ""
-#~ "如果这种情况不应该发生，而问题仍然存在，请将其报告给<a href=\"mailto:"
-#~ "support@osf.io\">support@osf.io</a>。"
-
-#~ msgid "Participant Login"
-#~ msgstr "参与者登录"
-
-#~ msgid "Looking for "
-#~ msgstr "查找 "
-
-#~ msgid "researcher login"
-#~ msgstr "研究员登录"
-
-#~ msgid "Create an account!"
-#~ msgstr "创建新用户！"
-
-#~ msgid "Account information"
-#~ msgstr "用户信息"
-
-#~ msgid "Change your name, email, or password."
-#~ msgstr "更改您的姓名、电子邮件或密码。"
-
-#~ msgid "Signup"
-#~ msgstr "注册"
-
-#~ msgid "Update account information"
-#~ msgstr "更新账号信息"
