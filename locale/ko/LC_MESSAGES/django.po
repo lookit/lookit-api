@@ -1,249 +1,181 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: MBAH_studiespage\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-11 07:10-0500\n"
-"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
+"Project-Id-Version: MBAH_studiespage\n"
+"Language: ko\n"
 
-#: accounts/forms.py:55
-msgid "Enter a valid 6-digit one-time password from Google Authenticator"
-msgstr ""
-
-#: accounts/forms.py:106
-#, python-format
-msgid ""
-"Please enter a correct %(username)s and password. Note that email and "
-"password fields may be case-sensitive. If you have turned on two-factor "
-"authentication, you will need a one-time password (OTP code) from Google "
-"Authenticator as well. "
-msgstr ""
-
-#: accounts/forms.py:111
-msgid "This account is inactive."
-msgstr ""
-
-#: accounts/forms.py:194
-msgid "Your password can’t be too similar to your other personal information."
-msgstr ""
-
-#: accounts/forms.py:195
-msgid "Your password must contain at least 16 characters."
-msgstr ""
-
-#: accounts/forms.py:196
-msgid "Your password can’t be a commonly used password."
-msgstr ""
-
-#: accounts/forms.py:197
-msgid "Your password can’t be entirely numeric."
-msgstr ""
-
-#: accounts/forms.py:213 accounts/forms.py:229 accounts/models.py:140
+#: accounts/forms.py:213 accounts/forms.py:229
 msgid "Email address"
 msgstr "이메일 주소"
 
-#: accounts/forms.py:214 accounts/models.py:145
-#: accounts/templates/accounts/participant_list.html:37
-#: accounts/templates/accounts/participant_list.html:58
-msgid "Nickname"
-msgstr "별명"
-
 #: accounts/forms.py:254
-msgid ""
-"It's time for another session of a study we are currently participating in"
+#, fuzzy
+msgid "It's time for another session of a study we are currently participating in"
 msgstr "현재 우리가 참여하고있는 연구의 다른 세션을 살펴보겠습니다"
 
+#. For Hyeon-Ah: 조금 더 자연스럽게 하기 위해서 문장의 어순을 조금 바꾸어보았어요 :)
 #: accounts/forms.py:256
-#, fuzzy
 msgid "A new study is available for one of my children"
-msgstr "내 자녀 중 한 명에게 새로운 연구가 가능합니다"
+msgstr "귀하의 자녀분(들) 중 한 명이 참여가능한 새로운 연구가 있습니다"
 
 #: accounts/forms.py:258
-#, fuzzy
-msgid ""
-"There's an update about a study we participated in (for example, results are "
-"published)"
-msgstr ""
-"우리가 참여한 연구에 대한 최신정보가 있습니다 (예를 들어, 결과가 발표됨)"
+msgid "There's an update about a study we participated in (for example, results are published)"
+msgstr "우리가 참여한 연구에 대한 새로운 알림이 있습니다 (예를 들어, 연구결과가 출판됨)"
 
+#. For Hyeon-Ah: 질문을 합니다 --> 질문이 있습니다로 직역해보았어요.
 #: accounts/forms.py:261
-#, fuzzy
-msgid ""
-"A researcher has questions about my individual responses (for example, if I "
-"report a technical problem during the study)"
-msgstr ""
-"연구자가 내 개별 응답에 대해 질문을 합니다 (예를 들어, 연구 중에 기술적 문제"
-"를 보고하는 경우)"
+msgid "A researcher has questions about my individual responses (for example, if I report a technical problem during the study)"
+msgstr "연구자가 귀하의 개별 응답에 대해 질문이 있습니다 (예를 들어, 귀하께서 연구 중에 기술적 문제를 보고하시는 경우)"
 
 #: accounts/forms.py:270 accounts/forms.py:317
-#, fuzzy
 msgid "What category(ies) does your family identify as?"
-msgstr "귀하의 가족형태는 어떻게 됩니까?"
+msgstr "귀하의 가족형태는 어떻게 되십니까?"
 
 #: accounts/forms.py:299
+#, fuzzy
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
-msgstr "쉼표로 구분 된 목록에 따라 입력: YYYY-MM-DD, YYYY-MM-DD, ..."
+msgstr "다음 형태에 맞게 년/월/일을 입력해주십시오 (쉼표로 구분): 0000-00-00, 0000-00-00, ..."
 
 #: accounts/forms.py:301
 #, fuzzy
 msgid "Numerical answers only - a rough guess is fine!"
-msgstr "숫자로 나타낸 답변만 - 대략적인 추측은(어림짐작해도) 괜찮습니다!"
+msgstr "숫자 형태로만 입력 - 대략적인 추측도 괜찮습니다!"
 
 #: accounts/forms.py:305
 msgid "What country do you live in?"
-msgstr "귀하의 어느 나라에 살고 있습니까?"
+msgstr "귀하께서는 어느 나라에 살고 계십니까?"
 
+#. For Hyeon-Ah:지금은 일단 '주'를 하위 지역 단위로 보고 '지역'으로 의역했답니다. Slack에 전반적인 번역 지침이 있는 것 같은데, 다시 확인해보고 수정할게요!
 #: accounts/forms.py:306
 #, fuzzy
 msgid "What state do you live in?"
-msgstr "귀하의 어느 주에 살고 있습니까?"
+msgstr "귀하는 어느 지역 (도, 특별시) 에 살고 계십니까?"
 
 #: accounts/forms.py:307
 msgid "How would you describe the area where you live?"
-msgstr "귀하가 살고있는 지역을 어떻게 설명 하시겠습니까?"
+msgstr "귀하께서 살고 계신 지역을 어떻게 설명 하시겠습니까?"
 
+#. For Hyeon-Ah: 한국에서는 단일 언어 가정 (한국어 사용)이 더 많을것 같은데, 한번 언어(들)은 을 해봤어요! 이 경우에 언어'는'으로 해야할 지 '은' 으로 해야할지 고민이네요 ㅠㅠ 이 부분도 다시 확인해볼께요..!
 #: accounts/forms.py:309
+#, fuzzy
 msgid "What language(s) does your family speak at home?"
-msgstr "귀하의 가족이 집에서 사용하는 언어는 무엇입니까?"
+msgstr "귀하의 가족이 집에서 대화할 때 사용하는 언어(들)은 무엇입니까?"
 
+#. 자식 -> 자녀 (10-06-2020, 김민주)
 #: accounts/forms.py:311
+#, fuzzy
 msgid "How many children do you have?"
-msgstr "귀하는 자식이 몇명입니까?"
+msgstr "귀하는 자녀분이 몇명 있으십니까?"
 
 #: accounts/forms.py:312
 msgid "For each child, please enter his or her birthdate:"
-msgstr "각 자녀의 생년월일을 입력하십시오:"
+msgstr "각 자녀분의 생년월일을 입력해주십시오:"
 
+#. 후견인, 법적 보호자
 #: accounts/forms.py:314
 #, fuzzy
 msgid "How many parents/guardians do your children live with?"
-msgstr "귀하의 자녀는 몇 명의 부모/후견인(보호자)과 함께 살고 있습니까?"
+msgstr "귀하의 자녀분(들)은 몇 명의 부모/법적보호자와 함께 살고 있습니까?"
 
 #: accounts/forms.py:319
 msgid "What is your age?"
-msgstr "귀하의 나이는 무엇입니까?"
+msgstr "귀하의 만 나이는 무엇입니까?"
 
 #: accounts/forms.py:320
 msgid "What is your gender?"
 msgstr "귀하의 성별은 무엇입니까?"
 
+#. For Hyeon-Ah: 예전에 다른 설문지에서 '최고학력'이라는 단어를 썼었던 적이 있는데, 조금 딱딱해보이네요 ㅠㅠ 이 부분도 다시 확인해볼게요!
 #: accounts/forms.py:322
+#, fuzzy
 msgid "What is the highest level of education you've completed?"
-msgstr "귀하가 수료한 최고 수준의 교육은 무엇입니까?"
+msgstr "귀하가 수료한 최고학력은 무엇입니까?"
 
 #: accounts/forms.py:325
 msgid "What is the highest level of education your spouse has completed?"
-msgstr "귀하의 배우자가 수료한 최고 수준의 교육은 무엇입니까?"
+msgstr "귀하의 배우자가 수료한 최고학력은 무엇입니까?"
 
 #: accounts/forms.py:328
 msgid "What is your approximate family yearly income (in US dollars)?"
-msgstr "대략적인 연간 가족 소득은 얼마입니까 (미국 달러로)?"
+msgstr "대략적인 연간 가족 소득은 얼마입니까 (한국 원화로)?"
 
 #: accounts/forms.py:331
 msgid "About how many children's books are there in your home?"
-msgstr "집에 아동도서가 몇 권 있습니까?"
+msgstr "집에 아동도서가 몇 권 정도 있으십니까?"
 
 #: accounts/forms.py:333
-#, fuzzy
 msgid "Anything else you'd like us to know?"
-msgstr "다른 궁금한 것이 있습니까?"
+msgstr "저희에게 더 알려주시고 싶으신 부분이 있으십니까?"
 
 #: accounts/forms.py:334
 msgid "How did you hear about Lookit?"
 msgstr "Lookit에 대해 어떻게 알게 되셨습니까?"
 
 #: accounts/forms.py:336
-msgid ""
-"If the answer varies due to shared custody arrangements or travel, please "
-"enter the number of parents/guardians your children are usually living with "
-"or explain."
-msgstr ""
-"공동 양육권 계약이나 여행으로 인해 답변이 다른 경우, 자녀가 일반적으로 함께 "
-"살고있는 부모/후견인 수를 입력하거나 설명하십시오."
-
-#: accounts/forms.py:351 accounts/forms.py:377 accounts/forms.py:429
-#: accounts/templates/accounts/participant_detail.html:38
-#: web/templates/web/children-list.html:112
-msgid "Birthday"
-msgstr "생일"
-
-#: accounts/forms.py:353
 #, fuzzy
-msgid ""
-"This lets us figure out exactly how old your child is when they participate "
-"in a study. We never publish children's birthdates or information that would "
-"allow a reader to calculate the birthdate."
-msgstr ""
-"이를 통해 자녀가 연구에 참여할 때 몇 살인지 정확히 알아낼 수 있습니다. 저희"
-"는 독자가 생년월일을 계산하도록 아동의 생년월일 또는 아동에 대한 정보를 절대 "
-"게시하지 않습니다."
+msgid "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
+msgstr "귀하의 답변이 공동 양육권 계약 및 방문 규정으로 인해 답변이 다른 경우, 자녀분이 일반적으로 함께 살고있는 부모/법적 보호자 수를 입력하거나 설명해주십시오."
 
-#: accounts/forms.py:360
+#: accounts/forms.py:352
+#, fuzzy
+msgid "This lets us figure out exactly how old your child is when they participate in a study. We never publish children's birthdates or information that would allow a reader to calculate the birthdate."
+msgstr "이 정보는 연구 참여 시의 자녀분의 연령을 저희가 정확하게 계산할 수 있도록 해줍니다. 저희는 다른 독자가 자녀분의 생년월일을 계산할 수 있는 형태의 정보를 절대로 출판하지 않습니다."
+
+#: accounts/forms.py:359
+#, fuzzy
 msgid "Birthdays cannot be in the future."
-msgstr "생일은 미래일 수 없습니다."
+msgstr "생일은 미래의 날짜일 수 없습니다."
 
-#: accounts/forms.py:376 accounts/forms.py:428
+#: accounts/forms.py:375 accounts/forms.py:426
 msgid "First Name"
 msgstr "이름"
 
-#: accounts/forms.py:378 accounts/forms.py:430
-#: accounts/templates/accounts/participant_detail.html:54
-msgid "Gender"
-msgstr "성별"
+#: accounts/templates/accounts/participant_detail.html:38
+#: web/templates/web/children-list.html:112
+msgid "Birthday"
+msgstr "생년월일"
 
-#: accounts/forms.py:379 accounts/forms.py:431
+#: accounts/forms.py:378 accounts/forms.py:429
 #: accounts/templates/accounts/participant_detail.html:62
-#, fuzzy
 msgid "Gestational Age at Birth"
-msgstr "아기를 임신한 기간"
+msgstr "임신 주 수 (출생 당시 __주)"
 
-#: accounts/forms.py:381 accounts/forms.py:433
-#, fuzzy
+#: accounts/forms.py:380 accounts/forms.py:431
 msgid "Any additional information you'd like us to know"
-msgstr "추가로 하고싶은 이야기"
+msgstr "저희에게 더 알려주시고 싶으신 부분이 있으십니까?"
 
-#: accounts/forms.py:383 accounts/forms.py:435
+#. 이 부분은 하위 메뉴를 보고 정의해야 할것 같습니다.
+#: accounts/forms.py:382 accounts/forms.py:433
 #, fuzzy
 msgid "Characteristics and conditions"
 msgstr "특성 및 조건"
 
-#: accounts/forms.py:385 accounts/forms.py:437
-msgid ""
-"Languages this child is exposed to at home, school, or with another "
-"caregiver."
-msgstr "이 아이가 가정, 학교 또는 다른 보호자와 함께 노출되는 언어."
+#: accounts/forms.py:384 accounts/forms.py:435
+msgid "Languages this child is exposed to at home, school, or with another caregiver."
+msgstr "자녀분이 가정, 학교 또는 다른 보호자와 있을 때 노출되는 언어(들)"
 
-#: accounts/forms.py:391 accounts/forms.py:443
+#. used to be: 이를 통해 특정 연구에 참여할 수 있는 적절한 아이를 선택할 수 있습니다. 별명이나 이니셜을 적어도 괜찮습니다! 귀하께 보내는 이메일에 자녀의 이름을 포함시킬 수 있지만 (예 : "Molly가 참여할 수 있는 새로운 연구가 있습니다!") 절대 이름을 게시하거나 연구에 사용하지 않습니다.
+#: accounts/forms.py:390 accounts/forms.py:441
 #, fuzzy
-msgid ""
-"This lets you select the correct child to participate in a particular study. "
-"A nickname or initials are fine! We may include your child's name in email "
-"to you (for instance, \"There's a new study available for Molly!\") but will "
-"never publish names or use them in our research."
-msgstr ""
-"이를 통해 특정 연구에 참여할 수 있는 적절한 아이를 선택할 수 있습니다. 별명이"
-"나 이니셜을 적어도 괜찮습니다! 귀하께 보내는 이메일에 자녀의 이름을 포함시킬 "
-"수 있지만 (예 : \"Molly가 참여할 수 있는 새로운 연구가 있습니다!\") 절대 이름"
-"을 게시하거나 연구에 사용하지 않습니다."
+msgid "This lets you select the correct child to participate in a particular study. A nickname or initials are fine! We may include your child's name in email to you (for instance, \"There's a new study available for Molly!\") but will never publish names or use them in our research."
+msgstr "이 정보는 연구참여시 특정 연구에 맞는 자녀분을 고르실 수 있도록 도와줍니다. 별칭(이니셜)도 좋습니다! 저희가 귀하께 보내드리는 이메일에 자녀분의 이름을 포함할 수 있지만 (예 : \"영희가 참여할 수 있는 새로운 연구가 있습니다!\") 저희는 절대 자녀분의 이름을 공적으로 게시하거나 연구에 사용하지 않을 것입니다."
 
-#: accounts/forms.py:394 accounts/forms.py:446
-msgid ""
-"For instance, diagnosed developmental disorders or vision or hearing problems"
-msgstr "예를 들어, 발달 장애 또는 시력 또는 청력 문제를 진단받았습니다"
+#: accounts/forms.py:393 accounts/forms.py:444
+msgid "For instance, diagnosed developmental disorders or vision or hearing problems"
+msgstr "예를 들어, 발달 장애 또는 시력 및 청력 문제를 진단받은 적이 있습니다."
 
-#: accounts/forms.py:397
+#: accounts/forms.py:396
 #, fuzzy
 msgid "Please round down to the nearest full week of pregnancy completed"
-msgstr "임신이 완료된 가장 가까운 전체 주를 내림하십시오."
+msgstr "출산까지 임신 하셨던 기간을 가장 가까운 정수로 내림하여 응답해주십시오 (예 36.5주 --> 36주)."
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
 #: accounts/models.py:301 studies/fields.py:135
 msgid "Not sure or prefer not to answer"
-msgstr "확실하지 않거나 답변을 원하지 않습니다"
+msgstr "확실하지 않거나 답변하기를 원하지 않습니다"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
 #: accounts/models.py:302 studies/fields.py:136
@@ -338,27 +270,27 @@ msgstr "40주 이상"
 #: accounts/models.py:79
 #, fuzzy
 msgid "Can View Organization"
-msgstr "조직 보기 가능"
+msgstr "기관 보기"
 
 #: accounts/models.py:80
 msgid "Can Edit Organization"
-msgstr "조직 편집 가능"
+msgstr "기관 편집하기"
 
 #: accounts/models.py:81
 msgid "Can Create Organization"
-msgstr "조직 생성 가능"
+msgstr "기관 추가하기"
 
 #: accounts/models.py:82
 msgid "Can Remove Organization"
-msgstr "조직 제거 가능"
+msgstr "기관 제거하기"
 
 #: accounts/models.py:83
 msgid "Can View Experimenter"
-msgstr "실험자 보기 가능"
+msgstr "연구자 보기"
 
 #: accounts/models.py:84
 msgid "Can View Analytics"
-msgstr "분석 보기 가능"
+msgstr "분석내용 보기"
 
 #: accounts/models.py:279
 msgid "Can Create User"
@@ -386,7 +318,7 @@ msgstr "사용자 권한 편집 가능"
 
 #: accounts/models.py:285
 msgid "Can Read All User Data"
-msgstr "모든 사용자 자료를 읽을 수 있음"
+msgstr "모든 사용자 데이터를 읽을 수 있음"
 
 #: accounts/models.py:286
 msgid "Can Read User Usernames"
@@ -413,6 +345,7 @@ msgid "White"
 msgstr "백인"
 
 #: accounts/models.py:387
+#, fuzzy
 msgid "Hispanic, Latino, or Spanish origin"
 msgstr "히스패닉, 라틴계 또는 스페인계"
 
@@ -422,7 +355,7 @@ msgstr "흑인 또는 아프리카 계 미국인"
 
 #: accounts/models.py:389
 msgid "Asian"
-msgstr "아시아 인"
+msgstr "아시아인"
 
 #: accounts/models.py:390
 msgid "American Indian or Alaska Native"
@@ -437,22 +370,23 @@ msgid "Native Hawaiian or Other Pacific Islander"
 msgstr "하와이 원주민 또는 기타 태평양 섬 주민"
 
 #: accounts/models.py:393
+#, fuzzy
 msgid "Another race, ethnicity, or origin"
 msgstr "다른 인종, 민족 또는 출신"
 
 #: accounts/models.py:402 accounts/models.py:411
 msgid "some or attending high school"
-msgstr "일부 또는 고등학교 재학중"
+msgstr "고등학교 재학 중 및 중퇴"
 
 #: accounts/models.py:403 accounts/models.py:412
 #, fuzzy
 msgid "high school diploma or GED"
-msgstr "고등학교 졸업 또는 검정고시 합격(응시)"
+msgstr "고등학교 졸업 또는 검정고시 합격"
 
 #: accounts/models.py:404 accounts/models.py:413
 #, fuzzy
 msgid "some or attending college"
-msgstr "일부 또는 대학에 재학중"
+msgstr "대학 재학중 및 중퇴"
 
 #: accounts/models.py:405 accounts/models.py:414
 msgid "2-year college degree"
@@ -465,7 +399,7 @@ msgstr "4년제 대학 학위"
 #: accounts/models.py:407 accounts/models.py:416
 #, fuzzy
 msgid "some or attending graduate or professional school"
-msgstr "일부 또는 대학원이나 전문 학교에 재학중"
+msgstr "일부 또는 대학원이나 전문 학교에 재학중 및 중퇴"
 
 #: accounts/models.py:408 accounts/models.py:417
 msgid "graduate or professional degree"
@@ -523,6 +457,7 @@ msgstr "10"
 msgid "More than 10"
 msgstr "10 이상"
 
+#. Does these numbers mean age? If so, Korean has a "Korean age" where a baby becomes one year old as soon as it is born. So should i match Korean age and American age by writing "만" in front of these numbers which means 'you should subtract ONE YEAR off from your baby's Korean age.'
 #: accounts/models.py:435
 msgid "under 18"
 msgstr "18 미만"
@@ -545,7 +480,7 @@ msgstr "30-34"
 
 #: accounts/models.py:440
 msgid "35-39"
-msgstr "만 35 ~ 39"
+msgstr "35 ~ 39"
 
 #: accounts/models.py:441
 msgid "40-44"
@@ -553,7 +488,7 @@ msgstr "40 ~ 44"
 
 #: accounts/models.py:442
 msgid "45-49"
-msgstr "만 45 ~ 49"
+msgstr "45 ~ 49"
 
 #: accounts/models.py:443
 msgid "50-59"
@@ -564,17 +499,20 @@ msgid "60-69"
 msgstr "60-69"
 
 #: accounts/models.py:445
+#, fuzzy
 msgid "70 or over"
 msgstr "70 이상"
 
 #: accounts/models.py:449
+#, fuzzy
 msgid "3 or more"
 msgstr "3 이상"
 
+#. 상황에 따라 다릅니다?
 #: accounts/models.py:449
 #, fuzzy
 msgid "varies"
-msgstr "다양하다/다르다"
+msgstr "상황에 따라 다름"
 
 #: accounts/models.py:453
 msgid "5000"
@@ -674,84 +612,19 @@ msgstr "교외"
 
 #: accounts/models.py:478
 msgid "rural"
-msgstr "시골"
+msgstr "농/어촌 지역"
 
 #: accounts/models.py:528
 #, fuzzy
 msgid "Select a State"
-msgstr "주 선택"
+msgstr "도/특별시 선택"
 
-#: accounts/templates/accounts/_account-navigation.html:2
-#: accounts/templates/accounts/account-update.html:24
-msgid "Account Information"
-msgstr "계정 정보"
-
-#: accounts/templates/accounts/_account-navigation.html:2
-msgid "Change your login credentials and/or nickname."
-msgstr ""
-
-#: accounts/templates/accounts/_account-navigation.html:3
+#: web/templates/registration/login.html:18
+#: web/templates/registration/login.html:25
+#: web/templates/web/_navigation.html:45
 #, fuzzy
-msgid "Demographic Survey"
-msgstr "인구 통계 조사"
-
-#: accounts/templates/accounts/_account-navigation.html:3
-#, fuzzy
-msgid "Tell us more about yourself."
-msgstr "귀하에 대해 알려주십시오."
-
-#: accounts/templates/accounts/_account-navigation.html:4
-msgid "Children Information"
-msgstr "아동 정보"
-
-#: accounts/templates/accounts/_account-navigation.html:4
-msgid "Add or edit participant information."
-msgstr "참가자 정보를 추가하거나 편집합니다."
-
-#: accounts/templates/accounts/_account-navigation.html:5
-#: web/templates/web/participant-email-preferences.html:4
-msgid "Email Preferences"
-msgstr "이메일 환경 설정"
-
-#: accounts/templates/accounts/_account-navigation.html:5
-#, fuzzy
-msgid "Edit when you can be contacted."
-msgstr "연락(이 가능할 때) 할 수있을 때 편집하십시오."
-
-#: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
-#: web/templates/web/children-list.html:67
-#: web/templates/web/demographic-data-update.html:78
-#: web/templates/web/participant-email-preferences.html:16
-msgid "My Account"
-msgstr "내 계정"
-
-#: accounts/templates/accounts/account-update.html:37
-#: accounts/templates/accounts/account-update.html:58
-#: web/templates/web/child-update.html:46
-#: web/templates/web/demographic-data-update.html:102
-#: web/templates/web/participant-email-preferences.html:38
-msgid "Save"
-msgstr "저장"
-
-#: accounts/templates/accounts/account-update.html:45
-#, fuzzy
-msgid "Change Your Password"
-msgstr "비밀번호를 변경하십시오"
-
-#: accounts/templates/accounts/account-update.html:68
-msgid "Manage Two-Factor Authentication"
-msgstr ""
-
-#: accounts/templates/accounts/account-update.html:83
-msgid ""
-"If you'd like, you can turn two-factor authentication off here. Just enter "
-"your one-time password here, hit submit, and it'll get deleted for you!"
-msgstr ""
-
-#: accounts/templates/accounts/account-update.html:108
-msgid "Set up Two-Factor Authentication"
-msgstr ""
+msgid "Login"
+msgstr "로그인"
 
 #: accounts/templates/accounts/participant_detail.html:15
 msgid "All Participants"
@@ -773,11 +646,16 @@ msgstr "참가자 글로벌 ID:"
 #: web/templates/web/children-list.html:105
 #, fuzzy
 msgid "Children"
-msgstr "아동"
+msgstr "자녀"
 
 #: accounts/templates/accounts/participant_detail.html:46
 msgid "Age"
-msgstr "나이"
+msgstr "만 나이"
+
+#: accounts/forms.py:377 accounts/forms.py:428
+#: accounts/templates/accounts/participant_detail.html:54
+msgid "Gender"
+msgstr "성별"
 
 #: accounts/templates/accounts/participant_detail.html:70
 msgid "Additional Info"
@@ -786,11 +664,11 @@ msgstr "추가 정보"
 #: accounts/templates/accounts/participant_detail.html:79
 #, fuzzy
 msgid "No children profiles registered!"
-msgstr "등록된  아동프로필이 없습니다!"
+msgstr "등록된 자녀 정보가 없습니다!"
 
 #: accounts/templates/accounts/participant_detail.html:83
 msgid "Latest Demographic Data"
-msgstr "최신 인구 통계 자료"
+msgstr "최신 인구 통계 정보"
 
 #: accounts/templates/accounts/participant_detail.html:86
 msgid "Country"
@@ -799,7 +677,7 @@ msgstr "국가"
 #: accounts/templates/accounts/participant_detail.html:94
 #, fuzzy
 msgid "State"
-msgstr "주"
+msgstr "도/특별시"
 
 #: accounts/templates/accounts/participant_detail.html:102
 msgid "Area description"
@@ -807,7 +685,7 @@ msgstr "지역 설명"
 
 #: accounts/templates/accounts/participant_detail.html:110
 msgid "Languages Spoken at Home"
-msgstr "가정에서 사용하는 언어"
+msgstr "가정에서 사용하는 언어(들)"
 
 #: accounts/templates/accounts/participant_detail.html:118
 msgid "Number of Children"
@@ -815,44 +693,30 @@ msgstr "자녀의 수"
 
 #: accounts/templates/accounts/participant_detail.html:126
 msgid "Children current ages"
-msgstr "자녀의 현재 나이"
+msgstr "자녀분들의 현재 만 나이(들)"
 
 #: accounts/templates/accounts/participant_detail.html:134
 msgid "Number of Guardians"
-msgstr "보호자 수"
+msgstr "부모 또는 법적 보호자 수"
 
 #: accounts/templates/accounts/participant_detail.html:142
 msgid "Explanation for Guardians:"
-msgstr "보호자에 대한 설명 :"
+msgstr "법적 보호자에 대한 설명 :"
 
 #: accounts/templates/accounts/participant_detail.html:150
+#, fuzzy
 msgid "Race"
 msgstr "인종"
+
+#: accounts/forms.py:214 accounts/templates/accounts/participant_list.html:37
+#: accounts/templates/accounts/participant_list.html:58
+msgid "Nickname"
+msgstr "별칭"
 
 #: exp/templates/exp/dashboard.html:16
 #, fuzzy
 msgid "Dashboard"
 msgstr "대시보드(계기판)"
-
-#: studies/fields.py:7
-msgid "Autism Spectrum Disorder"
-msgstr ""
-
-#: studies/fields.py:8
-msgid "Deaf"
-msgstr ""
-
-#: studies/fields.py:9
-msgid "Hard of Hearing"
-msgstr ""
-
-#: studies/fields.py:10
-msgid "Dyslexia"
-msgstr ""
-
-#: studies/fields.py:11
-msgid "Multiple Birth (twin, triplet, or higher order)"
-msgstr ""
 
 #: studies/fields.py:45
 msgid "Twin"
@@ -862,275 +726,35 @@ msgstr "쌍둥이"
 msgid "Triplet"
 msgstr "세 쌍둥이"
 
+#. @Hyeon-Ah @Minju 일관성/간편성을 위해 "네 쌍둥이"로 수정하는게 어떨까요? (아래 quintuplet부터 octoplet에도 같은 의견입니다)
 #: studies/fields.py:47
 #, fuzzy
 msgid "Quadruplet"
-msgstr "네 쌍둥이 중의 한 명"
+msgstr "네 쌍둥이"
 
 #: studies/fields.py:48
 #, fuzzy
 msgid "Quintuplet"
-msgstr "다섯 쌍둥이 중의 한 명"
+msgstr "다섯 쌍둥이"
 
 #: studies/fields.py:49
 #, fuzzy
 msgid "Sextuplet"
-msgstr "여섯 쌍둥이 중의 한 명"
+msgstr "여섯 쌍둥이"
 
 #: studies/fields.py:50
 #, fuzzy
 msgid "Septuplet"
-msgstr "일곱 쌍둥이 중의 한 명"
+msgstr "일곱 쌍둥이"
 
 #: studies/fields.py:51
 #, fuzzy
 msgid "Octuplet"
-msgstr "여덟 쌍둥이 중의 한 명"
-
-#: studies/fields.py:57
-msgid "English"
-msgstr ""
-
-#: studies/fields.py:58
-msgid "Amharic"
-msgstr ""
-
-#: studies/fields.py:59
-msgid "Bengali"
-msgstr ""
-
-#: studies/fields.py:60
-msgid "Bhojpuri"
-msgstr ""
-
-#: studies/fields.py:61
-msgid "Burmese"
-msgstr ""
-
-#: studies/fields.py:62
-msgid "Cebuano"
-msgstr ""
-
-#: studies/fields.py:63
-msgid "Chhattisgarhi"
-msgstr ""
-
-#: studies/fields.py:64
-msgid "Dutch"
-msgstr ""
-
-#: studies/fields.py:65
-msgid "Egyptian Spoken Arabic"
-msgstr ""
-
-#: studies/fields.py:66
-msgid "French"
-msgstr ""
-
-#: studies/fields.py:67
-msgid "Gan"
-msgstr ""
-
-#: studies/fields.py:68
-msgid "German"
-msgstr ""
-
-#: studies/fields.py:69
-#, fuzzy
-msgid "Gujarati"
-msgstr "지속 기간"
-
-#: studies/fields.py:70
-msgid "Hakka"
-msgstr ""
-
-#: studies/fields.py:71
-msgid "Hausa"
-msgstr ""
-
-#: studies/fields.py:72
-msgid "Hindi"
-msgstr ""
-
-#: studies/fields.py:73
-msgid "Igbo"
-msgstr ""
-
-#: studies/fields.py:74
-msgid "Indonesian"
-msgstr ""
-
-#: studies/fields.py:75
-msgid "Iranian Persian"
-msgstr ""
-
-#: studies/fields.py:76
-msgid "Italian"
-msgstr ""
-
-#: studies/fields.py:77
-msgid "Japanese"
-msgstr ""
-
-#: studies/fields.py:78
-msgid "Javanese"
-msgstr ""
-
-#: studies/fields.py:79
-msgid "Jinyu"
-msgstr ""
-
-#: studies/fields.py:80
-msgid "Kannada"
-msgstr ""
-
-#: studies/fields.py:81
-msgid "Khmer"
-msgstr ""
-
-#: studies/fields.py:82
-msgid "Korean"
-msgstr ""
-
-#: studies/fields.py:83
-msgid "Magahi"
-msgstr ""
-
-#: studies/fields.py:84
-msgid "Maithili"
-msgstr ""
-
-#: studies/fields.py:85
-msgid "Malay"
-msgstr ""
-
-#: studies/fields.py:86
-msgid "Malayalam"
-msgstr ""
-
-#: studies/fields.py:87
-msgid "Mandarin"
-msgstr ""
-
-#: studies/fields.py:88
-msgid "Marathi"
-msgstr ""
-
-#: studies/fields.py:89
-msgid "Min Nan"
-msgstr ""
-
-#: studies/fields.py:90
-msgid "Moroccan Spoken Arabic"
-msgstr ""
-
-#: studies/fields.py:91
-msgid "Northern Pashto"
-msgstr ""
-
-#: studies/fields.py:92
-msgid "Northern Uzbek"
-msgstr ""
-
-#: studies/fields.py:93
-msgid "Odia"
-msgstr ""
-
-#: studies/fields.py:94
-msgid "Polish"
-msgstr ""
-
-#: studies/fields.py:95
-msgid "Portuguese"
-msgstr ""
-
-#: studies/fields.py:96
-msgid "Romanian"
-msgstr ""
-
-#: studies/fields.py:97
-#, fuzzy
-#| msgid "Asian"
-msgid "Russian"
-msgstr "아시아 인"
-
-#: studies/fields.py:98
-msgid "Saraiki"
-msgstr ""
-
-#: studies/fields.py:99
-msgid "Sindhi"
-msgstr ""
-
-#: studies/fields.py:100
-msgid "Somali"
-msgstr ""
-
-#: studies/fields.py:101
-msgid "Spanish"
-msgstr ""
-
-#: studies/fields.py:102
-msgid "Sunda"
-msgstr ""
-
-#: studies/fields.py:103
-msgid "Tagalog"
-msgstr ""
-
-#: studies/fields.py:104
-msgid "Tamil"
-msgstr ""
-
-#: studies/fields.py:105
-msgid "Telugu"
-msgstr ""
-
-#: studies/fields.py:106
-msgid "Thai"
-msgstr ""
-
-#: studies/fields.py:107
-msgid "Turkish"
-msgstr ""
-
-#: studies/fields.py:108
-msgid "Ukrainian"
-msgstr ""
-
-#: studies/fields.py:109
-msgid "Urdu"
-msgstr ""
-
-#: studies/fields.py:110
-msgid "Vietnamese"
-msgstr ""
-
-#: studies/fields.py:111
-msgid "Western Punjabi"
-msgstr ""
-
-#: studies/fields.py:112
-msgid "Wu"
-msgstr ""
-
-#: studies/fields.py:113
-msgid "Xiang Chinese"
-msgstr ""
-
-#: studies/fields.py:114
-msgid "Yoruba"
-msgstr ""
-
-#: studies/fields.py:115
-#, fuzzy
-#| msgid "Yes"
-msgid "Yue"
-msgstr "예"
+msgstr "여덟 쌍둥이"
 
 #: studies/fields.py:123
 msgid "Not answered"
-msgstr "대답을 하지 않음"
+msgstr "대답 하지 않음"
 
 #: studies/fields.py:124
 msgid "Other"
@@ -1146,78 +770,25 @@ msgstr "여성"
 
 #: studies/models.py:113
 #, fuzzy
-msgid ""
-"The Users who belong to this Lab. A user in this lab will be able to create "
-"studies associated with this Lab and can be added to this Lab's studies."
-msgstr ""
-"이 실험실에 속한 사용자입니다. 이 실험실의 사용자는 이 실험실과 관련된 연구"
-"를 만들 수 있으며 연구에 추가 될 수 있습니다."
+msgid "The Users who belong to this Lab. A user in this lab will be able to create studies associated with this Lab and can be added to this Lab's studies."
+msgstr "이 연구실에 속한 사용자들입니다. 이 연구실의 사용자는 이 연구실과 관련된 연구를 만들 수 있으며, 이 연구실의 연구들에 추가 될 수 있습니다."
 
 #: studies/models.py:122
 #, fuzzy
 msgid "The Users who have requested to join this Lab."
-msgstr "이 실험실에 가입을 요청한 사용자입니다."
-
-#: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
-#: web/templates/web/base.html:10
-msgid "Lookit"
-msgstr "Lookit"
-
-#: web/templates/flatpages/default.html:53
-msgid ""
-"This material is based upon work supported by the National Science "
-"Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
-"Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an "
-"NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, "
-"findings, and conclusions or recommendations expressed in this material are "
-"those of the authors(s) and do not necessarily reflect the views of the "
-"National Science Foundation."
-msgstr ""
-
-#: web/templates/flatpages/default.html:58
-msgid "Privacy"
-msgstr ""
-
-#: web/templates/flatpages/default.html:59
-#, fuzzy
-msgid "Contact us"
-msgstr "문의:"
-
-#: web/templates/flatpages/default.html:60
-msgid "Connect"
-msgstr ""
+msgstr "이 연구실에 가입을 요청한 사용자들입니다."
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
-msgstr "성공적으로 로그아웃했습니다."
-
-#: web/templates/registration/login.html:8
-#: web/templates/web/studies-history.html:9
-#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
-#, fuzzy
-#| msgid "Your username and password didn't match. Please try again."
-msgid "Your login credentials didn't work. Please try again."
-msgstr "사용자 이름과 비밀번호가 일치하지 않습니다. 다시 시도하십시오."
-
-#: web/templates/registration/login.html:18
-#: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:45
-#, fuzzy
-msgid "Login"
-msgstr "로그인"
+msgstr "성공적으로 로그아웃 하셨습니다."
 
 #: web/templates/registration/login.html:34
 msgid "Forgot password?"
-msgstr "비밀번호를 잊으셨나요?"
+msgstr "비밀번호를 잊으셨습니까?"
 
 #: web/templates/registration/login.html:36
 msgid "New to Lookit?"
-msgstr "Lookit에 처음이신가요?"
-
-#: web/templates/registration/login.html:36
-msgid "Register your family!"
-msgstr ""
+msgstr "Lookit에 처음이십니까?"
 
 #: web/templates/registration/password_change_done.html:11
 #, fuzzy
@@ -1241,7 +812,7 @@ msgstr "비밀번호 변경"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Log out"
-msgstr "로그 아웃"
+msgstr "로그아웃"
 
 #: web/templates/registration/password_change_form.html:7
 #: web/templates/web/home.html:3 web/templates/web/home.html:7
@@ -1256,24 +827,20 @@ msgstr "비밀번호 변경"
 
 #: web/templates/registration/password_change_form.html:21
 msgid "Please correct the error below."
-msgstr "아래 오류를 수정하세요."
+msgstr "아래 오류를 수정하십시오."
 
 #: web/templates/registration/password_change_form.html:21
 msgid "Please correct the errors below."
-msgstr "아래 오류들을 수정하세요."
+msgstr "아래 오류들을 수정하십시오."
 
 #: web/templates/registration/password_change_form.html:26
-msgid ""
-"Please enter your old password, for security's sake, and then enter your new "
-"password twice so we can verify you typed it in correctly."
-msgstr ""
-"보안을 위해 이전 암호를 입력 한 다음, 올바르게 입력했는지 확인할 수 있도록 "
-"새 암호를 두 번 입력하십시오."
+msgid "Please enter your old password, for security's sake, and then enter your new password twice so we can verify you typed it in correctly."
+msgstr "보안을 위해 이전 암호를 입력 한 다음, 올바르게 입력했는지 확인할 수 있도록 새 암호를 두 번 입력하십시오."
 
 #: web/templates/registration/password_change_form.html:54
 #: web/templates/registration/password_reset_confirm.html:31
 msgid "Change my password"
-msgstr "내 비밀번호 변경"
+msgstr "비밀번호 변경"
 
 #: web/templates/registration/password_reset_complete.html:11
 msgid "Password reset complete"
@@ -1281,7 +848,7 @@ msgstr "비밀번호 재설정 완료"
 
 #: web/templates/registration/password_reset_complete.html:15
 msgid "Your password has been set.  You may go ahead and log in now."
-msgstr "비밀번호가 설정되었습니다. 지금 바로 로그인 할 수 있습니다."
+msgstr "비밀번호가 설정되었습니다. 지금 바로 로그인 하실 수 있습니다."
 
 #: web/templates/registration/password_reset_complete.html:17
 msgid "Log in"
@@ -1290,12 +857,10 @@ msgstr "로그인"
 #: web/templates/registration/password_reset_confirm.html:11
 #, fuzzy
 msgid "Password reset confirmation"
-msgstr "비밀번호 재설정(을 위한) 확인"
+msgstr "비밀번호 재설정 확인"
 
 #: web/templates/registration/password_reset_confirm.html:17
-msgid ""
-"Please enter your new password twice so we can verify you typed it in "
-"correctly."
+msgid "Please enter your new password twice so we can verify you typed it in correctly."
 msgstr "올바르게 입력했는지 확인하기 위해 새 암호를 두 번 입력해 주십시오."
 
 #: web/templates/registration/password_reset_confirm.html:23
@@ -1308,49 +873,12 @@ msgstr "비밀번호 확인:"
 
 #: web/templates/registration/password_reset_confirm.html:37
 #, fuzzy
-msgid ""
-"The password reset link was invalid, possibly because it has already been "
-"used.  Please request a new password reset."
-msgstr ""
-"암호 재설정 링크가 유효하지 않습니다. 이미 사용된 링크일 수 있으니 새 비밀번"
-"호 재설정을 요청하십시오."
-
-#: web/templates/registration/password_reset_done.html:11
-#, fuzzy
-#| msgid "Password reset complete"
-msgid "Password reset link sent"
-msgstr "비밀번호 재설정 완료"
-
-#: web/templates/registration/password_reset_done.html:15
-#, fuzzy
-#| msgid ""
-#| "We've emailed you instructions for setting your password, if an account "
-#| "exists with the email you entered. You should receive them shortly."
-msgid ""
-"If an account exists with the email you entered, we've emailed instructions "
-"for resetting your password and you should receive them shortly."
-msgstr ""
-"입력한 이메일에 계정이 있는 경우, 비밀번호 설정에 대한 지침을 해당 이메일로 "
-"보내 드렸습니다. 곧 받으실 것입니다."
-
-#: web/templates/registration/password_reset_done.html:17
-#, fuzzy
-msgid ""
-"If you don't receive an email, please check your spam folder and make sure "
-"you've entered the address you registered with. (You won't get an email "
-"unless there's already an account for that email address!)"
-msgstr ""
-"이메일을 받지 못한 경우, 귀하가 등록했을 때 사용했던 이메일을 입력했는지 확인"
-"하고 스팸함을 확인하세요."
+msgid "The password reset link was invalid, possibly because it has already been used.  Please request a new password reset."
+msgstr "암호 재설정 링크가 유효하지 않습니다. 이미 사용된 링크일 수 있으니 새 비밀번호 재설정을 요청하십시오."
 
 #: web/templates/registration/password_reset_email.html:2
-#, python-format
-msgid ""
-"You're receiving this email because you requested a password reset for your "
-"user account at %(site_name)s."
-msgstr ""
-"이 이메일은 %(site_name)s에서 사용자 계정에 대한 비밀번호 재설정을 요청하셨"
-"기 때문에 발송되었습니다."
+msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
+msgstr "이 이메일은 %(site_name)s에서 사용자 계정에 대한 비밀번호 재설정을 요청하셨기 때문에 발송되었습니다."
 
 #: web/templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
@@ -1359,30 +887,20 @@ msgstr "다음 페이지로 이동하여 새 비밀번호를 만드십시오:"
 #: web/templates/registration/password_reset_email.html:8
 #, fuzzy
 msgid "Your username, in case you've forgotten:"
-msgstr "사용자 이름, 잊어 버린 경우 :"
+msgstr "사용자 이름, 잊어 버린 경우:"
 
 #: web/templates/registration/password_reset_email.html:10
 msgid "Thanks for using our site!"
 msgstr "저희 사이트를 이용해 주셔서 감사합니다!"
 
 #: web/templates/registration/password_reset_email.html:12
-#, python-format
 msgid "The %(site_name)s team"
 msgstr "%(site_name)s 팀"
 
-#: web/templates/registration/password_reset_form.html:11
-#, fuzzy
-#| msgid "Password reset complete"
-msgid "Password reset"
-msgstr "비밀번호 재설정 완료"
-
 #: web/templates/registration/password_reset_form.html:15
-msgid ""
-"Forgotten your password? Enter your email address below, and we'll email "
-"instructions for setting a new one."
-msgstr ""
-"비밀번호를 잊으셨습니까? 아래에 이메일 주소를 입력하시면 새 비밀번호 설정에 "
-"대한 지침을 이메일로 보내드립니다."
+msgid "Forgotten your password? Enter your email address below, and we'll email instructions for setting a new one."
+msgstr "비밀번호를 잊으셨습니까? 아래에 이메일 주소를 입력하시면 새 비밀번호 설정에 대한 지침을 이메일로 보내드립니다."
+""
 
 #: web/templates/registration/password_reset_form.html:21
 msgid "Email address:"
@@ -1390,33 +908,69 @@ msgstr "이메일 주소:"
 
 #: web/templates/registration/password_reset_form.html:24
 msgid "Reset my password"
-msgstr "내 비밀번호 재설정"
+msgstr "비밀번호 재설정"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+#, fuzzy
+msgid "Demographic Survey"
+msgstr "인구 통계 조사"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+#, fuzzy
+msgid "Tell us more about yourself."
+msgstr "귀하에 대해 알려주십시오."
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Children Information"
+msgstr "자녀 정보"
+
+#. @Hyeon-Ah @Minju 다른 번역과의 consistency를 위해 뒷부분을 "편집하십시오"로 바꿔볼 수 도 있을 것 같네요
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Add or edit participant information."
+msgstr "참가자 정보를 추가하거나 편집하십시오."
+
+#: accounts/templates/accounts/_account-navigation.html:5
+#: web/templates/web/participant-email-preferences.html:4
+msgid "Email Preferences"
+msgstr "이메일 환경 설정"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+#, fuzzy
+msgid "Edit when you can be contacted."
+msgstr "연락 원하실 때를 선택하십시오."
+
+#: web/templates/flatpages/default.html:10
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
+#: web/templates/web/base.html:10
+msgid "Lookit"
+msgstr "Lookit"
 
 #: web/templates/web/_navigation.html:17
 msgid "Experimenter"
-msgstr "실험자"
+msgstr "연구자"
 
+#. 참여가능연구?
 #: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
 msgid "Studies"
-msgstr "연구"
+msgstr "연구들"
 
 #: web/templates/web/_navigation.html:29
 msgid "FAQ"
-msgstr "자주묻는 질문"
+msgstr "자주 묻는 질문들"
 
 #: web/templates/web/_navigation.html:30
 #, fuzzy
 msgid "The Scientists"
-msgstr "과학자들"
+msgstr "연구자들"
 
 #: web/templates/web/_navigation.html:31
 #, fuzzy
 msgid "Resources"
-msgstr " Resources"
+msgstr "참고 자료실"
 
 #: web/templates/web/_navigation.html:40
 msgid "Hi"
-msgstr "안녕하세요"
+msgstr "안녕하십니까"
 
 #: web/templates/web/_navigation.html:42
 msgid "Logout"
@@ -1430,13 +984,15 @@ msgstr "회원가입"
 #: web/templates/web/studies-history.html:116
 #, fuzzy
 msgid "Child"
-msgstr "아동"
+msgstr "자녀"
 
-#: web/templates/web/child-update.html:26
-#, fuzzy
-#| msgid "Back to list"
-msgid "Back to Children List"
-msgstr "목록으로 돌아가기"
+#: accounts/templates/accounts/account-update.html:14
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
+#: web/templates/web/children-list.html:67
+#: web/templates/web/demographic-data-update.html:78
+#: web/templates/web/participant-email-preferences.html:16
+msgid "My Account"
+msgstr "나의 계정"
 
 #: web/templates/web/child-update.html:31
 msgid "Update"
@@ -1446,17 +1002,17 @@ msgstr "업데이트(최신정보)"
 msgid "Delete"
 msgstr "삭제"
 
-#: web/templates/web/child-update.html:44
-#: web/templates/web/children-list.html:92
-#: web/templates/web/demographic-data-update.html:100
-#: web/templates/web/participant-email-preferences.html:36
-msgid "Cancel"
-msgstr "취소"
+#: accounts/templates/accounts/account-update.html:58
+#: web/templates/web/child-update.html:46
+#: web/templates/web/demographic-data-update.html:102
+#: web/templates/web/participant-email-preferences.html:38
+msgid "Save"
+msgstr "저장"
 
 #: web/templates/web/children-list.html:40
 #, fuzzy
 msgid "Empty birthday"
-msgstr "생일란이 비었습니다."
+msgstr "생일 정보 없음"
 
 #: web/templates/web/children-list.html:47
 msgid " day"
@@ -1489,12 +1045,19 @@ msgstr " 년 (살)"
 #: web/templates/web/children-list.html:82
 #: web/templates/web/children-list.html:94
 msgid "Add Child"
-msgstr "자녀 추가"
+msgstr "자녀 정보 입력"
 
 #: web/templates/web/children-list.html:61
 #: web/templates/web/children-list.html:77
 msgid "Hide Form"
 msgstr "양식 숨기기"
+
+#: web/templates/web/child-update.html:44
+#: web/templates/web/children-list.html:92
+#: web/templates/web/demographic-data-update.html:100
+#: web/templates/web/participant-email-preferences.html:36
+msgid "Cancel"
+msgstr "취소"
 
 #: web/templates/web/children-list.html:111
 msgid "Name"
@@ -1503,70 +1066,31 @@ msgstr "이름"
 #: web/templates/web/children-list.html:121
 #, fuzzy
 msgid "Update child"
-msgstr "자녀정보 업데이트"
+msgstr "자녀 정보 업데이트"
 
 #: web/templates/web/children-list.html:128
 msgid "No child profiles registered!"
-msgstr "등록된 자녀 프로필이 없습니다!"
+msgstr "등록된 자녀 정보가 없습니다!"
 
 #: web/templates/web/demographic-data-update.html:4
 msgid "Update demographics"
-msgstr "인구 통계 업데이트"
+msgstr "인구 통계 정보 업데이트"
 
 #: web/templates/web/demographic-data-update.html:89
 #, fuzzy
-msgid ""
-"One reason we are developing Internet-based experiments is to represent a "
-"more diverse group of families in our research. Your answers to these "
-"questions will help us understand what audience we reach, as well as how "
-"factors like speaking multiple languages or having older siblings affect "
-"children's learning."
-msgstr ""
-"저희가 인터넷 기반의 실험을 개발하는 한 가지 이유는 저희 연구에서 보다 다양"
-"한 가족 집단을 대표하기 위한 것입니다. 이러한 질문에 대한 귀하의 답변은 다국"
-"어를 사용하거나 형제 자매가있는 것과 같은 요인이 아이의 학습에 어떤 영향을 미"
-"치는지 이해하는 데 도움이 될 뿐만 아니라, 저희가 어떤 청중(?)을 접하는 지 이"
-"해하는 데 도움이 됩니다."
+msgid "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning."
+msgstr "저희가 인터넷 기반의 연구들을 개발하는 이유들 중 하나는, 저희 연구에 더 다양한 가족 집단을 대표하기 위해서입니다. 아래 질문들에 대한 귀하의 대답은 저희가 맞닿을 수 있는 대중과, 다국어 사용 및 형제 자매 등의 요인들이 어떻게 아이의 학습에 영향을 주는지를 이해하는 데에 도움이 될 것입니다."
 
 #: web/templates/web/demographic-data-update.html:90
-msgid ""
-"Even if you allow your study videos to be published for scientific or "
-"publicity purposes, your demographic information is never published in "
-"conjunction with your video."
-msgstr ""
-"귀하께서 연구 영상를 과학 또는 홍보 목적으로 게시하도록 허용하더라도 인구 통"
-"계 정보는 영상과 함께 게시되지 않습니다."
+msgid "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video."
+msgstr "귀하께서 참여 연구 동영상을 과학 또는 홍보 목적으로 게시하도록 허용하더라도 귀하의 인구 통계 정보는 절대로 영상과 접목되어 게시되지 않습니다."
 
 #: web/templates/web/participant-email-preferences.html:27
 msgid "I would like to be contacted when:"
 msgstr "다음의 경우에 연락을 받고 싶습니다:"
 
-#: web/templates/web/participant-signup.html:18
-#, fuzzy
-#| msgid "Participant account"
-msgid "Create Participant Account"
-msgstr "참가자 계정"
-
-#: web/templates/web/participant-signup.html:22
-msgid "Create a family account to start participating in Lookit studies!"
-msgstr ""
-
-#: web/templates/web/participant-signup.html:23
-msgid "To register as a researcher, please use"
-msgstr ""
-
-#: web/templates/web/participant-signup.html:23
-msgid "this form"
-msgstr ""
-
-#: web/templates/web/participant-signup.html:23
-#, fuzzy
-msgid "instead"
-msgstr "대신?"
-
 #: web/templates/web/participant-signup.html:28
-msgid ""
-"By clicking 'Create Account', I agree that I have read and accepted the "
+msgid "By clicking 'Create Account', I agree that I have read and accepted the "
 msgstr "'계정 만들기'를 클릭하여 다음 내용을 읽고 수락하는 것에 동의합니다. "
 
 #: web/templates/web/participant-signup.html:28
@@ -1577,19 +1101,25 @@ msgstr "개인 정보 보호 정책"
 msgid "Create Account"
 msgstr "계정 만들기"
 
+#: accounts/templates/accounts/_account-navigation.html:2
+#: accounts/templates/accounts/account-update.html:24
+msgid "Account Information"
+msgstr "계정 정보"
+
+#: accounts/templates/accounts/account-update.html:45
+#, fuzzy
+msgid "Change Your Password"
+msgstr "비밀번호 변경"
+
 #: web/templates/web/studies-history.html:4
 #: web/templates/web/studies-history.html:27
 msgid "Past Studies"
-msgstr "지난 연구"
+msgstr "지난 연구들"
 
 #: web/templates/web/studies-history.html:16
 #: web/templates/web/studies-list.html:16
-msgid ""
-"Your account doesn't have access to this page. To proceed, please login with "
-"an account that has access."
-msgstr ""
-"귀하의 계정으로 이 페이지에 액세스 할 수 없습니다. 계속하려면 액세스 권한이 "
-"있는 계정으로 로그인하십시오."
+msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
+msgstr "귀하의 계정으로 이 페이지에 액세스 할 수 없습니다. 계속하려면 액세스 권한이 있는 계정으로 로그인하십시오."
 
 #: web/templates/web/studies-history.html:18
 #: web/templates/web/studies-list.html:18
@@ -1600,16 +1130,17 @@ msgstr "이 페이지를 보려면 로그인하십시오."
 #: web/templates/web/studies-list.html:38
 #, fuzzy
 msgid "Current studies"
-msgstr "현재 진행중인  연구"
+msgstr "현재 진행중인 연구들"
 
 #: web/templates/web/studies-history.html:37
 #: web/templates/web/studies-list.html:41
 msgid "Your past studies"
-msgstr "귀하의 지난 연구"
+msgstr "귀하의 지난 연구들"
 
+#. @Hyeon-Ah @Minju 수정해보았는데 맥락에 따라 조금 더 수정해도 될 것 같아요!
 #: web/templates/web/studies-history.html:50
 msgid "Here you can view your studies and see comments left by researchers:"
-msgstr "여기에서 연구와 연구원이 남긴 의견을 볼 수 있습니다."
+msgstr "여기에서 귀화의 연구들과 연구원이 남긴 의견을 볼 수 있습니다."
 
 #: web/templates/web/studies-history.html:67
 msgid "Study Thumbnail"
@@ -1626,11 +1157,11 @@ msgstr "문의:"
 
 #: web/templates/web/studies-history.html:81
 msgid "Still collecting data?"
-msgstr "아직 데이터를 수집하고 있나요?"
+msgstr "아직 데이터를 수집하고 계십니까?"
 
 #: web/templates/web/studies-history.html:81
 msgid "Yes"
-msgstr "예"
+msgstr "네"
 
 #: web/templates/web/studies-history.html:81
 msgid "No"
@@ -1643,10 +1174,6 @@ msgstr "보상: "
 #: web/templates/web/studies-history.html:87
 msgid "Study Responses"
 msgstr "연구 응답"
-
-#: web/templates/web/studies-history.html:107
-msgid "Video"
-msgstr ""
 
 #: web/templates/web/studies-history.html:118
 msgid "Date"
@@ -1676,33 +1203,21 @@ msgstr "귀하의 동의 영상은 연구자가 아직 검토하지 않았습니
 msgid "Invalid"
 msgstr "유효하지 않음"
 
+#. @Hyeon-Ah @Minju "연구이"를 "연구원이"로 수정했습니다
 #: web/templates/web/studies-history.html:127
 #, fuzzy
-msgid ""
-"There was a technical problem with your consent video, or it did not show "
-"you reading the consent statement out loud. Your other data from this "
-"session will not be viewed or used by the study researchers."
-msgstr ""
-"귀하의 동의 영상에 기술적인 문제가 있거나, 동의문을 소리내어 읽는 것을 보여주"
-"지 않았습니다. 이 세션의 귀하의 다른 데이터는 연구이 보거나 사용하지 않습니"
-"다."
+msgid "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers."
+msgstr "귀하의 동의 영상에 기술적인 문제가 있거나, 귀하께서 동의문을 소리내어 읽는 것을 보여주지 않았습니다. 이 세션의 귀하의 다른 데이터는 연구원이 보거나 사용하지 않습니다."
 
+#. @Hyeon-Ah @Minju 다음과 같이 수정해보았습니다: "동의 영상 검토 상태에 대한 정보가 없습니다."
 #: web/templates/web/studies-history.html:129
 #, fuzzy
 msgid "No information about consent video review status."
-msgstr "동영상 검토 상태에 동의하는 정보가 없습니다."
-
-#: web/templates/web/studies-history.html:133
-msgid "Feedback"
-msgstr ""
-
-#: web/templates/web/studies-history.html:139
-msgid "None"
-msgstr ""
+msgstr "동의 영상 검토 상태에 대한 정보가 없습니다."
 
 #: web/templates/web/studies-history.html:154
 msgid "You have not yet participated in any studies."
-msgstr "아직 어떤 연구에도 참여하지 않았습니다."
+msgstr "귀하께서는 아직 어떤 연구에도 참여하지 않으셨습니다."
 
 #: web/templates/web/studies-list.html:32
 #, fuzzy
@@ -1710,12 +1225,8 @@ msgid "Current Studies"
 msgstr "현재 진행하고 있는 연구"
 
 #: web/templates/web/studies-list.html:53
-msgid ""
-"Please note you'll need a laptop or desktop computer (not a mobile device) "
-"running Chrome or Firefox to participate."
-msgstr ""
-"참여하려면 Chrome 또는 Firefox를 실행할 수 있는 노트북 또는 데스크톱 컴퓨터 "
-"(휴대 기기가 아님)가 필요합니다."
+msgid "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate."
+msgstr "참여하시려면 Chrome 또는 Firefox를 실행할 수 있는 노트북 또는 데스크톱 컴퓨터 (휴대 기기가 아님)가 필요합니다."
 
 #: web/templates/web/studies-list.html:80
 msgid "See details"
@@ -1724,33 +1235,12 @@ msgstr "상세보기"
 #: web/templates/web/studies-list.html:87
 #, fuzzy
 msgid "We are not running any studies at this time!"
-msgstr ""
-"현재 진행하고 있는 연구가 없습니다! (현재 연구를 진행하고 있지 않습니다!)"
+msgstr "현재 진행하고 있는 연구가 없습니다! "
 
 #: web/templates/web/studies-list.html:93
 #, fuzzy
-msgid ""
-"Looking for more ways to contribute to research from home? Check out <a href="
-"\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer "
-"noopener\">Children Helping Science</a> for even more studies!"
-msgstr ""
-"집에서 연구에 기여할 더 많은 방법을 찾고 계십니까? 더 많은 연구를 위해 <a "
-"href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-"\"noreferrer noopener\">Children Helping Science</a>를 확인하세요!"
-
-#: web/templates/web/study-detail.html:53
-#, fuzzy
-#| msgid " days"
-msgid "days"
-msgstr " 일"
-
-#: web/templates/web/study-detail.html:53
-msgid " until "
-msgstr ""
-
-#: web/templates/web/study-detail.html:53
-msgid " when "
-msgstr ""
+msgid "Looking for more ways to contribute to research from home? Check out <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> for even more studies!"
+msgstr "집에서 연구에 기여할 더 많은 방법을 찾고 계십니까? 더 많은 연구를 위해 <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a>를 확인하십시요!"
 
 #: web/templates/web/study-detail.html:93
 msgid "Study overview"
@@ -1776,15 +1266,15 @@ msgstr "보상"
 
 #: web/templates/web/study-detail.html:126
 msgid "What happens"
-msgstr "진행 상황"
+msgstr "어떻게 진행 되나요?"
 
 #: web/templates/web/study-detail.html:130
 msgid "What we're studying"
-msgstr "저희가 연구하고 있는 것"
+msgstr "어떤 연구를 하나요?"
 
 #: web/templates/web/study-detail.html:134
 msgid "This study is conducted by"
-msgstr "이 연구는  가 진행합니다."
+msgstr "이 연구는  에서 진행합니다."
 
 #: web/templates/web/study-detail.html:138
 msgid "Would you like to participate in this study?"
@@ -1792,30 +1282,7 @@ msgstr "이 연구에 참여하시겠습니까?"
 
 #: web/templates/web/study-detail.html:140
 msgid "Log in to participate"
-msgstr "참여하시려면 로그인하세요."
-
-#: web/templates/web/study-detail.html:142
-#, fuzzy
-#| msgid "No child profiles registered!"
-msgid "Add child profile to "
-msgstr "등록된 자녀 프로필이 없습니다!"
-
-#: web/templates/web/study-detail.html:142
-#: web/templates/web/study-detail.html:144
-msgid "preview"
-msgstr ""
-
-#: web/templates/web/study-detail.html:142
-#: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Participate"
-msgid "participate"
-msgstr "참여하기"
-
-#: web/templates/web/study-detail.html:144
-#, fuzzy
-msgid "Complete demographic survey to "
-msgstr "인구 통계 조사"
+msgstr "참여하시려면 로그인하십시오."
 
 #: web/templates/web/study-detail.html:148
 msgid "Select a child:"
@@ -1826,36 +1293,20 @@ msgid "None Selected"
 msgstr "선택되지 않음"
 
 #: web/templates/web/study-detail.html:161
-msgid ""
-"Your child is still younger than the recommended age range for this study. "
-"If you can wait <span id='wait-until'>until</span> he or she is old enough, "
-"we'll be able to use the collected data in our research!"
-msgstr ""
-"귀하의 자녀는 이 연구에 권장되는 연령대보다 아직 어립니다. 자녀가 충분한 연령"
-"이 될 때까지 </span> 기다리실 수 있다면 <span id='wait-until'> 수집된 데이터"
-"를 저희의 연구에 사용할 수 있습니다!"
+msgid "Your child is still younger than the recommended age range for this study. If you can wait <span id='wait-until'>until</span> he or she is old enough, we'll be able to use the collected data in our research!"
+msgstr "귀하의 자녀는 이 연구에 권장되는 연령대보다 아직 어립니다. 자녀가 충분한 연령이 될 때까지 </span> 기다리실 수 있다면 <span id='wait-until'> 수집된 연구정보를 저희의 연구에 사용할 수 있습니다!"
 
+#. @Hyeon-Ah @Minju 다음과 같이 수정해보았습니다: "연구 참여를 하실 수는 있지만, 수집된 데이터는 저희의 연구에 사용 되지 않습니다."
 #: web/templates/web/study-detail.html:162
-msgid ""
-"Your child is older than the recommended age range for this study. You're "
-"welcome to try the study anyway, but we won't be able to use the collected "
-"data in our research."
-msgstr ""
-"귀하 자녀의 연령은 이 연구에 권장되는 연령대보다 높습니다. 연구를 시도해볼 수"
-"는 있지만, 수집된 데이터를 저희의 연구에 사용할 수 없습니다."
+msgid "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research."
+msgstr "귀하 자녀의 연령은 이 연구에 권장되는 연령대보다 높습니다. 연구 참여를 하실 수는 있지만, 수집된 연구정보는 저희의 연구에 사용 되지 않습니다."
 
+#. @Hyeon-Ah @Minju 위의 예제와 같은 맥락으로 바꿔보았습니다.
 #: web/templates/web/study-detail.html:163
-msgid ""
-"Your child does not meet the eligibility criteria listed for this study. "
-"You're welcome to try the study anyway, but we won't be able to use the "
-"collected data in our research. Please contact the study researchers"
-msgstr ""
-"귀하의 자녀는 이 연구 참여를 위한 자격 기준을 충족하지 않습니다. 연구를 시도"
-"해 볼 수는 있지만, 수집된 데이터를 저희의 연구에 사용할 수 없습니다. 연구원에"
-"게 문의하십시오"
+msgid "Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers"
+msgstr "귀하의 자녀는 이 연구 참여를 위한 자격 기준을 충족하지 않습니다. 연구 참여를 하실 수는 있지만, 수집된 연구정보는 저희의 연구에 사용 되지 없습니다. 연구원에게 문의하여 주십시오."
 
 #: web/templates/web/study-detail.html:165
-#, fuzzy
 msgid "Build experiment runner to preview"
 msgstr "미리 볼 수 있는 실험 진행자 만들기"
 
@@ -1863,145 +1314,461 @@ msgstr "미리 볼 수 있는 실험 진행자 만들기"
 msgid "Participate"
 msgstr "참여하기"
 
+#: web/templates/web/study-detail.html:168
+msgid "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to."
+msgstr "귀하의 연구 프로토콜을 업데이트할 때 발생하는 상황을 쉽게 보려면 위의 버튼에서 전송하는 URL을 즐겨찾기에 추가하십시오."
+
+#. 새로 추가된 문장입니다
+#: accounts/forms.py:54
+msgid "Enter a valid 6-digit one-time password from Google Authenticator"
+msgstr "구글 인증 (Google Authenticator)에서 제공된 유효한 6자리 일회용 비밀번호를 입력해주십시오."
+
+#. 새로 추가된 문장입니다
+#: accounts/forms.py:105
+msgid "Please enter a correct %(username)s and password. Note that email and password fields may be case-sensitive. If you have turned on two-factor authentication, you will need a one-time password (OTP code) from Google Authenticator as well. "
+msgstr "정확한 %(사용자이름)들과 비밀번호를 입력해주십시오. 이메일과 비밀번호 란은 영문 대소문자의 구분이 필요할 수 있습니다. 구글 계정의 2단계 인증을 활성화하셨다면, 구글 인증(Google Authenticator)으로부터 일회용 비밀번호 (OTP코드) 가 필요할 수 있습니다."
+
+#: accounts/forms.py:110
+msgid "This account is inactive."
+msgstr "본 계정은 활성화되어있지 않습니다."
+
+#: accounts/forms.py:191
+msgid "Your password can’t be too similar to your other personal information."
+msgstr "비밀번호는 귀하의 개인정보와 비슷하게 생성할 수 없습니다."
+
+#: accounts/forms.py:192
+msgid "Your password must contain at least 16 characters."
+msgstr "비밀번호는 최소 16자이상이 되어야 합니다."
+
+#: accounts/forms.py:193
+msgid "Your password can’t be a commonly used password."
+msgstr "비밀번호는 자주쓰는 비밀번호가 아니어야 합니다."
+
+#: accounts/forms.py:194
+msgid "Your password can’t be entirely numeric."
+msgstr "비밀번호는 숫자로만 구성될 수 없습니다."
+
+#: accounts/forms.py:376
+msgid "Birthday test"
+msgstr "Birthday test"
+
+#: accounts/forms.py:427
+msgid "Birthday test2"
+msgstr "Birthday test2"
+
+#: accounts/templates/accounts/_account-navigation.html:2
+msgid "Change your login credentials and/or nickname."
+msgstr "로그인 정보 그리고/또는 별칭을 수정하십시오."
+
+#: accounts/templates/accounts/account-update.html:68
+msgid "Manage Two-Factor Authentication"
+msgstr "2단계 인증 관리"
+
+#: accounts/templates/accounts/account-update.html:83
+msgid "If you'd like, you can turn two-factor authentication off here. Just enter your one-time password here, hit submit, and it'll get deleted for you!"
+msgstr "귀하께서 원하실 경우, 여기서 2단계 인증을 해제하실 수 있습니다. 귀하의 일회용 비밀번호를 이 곳에 입력하시고, 제출 버튼을 클릭하시면, 이것은 삭제될 것입니다!"
+
+#: accounts/templates/accounts/account-update.html:108
+msgid "Set up Two-Factor Authentication"
+msgstr "2단계 인증 설정하기"
+
+#: studies/fields.py:7
+msgid "Autism Spectrum Disorder"
+msgstr "자폐 스펙트럼 장애"
+
+#: studies/fields.py:8
+msgid "Deaf"
+msgstr "귀가 들리지 않음 (청각장애)"
+
+#: studies/fields.py:9
+msgid "Hard of Hearing"
+msgstr "난청"
+
+#: studies/fields.py:10
+msgid "Dyslexia"
+msgstr "난독증"
+
+#: studies/fields.py:11
+msgid "Multiple Birth (twin, triplet, or higher order)"
+msgstr "생일 정보가 다양함 (쌍둥이, 세쌍둥이, 또는 그 이상)"
+
+#: studies/fields.py:57
+msgid "English"
+msgstr "영어(English)"
+
+#: studies/fields.py:58
+msgid "Amharic"
+msgstr "암하라어(Amharic)"
+
+#: studies/fields.py:59
+msgid "Bengali"
+msgstr "벵골어(Bengali)"
+
+#: studies/fields.py:60
+msgid "Bhojpuri"
+msgstr "보즈푸리어(Bhojpuri)"
+
+#: studies/fields.py:61
+msgid "Burmese"
+msgstr "버마어(Burmese)"
+
+#: studies/fields.py:62
+msgid "Cebuano"
+msgstr "세부아노어(Cebuano)"
+
+#: studies/fields.py:63
+msgid "Chhattisgarhi"
+msgstr "차티스가르어(Chhattisgarhi)"
+
+#: studies/fields.py:64
+msgid "Dutch"
+msgstr "네덜란드어(Dutch)"
+
+#: studies/fields.py:65
+msgid "Egyptian Spoken Arabic"
+msgstr "이집트계 통용 아랍어(Egyptian Spoken Arabic)"
+
+#: studies/fields.py:66
+msgid "French"
+msgstr "프랑스어(French)"
+
+#: studies/fields.py:67
+msgid "Gan"
+msgstr "관화(Gan)"
+
+#: studies/fields.py:68
+msgid "German"
+msgstr "독일어(German)"
+
+#: studies/fields.py:69
+msgid "Gujarati"
+msgstr "구자라트어(Gujarati)"
+
+#: studies/fields.py:70
+msgid "Hakka"
+msgstr "하카어(Hakka)"
+
+#: studies/fields.py:71
+msgid "Hausa"
+msgstr "하우사어(Hausa)"
+
+#: studies/fields.py:72
+msgid "Hindi"
+msgstr "힌디어(Hindi)"
+
+#: studies/fields.py:73
+msgid "Igbo"
+msgstr "이그보우어(Igbo)"
+
+#: studies/fields.py:74
+msgid "Indonesian"
+msgstr "인도네시아어(Indonesian)"
+
+#: studies/fields.py:75
+msgid "Iranian Persian"
+msgstr "이란계 페르시아어(Iranian Persian)"
+
+#: studies/fields.py:76
+msgid "Italian"
+msgstr "이탈리아어 (Italian)"
+
+#: studies/fields.py:77
+msgid "Japanese"
+msgstr "일본어(Japanese)"
+
+#: studies/fields.py:78
+msgid "Javanese"
+msgstr "자바어(Javanese)"
+
+#: studies/fields.py:79
+msgid "Jinyu"
+msgstr "진위안어(Jinyu)"
+
+#: studies/fields.py:80
+msgid "Kannada"
+msgstr "칸나다어(Kannada)"
+
+#: studies/fields.py:81
+msgid "Khmer"
+msgstr "크메르어(Khmer)"
+
+#: studies/fields.py:82
+msgid "Korean"
+msgstr "한국어(Korean)"
+
+#: studies/fields.py:83
+msgid "Magahi"
+msgstr "마가히어(Magahi)"
+
+#: studies/fields.py:84
+msgid "Maithili"
+msgstr "마이틸리어(Maithili)"
+
+#: studies/fields.py:85
+msgid "Malay"
+msgstr "말레이어(Malay)"
+
+#: studies/fields.py:86
+msgid "Malayalam"
+msgstr "말라얄람어(Malayalam)"
+
+#: studies/fields.py:87
+msgid "Mandarin"
+msgstr "표준 중국어(Mandarin)"
+
+#: studies/fields.py:88
+msgid "Marathi"
+msgstr "마라티어(Marathi)"
+
+#: studies/fields.py:89
+msgid "Min Nan"
+msgstr "민난어(Min Nan)"
+
+#: studies/fields.py:90
+msgid "Moroccan Spoken Arabic"
+msgstr "모로코계 통용 아랍어(Moroccan Spoken Arabic)"
+
+#: studies/fields.py:91
+msgid "Northern Pashto"
+msgstr "북부 파슈토어(Northern Pashto)"
+
+#: studies/fields.py:92
+msgid "Northern Uzbek"
+msgstr "북부 우즈베크어(Northern Uzbek)"
+
+#: studies/fields.py:93
+msgid "Odia"
+msgstr "오리야어(Odia)"
+
+#: studies/fields.py:94
+msgid "Polish"
+msgstr "폴란드어(Polish)"
+
+#: studies/fields.py:95
+msgid "Portuguese"
+msgstr "포르투갈어(Portuguese)"
+
+#: studies/fields.py:96
+msgid "Romanian"
+msgstr "루마니아어(Romanian)"
+
+#: studies/fields.py:97
+msgid "Russian"
+msgstr "러시아어(Russian)"
+
+#: studies/fields.py:98
+msgid "Saraiki"
+msgstr "사라이키어(Saraiki)"
+
+#: studies/fields.py:99
+msgid "Sindhi"
+msgstr "신디어(Sindhi)"
+
+#: studies/fields.py:100
+msgid "Somali"
+msgstr "소말리어(Somali)"
+
+#: studies/fields.py:101
+msgid "Spanish"
+msgstr "스페인어(Spanish)"
+
+#: studies/fields.py:102
+msgid "Sunda"
+msgstr "순다어(Sunda)"
+
+#: studies/fields.py:103
+msgid "Tagalog"
+msgstr "타갈로그어(Tagalog)"
+
+#: studies/fields.py:104
+msgid "Tamil"
+msgstr "타밀어(Tamil)"
+
+#: studies/fields.py:105
+msgid "Telugu"
+msgstr "텔루구어(Telugu)"
+
+#: studies/fields.py:106
+msgid "Thai"
+msgstr "태국어(Thai)"
+
+#: studies/fields.py:107
+msgid "Turkish"
+msgstr "터키어(Turkish)"
+
+#: studies/fields.py:108
+msgid "Ukrainian"
+msgstr "우크라이나어(Ukrainian)"
+
+#: studies/fields.py:109
+msgid "Urdu"
+msgstr "우르두어(Urdu)"
+
+#: studies/fields.py:110
+msgid "Vietnamese"
+msgstr "베트남어(Vietnamese)"
+
+#: studies/fields.py:111
+msgid "Western Punjabi"
+msgstr "서부 펀자브어(Western Punjabi)"
+
+#: studies/fields.py:112
+msgid "Wu"
+msgstr "중국의 장쑤, 저장, 상하이에서 사용되는 중국어 (Wu)"
+
+#: studies/fields.py:113
+msgid "Xiang Chinese"
+msgstr "중국의 후난에서 사용되는 중국어(Xiang Chinese)"
+
+#: studies/fields.py:114
+msgid "Yoruba"
+msgstr "요루바어(Yoruba)"
+
+#: studies/fields.py:115
+msgid "Yue"
+msgstr "유 중국어 및 광동어(Yue)"
+
+#: web/templates/flatpages/default.html:53
+msgid "This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation."
+msgstr "이 내용물은 미국 국립과학재단(National Science Foundation, NSF) 승인 연구 1429216과 1923919; \n"
+"미국 뇌마음기계센터(Center for Brains, Minds and Machines, CBMM), NSF STC 수상 CCF-1231216, 그리고 NSF 대학원생 연구 장학금 번호 No.1122374 의 지원을 받은 연구내용에 기반하였습니다. 이 내용물에 담긴 그 어떤 의견, 연구 결과, 결론 또는 조언은 이 저자(들)의 것이며, 미국 국립과학재단의 관점을 반영하는 것이 아님을 밝힘니다."
+
+#: web/templates/flatpages/default.html:58
+msgid "Privacy"
+msgstr "개인정보정책"
+
+#: web/templates/flatpages/default.html:59
+msgid "Contact us"
+msgstr "연구자와 연락하기"
+
+#: web/templates/flatpages/default.html:60
+msgid "Connect"
+msgstr "연결하기"
+
+#: web/templates/registration/login.html:8
+#: web/templates/web/studies-history.html:9
+#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
+msgid "Your login credentials didn't work. Please try again."
+msgstr "귀하의 정보로 로그인에 실패했습니다. 다시 시도해 주십시오."
+
+#: web/templates/registration/login.html:36
+msgid "Register your family!"
+msgstr "귀하의 가족을 등록해주십시오!"
+
+#: web/templates/registration/password_reset_done.html:11
+msgid "Password reset link sent"
+msgstr "비밀번호 변경 링크가 전송됨"
+
+#: web/templates/registration/password_reset_done.html:15
+msgid "If an account exists with the email you entered, we've emailed instructions for resetting your password and you should receive them shortly."
+msgstr "귀하께서 입력해주신 이메일에 연결된 계정이 있다면, 곧 귀하의 이메일 주소로 비밀번호 재설정 안내문이 도착할 것입니다."
+
+#: web/templates/registration/password_reset_done.html:17
+msgid "If you don't receive an email, please check your spam folder and make sure you've entered the address you registered with. (You won't get an email unless there's already an account for that email address!)"
+msgstr "이메일을 받으시지 못하셨다면, 귀하의 스팸 폴더를 확인해주시고 귀하께서 등록하신 이메일 주소를 정확하게 입력하셨는지 확인해주시기 바랍니다. (귀하께서 이미 등록된 이메일 주소가 있으셔야만 안내문 이메일을 받으실 수 있습니다)."
+
+#: web/templates/registration/password_reset_form.html:11
+msgid "Password reset"
+msgstr "비밀번호 재설정하기"
+
+#: web/templates/web/child-update.html:26
+msgid "Back to Children List"
+msgstr "자녀 목록으로 돌아가기"
+
+#: web/templates/web/participant-signup.html:18
+msgid "Create Participant Account"
+msgstr "연구 참여자 계정 만들기"
+
+#: web/templates/web/participant-signup.html:22
+msgid "Create a family account to start participating in Lookit studies!"
+msgstr "Lookit 연구 참여를 시작하기 위해 가족 계정 만들기 (Lookit 연구에 참여하기 위해 가족 계정 만들기)"
+
+#: web/templates/web/participant-signup.html:23
+msgid "To register as a researcher, please use"
+msgstr "연구자로서 등록하시려면 이것을 사용해주십시오"
+
+#: web/templates/web/participant-signup.html:23
+#, fuzzy
+msgid "this form"
+msgstr "이 양식"
+
+#: web/templates/web/participant-signup.html:23
+#, fuzzy
+msgid "instead"
+msgstr "대신"
+
+#: web/templates/web/studies-history.html:107
+msgid "Video"
+msgstr "동영상"
+
+#: web/templates/web/studies-history.html:133
+msgid "Feedback"
+msgstr "피드백/후기"
+
+#: web/templates/web/studies-history.html:139
+msgid "None"
+msgstr "없음"
+
+#: web/templates/web/study-detail.html:53
+msgid "days"
+msgstr "일수"
+
+#: web/templates/web/study-detail.html:53
+msgid " until "
+msgstr " 까지 "
+
+#: web/templates/web/study-detail.html:53
+msgid " when "
+msgstr " 언제 "
+
+#: web/templates/web/study-detail.html:142
+#, fuzzy
+msgid "Add child profile to "
+msgstr " 에 자녀정보를 추가하기"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "preview"
+msgstr "미리보기"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "participate"
+msgstr "참여"
+
+#: web/templates/web/study-detail.html:144
+msgid "Complete demographic survey to "
+msgstr " 를 하기 위해 인구 통계 설문지를 작성하기"
+
 #: web/templates/web/study-detail.html:167
 msgid "now"
-msgstr ""
-
-#: web/templates/web/study-detail.html:168
-#, fuzzy
-msgid ""
-"For an easy way to see what happens as you update your study protocol, "
-"bookmark the URL the button above sends you to."
-msgstr ""
-"귀하의 연구 프로토콜을 업데이트할 때 발생하는 상황을 쉽게 보려면 위의 버튼에"
-"서 전송하는 URL을 즐겨찾기에 추가하십시오."
+msgstr "지금 (현재)"
 
 #: web/views.py:47
-#, fuzzy
-#| msgid "Participant account"
 msgid "Participant created."
-msgstr "참가자 계정"
+msgstr "연구참여자 계정이 생성됨"
 
 #: web/views.py:72
-#, fuzzy
 msgid "Demographic data saved."
-msgstr "인구 통계 조사"
+msgstr "인구 통계 정보가 저장됨"
 
 #: web/views.py:140
-#, fuzzy
 msgid "Child added."
-msgstr "아동"
+msgstr "자녀 정보가 추가됨"
 
 #: web/views.py:176
 msgid "Child deleted."
-msgstr ""
+msgstr "자녀 정보가 삭제됨"
 
 #: web/views.py:178
 msgid "Child updated."
-msgstr ""
+msgstr "자녀 정보가 업데이트 됨"
 
 #: web/views.py:201
-#, fuzzy
-#| msgid "Email Preferences"
 msgid "Email preferences saved."
-msgstr "이메일 환경 설정"
+msgstr "이메일 선호 방식이 저장됨"
 
 #: web/views.py:295
-#, python-brace-format
-msgid ""
-"The study {study.name} is not currently collecting data - the study is "
-"either completed or paused. If you think this is an error, please contact "
-"{study.contact_info}"
-msgstr ""
+msgid "The study {study.name} is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact {study.contact_info}"
+msgstr "{연구명} 연구는 현재 연구정보를 모으고 있지 않습니다 - 이 연구는 종단되었거나 임시로 중단되었습니다. 만약 오류가 있다고 판단되신다면, {연구연락정보} 로 연락을 주십시오."
 
-#, fuzzy
-#~| msgid "Birthday"
-#~ msgid "Birthday test"
-#~ msgstr "생일"
-
-#, fuzzy
-#~| msgid "Birthday"
-#~ msgid "Birthday test2"
-#~ msgstr "생일"
-
-#~ msgid "Login Unsuccessful"
-#~ msgstr "로그인 실패"
-
-#~ msgid ""
-#~ "A Lookit study participant exists with the email address for your OSF "
-#~ "user account. Create an OSF user with a different email address and try "
-#~ "logging into Experimenter with that. "
-#~ msgstr ""
-#~ "귀하의 OSF 사용자 계정의 이메일 주소를 가진 Lookit 연구 참가자가 존재합니"
-#~ "다. 다른 이메일 주소로 OSF 사용자를 만들고 그 주소로 Experimenter에 로그"
-#~ "인 해보십시오. "
-
-#, fuzzy
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href="
-#~ msgstr "이 문제가 지속되면 <a href=에보고하십시오."
-
-#~ msgid "Return to Experimenter"
-#~ msgstr "실험자에게 돌아가기"
-
-#, fuzzy
-#~ msgid "Sign In"
-#~ msgstr "로그인"
-
-#~ msgid ""
-#~ "\n"
-#~ "          Please sign in to the Open Science Framework or register for an "
-#~ "account and sign in below.\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "        By using or requesting access to Lookit, you agree that you have "
-#~ "read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of "
-#~ "Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</"
-#~ "a>.\n"
-#~ "        "
-#~ msgstr ""
-#~ "\n"
-#~ "              Open Science Framework에 로그인하거나 계정을 등록하고 아래에"
-#~ "서 로그인하십시오.\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "         Lookit을 사용하거나 액세스를 요청함으로써, 귀하는 <a href=\"/"
-#~ "termsofuse/\" target=\"_blank\"> 이용 약관 </a> 및 <a href=\"/privacy/\" "
-#~ "target=\"_blank\">개인 정보 보호 정책</a>을 읽고 동의했음에 동의합니다.\n"
-#~ "        "
-
-#, fuzzy
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href=\"mailto:support@osf.io\">support@osf.io</a>"
-#~ msgstr ""
-#~ "이 문제가 지속되면 <a href=\"mailto:support@osf.io\">support@osf.io</a>로 "
-#~ "보고해 주세요."
-
-#~ msgid "Participant Login"
-#~ msgstr "참가자 로그인"
-
-#, fuzzy
-#~ msgid "Looking for "
-#~ msgstr "찾고있는 "
-
-#~ msgid "researcher login"
-#~ msgstr "연구원 로그인"
-
-#~ msgid "Create an account!"
-#~ msgstr "계정을 만드십시오!"
-
-#~ msgid "Account information"
-#~ msgstr "계정 정보"
-
-#, fuzzy
-#~ msgid "Change your name, email, or password."
-#~ msgstr "이름, 이메일 또는 비밀번호를 변경하십시오."
-
-#~ msgid "Signup"
-#~ msgstr "가입하기"
-
-#, fuzzy
-#~ msgid "Update account information"
-#~ msgstr "계정 정보를 업데이트 하십시오"
