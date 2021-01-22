@@ -2,6 +2,57 @@ from django.apps import apps
 
 from project import settings
 
+import requests
+
+def post_migrate_refresh_flatpages(sender, **kwargs):
+
+    # Check first site
+    Site = apps.get_model("sites.Site")
+    site = Site.objects.first()
+
+    site.domain = settings.SITE_DOMAIN
+    site.name = settings.SITE_NAME
+
+    site.save()
+    FlatPage = apps.get_model("flatpages.FlatPage")
+
+
+    # Path to raw github files. English in this folder, others in locale/[langcode]/
+    github_root='https://github.com/manybabies/mbah-research-resources/raw/master/lookit%20static%20pages'
+
+    for page, url in settings.FLATPAGELIST.items():
+        # Get en version to use as default
+        r_eng = requests.get(github_root + '/' + page + '.html')
+
+        for lang in settings.LANGUAGES:
+            langcode=lang[0]
+            if langcode=='en':
+                urllangprefix='en-us'   # no url
+                r=r_eng
+            else:
+                urllangprefix=langcode
+                gitraw = github_root + '/locale/' + langcode + '/' + page + '.html'
+                r = requests.get(gitraw)
+                if r.status_code == 404:
+                    print(f'Did not find i18n, will use en instead - lang {langcode} {page} at {gitraw}')
+                    r=r_eng
+            pagedesc = dict(
+                url = '/' + urllangprefix + url,
+                title = page,
+                content = r.text
+            )
+
+            # Update flatpage entry 
+            flatpage_obj, created = FlatPage.objects.get_or_create(url=pagedesc["url"], defaults=pagedesc)
+            flatpage_obj.content = pagedesc['content']
+            flatpage_obj.title = pagedesc['title']
+            flatpage_obj.sites.add(site)
+            flatpage_obj.save()
+
+
+
+
+
 
 def post_migrate_create_flatpages(sender, **kwargs):
     Site = apps.get_model("sites.Site")
@@ -14,7 +65,7 @@ def post_migrate_create_flatpages(sender, **kwargs):
         <div class="main">
         	<div class="home-jumbotron">
         		<div class="content">
-        			<h1>Lookit<br>
+        			<h1>Lookit MBAH<br>
         			<small>the online child lab</small></h1>
         			<p>A project of the MIT Early Childhood Cognition Lab</p><a class="btn btn-primary btn-lg ember-view" href="/studies" id="ember821">Participate in a Study</a>
         		</div>
@@ -1279,3 +1330,6 @@ def post_migrate_create_flatpages(sender, **kwargs):
             defaults=defaults, **page
         )
         flatpage_obj.sites.add(site)
+
+
+

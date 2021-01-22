@@ -1,7 +1,8 @@
-from django.contrib.flatpages import views as flatpages_views
 from django.urls import path, re_path
 
 from web import views
+
+from project import settings
 
 app_name = "web"
 
@@ -40,25 +41,6 @@ urlpatterns = [
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),
-    path("faq/", flatpages_views.flatpage, dict(url="/faq/"), name="faq"),
-    path(
-        "scientists/",
-        flatpages_views.flatpage,
-        dict(url="/scientists/"),
-        name="scientists",
-    ),
-    path(
-        "resources/",
-        flatpages_views.flatpage,
-        dict(url="/resources/"),
-        name="resources",
-    ),
-    path(
-        "contact_us/",
-        flatpages_views.flatpage,
-        dict(url="/contact_us/"),
-        name="contact_us",
-    ),
     re_path(
         r"^(?P<path>assets/.*)$",
         views.ExperimentAssetsProxyView.as_view(),
@@ -69,5 +51,15 @@ urlpatterns = [
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-fonts-proxy",
     ),
-    path("", flatpages_views.flatpage, dict(url=""), name="home"),
+
 ]
+
+# Add flatpages
+for name, url in settings.FLATPAGELIST.items():
+    urlpatterns.append(path(
+        url[1:],
+        views.flatpages_i18n_view,
+        dict(url=url),
+        name=name
+    ))
+

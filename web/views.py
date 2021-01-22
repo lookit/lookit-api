@@ -18,12 +18,18 @@ from accounts.models import Child, DemographicData, User
 from project import settings
 from studies.models import Response, Study, Video
 
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
+
+from django.contrib.flatpages import views
+
 
 @receiver(signals.user_logged_out)
 def on_user_logged_out(sender, request, **kwargs):
     messages.success(request, "You've successfully logged out.")
 
+def flatpages_i18n_view(request, url):
+    print(f"URL is {url} and lang {get_language()}")
+    return views.flatpage(request,f'/{get_language()}{url}')
 
 class ParticipantSignupView(generic.CreateView):
     """
