@@ -1,4 +1,4 @@
+-r ./requirements/dev.txt
 gunicorn
 django-heroku
--r ./requirements/defaults.txt
--r ./requirements/dev.txt
+whitenoise
