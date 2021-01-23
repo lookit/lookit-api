@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Prefetch
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.shortcuts import get_object_or_404, redirect, reverse, render
 from django.views import generic
 from django_countries import countries
 
@@ -30,6 +30,9 @@ def on_user_logged_out(sender, request, **kwargs):
 def flatpages_i18n_view(request, url):
     print(f"URL is {url} and lang {get_language()}")
     return views.flatpage(request,f'/{get_language()}{url}')
+
+def home_view(request):
+    return render(request, 'flatpages/home.html')
 
 class ParticipantSignupView(generic.CreateView):
     """

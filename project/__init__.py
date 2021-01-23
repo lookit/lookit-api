@@ -19,7 +19,7 @@ except ImportError:
         ImportWarning,
     )
 else:
-    env_path = find_dotenv()
+    env_path = find_dotenv(usecwd=True)
     if not env_path:
         warnings.warn("Expected .env file not found; not importing local settings")
     else:

@@ -37,6 +37,9 @@ SECRET_KEY = os.environ.get(
 DEBUG = bool(os.environ.get("DEBUG", False))
 ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
 
+print(DEBUG)
+print(ALLOWED_HOSTS)
+
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_AGE = 60 * 60 * 24  # One day in seconds
 

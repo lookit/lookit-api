@@ -52,6 +52,8 @@ urlpatterns = [
         name="experiment-fonts-proxy",
     ),
 
+    path("testme/", views.home_view, name="home"),
+
 ]
 
 # Add flatpages

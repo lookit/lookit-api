@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-11 07:10-0500\n"
+"POT-Creation-Date: 2021-01-23 02:55-0500\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -693,7 +693,7 @@ msgid "Edit when you can be contacted."
 msgstr "ערכו מתי אפשר ליצור איתכם קשר."
 
 #: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
+#: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
 #: web/templates/web/children-list.html:67
 #: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
@@ -803,6 +803,80 @@ msgstr "מגזר"
 msgid "Dashboard"
 msgstr "לוּחַ מַחווָנִים"
 
+#: project/settings.py:227 studies/fields.py:68
+msgid "German"
+msgstr ""
+
+#: project/settings.py:228 studies/fields.py:57
+msgid "English"
+msgstr ""
+
+#: project/settings.py:229 studies/fields.py:101
+msgid "Spanish"
+msgstr ""
+
+#: project/settings.py:230
+msgid "Argentinian Spanish"
+msgstr ""
+
+#: project/settings.py:231 studies/fields.py:66
+msgid "French"
+msgstr ""
+
+#: project/settings.py:232
+msgid "Canadian French"
+msgstr ""
+
+#: project/settings.py:233
+msgid "Hebrew"
+msgstr ""
+
+#: project/settings.py:234 studies/fields.py:76
+msgid "Italian"
+msgstr ""
+
+#: project/settings.py:235 studies/fields.py:77
+msgid "Japanese"
+msgstr ""
+
+#: project/settings.py:236 studies/fields.py:82
+msgid "Korean"
+msgstr ""
+
+#: project/settings.py:237
+msgid "Norwegian Bokmål"
+msgstr ""
+
+#: project/settings.py:238 studies/fields.py:94
+msgid "Polish"
+msgstr ""
+
+#: project/settings.py:239 studies/fields.py:95
+msgid "Portuguese"
+msgstr ""
+
+#: project/settings.py:240
+msgid "Brazilian Portuguese"
+msgstr ""
+
+#: project/settings.py:241 studies/fields.py:96
+msgid "Romanian"
+msgstr ""
+
+#: project/settings.py:242 studies/fields.py:97
+#, fuzzy
+#| msgid "Asian"
+msgid "Russian"
+msgstr "אסייתי"
+
+#: project/settings.py:243 studies/fields.py:107
+msgid "Turkish"
+msgstr ""
+
+#: project/settings.py:244
+msgid "Simplified Chinese"
+msgstr ""
+
 #: studies/fields.py:7
 msgid "Autism Spectrum Disorder"
 msgstr ""
@@ -851,10 +925,6 @@ msgstr "שביעיה"
 msgid "Octuplet"
 msgstr "שמיניה"
 
-#: studies/fields.py:57
-msgid "English"
-msgstr ""
-
 #: studies/fields.py:58
 msgid "Amharic"
 msgstr ""
@@ -887,16 +957,8 @@ msgstr ""
 msgid "Egyptian Spoken Arabic"
 msgstr ""
 
-#: studies/fields.py:66
-msgid "French"
-msgstr ""
-
 #: studies/fields.py:67
 msgid "Gan"
-msgstr ""
-
-#: studies/fields.py:68
-msgid "German"
 msgstr ""
 
 #: studies/fields.py:69
@@ -929,14 +991,6 @@ msgstr ""
 msgid "Iranian Persian"
 msgstr ""
 
-#: studies/fields.py:76
-msgid "Italian"
-msgstr ""
-
-#: studies/fields.py:77
-msgid "Japanese"
-msgstr ""
-
 #: studies/fields.py:78
 msgid "Javanese"
 msgstr ""
@@ -951,10 +1005,6 @@ msgstr ""
 
 #: studies/fields.py:81
 msgid "Khmer"
-msgstr ""
-
-#: studies/fields.py:82
-msgid "Korean"
 msgstr ""
 
 #: studies/fields.py:83
@@ -1001,24 +1051,6 @@ msgstr ""
 msgid "Odia"
 msgstr ""
 
-#: studies/fields.py:94
-msgid "Polish"
-msgstr ""
-
-#: studies/fields.py:95
-msgid "Portuguese"
-msgstr ""
-
-#: studies/fields.py:96
-msgid "Romanian"
-msgstr ""
-
-#: studies/fields.py:97
-#, fuzzy
-#| msgid "Asian"
-msgid "Russian"
-msgstr "אסייתי"
-
 #: studies/fields.py:98
 msgid "Saraiki"
 msgstr ""
@@ -1029,10 +1061,6 @@ msgstr ""
 
 #: studies/fields.py:100
 msgid "Somali"
-msgstr ""
-
-#: studies/fields.py:101
-msgid "Spanish"
 msgstr ""
 
 #: studies/fields.py:102
@@ -1053,10 +1081,6 @@ msgstr ""
 
 #: studies/fields.py:106
 msgid "Thai"
-msgstr ""
-
-#: studies/fields.py:107
-msgid "Turkish"
 msgstr ""
 
 #: studies/fields.py:108
@@ -1122,7 +1146,7 @@ msgid "The Users who have requested to join this Lab."
 msgstr "המשתמשים שביקשו להצטרף למעבדה זו."
 
 #: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
+#: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
@@ -1152,6 +1176,100 @@ msgstr "איש קשר:"
 msgid "Connect"
 msgstr ""
 
+#: web/templates/flatpages/home.html:11
+msgid "the online child lab"
+msgstr ""
+
+#: web/templates/flatpages/home.html:12
+msgid "A project of the MIT Early Childhood Cognition Lab"
+msgstr ""
+
+#: web/templates/flatpages/home.html:22
+msgid "Bringing science home"
+msgstr ""
+
+#: web/templates/flatpages/home.html:23
+msgid ""
+"Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
+"developmental psychology: bringing the experiments to you."
+msgstr ""
+
+#: web/templates/flatpages/home.html:29
+msgid "Help us understand how your child thinks"
+msgstr ""
+
+#: web/templates/flatpages/home.html:30
+msgid ""
+"Your family can contribute to research about how children learn by doing fun "
+"activities together, right in your web browser."
+msgstr ""
+
+#: web/templates/flatpages/home.html:36
+msgid "Participate whenever and wherever"
+msgstr ""
+
+#: web/templates/flatpages/home.html:37
+msgid ""
+"Log in or create an account at the top right to get started! You can "
+"participate with your child from any computer with a webcam."
+msgstr ""
+
+#: web/templates/flatpages/home.html:45
+msgid "News"
+msgstr ""
+
+#: web/templates/flatpages/home.html:49
+msgid "June 29, 2020"
+msgstr ""
+
+#: web/templates/flatpages/home.html:52
+msgid "We're now accepting new studies from research groups around the world!"
+msgstr ""
+
+#: web/templates/flatpages/home.html:57
+msgid "May 4, 2020"
+msgstr ""
+
+#: web/templates/flatpages/home.html:60
+#, fuzzy
+#| msgid ""
+#| "Looking for more ways to contribute to research from home? Check out <a "
+#| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
+#| "\"noreferrer noopener\">Children Helping Science</a> for even more "
+#| "studies!"
+msgid ""
+"For even more ways to participate in science with your kids at home, check "
+"out the newly launched site <a href='https://childrenhelpingscience.com/' "
+"target='_blank'>Children Helping Science"
+msgstr ""
+"מחפשים דרכים נוספות לתרום למחקר מהבית? עיינו ב <a href=\"https://"
+"childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\"> "
+"ילדים העוזרים למדע </a> למחקרים נוספים!"
+
+#: web/templates/flatpages/home.html:65
+msgid "March 27, 2020"
+msgstr ""
+
+#: web/templates/flatpages/home.html:68
+msgid ""
+"We're gearing up to open up Lookit to more research labs! Our first study "
+"for newborns, 'Baby See, Baby Do?' is live, and 'Baby Euclid' is back for 7-"
+"month-olds. And we're still recruiting for Flurps and Zazzes, Your Baby the "
+"Physicist, and Baby Laughter - please help us spread the word!"
+msgstr ""
+
+#: web/templates/flatpages/home.html:73
+msgid "September 18, 2019"
+msgstr ""
+
+#: web/templates/flatpages/home.html:76
+msgid ""
+"Data collection is complete for the Lookit studies 'Baby Euclid,' 'Mind and "
+"Manners', 'Flurps and Zazzes,' and 'Words and Objects' (but stay tuned for "
+"follow-ups!). We're still looking families with babies to participate in "
+"'Look and Listen,' 'Your Baby the Physicist,' and 'Baby Laughter Games.'"
+msgstr ""
+
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
 msgstr "התנתקת בהצלחה."
@@ -1166,7 +1284,7 @@ msgstr "שם המשתמש והסיסמה שלכם לא תואמים. אנא נס
 
 #: web/templates/registration/login.html:18
 #: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:45
+#: web/templates/web/_navigation.html:50
 msgid "Login"
 msgstr "התחברות"
 
@@ -1354,35 +1472,35 @@ msgstr "כתובת דוא\"ל:"
 msgid "Reset my password"
 msgstr "אפסו את הסיסמה שלי"
 
-#: web/templates/web/_navigation.html:17
+#: web/templates/web/_navigation.html:22
 msgid "Experimenter"
 msgstr "נסיינ/ית"
 
-#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
+#: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
 msgid "Studies"
 msgstr "מחקרים"
 
-#: web/templates/web/_navigation.html:29
+#: web/templates/web/_navigation.html:34
 msgid "FAQ"
 msgstr "שאלות נפוצות"
 
-#: web/templates/web/_navigation.html:30
+#: web/templates/web/_navigation.html:35
 msgid "The Scientists"
 msgstr "המדענים והמדעניות"
 
-#: web/templates/web/_navigation.html:31
+#: web/templates/web/_navigation.html:36
 msgid "Resources"
 msgstr "משאבים"
 
-#: web/templates/web/_navigation.html:40
+#: web/templates/web/_navigation.html:45
 msgid "Hi"
 msgstr "היי"
 
-#: web/templates/web/_navigation.html:42
+#: web/templates/web/_navigation.html:47
 msgid "Logout"
 msgstr "להתנתק"
 
-#: web/templates/web/_navigation.html:44
+#: web/templates/web/_navigation.html:49
 msgid "Sign up"
 msgstr "להרשם"
 
@@ -1817,39 +1935,39 @@ msgstr ""
 "לקבלת דרך קלה לראות מה קורה בעת עדכון פרוטוקול הלימוד שלכם, סמנו את כתובת "
 "האתר שהכפתור שלמעלה שולח אתכם אליה."
 
-#: web/views.py:47
+#: web/views.py:56
 #, fuzzy
 #| msgid "Participant account"
 msgid "Participant created."
 msgstr "חשבון המשתתפ/ת"
 
-#: web/views.py:72
+#: web/views.py:81
 #, fuzzy
 #| msgid "Demographic Survey"
 msgid "Demographic data saved."
 msgstr "סקר דמוגרפי"
 
-#: web/views.py:140
+#: web/views.py:149
 #, fuzzy
 #| msgid "Children"
 msgid "Child added."
 msgstr "יְלָדִים"
 
-#: web/views.py:176
+#: web/views.py:185
 msgid "Child deleted."
 msgstr ""
 
-#: web/views.py:178
+#: web/views.py:187
 msgid "Child updated."
 msgstr ""
 
-#: web/views.py:201
+#: web/views.py:210
 #, fuzzy
 #| msgid "Email Preferences"
 msgid "Email preferences saved."
 msgstr "העדפות דוא\"ל"
 
-#: web/views.py:295
+#: web/views.py:304
 #, python-brace-format
 msgid ""
 "The study {study.name} is not currently collecting data - the study is "
