@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-23 19:41+0000\n"
+"POT-Creation-Date: 2021-01-23 21:52+0100\n"
 "Language: pt-br\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -714,7 +714,7 @@ msgid "Edit when you can be contacted."
 msgstr "Edite suas preferências de notificações."
 
 #: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
 #: web/templates/web/children-list.html:67
 #: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
@@ -827,77 +827,77 @@ msgstr "Raça"
 msgid "Dashboard"
 msgstr "painel de controle"
 
-#: project/settings.py:230 studies/fields.py:68
+#: project/settings.py:228 studies/fields.py:68
 msgid "German"
 msgstr "alemão"
 
-#: project/settings.py:231 studies/fields.py:57
+#: project/settings.py:229 studies/fields.py:57
 msgid "English"
 msgstr "Inglês"
 
-#: project/settings.py:232 studies/fields.py:101
+#: project/settings.py:230 studies/fields.py:101
 msgid "Spanish"
 msgstr "espanhol"
 
-#: project/settings.py:233
+#: project/settings.py:231
 msgid "Argentinian Spanish"
 msgstr ""
 
-#: project/settings.py:234 studies/fields.py:66
+#: project/settings.py:232 studies/fields.py:66
 msgid "French"
 msgstr "francês"
 
-#: project/settings.py:235
+#: project/settings.py:233
 msgid "Canadian French"
 msgstr ""
 
-#: project/settings.py:236
+#: project/settings.py:234
 msgid "Hebrew"
 msgstr ""
 
-#: project/settings.py:237 studies/fields.py:76
+#: project/settings.py:235 studies/fields.py:76
 msgid "Italian"
 msgstr "italiano"
 
-#: project/settings.py:238 studies/fields.py:77
+#: project/settings.py:236 studies/fields.py:77
 msgid "Japanese"
 msgstr "japonês"
 
-#: project/settings.py:239 studies/fields.py:82
+#: project/settings.py:237 studies/fields.py:82
 msgid "Korean"
 msgstr "Coreano"
 
-#: project/settings.py:240
+#: project/settings.py:238
 msgid "Norwegian Bokmål"
 msgstr ""
 
-#: project/settings.py:241 studies/fields.py:94
+#: project/settings.py:239 studies/fields.py:94
 msgid "Polish"
 msgstr "Polonês"
 
-#: project/settings.py:242 studies/fields.py:95
+#: project/settings.py:240 studies/fields.py:95
 msgid "Portuguese"
 msgstr "Português"
 
-#: project/settings.py:243
+#: project/settings.py:241
 #, fuzzy
 #| msgid "Portuguese"
 msgid "Brazilian Portuguese"
 msgstr "Português"
 
-#: project/settings.py:244 studies/fields.py:96
+#: project/settings.py:242 studies/fields.py:96
 msgid "Romanian"
 msgstr "Romeno"
 
-#: project/settings.py:245 studies/fields.py:97
+#: project/settings.py:243 studies/fields.py:97
 msgid "Russian"
 msgstr "Russo"
 
-#: project/settings.py:246 studies/fields.py:107
+#: project/settings.py:244 studies/fields.py:107
 msgid "Turkish"
 msgstr "Turco"
 
-#: project/settings.py:247
+#: project/settings.py:245
 msgid "Simplified Chinese"
 msgstr ""
 
@@ -1167,7 +1167,7 @@ msgid "The Users who have requested to join this Lab."
 msgstr "Os usuários que solicitaram ingressar neste laboratório."
 
 #: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
@@ -1204,57 +1204,57 @@ msgstr "Conecte-se"
 
 #: web/templates/flatpages/home.html:11
 msgid "the online child lab"
-msgstr ""
+msgstr "O laboratório online para crianças"
 
 #: web/templates/flatpages/home.html:12
 msgid "A project of the MIT Early Childhood Cognition Lab"
-msgstr ""
+msgstr "Um projeto do Laboratório de Cognição Infantil do MIT"
 
 #: web/templates/flatpages/home.html:22
 msgid "Bringing science home"
-msgstr ""
+msgstr "Trazendo ciência aos lares"
 
 #: web/templates/flatpages/home.html:23
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
-msgstr ""
+msgstr "Aqui no Laboratório de Cognição Infantil do MIT, nós estamos testando uma nova abordagem em psicologia do desenvolvimento: trazer os experimentos até você."
 
 #: web/templates/flatpages/home.html:29
 msgid "Help us understand how your child thinks"
-msgstr ""
+msgstr "Ajude-nos a entender como a sua criança pensa"
 
 #: web/templates/flatpages/home.html:30
 msgid ""
 "Your family can contribute to research about how children learn by doing fun "
 "activities together, right in your web browser."
-msgstr ""
+msgstr "Sua família pode contribuir para pesquisas sobre como crianças aprendem fazendo atividades divertidas juntos, no seu navegador de internet"
 
 #: web/templates/flatpages/home.html:36
 msgid "Participate whenever and wherever"
-msgstr ""
+msgstr "Participe a qualquer momento, de qualquer lugar"
 
 #: web/templates/flatpages/home.html:37
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
-msgstr ""
+msgstr "Faça o login ou crie uma conta no topo direito para começar! Você pode participar com sua criança de qualquer computador com webcam."
 
 #: web/templates/flatpages/home.html:45
 msgid "News"
-msgstr ""
+msgstr "Notícias"
 
 #: web/templates/flatpages/home.html:49
-msgid "June 29, 2020"
+msgid "29 de junho de 2020"
 msgstr ""
 
 #: web/templates/flatpages/home.html:52
 msgid "We're now accepting new studies from research groups around the world!"
-msgstr ""
+msgstr "Nós estamos agora aceitando novos estudos de grupos de pesquisas ao redor do mundo!"
 
 #: web/templates/flatpages/home.html:57
 msgid "May 4, 2020"
-msgstr ""
+msgstr "04 de maio de 2020"
 
 #: web/templates/flatpages/home.html:60
 #, fuzzy
@@ -1274,7 +1274,7 @@ msgstr ""
 
 #: web/templates/flatpages/home.html:65
 msgid "March 27, 2020"
-msgstr ""
+msgstr "27 de março de 2020"
 
 #: web/templates/flatpages/home.html:68
 msgid ""
@@ -1282,11 +1282,11 @@ msgid ""
 "for newborns, 'Baby See, Baby Do?' is live, and 'Baby Euclid' is back for 7-"
 "month-olds. And we're still recruiting for Flurps and Zazzes, Your Baby the "
 "Physicist, and Baby Laughter - please help us spread the word!"
-msgstr ""
+msgstr "Estamos nos preparando para abrir o Lookit para mais laboratórios de pesquisa! Nosso primeiro estudo com recém-nascidos, 'O bebê vê, o bebê faz?' está ativo, e 'Bebê Euclides' está de volta para bebês de sete meses. E ainda estamos recrutando para 'Flurps and Zazzes', 'Seu bebê médico' e 'Risada de bebê' - por favor nos ajude a espalhar a notícia!"
 
 #: web/templates/flatpages/home.html:73
 msgid "September 18, 2019"
-msgstr ""
+msgstr "18 de setembro de 2019"
 
 #: web/templates/flatpages/home.html:76
 msgid ""
@@ -1294,7 +1294,7 @@ msgid ""
 "Manners', 'Flurps and Zazzes,' and 'Words and Objects' (but stay tuned for "
 "follow-ups!). We're still looking families with babies to participate in "
 "'Look and Listen,' 'Your Baby the Physicist,' and 'Baby Laughter Games.'"
-msgstr ""
+msgstr "A coleta de dados está completa para os estudos 'Bebê Euclides', 'Mente e Maneiras', 'Flurps and Zazzes' e 'Palavras e Objetos' (mas fique ligado nas próximas fases!). Ainda estamos procurando famílias com bebês para participar em 'Olhe e Escute', 'Seu bebê médico' e 'Jogos de risada de bebê'."
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
@@ -1308,7 +1308,7 @@ msgstr "Suas credenciais são inválidas. Por favor, tente novamente."
 
 #: web/templates/registration/login.html:18
 #: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:50
+#: web/templates/web/_navigation.html:45
 msgid "Login"
 msgstr "Login"
 
@@ -1487,35 +1487,35 @@ msgstr "Endereço de e-mail:"
 msgid "Reset my password"
 msgstr "Redefinir minha senha"
 
-#: web/templates/web/_navigation.html:22
+#: web/templates/web/_navigation.html:17
 msgid "Experimenter"
 msgstr "Pesquisador"
 
-#: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
+#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
 msgid "Studies"
 msgstr "Estudos"
 
-#: web/templates/web/_navigation.html:34
+#: web/templates/web/_navigation.html:29
 msgid "FAQ"
 msgstr "Perguntas frequentes"
 
-#: web/templates/web/_navigation.html:35
+#: web/templates/web/_navigation.html:30
 msgid "The Scientists"
 msgstr "Os cientistas"
 
-#: web/templates/web/_navigation.html:36
+#: web/templates/web/_navigation.html:31
 msgid "Resources"
 msgstr "Recursos"
 
-#: web/templates/web/_navigation.html:45
+#: web/templates/web/_navigation.html:40
 msgid "Hi"
 msgstr "Oi"
 
-#: web/templates/web/_navigation.html:47
+#: web/templates/web/_navigation.html:42
 msgid "Logout"
 msgstr "Sair"
 
-#: web/templates/web/_navigation.html:49
+#: web/templates/web/_navigation.html:44
 msgid "Sign up"
 msgstr "inscrever-se"
 
