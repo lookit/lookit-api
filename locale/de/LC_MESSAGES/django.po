@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-23 02:55-0500\n"
+"POT-Creation-Date: 2021-01-23 19:41+0000\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -822,77 +822,77 @@ msgstr "Ethnische Zugehörigkeit"
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: project/settings.py:227 studies/fields.py:68
+#: project/settings.py:230 studies/fields.py:68
 msgid "German"
 msgstr ""
 
-#: project/settings.py:228 studies/fields.py:57
+#: project/settings.py:231 studies/fields.py:57
 msgid "English"
 msgstr ""
 
-#: project/settings.py:229 studies/fields.py:101
+#: project/settings.py:232 studies/fields.py:101
 msgid "Spanish"
 msgstr ""
 
-#: project/settings.py:230
+#: project/settings.py:233
 msgid "Argentinian Spanish"
 msgstr ""
 
-#: project/settings.py:231 studies/fields.py:66
+#: project/settings.py:234 studies/fields.py:66
 msgid "French"
 msgstr ""
 
-#: project/settings.py:232
+#: project/settings.py:235
 msgid "Canadian French"
 msgstr ""
 
-#: project/settings.py:233
+#: project/settings.py:236
 msgid "Hebrew"
 msgstr ""
 
-#: project/settings.py:234 studies/fields.py:76
+#: project/settings.py:237 studies/fields.py:76
 msgid "Italian"
 msgstr ""
 
-#: project/settings.py:235 studies/fields.py:77
+#: project/settings.py:238 studies/fields.py:77
 msgid "Japanese"
 msgstr ""
 
-#: project/settings.py:236 studies/fields.py:82
+#: project/settings.py:239 studies/fields.py:82
 msgid "Korean"
 msgstr ""
 
-#: project/settings.py:237
+#: project/settings.py:240
 msgid "Norwegian Bokmål"
 msgstr ""
 
-#: project/settings.py:238 studies/fields.py:94
+#: project/settings.py:241 studies/fields.py:94
 msgid "Polish"
 msgstr ""
 
-#: project/settings.py:239 studies/fields.py:95
+#: project/settings.py:242 studies/fields.py:95
 msgid "Portuguese"
 msgstr ""
 
-#: project/settings.py:240
+#: project/settings.py:243
 msgid "Brazilian Portuguese"
 msgstr ""
 
-#: project/settings.py:241 studies/fields.py:96
+#: project/settings.py:244 studies/fields.py:96
 msgid "Romanian"
 msgstr ""
 
-#: project/settings.py:242 studies/fields.py:97
+#: project/settings.py:245 studies/fields.py:97
 #, fuzzy
 #| msgid "Asian"
 msgid "Russian"
 msgstr "Asiate"
 
-#: project/settings.py:243 studies/fields.py:107
+#: project/settings.py:246 studies/fields.py:107
 msgid "Turkish"
 msgstr ""
 
-#: project/settings.py:244
+#: project/settings.py:247
 msgid "Simplified Chinese"
 msgstr ""
 

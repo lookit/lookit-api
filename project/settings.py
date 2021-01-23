@@ -37,9 +37,6 @@ SECRET_KEY = os.environ.get(
 DEBUG = bool(os.environ.get("DEBUG", False))
 ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS", "").split(" ") if h]
 
-print(DEBUG)
-print(ALLOWED_HOSTS)
-
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_AGE = 60 * 60 * 24  # One day in seconds
 
@@ -147,6 +144,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'django.template.context_processors.i18n',
             ]
         },
     }
@@ -215,7 +213,7 @@ JSON_API_PLURALIZE_TYPES = True
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "pt-br"
 
 TIME_ZONE = "America/New_York"
 
@@ -362,8 +360,8 @@ CELERY_TASK_ROUTES = {
 }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-SITE_ROOT = os.path.dirname(os.path.realpath(__name__))
-LOCALE_PATHS = ( os.path.join(SITE_ROOT, 'locale'), )
+print(f'BASE_DIR {BASE_DIR}')
+LOCALE_PATHS = ( os.path.join(BASE_DIR, '../locale'), )
 
 FLATPAGELIST={  'contact': '/contact_us/',
                 'faq' : '/faq/',
