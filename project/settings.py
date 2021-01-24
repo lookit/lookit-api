@@ -243,6 +243,7 @@ LANGUAGES = [
     ('ru', gettext_noop('Russian')),
     ('tr', gettext_noop('Turkish')),
     ('zh-hans', gettext_noop('Simplified Chinese')),
+    ('nl', gettext_noop('Dutch')),
 ] 
 
 SITE_ID = 1
