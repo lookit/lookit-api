@@ -213,7 +213,7 @@ JSON_API_PLURALIZE_TYPES = True
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = "pt-br"
+LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "America/New_York"
 
