@@ -27,12 +27,20 @@ from django.contrib.flatpages import views
 def on_user_logged_out(sender, request, **kwargs):
     messages.success(request, "You've successfully logged out.")
 
-def flatpages_i18n_view(request, url):
-    print(f"URL is {url} and lang {get_language()}")
-    return views.flatpage(request,f'/{get_language()}{url}')
+class HomeView(generic.TemplateView):
+    template_name = 'flatpages/home.html'
 
-def home_view(request):
-    return render(request, 'flatpages/home.html')
+class FAQView(generic.TemplateView):
+    template_name = 'flatpages/faq.html'
+
+class PrivacyView(generic.TemplateView):
+    template_name = 'flatpages/privacy.html'
+
+class ScientistsView(generic.TemplateView):
+    template_name = 'flatpages/scientists.html'
+
+class ContactView(generic.TemplateView):
+    template_name = 'flatpages/contact.html'
 
 class ParticipantSignupView(generic.CreateView):
     """

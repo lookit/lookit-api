@@ -52,16 +52,15 @@ urlpatterns = [
         name="experiment-fonts-proxy",
     ),
 
-    path("testme/", views.home_view, name="home"),
+    path("/", views.HomeView.as_view(), name="home"),
+    path("faq/", views.FAQView.as_view(), name="faq"),
+    path("privacy/", views.PrivacyView.as_view(), name="privacy"),
+    path("scientists/", views.HomeView.as_view(), name="scientists"),
+    path("contact_us/", views.HomeView.as_view(), name="contact"),
 
+# Remaining flat pages
+    path("resources/", views.flatpages.as_view() , name="resources"),
+    path("termsofuse/", views.flatpages.as_view() , name="termsofuser"),
 ]
 
-# Add flatpages
-for name, url in settings.FLATPAGELIST.items():
-    urlpatterns.append(path(
-        url[1:],
-        views.flatpages_i18n_view,
-        dict(url=url),
-        name=name
-    ))
 
