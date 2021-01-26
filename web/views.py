@@ -20,7 +20,6 @@ from studies.models import Response, Study, Video
 
 from django.utils.translation import get_language, gettext_lazy as _
 
-from django.contrib.flatpages import views
 
 
 @receiver(signals.user_logged_out)

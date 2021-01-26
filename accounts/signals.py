@@ -6,6 +6,9 @@ import requests
 
 def post_migrate_refresh_flatpages(sender, **kwargs):
 
+    FLATPAGELIST={'resources': '/resources/', 
+        'termsofuse': '/termsofuse',}
+
     # Check first site
     Site = apps.get_model("sites.Site")
     site = Site.objects.first()
@@ -20,7 +23,7 @@ def post_migrate_refresh_flatpages(sender, **kwargs):
     # Path to raw github files. English in this folder, others in locale/[langcode]/
     github_root='https://github.com/manybabies/mbah-research-resources/raw/master/lookit%20static%20pages'
 
-    for page, url in settings.FLATPAGELIST.items():
+    for page, url in FLATPAGELIST.items():
         # Get en version to use as default
         r_eng = requests.get(github_root + '/' + page + '.html')
 

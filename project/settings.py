@@ -364,11 +364,4 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 print(f'BASE_DIR {BASE_DIR}')
 LOCALE_PATHS = ( os.path.join(BASE_DIR, '../locale'), )
 
-FLATPAGELIST={  'contact': '/contact_us/',
-                'faq' : '/faq/',
-                'home' : '/',
-                'privacy': '/privacy/',
-                'resources': '/resources/',
-                'scientists': '/scientists/',
-                'termsofuse': '/termsofuse/',
                 }

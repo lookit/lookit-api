@@ -4,6 +4,8 @@ from web import views
 
 from project import settings
 
+from django.contrib.flatpages import views as flatpages_views
+
 app_name = "web"
 
 urlpatterns = [
@@ -52,15 +54,15 @@ urlpatterns = [
         name="experiment-fonts-proxy",
     ),
 
-    path("/", views.HomeView.as_view(), name="home"),
+    path("", views.HomeView.as_view(), name="home"),
     path("faq/", views.FAQView.as_view(), name="faq"),
     path("privacy/", views.PrivacyView.as_view(), name="privacy"),
-    path("scientists/", views.HomeView.as_view(), name="scientists"),
-    path("contact_us/", views.HomeView.as_view(), name="contact"),
+    path("scientists/", views.ScientistsView.as_view(), name="scientists"),
+    path("contact_us/", views.ContactView.as_view(), name="contact"),
 
 # Remaining flat pages
-    path("resources/", views.flatpages.as_view() , name="resources"),
-    path("termsofuse/", views.flatpages.as_view() , name="termsofuser"),
+    path("resources/", flatpages_views.flatpage , dict(url="/en-us/resources/"), name="resources"),
+    path("termsofuse/", flatpages_views.flatpage , dict(url="/en-us/termsofuse/"), name="termsofuser"),
 ]
 
 
