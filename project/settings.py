@@ -364,4 +364,3 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 print(f'BASE_DIR {BASE_DIR}')
 LOCALE_PATHS = ( os.path.join(BASE_DIR, '../locale'), )
 
-                }
