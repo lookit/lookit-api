@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-23 19:41+0000\n"
+"POT-Creation-Date: 2021-01-30 14:30-0500\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -814,78 +814,82 @@ msgstr "Etnie"
 msgid "Dashboard"
 msgstr "Tablou de bord"
 
-#: project/settings.py:230 studies/fields.py:68
+#: project/settings.py:228 studies/fields.py:68
 msgid "German"
 msgstr ""
 
-#: project/settings.py:231 studies/fields.py:57
+#: project/settings.py:229 studies/fields.py:57
 msgid "English"
 msgstr ""
 
-#: project/settings.py:232 studies/fields.py:101
+#: project/settings.py:230 studies/fields.py:101
 msgid "Spanish"
 msgstr ""
 
-#: project/settings.py:233
+#: project/settings.py:231
 msgid "Argentinian Spanish"
 msgstr ""
 
-#: project/settings.py:234 studies/fields.py:66
+#: project/settings.py:232 studies/fields.py:66
 msgid "French"
 msgstr ""
 
-#: project/settings.py:235
+#: project/settings.py:233
 msgid "Canadian French"
 msgstr ""
 
-#: project/settings.py:236
+#: project/settings.py:234
 msgid "Hebrew"
 msgstr ""
 
-#: project/settings.py:237 studies/fields.py:76
+#: project/settings.py:235 studies/fields.py:76
 msgid "Italian"
 msgstr ""
 
-#: project/settings.py:238 studies/fields.py:77
+#: project/settings.py:236 studies/fields.py:77
 msgid "Japanese"
 msgstr ""
 
-#: project/settings.py:239 studies/fields.py:82
+#: project/settings.py:237 studies/fields.py:82
 msgid "Korean"
 msgstr ""
 
-#: project/settings.py:240
+#: project/settings.py:238
 msgid "Norwegian Bokmål"
 msgstr ""
 
-#: project/settings.py:241 studies/fields.py:94
+#: project/settings.py:239 studies/fields.py:94
 msgid "Polish"
 msgstr ""
 
-#: project/settings.py:242 studies/fields.py:95
+#: project/settings.py:240 studies/fields.py:95
 msgid "Portuguese"
 msgstr ""
 
-#: project/settings.py:243
+#: project/settings.py:241
 msgid "Brazilian Portuguese"
 msgstr ""
 
-#: project/settings.py:244 studies/fields.py:96
+#: project/settings.py:242 studies/fields.py:96
 msgid "Romanian"
 msgstr ""
 
-#: project/settings.py:245 studies/fields.py:97
+#: project/settings.py:243 studies/fields.py:97
 #, fuzzy
 #| msgid "Asian"
 msgid "Russian"
 msgstr "asiatică"
 
-#: project/settings.py:246 studies/fields.py:107
+#: project/settings.py:244 studies/fields.py:107
 msgid "Turkish"
 msgstr ""
 
-#: project/settings.py:247
+#: project/settings.py:245
 msgid "Simplified Chinese"
+msgstr ""
+
+#: project/settings.py:246 studies/fields.py:64
+msgid "Dutch"
 msgstr ""
 
 #: studies/fields.py:7
@@ -958,10 +962,6 @@ msgstr ""
 
 #: studies/fields.py:63
 msgid "Chhattisgarhi"
-msgstr ""
-
-#: studies/fields.py:64
-msgid "Dutch"
 msgstr ""
 
 #: studies/fields.py:65
@@ -1157,6 +1157,21 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "Utilizatorii care au solicitat să se alăture acestui laborator."
 
+#: web/templates/flatpages/contact.html:15
+msgid "Technical difficulties"
+msgstr ""
+
+#: web/templates/flatpages/contact.html:18
+msgid "Questions about the studies"
+msgstr ""
+
+#: web/templates/flatpages/contact.html:22
+#: web/templates/flatpages/privacy.html:140
+#, fuzzy
+#| msgid "researcher login"
+msgid "For researchers"
+msgstr "conectare cercetător"
+
 #: web/templates/flatpages/default.html:10
 #: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
 #: web/templates/web/base.html:10
@@ -1186,6 +1201,574 @@ msgstr "Contact"
 
 #: web/templates/flatpages/default.html:60
 msgid "Connect"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:11
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:16
+#, fuzzy
+#| msgid "Participate"
+msgid "Participation"
+msgstr "Participați"
+
+#: web/templates/flatpages/faq.html:20
+msgid "What is a 'study' about cognitive development?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:25
+msgid ""
+"\n"
+"                                <p>Cognitive development is the science of "
+"what kids understand and how they learn. Researchers in cognitive "
+"development are interested in questions like...</p>\n"
+"                                <ul>\n"
+"                                    <li>what knowledge and abilities infants "
+"are born with, and what they have to learn from experience</li>\n"
+"                                    <li>how abilities like mathematical "
+"reasoning are organized and how they develop over time</li>\n"
+"                                    <li>what strategies children use to "
+"learn from the wide variety of data they observe</li>\n"
+"                                </ul>\n"
+"                                <p>A study is meant to answer a very "
+"specific question about how children learn or what they know: for instance, "
+"'Do three-month-olds recognize their parents' faces?'</p>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:40
+#, fuzzy
+#| msgid "Log in to participate"
+msgid "How can we participate online?"
+msgstr "Conectați-vă pentru a participa"
+
+#: web/templates/flatpages/faq.html:45
+msgid ""
+"\n"
+"                            <p>If you have a child and would like to "
+"participate, create an account and take a look at what we have available for "
+"your child's age range. You'll need a working webcam to participate.</p>\n"
+"                                <p>When you select a study, you'll be asked "
+"to read a consent form and record yourself stating that you and your child "
+"agree to participate. Then we'll guide you through what will happen during "
+"the study. Depending on your child's age, your child may answer questions "
+"directly or we may be looking for indirect signs of what she thinks is going "
+"on--like how long she looks at a surprising outcome.</p>\n"
+"                                <p>Some portions of the study will be "
+"automatically recorded using your webcam and sent securely to the Lookit "
+"platform. Trained researchers will watch the video and record your child's "
+"responses--for instance, which way he pointed, or how long she looked at "
+"each image. We'll put these together with responses from lots of other "
+"children to learn more about how kids think!</p>\n"
+"                            "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:56
+msgid "Who can create studies on Lookit?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:61
+msgid ""
+"Any researcher with questions about how kids learn and grow can propose a "
+"Lookit study! Each institution using Lookit has to sign a contract with MIT "
+"where they agree to the <a href='/termsofuse'>Terms of Use</a> and certify "
+"that their studies will be reviewed and approved by an institutional review "
+"board. Studies are also subject to approval by Lookit. As of June 2020 we "
+"have agreements with 20 universities!"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:69
+#, fuzzy
+#| msgid "Log in to participate"
+msgid "How do we provide consent to participate?"
+msgstr "Conectați-vă pentru a participa"
+
+#: web/templates/flatpages/faq.html:74
+msgid ""
+"\n"
+"                                <p>Rather than having the parent or legal "
+"guardian sign a form, we ask that you read aloud (or sign in ASL) a "
+"statement of consent which is recorded using your webcam. This statement "
+"holds the same weight as a signed form, but should be less hassle for you. "
+"It also lets us verify that you understand written English and that you "
+"understand you're being videotaped.</p>\n"
+"                                <p>Researchers watch these consent videos on "
+"a special page of the researcher interface, and record for each one whether "
+"the video shows informed consent. They cannot view other video or download "
+"data from a session unless they have confirmed that you consented to "
+"participate! If they see a consent video that does NOT clearly demonstrate "
+"informed consent--for instance, there was a technical problem and there's no "
+"audio--they may contact you to check, depending on your email settings.</p>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:80
+msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:89
+msgid "How is our information kept secure and confidential?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:94
+msgid ""
+"\n"
+"                                <p>\n"
+"                                Researchers using Lookit agree to uphold a "
+"common set of standards about how data is protected and shared. For "
+"instance, they never publish children's names or birthdates, or information "
+"that could be used to calculate a birthdate.</p>\n"
+"                                <p>The Lookit researcher interface is "
+"designed with participant data protection as the top priority. For instance, "
+"a special interface lets researchers confirm consent videos before they are "
+"able to download any other data from your session. Research groups can "
+"control who has access to what data in a very fine-grained way, for instance "
+"allowing an assistant to confirm consent and send gift cards, but not "
+"download study data.</p>\n"
+"                                <p>All of your data, including video, is "
+"transmitted over a secure HTTPS connection to Lookit storage, and is "
+"encrypted at rest. We take security very seriously; in addition to making "
+"sure any software we use is up-to-date, cloud servers are configured "
+"securely, and unit tests cover checking that accessing data requires correct "
+"permissions, we conducted a risk assessment and detailed manual penetration "
+"testing with a security contractor prior to our 2020 launch.</p>\n"
+"                                <p>See also 'Who will see our video?'</p>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:107
+#, fuzzy
+#| msgid "What is your gender?"
+msgid "Who will see our video?"
+msgstr "Ce gen aveţi?"
+
+#: web/templates/flatpages/faq.html:112
+msgid ""
+"\n"
+"                                <p>Lookit staff at MIT will have access to "
+"your video and other data in order to improve and promote the platform and "
+"help with troubleshooting. The researchers running the study you "
+"participated in will also have access to your video and other data (like "
+"responses to questions during the study, and information you fill out when "
+"registering a child) for research purposes. They will watch the video "
+"segments you send to mark down information specific to the study--for "
+"instance, what your child said, or how long he/she looked to the left versus "
+"the right of the screen. This research group may be at MIT or at another "
+"institution. All studies run on Lookit must be approved by an Institutional "
+"Review Board (IRB) that ensures participants' rights and welfare are "
+"protected. All researchers using Lookit also agree to Terms of Use that "
+"govern what data they can share and what sorts of studies are okay to run on "
+"Lookit; these rules are sometimes stricter than their own institution might "
+"be.  </p>\n"
+"                                <p>Whether anyone else may view the video "
+"depends on the privacy settings you select at the end of the study. There "
+"are two decisions to make: whether to share your data with Databrary, and "
+"how to allow your video clips to be used by the researchers you have "
+"selected.</p>\n"
+"                                <p>First, we ask if you would like to share "
+"your data (including video) with authorized users fo the secure data library "
+"Databrary. Data sharing will lead to faster progress in research on human "
+"development and behavior. Researchers who are granted access to the "
+"Databrary library must agree to treat the data with the same high standard "
+"of care they would use in their own laboratories. Learn more about "
+"Databrary's <a href=\"https://databrary.org/about/mission.html\">mission</a> "
+"or the <a href=\"https://databrary.org/access/responsibilities/investigators."
+"html\">requirements for authorized users</a>.</p>\n"
+"                                <p>Next, we ask what types of uses of your "
+"video are okay with you.</p>\n"
+"                                <ul>\n"
+"                                    <li><strong>Private</strong> This "
+"privacy level ensures that your video clips will be viewed only by "
+"authorized scientists (Lookit staff, the research group running the study "
+"and, if you have opted to share your data with Databrary, authorized "
+"Databrary users.) They will view the videos to record information about what "
+"your child did during the study--for instance, looking for 9 seconds at one "
+"image and 7 seconds at another image.</li>\n"
+"                                    <li><strong>Scientific and educational</"
+"strong> This privacy level gives permission to share your video clips with "
+"other researchers or students for scientific or educational purposes. For "
+"example, researchers might show a video clip in a talk at a scientific "
+"conference or an undergraduate class about cognitive development, or include "
+"an image or video in a scientific paper. In some circumstances, video or "
+"images may be available online, for instance as supplemental material in a "
+"scientific paper. Sharing videos with other researchers helps other groups "
+"trust and build on our work.</li>\n"
+"                                    <li><strong>Publicity</strong> This "
+"privacy level is for families who would be excited to see their child "
+"featured on the Lookit website or in the news! Selecting this privacy level "
+"gives permission to use your video clips to communicate about developmental "
+"studies and the Lookit platform with the public. For instance, we might post "
+"a short video clip on the Lookit website, on our Facebook page, or in a "
+"press release. Your video will never be used for commercial purposes.</li>\n"
+"                                </ul>\n"
+"                                <p>If for some reason you do not select a "
+"privacy level, we treat the data as 'Private' and do not share with "
+"Databrary. Participants also have the option to withdraw all video besides "
+"consent at the end of the study if necessary (for instance, because someone "
+"was discussing state secrets in the background), and in this case it is "
+"automatically deleted. Privacy settings for completed sessions cannot "
+"automatically be changed retroactively. If you have any questions or "
+"concerns about privacy, please contact our team at <a href=\"mailto:"
+"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:130
+msgid "What information do researchers use from our video?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:136
+msgid ""
+"For children under about two years old, we usually design our studies to let "
+"their eyes do the talking! We're interested in where on the screen your "
+"child looks and/or how long your child looks at the screen rather than "
+"looking away. Our calibration videos (example shown below) help us get an "
+"idea of what it looks like when your child is looking to the right or the "
+"left, so we can code the rest of the video."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:143
+msgid ""
+"Here's an example of a few children watching our calibration video--it's "
+"easy to see that they look to one side and then the other."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:149
+msgid ""
+"Your child's decisions about where to look can give us lots of information "
+"about what he or she understands. Here are some of the techniques labs use "
+"to learn more about how children learn."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:150
+#, fuzzy
+#| msgid "Duration"
+msgid "Habituation"
+msgstr "Durată"
+
+#: web/templates/flatpages/faq.html:151
+msgid ""
+"\n"
+"                                <p>In a habituation study, we first show "
+"infants many examples of one type of object or event, and they lose interest "
+"over time. Infants typically look for a long time at the first pictures, but "
+"then they start to look away more quickly. Once their looking times are much "
+"less than they were initially, we show either a picture from a new category "
+"or a new picture from the familiar category. If infants now look longer to "
+"the novel example, we can tell that they understood--and got bored of--the "
+"category we showed initially.</p>\n"
+"                                <p>Habituation requires waiting for each "
+"individual infant to achieve some threshold of \"boredness\"--for instance, "
+"looking half as long at a picture as he or she did initially. Sometimes this "
+"is impractical, and we use familiarization instead. In a familiarization "
+"study, we show all babies the same number of examples, and then see how "
+"interested they are in the familiar versus a new category. Younger infants "
+"and those who have seen few examples tend to show a familiarity preference--"
+"they look longer at images similar to what they have seen before. Older "
+"infants and those who have seen many examples tend to show a novelty "
+"preference--they look longer at images that are different from the ones they "
+"saw before. You probably notice the same phenomenon when you hear a new song "
+"on the radio: initially you don't recognize it; after it's played several "
+"times you may like it and sing along; after it's played hundreds of times "
+"you would choose to listen to anything else.</p>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:156
+msgid "Violation of expectation"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:157
+msgid ""
+"Infants and children already have rich expectations about how events work. "
+"Children (and adults for that matter) tend to look longer at things they "
+"find surprising, so in some cases, we can take their looking times as a "
+"measure of how surprised they are."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:158
+msgid "Preferential looking"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:159
+msgid ""
+"Even when they seem to be passive observers, children are making lots of "
+"decisions about where to look and what to pay attention to. In this "
+"technique, we present children with a choice between two side-by-side images "
+"or videos, and see if children spend more time looking at one of them. We "
+"may additionally play audio that matches one of the videos. The video below "
+"shows a participant looking to her left when asked to 'find clapping'; the "
+"display she's watching is shown at the top."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:165
+msgid "Predictive looking"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:166
+msgid ""
+"Children can often make sophisticated predictions about what they expect to "
+"see or hear next. One way we can see those predictions in young children is "
+"to look at their eye movements. For example, if a child sees a ball roll "
+"behind a barrier, she may look to the other edge of the barrier, expecting "
+"the ball to emerge there. We may also set up artificial predictive "
+"relationships--for instance, the syllable 'da' means a toy will appear at "
+"the left of the screen, and 'ba' means a toy will appear at the right. Then "
+"we can see whether children learn these relationships, and how they "
+"generalize, by watching where they look when they hear a syllable."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:168
+msgid ""
+"Older children may simply be able to answer spoken questions about what they "
+"think is happening. For instance, in a recent study, two women called an "
+"object two different made-up names, and children were asked which is the "
+"correct name for the object."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:174
+msgid ""
+"Another way we can learn about how older children (and adults) think is to "
+"measure their reaction times. For instance, we might ask you to help your "
+"child learn to press one key when a circle appears and another key when a "
+"square appears, and then look at factors that influence how quickly they "
+"press a key."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:181
+#, fuzzy
+#| msgid "We are not running any studies at this time!"
+msgid "Why are you running studies online instead of in person?"
+msgstr "Nu derulăm niciun studiu în acest moment!"
+
+#: web/templates/flatpages/faq.html:186
+msgid ""
+"Traditionally, developmental studies happen in a quiet room in a university "
+"lab. Researchers call or email local parents to see if they'd like to take "
+"part and schedule an appointment for them to come visit the lab. Why "
+"complement these in-lab studies with online ones? We're hoping to..."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:187
+msgid ""
+"\n"
+"                                <ul>\n"
+"                                    <li>Make it easier for you to take part "
+"in research, especially for families without a stay-at-home parent</li>\n"
+"                                    <li>Work with more kids when needed--"
+"right now a limiting factor in designing studies is the time it takes to "
+"recruit participants</li>\n"
+"                                    <li>Draw conclusions from a more "
+"representative population of families--not just those who live near a "
+"university and are able to visit the lab during the day.\n"
+"                                    </li>\n"
+"                                    <li>Make it easier for families to "
+"continue participating in longitudinal studies, which may involve multiple "
+"testing sessions separated by months or years</li>\n"
+"                                    <li>Observe more natural behavior "
+"because children are at home rather than in an unfamiliar place</li>\n"
+"                                    <li>Create a system for learning about "
+"special populations--for instance, children with specific developmental "
+"disorders</li>\n"
+"                                    <li>Make the procedures we use in doing "
+"research more transparent, and make it easier to replicate our findings</"
+"li>\n"
+"                                    <li>Communicate with families about the "
+"research we're doing and what we can learn from it</li>\n"
+"                                </ul>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:206
+msgid "When will we see the results of the study?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:211
+msgid ""
+"The process of publishing a scientific study, from starting data collection "
+"to seeing the paper in a journal, can take several years. You can check the "
+"Lookit home page for updates on papers, or set your communication "
+"preferences to be notified when we have results from studies you "
+"participated in."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:218
+msgid ""
+"My child wasn't paying attention, or we were interrupted. Can we try the "
+"study again?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:223
+msgid ""
+"Certainly--thanks for your dedication! You may see a warning that you have "
+"already participated in the study when you go to try it again, but you can "
+"ignore it. You don't need to tell us that you tried the study before; we'll "
+"have a record of your previous participation."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:230
+msgid ""
+"My child is outside the age range. Can he/she still participate in this "
+"study?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:235
+msgid ""
+"Sure! We may not be able to use his or her data in our research directly, "
+"but if you're curious you're welcome to try the study anyway. (Sometimes big "
+"siblings really want their own turn!) If your child is just below the "
+"minimum age for a study, however, we encourage you to wait so that we'll be "
+"able to use the data."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:242
+msgid "My child was born prematurely. Should we use his/her adjusted age?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:247
+msgid ""
+"For study eligibility, we usually use the child's chronological age (time "
+"since birth), even for premature babies. If adjusted age is important for a "
+"particular study, we will make that clear in the study eligibility criteria."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:254
+msgid ""
+"Our family speaks a language other than English at home. Can my child "
+"participate?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:259
+msgid ""
+"Sure! Right now, instructions for children and parents are written only in "
+"English, so some of them may be confusing to a child who does not hear "
+"English regularly. However, you're welcome to try any of the studies and "
+"translate for your child if you can. If it matters for the study whether "
+"your child speaks any languages besides English, we'll ask specifically. You "
+"can also indicate the languages your child speaks or is learning to speak on "
+"your demographic survey."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:266
+msgid ""
+"My child has been diagnosed with a developmental disorder or has special "
+"needs. Can he/she still participate?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:271
+msgid ""
+"\n"
+"                                <p>Of course! We're interested in how all "
+"children learn and grow. If you'd like, you can make a note of any "
+"developmental disorders in the comments section at the end of the study. We "
+"are excited that in the future, online studies may help more families "
+"participate in research to better understand their own children's diagnoses."
+"</p>\n"
+"                                <p>One note: most of our studies include "
+"both images and sound, and may be hard to understand if your child is blind "
+"or deaf. If you can, please feel free to help out by describing images or "
+"signing.</p>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:281
+msgid ""
+"I have multiple children in the age range for a study. Can they participate "
+"together?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:286
+msgid ""
+"If possible, we ask that each child participate separately. When children "
+"participate together they generally influence each other. That's a "
+"fascinating subject in its own right but usually not the focus of our "
+"research."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:293
+msgid "But I've heard that young children should avoid 'screen time.'"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:298
+msgid ""
+"\n"
+"                                <p>We agree with the American Academy of "
+"Pediatrics <a href=\"https://pediatrics.aappublications.org/content/138/5/"
+"e20162591\" target=\"_blank\">advice</a> that children learn best from "
+"people, not screens! However, our studies are not intended to educate "
+"children, but to learn from them.</p>\n"
+"                                <p>As part of a child's limited screen time, "
+"we hope that our studies will foster family conversation and engagement with "
+"science that offsets the few minutes spent watching a video instead of "
+"playing. And we do \"walk the walk\"--our own young children provide lots of "
+"feedback on our studies!</p>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:308
+msgid "Will we be paid for our participation?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:313
+msgid ""
+"Some research groups provide gift cards or other compensation for completing "
+"their studies, and others rely on volunteers. (This often depends on the "
+"rules of the university that's doing the research.) This information will be "
+"listed on the study description page."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:320
+msgid "Can I get my child's results?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:325
+#, python-format
+msgid ""
+"\n"
+"                                <p>For some studies, yes! Usually, "
+"developmental researchers only interpret children's abilities and "
+"developmental trends at a group level, and the individual data collected "
+"just isn't very interpretable. But for \"Your baby, the physicist\" and "
+"other longitudinal studies (where you come back for more than one session), "
+"we can sometimes collect enough data to give you a report of your child's "
+"responses after you complete all the sessions.</p>\n"
+"                                <p>Please note that none of the measures we "
+"collect are diagnostic! For instance, while we hope you'll be interested to "
+"learn that your child looked 70%% of the time at videos where things fell up "
+"versus falling down, we won't be able to tell you whether this means your "
+"child is going to be especially good at physics.</p>\n"
+"                                <p>If you're interested in getting "
+"individual results right away, please see our <a href='resources'>Resources</"
+"a> section for fun at-home activities you can try with your child.</p>\n"
+"                                "
+msgstr ""
+
+#: web/templates/flatpages/faq.html:335
+msgid "Technical"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:339
+msgid "What browsers are supported?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:344
+msgid ""
+"Lookit supports recent versions of Chrome and Firefox. We are not currently "
+"able to support Internet Explorer or Safari."
+msgstr ""
+
+#: web/templates/flatpages/faq.html:351
+msgid "Can we do a study on my phone or tablet?"
+msgstr ""
+
+#: web/templates/flatpages/faq.html:357
+msgid ""
+"Not yet! Because we're measuring kids' looking patterns, we need a "
+"reasonably stable view of their eyes and a big enough screen that we can "
+"tell whether they're looking at the left or the right side of it. We're "
+"excited about the potential for touchscreen studies that allow us to observe "
+"infants and toddlers exploring, though!"
 msgstr ""
 
 #: web/templates/flatpages/home.html:11
@@ -1280,6 +1863,476 @@ msgid ""
 "Manners', 'Flurps and Zazzes,' and 'Words and Objects' (but stay tuned for "
 "follow-ups!). We're still looking families with babies to participate in "
 "'Look and Listen,' 'Your Baby the Physicist,' and 'Baby Laughter Games.'"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:11
+#, fuzzy
+#| msgid "Privacy Statement"
+msgid "Privacy statement"
+msgstr "Declarația de confidențialitate"
+
+#: web/templates/flatpages/privacy.html:17
+msgid "Introduction"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:18
+msgid ""
+"Lookit is committed to supporting the privacy of individuals who enroll on "
+"our Platform to conduct\n"
+"                research or serve as research subjects. This Privacy "
+"Statement explains how we handle and use the\n"
+"                personal information we collect about our researchers and "
+"research participant community."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:22
+#, fuzzy
+#| msgid "All Participants"
+msgid "For participants"
+msgstr "Toți participanții"
+
+#: web/templates/flatpages/privacy.html:24
+msgid ""
+"Lookit is a platform that many different researchers use to conduct studies "
+"about how children learn and\n"
+"                develop. It is run by the MIT Early Childhood Cognition Lab, "
+"which has access to all of the data\n"
+"                collected on Lookit. Researchers using Lookit to conduct "
+"studies only access your personal information\n"
+"                if you choose to participate in their study."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:29
+#: web/templates/flatpages/privacy.html:142
+msgid "What personal information we collect"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:31
+msgid "We collect the following kinds of personal information:"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:32
+msgid ""
+"<ul>\n"
+"                <li>Account data: basic contact information that may include "
+"your email address, nickname, mailing\n"
+"                    address, and contact preferences.</li>\n"
+"                <li>Child data: basic biographical information about your "
+"child(ren), including nickname, date of birth,\n"
+"                    and gestational age at birth.</li>\n"
+"                <li>Demographic data: background and biographical "
+"information such as your native language, race, age,\n"
+"                    educational background, and family history of particular "
+"medical conditions.</li>\n"
+"                <li>Study data: responses collected during particular "
+"studies conducted on Lookit, including webcam\n"
+"                    video of your family participating in the study, text "
+"entered in forms, the particular images that\n"
+"                    were shown, the timing of progression through the study, "
+"etc.</li>\n"
+"            </ul>"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:44
+#: web/templates/flatpages/privacy.html:147
+msgid "How we collect personal information about you"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:46
+msgid ""
+"The information we collect and maintain about you is the information you "
+"provide to us when registering\n"
+"                for a Lookit account, registering your children, updating "
+"your account or your children’s profiles,\n"
+"                completing or updating surveys, or participating in "
+"individual Lookit studies."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:50
+#: web/templates/flatpages/privacy.html:167
+msgid "When we share your personal information"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:52
+msgid ""
+"When you participate in a Lookit study, we share the following information "
+"with the research group conducting the study:"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:54
+msgid ""
+"\n"
+"            <ul>\n"
+"                <li>Your account data </li>\n"
+"                <li>The child data for the child who is participating</li>\n"
+"                <li>Your demographic data</i>\n"
+"                <li>The study data for this particular study session</li>\n"
+"            </ul>"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:61
+msgid ""
+"Your email address is not shared directly with the research group, although "
+"they can contact you via Lookit in accordance with your contact preferences."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:63
+msgid ""
+"Researchers may publish the results of a study, including individual "
+"responses. However, although they\n"
+"                may publish the ages of participants, they may not publish "
+"participant birthdates (or information that\n"
+"                could be used to calculate birthdates)."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:67
+msgid ""
+"We and/or the researchers responsible for a study may share video of your "
+"family’s participation for\n"
+"                scientific, educational, and/or publicity purposes, but only "
+"if you choose at the conclusion of a study\n"
+"                to allow such usage. Researchers may also share your video "
+"and other data with Databrary if you choose\n"
+"                at the conclusion of a study to allow that. We don’t publish "
+"video of participants such that it can be\n"
+"                linked to individual demographic data (e.g., household "
+"income or number of parents/guardians), and\n"
+"                researchers must also agree not to do so in order to use "
+"Lookit."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:74
+msgid ""
+"We don’t share, sell, publish, or otherwise disclose your contact "
+"information (email and/or mailing\n"
+"                address) to anyone but the researchers involved in a study. "
+"Researchers must also agree not to disclose\n"
+"                your contact information in order to use Lookit."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:78
+#: web/templates/flatpages/privacy.html:152
+msgid "How we use your personal information"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:80
+msgid ""
+"We may use your personal information (account, child, demographic, and study "
+"data) for a variety of purposes, including to:"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:81
+msgid ""
+"<ul>\n"
+"                <li>Provide you with the research studies you have enrolled "
+"in, and information about which studies your\n"
+"                    children are eligible for</li>\n"
+"                <li>Send you information about studies you may be interested "
+"in, reminders to participate in multi-part\n"
+"                    studies, and/or results of studies you have participated "
+"in, subject to your contact preferences\n"
+"                </li>\n"
+"                <li>Improve the Lookit platform: e.g., detect and fix "
+"technical problems or identify new features that\n"
+"                    would be helpful</li>\n"
+"                <li>Develop data analysis tools for Lookit researchers </"
+"li>\n"
+"                <li>Provide technical support to study researchers</li>\n"
+"                <li>Assess the quality of data collected on the platform (e."
+"g., how well an observer can tell which\n"
+"                    direction children are looking)</li>\n"
+"                <li>Evaluate recruitment and family engagement efforts (e."
+"g., see how many participants come from rural\n"
+"                    vs. urban areas)</li>\n"
+"                <li>Recruit participants or researchers to use Lookit (e.g., "
+"sharing a short video clip of your child\n"
+"                    having fun – ONLY if you have chosen to allow use of the "
+"video for publicity)</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:100
+msgid ""
+"Researchers use the data collected in their studies to address particular "
+"scientific questions. It may\n"
+"                also turn out that data collected for one study can help to "
+"answer a related question later on. If\n"
+"                researchers are using any additional information about you "
+"in their study, beyond what is collected on\n"
+"                Lookit – for instance, if you are participating in a follow-"
+"up online session for an in-person study –\n"
+"                they must tell you that in the study consent form."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:106
+msgid ""
+"There are some basic rules about how personal information may be used that "
+"all Lookit researchers agree to, including:"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:107
+msgid ""
+"\n"
+"            <ul>\n"
+"                <li>They may not use usernames, child nicknames, or contact "
+"information as a subject of research.</li>\n"
+"                <li>They may contact families by postal mail only in order "
+"to send compensation for study participation\n"
+"                    or materials needed for participation.</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:114
+#: web/templates/flatpages/privacy.html:163
+msgid ""
+"If you have concerns about any of these purposes, or how we communicate with "
+"you, please contact us at\n"
+"                dataprotection@mit.edu. We will always respect a request by "
+"you to stop processing your personal\n"
+"                information (subject to our legal obligations)."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:118
+#: web/templates/flatpages/privacy.html:171
+msgid "How your information is stored and secured"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:120
+#, python-format
+msgid ""
+"We have implemented industry-standard security safeguards designed to "
+"protect the personal information\n"
+"                that you may provide. We also periodically monitor our "
+"system for possible vulnerabilities and attacks,\n"
+"                consistent with industry standards. Only authenticated users "
+"with specific permissions may access the\n"
+"                data. All data is transmitted via a secure https connection, "
+"and all video data is encrypted at rest on\n"
+"                the storage systems used by Lookit to provide data to "
+"researchers. Researchers are responsible for their\n"
+"                own secure storage of data once they obtain it from Lookit. "
+"You should be aware, however, that since the\n"
+"                internet is not a 100%% secure environment, there’s no "
+"guarantee that information may not be accessed,\n"
+"                disclosed, altered, or destroyed by breach of any of our "
+"physical, technical, or managerial safeguards.\n"
+"                It's your responsibility to protect the security of your "
+"account details, including your username and\n"
+"                password."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:131
+#: web/templates/flatpages/privacy.html:182
+msgid "How long we keep your personal information"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:133
+msgid ""
+"We consider our relationship with our research community to be lifelong. "
+"This means that we will maintain\n"
+"                a record for you until such time as you tell us that you no "
+"longer wish us to keep in touch. If you wish\n"
+"                to remove your account, we will retain a core set of "
+"information about you to fulfill administrative\n"
+"                tasks and legal obligations. If you have participated in "
+"Lookit studies, the personal information\n"
+"                already shared with those researchers may not generally be "
+"‘taken back,’ as it is part of a scientific\n"
+"                dataset and removing your data could affect already "
+"published findings."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:144
+msgid ""
+"We may collect basic biographic/contact information about you and your "
+"representative organization,\n"
+"                including name, title, business addresses, phone numbers, "
+"and email addresses."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:149
+msgid ""
+"The information we collect and maintain about you is that which you have "
+"provided to us when registering\n"
+"                to use Lookit, updating your profile, or creating or editing "
+"a study."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:154
+msgid ""
+"We use your personal information for a number of legitimate purposes, "
+"including the performance of contractual obligations. Specifically, we use "
+"your personal information to:"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:155
+msgid ""
+"<ul>\n"
+"                <li>Provide you with the research services for which you "
+"have enrolled. </li>\n"
+"                <li>Perform administrative tasks and for internal record "
+"keeping purposes.</li>\n"
+"                <li>Create and analyze aggregated (fully anonymized) "
+"information about our users for statistical\n"
+"                    research purposes in support of our mission.</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:169
+msgid "We do not share your personal information with any third parties."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:173
+#, python-format
+msgid ""
+"We have implemented industry-standard security safeguards designed to "
+"protect the personal information\n"
+"                that you may provide. We also periodically monitor our "
+"system for possible vulnerabilities and attacks,\n"
+"                consistent with industry standards. Only authenticated users "
+"with specific permissions may access the\n"
+"                data. All data is transmitted via a secure https connection. "
+"You should be aware, however, that since\n"
+"                the internet is not a 100%% secure environment, there’s no "
+"guarantee that information may not be\n"
+"                accessed, disclosed, altered, or destroyed by breach of any "
+"of our physical, technical, or managerial\n"
+"                safeguards. It's your responsibility to protect the security "
+"of your account details, including your\n"
+"                username and password."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:184
+msgid ""
+"We consider our relationship with our research community to be lifelong. "
+"This means that we will maintain\n"
+"                a record for you until such time as you tell us that you no "
+"longer wish us to keep in touch. If you no\n"
+"                longer wish to hear from Lookit, we will retain a core set "
+"of information about you to fulfill\n"
+"                administrative tasks and legal obligations."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:189
+msgid "For everyone"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:191
+msgid "Rights for individuals in the European Economic Area"
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:192
+msgid ""
+"You have the right in certain circumstances to (1) access your personal "
+"information; (2) to correct or\n"
+"                erase information; (3) restrict processing; and (4) object "
+"to communications, direct marketing, or\n"
+"                profiling. To the extent applicable, the EU’s General Data "
+"Protection Regulation provides further\n"
+"                information about your rights. You also have the right to "
+"lodge complaints with your national or\n"
+"                regional data protection authority."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:198
+msgid ""
+"If you are inclined to exercise these rights, we request an opportunity to "
+"discuss with you any concerns\n"
+"                you may have. To protect the personal information we hold, "
+"we may also request further information to\n"
+"                verify your identify when exercising these rights. Upon a "
+"request to erase information, we will maintain\n"
+"                a core set of personal data to ensure we do not contact you "
+"inadvertently in the future, as well as any\n"
+"                information necessary for archival purposes. We may also "
+"need to retain some financial information for\n"
+"                legal purposes, including US IRS compliance. In the event of "
+"an actual or threatened legal claim, we may\n"
+"                retain your information for purposes of establishing, "
+"defending against or exercising our rights with\n"
+"                respect to such claim."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:207
+msgid ""
+"By providing information directly to Lookit, you consent to the transfer of "
+"your personal information\n"
+"                outside of the European Economic Area to the United States. "
+"You understand that the current laws and\n"
+"                regulations of the United States may not provide the same "
+"level of protection as the data and privacy\n"
+"                laws and regulations of the EEA."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:212
+msgid ""
+"You are under no statutory or contractual obligation to provide any personal "
+"data to us."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:214
+#, fuzzy
+#| msgid "Additional Info"
+msgid "Additional Information"
+msgstr "Informații suplimentare"
+
+#: web/templates/flatpages/privacy.html:216
+msgid ""
+"We may change this Privacy Statement from time to time. If we make any "
+"significant changes in the way we\n"
+"                treat your personal information we will make this clear on "
+"our website or by contacting you directly."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:220
+msgid ""
+"The controller for your personal information is MIT. We can be contacted at "
+"dataprotection@mit.edu."
+msgstr ""
+
+#: web/templates/flatpages/privacy.html:222
+msgid "This policy was last updated in June 2018."
+msgstr ""
+
+#: web/templates/flatpages/scientists.html:27
+msgid "Meet the Lookit team"
+msgstr ""
+
+#: web/templates/flatpages/scientists.html:33
+msgid "Core Team"
+msgstr ""
+
+#: web/templates/flatpages/scientists.html:38
+msgid ""
+"Rico is Lookit's lead software engineer, working on planning and adding "
+"features for both participants and researchers."
+msgstr ""
+
+#: web/templates/flatpages/scientists.html:43
+msgid ""
+"Laura is the PI of the Early Childhood Cognition Lab. She conducts research "
+"about how children arrive at a common-sense understanding of the physical "
+"and social world through exploration and instruction."
+msgstr ""
+
+#: web/templates/flatpages/scientists.html:49
+msgid ""
+"Kim started Lookit as a graduate student, and now runs the project as a "
+"research scientist in the Early Childhood Cognition Lab. Her three children "
+"frequently provide feedback on studies."
+msgstr ""
+
+#: web/templates/flatpages/scientists.html:54
+msgid ""
+"Mark organizes the Lookit Working Groups, which are groups of researchers "
+"working to improve Lookit in a variety of ways."
+msgstr ""
+
+#: web/templates/flatpages/scientists.html:58
+msgid "Alumni &amp; Collaborators"
 msgstr ""
 
 #: web/templates/registration/logged_out.html:6
@@ -1963,39 +3016,39 @@ msgstr ""
 "actualizați protocolul de studiu, marcați adresa URL la care vă trimite "
 "butonul de mai sus."
 
-#: web/views.py:56
+#: web/views.py:63
 #, fuzzy
 #| msgid "Participant account"
 msgid "Participant created."
 msgstr "Contul participantului"
 
-#: web/views.py:81
+#: web/views.py:88
 #, fuzzy
 #| msgid "Demographic Survey"
 msgid "Demographic data saved."
 msgstr "Sondaj demografic"
 
-#: web/views.py:149
+#: web/views.py:156
 #, fuzzy
 #| msgid "Children"
 msgid "Child added."
 msgstr "Copii"
 
-#: web/views.py:185
+#: web/views.py:192
 msgid "Child deleted."
 msgstr ""
 
-#: web/views.py:187
+#: web/views.py:194
 msgid "Child updated."
 msgstr ""
 
-#: web/views.py:210
+#: web/views.py:217
 #, fuzzy
 #| msgid "Email Preferences"
 msgid "Email preferences saved."
 msgstr "Preferinţe e-mail"
 
-#: web/views.py:304
+#: web/views.py:311
 #, python-brace-format
 msgid ""
 "The study {study.name} is not currently collecting data - the study is "
@@ -2073,9 +3126,6 @@ msgstr ""
 
 #~ msgid "Looking for "
 #~ msgstr "Căutați"
-
-#~ msgid "researcher login"
-#~ msgstr "conectare cercetător"
 
 #~ msgid "Create an account!"
 #~ msgstr "Creați un cont!"
