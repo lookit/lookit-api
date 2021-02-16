@@ -111,6 +111,15 @@
             }
         });
 
+        // Calculate the minimum age in day(s)
+        $("#id_min_age_years,#id_min_age_months,#id_min_age_days").change(function () {
+            $("#min_age_in_days_val").text(Number($("#id_min_age_years").val()) * 365 + Number($("#id_min_age_months").val()) * 30 + Number($("#id_min_age_days").val()))
+        });
+
+        // Calculate the maximum age in day(s)
+        $("#id_max_age_years,#id_max_age_months,#id_max_age_days").change(function () {
+            $("#max_age_in_days_val").text(Number($("#id_max_age_years").val()) * 365 + Number($("#id_max_age_months").val()) * 30 + Number($("#id_max_age_days").val()))
+        });
     });
 </script>
 
@@ -160,6 +169,12 @@
             </select>
         </div>
     </div>
+    <div class="col-xs-2">
+        <div class="form-group">
+            <label class="control-label" for="min_age_in_days"><em>Age in Day(s)</em></label>
+            <span class="help-block" id="min_age_in_days_val">0</span>
+        </div>
+    </div>
 </div>
 <div class="row">
     <div class="col-xs-12">
@@ -193,6 +208,12 @@
                     <option value="{{ x }}" {% if study.max_age_days == x %} selected {% endif %}>{{ y }}</option>
                 {% endfor %}
             </select>
+        </div>
+    </div>
+    <div class="col-xs-2">
+        <div class="form-group">
+            <label class="control-label" for="max_age_in_days"><em>Age in Day(s)</em></label>
+            <span class="help-block" id="max_age_in_days_val">0</span>
         </div>
     </div>
 </div>
