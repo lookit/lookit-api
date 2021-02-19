@@ -312,6 +312,11 @@ def cleanup_docker_images():
     logger.debug("Cleaning up docker images...")
     DOCKER_CLIENT.images.prune(filters={"dangling": True})
 
+@app.task
+def cleanup_docker_containers():
+    logger.debug("Cleaning up docker containers...")
+    DOCKER_CLIENT.containers.prune()
+
 
 @app.task(bind=True, max_retries=10, retry_backoff=10)
 def build_zipfile_of_videos(
