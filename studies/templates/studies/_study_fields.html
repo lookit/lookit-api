@@ -61,6 +61,16 @@
         return 0;
     }
 
+    // Update a read-only field to display the calculated max age in days
+    function updateMaxAgeDaysDisplay() {
+        $("#max_age_in_days_val").text(Number($("#id_max_age_years").val()) * 365 + Number($("#id_max_age_months").val()) * 30 + Number($("#id_max_age_days").val()))
+    }
+
+    // Update a read-only field to display the calculated min age in days
+    function updateMinAgeDaysDisplay() {
+        $("#min_age_in_days_val").text(Number($("#id_min_age_years").val()) * 365 + Number($("#id_min_age_months").val()) * 30 + Number($("#id_min_age_days").val()))
+    }
+
     $(document).ready(function() {
 
         // Do initial validation of structure, generator.
@@ -111,15 +121,11 @@
             }
         });
 
-        // Calculate the minimum age in day(s)
-        $("#id_min_age_years,#id_min_age_months,#id_min_age_days").change(function () {
-            $("#min_age_in_days_val").text(Number($("#id_min_age_years").val()) * 365 + Number($("#id_min_age_months").val()) * 30 + Number($("#id_min_age_days").val()))
-        });
-
-        // Calculate the maximum age in day(s)
-        $("#id_max_age_years,#id_max_age_months,#id_max_age_days").change(function () {
-            $("#max_age_in_days_val").text(Number($("#id_max_age_years").val()) * 365 + Number($("#id_max_age_months").val()) * 30 + Number($("#id_max_age_days").val()))
-        });
+        // Calculate the min/max age in day(s) upon page load & updates
+        $("#id_min_age_years, #id_min_age_months, #id_min_age_days").change(updateMinAgeDaysDisplay);
+        $("#id_max_age_years, #id_max_age_months, #id_max_age_days").change(updateMaxAgeDaysDisplay);
+        updateMinAgeDaysDisplay();
+        updateMaxAgeDaysDisplay();
     });
 </script>
 
@@ -141,7 +147,7 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_min_age_years"><em>Year(s)</em></label>
+            <label class="control-label" for="id_min_age_years"><em>Years</em></label>
             <select name="min_age_years" class="form-control" title="" id="id_min_age_years">
                 {% for x, y in form.fields.min_age_years.choices %}
                     <option value="{{ x }}" {% if study.min_age_years == x %} selected {% endif %}>{{ y }}</option>
@@ -151,7 +157,7 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_min_age_months"><em>Month(s)</em></label>
+            <label class="control-label" for="id_min_age_months"><em>Months</em></label>
             <select class="form-control" id="id_min_age_months" name="min_age_months" title="">
                 {% for x, y in form.fields.min_age_months.choices %}
                     <option value="{{ x }}"{% if study.min_age_months == x %} selected{% endif %}>{{ y }}</option>
@@ -161,7 +167,7 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_min_age_days"><em>Day(s)</em></label>
+            <label class="control-label" for="id_min_age_days"><em>Days</em></label>
             <select class="form-control" id="id_min_age_days" name="min_age_days" title="">
                 {% for x, y in form.fields.min_age_days.choices %}
                     <option value="{{ x }}" {% if study.min_age_days == x %} selected {% endif %}>{{ y }}</option>
@@ -171,7 +177,7 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="min_age_in_days"><em>Age in Day(s)</em></label>
+            <label class="control-label" for="min_age_in_days"><em>Age in Days</em></label>
             <span class="help-block" id="min_age_in_days_val">0</span>
         </div>
     </div>
@@ -182,7 +188,7 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_max_age_years"><em>Year(s)</em></label>
+            <label class="control-label" for="id_max_age_years"><em>Years</em></label>
             <select name="max_age_years" class="form-control" title="" id="id_max_age_years">
                 {% for x, y in form.fields.max_age_years.choices %}
                     <option value="{{ x }}" {% if study.max_age_years == x %} selected {% endif %}>{{ y }}</option>
@@ -192,7 +198,7 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_max_age_months"><em>Month(s)</em></label>
+            <label class="control-label" for="id_max_age_months"><em>Months</em></label>
             <select class="form-control" id="id_max_age_months" name="max_age_months" title="">
                 {% for x, y in form.fields.max_age_months.choices %}
                     <option value="{{ x }}" {% if study.max_age_months == x %} selected {% endif %}>{{ y }}</option>
@@ -202,7 +208,7 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_max_age_days"><em>Day(s)</em></label>
+            <label class="control-label" for="id_max_age_days"><em>Days</em></label>
             <select class="form-control" id="id_max_age_days" name="max_age_days" title="">
                 {% for x, y in form.fields.max_age_days.choices %}
                     <option value="{{ x }}" {% if study.max_age_days == x %} selected {% endif %}>{{ y }}</option>
@@ -212,7 +218,7 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="max_age_in_days"><em>Age in Day(s)</em></label>
+            <label class="control-label" for="max_age_in_days"><em>Age in Days</em></label>
             <span class="help-block" id="max_age_in_days_val">0</span>
         </div>
     </div>
