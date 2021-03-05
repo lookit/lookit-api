@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 14:30-0500\n"
+"POT-Creation-Date: 2021-03-05 19:40+0100\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -598,91 +598,91 @@ msgstr "상황에 따라 다름"
 
 #: accounts/models.py:453
 msgid "5000"
-msgstr "5000"
+msgstr "월 평균 0-50만원 대 (연 평균 0-600만원 대)"
 
 #: accounts/models.py:454
 msgid "10000"
-msgstr "10000"
+msgstr "월 평균 100만원 대 (연 평균1200만원 대)"
 
 #: accounts/models.py:455
 msgid "15000"
-msgstr "15000"
+msgstr "월 평균 150만원 대 (연 평균 1800만원 대)"
 
 #: accounts/models.py:456
 msgid "20000"
-msgstr "20000"
+msgstr "월 평균 200만원 대 (연 평균 2400만원 대)"
 
 #: accounts/models.py:457
 msgid "30000"
-msgstr "30000"
+msgstr "월 평균 300만원 대 (연 평균 3600만원 대)"
 
 #: accounts/models.py:458
 msgid "40000"
-msgstr "40000"
+msgstr "월 평균 400만원 대 (연 평균 4800만원 대)"
 
 #: accounts/models.py:459
 msgid "50000"
-msgstr "50000"
+msgstr "월 평균 500만원 대 (연 평균 6000만원 대)"
 
 #: accounts/models.py:460
 msgid "60000"
-msgstr "60000"
+msgstr "월 평균 600만원 대 (연 평균 7200만원 대)"
 
 #: accounts/models.py:461
 msgid "70000"
-msgstr "70000"
+msgstr "월 평균 700만원 대 (연 평균 8400만원 대)"
 
 #: accounts/models.py:462
 msgid "80000"
-msgstr "80000"
+msgstr "월 평균 800만원 대 (연 평균 9600만원 대)"
 
 #: accounts/models.py:463
 msgid "90000"
-msgstr "90000"
+msgstr "월 평균 900만원 대 (연 평균 1억800만원 대)"
 
 #: accounts/models.py:464
 msgid "100000"
-msgstr "100000"
+msgstr "월 평균 1000만원 대 (연 평균 1억2000만원 대)"
 
 #: accounts/models.py:465
 msgid "110000"
-msgstr "110000"
+msgstr "월 평균 1100만원 대 (연 평균 1억3200만원 대)"
 
 #: accounts/models.py:466
 msgid "120000"
-msgstr "120000"
+msgstr "월 평균 1200만원 대 (연 평균 1억4400만원 대)"
 
 #: accounts/models.py:467
 msgid "130000"
-msgstr "130000"
+msgstr "월 평균 1300만원 대 (연 평균 1억5600만원 대)"
 
 #: accounts/models.py:468
 msgid "140000"
-msgstr "140000"
+msgstr "월 평균 1400만원 대 (연 평균 1억6800만원 대)"
 
 #: accounts/models.py:469
 msgid "150000"
-msgstr "150000"
+msgstr "월 평균 1500만원 대 (연 평균 1억8000만원 대)"
 
 #: accounts/models.py:470
 msgid "160000"
-msgstr "160000"
+msgstr "월 평균 1600만원 대 (연 평균 1억9200만원 대)"
 
 #: accounts/models.py:471
 msgid "170000"
-msgstr "170000"
+msgstr "월 평균 1700만원 대 (연 평균 2억400만원 대)"
 
 #: accounts/models.py:472
 msgid "180000"
-msgstr "180000"
+msgstr "월 평균 1800만원 대 (연 평균 2억1600만원 대)"
 
 #: accounts/models.py:473
 msgid "190000"
-msgstr "190000"
+msgstr "월 평균 1900만원 대 (연 평균 2억2800만원 대)"
 
 #: accounts/models.py:474
 msgid "over 200000"
-msgstr "200000 이상"
+msgstr "월 평균 2000만원 이상 (연 평균 2억4000만원 이상)"
 
 #: accounts/models.py:478
 msgid "urban"
@@ -739,7 +739,7 @@ msgid "Edit when you can be contacted."
 msgstr "연락 원하실 때를 선택하십시오."
 
 #: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
 #: web/templates/web/children-list.html:67
 #: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
@@ -871,8 +871,9 @@ msgid "Spanish"
 msgstr "스페인어(Spanish)"
 
 #: project/settings.py:231
+#, fuzzy
 msgid "Argentinian Spanish"
-msgstr ""
+msgstr "아르헨티나 스페인어"
 
 #: project/settings.py:232 studies/fields.py:66
 msgid "French"
@@ -880,11 +881,11 @@ msgstr "프랑스어(French)"
 
 #: project/settings.py:233
 msgid "Canadian French"
-msgstr ""
+msgstr "캐나다 프랑스어"
 
 #: project/settings.py:234
 msgid "Hebrew"
-msgstr ""
+msgstr "히브리어"
 
 #: project/settings.py:235 studies/fields.py:76
 msgid "Italian"
@@ -900,7 +901,7 @@ msgstr "한국어(Korean)"
 
 #: project/settings.py:238
 msgid "Norwegian Bokmål"
-msgstr ""
+msgstr "노르웨이 보크몰"
 
 #: project/settings.py:239 studies/fields.py:94
 msgid "Polish"
@@ -911,10 +912,8 @@ msgid "Portuguese"
 msgstr "포르투갈어(Portuguese)"
 
 #: project/settings.py:241
-#, fuzzy
-#| msgid "Portuguese"
 msgid "Brazilian Portuguese"
-msgstr "포르투갈어(Portuguese)"
+msgstr "브라질 포르투갈어"
 
 #: project/settings.py:242 studies/fields.py:96
 msgid "Romanian"
@@ -930,7 +929,7 @@ msgstr "터키어(Turkish)"
 
 #: project/settings.py:245
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "간체자"
 
 #: project/settings.py:246 studies/fields.py:64
 msgid "Dutch"
@@ -1204,20 +1203,23 @@ msgid "The Users who have requested to join this Lab."
 msgstr "이 연구실에 가입을 요청한 사용자들입니다."
 
 #: web/templates/flatpages/contact.html:15
+#, fuzzy
 msgid "Technical difficulties"
-msgstr ""
+msgstr "기술적인 어려움"
 
 #: web/templates/flatpages/contact.html:18
+#, fuzzy
 msgid "Questions about the studies"
-msgstr ""
+msgstr "연구에 대한 질문들"
 
 #: web/templates/flatpages/contact.html:22
 #: web/templates/flatpages/privacy.html:140
+#, fuzzy
 msgid "For researchers"
-msgstr ""
+msgstr "연구자용"
 
 #: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
@@ -1254,17 +1256,15 @@ msgstr "연결하기"
 
 #: web/templates/flatpages/faq.html:11
 msgid "Frequently Asked Questions"
-msgstr ""
+msgstr "자주 묻는 질문들"
 
 #: web/templates/flatpages/faq.html:16
-#, fuzzy
-#| msgid "Participate"
 msgid "Participation"
-msgstr "참여하기"
+msgstr "연구 참여"
 
 #: web/templates/flatpages/faq.html:20
 msgid "What is a 'study' about cognitive development?"
-msgstr ""
+msgstr "인지발달에 관한 ‘연구’란 어떤 것인가요?"
 
 #: web/templates/flatpages/faq.html:25
 msgid ""
@@ -1285,12 +1285,24 @@ msgid ""
 "'Do three-month-olds recognize their parents' faces?'</p>\n"
 "                                "
 msgstr ""
+"\n"
+"<p>인지발달에 대한 연구란 아동이 무엇을 이해하고 어떻게 배우는 지에 대해 공부"
+"하는 학문입니다. 인지발달 연구자들은 다음과 같은 질문을 합니다...</p>\n"
+"                                <ul>\n"
+"                                    <li>아동이 어떤 지식과 능력을 가지고 태어"
+"났는지, 또 경험으로부터 무엇을 배워야하는지</li>\n"
+"                                    <li>수학적 추론과 같은 능력이 어떻게 체계"
+"화되며 시간에 따라 발달하는지</li>\n"
+"                                    <li>아동이 다양한 정보들로부터 배우기 위"
+"해 어떤 전략을 쓰는지</li>\n"
+"                                </ul>\n"
+"                                <p>인지발달 연구는 이러한 질문을 통해 아동이 "
+"어떻게 배우고 무엇을 아는지를 공부합니다, 예: '3개월 영아들은 부모님의 얼굴"
+"을 알아볼 수 있는가?'</p>"
 
 #: web/templates/flatpages/faq.html:40
-#, fuzzy
-#| msgid "Log in to participate"
 msgid "How can we participate online?"
-msgstr "참여하시려면 로그인하십시오."
+msgstr "온라인으로 참여가 가능한가요?"
 
 #: web/templates/flatpages/faq.html:45
 msgid ""
@@ -1312,10 +1324,22 @@ msgid ""
 "children to learn more about how kids think!</p>\n"
 "                            "
 msgstr ""
+"\n"
+"<p>자녀가 있으시고 연구에 참여하고 싶으시다면, 계정을 만드시고 자녀의 나이에 "
+"맞는 연구들을 살펴보세요. 참여하시기 위해서는 화상카메라가 필요합니다.</p>\n"
+"                                <p>연구를 고르신 후, 동의서를 읽고 본인과 자"
+"녀가 연구 참여에 동의한다는 것을 녹화 해주시면 됩니다. 이후 연구에 대한 자세"
+"한 설명이 제공됩니다. 자녀분의 연령에 따라, 연구 방식이 달라집니다. 자녀분께"
+"서 질문에 직접 답변할 수도 있고 자녀분의 암묵적인 행동 (예: 시선 움직임)이 관"
+"찰될 수도 있습니다.</p>\n"
+"                                <p>연구의 일부분은 화상카메라를 통해 자동으"
+"로 녹화되며 Lookit 플랫폼에 안전하게 전송됩니다. 숙련된 연구자들이 비디오를 "
+"보며 자녀의 행동을 기록합니다 (예: 어떻게 손짓 했는지, 얼마 동안 그림을 보았"
+"는지). 이러한 아동들의 데이터를 분석하여 인지발달 연구가 진행됩니다!</p>"
 
 #: web/templates/flatpages/faq.html:56
 msgid "Who can create studies on Lookit?"
-msgstr ""
+msgstr "누가 Lookit에서 연구를 만들 수 있나요?"
 
 #: web/templates/flatpages/faq.html:61
 msgid ""
@@ -1326,14 +1350,19 @@ msgid ""
 "board. Studies are also subject to approval by Lookit. As of June 2020 we "
 "have agreements with 20 universities!"
 msgstr ""
+"아동이 어떻게 배우며 성장하는지에 관한 공부하는 연구자 누구나 Lookit 연구를 "
+"제안할 수 있습니다! Lookit을 사용하는 기관은 매사추세츠 공과대학(MIT)과 계약"
+"해야 하며, <a href='/termsofuse'>이용약관</a> 및 제안된 연구가 기관 검토위원"
+"회(IRB)에서 검토, 승인되는 것에 동의해야 합니다. 모든 연구는 Lookit의 승인을 "
+"거쳐야 합니다. 2020년 6월 기준 Lookit 은 20개의 대학들과 계약이 체결되었습니"
+"다."
 
 #: web/templates/flatpages/faq.html:69
-#, fuzzy
-#| msgid "Log in to participate"
 msgid "How do we provide consent to participate?"
-msgstr "참여하시려면 로그인하십시오."
+msgstr "연구 참여를 위해 어떻게 동의하나요?"
 
 #: web/templates/flatpages/faq.html:74
+#, fuzzy
 msgid ""
 "\n"
 "                                <p>Rather than having the parent or legal "
@@ -1351,14 +1380,28 @@ msgid ""
 "audio--they may contact you to check, depending on your email settings.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"<p>서면 서류를 작성하시는 대신, 부모님 또는 법적 보호자가 큰 소리로 연구 참"
+"여 동의서를 직접 읽으시는 것을 (혹은 수화 사용) 화상카메라로 녹화해주시면 됩"
+"니다.\n"
+"이것은 서명된 동의서와 같은 효력을 가지며, 부모님의 연구 참여 과정이 조금 더 "
+"편리하실 수 있도록 마련되었습니다. 또한 이것을 통해 연구자들이 부모님 또는 법"
+"적 보호자께서 서면으로 된 한국어와 연구 과정이 녹화됨을 이해하시는 것을 알 "
+"수 있습니다.</p>\n"
+"                                <p>연구자들은 이런 동의 비디오를 연구자 인터"
+"페이스에서 볼 수 있으며 비디오에 동의를 포함되여 있는지 기록할 수 있습니다. "
+"연구참여에 동의하셨을 경우에만 연구자가 비디오를 보고 데이터 수집을 할 수 있"
+"습니다. 간혹 연구자가 비디오에서 동의를 보지 못하면 (예: 기술적 결함) 다시 연"
+"락할수 있습니다.</p>"
 
 #: web/templates/flatpages/faq.html:80
 msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 msgstr ""
+"https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 
 #: web/templates/flatpages/faq.html:89
 msgid "How is our information kept secure and confidential?"
-msgstr ""
+msgstr "개인정보는 어떻게 보호되나요?"
 
 #: web/templates/flatpages/faq.html:94
 msgid ""
@@ -1385,12 +1428,30 @@ msgid ""
 "                                <p>See also 'Who will see our video?'</p>\n"
 "                                "
 msgstr ""
+"\n"
+"<p>\n"
+"                                Lookit을 이용하는 연구자는 데이터 보호 및 공"
+"유 방법에 대한 공통 표준을 유지하는데 동의합니다. 예를 들어, 그들은 아동의 이"
+"름이나 생년월일 또는 생년월일을 계산하는데 사용할 수 있는 정보를 게시하지 않"
+"습니다</p>\n"
+"                                <p>Lookit 연구자 인터페이스는 참가자 데이터 "
+"보호를 최우선으로하여 설계되었습니다. 예를 들어, 연구자는 특수 인터페이스를 "
+"통해 연구 세션에서 연구 데이터를 다운로드하기 전에 동의 비디오를 확인할 수 있"
+"습니다. 연구 그룹은 연구 보조원의 동의를 확인하고 기프트 카드를 보낼 수 있지"
+"만 연구 데이터를 다운로드하지 못하도록 허용하는 등 매우 세밀한 방식으로 누가 "
+"어떤 데이터에 접근할 수 있는지 제어할 수 있습니다.</p>\n"
+"                                <p>비디오를 포함한 참여자의 모든 정보는 보안 "
+"HTTPS 연결을 통해Lookit 스토리지로 전송되며 저장시 암호화됩니다. 우리는 보안"
+"을 매우 중요히 생각합니다. 2020년 출시전, 우리가 사용하는 모든 소프트웨어가 "
+"최선인지 확인하는 것 외에도 클라우드 서버가 안전하게 구성되고 유닛 테스트가 "
+"데이터에 액세스하는데 올바른 권한이 필요한지 확인하는 것 외에도 보안 계약 업"
+"체와 함께 위험 평가 및 자세한 수동 침투 테스트를 수행했습니다.</p>\n"
+"                                <p>또한 ‘누가 우리 비디오를 보나요?’를 참조하"
+"세요.</p>"
 
 #: web/templates/flatpages/faq.html:107
-#, fuzzy
-#| msgid "What is your gender?"
 msgid "Who will see our video?"
-msgstr "귀하의 성별은 무엇입니까?"
+msgstr "누가 우리 비디오를 보나요?"
 
 #: web/templates/flatpages/faq.html:112
 msgid ""
@@ -1462,10 +1523,67 @@ msgid ""
 "lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                                "
 msgstr ""
+"\n"
+" <p>MIT의 Lookit 직원은 플랫폼 개선 및 홍보, 문제 해결을 돕기 위해 귀하의 비"
+"디오 및 다른 데이터에 접근 할 수 있습니다. 귀하가 참여한 연구를 진행하는 연구"
+"자는 연구 목적으로 귀하의 비디오 및 다른 데이터에 (예: 연구 중 질문에 대한 답"
+"변 및 아동 등록시 입력한 정보) 접근할 수 있습니다. 연구자는 귀하가 보내는 비"
+"디오 특정 부분을 시청하고 연구와 관련된 정보를 (예: 자녀가 말한 내용 또는 화"
+"면의 왼쪽과 오른쪽을 비교한 시간) 표시합니다. 이 연구 그룹은 MIT 또는 다른 기"
+"관 소속일 수 있습니다. Lookit에서 실행되는 모든 연구는 참가자의 권리와 복지"
+"를 보호하는 기관 검토위원회(IRB)의 승인을 받아야합니다. Lookit을 사용하는 모"
+"든 연구자들은 공유할 수 있는 데이터와 Lookit에서 실행할 수 있는 연구의 종류"
+"를 규정하는 이용약관에 동의합니다. 이러한 교칙은 때때로 자신의 기관보다 더 엄"
+"격합니다.  </p>\n"
+"                                <p>다른 사람이 비디오를 볼 수 있는지 여부는 "
+"연구가 끝날 때 선택한 개인 정보 설정에 따라 다릅니다. 두 가지 결정을 내릴 수 "
+"있습니다. 데이터를 Databrary와 공유할지 여부와 선택한 연구원이 비디오 클립을 "
+"사용할 수 있도록 허용하는 방법입니다.</p>\n"
+"                                <p>우선, 보안 데이터 Databrary 사용이 승인된 "
+"사용자와 데이터를 (비디오 포함) 공유할 것인지 묻습니다. 데이터 공유는 인간의 "
+"발달과 행동에 대한 연구의 빠른 진전에 도움될 것입니다. Databrary에 대한 접근 "
+"권한이 부여된 연구자는 자신의 연구실에서 사용하는 것과 동일한 수준의 관리로 "
+"데이터를 처리하는데 동의해야합니다. Learn more about Databrary's <a href="
+"\"https://databrary.org/about/mission.html\">사명</a> 혹은 <a href=\"https://"
+"databrary.org/access/responsibilities/investigators.html\">승인된 사용자에 대"
+"한 요구 사항</a>에 대해 자세히 알아보세요.</p>\n"
+"                                <p>다음으로, 귀하의 동영상 사용 유형이 귀하에"
+"게 괜찮은지 묻습니다.</p>\n"
+"                                <ul>\n"
+"                                    <li><strong>연구자만 열람 가능</strong> "
+"이 개인 정보 보호 수준은 승인된 과학자 (Lookit 직원, 연구를 실행하는 연구 그"
+"룹 및 Databrary와 데이터를 공유하기로 선택한 경우 승인된 Databrary 사용자)만 "
+"비디오 클립을 볼 수 있도록 보장합니다. 그들은 귀하의 자녀가 연구 참여 동안 무"
+"엇을 했는지를(예를 들어, 한 이미지를 9초, 다른 이미지를 7초동안 보는 것) 기록"
+"하기 위해 비디오를 볼 것입니다.</li>\n"
+"                                    <li><strong>교육 및 학회 목적</strong> "
+"이 개인 정보 보호 수준은 과학 또는 교육 목적으로 다른 연구자나 학생과 비디오 "
+"클립을 공유할 수 있는 권한을 부여합니다. 예를 들어, 연구자가 인지 발달에 관"
+"한 학회 혹은 수업에서 비디오 클립을 보여 주거나 논문에 이미지 또는 비디오를 "
+"포함 할 수 있습니다. 경우에 따라 비디오 또는 이미지가 온라인으로 제공될 수 있"
+"습니다 (예: 논문의 보충 자료). 다른 연구자들과 비디오를 공유하면 다른 연구 그"
+"룹이 우리 연구를 신뢰하는데 도움이 됩니다. 예를 들어, Lookit 웹사이트, "
+"Facebook 페이지 또는 보도 자료에 짧은 비디오 클립을 게시할 수 있습니다. 귀하"
+"의 동영상은 절대 상업적 목적으로 사용되지 않습니다.</li>\n"
+"                                    <li><strong>일반 대중에게 공개</strong> "
+"이 개인 정보 보호 수준은 Lookit 웹사이트나 뉴스에 자녀가 등장하는 것을 원하"
+"는 가족을 위한 것입니다! 이 개인 정보 보호 수준을 선택하면 귀하의 비디오 클립"
+"이 발달 연구와 Lookit 플랫폼에 대해 알리는데 쓰일 수 있습니다. 예를 들어, "
+"Lookit 웹사이트, Faceook 페이지 또는 보도 자료에 짧은 비디오 클립이 게시될 "
+"수 있습니다. 귀하의 동영상은 절대 상업적 목적으로 사용되지 않습니다.</li>\n"
+"                                </ul>\n"
+"                                <p>어떤 이유로 개인 정보 보호 수준을 선택하"
+"지 않는 경우 당사는 데이터를 ‘연구자만 열람 가능’으로 취급하고 Databrary와 공"
+"유하지 않습니다. 또한 참가자는 필요한 연구 경우 연구 종료시 동의 비디오를 제"
+"외한 모든 비디오를 철회할 수 있으며 (예: 누군가가 주변에서 국가 비밀을 논의 "
+"하고 있었기 때문에) 이 경우 자동으로 삭제됩니다. 완료된 세션에 대한 개인 정"
+"보 설정은 소급하여 자동으로 변경할 수 없습니다. 개인 정보 보호에 대한 질문이"
+"나 우려 사항이 있으면 <a href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>로 "
+"문의하십시오.</p>"
 
 #: web/templates/flatpages/faq.html:130
 msgid "What information do researchers use from our video?"
-msgstr ""
+msgstr "연구자들은 녹화된 비디오에서 어떤 정보를 사용하나요?"
 
 #: web/templates/flatpages/faq.html:136
 msgid ""
@@ -1476,12 +1594,18 @@ msgid ""
 "idea of what it looks like when your child is looking to the right or the "
 "left, so we can code the rest of the video."
 msgstr ""
+"연구자들은 약 2세 미만의 어린이들이 화면에서 어디를 보는지 또는 화면을 얼마"
+"나 오래 보는지 등을 관찰합니다. 아래 비디오에서 보여지듯, 화면 상의 시선 교정"
+"(calibration)을 통해 아이가 화면의 오른쪽 또는 왼쪽을 보고 있는지 정확히 파악"
+"하며 비디오를 분석합니다."
 
 #: web/templates/flatpages/faq.html:143
 msgid ""
 "Here's an example of a few children watching our calibration video--it's "
 "easy to see that they look to one side and then the other."
 msgstr ""
+"다음은 시선 교정(calibration) 비디오를 보는 몇몇 어린이들의 예입니다 - 아이들"
+"이 화면의 한 쪽을 보았는지 또는 다른 한 쪽을 보았는지를 볼 수 있습니다."
 
 #: web/templates/flatpages/faq.html:149
 msgid ""
@@ -1489,13 +1613,16 @@ msgid ""
 "about what he or she understands. Here are some of the techniques labs use "
 "to learn more about how children learn."
 msgstr ""
+"아이들이 화면의 어느 곳을 보는지를 관찰해보면, 아이들이 무엇을 이해하는지 등 "
+"많은 정보를 알 수 있습니다. 다음은 아동이 학습하는 방법에 대해 자세히 알아보"
+"기 위해 연구실에서 사용하는 몇 가지 기술입니다."
 
 #: web/templates/flatpages/faq.html:150
-#, fuzzy
 msgid "Habituation"
-msgstr "지속 기간"
+msgstr "습관화"
 
 #: web/templates/flatpages/faq.html:151
+#, fuzzy
 msgid ""
 "\n"
 "                                <p>In a habituation study, we first show "
@@ -1522,10 +1649,31 @@ msgid ""
 "you would choose to listen to anything else.</p>\n"
 "                                "
 msgstr ""
+"<p>습관화 연구에서는 연구자가 먼저 한가지 유형의 물건이나 현상에 대한 많은 예"
+"제를 유아에게 보여줍니다. 그리고 영유아는 시간이 지남에 따라 반복되는 물건 또"
+"는 현상에 흥미를 잃습니다. 예를 들어, 일반적으로 영유아는 어떤 사진/그림을 처"
+"음 봤을 때는 오랫동안 바라 보지만 그 후에는 더 빨리 눈길을 돌립니다. 사진/그"
+"림을 보는 시간이 처음보다 훨씬 짧아지면 새 사진/그림을 보여줍니다. 유아가 새 "
+"사진을 더 오래 보면, 우리가 처음에 보여준 사진/그림을 이해하고 지루함을 느꼈"
+"음을 알 수 있습니다.</p>\n"
+"\n"
+"<p>습관화를 위해서는 유아가 \"지루함\"의 어느 정도 임계 값에 도달할 때까지 기"
+"다려야합니다. 예를 들어 사진을 처음 보는것의 절반 정도를 바라 보는 것입니다. "
+"때때로 이것은 비실용적이며 우리는 대신 \"친숙화\" 연구 방법을 사용합니다. 친"
+"숙화 연구에서 모든 유아에게 동일한 수의 예를 보여준 다음 익숙한 범주와 새로"
+"운 범주에 얼마나 관심이 있는지 확인합니다. 어린 영아와 사례를 거의 본 적이 없"
+"는 사람들은 익숙함 선호도를 보이는 경향이 있습니다. 그들은 이전에 본 것과 비"
+"슷한 이미지를 더 오래 보게됩니다. 나이가 많은 유아와 많은 사례를 본 사람들은 "
+"새로움 선호도를 보이는 경향이 있습니다. 그들은 이전에 본 것과 다른 이미지를 "
+"더 오래 보게됩니다. 라디오에서 새 노래를 들을 때도 같은 현상을 느낄 것입니"
+"다: 처음에는 인식하지지 못하지만, 여러 번 들은 후에는 그 노래를 좋아하며 따"
+"라 부를 수 있습니다. 수백 번 재생한 후에는 다른 것을 듣기를 선택하실 수도 있"
+"습니다."
 
 #: web/templates/flatpages/faq.html:156
+#, fuzzy
 msgid "Violation of expectation"
-msgstr ""
+msgstr "기대 위배 패러다임"
 
 #: web/templates/flatpages/faq.html:157
 msgid ""
@@ -1534,10 +1682,14 @@ msgid ""
 "find surprising, so in some cases, we can take their looking times as a "
 "measure of how surprised they are."
 msgstr ""
+"영유아는 일들이 어떻게 진행되는지에 대해 이미 많은 예상을 갖고 있습니다. 어린"
+"이 (및 성인)은 놀라운 것을 더 오래 보는 경향이 있으므로, 어떤 경우에는 그들"
+"이 얼마나 놀랐는지의 척도로, 보는 시간을 재기도 합니다."
 
 #: web/templates/flatpages/faq.html:158
+#, fuzzy
 msgid "Preferential looking"
-msgstr ""
+msgstr "보기 선호 과제"
 
 #: web/templates/flatpages/faq.html:159
 msgid ""
@@ -1549,10 +1701,18 @@ msgid ""
 "shows a participant looking to her left when asked to 'find clapping'; the "
 "display she's watching is shown at the top."
 msgstr ""
+"아이들이 수동적인 관찰자처럼 보일 때도 그들은 어디를 보고 무엇에 주의를 기울"
+"여야할지에 대해 많은 결정을 내리고 있습니다. 선호적 주시법을 통해서 우리는 아"
+"이들에게 두 개의 나란히 놓인 이미지 또는 비디오 중에서 선택할 수있는 기회를 "
+"제공하고 아이들이 그 중 어떤 것을 보는 데 더 많은 시간을 보내는 지 확인합니"
+"다. 비디오 중 하나와 일치하는 오디오를 추가로 재생할 수 있습니다. 아래 비디오"
+"는 참가자에게 '박수치고 있는 행동을 찾으세요'라는 문장을 들었을 때 왼쪽을 보"
+"고있는 모습을 보여줍니다: 참가자가 보는 화면은 상단에 표시됩니다."
 
 #: web/templates/flatpages/faq.html:165
+#, fuzzy
 msgid "Predictive looking"
-msgstr ""
+msgstr "보기 예측 과제"
 
 #: web/templates/flatpages/faq.html:166
 msgid ""
@@ -1566,14 +1726,26 @@ msgid ""
 "we can see whether children learn these relationships, and how they "
 "generalize, by watching where they look when they hear a syllable."
 msgstr ""
+"아이들은 종종 다음으로 보거나 들을 것에 대한 정교한 예측을 할 수 있습니다. 어"
+"린 아이들에게서 이러한 예측을 볼 수 있는 한가지 방법은 눈의 움직임을 보는 것"
+"입니다. 예를 들어, 아이가 장벽 뒤에서 공이 굴러가는 것을 본다면, 공이 그 자리"
+"에서 나올 것을 예상하고 장벽의 가장자리를 봅니다. 이러한 아이들의 특징을 이용"
+"하여, 연구자들은 보기 예측 과제를 사용합니다 - 예를 들어, 음절 '다'는 장난감"
+"이 화면 왼쪽에서 나오게, 음절 '바'는 장난감이 오른쪽이 나타나게 하여, 아이들"
+"이 음절을 들을 때 어디를 보는지를 보며, 아이들이 이러한 관계를 어떻게 배우고 "
+"일반화하는지 알 수 있습니다."
 
 #: web/templates/flatpages/faq.html:168
+#, fuzzy
 msgid ""
 "Older children may simply be able to answer spoken questions about what they "
 "think is happening. For instance, in a recent study, two women called an "
 "object two different made-up names, and children were asked which is the "
 "correct name for the object."
 msgstr ""
+"나이가 많은 어린이들은 무슨 일이 일어나고 있다고 생각하는지에 대해 말로 질문"
+"에 대답할 수 있습니다. 예를 들어, 두 명의 여성이 한가지 물체에 다른 이름을 불"
+"렀고 아이들에게 물체의 맞는 이름이 무엇인지 물을 수 있습니다."
 
 #: web/templates/flatpages/faq.html:174
 msgid ""
@@ -1583,11 +1755,15 @@ msgid ""
 "square appears, and then look at factors that influence how quickly they "
 "press a key."
 msgstr ""
+"나이가 많은 어린이 (및 성인)의 사고 방식을 알 수 있는 또 다른 방법은 반응 시"
+"간을 측정하는 것입니다. 예를 들어, 연구자들은 부모님께 동그라미가 화면에 나타"
+"날 때 한 키를 누르고 정사각형이 나타날 때 다른 키를 누르는 방법을 배우는 것"
+"을 도와달라고 요청할 수 있습니다. 그리고 연구자들은 얼마나 빠르게 키를 누르"
+"는 지에 영향을 미치는 요인을 살펴볼 수 있습니다."
 
 #: web/templates/flatpages/faq.html:181
-#, fuzzy
 msgid "Why are you running studies online instead of in person?"
-msgstr "현재 진행하고 있는 연구가 없습니다! "
+msgstr "온라인으로 연구를 진행하는 이유는 무엇인가요?"
 
 #: web/templates/flatpages/faq.html:186
 msgid ""
@@ -1596,8 +1772,13 @@ msgid ""
 "part and schedule an appointment for them to come visit the lab. Why "
 "complement these in-lab studies with online ones? We're hoping to..."
 msgstr ""
+"일반적으로 발달 연구는 대학교 연구실의 조용한 공간에서 이루어집니다. 연구자들"
+"은 부모님께 전화 또는 이메일을 보내 참여하고 싶은지 의사를 물어보고 연구실을 "
+"방문하도록 약속을 잡습니다. 이러한 일반적인 방법과 달리 저희가 온라인으로 연"
+"구를 진행하는 이유는 아래와 같습니다."
 
 #: web/templates/flatpages/faq.html:187
+#, fuzzy
 msgid ""
 "\n"
 "                                <ul>\n"
@@ -1626,10 +1807,28 @@ msgid ""
 "                                </ul>\n"
 "                                "
 msgstr ""
+"<ul>\n"
+"                                    <li>관심있는 가족들의 연구 참여를 더욱 쉽"
+"게함</li>\n"
+"                                    <li>보다 많은 아이들을 모집할 수 있음</"
+"li>\n"
+"                                    <li>대학 근처에 살고, 연구실을 방문 할 수"
+"있는 가족들뿐만 아니라 보다 많고 다양한 가족들이 참여할 수 있음</li>\n"
+"                                    <li>수개월 또는 수년으로 이어지는 종단 연"
+"구 경우, 계속 참여할 수 있음</li>\n"
+"                                    <li>아이들이 익숙하지 않은 장소보다는 집"
+"에서 참여하기 때문에 더 자연스러운 행동을 관찰할 수 있음</li>\n"
+"                                    <li>발달 장애가 있는 아동들이 쉽게 연구"
+"에 참여할 수 있는 시스템을 구축할 수 있음</li>\n"
+"                                    <li>연구를 수행하는 데 사용하는 절차를보"
+"다 투명하게 만들고 결과를 더 쉽게 replicate할 수 있음</li>\n"
+"                                    <li>연구자들이 진행하는 연구와 목적에 대"
+"해 가족들과 소통할 수 있음</li>\n"
+"                                </ul>"
 
 #: web/templates/flatpages/faq.html:206
 msgid "When will we see the results of the study?"
-msgstr ""
+msgstr "연구 결과는 언제 볼 수 있나요?"
 
 #: web/templates/flatpages/faq.html:211
 msgid ""
@@ -1639,12 +1838,17 @@ msgid ""
 "preferences to be notified when we have results from studies you "
 "participated in."
 msgstr ""
+"데이터 수집을 시작하고 학술지에서 논문이 출판되기까지 과정은 몇 년이 걸릴 수 "
+"있습니다. Lookit 홈페이지에서 논문 업데이트를 확인하거나 참여한 연구 결과가있"
+"을 때 알림을 받도록 커뮤니케이션 선호도를 설정하실 수 있습니다."
 
 #: web/templates/flatpages/faq.html:218
 msgid ""
 "My child wasn't paying attention, or we were interrupted. Can we try the "
 "study again?"
 msgstr ""
+"연구 참여 도중 아이가 주의를 기울이지 않았거나 방해받았습니다. 참여를 다시 시"
+"도 할 수 있나요?"
 
 #: web/templates/flatpages/faq.html:223
 msgid ""
@@ -1653,14 +1857,19 @@ msgid ""
 "ignore it. You don't need to tell us that you tried the study before; we'll "
 "have a record of your previous participation."
 msgstr ""
+"그렇습니다! 다시 시도 하실 때 이미 연구에 참여했다는 경고가 표시 될 수 있지"
+"만 무시하셔도됩니다. 귀하의 이전 참여 기록이 있기 때문에 이전에 연구를 시도했"
+"다고 따로 알려주실 필요는 없습니다. "
 
 #: web/templates/flatpages/faq.html:230
 msgid ""
 "My child is outside the age range. Can he/she still participate in this "
 "study?"
 msgstr ""
+"제 아이는 연구 참여 연령대를 벗어났습니다. 이 연구에 계속 참여할 수 있나요?"
 
 #: web/templates/flatpages/faq.html:235
+#, fuzzy
 msgid ""
 "Sure! We may not be able to use his or her data in our research directly, "
 "but if you're curious you're welcome to try the study anyway. (Sometimes big "
@@ -1668,25 +1877,39 @@ msgid ""
 "minimum age for a study, however, we encourage you to wait so that we'll be "
 "able to use the data."
 msgstr ""
+"물론입니다! 아이가 연구 참여 연령대를 벗어났다면, 연구자들이 그 데이터를 직"
+"접 사용하지 못할 수도 있지만 연구 참여에 시도해보실 수 있습니다. (연구 참여 "
+"연령대에 맞는 큰 형제 자매가 있다면 그들이 참여하는 것도 좋은 방법입니다!) 아"
+"이가 연구에 참여할 수 있는 최소 연령 미만인 경우 조금 더 기다리신 뒤에 참여하"
+"시길 추천드립니다."
 
 #: web/templates/flatpages/faq.html:242
+#, fuzzy
 msgid "My child was born prematurely. Should we use his/her adjusted age?"
 msgstr ""
+"제 아이는 예정일보다 일찍 (조산) 태어났습니다. 조정된 나이를 사용해야 하나요?"
 
 #: web/templates/flatpages/faq.html:247
+#, fuzzy
 msgid ""
 "For study eligibility, we usually use the child's chronological age (time "
 "since birth), even for premature babies. If adjusted age is important for a "
 "particular study, we will make that clear in the study eligibility criteria."
 msgstr ""
+"연구 자격을 위해 미숙아/조산아의 경우에도 일반적으로 아동의 연령 (출생 이후 "
+"시간)을 사용합니다. 특정 연구에 대해 조정된 나이가 중요한 경우, 연구 자격 기"
+"준에서 이를 명확히 할 것입니다."
 
 #: web/templates/flatpages/faq.html:254
 msgid ""
 "Our family speaks a language other than English at home. Can my child "
 "participate?"
 msgstr ""
+"우리 가족은 집에서 한국어가 아닌 다른 언어를 사용합니다. 우리 아이가 참여할 "
+"수 있나요?"
 
 #: web/templates/flatpages/faq.html:259
+#, fuzzy
 msgid ""
 "Sure! Right now, instructions for children and parents are written only in "
 "English, so some of them may be confusing to a child who does not hear "
@@ -1696,12 +1919,20 @@ msgid ""
 "can also indicate the languages your child speaks or is learning to speak on "
 "your demographic survey."
 msgstr ""
+"물론입니다! 현재 어린이와 부모를 위한 지침은 한국어로만 작성되어 있기 때문에 "
+"일부는 한국어를 정기적으로 듣지 않는 어린이에게는 혼란스러울 수 있습니다. 그"
+"러나 가능한 한 자녀를 위해 연구를 시도하고 번역 할 수 있습니다. 귀하의 자녀"
+"가 한국어 이외의 언어를 사용하는지 여부가 연구에 중요한 경우 특별히 질문을 드"
+"릴 것입니다. 또한 인구 통계 조사에서 자녀가 사용하는 언어나 말하기를 배우고있"
+"는 언어를 표시 하실 수 있습니다."
 
 #: web/templates/flatpages/faq.html:266
 msgid ""
 "My child has been diagnosed with a developmental disorder or has special "
 "needs. Can he/she still participate?"
 msgstr ""
+"제 아이가 발달 장애 진단을 받았거나 특별한 도움이 필요합니다. 그래도 연구에 "
+"참여할 수 있습니까?"
 
 #: web/templates/flatpages/faq.html:271
 msgid ""
@@ -1718,12 +1949,20 @@ msgid ""
 "signing.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"<p>물론입니다! 우리는 모든 아이들이 어떻게 배우고 성장하는지에 관심이 있습니"
+"다. 원하는 경우 연구 끝에있는 의견 섹션에 발달 장애를 기록 할 수 있습니다. 앞"
+"으로 온라인 연구를 통해 더 많은 가족이 자녀의 진단을 더 잘 이해하기 위해 연구"
+"에 참여 할수있게 되어 기쁩니다.</p>\n"
+"<p>참고 : 대부분의 연구에는 이미지와 소리가 모두 포함되어 있으며 자녀분께서 "
+"시각 장애 또는 청각 장애가 있으신 경우 이해가 어려울 수 있습니다. 가능하시다"
+"면 이미지를 말 또는 수화를 통해 도와주셔도 됩니다.</p>"
 
 #: web/templates/flatpages/faq.html:281
 msgid ""
 "I have multiple children in the age range for a study. Can they participate "
 "together?"
-msgstr ""
+msgstr "연구 대상 연령대에 여러 자녀가 있습니다. 함께 참여할 수 있습니까?"
 
 #: web/templates/flatpages/faq.html:286
 msgid ""
@@ -1732,12 +1971,18 @@ msgid ""
 "fascinating subject in its own right but usually not the focus of our "
 "research."
 msgstr ""
+"가능하다면 각 어린이가 개별적으로 참여할 것을 요청합니다. 아이들이 함께 참여"
+"하면 일반적으로 서로에게 영향을 미칩니다. 그것은 그 자체로 흥미있는 주제이지"
+"만 일반적으로 우리 연구의 초점은 아닙니다."
 
 #: web/templates/flatpages/faq.html:293
 msgid "But I've heard that young children should avoid 'screen time.'"
 msgstr ""
+"하지만 어린 아이들은 '영상매체에 노출되는 시간'(screen time)을 피해야한다고 "
+"들었습니다. "
 
 #: web/templates/flatpages/faq.html:298
+#, fuzzy
 msgid ""
 "\n"
 "                                <p>We agree with the American Academy of "
@@ -1752,10 +1997,17 @@ msgid ""
 "feedback on our studies!</p>\n"
 "                                "
 msgstr ""
+"<p> 우리는 미국 소아과 협회 <a href=\"https://pediatrics.aappublications.org/"
+"content/138/5/e20162591\" target=\"_blank\"> 조언 </a>, 즉 어린이는 스크린이 "
+"아닌 사람을 통해 가장 잘 배울 수 있음에 동의합니다. 그러나 우리 연구는 아이들"
+"을 교육하기 위한 것이 아니라 아이들로부터 배우기위한 것입니다. </p>\n"
+"\n"
+"<p> **수정** 어린이의 제한된 영상매체에 노출되는 시간, 우리의 연구가 가족과"
+"의 대화와 과학에 대한 참여를 촉진하기 바랍니다! </p>"
 
 #: web/templates/flatpages/faq.html:308
 msgid "Will we be paid for our participation?"
-msgstr ""
+msgstr "연구 참여에 대한 보상이 있습니까?"
 
 #: web/templates/flatpages/faq.html:313
 msgid ""
@@ -1764,13 +2016,36 @@ msgid ""
 "rules of the university that's doing the research.) This information will be "
 "listed on the study description page."
 msgstr ""
+"일부 연구 그룹들은 기프트 카드 또는 다른 보상을 제공하고, 다른 연구 그룹들은 "
+"자원 봉사자에게 의존합니다. (이것은 종종 연구를 수행하는 대학의 규칙에 따라 "
+"다릅니다.) 연구 보상 관련 정보는 연구 설명 페이지에서 확인하실 수 있습니다."
 
 #: web/templates/flatpages/faq.html:320
 msgid "Can I get my child's results?"
-msgstr ""
+msgstr "내 자녀의 연구 결과를 받을 수 있습니까?"
 
 #: web/templates/flatpages/faq.html:325
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "                                <p>For some studies, yes! Usually, "
+#| "developmental researchers only interpret children's abilities and "
+#| "developmental trends at a group level, and the individual data collected "
+#| "just isn't very interpretable. But for \"Your baby, the physicist\" and "
+#| "other longitudinal studies (where you come back for more than one "
+#| "session), we can sometimes collect enough data to give you a report of "
+#| "your child's responses after you complete all the sessions.</p>\n"
+#| "                                <p>Please note that none of the measures "
+#| "we collect are diagnostic! For instance, while we hope you'll be "
+#| "interested to learn that your child looked 70%% of the time at videos "
+#| "where things fell up versus falling down, we won't be able to tell you "
+#| "whether this means your child is going to be especially good at physics.</"
+#| "p>\n"
+#| "                                <p>If you're interested in getting "
+#| "individual results right away, please see our <a "
+#| "href='resources'>Resources</a> section for fun at-home activities you can "
+#| "try with your child.</p>\n"
+#| "                                "
 msgid ""
 "\n"
 "                                <p>For some studies, yes! Usually, "
@@ -1790,24 +2065,39 @@ msgid ""
 "a> section for fun at-home activities you can try with your child.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"<p>일부 연구의 경우 귀하 자녀의 결과를 받으실 수 있습니다! 일반적으로 발달 연"
+"구자들은 개별 단계가 아닌 집단 단계에서 아동의 능력과 발달 경향성을 해석합니"
+"다. 그러나 '아기, 물리학자\" 및 다른 종적 연구 (여러 세션을 위해 반복하여 참"
+"여하는 연구) 경우 모든 세션을 완료한 후 자녀의 결과에 대한 보고서를 제공할 "
+"수 있습니다.</p>\n"
+"\n"
+"<p>저희가 수집하는 어떤 데이터도 그 어떤 진단에 쓰일 수 없다는 점을 기억해주"
+"세요! 예를 들어, 자녀가 물건이 넘어지거나 떨어지는 비디오를 70% 만큼 봤다는 "
+"사실만으로, 자녀가 물리학에 뛰어날 것이란 걸 예측할 수는 없습니다.</p>\n"
+"\n"
+"<p>개별 결과를 즉시 얻고 싶으시면, <a href='resources'>참고 자료실</a>창에서 "
+"자녀와 함께 할 수 있는 재미있는 활동들을 참조하십시오.</p>"
 
 #: web/templates/flatpages/faq.html:335
 msgid "Technical"
-msgstr ""
+msgstr "기술 관련 자주 묻는 질문들"
 
 #: web/templates/flatpages/faq.html:339
 msgid "What browsers are supported?"
-msgstr ""
+msgstr "어떤 브라우저가 지원됩니까?"
 
 #: web/templates/flatpages/faq.html:344
 msgid ""
 "Lookit supports recent versions of Chrome and Firefox. We are not currently "
 "able to support Internet Explorer or Safari."
 msgstr ""
+"Lookit은 최신 버전의 Chrome 및 Firebox를 지원합니다. 현재 Internet Explorer "
+"또는 Safari를 지원할 수 없습니다."
 
 #: web/templates/flatpages/faq.html:351
 msgid "Can we do a study on my phone or tablet?"
-msgstr ""
+msgstr "휴대전화나 태블릿으로 연구에 참여할 수 있습니까?"
 
 #: web/templates/flatpages/faq.html:357
 msgid ""
@@ -1817,105 +2107,64 @@ msgid ""
 "excited about the potential for touchscreen studies that allow us to observe "
 "infants and toddlers exploring, though!"
 msgstr ""
+"아직은 휴대전화나 태블릿을 이용해 연구 참여가 불가능합니다. 우리는 아이들의 "
+"시각(looking) 패턴을 측정하기 때문에 아이들의 눈에 대한 상당히 안정적인 시야"
+"와 그들이 왼쪽을 보고 있는지 오른쪽을 보고 있는지 알 수 있는 충분히 큰 화면"
+"이 필요합니다. 우리는 영유아가 탐험하는것을 관찰할 수 있는 터치 스크린 연구"
+"의 잠재력에 대해 기대하고 있습니다."
 
 #: web/templates/flatpages/home.html:11
 msgid "the online child lab"
-msgstr ""
+msgstr "온라인 아동 연구실 "
 
 #: web/templates/flatpages/home.html:12
+#, fuzzy
 msgid "A project of the MIT Early Childhood Cognition Lab"
-msgstr ""
+msgstr "MIT 유아기 인지 연구실의 프로젝트"
 
 #: web/templates/flatpages/home.html:22
 msgid "Bringing science home"
-msgstr ""
+msgstr "집에서 진행하는 연구"
 
 #: web/templates/flatpages/home.html:23
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
 msgstr ""
+"MIT에서 진행하는 유아기 인지 연구실입니다, 저희는 여러분들이 연구에 참여하실 "
+"수 있도록 발달 심리학에 대한 새로운 접근을 시도하고 있습니다."
 
 #: web/templates/flatpages/home.html:29
 msgid "Help us understand how your child thinks"
-msgstr ""
+msgstr "귀하의 자녀가 어떻게 생각 하는지에 대한 이해를 돕는데 참여해 주세요"
 
 #: web/templates/flatpages/home.html:30
 msgid ""
 "Your family can contribute to research about how children learn by doing fun "
 "activities together, right in your web browser."
 msgstr ""
+"귀하의 가족은 이 웹 브라우저에서 함께 재미있는 활동을 함으로써 아이들이 어떻"
+"게 배우는지에 대한 연구에 기여할 수 있습니다."
 
 #: web/templates/flatpages/home.html:36
 msgid "Participate whenever and wherever"
-msgstr ""
+msgstr "연구에 언제든 어디서든 참여해보십시오."
 
 #: web/templates/flatpages/home.html:37
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
 msgstr ""
-
-#: web/templates/flatpages/home.html:45
-msgid "News"
-msgstr ""
-
-#: web/templates/flatpages/home.html:49
-msgid "June 29, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:52
-msgid "We're now accepting new studies from research groups around the world!"
-msgstr ""
-
-#: web/templates/flatpages/home.html:57
-msgid "May 4, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:60
-#, fuzzy
-msgid ""
-"For even more ways to participate in science with your kids at home, check "
-"out the newly launched site <a href='https://childrenhelpingscience.com/' "
-"target='_blank'>Children Helping Science"
-msgstr ""
-"집에서 연구에 기여할 더 많은 방법을 찾고 계십니까? 더 많은 연구를 위해 <a "
-"href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-"\"noreferrer noopener\">Children Helping Science</a>를 확인하십시요!"
-
-#: web/templates/flatpages/home.html:65
-msgid "March 27, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:68
-msgid ""
-"We're gearing up to open up Lookit to more research labs! Our first study "
-"for newborns, 'Baby See, Baby Do?' is live, and 'Baby Euclid' is back for 7-"
-"month-olds. And we're still recruiting for Flurps and Zazzes, Your Baby the "
-"Physicist, and Baby Laughter - please help us spread the word!"
-msgstr ""
-
-#: web/templates/flatpages/home.html:73
-msgid "September 18, 2019"
-msgstr ""
-
-#: web/templates/flatpages/home.html:76
-msgid ""
-"Data collection is complete for the Lookit studies 'Baby Euclid,' 'Mind and "
-"Manners', 'Flurps and Zazzes,' and 'Words and Objects' (but stay tuned for "
-"follow-ups!). We're still looking families with babies to participate in "
-"'Look and Listen,' 'Your Baby the Physicist,' and 'Baby Laughter Games.'"
-msgstr ""
+"우측 상단에서 로그인을 하시거나 계정을 생성하여 시작하십시오! 화상 카메라가 "
+"달린 컴퓨터를 사용하여 아이와 연구에 참여하실 수 있습니다."
 
 #: web/templates/flatpages/privacy.html:11
-#, fuzzy
-#| msgid "Privacy Statement"
 msgid "Privacy statement"
-msgstr "개인 정보 보호 정책"
+msgstr "개인정보보호방침"
 
 #: web/templates/flatpages/privacy.html:17
 msgid "Introduction"
-msgstr ""
+msgstr "개요"
 
 #: web/templates/flatpages/privacy.html:18
 msgid ""
@@ -1926,12 +2175,14 @@ msgid ""
 "                personal information we collect about our researchers and "
 "research participant community."
 msgstr ""
+"Lookit은 연구 진행 및 연구 참여 목적으로 본 플랫폼에 등록된 (개인의) 개인정보"
+"보호 방침을 수립하고 이를 따를 것을 알려드립니다. 이 개인정보보호정책 안내문"
+"은 우리 연구자들과 연구참여자들로부터 수집한 개인정보를 어떻게 관리하고 사용"
+"하는지 설명합니다."
 
 #: web/templates/flatpages/privacy.html:22
-#, fuzzy
-#| msgid "All Participants"
 msgid "For participants"
-msgstr "모든 참가자"
+msgstr "참가자용 안내문"
 
 #: web/templates/flatpages/privacy.html:24
 msgid ""
@@ -1943,15 +2194,21 @@ msgid ""
 "studies only access your personal information\n"
 "                if you choose to participate in their study."
 msgstr ""
+"Lookit은 다수의 다양한 연구자들이 아동의 학습과 발달에 대한 연구를 진행하기 "
+"위해 사용하는 플랫폼입니다. Lookit은 메사추세츠 공과대학 소속 유아기 인지 연"
+"구실 (MIT Early Childhood Cognition Lab)에 의해 운영되며, 이 연구실은 Lookit "
+"상에서 수집된 모든 연구 데이터에 대하여 접근 권한이 있습니다. Lookit을 사용하"
+"여 연구를 진행하는 연구자들은 귀하께서 연구 참여를 선택하신 경우에만 귀하의 "
+"개인 정보에 접근이 가능합니다."
 
 #: web/templates/flatpages/privacy.html:29
 #: web/templates/flatpages/privacy.html:142
 msgid "What personal information we collect"
-msgstr ""
+msgstr "수집되는 개인 정보 안내"
 
 #: web/templates/flatpages/privacy.html:31
 msgid "We collect the following kinds of personal information:"
-msgstr ""
+msgstr "다음과 같은 개인정보 항목들이 수집됩니다."
 
 #: web/templates/flatpages/privacy.html:32
 msgid ""
@@ -1974,11 +2231,22 @@ msgid ""
 "etc.</li>\n"
 "            </ul>"
 msgstr ""
+"<ul>\n"
+"                <li>계정 정보: 기본 연락 정보로, 귀하의 이메일 주소, 별칭, 우"
+"편 주소, 그리고 연락 선호 사항을 포함할 수 있습니다.</li>\n"
+"                <li>자녀 정보: 귀하의 자녀분(들)의 기본 성장 관련 정보로, 별"
+"칭, 생년월일, 그리고 임신 주 수를 포함할 수 있습니다.</li>\n"
+"                <li>인구 통계 정보: 배경 및 성장 관련 정보로, 모국어, 인종, "
+"연령, 교육 배경, 그리고 특정 건강 상태의 가족력을 포함할 수 있습니다.</li>\n"
+"                <li>연구 정보: Lookit 에서 특정 연구 진행 시 수집된 자료로, "
+"연구에 참여하는 귀하의 가족의 웹캠 영상, 서류 양식에 입력된 응답 본문, 연구 "
+"중 제시된 특정 이미지 (그림), 또는 연구 진행 과정 기록을 포함합니다.</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:44
 #: web/templates/flatpages/privacy.html:147
 msgid "How we collect personal information about you"
-msgstr ""
+msgstr "귀하의 개인정보 수집 절차"
 
 #: web/templates/flatpages/privacy.html:46
 msgid ""
@@ -1989,17 +2257,27 @@ msgid ""
 "                completing or updating surveys, or participating in "
 "individual Lookit studies."
 msgstr ""
+"Lookit이 수집하고 보유하는 귀하의 정보는 귀하께서 Lookit 계정을 등록하실 경"
+"우, 귀하 본인 또는 자녀분(들)의 프로필을 업데이트 하시는 경우, 설문지 작성 완"
+"료 및 업데이트하시는 경우, 또는 개인 Lookit 연구에 참여하시는 경우에 귀하께"
+"서 제공해주시는 정보입니다."
 
 #: web/templates/flatpages/privacy.html:50
 #: web/templates/flatpages/privacy.html:167
 msgid "When we share your personal information"
 msgstr ""
+"Lookit이 수집하고 보유하는 귀하의 정보는 귀하께서 Lookit 계정을 등록하실 경"
+"우, 귀하 본인 또는 자녀분(들)의 프로필을 업데이트 하시는 경우, 설문지 작성 완"
+"료 및 업데이트하시는 경우, 또는 개인 Lookit 연구에 참여하시는 경우에 귀하께"
+"서 제공해주시는 정보입니다."
 
 #: web/templates/flatpages/privacy.html:52
 msgid ""
 "When you participate in a Lookit study, we share the following information "
 "with the research group conducting the study:"
 msgstr ""
+"귀하께서 Lookit 연구에 참여하시는 경우, 연구를 진행하는 연구자 집단과 아래의 "
+"정보를 공유합니다:"
 
 #: web/templates/flatpages/privacy.html:54
 msgid ""
@@ -2011,12 +2289,21 @@ msgid ""
 "                <li>The study data for this particular study session</li>\n"
 "            </ul>"
 msgstr ""
+"\n"
+"<ul>\n"
+"                <li>귀하의 계정 정보 </li>\n"
+"                <li>연구에 참여하는 귀하의 아동 정보</li>\n"
+"                <li>귀하의 인구통계 정보</i>\n"
+"                <li>특정 연구 세션의 연구 정보</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:61
 msgid ""
 "Your email address is not shared directly with the research group, although "
 "they can contact you via Lookit in accordance with your contact preferences."
 msgstr ""
+"귀하의 이메일 주소는 연구자 집단에게 직접적으로 공개되지 않으나, 연구자들은 "
+"귀하의 연락 선호 방식을 준수하는 범위 내에서에 귀하에게 연락이 가능합니다."
 
 #: web/templates/flatpages/privacy.html:63
 msgid ""
@@ -2026,8 +2313,13 @@ msgid ""
 "participant birthdates (or information that\n"
 "                could be used to calculate birthdates)."
 msgstr ""
+"연구자들은 연구 결과를 출판할 수 있으며, 이는 개개인의 응답 내용을 포함할 수 "
+"있습니다. 그러나 연구자들은 연구참여자들의 연령은 공개할 수 있으나, 연구참여"
+"자의 생년월일은 (또는 생년월일을 계산할 수 있는 정보는) 공개하지 않을 수 있습"
+"니다"
 
 #: web/templates/flatpages/privacy.html:67
+#, fuzzy
 msgid ""
 "We and/or the researchers responsible for a study may share video of your "
 "family’s participation for\n"
@@ -2042,6 +2334,15 @@ msgid ""
 "                researchers must also agree not to do so in order to use "
 "Lookit."
 msgstr ""
+"Lookit과  Lookit 상의 연구를 담당하는 연구자들은 과학적, 교육적 그리고/또는 "
+"홍보용 목적으로 귀하의 가족의연구 참여 영상을 공유할 수 있으나, 이는 오직 귀"
+"하께서 연구 참여의 마지막 단계에서 그런 용도를 허용하신 경우에만 허용됩니다. "
+"귀하께서 연구 참여 마지막 단계에서 허용하신 경우, 연구자들은 귀하의 연구 참"
+"여 영상과 다른 연구 자료를 데이타브러리(Databrary)와 공유할 수 있습니다. "
+"Lookit은 연구 참여 영상이 어떤 방법으로든 연구참여자들의 인구 통계 정보 "
+"(예., 가정 소득 및 부모/법적보호자의 명 수)와 연결되는 형태로는 연구참여 영상"
+"을 공개하지 않으며, Lookit을 사용하기 위해서는 연구자들 또한 이런 행위를 하"
+"지 않을 것임에 동의하도록 하고 있습니다."
 
 #: web/templates/flatpages/privacy.html:74
 msgid ""
@@ -2051,19 +2352,26 @@ msgid ""
 "Researchers must also agree not to disclose\n"
 "                your contact information in order to use Lookit."
 msgstr ""
+"Lookit은 연구에 관여된 연구자들을 제외하고는 그 누구에게도 귀하의 연락처 정보"
+"(이메일 그리고/또는 우편 주소)를 공유, 판매, 출판, 또는 다른 방법으로 공개하"
+"지 않습니다. Lookit을 사용하기 위해서는 연구자들 또한 이런 행위를 하지 않을 "
+"것임에 동의하도록 하고 있습니다."
 
 #: web/templates/flatpages/privacy.html:78
 #: web/templates/flatpages/privacy.html:152
 msgid "How we use your personal information"
-msgstr ""
+msgstr "귀하의 개인 정보가 사용되는 경우"
 
 #: web/templates/flatpages/privacy.html:80
 msgid ""
 "We may use your personal information (account, child, demographic, and study "
 "data) for a variety of purposes, including to:"
 msgstr ""
+"Lookit은 귀하의 개인 정보 (계정, 자녀, 인구통계적 정보, 그리고 연구 자료)를 "
+"다양한 목적으로 사용할 수 있으며, 이는 아래 경우를 포함할 수 있습니다:"
 
 #: web/templates/flatpages/privacy.html:81
+#, fuzzy
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research studies you have enrolled "
@@ -2093,8 +2401,29 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+"<ul>\n"
+"                <li>귀하께서 참여를 등록하신 연구 및 귀하의 자녀가 참여할 수 "
+"있는 연구들에 대한 정보 제공</li>\n"
+"                <li>귀하의 연락 선호 정보에 따라 귀하께서 관심있으실 수도 있"
+"는 연구에 대한 정보, 귀하의 복수-단계 참여 연구에 대한 상기 알림 이메일, 그리"
+"고/또는 귀하께서 참여하신 연구의 결과물 제공\n"
+"                </li>\n"
+"                <li>Lookit 플랫폼의 발전에 관한 의견 수렴: 예: 기술적인 문제"
+"를 발견 또는 수정하거나, 앞으로 도움이 될 수 있는 새로운 기능에 대한 아이디"
+"어 제공</li>\n"
+"                <li>Lookit 연구자들을 위한 자료 분석 도구 개발 </li>\n"
+"                <li>연구자들을 연구하기 위한 기술적인 도움을 제공</li>\n"
+"                <li>Lookit 플랫폼의 자료의 질적 수준을 평가 (예: 관찰자가 얼"
+"마나 잘 아이의 시선 방향을 구분할 수 있는지)</li>\n"
+"                <li>연구 참여자 모집과 가족 참여 환경을 평가 (예: 얼마나 많"
+"은 연구참여자들이 도시 또는 농어촌 지역에서 오는지) </li>\n"
+"                <li>연구참여자 또는 연구자들이 Lookit을 사용할 수 있도록 모"
+"집 (예: 귀하께서 자녀의 연구 참여 영상을 공개하는 것에 동의하신 경우에만, 귀"
+"하의 자녀가 연구를 참여하면서 재밌어하는 영상을 공유)</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:100
+#, fuzzy
 msgid ""
 "Researchers use the data collected in their studies to address particular "
 "scientific questions. It may\n"
@@ -2106,12 +2435,20 @@ msgid ""
 "up online session for an in-person study –\n"
 "                they must tell you that in the study consent form."
 msgstr ""
+"연구자들은 연구에 수집된 자료들을 사용하여 특정한 과학적 궁금증을 해결하고자 "
+"합니다. 어떤 경우, 한 연구에서 수집된 연구 자료가 이와 관련된 또 다른 연구 질"
+"문을 해결하는 데에 도움이 될 수 있습니다. 만약 연구자들이 Lookit에서 수집된 "
+"자료 외에도 귀하의 추가적인 자료를 그들의 연구에 사용하는 경우 - 예를 들면, "
+"귀하께서 면대면으로 참여하셨던 연구의 후속 연구를 온라인에서 참여하는 경우 - "
+"연구자들은 그들의 연구 참여 동의서에 이 부분을 명시해야 합니다."
 
 #: web/templates/flatpages/privacy.html:106
 msgid ""
 "There are some basic rules about how personal information may be used that "
 "all Lookit researchers agree to, including:"
 msgstr ""
+"Lookit의 모든 연구자들이 동의하는 개인 정보 사용 정책의 기본 방침들이 있으"
+"며, 이는 다음과 같은 내용을 포합합니다:"
 
 #: web/templates/flatpages/privacy.html:107
 msgid ""
@@ -2125,6 +2462,13 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+"\n"
+"<ul>\n"
+"                <li>연구자들은 연구 참여자에 대한 명칭으로 사용자명, 자녀의 "
+"별칭, 또는 연락저 정보를 사용할 수 없습니다.</li>\n"
+"                <li>연구자들은 연구 참여의 보상 또는 연구에 참여한 물품을 배"
+"송하는 경우에만 연구 참여 가족의 우편 주소를 사용할 수 있습니다.</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:114
 #: web/templates/flatpages/privacy.html:163
@@ -2135,14 +2479,38 @@ msgid ""
 "you to stop processing your personal\n"
 "                information (subject to our legal obligations)."
 msgstr ""
+"귀하께서 위의 목적들 또는 저희가 귀하와 의사소통 하는 방법에 대해 우려되는 부"
+"분이 있으신 경우,  dataprotection@mit.edu로 연락주시기 바랍니다. Lookit은 귀"
+"하께서 (Lookit의 법적 의무 충족에 필요한) 귀하의 개인정보를 처리하는 것에 대"
+"한 중단 요청을 언제나 존중할 것입니다. "
 
 #: web/templates/flatpages/privacy.html:118
 #: web/templates/flatpages/privacy.html:171
 msgid "How your information is stored and secured"
-msgstr ""
+msgstr "귀하의 정보의 보호 및 보관 방법"
 
 #: web/templates/flatpages/privacy.html:120
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "We have implemented industry-standard security safeguards designed to "
+#| "protect the personal information\n"
+#| "                that you may provide. We also periodically monitor our "
+#| "system for possible vulnerabilities and attacks,\n"
+#| "                consistent with industry standards. Only authenticated "
+#| "users with specific permissions may access the\n"
+#| "                data. All data is transmitted via a secure https "
+#| "connection, and all video data is encrypted at rest on\n"
+#| "                the storage systems used by Lookit to provide data to "
+#| "researchers. Researchers are responsible for their\n"
+#| "                own secure storage of data once they obtain it from "
+#| "Lookit. You should be aware, however, that since the\n"
+#| "                internet is not a 100%% secure environment, there’s no "
+#| "guarantee that information may not be accessed,\n"
+#| "                disclosed, altered, or destroyed by breach of any of our "
+#| "physical, technical, or managerial safeguards.\n"
+#| "                It's your responsibility to protect the security of your "
+#| "account details, including your username and\n"
+#| "                password."
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
 "protect the personal information\n"
@@ -2164,11 +2532,24 @@ msgid ""
 "account details, including your username and\n"
 "                password."
 msgstr ""
+"저희는 귀하께서 제공해주시는 개인정보의 보호 목적으로 기획된 산업표준의 보안 "
+"방화벽을 설치하였습니다. 또한 저희는 만약의 정보 유출 및 침해 가능성에 대비하"
+"여 주기적으로 저희 보안 시스템을 산업 표준에 따라 모니터링하고 있습니다. 오"
+"직 특정한 접근 권한이 검증된 사용자만이 데이터를 열람할 수 있습니다. 모든 데"
+"이터는 보안이 검증된 http 접속을 통해 전송되며, 모든 영상 데이터는 Lookit의 "
+"정보 저장 시스템에 미사용 암호화 되어 연구자들에게 제공됩니다. 연구자가 "
+"Lookit에서 데이터를 습득하면, 데이터를 연구자 개인의 보안이 검증된 저장소에 "
+"보관하는 것에 대하여 연구자에게 책임이 있습니다. 그러나 인터넷은 100%로 보안"
+"이 검증된 환경이 아니므로, Lookit의 물리적, 기술적, 행정적 방화벽의 파괴로 인"
+"하여 정보가 열람, 공개, 변형, 또는 파기되지 않을 것이라는 절대적인 보장은 불"
+"가능함을 알려드립니다. 개인의 사용자명과 비밀번호를 포함하여 개인 계정의 세"
+"부 정보에 대한 보안 유지에 대해서는 개인에게 책임이 있음을 알려드립니다."
 
 #: web/templates/flatpages/privacy.html:131
 #: web/templates/flatpages/privacy.html:182
+#, fuzzy
 msgid "How long we keep your personal information"
-msgstr ""
+msgstr "귀하의 정보를 보관하는 기간 관련"
 
 #: web/templates/flatpages/privacy.html:133
 msgid ""
@@ -2185,14 +2566,25 @@ msgid ""
 "                dataset and removing your data could affect already "
 "published findings."
 msgstr ""
+"저희는 저희 연구 공동체와의 관계를 영구적인 관계로 인식합니다. 즉, 저희는 귀"
+"하께서 저희의 연락을 더이상 받고 싶지 않으실 때 까지 귀하의 정보 기록을 유지"
+"할 것입니다. 귀하께서 귀하의 계정을 삭제하고 싶으신 경우, 저희는 행정적 처리"
+"와 법적인 의무를 충족시키기 위한 핵심적인 정보를 유지할 것입니다. 귀하께서 "
+"Lookit 연구에 참여하셨다면, 귀하께서 제공해주신 정보는 과학적 데이터의 일부이"
+"며, 귀하 정보의 삭제가 이미 출판된 해당 연구자의 결과물에 영향을 줄 수 있으므"
+"로, 대다수의 경우 연구자로부터 귀하의 정보를 다시 회수하기는 어려울 것입니다."
 
 #: web/templates/flatpages/privacy.html:144
+#, fuzzy
 msgid ""
 "We may collect basic biographic/contact information about you and your "
 "representative organization,\n"
 "                including name, title, business addresses, phone numbers, "
 "and email addresses."
 msgstr ""
+"저희는 개인과 개인을 대표하는 기관의 기본적인 소개 및 연락처 정보를 수집할 "
+"수 있으며, 이는 연구자의 이름, 직함, 직장 주소, 전화 번호, 그리고 이메일 주소"
+"를 포함할 수 있습니다."
 
 #: web/templates/flatpages/privacy.html:149
 msgid ""
@@ -2201,6 +2593,8 @@ msgid ""
 "                to use Lookit, updating your profile, or creating or editing "
 "a study."
 msgstr ""
+"저희가 수집하고 보관하는 개인 정보는 개인이 Lookit에 등록하고, 프로필을 업데"
+"이트 하고, 연구를 생성 또는 수정하는 정보입니다."
 
 #: web/templates/flatpages/privacy.html:154
 msgid ""
@@ -2208,8 +2602,11 @@ msgid ""
 "including the performance of contractual obligations. Specifically, we use "
 "your personal information to:"
 msgstr ""
+"저희는 여러 법적인 사유로 귀하의 개인정보를 사용하며, 이는 계약적인 의무의 시"
+"행을 포함합니다. 저희는 개인의 정보를 아래에 명시된 목적으로 사용합니다:"
 
 #: web/templates/flatpages/privacy.html:155
+#, fuzzy
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research services for which you "
@@ -2222,13 +2619,35 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+"<ul>\n"
+"                <li>개인이 등록한 연구 서비스 제공 목적. </li>\n"
+"                <li>행정 처리 수행 및 내부 기록 유지 목적.</li>\n"
+"                <li>Lookit의 윤리(mission) 지지 또는 통계적 연구 목적으로 통"
+"합 (전수 암호화 된) 사용자의 정보를 생성 및 분석 목적.</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:169
 msgid "We do not share your personal information with any third parties."
-msgstr ""
+msgstr "저희는 그 어느 제 3자와도 개인의 개인 정보를 공유하지 않습니다."
 
 #: web/templates/flatpages/privacy.html:173
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "We have implemented industry-standard security safeguards designed to "
+#| "protect the personal information\n"
+#| "                that you may provide. We also periodically monitor our "
+#| "system for possible vulnerabilities and attacks,\n"
+#| "                consistent with industry standards. Only authenticated "
+#| "users with specific permissions may access the\n"
+#| "                data. All data is transmitted via a secure https "
+#| "connection. You should be aware, however, that since\n"
+#| "                the internet is not a 100%% secure environment, there’s "
+#| "no guarantee that information may not be\n"
+#| "                accessed, disclosed, altered, or destroyed by breach of "
+#| "any of our physical, technical, or managerial\n"
+#| "                safeguards. It's your responsibility to protect the "
+#| "security of your account details, including your\n"
+#| "                username and password."
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
 "protect the personal information\n"
@@ -2246,6 +2665,15 @@ msgid ""
 "of your account details, including your\n"
 "                username and password."
 msgstr ""
+"저희는 개인이 제공하는 개인정보의 보호 목적으로 기획된 산업표준의 보안 방화벽"
+"을 설치하였습니다. 저희는 또한 만약의 정보 유출 및 침해 가능성에 대비하여 주"
+"기적으로 저희 보안 시스템을 산업 표준에 따라 모니터링하고 있습니다. 오직 특정"
+"한 접근 권한이 검증된 사용자만이 데이터를 열람할 수 있습니다. 모든 데이터는 "
+"보안이 검증된 http 접속을 통해 전송됩니다. 그러나 인터넷은 100%로 보안이 검증"
+"된 환경이 아니므로, Lookit의 물리적, 기술적, 행정적 방화벽의 파괴로 인하여 정"
+"보가 열람, 공개, 변형, 또는 파기되지 않을 것이라는 절대적인 보장은 불가능함"
+"을 알려드립니다. 개인의 사용자명과 비밀번호를 포함하여 개인 계정의 세부 정보"
+"에 대한 보안 유지에 대해서는 개인에게 책임이 있음을 알려드립니다."
 
 #: web/templates/flatpages/privacy.html:184
 msgid ""
@@ -2257,14 +2685,19 @@ msgid ""
 "of information about you to fulfill\n"
 "                administrative tasks and legal obligations."
 msgstr ""
+"저희는 저희 연구 공동체와의 관계를 평생의 관계로 인식합니다. 즉, 저희는 개인"
+"이 저희의 연락을 더이상 받고 싶지 않을 때 까지 개인의 정보 기록을 유지할 것입"
+"니다. 개인이 더이상 Lookit으로부터 연락을 받고 싶지 않을 경우, 귀하께서 귀하"
+"의 계정을 삭제하고 싶으신 경우, 저희는 행정적 처리와 법적인 의무를 충족시키"
+"기 위한 핵심적인 정보를 유지할 것입니다."
 
 #: web/templates/flatpages/privacy.html:189
 msgid "For everyone"
-msgstr ""
+msgstr "모든 사용자용"
 
 #: web/templates/flatpages/privacy.html:191
 msgid "Rights for individuals in the European Economic Area"
-msgstr ""
+msgstr "유럽 경제 지역의 개인의 권리"
 
 #: web/templates/flatpages/privacy.html:192
 msgid ""
@@ -2278,6 +2711,12 @@ msgid ""
 "lodge complaints with your national or\n"
 "                regional data protection authority."
 msgstr ""
+"귀하는 (1) 귀하의 개인 정보를 열람; (2) 정보를 수정 또는 삭제; (3) 귀하의 정"
+"보 처리를 제한; (4) 직접적 마케팅 및 프로파일링을 반대할 수 있는 권리가 있습"
+"니다. 가능한 범위 내에서, 유럽연합(EU)의 일반적 데이터 보호 규정 (General "
+"Data Protection Regulation)이 귀하의 권리에 대해 더 자세히 규정할 것입니다. "
+"귀하는 또한 귀하의 국가 또는 귀하의 지역 데이터 보호 관리자에 대하여 이의를 "
+"제기할 수 있는 권리가 있습니다."
 
 #: web/templates/flatpages/privacy.html:198
 msgid ""
@@ -2297,8 +2736,19 @@ msgid ""
 "defending against or exercising our rights with\n"
 "                respect to such claim."
 msgstr ""
+"귀하는 위의 권리들을 시행하고 싶으신 경우, Lookit은 귀하의 의견을 함께 논의"
+"할 기회를 요청합니다. 귀하가 위의 권리들을 시행하는 경우, Lookit에 보관된 개"
+"인정보를 보호하기 위하여 Lookit은 귀하에게 귀하의 신분을 증명할 수 있는 추가 "
+"자료를 요구할 수 있습니다. 귀하의 정보 삭제의 요청이 있을 경우, Lookit은 귀하"
+"에게 추후 실수로라도 연락을 하지 않도록, 그리고 꼭 필요한 정보 기록만을 위"
+"해, 핵심적인 개인 정보 만을 보관할 것입니다.  Lookit은 또한 미국 세무국 (US "
+"IRS) 을 포함한 법적인 의무에 부합하기 위하여 일부 재정적 정보를 보관해야 할 "
+"수도 있습니다. 실제로 법적 분쟁 또는 그 가능성에 직면하는 경우, Lookit은 법"
+"적 대응을 설립하거나 해당 법적 분쟁에 대한 Lookit의 권리 시행을 위하여 귀하"
+"의 정보를 복구할 수 있습니다."
 
 #: web/templates/flatpages/privacy.html:207
+#, fuzzy
 msgid ""
 "By providing information directly to Lookit, you consent to the transfer of "
 "your personal information\n"
@@ -2308,18 +2758,22 @@ msgid ""
 "level of protection as the data and privacy\n"
 "                laws and regulations of the EEA."
 msgstr ""
+"귀하의 정보를 직접 Lookit에게 제공함으로써, 귀하는 귀하의 정보를 유럽 경제지"
+"역의 외부인 미국에 귀하의 개인 정보를 제공하는 것에 동의합니다. 귀하는 현재"
+"의 미국의 법률과 규정이 유럽 경제지역(EEA) 과 같은 수준의 정보 보안 및 보호"
+"를 제공하지 않을 수 있음을 이해하고 있습니다."
 
 #: web/templates/flatpages/privacy.html:212
 msgid ""
 "You are under no statutory or contractual obligation to provide any personal "
 "data to us."
 msgstr ""
+"귀하는 귀하의 개인 정보를 Lookit에게 제공할 그 어떤 신분적 또는 계약적 의무"
+"가 없습니다."
 
 #: web/templates/flatpages/privacy.html:214
-#, fuzzy
-#| msgid "Additional Info"
 msgid "Additional Information"
-msgstr "추가 정보"
+msgstr "추가적인 정보"
 
 #: web/templates/flatpages/privacy.html:216
 msgid ""
@@ -2328,30 +2782,37 @@ msgid ""
 "                treat your personal information we will make this clear on "
 "our website or by contacting you directly."
 msgstr ""
+"Lookit은 종종 개인 정보 정책을 수정할 수 있습니다. 귀하의 개인정보를 사용하"
+"는 방식에 상당한 변화가 있을 경우 이 부분을 웹사이트에 올리거나 귀하를 직접 "
+"연락함으로써 명확하게 전달할 것을 약속합니다."
 
 #: web/templates/flatpages/privacy.html:220
 msgid ""
 "The controller for your personal information is MIT. We can be contacted at "
 "dataprotection@mit.edu."
 msgstr ""
+"귀하의 개인 정보를 관리하는 기관은 매사추세츠 공과대학교(MIT) 입니다. 이와 관"
+"련한 연락은 dataprotection@mit.edu로 해주시기 바랍니다."
 
 #: web/templates/flatpages/privacy.html:222
 msgid "This policy was last updated in June 2018."
-msgstr ""
+msgstr "이 정책은 2018년 6월에 마지막으로 수정되었습니다."
 
 #: web/templates/flatpages/scientists.html:27
 msgid "Meet the Lookit team"
-msgstr ""
+msgstr "Lookit 팀을 만나보십시오."
 
 #: web/templates/flatpages/scientists.html:33
 msgid "Core Team"
-msgstr ""
+msgstr "핵심 팀"
 
 #: web/templates/flatpages/scientists.html:38
 msgid ""
 "Rico is Lookit's lead software engineer, working on planning and adding "
 "features for both participants and researchers."
 msgstr ""
+"리코는 참여자와 연구자를 위한 기능을 계획하고 추가하는 Lookit 소프트웨어 엔지"
+"지어의 리더입니다."
 
 #: web/templates/flatpages/scientists.html:43
 msgid ""
@@ -2359,6 +2820,9 @@ msgid ""
 "about how children arrive at a common-sense understanding of the physical "
 "and social world through exploration and instruction."
 msgstr ""
+"로라는 유아기 인지 연구실의 연구책임자입니다. 그녀는 아이들이 어떻게 탐구 및 "
+"교육을 통해 신체적, 사회적 세계에 대한 상식적인 이해에 도달하는지에 대한 연구"
+"합니다."
 
 #: web/templates/flatpages/scientists.html:49
 msgid ""
@@ -2366,16 +2830,21 @@ msgid ""
 "research scientist in the Early Childhood Cognition Lab. Her three children "
 "frequently provide feedback on studies."
 msgstr ""
+"킴은 대학생으로서 Lookit을 시작하였고, 지금은 유아기 인지 연구실에서 연구자로"
+"서 프로젝트를 진행하고 있습니다."
 
 #: web/templates/flatpages/scientists.html:54
 msgid ""
 "Mark organizes the Lookit Working Groups, which are groups of researchers "
 "working to improve Lookit in a variety of ways."
 msgstr ""
+"마크는 다양한 방식으로 Lookit을 개선하기 위해 일하는 연구원이 모인 Lookit 워"
+"킹 그룹을 조직하였습니다."
 
 #: web/templates/flatpages/scientists.html:58
+#, fuzzy
 msgid "Alumni &amp; Collaborators"
-msgstr ""
+msgstr "졸업생 &amp; 협업자들"
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
@@ -2389,7 +2858,7 @@ msgstr "귀하의 정보로 로그인에 실패했습니다. 다시 시도해 �
 
 #: web/templates/registration/login.html:18
 #: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:50
+#: web/templates/web/_navigation.html:45
 #, fuzzy
 msgid "Login"
 msgstr "로그인"
@@ -2419,7 +2888,7 @@ msgstr "비밀번호가 변경되었습니다."
 #: web/templates/registration/password_change_form.html:4
 #, fuzzy
 msgid "Documentation"
-msgstr "선적 서류 비치"
+msgstr "선적 서류 보관 / 관련 기록"
 
 #: web/templates/registration/password_change_form.html:4
 #, fuzzy
@@ -2571,37 +3040,37 @@ msgstr "이메일 주소:"
 msgid "Reset my password"
 msgstr "비밀번호 재설정"
 
-#: web/templates/web/_navigation.html:22
+#: web/templates/web/_navigation.html:17
 msgid "Experimenter"
 msgstr "연구자"
 
-#: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
+#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
 msgid "Studies"
 msgstr "연구들"
 
-#: web/templates/web/_navigation.html:34
+#: web/templates/web/_navigation.html:29
 msgid "FAQ"
 msgstr "자주 묻는 질문들"
 
-#: web/templates/web/_navigation.html:35
+#: web/templates/web/_navigation.html:30
 #, fuzzy
 msgid "The Scientists"
 msgstr "연구자들"
 
-#: web/templates/web/_navigation.html:36
+#: web/templates/web/_navigation.html:31
 #, fuzzy
 msgid "Resources"
 msgstr "참고 자료실"
 
-#: web/templates/web/_navigation.html:45
+#: web/templates/web/_navigation.html:40
 msgid "Hi"
 msgstr "안녕하십니까"
 
-#: web/templates/web/_navigation.html:47
+#: web/templates/web/_navigation.html:42
 msgid "Logout"
 msgstr "로그아웃"
 
-#: web/templates/web/_navigation.html:49
+#: web/templates/web/_navigation.html:44
 msgid "Sign up"
 msgstr "회원가입"
 
@@ -2786,7 +3255,7 @@ msgstr "귀하의 지난 연구들"
 
 #: web/templates/web/studies-history.html:50
 msgid "Here you can view your studies and see comments left by researchers:"
-msgstr "여기에서 귀화의 연구들과 연구원이 남긴 의견을 볼 수 있습니다."
+msgstr "여기에서 귀화의 연구들과 연구자가 남긴 의견을 볼 수 있습니다."
 
 #: web/templates/web/studies-history.html:67
 msgid "Study Thumbnail"
@@ -2839,7 +3308,7 @@ msgstr "승인됨"
 
 #: web/templates/web/studies-history.html:123
 msgid "Your consent video was reviewed by a researcher and is valid."
-msgstr "귀하의 동의 영상은 연구원이 검토했으며 유효합니다."
+msgstr "귀하의 동의 영상은 연구자가 검토했으며 유효합니다."
 
 #: web/templates/web/studies-history.html:125
 msgid "Pending"
@@ -2861,7 +3330,7 @@ msgid ""
 "session will not be viewed or used by the study researchers."
 msgstr ""
 "귀하의 동의 영상에 기술적인 문제가 있거나, 귀하께서 동의문을 소리내어 읽는 것"
-"을 보여주지 않았습니다. 이 세션의 귀하의 다른 데이터는 연구원이 보거나 사용하"
+"을 보여주지 않았습니다. 이 세션의 귀하의 다른 데이터는 연구자가 보거나 사용하"
 "지 않습니다."
 
 #: web/templates/web/studies-history.html:129
@@ -3021,12 +3490,12 @@ msgid ""
 "collected data in our research. Please contact the study researchers"
 msgstr ""
 "귀하의 자녀는 이 연구 참여를 위한 자격 기준을 충족하지 않습니다. 연구 참여를 "
-"하실 수는 있지만, 수집된 연구정보는 저희의 연구에 사용 되지 없습니다. 연구원"
+"하실 수는 있지만, 수집된 연구정보는 저희의 연구에 사용 되지 없습니다. 연구자"
 "에게 문의하여 주십시오."
 
 #: web/templates/web/study-detail.html:165
 msgid "Build experiment runner to preview"
-msgstr "미리 볼 수 있는 실험 진행자 만들기"
+msgstr "미리 볼 수 있는 연구 진행자 만들기"
 
 #: web/templates/web/study-detail.html:167
 msgid "Participate"
@@ -3082,9 +3551,3 @@ msgstr ""
 "{연구명} 연구는 현재 연구정보를 모으고 있지 않습니다 - 이 연구는 종단되었거"
 "나 임시로 중단되었습니다. 만약 오류가 있다고 판단되신다면, {연구연락정보} 로 "
 "연락을 주십시오."
-
-#~ msgid "Birthday test"
-#~ msgstr "Birthday test"
-
-#~ msgid "Birthday test2"
-#~ msgstr "Birthday test2"
