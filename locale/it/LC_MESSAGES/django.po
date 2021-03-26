@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 14:30-0500\n"
+"POT-Creation-Date: 2021-03-26 18:10+0100\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12,35 +12,46 @@ msgstr ""
 #: accounts/forms.py:55
 msgid "Enter a valid 6-digit one-time password from Google Authenticator"
 msgstr ""
+"Inserisci una password monouso di 6 cifre valida da Google Authenticator"
 
 #: accounts/forms.py:106
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Please enter a correct %(username)s and password. Note that email and "
+#| "password fields may be case-sensitive. If you have turned on two-factor "
+#| "authentication, you will need a one-time password (OTP code) from Google "
+#| "Authenticator as well. "
 msgid ""
 "Please enter a correct %(username)s and password. Note that email and "
 "password fields may be case-sensitive. If you have turned on two-factor "
 "authentication, you will need a one-time password (OTP code) from Google "
 "Authenticator as well. "
 msgstr ""
+"Inserisci un nome utente e una password corretti. Tieni presente che i campi "
+"email e password potrebbero fare distinzione tra maiuscole e minuscole. Se "
+"hai attivato l'autenticazione a due fattori, avrai bisogno anche di una "
+"password monouso (codice OTP) da Google Authenticator."
 
 #: accounts/forms.py:111
 msgid "This account is inactive."
-msgstr ""
+msgstr "Questo account non è attivo."
 
 #: accounts/forms.py:194
 msgid "Your password can’t be too similar to your other personal information."
 msgstr ""
+"La tua password non può essere troppo simile alle tue informazioni personali."
 
 #: accounts/forms.py:195
 msgid "Your password must contain at least 16 characters."
-msgstr ""
+msgstr "La tua password deve contenere almeno 16 caratteri."
 
 #: accounts/forms.py:196
 msgid "Your password can’t be a commonly used password."
-msgstr ""
+msgstr "La tua password non può essere una password comunemente utilizzata."
 
 #: accounts/forms.py:197
 msgid "Your password can’t be entirely numeric."
-msgstr ""
+msgstr "La tua password non può essere interamente numerica."
 
 #: accounts/forms.py:213 accounts/forms.py:229 accounts/models.py:140
 msgid "Email address"
@@ -50,7 +61,7 @@ msgstr "Indirizzo email"
 #: accounts/templates/accounts/participant_list.html:37
 #: accounts/templates/accounts/participant_list.html:58
 msgid "Nickname"
-msgstr "Soprannome"
+msgstr "Nickname"
 
 #: accounts/forms.py:254
 msgid ""
@@ -680,7 +691,7 @@ msgstr "Informazioni account"
 
 #: accounts/templates/accounts/_account-navigation.html:2
 msgid "Change your login credentials and/or nickname."
-msgstr ""
+msgstr "Modifica le tue credenziali di accesso e/o il nickname."
 
 #: accounts/templates/accounts/_account-navigation.html:3
 msgid "Demographic Survey"
@@ -692,7 +703,7 @@ msgstr "Dicci di più su di te."
 
 #: accounts/templates/accounts/_account-navigation.html:4
 msgid "Children Information"
-msgstr "Informazioni per bambini"
+msgstr "Informazioni sui bambini"
 
 #: accounts/templates/accounts/_account-navigation.html:4
 msgid "Add or edit participant information."
@@ -701,14 +712,14 @@ msgstr "Aggiungi o modifica le informazioni sui partecipanti."
 #: accounts/templates/accounts/_account-navigation.html:5
 #: web/templates/web/participant-email-preferences.html:4
 msgid "Email Preferences"
-msgstr "preferenze email"
+msgstr "Preferenze email"
 
 #: accounts/templates/accounts/_account-navigation.html:5
 msgid "Edit when you can be contacted."
 msgstr "Modifica quando puoi essere contattato."
 
 #: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
 #: web/templates/web/children-list.html:67
 #: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
@@ -729,17 +740,19 @@ msgstr "Cambia la tua password"
 
 #: accounts/templates/accounts/account-update.html:68
 msgid "Manage Two-Factor Authentication"
-msgstr ""
+msgstr "Gestisci l'autenticazione a due fattori"
 
 #: accounts/templates/accounts/account-update.html:83
 msgid ""
 "If you'd like, you can turn two-factor authentication off here. Just enter "
 "your one-time password here, hit submit, and it'll get deleted for you!"
 msgstr ""
+"Se lo desideri, puoi disattivare l'autenticazione a due fattori qui. "
+"Inserisci la tua password monouso, premi Invia e verrà eliminata per te!"
 
 #: accounts/templates/accounts/account-update.html:108
 msgid "Set up Two-Factor Authentication"
-msgstr ""
+msgstr "Imposta l'autenticazione a due fattori"
 
 #: accounts/templates/accounts/participant_detail.html:15
 msgid "All Participants"
@@ -812,7 +825,7 @@ msgstr "Spiegazione per i tutori:"
 
 #: accounts/templates/accounts/participant_detail.html:150
 msgid "Race"
-msgstr "Gara"
+msgstr "Etnia"
 
 #: exp/templates/exp/dashboard.html:16
 msgid "Dashboard"
@@ -820,101 +833,99 @@ msgstr "Pannello di controllo"
 
 #: project/settings.py:228 studies/fields.py:68
 msgid "German"
-msgstr ""
+msgstr "Tedesco"
 
 #: project/settings.py:229 studies/fields.py:57
 msgid "English"
-msgstr ""
+msgstr "Inglese"
 
 #: project/settings.py:230 studies/fields.py:101
 msgid "Spanish"
-msgstr ""
+msgstr "Spagnolo"
 
 #: project/settings.py:231
 msgid "Argentinian Spanish"
-msgstr ""
+msgstr "Spagnolo argentino"
 
 #: project/settings.py:232 studies/fields.py:66
 msgid "French"
-msgstr ""
+msgstr "Francese"
 
 #: project/settings.py:233
 msgid "Canadian French"
-msgstr ""
+msgstr "Francese canadese"
 
 #: project/settings.py:234
 msgid "Hebrew"
-msgstr ""
+msgstr "Ebreo"
 
 #: project/settings.py:235 studies/fields.py:76
 msgid "Italian"
-msgstr ""
+msgstr "Italiano"
 
 #: project/settings.py:236 studies/fields.py:77
 msgid "Japanese"
-msgstr ""
+msgstr "Giapponese"
 
 #: project/settings.py:237 studies/fields.py:82
 msgid "Korean"
-msgstr ""
+msgstr "Coreano"
 
 #: project/settings.py:238
 msgid "Norwegian Bokmål"
-msgstr ""
+msgstr "Norvegese Bokmål"
 
 #: project/settings.py:239 studies/fields.py:94
 msgid "Polish"
-msgstr ""
+msgstr "Polacco"
 
 #: project/settings.py:240 studies/fields.py:95
 msgid "Portuguese"
-msgstr ""
+msgstr "Portoghese"
 
 #: project/settings.py:241
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Portoghese brasiliano"
 
 #: project/settings.py:242 studies/fields.py:96
 msgid "Romanian"
-msgstr ""
+msgstr "Rumeno"
 
 #: project/settings.py:243 studies/fields.py:97
-#, fuzzy
-#| msgid "Asian"
 msgid "Russian"
-msgstr "asiatico"
+msgstr "Russo"
 
 #: project/settings.py:244 studies/fields.py:107
 msgid "Turkish"
-msgstr ""
+msgstr "Turco"
 
 #: project/settings.py:245
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Cinese semplificato"
 
 #: project/settings.py:246 studies/fields.py:64
 msgid "Dutch"
-msgstr ""
+msgstr "Olandese"
 
 #: studies/fields.py:7
 msgid "Autism Spectrum Disorder"
-msgstr ""
+msgstr "Disturbo dello spettro autistico"
 
 #: studies/fields.py:8
 msgid "Deaf"
-msgstr ""
+msgstr "Sordo"
 
 #: studies/fields.py:9
 msgid "Hard of Hearing"
-msgstr ""
+msgstr "Problemi di udito"
 
 #: studies/fields.py:10
 msgid "Dyslexia"
-msgstr ""
+msgstr "Dislessia"
 
 #: studies/fields.py:11
 msgid "Multiple Birth (twin, triplet, or higher order)"
-msgstr ""
+msgstr "Nascita multipla (gemelli, tripletti o ordine superiore)"
 
 #: studies/fields.py:45
 msgid "Twin"
@@ -946,191 +957,187 @@ msgstr "Plurigemellare di 8 gemelli"
 
 #: studies/fields.py:58
 msgid "Amharic"
-msgstr ""
+msgstr "Amarico"
 
 #: studies/fields.py:59
 msgid "Bengali"
-msgstr ""
+msgstr "Bengalese"
 
 #: studies/fields.py:60
 msgid "Bhojpuri"
-msgstr ""
+msgstr "Bhojpuri"
 
 #: studies/fields.py:61
 msgid "Burmese"
-msgstr ""
+msgstr "Birmano"
 
 #: studies/fields.py:62
 msgid "Cebuano"
-msgstr ""
+msgstr "Cebuano"
 
 #: studies/fields.py:63
 msgid "Chhattisgarhi"
-msgstr ""
+msgstr "Chhattisgarhi"
 
 #: studies/fields.py:65
 msgid "Egyptian Spoken Arabic"
-msgstr ""
+msgstr "Arabo Egiziano"
 
 #: studies/fields.py:67
 msgid "Gan"
-msgstr ""
+msgstr "Gan"
 
 #: studies/fields.py:69
-#, fuzzy
-#| msgid "Duration"
 msgid "Gujarati"
-msgstr "Durata"
+msgstr "Gujrati"
 
 #: studies/fields.py:70
 msgid "Hakka"
-msgstr ""
+msgstr "Hakka"
 
 #: studies/fields.py:71
 msgid "Hausa"
-msgstr ""
+msgstr "Hausa"
 
 #: studies/fields.py:72
 msgid "Hindi"
-msgstr ""
+msgstr "Hindi"
 
 #: studies/fields.py:73
 msgid "Igbo"
-msgstr ""
+msgstr "Igbo"
 
 #: studies/fields.py:74
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesiano"
 
 #: studies/fields.py:75
 msgid "Iranian Persian"
-msgstr ""
+msgstr "Persiano iraniano"
 
 #: studies/fields.py:78
 msgid "Javanese"
-msgstr ""
+msgstr "Giavanese"
 
 #: studies/fields.py:79
 msgid "Jinyu"
-msgstr ""
+msgstr "Jinyu"
 
 #: studies/fields.py:80
 msgid "Kannada"
-msgstr ""
+msgstr "Kannada"
 
 #: studies/fields.py:81
 msgid "Khmer"
-msgstr ""
+msgstr "Khmer"
 
 #: studies/fields.py:83
 msgid "Magahi"
-msgstr ""
+msgstr "Magahi"
 
 #: studies/fields.py:84
 msgid "Maithili"
-msgstr ""
+msgstr "Maithili"
 
 #: studies/fields.py:85
 msgid "Malay"
-msgstr ""
+msgstr "Malese"
 
 #: studies/fields.py:86
 msgid "Malayalam"
-msgstr ""
+msgstr "Malayalam"
 
 #: studies/fields.py:87
 msgid "Mandarin"
-msgstr ""
+msgstr "Mandarino"
 
 #: studies/fields.py:88
 msgid "Marathi"
-msgstr ""
+msgstr "Marathi"
 
 #: studies/fields.py:89
 msgid "Min Nan"
-msgstr ""
+msgstr "Min Nan"
 
 #: studies/fields.py:90
 msgid "Moroccan Spoken Arabic"
-msgstr ""
+msgstr "Arabo Marocchino"
 
 #: studies/fields.py:91
 msgid "Northern Pashto"
-msgstr ""
+msgstr "Pashto settentrionale"
 
 #: studies/fields.py:92
 msgid "Northern Uzbek"
-msgstr ""
+msgstr "Uzbeko settentrionale"
 
 #: studies/fields.py:93
 msgid "Odia"
-msgstr ""
+msgstr "Odia"
 
 #: studies/fields.py:98
 msgid "Saraiki"
-msgstr ""
+msgstr "Saraiki"
 
 #: studies/fields.py:99
 msgid "Sindhi"
-msgstr ""
+msgstr "Sindhi"
 
 #: studies/fields.py:100
 msgid "Somali"
-msgstr ""
+msgstr "Somalo"
 
 #: studies/fields.py:102
 msgid "Sunda"
-msgstr ""
+msgstr "Sundanese"
 
 #: studies/fields.py:103
 msgid "Tagalog"
-msgstr ""
+msgstr "Tagalog"
 
 #: studies/fields.py:104
 msgid "Tamil"
-msgstr ""
+msgstr "Tamil"
 
 #: studies/fields.py:105
 msgid "Telugu"
-msgstr ""
+msgstr "Telugu"
 
 #: studies/fields.py:106
 msgid "Thai"
-msgstr ""
+msgstr "Thailandese"
 
 #: studies/fields.py:108
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ucraino"
 
 #: studies/fields.py:109
 msgid "Urdu"
-msgstr ""
+msgstr "Urdu"
 
 #: studies/fields.py:110
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnamita"
 
 #: studies/fields.py:111
 msgid "Western Punjabi"
-msgstr ""
+msgstr "Punjabi occidentale"
 
 #: studies/fields.py:112
 msgid "Wu"
-msgstr ""
+msgstr "Wu"
 
 #: studies/fields.py:113
 msgid "Xiang Chinese"
-msgstr ""
+msgstr "Cinese Xiāng"
 
 #: studies/fields.py:114
 msgid "Yoruba"
-msgstr ""
+msgstr "Yoruba"
 
 #: studies/fields.py:115
-#, fuzzy
-#| msgid "Yes"
 msgid "Yue"
-msgstr "Sì"
+msgstr "Cantonese"
 
 #: studies/fields.py:123
 msgid "Not answered"
@@ -1154,8 +1161,7 @@ msgid ""
 "studies associated with this Lab and can be added to this Lab's studies."
 msgstr ""
 "Gli utenti che appartengono a questo laboratorio. Un utente in questo "
-"laboratorio potrà creare studi associati a questo laboratorio e potrà essere "
-"aggiunto agli studi di questo laboratorio."
+"laboratorio potrà creare studi associati e potrà essere aggiunto agli studi."
 
 #: studies/models.py:122
 msgid "The Users who have requested to join this Lab."
@@ -1163,24 +1169,22 @@ msgstr "Gli utenti che hanno richiesto di partecipare a questo laboratorio."
 
 #: web/templates/flatpages/contact.html:15
 msgid "Technical difficulties"
-msgstr ""
+msgstr "Difficoltà tecniche"
 
 #: web/templates/flatpages/contact.html:18
 msgid "Questions about the studies"
-msgstr ""
+msgstr "Domande sugli studi"
 
 #: web/templates/flatpages/contact.html:22
 #: web/templates/flatpages/privacy.html:140
-#, fuzzy
-#| msgid "researcher login"
 msgid "For researchers"
-msgstr "login ricercatore"
+msgstr "Per i ricercatori"
 
 #: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
 #: web/templates/web/base.html:10
 msgid "Lookit"
-msgstr "Guardalo"
+msgstr "Lookit"
 
 #: web/templates/flatpages/default.html:53
 msgid ""
@@ -1192,34 +1196,37 @@ msgid ""
 "those of the authors(s) and do not necessarily reflect the views of the "
 "National Science Foundation."
 msgstr ""
+"Questo materiale si basa sul lavoro sostenuto dalla National Science "
+"Foundation (NSF) nell'ambito delle sovvenzioni 1429216 e 1823919; il Center "
+"for Brains, Minds and Machines (CBMM), finanziato dal premio NSF STC "
+"CCF-1231216 e da una Borsa di ricerca NSF con  finanziamento No. 1122374. "
+"Qualsiasi opinione, risultato e conclusione o raccomandazione espressa in "
+"questo materiale sono quelli degli autori e non riflettono necessariamente "
+"le opinioni della National Science Foundation."
 
 #: web/templates/flatpages/default.html:58
 msgid "Privacy"
-msgstr ""
+msgstr "Privacy"
 
 #: web/templates/flatpages/default.html:59
-#, fuzzy
-#| msgid "Contact:"
 msgid "Contact us"
-msgstr "Contatto:"
+msgstr "Contattaci"
 
 #: web/templates/flatpages/default.html:60
 msgid "Connect"
-msgstr ""
+msgstr "Connettiti"
 
 #: web/templates/flatpages/faq.html:11
 msgid "Frequently Asked Questions"
-msgstr ""
+msgstr "Domande frequenti"
 
 #: web/templates/flatpages/faq.html:16
-#, fuzzy
-#| msgid "Participate"
 msgid "Participation"
-msgstr "Partecipare"
+msgstr "Partecipazione"
 
 #: web/templates/flatpages/faq.html:20
 msgid "What is a 'study' about cognitive development?"
-msgstr ""
+msgstr "Che cos'è uno 'studio' sullo sviluppo cognitivo?"
 
 #: web/templates/flatpages/faq.html:25
 msgid ""
@@ -1240,12 +1247,25 @@ msgid ""
 "'Do three-month-olds recognize their parents' faces?'</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Lo sviluppo cognitivo è la scienza di ciò "
+"che i bambini capiscono e di come imparano. I ricercatori dello sviluppo "
+"cognitivo sono interessati a domande come ...</p>\n"
+"                                <ul>\n"
+"                                    <li>con quali conoscenze e abilità "
+"nascono i bambini e cosa devono imparare dall'esperienza</li>\n"
+"                                    <li>come sono organizzate le abilità "
+"come il ragionamento matematico e come si sviluppano nel tempo</li>\n"
+"                                    <li>quali strategie usano i bambini per "
+"imparare dall'ampia varietà di dati che osservano</li>\n"
+"                                </ul>\n"
+"                                <p>Uno studio ha lo scopo di rispondere a "
+"una domanda molto specifica su come i bambini imparano o cosa sanno: ad "
+"esempio, 'I bambini di tre mesi riconoscono i volti dei loro genitori?'</p>"
 
 #: web/templates/flatpages/faq.html:40
-#, fuzzy
-#| msgid "Log in to participate"
 msgid "How can we participate online?"
-msgstr "Accedi per partecipare"
+msgstr "Come possiamo partecipare online?"
 
 #: web/templates/flatpages/faq.html:45
 msgid ""
@@ -1267,10 +1287,28 @@ msgid ""
 "children to learn more about how kids think!</p>\n"
 "                            "
 msgstr ""
+"\n"
+"                            <p>Se hai un figlio e desideri partecipare, crea "
+"un account e dai un'occhiata a ciò che è disponibile per la fascia di età di "
+"tuo figlio. Avrai bisogno di una webcam funzionante per partecipare.</p>\n"
+"                                <p>Quando selezioni uno studio, ti verrà "
+"chiesto di leggere un modulo di consenso e registrarti affermando che tu e "
+"tuo figlio acconsentite a partecipare. Quindi ti guideremo attraverso ciò "
+"che accadrà durante lo studio. A seconda della sua età, tuo figlio potrebbe "
+"rispondere direttamente alle domande o potremmo cercare segni indiretti di "
+"ciò che pensa stia succedendo--ad esempio per quanto tempo osserva un "
+"risultato sorprendente.</p>\n"
+"                                <p>Alcune parti dello studio verranno "
+"registrate automaticamente utilizzando la tua webcam e inviate in modo "
+"sicuro alla piattaforma Lookit. Ricercatori qualificati guarderanno il video "
+"e registreranno le risposte di tuo figlio--ad esempio, da che parte ha "
+"indicato o per quanto tempo ha guardato ogni immagine. Li metteremo insieme "
+"alle risposte di molti altri partecipati per saperne di più su come pensano "
+"i bambini!</p>"
 
 #: web/templates/flatpages/faq.html:56
 msgid "Who can create studies on Lookit?"
-msgstr ""
+msgstr "Chi può creare studi su Lookit?"
 
 #: web/templates/flatpages/faq.html:61
 msgid ""
@@ -1281,12 +1319,17 @@ msgid ""
 "board. Studies are also subject to approval by Lookit. As of June 2020 we "
 "have agreements with 20 universities!"
 msgstr ""
+"Qualsiasi ricercatore con domande su come i bambini imparano e crescono può "
+"proporre uno studio Lookit! Ogni istituzione che utilizza Lookit deve "
+"firmare un contratto con il MIT in cui accetta i <a \n"
+"href='/termsofuse'>Terms of Use</a> e certifica che i suoi studi saranno "
+"esaminati e approvati da un comitato di revisione istituzionale. Inoltre, "
+"gli studi sono soggetti all'approvazione di Lookit. Da giugno 2020 abbiamo "
+"accordi con 20 università!"
 
 #: web/templates/flatpages/faq.html:69
-#, fuzzy
-#| msgid "Log in to participate"
 msgid "How do we provide consent to participate?"
-msgstr "Accedi per partecipare"
+msgstr "Come forniamo il consenso alla partecipazione?"
 
 #: web/templates/flatpages/faq.html:74
 msgid ""
@@ -1306,14 +1349,33 @@ msgid ""
 "audio--they may contact you to check, depending on your email settings.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p> Anziché chiedere al genitore o al tutore "
+"legale di firmare un modulo, ti chiediamo di leggere ad alta voce (o di "
+"segnare in LIS) una dichiarazione di consenso che viene registrata "
+"utilizzando la tua webcam. Questa dichiarazione ha lo stesso valore di un "
+"modulo firmato, ma consente di comunicre il proprio consenso più facilmente. "
+"Ci consente inoltre di verificare che tu capisca l'italiano scritto e di "
+"essere ripreso. </p>\n"
+"                                <p> I ricercatori guardano questi video sul "
+"consenso su una pagina specifica dell'interfaccia del ricercatore e "
+"registrano per ciascuno se il video contiene il consenso informato. Non "
+"possono visualizzare altri video o scaricare dati da una sessione a meno che "
+"non abbiano confermato che hai acconsentito a partecipare! Se vedono un "
+"video per il consenso che NON dimostra chiaramente il consenso informato--ad "
+"esempio, si è verificato un problema tecnico e non c'è audio--potrebbero "
+"contattarti per verificarlo, a seconda delle tue impostazioni email. </p>\n"
+"                                "
 
 #: web/templates/flatpages/faq.html:80
 msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 msgstr ""
+"https://storage.googleapis.com/lookit-\n"
+"staging/static/videos/consent.mp4"
 
 #: web/templates/flatpages/faq.html:89
 msgid "How is our information kept secure and confidential?"
-msgstr ""
+msgstr "Come vengono mantenute sicure e confidenziali le nostre informazioni?"
 
 #: web/templates/flatpages/faq.html:94
 msgid ""
@@ -1340,12 +1402,37 @@ msgid ""
 "                                <p>See also 'Who will see our video?'</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>\n"
+"                                I ricercatori che usano Lookit accettano di "
+"sostenere una serie di standard comuni su come i dati sono protetti e "
+"condivisi. Per esempio, non possono pubblicare i nomi o le date di nascita "
+"dei bambini, o le informazioni che potrebbero essere usate per calcolare una "
+"data di nascita.</p> \n"
+"                                <p>L'interfaccia di Lookit per i ricercatori "
+"è stata progettata dando la massima priorità alla protezione dei dati dei "
+"partecipanti. Per esempio, un'interfaccia speciale permette ai ricercatori "
+"di confermare i video di consenso prima di poter scaricare qualsiasi altro "
+"dato dalla sessione. I gruppi di ricerca possono controllare chi ha accesso "
+"a quali dati in modo molto preciso, per esempio permettendo a un assistente "
+"di confermare il consenso e inviare carte regalo, ma non di scaricare i dati "
+"dello studio.</p>\n"
+"                                <p>Tutti i tuoi dati, incluso il video, "
+"vengono trasmessi tramite una connessione HTTPS sicura allo spazio di "
+"archiviazione di Lookit e vengono crittografati quando sono inattivi. "
+"Prendiamo molto sul serio la sicurezza; oltre ad assicurarci che il software "
+"che utilizziamo sia aggiornato, i server cloud siano configurati in modo "
+"sicuro e che gli unit test coprano il controllo dell'accesso ai dati "
+"richieda le autorizzazioni corrette, abbiamo condotto una valutazione del "
+"rischio e test di penetrazione manuale dettagliata con un appaltatore di "
+"sicurezza prima del nostro lancio nel 2020.</p>\n"
+"                                <p>Vedi anche 'Chi vedrà il nostro video?'</"
+"p>\n"
+"                                "
 
 #: web/templates/flatpages/faq.html:107
-#, fuzzy
-#| msgid "What is your gender?"
 msgid "Who will see our video?"
-msgstr "Qual è il tuo genere?"
+msgstr "Chi vedrà il nostro video?"
 
 #: web/templates/flatpages/faq.html:112
 msgid ""
@@ -1417,10 +1504,82 @@ msgid ""
 "lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p> Il personale di Lookit al MIT avrà "
+"accesso al tuo video e ad altri dati per migliorare e promuovere la "
+"piattaforma e aiutarti con la risoluzione dei problemi. I ricercatori che "
+"gestiscono lo studio a cui hai partecipato avranno anche accesso al tuo "
+"video e ad altri dati (come le risposte alle domande durante lo studio e le "
+"informazioni che inserisci quando registri un bambino) per scopi di ricerca. "
+"Guarderanno i segmenti video che invii per contrassegnare le informazioni "
+"specifiche dello studio, ad esempio cosa ha detto tuo figlio o per quanto "
+"tempo ha guardato a sinistra rispetto a destra dello schermo. Questo gruppo "
+"di ricerca può essere al MIT o in un'altra istituzione. Tutti gli studi "
+"condotti su Lookit devono essere approvati da un Comitato istituzionale di "
+"revisione che garantisce la protezione dei diritti e del benessere dei "
+"partecipanti. Tutti i ricercatori che utilizzano Lookit accettano anche i "
+"Termini di utilizzo che regolano quali dati possono condividere e quali tipi "
+"di studi possono essere eseguiti su Lookit; queste regole sono talvolta più "
+"rigide di quanto potrebbe essere la loro stessa istituzione. </p>\n"
+"                                <p> La possibilità che qualcun altro possa "
+"visualizzare il video dipende dalle impostazioni sulla privacy che selezioni "
+"alla fine dello studio. Ci sono due decisioni da prendere: se condividere i "
+"tuoi dati con Databrary e come consentire ai ricercatori che hai selezionato "
+"di utilizzare i tuoi video clip. </p>\n"
+"                                <p> Innanzitutto, ti chiediamo se desideri "
+"condividere i tuoi dati (incluso il video) con utenti autorizzati per la "
+"libreria di dati protetti Databrary. La condivisione dei dati porterà a "
+"progressi più rapidi nella ricerca sullo sviluppo e sul comportamento umano. "
+"I ricercatori a cui è concesso l'accesso alla biblioteca di Databrary devono "
+"accettare di trattare i dati con lo stesso elevato standard di cura che "
+"utilizzerebbero nei propri laboratori. Ulteriori informazioni su Databrary  "
+"<a\n"
+"href=\"https://databrary.org/about/mission.html\">mission</a> or the <a href="
+"\"https://databrary.org/access/responsibilities/investigators.html"
+"\">requirements for authorized users</a>.</p>\n"
+"                                <p> Successivamente, ti chiediamo quali tipi "
+"di utilizzi del tuo video ti vanno bene. </p> \n"
+"                                 <ul>\n"
+"                                     <li><strong>Privato</strong> Questo "
+"livello di privacy garantisce che i tuoi video clip saranno visualizzati "
+"solo da scienziati autorizzati (lo staff di Lookit, il gruppo di ricerca che "
+"esegue lo studio e, se hai scelto di condividere i tuoi dati con Databrary, "
+"gli utenti autorizzati di Databrary.) Guarderanno i video per registrare le "
+"informazioni su ciò che ha fatto tuo figlio durante lo studio--ad esempio "
+"guardando 9 secondi su un'immagine e 7 secondi su un'altra. </li>\n"
+"                                     <li><strong>Scientifico ed educativo</"
+"strong> Questo livello di privacy consente di condividere i tuoi video clip "
+"con altri ricercatori o studenti per scopi scientifici o educativi. Ad "
+"esempio, i ricercatori potrebbero mostrare un video clip in un discorso a "
+"una conferenza scientifica o una classe universitaria sullo sviluppo "
+"cognitivo, o includere un'immagine o un video in un documento scientifico. "
+"In alcune circostanze, video o immagini possono essere disponibili online, "
+"ad esempio come materiale supplementare in un documento scientifico. La "
+"condivisione di video con altri ricercatori aiuta altri gruppi a dare "
+"fiducia e sviluppare il nostro lavoro. </li>\n"
+"                                     <li><strong>Pubblico</strong> Questo "
+"livello di privacy è per le famiglie che sarebbero entusiaste di vedere il "
+"loro bambino presentato sul sito web di Lookit o nelle notizie! La selezione "
+"di questo livello di privacy consente di utilizzare i video clip per "
+"comunicare al pubblico circa gli studi sullo sviluppo e sulla piattaforma "
+"Lookit. Ad esempio, potremmo pubblicare un breve video clip sul sito web di "
+"Lookit, sulla nostra pagina Facebook o in un comunicato stampa. Il tuo video "
+"non verrà mai utilizzato per scopi commerciali. </li>\n"
+"                                  </ul>\n"
+"                                  <p> Se per qualche motivo non selezioni un "
+"livello di privacy, tratteremo i dati come \"Privati\" e non li "
+"condivideremo con Databrary. I partecipanti hanno anche la possibilità di "
+"ritirare tutti i video oltre al consenso alla fine dello studio se "
+"necessario (ad esempio, perché qualcuno stava discutendo dei segreti di "
+"stato in sottofondo), e in questo caso viene automaticamente cancellato. Le "
+"impostazioni sulla privacy per le sessioni completate non possono essere "
+"modificate automaticamente in modo retroattivo. In caso di domande o dubbi "
+"sulla privacy, puoi contattare il nostro team all'indirizzo <a href=\"mailto:"
+"lookit@mit.edu\">lookit@mit.edu</a>.</p>"
 
 #: web/templates/flatpages/faq.html:130
 msgid "What information do researchers use from our video?"
-msgstr ""
+msgstr "Quali informazioni usano i ricercatori dal nostro video?"
 
 #: web/templates/flatpages/faq.html:136
 msgid ""
@@ -1431,12 +1590,22 @@ msgid ""
 "idea of what it looks like when your child is looking to the right or the "
 "left, so we can code the rest of the video."
 msgstr ""
+"Per i bambini sotto i due anni circa, di solito progettiamo i nostri studi "
+"in modo che siano i loro occhi a parlare! Siamo interessati a dove il "
+"bambino guarda sullo schermo e/o per quanto tempo il bambino guarda lo "
+"schermo piuttosto che guardare altrove. I nostri video di calibrazione "
+"(esempio mostrato sotto) ci aiutano a farci un'idea di come appare quando il "
+"bambino guarda a destra o a sinistra, in modo da poter codificare il resto "
+"del video."
 
 #: web/templates/flatpages/faq.html:143
 msgid ""
 "Here's an example of a few children watching our calibration video--it's "
 "easy to see that they look to one side and then the other."
 msgstr ""
+"Ecco un esempio di alcuni bambini che guardano il nostro video di "
+"calibrazione-\n"
+"- è facile vedere che guardano da una parte e poi dall'altra."
 
 #: web/templates/flatpages/faq.html:149
 msgid ""
@@ -1444,12 +1613,13 @@ msgid ""
 "about what he or she understands. Here are some of the techniques labs use "
 "to learn more about how children learn."
 msgstr ""
+"Le decisioni di tuo figlio su dove guardare possono darci molte informazioni "
+"su ciò che lui o lei comprende. Ecco alcune delle tecniche che i laboratori "
+"usano per comprendere di più su come i bambini imparano"
 
 #: web/templates/flatpages/faq.html:150
-#, fuzzy
-#| msgid "Duration"
 msgid "Habituation"
-msgstr "Durata"
+msgstr "Abituazione"
 
 #: web/templates/flatpages/faq.html:151
 msgid ""
@@ -1478,10 +1648,36 @@ msgid ""
 "you would choose to listen to anything else.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                 <p> In uno studio di abituazione, per prima "
+"cosa mostriamo ai bambini molti esempi di un tipo di oggetto o evento finchè "
+"non perdono interesse nel tempo. I bambini in genere osservano a lungo le "
+"prime immagini, ma poi iniziano a distogliere lo sguardo più rapidamente. "
+"Una volta che i loro tempi di osservazione sono molto inferiori a quelli "
+"iniziali, mostriamo un'immagine da una nuova categoria o una nuova immagine "
+"dalla categoria conosciuta. Se i bambini ora guardano più a lungo il nuovo "
+"stimolo, possiamo dire che hanno capito--e si sono stufati--della categoria "
+"che abbiamo mostrato inizialmente.</p>\n"
+"                                <p>L'abituazione richiede di attendere che "
+"ogni singolo bambino raggiunga una certa soglia di \"noia\"--ad esempio, "
+"guardando un'immagine per un tempo pari alla metà del tempo di osservazione "
+"della prima immagine. A volte questo non è pratico e usiamo invece la "
+"familiarizzazione. In uno studio di familiarizzazione, mostriamo a tutti i "
+"bambini lo stesso numero di esempi e poi vediamo quanto sono interessati "
+"alla categoria familiare rispetto a una nuova categoria. I bambini più "
+"piccoli e quelli che hanno visto pochi esempi tendono a mostrare una "
+"preferenza di familiarità: guardano più a lungo le immagini simili a ciò che "
+"hanno visto prima. I bambini più grandi e coloro che hanno visto molti "
+"esempi tendono a mostrare una preferenza per le novità: guardano più a lungo "
+"le immagini che sono diverse da quelle che hanno visto prima. Probabilmente "
+"noti lo stesso fenomeno quando ascolti una nuova canzone alla radio: "
+"inizialmente non la riconosci; dopo che l'hai ascoltata più volte potrebbe "
+"piacerti e potresti cantarla; invece dopo che è stato riprodotta centinaia "
+"di volte, sceglierai di ascoltare qualsiasi altra cosa.</p>"
 
 #: web/templates/flatpages/faq.html:156
 msgid "Violation of expectation"
-msgstr ""
+msgstr "Violazione delle aspettative"
 
 #: web/templates/flatpages/faq.html:157
 msgid ""
@@ -1490,10 +1686,14 @@ msgid ""
 "find surprising, so in some cases, we can take their looking times as a "
 "measure of how surprised they are."
 msgstr ""
+"I neonati e i bambini hanno già molte aspettative su come funzionano gli "
+"eventi. I bambini (e gli adulti, se è per questo) tendono a guardare più a "
+"lungo le cose che trovano sorprendenti, quindi in alcuni casi, possiamo "
+"prendere i loro tempi di osservazione come misura di quanto siano sorpresi."
 
 #: web/templates/flatpages/faq.html:158
 msgid "Preferential looking"
-msgstr ""
+msgstr "Sguardo preferenziale"
 
 #: web/templates/flatpages/faq.html:159
 msgid ""
@@ -1505,10 +1705,18 @@ msgid ""
 "shows a participant looking to her left when asked to 'find clapping'; the "
 "display she's watching is shown at the top."
 msgstr ""
+"Anche quando sembrano osservatori passivi, i bambini prendono molte "
+"decisioni su dove guardare e a cosa prestare attenzione. In questa tecnica, "
+"presentiamo ai bambini la possibilità di scegliere tra due immagini o video "
+"affiancati e vediamo se trascorrono più tempo a guardarne uno dei due. "
+"Potremmo inoltre riprodurre l'audio che corrisponde a uno dei video. Il "
+"video qui sotto mostra una partecipante che guarda alla sua sinistra quando "
+"le viene chiesto di 'trovare gli applausi'; il display che sta guardando è "
+"mostrato in alto."
 
 #: web/templates/flatpages/faq.html:165
 msgid "Predictive looking"
-msgstr ""
+msgstr "Ricerca predittiva"
 
 #: web/templates/flatpages/faq.html:166
 msgid ""
@@ -1522,6 +1730,16 @@ msgid ""
 "we can see whether children learn these relationships, and how they "
 "generalize, by watching where they look when they hear a syllable."
 msgstr ""
+"I bambini possono spesso fare previsioni sofisticate su ciò che si aspettano "
+"di vedere o sentire. Un modo in cui possiamo vedere queste previsioni nei "
+"bambini piccoli è guardare i loro movimenti oculari. Ad esempio, se un "
+"bambino vede una palla rotolare dietro una barriera, può guardare dall'altra "
+"parte di questa, aspettandosi che la palla esca lì. Potremmo anche creare "
+"relazioni predittive artificiali: ad esempio, la sillaba \"da\" significa "
+"che un giocattolo apparirà a sinistra dello schermo e \"ba\" significa che "
+"un giocattolo apparirà a destra. Quindi possiamo vedere se i bambini "
+"imparano queste relazioni e come le generalizzano, analizzando dove dirigono "
+"il loro sguardo quando sentono una o l'altra sillaba."
 
 #: web/templates/flatpages/faq.html:168
 msgid ""
@@ -1530,6 +1748,11 @@ msgid ""
 "object two different made-up names, and children were asked which is the "
 "correct name for the object."
 msgstr ""
+"I bambini più grandi possono semplicemente essere in grado di rispondere a "
+"domande vocali su ciò che pensano stia accadendo. Ad esempio, in uno studio "
+"recente, due donne hanno chiamato un oggetto con due nomi di fantasia "
+"diversi e ai bambini è stato chiesto quale fosse il nome corretto "
+"dell'oggetto."
 
 #: web/templates/flatpages/faq.html:174
 msgid ""
@@ -1539,12 +1762,15 @@ msgid ""
 "square appears, and then look at factors that influence how quickly they "
 "press a key."
 msgstr ""
+"Un altro modo in cui possiamo apprendere come pensano i bambini più grandi "
+"(e gli adulti) è misurare i loro tempi di reazione. Ad esempio, potremmo "
+"chiederti di aiutare tuo figlio a imparare a premere un tasto quando appare "
+"un cerchio e un altro tasto quando appare un quadrato, e quindi esaminare i "
+"fattori che influenzano la velocità con cui preme un tasto."
 
 #: web/templates/flatpages/faq.html:181
-#, fuzzy
-#| msgid "We are not running any studies at this time!"
 msgid "Why are you running studies online instead of in person?"
-msgstr "Non stiamo conducendo alcuno studio in questo momento!"
+msgstr "Perché state conducendo studi online invece che di persona?"
 
 #: web/templates/flatpages/faq.html:186
 msgid ""
@@ -1553,6 +1779,11 @@ msgid ""
 "part and schedule an appointment for them to come visit the lab. Why "
 "complement these in-lab studies with online ones? We're hoping to..."
 msgstr ""
+"Tradizionalmente, gli studi sullo sviluppo avvengono in una stanza "
+"tranquilla in un laboratorio universitario. I ricercatori chiamano o inviano "
+"un'e-mail ai genitori locali per vedere se desiderano partecipare e fissare "
+"un appuntamento per andare in laboratorio. Perché integrare questi studi in "
+"laboratorio con quelli online? Speriamo di..."
 
 #: web/templates/flatpages/faq.html:187
 msgid ""
@@ -1583,10 +1814,36 @@ msgid ""
 "                                </ul>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <ul>\n"
+"                                    <li>Semplificare la tua partecipazione "
+"alla ricerca, soprattutto per le famiglie senza un genitore casalingo</li>\n"
+"                                    <li>Lavorare con più bambini quando "
+"necessario--in questo momento un fattore limitante nella progettazione degli "
+"studi è il tempo necessario per reclutare i partecipanti</li>\n"
+"                                    <li>Trarre conclusioni da una "
+"popolazione di famiglie più rappresentativa--non solo da quelle che vivono "
+"vicino a un'università e possono visitare il laboratorio durante il giorno.\n"
+"                                    </li>\n"
+"                                    <li>Rendere più facile per le famiglie "
+"continuare a partecipare a studi longitudinali, che possono comportare più "
+"sessioni di test separate da mesi o anni</li>\n"
+"                                    <li>Osservare un comportamento più "
+"naturale perché i bambini sono a casa piuttosto che in un luogo sconosciuto</"
+"li>\n"
+"                                    <li>Creare un sistema per conoscere "
+"popolazioni speciali--ad esempio, bambini con disturbi dello sviluppo "
+"specifici</li>\n"
+"                                    <li>Rendere le procedure che utilizziamo "
+"per svolgere la ricerca più trasparenti e semplificare la replicazione dei "
+"nostri risultati</li>\n"
+"                                    <li>Comunicare alle famiglie circa la "
+"ricerca che stiamo facendo e su ciò che possiamo imparare da essa</li>\n"
+"                                </ul>"
 
 #: web/templates/flatpages/faq.html:206
 msgid "When will we see the results of the study?"
-msgstr ""
+msgstr "Quando vedremo i risultati dello studio?"
 
 #: web/templates/flatpages/faq.html:211
 msgid ""
@@ -1596,12 +1853,20 @@ msgid ""
 "preferences to be notified when we have results from studies you "
 "participated in."
 msgstr ""
+"Il processo di pubblicazione di uno studio scientifico, dall'avvio della "
+"raccolta dei dati alla visualizzazione dell'articolo su una rivista, può "
+"richiedere diversi anni. Puoi controllare la home page di Lookit per gli "
+"aggiornamenti sui documenti o impostare le tue preferenze di comunicazione "
+"per essere avvisato quando avremo i risultati degli studi a cui hai "
+"partecipato."
 
 #: web/templates/flatpages/faq.html:218
 msgid ""
 "My child wasn't paying attention, or we were interrupted. Can we try the "
 "study again?"
 msgstr ""
+"Mio figlio non stava prestando attenzione o siamo stati interrotti. Possiamo "
+"provare di nuovo lo studio?"
 
 #: web/templates/flatpages/faq.html:223
 msgid ""
@@ -1610,12 +1875,17 @@ msgid ""
 "ignore it. You don't need to tell us that you tried the study before; we'll "
 "have a record of your previous participation."
 msgstr ""
+"Certamente--grazie per la tua attenzione! Potresti vedere un avviso che hai "
+"già partecipato allo studio quando andrai a provare di nuovo, puoi "
+"ignorarlo. Non hai bisogno di dirci che hai già provato lo studio in "
+"precedenza; avremo una registrazione della tua precedente partecipazione."
 
 #: web/templates/flatpages/faq.html:230
 msgid ""
 "My child is outside the age range. Can he/she still participate in this "
 "study?"
 msgstr ""
+"Mio figlio non ha l'età prevista. Può comunque partecipare a questo studio?"
 
 #: web/templates/flatpages/faq.html:235
 msgid ""
@@ -1625,10 +1895,14 @@ msgid ""
 "minimum age for a study, however, we encourage you to wait so that we'll be "
 "able to use the data."
 msgstr ""
+"Certo! Potremmo non essere in grado di usare direttamente i suoi dati nella "
+"nostra ricerca, ma se sei curioso puoi comunque provare lo studio. Se tuo "
+"figlio è appena al di sotto dell'età minima per uno studio, tuttavia, ti "
+"invitiamo ad aspettare in modo da poter utilizzare i dati."
 
 #: web/templates/flatpages/faq.html:242
 msgid "My child was born prematurely. Should we use his/her adjusted age?"
-msgstr ""
+msgstr "Mio figlio è nato prematuro. Dobbiamo usare la sua età corretta?"
 
 #: web/templates/flatpages/faq.html:247
 msgid ""
@@ -1636,12 +1910,18 @@ msgid ""
 "since birth), even for premature babies. If adjusted age is important for a "
 "particular study, we will make that clear in the study eligibility criteria."
 msgstr ""
+"Per l'ammissibilità dello studio, di solito usiamo l'età cronologica del "
+"bambino (tempo dalla nascita), anche per i bambini prematuri. Se l'età "
+"corretta è importante per uno studio particolare, lo renderemo chiaro nei "
+"criteri di ammissibilità dello studio."
 
 #: web/templates/flatpages/faq.html:254
 msgid ""
 "Our family speaks a language other than English at home. Can my child "
 "participate?"
 msgstr ""
+"La nostra famiglia parla una lingua diversa dall'italiano a casa. Mio figlio "
+"può partecipare?"
 
 #: web/templates/flatpages/faq.html:259
 msgid ""
@@ -1653,12 +1933,21 @@ msgid ""
 "can also indicate the languages your child speaks or is learning to speak on "
 "your demographic survey."
 msgstr ""
+"Certo! In questo momento, le istruzioni per bambini e genitori sono scritte "
+"solo in italiano, quindi alcune di esse possono essere confuse per un "
+"bambino che non sente regolarmente l'italiano. Tuttavia, sei il benvenuto a "
+"provare qualsiasi studio e a tradurre per tuo figlio se puoi. Se per lo "
+"studio è importante che tuo figlio parli altre lingue oltre all'italiano, te "
+"lo chiederemo specificamente. Puoi anche indicare le lingue che tuo figlio "
+"parla o sta imparando a parlare nella tua indagine demografica."
 
 #: web/templates/flatpages/faq.html:266
 msgid ""
 "My child has been diagnosed with a developmental disorder or has special "
 "needs. Can he/she still participate?"
 msgstr ""
+"A mio figlio è stato diagnosticato un disturbo dello sviluppo o ha bisogni "
+"speciali. Può ancora partecipare?"
 
 #: web/templates/flatpages/faq.html:271
 msgid ""
@@ -1675,12 +1964,25 @@ msgid ""
 "signing.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                           <p>Certo! Siamo interessati a "
+"come tutti i bambini imparano e crescono. Se vuoi, puoi annotare eventuali "
+"disturbi dello sviluppo nella sezione dei commenti alla fine dello studio. "
+"Siamo entusiasti che in futuro gli studi online possano aiutare più famiglie "
+"a partecipare alla ricerca per capire meglio le diagnosi dei propri figli.</"
+"p>\n"
+"                                <p>Una nota: la maggior parte dei nostri "
+"studi include sia immagini che suoni, e potrebbero essere difficili da "
+"capire se vostro figlio ha una disabilità visiva o uditiva. Se potete, "
+"sentitevi liberi di aiutare descrivendo le immagini o segnando.</p> </p>"
 
 #: web/templates/flatpages/faq.html:281
 msgid ""
 "I have multiple children in the age range for a study. Can they participate "
 "together?"
 msgstr ""
+"Ho più bambini nella fascia d'età per uno studio. Possono partecipare "
+"insieme?"
 
 #: web/templates/flatpages/faq.html:286
 msgid ""
@@ -1689,10 +1991,16 @@ msgid ""
 "fascinating subject in its own right but usually not the focus of our "
 "research."
 msgstr ""
+"Se possibile, chiediamo che ogni bambino partecipi separatamente. Quando i "
+"bambini partecipano insieme, generalmente si influenzano a vicenda. Questo è "
+"un argomento affascinante di per sé, ma di solito non è al centro della "
+"nostra ricerca."
 
 #: web/templates/flatpages/faq.html:293
 msgid "But I've heard that young children should avoid 'screen time.'"
 msgstr ""
+"Ma ho sentito dire che i bambini piccoli dovrebbero evitare di passare del "
+"tempo davanti allo schermo."
 
 #: web/templates/flatpages/faq.html:298
 msgid ""
@@ -1709,10 +2017,22 @@ msgid ""
 "feedback on our studies!</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Siamo d'accordo con l'American Academy of "
+"Pediatrics <a href=\"https://pediatrics.aappublications.org/content/138/5/"
+"e20162591\" target=\"_blank\">advice</a> che i bambini imparano meglio dalle "
+"persone, non dagli schermi! Tuttavia, i nostri studi non hanno lo scopo di "
+"educare i bambini, ma di imparare da loro.</p>\n"
+"                                <p>Come parte del tempo limitato di un "
+"bambino davanti allo schermo, speriamo che i nostri studi saranno stimolo di "
+"conversazione familiare e interesse verso la scienza la quale ricompenserà i "
+"pochi minuti spesi a guardare un video invece che a giocare. E per noi \"i "
+"fatti valgono più delle parole\"-- i nostri bambini ci forniscono un sacco "
+"di feedback per i nostri studi!</p>"
 
 #: web/templates/flatpages/faq.html:308
 msgid "Will we be paid for our participation?"
-msgstr ""
+msgstr "Saremo pagati per la nostra partecipazione?"
 
 #: web/templates/flatpages/faq.html:313
 msgid ""
@@ -1721,10 +2041,15 @@ msgid ""
 "rules of the university that's doing the research.) This information will be "
 "listed on the study description page."
 msgstr ""
+"Alcuni gruppi di ricerca forniscono carte regalo o altri compensi per "
+"completare i loro studi, mentre altri si affidano a volontari. (Questo "
+"spesso dipende dalle regole dell'università che sta facendo la ricerca). "
+"Queste informazioni saranno elencate nella pagina di descrizione dello "
+"studio."
 
 #: web/templates/flatpages/faq.html:320
 msgid "Can I get my child's results?"
-msgstr ""
+msgstr "Posso avere i risultati di mio figlio?"
 
 #: web/templates/flatpages/faq.html:325
 #, python-format
@@ -1747,24 +2072,44 @@ msgid ""
 "a> section for fun at-home activities you can try with your child.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Per alcuni studi, sì! Di solito, i "
+"ricercatori dello sviluppo interpretano le capacità e le tendenze evolutive "
+"dei bambini solo a livello di gruppo, e i dati individuali raccolti "
+"semplicemente non sono molto interpretabili. Ma per \"Il tuo bambino, il "
+"fisico\" e altri studi longitudinali (in cui torni per più di una sessione), "
+"a volte, possiamo raccogliere dati sufficienti per darti un resoconto delle "
+"risposte di tuo figlio dopo aver completato tutte le sessioni.</p>\n"
+"                                <p>Tieni presente che nessuna delle misure "
+"che raccogliamo è diagnostica! Ad esempio, anche se speriamo che ti "
+"interesserà sapere che tuo figlio ha guardato il 70 %% delle volte un video "
+"in cui le cose cadevano verso l'alto invece che cadere in basso, non saremo "
+"in grado di dirti se questo significa che tuo figlio sarà particolarmente "
+"bravo in fisica.</p>\n"
+"                                <p>Se sei interessato a ottenere subito "
+"risultati individuali, consulta la nostra sezione <a \n"
+"href='resources'>Resources</a> per divertenti attività  che puoi provare a "
+"casa con tuo figlio.</p>"
 
 #: web/templates/flatpages/faq.html:335
 msgid "Technical"
-msgstr ""
+msgstr "Tecnico"
 
 #: web/templates/flatpages/faq.html:339
 msgid "What browsers are supported?"
-msgstr ""
+msgstr "Quali browser sono supportati?"
 
 #: web/templates/flatpages/faq.html:344
 msgid ""
 "Lookit supports recent versions of Chrome and Firefox. We are not currently "
 "able to support Internet Explorer or Safari."
 msgstr ""
+"Lookit supporta le versioni recenti di Chrome e Firefox. Attualmente non "
+"siamo in grado di supportare Internet Explorer o Safari."
 
 #: web/templates/flatpages/faq.html:351
 msgid "Can we do a study on my phone or tablet?"
-msgstr ""
+msgstr "Possiamo fare uno studio sul mio telefono o tablet?"
 
 #: web/templates/flatpages/faq.html:357
 msgid ""
@@ -1774,110 +2119,64 @@ msgid ""
 "excited about the potential for touchscreen studies that allow us to observe "
 "infants and toddlers exploring, though!"
 msgstr ""
+"Non ancora! Poiché stiamo misurando i pattern di osservazione dei bambini, "
+"abbiamo bisogno di una visione ragionevolmente stabile dei loro occhi e di "
+"uno schermo abbastanza grande da poter dire se stanno guardando il lato "
+"sinistro o destro di esso. Tuttavia, siamo entusiasti del potenziale di "
+"studi con il touchscreen che ci consentono di osservare neonati e bambini "
+"che esplorano!"
 
 #: web/templates/flatpages/home.html:11
 msgid "the online child lab"
-msgstr ""
+msgstr "il laboratorio online per bambini"
 
 #: web/templates/flatpages/home.html:12
 msgid "A project of the MIT Early Childhood Cognition Lab"
-msgstr ""
+msgstr "Un progetto dell' Early Childhood Cognition Lab del MIT"
 
 #: web/templates/flatpages/home.html:22
 msgid "Bringing science home"
-msgstr ""
+msgstr "Portare la scienza a casa"
 
 #: web/templates/flatpages/home.html:23
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
 msgstr ""
+"Qui all'Early Childhood Cognition Lab del MIT, stiamo provando un nuovo "
+"approccio alla psicologia dello sviluppo: portarti gli esperimenti."
 
 #: web/templates/flatpages/home.html:29
 msgid "Help us understand how your child thinks"
-msgstr ""
+msgstr "Aiutaci a capire come pensa tuo figlio"
 
 #: web/templates/flatpages/home.html:30
 msgid ""
 "Your family can contribute to research about how children learn by doing fun "
 "activities together, right in your web browser."
 msgstr ""
+"La tua famiglia può contribuire alla ricerca su come i bambini imparano "
+"svolgendo attività divertenti insieme, direttamente nel tuo browser web."
 
 #: web/templates/flatpages/home.html:36
 msgid "Participate whenever and wherever"
-msgstr ""
+msgstr "Partecipa sempre e ovunque"
 
 #: web/templates/flatpages/home.html:37
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
 msgstr ""
-
-#: web/templates/flatpages/home.html:45
-msgid "News"
-msgstr ""
-
-#: web/templates/flatpages/home.html:49
-msgid "June 29, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:52
-msgid "We're now accepting new studies from research groups around the world!"
-msgstr ""
-
-#: web/templates/flatpages/home.html:57
-msgid "May 4, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:60
-#, fuzzy
-#| msgid ""
-#| "Looking for more ways to contribute to research from home? Check out <a "
-#| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#| "\"noreferrer noopener\">Children Helping Science</a> for even more "
-#| "studies!"
-msgid ""
-"For even more ways to participate in science with your kids at home, check "
-"out the newly launched site <a href='https://childrenhelpingscience.com/' "
-"target='_blank'>Children Helping Science"
-msgstr ""
-"Cerchi altri modi per contribuire alla ricerca da casa? Dai un'occhiata a <a "
-"href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-"\"noreferrer noopener\"> Children Helping Science </a> per ulteriori studi!"
-
-#: web/templates/flatpages/home.html:65
-msgid "March 27, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:68
-msgid ""
-"We're gearing up to open up Lookit to more research labs! Our first study "
-"for newborns, 'Baby See, Baby Do?' is live, and 'Baby Euclid' is back for 7-"
-"month-olds. And we're still recruiting for Flurps and Zazzes, Your Baby the "
-"Physicist, and Baby Laughter - please help us spread the word!"
-msgstr ""
-
-#: web/templates/flatpages/home.html:73
-msgid "September 18, 2019"
-msgstr ""
-
-#: web/templates/flatpages/home.html:76
-msgid ""
-"Data collection is complete for the Lookit studies 'Baby Euclid,' 'Mind and "
-"Manners', 'Flurps and Zazzes,' and 'Words and Objects' (but stay tuned for "
-"follow-ups!). We're still looking families with babies to participate in "
-"'Look and Listen,' 'Your Baby the Physicist,' and 'Baby Laughter Games.'"
-msgstr ""
+"Accedi o crea un account in alto a destra per iniziare! Puoi partecipare con "
+"tuo figlio da qualsiasi computer dotato di webcam."
 
 #: web/templates/flatpages/privacy.html:11
-#, fuzzy
-#| msgid "Privacy Statement"
 msgid "Privacy statement"
 msgstr "Informativa sulla Privacy"
 
 #: web/templates/flatpages/privacy.html:17
 msgid "Introduction"
-msgstr ""
+msgstr "Introduzione"
 
 #: web/templates/flatpages/privacy.html:18
 msgid ""
@@ -1888,12 +2187,16 @@ msgid ""
 "                personal information we collect about our researchers and "
 "research participant community."
 msgstr ""
+"Lookit si impegna a sostenere la privacy degli individui che si iscrivono "
+"alla nostra Piattaforma per condurre\n"
+"                ricerche o candidarsi come soggetti di ricerca. Questa "
+"dichiarazione sulla privacy spiega come gestiamo e utilizziamo le\n"
+"                informazioni personali che raccogliamo sui nostri "
+"ricercatori e sui partecipanti alla ricerca."
 
 #: web/templates/flatpages/privacy.html:22
-#, fuzzy
-#| msgid "All Participants"
 msgid "For participants"
-msgstr "Tutti i partecipanti"
+msgstr "Per i partecipanti"
 
 #: web/templates/flatpages/privacy.html:24
 msgid ""
@@ -1905,15 +2208,22 @@ msgid ""
 "studies only access your personal information\n"
 "                if you choose to participate in their study."
 msgstr ""
+"Lookit è una piattaforma che molti ricercatori diversi usano per condurre "
+"studi su come i bambini imparano e si\n"
+"                sviluppano. È gestita dal MIT Early Childhood Cognition Lab, "
+"che ha accesso a tutti i dati\n"
+"                raccolti su Lookit. I ricercatori che usano Lookit per "
+"condurre studi accedono alle tue informazioni personali solo\n"
+"                solo se scegli di partecipare al loro studio."
 
 #: web/templates/flatpages/privacy.html:29
 #: web/templates/flatpages/privacy.html:142
 msgid "What personal information we collect"
-msgstr ""
+msgstr "Quali informazioni personali raccogliamo"
 
 #: web/templates/flatpages/privacy.html:31
 msgid "We collect the following kinds of personal information:"
-msgstr ""
+msgstr "Raccogliamo i seguenti tipi di informazioni personali:"
 
 #: web/templates/flatpages/privacy.html:32
 msgid ""
@@ -1936,11 +2246,29 @@ msgid ""
 "etc.</li>\n"
 "            </ul>"
 msgstr ""
+"<ul>\n"
+"                <li>Dati dell'account: informazioni di contatto di base che "
+"possono includere il tuo indirizzo email, nickname,\n"
+"                    indirizzo e preferenze di contatto.</li>\n"
+"                <li>Dati relativi al bambino: informazioni biografiche di "
+"base su/sui tuo/tuoi figlio/i, inclusi nickname, data di nascita,\n"
+"                    e l'età gestazionale alla nascita.</li>\n"
+"                <li>Dati demografici: informazioni generali e biografiche "
+"come lingua madre, etnia, età,\n"
+"                    background scolastico e familiarità a particolari "
+"condizioni mediche.</li>\n"
+"                <li>Dati dello studio: risposte raccolte durante particolari "
+"studi condotti su Lookit, incluso il video della webcam\n"
+"                con la tua famiglia che partecipa allo studio, il testo "
+"inserito nei moduli, le immagini particolari che\n"
+"                    sono state mostrate, la tempistica della progressione "
+"attraverso lo studio, ecc.</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:44
 #: web/templates/flatpages/privacy.html:147
 msgid "How we collect personal information about you"
-msgstr ""
+msgstr "Come raccogliamo informazioni personali su di te"
 
 #: web/templates/flatpages/privacy.html:46
 msgid ""
@@ -1951,17 +2279,25 @@ msgid ""
 "                completing or updating surveys, or participating in "
 "individual Lookit studies."
 msgstr ""
+"Le informazioni che raccogliamo e conserviamo su di te sono le informazioni "
+"che ci fornisci al momento della registrazione\n"
+"                per un account Lookit, per registrare i tuoi figli, per "
+"aggiornare il tuo account o i profili dei tuoi figli,\n"
+"                per completare o aggiornare sondaggi o partecipare a singoli "
+"studi Lookit."
 
 #: web/templates/flatpages/privacy.html:50
 #: web/templates/flatpages/privacy.html:167
 msgid "When we share your personal information"
-msgstr ""
+msgstr "Quando condividiamo le tue informazioni personali"
 
 #: web/templates/flatpages/privacy.html:52
 msgid ""
 "When you participate in a Lookit study, we share the following information "
 "with the research group conducting the study:"
 msgstr ""
+"Quando partecipi a uno studio su Lookit, condividiamo le seguenti "
+"informazioni con il gruppo di ricerca che conduce lo studio:"
 
 #: web/templates/flatpages/privacy.html:54
 msgid ""
@@ -1973,12 +2309,22 @@ msgid ""
 "                <li>The study data for this particular study session</li>\n"
 "            </ul>"
 msgstr ""
+"\n"
+"           <ul>\n"
+"                <li>I dati del tuo account </li>\n"
+"                <li>I dati del bambino che sta partecipando</li>\n"
+"                <li>I tuoi dati demografici</i>\n"
+"                <li>I dati di questa particolare sessione di studio</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:61
 msgid ""
 "Your email address is not shared directly with the research group, although "
 "they can contact you via Lookit in accordance with your contact preferences."
 msgstr ""
+"Il tuo indirizzo e-mail non viene condiviso direttamente con il gruppo di "
+"ricerca, anche se possono contattarti tramite Lookit in base alle tue "
+"preferenze di contatto."
 
 #: web/templates/flatpages/privacy.html:63
 msgid ""
@@ -1988,6 +2334,11 @@ msgid ""
 "participant birthdates (or information that\n"
 "                could be used to calculate birthdates)."
 msgstr ""
+"I ricercatori possono pubblicare i risultati di uno studio, comprese le "
+"risposte individuali. Tuttavia, anche se\n"
+"                possono pubblicare le età dei partecipanti, non possono "
+"pubblicare le date di nascita (o informazioni che\n"
+"                potrebbero essere utilizzate per calcolarle)."
 
 #: web/templates/flatpages/privacy.html:67
 msgid ""
@@ -2004,6 +2355,19 @@ msgid ""
 "                researchers must also agree not to do so in order to use "
 "Lookit."
 msgstr ""
+"Noi e/o i ricercatori responsabili di uno studio potremmo condividere il "
+"video della partecipazione della tua famiglia a\n"
+"                scopi scientifici, educativi e/o pubblicitari, ma solo se si "
+"sceglie alla conclusione di uno studio\n"
+"                di consentire tale utilizzo. I ricercatori possono anche "
+"condividere il tuo video e altri dati con Databrary, se decidi di dare tale "
+"consenso\n"
+"                alla conclusione dello studio. Non pubblichiamo video dei "
+"partecipanti in modo tale che possano essere\n"
+"                collegati a dati demografici individuali (ad es. reddito "
+"familiare o numero di genitori/tutori), e anche\n"
+"                i ricercatori devono accettare di non farlo per utilizzare "
+"Lookit."
 
 #: web/templates/flatpages/privacy.html:74
 msgid ""
@@ -2013,17 +2377,25 @@ msgid ""
 "Researchers must also agree not to disclose\n"
 "                your contact information in order to use Lookit."
 msgstr ""
+"Non condividiamo, vendiamo, pubblichiamo o divulghiamo in altro modo le tue "
+"informazioni di contatto (email e/o\n"
+"                indirizzo di posta) a chiunque fatta eccezione per i "
+"ricercatori coinvolti in uno studio. Anche i ricercatori devono accettare di "
+"non divulgare\n"
+"                le tue informazioni di contatto per utilizzare Lookit."
 
 #: web/templates/flatpages/privacy.html:78
 #: web/templates/flatpages/privacy.html:152
 msgid "How we use your personal information"
-msgstr ""
+msgstr "Come utilizziamo le tue informazioni personali"
 
 #: web/templates/flatpages/privacy.html:80
 msgid ""
 "We may use your personal information (account, child, demographic, and study "
 "data) for a variety of purposes, including to:"
 msgstr ""
+"Potremmo utilizzare le tue informazioni personali (account, figli, dati "
+"demografici e di studio) per una varietà di scopi, tra cui:"
 
 #: web/templates/flatpages/privacy.html:81
 msgid ""
@@ -2055,6 +2427,33 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+"<ul>\n"
+"                <li>Fornirti gli studi di ricerca a cui ti sei iscritto e "
+"informazioni sugli studi per i quali i tuoi bambini sono idonei</li>\n"
+"                <li>Inviarti informazioni sugli studi che potrebbero "
+"interessarti, promemoria per partecipare a \n"
+"                    studi con più parti e/o risultati di studi a cui hai "
+"partecipato, secondo le tue preferenze di contatto\n"
+"                </li>\n"
+"                <li>Migliorare la piattaforma Lookit: ad esempio, rilevare e "
+"risolvere problemi tecnici o identificare nuove funzionalità che\n"
+"                    potrebbero essere utili</li>\n"
+"                <li>Sviluppare strumenti di analisi dei dati per i "
+"ricercatori di Lookit</li>\n"
+"                <li>Fornire supporto tecnico ai ricercatori dello studio</"
+"li>\n"
+"                <li>Valutare la qualità dei dati raccolti sulla piattaforma "
+"(ad esempio, quanto bene un osservatore può dire verso quale\n"
+"                    direzione stiano guardando i bambini)</li>\n"
+"                <li>Valutare il reclutamento e gli sforzi di coinvolgimento "
+"della famiglia (ad esempio, guardare quanti partecipanti provengono dalle "
+"zone rurali\n"
+"                    vs. aree urbane)</li>\n"
+"                <li>Reclutare partecipanti o ricercatori per utilizzare "
+"Lookit (ad esempio, condividendo un breve video clip di tuo figlio\n"
+"                    che si diverte - SOLO se hai scelto di consentire l'uso "
+"del video per scopi pubblicitari)</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:100
 msgid ""
@@ -2068,12 +2467,24 @@ msgid ""
 "up online session for an in-person study –\n"
 "                they must tell you that in the study consent form."
 msgstr ""
+"I ricercatori utilizzano i dati raccolti nei loro studi per affrontare "
+"particolari domande di ricerca. Potrebbe anche\n"
+"                risultare che i dati raccolti per uno studio possano aiutare "
+"a rispondere a una domanda correlata in un secondo momento. Se\n"
+"                i ricercatori stanno utilizzando tutte le informazioni "
+"aggiuntive su di te nel loro studio, oltre a quelle raccolte\n"
+"                su LookIt, ad esempio, se stai partecipando a una sessione "
+"online di follow-up per uno studio in presenza -\n"
+"                sono tenuti a comunicartelo nel modulo di consenso allo "
+"studio."
 
 #: web/templates/flatpages/privacy.html:106
 msgid ""
 "There are some basic rules about how personal information may be used that "
 "all Lookit researchers agree to, including:"
 msgstr ""
+"Ci sono alcune regole di base su come possono essere utilizzate le "
+"informazioni personali che tutti i ricercatori di Lookit accettano, tra cui:"
 
 #: web/templates/flatpages/privacy.html:107
 msgid ""
@@ -2087,6 +2498,14 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+"\n"
+"          <ul>\n"
+"                <li>Non possono utilizzare nomi utente, soprannomi dei "
+"bambini o informazioni di contatto come oggetto di ricerca.</li>\n"
+"                <li>Possono contattare le famiglie solo per posta ordinaria "
+"per inviare un compenso per la partecipazione allo studio\n"
+"                    o materiali necessari per la partecipazione.</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:114
 #: web/templates/flatpages/privacy.html:163
@@ -2097,14 +2516,39 @@ msgid ""
 "you to stop processing your personal\n"
 "                information (subject to our legal obligations)."
 msgstr ""
+"In caso di dubbi su uno qualsiasi di questi scopi o su come comunichiamo con "
+"te, contattaci all'indirizzo\n"
+"                dataprotection@mit.edu. Rispetteremo sempre la tua richiesta "
+"di interrompere l'elaborazione dei tuoi dati personali\n"
+"                (soggetti ai nostri obblighi legali)."
 
 #: web/templates/flatpages/privacy.html:118
 #: web/templates/flatpages/privacy.html:171
 msgid "How your information is stored and secured"
-msgstr ""
+msgstr "Come vengono archiviate e protette le tue informazioni"
 
 #: web/templates/flatpages/privacy.html:120
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "We have implemented industry-standard security safeguards designed to "
+#| "protect the personal information\n"
+#| "                that you may provide. We also periodically monitor our "
+#| "system for possible vulnerabilities and attacks,\n"
+#| "                consistent with industry standards. Only authenticated "
+#| "users with specific permissions may access the\n"
+#| "                data. All data is transmitted via a secure https "
+#| "connection, and all video data is encrypted at rest on\n"
+#| "                the storage systems used by Lookit to provide data to "
+#| "researchers. Researchers are responsible for their\n"
+#| "                own secure storage of data once they obtain it from "
+#| "Lookit. You should be aware, however, that since the\n"
+#| "                internet is not a 100%% secure environment, there’s no "
+#| "guarantee that information may not be accessed,\n"
+#| "                disclosed, altered, or destroyed by breach of any of our "
+#| "physical, technical, or managerial safeguards.\n"
+#| "                It's your responsibility to protect the security of your "
+#| "account details, including your username and\n"
+#| "                password."
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
 "protect the personal information\n"
@@ -2126,11 +2570,30 @@ msgid ""
 "account details, including your username and\n"
 "                password."
 msgstr ""
+"Abbiamo implementato misure di sicurezza standard del settore progettate per "
+"proteggere le informazioni personali\n"
+"                che potresti fornire. Inoltre, monitoriamo periodicamente il "
+"nostro sistema per possibili vulnerabilità e attacchi,\n"
+"                coerentemente agli standard del settore. Solo gli utenti "
+"autenticati con autorizzazioni specifiche possono accedere ai\n"
+"                dati. Tutti i dati vengono trasmessi tramite una connessione "
+"https protetta e tutti i dati video vengono crittografati quando sono "
+"inattivi\n"
+"                i sistemi di archiviazione utilizzati da Lookit per fornire "
+"dati ai ricercatori. I ricercatori sono responsabili della memorizzazione "
+"sicura dei dati in loro possesso ottenuti da Lookit. Dovresti essere "
+"consapevole, tuttavia, che dal momento che Internet non è un ambiente sicuro "
+"al 100%, non vi è alcuna garanzia che non sia possibile accedere,\n"
+"                divulgare, alterare o distruggere le informazioni violando "
+"una delle nostre garanzie fisiche, tecniche o gestionali.\n"
+"                È tua responsabilità proteggere la sicurezza dei dettagli "
+"del tuo account, inclusi nome utente e\n"
+"                password."
 
 #: web/templates/flatpages/privacy.html:131
 #: web/templates/flatpages/privacy.html:182
 msgid "How long we keep your personal information"
-msgstr ""
+msgstr "Per quanto tempo conserviamo le tue informazioni personali"
 
 #: web/templates/flatpages/privacy.html:133
 msgid ""
@@ -2147,6 +2610,19 @@ msgid ""
 "                dataset and removing your data could affect already "
 "published findings."
 msgstr ""
+"Riteniamo che il nostro rapporto con la nostra comunità di ricerca duri "
+"tutta la vita. Ciò significa che manterremo\n"
+"                un registro per te fino al momento in cui ci dirai che non "
+"desideri più rimanere in contatto con noi. Se desideri\n"
+"                rimuovere il tuo account, conserveremo una serie ristretta "
+"di informazioni fondamentali su di te per adempiere a compiti di livello "
+"amministrativo e agli obblighi legali. Se hai partecipato a studi Lookit, le "
+"informazioni personali\n"
+"                già condivise con quei ricercatori non potranno generalmente "
+"essere 'ritirate', in quanto facenti parte di un set di dati di una ricerca "
+"scientifica\n"
+"                 e la rimozione dei dati potrebbe influire sui risultati già "
+"pubblicati."
 
 #: web/templates/flatpages/privacy.html:144
 msgid ""
@@ -2155,6 +2631,10 @@ msgid ""
 "                including name, title, business addresses, phone numbers, "
 "and email addresses."
 msgstr ""
+"Potremmo raccogliere informazioni biografiche/di contatto di base su di te e "
+"sulla tua organizzazione rappresentativa,\n"
+"                inclusi nome, titolo, indirizzi aziendali, numeri di "
+"telefono e indirizzi e-mail."
 
 #: web/templates/flatpages/privacy.html:149
 msgid ""
@@ -2163,6 +2643,10 @@ msgid ""
 "                to use Lookit, updating your profile, or creating or editing "
 "a study."
 msgstr ""
+"Le informazioni che raccogliamo e conserviamo su di te sono quelle che ci "
+"hai fornito al momento della registrazione\n"
+"                per utilizzare Lookit, per aggiornare il tuo profilo, creare "
+"o modificare uno studio."
 
 #: web/templates/flatpages/privacy.html:154
 msgid ""
@@ -2170,6 +2654,9 @@ msgid ""
 "including the performance of contractual obligations. Specifically, we use "
 "your personal information to:"
 msgstr ""
+"Utilizziamo le tue informazioni personali per una serie di scopi legittimi, "
+"incluso l'adempimento degli obblighi contrattuali. In particolare, "
+"utilizziamo le tue informazioni personali per:"
 
 #: web/templates/flatpages/privacy.html:155
 msgid ""
@@ -2184,10 +2671,19 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+"<ul>\n"
+"                <li>Fornirti i servizi di ricerca per i quali ti sei "
+"iscritto.</li>\n"
+"                <li>Eseguire attività amministrative e per scopi di "
+"conservazione dei registri interni.</li>\n"
+"                <li>Creare e analizzare informazioni aggregate "
+"(completamente anonime) sui nostri utenti a fini statistici\n"
+"                    di ricerca a sostegno della nostra missione.</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:169
 msgid "We do not share your personal information with any third parties."
-msgstr ""
+msgstr "Non condividiamo le tue informazioni personali con terze parti."
 
 #: web/templates/flatpages/privacy.html:173
 #, python-format
@@ -2208,6 +2704,21 @@ msgid ""
 "of your account details, including your\n"
 "                username and password."
 msgstr ""
+"Abbiamo implementato misure di sicurezza standard del settore progettate per "
+"proteggere le informazioni personali\n"
+"                che potresti fornire. Inoltre, monitoriamo periodicamente il "
+"nostro sistema per possibili vulnerabilità e attacchi,\n"
+"                coerentemente agli standard del settore. Solo gli utenti "
+"autenticati con autorizzazioni specifiche possono accedere ai\n"
+"                dati. Tutti i dati vengono trasmessi tramite una connessione "
+"https protetta. Dovresti essere consapevole, tuttavia, che dal momento che "
+"Internet non è un ambiente sicuro al 100%%, non vi è alcuna garanzia che non "
+"sia possibile accedere,\n"
+"                divulgare, alterare o distruggere le informazioni violando "
+"una delle nostre garanzie fisiche, tecniche o gestionali.\n"
+"                È tua responsabilità proteggere la sicurezza dei dettagli "
+"del tuo account, inclusi nome utente e\n"
+"                password."
 
 #: web/templates/flatpages/privacy.html:184
 msgid ""
@@ -2219,14 +2730,20 @@ msgid ""
 "of information about you to fulfill\n"
 "                administrative tasks and legal obligations."
 msgstr ""
+"Riteniamo che il nostro rapporto con la nostra comunità di ricerca duri "
+"tutta la vita. Ciò significa che manterremo un registro per te fino al "
+"momento in cui ci dirai che non desideri più rimanere in contatto con noi. "
+"Se non desideri più ricevere informazioni da LookIt, conserveremo una serie "
+"ristretta di informazioni fondamentali su di te per adempiere a compiti di "
+"livello amministrativo e obblighi legali."
 
 #: web/templates/flatpages/privacy.html:189
 msgid "For everyone"
-msgstr ""
+msgstr "Per tutti"
 
 #: web/templates/flatpages/privacy.html:191
 msgid "Rights for individuals in the European Economic Area"
-msgstr ""
+msgstr "Diritti degli individui nello Spazio economico europeo"
 
 #: web/templates/flatpages/privacy.html:192
 msgid ""
@@ -2240,6 +2757,15 @@ msgid ""
 "lodge complaints with your national or\n"
 "                regional data protection authority."
 msgstr ""
+"Hai il diritto in determinate circostanze di (1) accedere alle tue "
+"informazioni personali; (2) correggere o\n"
+"                cancellare le informazioni; (3) limitare l'elaborazione; e "
+"(4) opporti a comunicazioni, marketing diretto o\n"
+"                profilazione. Nella misura applicabile, il regolamento "
+"generale sulla protezione dei dati dell'UE fornisce ulteriori informazioni\n"
+"                sui tuoi diritti. Hai anche il diritto a presentare reclami "
+"alla tua\n"
+"                autorità nazionale o regionale per la protezione dei dati."
 
 #: web/templates/flatpages/privacy.html:198
 msgid ""
@@ -2259,6 +2785,22 @@ msgid ""
 "defending against or exercising our rights with\n"
 "                respect to such claim."
 msgstr ""
+"Se siete inclini ad esercitare questi diritti, vi chiediamo l'opportunità di "
+"discutere con voi qualsiasi preoccupazione\n"
+"                che potreste avere. Per proteggere le informazioni personali "
+"in nostro possesso, possiamo anche richiedere ulteriori informazioni per\n"
+"                verificare la vostra identità quando esercitate questi "
+"diritti. In caso di richiesta di cancellazione delle informazioni, "
+"manterremo\n"
+"                un nucleo di dati personali per assicurarci di non "
+"contattarla inavvertitamente in futuro, così come qualsiasi\n"
+"                informazione necessaria a fini di archiviazione. Potremmo "
+"anche aver bisogno di conservare alcune informazioni finanziarie per\n"
+"                scopi legali, compresa la conformità con l'IRS degli Stati "
+"Uniti. Nel caso di un reclamo legale effettivo o minacciato, potremmo\n"
+"                conservare le informazioni dell'utente al fine di stabilire, "
+"difendere o esercitare i nostri diritti\n"
+"                rispetto a tale rivendicazione."
 
 #: web/templates/flatpages/privacy.html:207
 msgid ""
@@ -2270,18 +2812,24 @@ msgid ""
 "level of protection as the data and privacy\n"
 "                laws and regulations of the EEA."
 msgstr ""
+"Fornendo informazioni direttamente a Lookit, acconsenti al trasferimento dei "
+"tuoi dati personali\n"
+"                al di fuori dello Spazio Economico Europeo verso gli Stati "
+"Uniti. Sei consapevole che le attuali leggi e regolamenti\n"
+"                degli Stati Uniti potrebbero non fornire lo stesso livello "
+"di protezione dei dati e della privacy\n"
+"               delle leggi e regolamenti del SEE."
 
 #: web/templates/flatpages/privacy.html:212
 msgid ""
 "You are under no statutory or contractual obligation to provide any personal "
 "data to us."
 msgstr ""
+"Non hai alcun obbligo legale o contrattuale di fornirci dati personali."
 
 #: web/templates/flatpages/privacy.html:214
-#, fuzzy
-#| msgid "Additional Info"
 msgid "Additional Information"
-msgstr "Informazioni addizionali"
+msgstr "Informazioni aggiuntive"
 
 #: web/templates/flatpages/privacy.html:216
 msgid ""
@@ -2290,30 +2838,38 @@ msgid ""
 "                treat your personal information we will make this clear on "
 "our website or by contacting you directly."
 msgstr ""
+"Possiamo modificare questa dichiarazione sulla privacy di tanto in tanto. Se "
+"apportiamo cambiamenti significativi nel modo in cui\n"
+"                trattiamo le tue informazioni personali lo renderemo chiaro "
+"sul nostro sito web o contattandoti direttamente."
 
 #: web/templates/flatpages/privacy.html:220
 msgid ""
 "The controller for your personal information is MIT. We can be contacted at "
 "dataprotection@mit.edu."
 msgstr ""
+"Il responsabile del trattamento dei tuoi dati personali è il MIT. Possiamo "
+"essere contattati all'indirizzo dataprotection@mit.edu."
 
 #: web/templates/flatpages/privacy.html:222
 msgid "This policy was last updated in June 2018."
-msgstr ""
+msgstr "Questa policy è stata aggiornata l'ultima volta nel giugno 2018."
 
 #: web/templates/flatpages/scientists.html:27
 msgid "Meet the Lookit team"
-msgstr ""
+msgstr "Incontra il team di Lookit"
 
 #: web/templates/flatpages/scientists.html:33
 msgid "Core Team"
-msgstr ""
+msgstr "Squadra principale"
 
 #: web/templates/flatpages/scientists.html:38
 msgid ""
 "Rico is Lookit's lead software engineer, working on planning and adding "
 "features for both participants and researchers."
 msgstr ""
+"Rico è l'ingegnere capo del software di Lookit e lavora alla pianificazione "
+"e all'aggiunta di funzionalità sia per i partecipanti che per i ricercatori"
 
 #: web/templates/flatpages/scientists.html:43
 msgid ""
@@ -2321,6 +2877,9 @@ msgid ""
 "about how children arrive at a common-sense understanding of the physical "
 "and social world through exploration and instruction."
 msgstr ""
+"Laura è il PI dell' Early Childhood Cognition Lab. Conduce ricerche su come "
+"i bambini arrivano a una comprensione di senso comune del mondo fisico e "
+"sociale attraverso l'esplorazione e l'istruzione."
 
 #: web/templates/flatpages/scientists.html:49
 msgid ""
@@ -2328,16 +2887,21 @@ msgid ""
 "research scientist in the Early Childhood Cognition Lab. Her three children "
 "frequently provide feedback on studies."
 msgstr ""
+"Kim ha iniziato a lavorare con Lookit da studentessa e ora gestisce il "
+"progetto come ricercatrice all'Early Childhood Cognition Lab. I suoi tre "
+"figli forniscono spesso un feedback sugli studi."
 
 #: web/templates/flatpages/scientists.html:54
 msgid ""
 "Mark organizes the Lookit Working Groups, which are groups of researchers "
 "working to improve Lookit in a variety of ways."
 msgstr ""
+"Mark organizza i gruppi di lavoro di Lookit che sono gruppi di ricercatori "
+"che lavorano per migliorare la piattaforma in diversi modi."
 
 #: web/templates/flatpages/scientists.html:58
 msgid "Alumni &amp; Collaborators"
-msgstr ""
+msgstr "Alumni &amp; Collaboratori"
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
@@ -2346,21 +2910,18 @@ msgstr "Ti sei disconnesso con successo."
 #: web/templates/registration/login.html:8
 #: web/templates/web/studies-history.html:9
 #: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
-#, fuzzy
-#| msgid "Your username and password didn't match. Please try again."
 msgid "Your login credentials didn't work. Please try again."
-msgstr ""
-"Il tuo nome utente e la tua password non corrispondevano. Per favore riprova."
+msgstr "Le tue credenziali di accesso non funzionano. Si prega di riprovare."
 
 #: web/templates/registration/login.html:18
 #: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:50
+#: web/templates/web/_navigation.html:45
 msgid "Login"
 msgstr "Accesso"
 
 #: web/templates/registration/login.html:34
 msgid "Forgot password?"
-msgstr "Ha dimenticato la password?"
+msgstr "Hai dimenticato la password?"
 
 #: web/templates/registration/login.html:36
 msgid "New to Lookit?"
@@ -2368,7 +2929,7 @@ msgstr "Nuovo su Lookit?"
 
 #: web/templates/registration/login.html:36
 msgid "Register your family!"
-msgstr ""
+msgstr "Registra la tua famiglia!"
 
 #: web/templates/registration/password_change_done.html:11
 msgid "Password changed"
@@ -2388,12 +2949,12 @@ msgstr "Cambia la password"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Log out"
-msgstr "Disconnettersi"
+msgstr "Disconnettiti"
 
 #: web/templates/registration/password_change_form.html:7
 #: web/templates/web/home.html:3 web/templates/web/home.html:7
 msgid "Home"
-msgstr "Casa"
+msgstr "Home"
 
 #: web/templates/registration/password_change_form.html:8
 msgid "Password change"
@@ -2413,8 +2974,8 @@ msgid ""
 "password twice so we can verify you typed it in correctly."
 msgstr ""
 "Inserisci la tua vecchia password, per motivi di sicurezza, quindi inserisci "
-"la nuova password due volte in modo che possiamo verificare di averla "
-"digitata correttamente."
+"la nuova password due volte in modo da verificare di averla digitata "
+"correttamente."
 
 #: web/templates/registration/password_change_form.html:54
 #: web/templates/registration/password_reset_confirm.html:31
@@ -2442,8 +3003,8 @@ msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Inserisci la tua nuova password due volte in modo che possiamo verificare di "
-"averla digitata correttamente."
+"Inserisci la tua nuova password due volte in modo da verificare di averla "
+"digitata correttamente."
 
 #: web/templates/registration/password_reset_confirm.html:23
 msgid "New password:"
@@ -2463,48 +3024,36 @@ msgstr ""
 "password."
 
 #: web/templates/registration/password_reset_done.html:11
-#, fuzzy
-#| msgid "Password reset complete"
 msgid "Password reset link sent"
-msgstr "Reimpostazione della password completata"
+msgstr "Ti abbiamo inviato il link per reimpostare la password"
 
 #: web/templates/registration/password_reset_done.html:15
-#, fuzzy
-#| msgid ""
-#| "We've emailed you instructions for setting your password, if an account "
-#| "exists with the email you entered. You should receive them shortly."
 msgid ""
 "If an account exists with the email you entered, we've emailed instructions "
 "for resetting your password and you should receive them shortly."
 msgstr ""
-"Ti abbiamo inviato un'email con le istruzioni per impostare la tua password, "
-"se esiste un account con l'email che hai inserito. Dovresti riceverli a "
+"Se esiste un account con l'email che hai inserito, ti abbiamo inviato per "
+"email le istruzioni per reimpostare la tua password e dovresti riceverle a "
 "breve."
 
 #: web/templates/registration/password_reset_done.html:17
-#, fuzzy
-#| msgid ""
-#| "If you don't receive an email, please make sure you've entered the "
-#| "address you registered with, and check your spam folder."
 msgid ""
 "If you don't receive an email, please check your spam folder and make sure "
 "you've entered the address you registered with. (You won't get an email "
 "unless there's already an account for that email address!)"
 msgstr ""
-"Se non ricevi un'email, assicurati di aver inserito l'indirizzo con cui ti "
-"sei registrato e controlla la cartella dello spam."
+"Se non ricevi un'email, controlla la tua cartella spam e assicurati di aver "
+"inserito l'indirizzo con cui ti sei registrato. (Non riceverai un'email se "
+"non c'è già un account per quell'indirizzo email!)"
 
 #: web/templates/registration/password_reset_email.html:2
-#, fuzzy, python-format
-#| msgid ""
-#| "You're receiving this email because you requested a password reset for "
-#| "your user account at %(site_name)s."
+#, python-format
 msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at %(site_name)s."
 msgstr ""
 "Hai ricevuto questa email perché hai richiesto una reimpostazione della "
-"password per il tuo account utente su% (site_name) s."
+"password per il tuo account utente su %(site_name)s."
 
 #: web/templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
@@ -2512,23 +3061,20 @@ msgstr "Vai alla pagina seguente e scegli una nuova password:"
 
 #: web/templates/registration/password_reset_email.html:8
 msgid "Your username, in case you've forgotten:"
-msgstr "Il tuo nome utente, nel caso l'hai dimenticato:"
+msgstr "Il tuo nome utente, nel caso l'avessi dimenticato:"
 
 #: web/templates/registration/password_reset_email.html:10
 msgid "Thanks for using our site!"
 msgstr "Grazie per aver utilizzato il nostro sito!"
 
 #: web/templates/registration/password_reset_email.html:12
-#, fuzzy, python-format
-#| msgid "The %(site_name)s team"
+#, python-format
 msgid "The %(site_name)s team"
-msgstr "Il team di% (site_name) s"
+msgstr "Il team di %(site_name)s"
 
 #: web/templates/registration/password_reset_form.html:11
-#, fuzzy
-#| msgid "Password reset complete"
 msgid "Password reset"
-msgstr "Reimpostazione della password completata"
+msgstr "Ripristino della password"
 
 #: web/templates/registration/password_reset_form.html:15
 msgid ""
@@ -2536,7 +3082,7 @@ msgid ""
 "instructions for setting a new one."
 msgstr ""
 "Hai dimenticato la tua password? Inserisci il tuo indirizzo email di seguito "
-"e ti invieremo un'email con le istruzioni per impostarne uno nuovo."
+"e ti invieremo un'email con le istruzioni per impostarne una nuova."
 
 #: web/templates/registration/password_reset_form.html:21
 msgid "Email address:"
@@ -2546,35 +3092,35 @@ msgstr "Indirizzo email:"
 msgid "Reset my password"
 msgstr "Reimposta la mia password"
 
-#: web/templates/web/_navigation.html:22
+#: web/templates/web/_navigation.html:17
 msgid "Experimenter"
 msgstr "Sperimentatore"
 
-#: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
+#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
 msgid "Studies"
 msgstr "Studi"
 
-#: web/templates/web/_navigation.html:34
+#: web/templates/web/_navigation.html:29
 msgid "FAQ"
 msgstr "FAQ"
 
-#: web/templates/web/_navigation.html:35
+#: web/templates/web/_navigation.html:30
 msgid "The Scientists"
 msgstr "Gli scienziati"
 
-#: web/templates/web/_navigation.html:36
+#: web/templates/web/_navigation.html:31
 msgid "Resources"
 msgstr "Risorse"
 
-#: web/templates/web/_navigation.html:45
+#: web/templates/web/_navigation.html:40
 msgid "Hi"
 msgstr "Ciao"
 
-#: web/templates/web/_navigation.html:47
+#: web/templates/web/_navigation.html:42
 msgid "Logout"
-msgstr "Disconnettersi"
+msgstr "Disconnettiti"
 
-#: web/templates/web/_navigation.html:49
+#: web/templates/web/_navigation.html:44
 msgid "Sign up"
 msgstr "Iscriviti"
 
@@ -2584,14 +3130,12 @@ msgid "Child"
 msgstr "Bambino"
 
 #: web/templates/web/child-update.html:26
-#, fuzzy
-#| msgid "Back to list"
 msgid "Back to Children List"
-msgstr "Torna alla lista"
+msgstr "Torna alla lista dei bambini"
 
 #: web/templates/web/child-update.html:31
 msgid "Update"
-msgstr "Aggiornare"
+msgstr "Aggiorna"
 
 #: web/templates/web/child-update.html:41
 msgid "Delete"
@@ -2680,37 +3224,34 @@ msgid ""
 "publicity purposes, your demographic information is never published in "
 "conjunction with your video."
 msgstr ""
-"Anche se acconsenti alla pubblicazione dei tuoi video di studio per scopi "
-"scientifici o pubblicitari, le tue informazioni demografiche non vengono mai "
-"pubblicate insieme al tuo video."
+"Anche se acconsenti alla pubblicazione dei tuoi video per scopi scientifici "
+"o pubblicitari, le tue informazioni demografiche non verranno mai pubblicate "
+"insieme al tuo video."
 
 #: web/templates/web/participant-email-preferences.html:27
 msgid "I would like to be contacted when:"
 msgstr "Vorrei essere contattato quando:"
 
 #: web/templates/web/participant-signup.html:18
-#, fuzzy
-#| msgid "Participant account"
 msgid "Create Participant Account"
-msgstr "Account partecipante"
+msgstr "Creare un'account per partecipare"
 
 #: web/templates/web/participant-signup.html:22
 msgid "Create a family account to start participating in Lookit studies!"
 msgstr ""
+"Crea un account familiare per iniziare a partecipare agli studi di Lookit!"
 
 #: web/templates/web/participant-signup.html:23
 msgid "To register as a researcher, please use"
-msgstr ""
+msgstr "Per registrarsi come ricercatore, si prega di utilizzare"
 
 #: web/templates/web/participant-signup.html:23
 msgid "this form"
-msgstr ""
+msgstr "questo modulo"
 
 #: web/templates/web/participant-signup.html:23
-#, fuzzy
-#| msgid "instead?"
 msgid "instead"
-msgstr "anziché?"
+msgstr "invece"
 
 #: web/templates/web/participant-signup.html:28
 msgid ""
@@ -2738,7 +3279,7 @@ msgid ""
 "an account that has access."
 msgstr ""
 "Il tuo account non ha accesso a questa pagina. Per procedere, effettua il "
-"login con un account che ha accesso."
+"login con un account autorizzato."
 
 #: web/templates/web/studies-history.html:18
 #: web/templates/web/studies-list.html:18
@@ -2748,7 +3289,7 @@ msgstr "Effettua il login per vedere questa pagina."
 #: web/templates/web/studies-history.html:34
 #: web/templates/web/studies-list.html:38
 msgid "Current studies"
-msgstr "Studi attuali"
+msgstr "Studi disponibili"
 
 #: web/templates/web/studies-history.html:37
 #: web/templates/web/studies-list.html:41
@@ -2763,15 +3304,15 @@ msgstr ""
 
 #: web/templates/web/studies-history.html:67
 msgid "Study Thumbnail"
-msgstr "Miniatura dello studio"
+msgstr "Anteprima dello studio"
 
 #: web/templates/web/studies-history.html:79
 msgid "Eligibility:"
-msgstr "Eleggibilità:"
+msgstr "Idoneaità:"
 
 #: web/templates/web/studies-history.html:80
 msgid "Contact:"
-msgstr "Contatto:"
+msgstr "Contatta:"
 
 #: web/templates/web/studies-history.html:81
 msgid "Still collecting data?"
@@ -2787,7 +3328,7 @@ msgstr "No"
 
 #: web/templates/web/studies-history.html:82
 msgid "Compensation: "
-msgstr "Compensazione: "
+msgstr "Compenso: "
 
 #: web/templates/web/studies-history.html:87
 msgid "Study Responses"
@@ -2795,7 +3336,7 @@ msgstr "Risposte dello studio"
 
 #: web/templates/web/studies-history.html:107
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: web/templates/web/studies-history.html:118
 msgid "Date"
@@ -2845,11 +3386,11 @@ msgstr ""
 
 #: web/templates/web/studies-history.html:133
 msgid "Feedback"
-msgstr ""
+msgstr "Feedback"
 
 #: web/templates/web/studies-history.html:139
 msgid "None"
-msgstr ""
+msgstr "Nessuno"
 
 #: web/templates/web/studies-history.html:154
 msgid "You have not yet participated in any studies."
@@ -2857,7 +3398,7 @@ msgstr "Non hai ancora partecipato a nessuno studio."
 
 #: web/templates/web/studies-list.html:32
 msgid "Current Studies"
-msgstr "Studi attuali"
+msgstr "Studi disponibili"
 
 #: web/templates/web/studies-list.html:53
 msgid ""
@@ -2883,21 +3424,20 @@ msgid ""
 msgstr ""
 "Cerchi altri modi per contribuire alla ricerca da casa? Dai un'occhiata a <a "
 "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-"\"noreferrer noopener\"> Children Helping Science </a> per ulteriori studi!"
+"\"noreferrer noopener\">Children Helping Science</a>Children Helping Science "
+"</a> per ulteriori studi!"
 
 #: web/templates/web/study-detail.html:53
-#, fuzzy
-#| msgid " days"
 msgid "days"
-msgstr " giorni"
+msgstr "giorni"
 
 #: web/templates/web/study-detail.html:53
 msgid " until "
-msgstr ""
+msgstr " fino a "
 
 #: web/templates/web/study-detail.html:53
 msgid " when "
-msgstr ""
+msgstr " quando "
 
 #: web/templates/web/study-detail.html:93
 msgid "Study overview"
@@ -2917,7 +3457,7 @@ msgstr "Durata"
 
 #: web/templates/web/study-detail.html:121
 msgid "Compensation"
-msgstr "Compensazione"
+msgstr "Compenso"
 
 #: web/templates/web/study-detail.html:126
 msgid "What happens"
@@ -2940,28 +3480,22 @@ msgid "Log in to participate"
 msgstr "Accedi per partecipare"
 
 #: web/templates/web/study-detail.html:142
-#, fuzzy
-#| msgid "No child profiles registered!"
 msgid "Add child profile to "
-msgstr "Nessun profilo bambino registrato!"
+msgstr "Aggiungi il profilo del bambino a "
 
 #: web/templates/web/study-detail.html:142
 #: web/templates/web/study-detail.html:144
 msgid "preview"
-msgstr ""
+msgstr "anteprima"
 
 #: web/templates/web/study-detail.html:142
 #: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Participate"
 msgid "participate"
-msgstr "Partecipare"
+msgstr "partecipa"
 
 #: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Demographic Survey"
 msgid "Complete demographic survey to "
-msgstr "Indagine demografica"
+msgstr "Completa il sondaggio demografico a "
 
 #: web/templates/web/study-detail.html:148
 msgid "Select a child:"
@@ -2977,10 +3511,9 @@ msgid ""
 "If you can wait <span id='wait-until'>until</span> he or she is old enough, "
 "we'll be able to use the collected data in our research!"
 msgstr ""
-"Suo figlio è ancora più giovane della fascia di età raccomandata per questo "
-"studio. Se puoi aspettare <span id = 'wait-until'> finché </span> non sarà "
-"abbastanza grande, saremo in grado di utilizzare i dati raccolti nella "
-"nostra ricerca!"
+"Suo figlio è più giovane della fascia di età raccomandata per questo studio. "
+"Se puoi aspettare <span id='wait-until'>until</span> sarà abbastanza grande "
+"e saremo in grado di utilizzare i dati raccolti nella nostra ricerca!"
 
 #: web/templates/web/study-detail.html:162
 msgid ""
@@ -3013,47 +3546,39 @@ msgstr "Partecipare"
 
 #: web/templates/web/study-detail.html:167
 msgid "now"
-msgstr ""
+msgstr "adesso"
 
 #: web/templates/web/study-detail.html:168
 msgid ""
 "For an easy way to see what happens as you update your study protocol, "
 "bookmark the URL the button above sends you to."
 msgstr ""
-"Per un modo semplice per vedere cosa succede mentre aggiorni il protocollo "
-"di studio, aggiungi ai segnalibri l'URL a cui ti invia il pulsante sopra."
+"Per visualizzare facilmente cosa succede mentre aggiorni il protocollo di "
+"studio, aggiungi ai segnalibri l'URL a cui ti invia il pulsante sopra."
 
 #: web/views.py:63
-#, fuzzy
-#| msgid "Participant account"
 msgid "Participant created."
-msgstr "Account partecipante"
+msgstr "Partecipante creato."
 
 #: web/views.py:88
-#, fuzzy
-#| msgid "Demographic Survey"
 msgid "Demographic data saved."
-msgstr "Indagine demografica"
+msgstr "Dati demografici salvati."
 
 #: web/views.py:156
-#, fuzzy
-#| msgid "Children"
 msgid "Child added."
-msgstr "Bambini"
+msgstr "Bambino aggiunto."
 
 #: web/views.py:192
 msgid "Child deleted."
-msgstr ""
+msgstr "Bambino eliminato."
 
 #: web/views.py:194
 msgid "Child updated."
-msgstr ""
+msgstr "Bambino aggiornato."
 
 #: web/views.py:217
-#, fuzzy
-#| msgid "Email Preferences"
 msgid "Email preferences saved."
-msgstr "preferenze email"
+msgstr "Preferenze email salvate."
 
 #: web/views.py:311
 #, python-brace-format
@@ -3062,89 +3587,6 @@ msgid ""
 "either completed or paused. If you think this is an error, please contact "
 "{study.contact_info}"
 msgstr ""
-
-#, fuzzy
-#~| msgid "Birthday"
-#~ msgid "Birthday test"
-#~ msgstr "Data di nascita"
-
-#, fuzzy
-#~| msgid "Birthday"
-#~ msgid "Birthday test2"
-#~ msgstr "Data di nascita"
-
-#~ msgid "Login Unsuccessful"
-#~ msgstr "Accesso non riuscito"
-
-#~ msgid ""
-#~ "A Lookit study participant exists with the email address for your OSF "
-#~ "user account. Create an OSF user with a different email address and try "
-#~ "logging into Experimenter with that. "
-#~ msgstr ""
-#~ "Esiste già un partecipante allo studio Lookit con l'indirizzo e-mail del "
-#~ "tuo account utente OSF. Crea un utente OSF con un indirizzo email diverso "
-#~ "e prova ad accedere a Experimenter con quello. "
-
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href="
-#~ msgstr ""
-#~ "Se ciò non si sarebbe dovuto verificare e il problema persiste, segnalalo "
-#~ "a <a href ="
-
-#~ msgid "Return to Experimenter"
-#~ msgstr "Torna a Experimenter"
-
-#~ msgid "Sign In"
-#~ msgstr "Registrati"
-
-#~ msgid ""
-#~ "\n"
-#~ "          Please sign in to the Open Science Framework or register for an "
-#~ "account and sign in below.\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "        By using or requesting access to Lookit, you agree that you have "
-#~ "read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of "
-#~ "Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</"
-#~ "a>.\n"
-#~ "        "
-#~ msgstr ""
-#~ "\n"
-#~ "          Accedi a Open Science Framework o registrati per un account e "
-#~ "accedi di seguito.\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "        Utilizzando o richiedendo l'accesso a Lookit, accetti di aver "
-#~ "letto e accettato i <a href=\"/termsofuse/\" target=\"_blank\"> Termini e "
-#~ "condizioni d'uso </a> e il <a href = \"/ privacy /\" target = \"_ blank"
-#~ "\"> Informativa sulla privacy </a>.\n"
-#~ "        "
-
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href=\"mailto:support@osf.io\">support@osf.io</a>"
-#~ msgstr ""
-#~ "Se ciò non si sarebbe dovuto verificare e il problema persiste, segnalalo "
-#~ "a <a href=\"mailto:support@osf.io\"> support@osf.io </a>"
-
-#~ msgid "Participant Login"
-#~ msgstr "Accesso partecipanti"
-
-#~ msgid "Looking for "
-#~ msgstr "Cercando "
-
-#~ msgid "Create an account!"
-#~ msgstr "Crea un account!"
-
-#~ msgid "Account information"
-#~ msgstr "Informazioni account"
-
-#~ msgid "Change your name, email, or password."
-#~ msgstr "Cambia il tuo nome, indirizzo email o password."
-
-#~ msgid "Signup"
-#~ msgstr "Iscriviti"
-
-#~ msgid "Update account information"
-#~ msgstr "Aggiorna le informazioni sull'account"
+"Lo studio {study.name} non sta attualmente raccogliendo dati - lo studio "
+"potrebbe essere completato o attualmente in pausa. Se pensi che si tratti di "
+"un errore, contatta {study.contact_info}"
