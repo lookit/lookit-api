@@ -145,7 +145,7 @@
                         <div class="form-group">
                         <form method="POST">{% csrf_token %}
                             <label for="child-dropdown">{% trans "Select a child:" %}</label>
-                            <select id="child-dropdown" name="child_id" class="childDropdown" onchange="childSelected(this)">
+                            <select id="child-dropdown" name="child_id" class="childDropdown form-control" onchange="childSelected(this)">
                                 <option value=none >{% trans "None Selected" %}</option>
                                 {% for child in children %}
                                     {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
