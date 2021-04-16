@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "830f54ff26f11680bafb4b153cb55db552bad57cd2c6af5324600893e70205ee"
+            "sha256": "ed137724ffb867c01c73efe944828697c4f89c6e1cbc39f121878f0770bf577c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -391,10 +391,10 @@
         },
         "google-auth": {
             "hashes": [
-                "sha256:186fe2564634d67fbbb64f3daf8bc8c9cecbb2a7f535ed1a8a71795e50db8d87",
-                "sha256:70b39558712826e41f65e5f05a8d879361deaf84df8883e5dd0ec3d0da6ab66e"
+                "sha256:010f011c4e27d3d5eb01106fba6aac39d164842dfcd8709955c4638f5b11ccf8",
+                "sha256:f30a672a64d91cc2e3137765d088c5deec26416246f7a9e956eaf69a8d7ed49c"
             ],
-            "version": "==1.28.1"
+            "version": "==1.29.0"
         },
         "google-cloud-core": {
             "hashes": [
@@ -941,11 +941,11 @@
         },
         "django-debug-toolbar": {
             "hashes": [
-                "sha256:eabbefe89881bbe4ca7c980ff102e3c35c8e8ad6eb725041f538988f2f39a943",
-                "sha256:ff94725e7aae74b133d0599b9bf89bd4eb8f5d2c964106e61d11750228c8774c"
+                "sha256:7aadab5240796ffe8e93cc7dfbe2f87a204054746ff7ff93cd6d4a0c3747c853",
+                "sha256:7feaee934608f5cdd95432154be832fe30fda6c1249018191e2c27bc0b6a965e"
             ],
             "index": "pypi",
-            "version": "==2.2"
+            "version": "==2.2.1"
         },
         "django-pdb": {
             "hashes": [
