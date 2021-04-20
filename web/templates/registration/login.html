@@ -32,8 +32,11 @@
             {% if not request.user.is_authenticated %}
                 {# This conditional block is so we can use the this template for 2FA as well #}
                 <p class="text-center"><a href="{% url 'password_reset' %}">{% trans "Forgot password?" %}</a></p>
+                <p class="text-center"><strong>{% trans "New to Lookit?" %}</strong> <a href="{% url 'web:participant-signup' %}">{% trans "Register your family!" %} </a></p>
+            {% else %}
+                <p class="text-center"><a href="https://lookit.readthedocs.io/en/develop/researchers-log-in.html#troubleshooting">Need help with your one time password?</a></p>
             {% endif %}
-            <p class="text-center"><strong>{% trans "New to Lookit?" %}</strong> <a href="{% url 'web:participant-signup' %}">{% trans "Register your family!" %} </a></p>
+        
           </div>
         </div>
     </div>
