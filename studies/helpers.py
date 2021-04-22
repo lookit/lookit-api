@@ -2,7 +2,6 @@ import base64
 import copy
 import logging
 import re
-from datetime import datetime
 from email.mime.image import MIMEImage
 
 from django.core.mail.message import EmailMultiAlternatives
