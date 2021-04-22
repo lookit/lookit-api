@@ -512,6 +512,7 @@ class Study(models.Model):
                     name=SiteAdminGroup.LOOKIT_ADMIN.name
                 ).user_set.values_list("username", flat=True)
             ),
+            reply_to=[self.request.user.username],
             **context,
         )
 
@@ -1095,7 +1096,9 @@ class StudyLog(Log):
     )
 
     def __str__(self):
-        return f"<StudyLog: {self.action} on {self.study.name} at {self.created_at}"  # noqa
+        return (
+            f"<StudyLog: {self.action} on {self.study.name} at {self.created_at}"
+        )  # noqa
 
     class JSONAPIMeta:
         resource_name = "study-logs"
@@ -1262,7 +1265,7 @@ class Video(models.Model):
 @receiver(pre_delete, sender=Video)
 def delete_video_on_s3(sender, instance, using, **kwargs):
     """Delete video from S3 when deleting Video object.
-    
+
     Do this in a pre_delete hook rather than a custom delete function because this will
     be called when cascading deletion from responses."""
     delete_video_from_cloud.apply_async(
