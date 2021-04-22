@@ -177,10 +177,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
 
         self.younger_child = G(
-            Child,
-            given_name="Joe",
-            user=self.participant_one,
-            birthday=five_months_ago,
+            Child, given_name="Joe", user=self.participant_one, birthday=five_months_ago
         )
 
         self.disabled_child = G(
@@ -231,7 +228,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         ]
 
         self.child_three = G(
-            Child, given_name="Curly", user=self.participant_two, birthday=one_year_ago,
+            Child, given_name="Curly", user=self.participant_two, birthday=one_year_ago
         )
         # Child three has only done study #1 and has not reached the consent frame yet
         self.responses_for_child_three = [
@@ -240,7 +237,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
                 study=self.study_one,
                 child=self.child_three,
                 completed_consent_frame=False,
-            ),
+            )
         ]
 
         # Spongebob don't want none of yo emails ಠ_ಠ
@@ -261,7 +258,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         # will be weeded out downstream, as they all fail to meet criteria in one way
         # or another.
         self.assertEqual(
-            quantify(mt.user_id == self.participant_one.id for mt in targets), 6,
+            quantify(mt.user_id == self.participant_one.id for mt in targets), 6
         )
 
         # Participant #2
@@ -453,7 +450,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
 
         # ... But no study one this time.
         self.assertDictEqual(
-            study_child_mapping, {self.study_two: [self.child_two, self.child_three]},
+            study_child_mapping, {self.study_two: [self.child_two, self.child_three]}
         )
 
     def test_announcement_email_to_child_with_long_name(self):
@@ -473,7 +470,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
 
         message_object = Message.send_announcement_email(
-            long_name_family, self.study_two, [long_name_child, short_name_child],
+            long_name_family, self.study_two, [long_name_child, short_name_child]
         )
         self.assertEqual(
             message_object.subject,
@@ -566,3 +563,30 @@ class TestSendMail(TestCase):
             ],
             "Email image attachment does not have expected headers",
         )
+
+    def test_empty_reply_to(self):
+        reply_to = []
+        email = send_mail(
+            template_name="empty", subject="subject", to_addresses="to_addresses"
+        )
+        self.assertEquals(email.reply_to, reply_to)
+
+    def test_one_reply_to(self):
+        reply_to = ["email@mit.edu"]
+        email = send_mail(
+            template_name="empty",
+            subject="subject",
+            to_addresses="to_addresses",
+            reply_to=reply_to,
+        )
+        self.assertEquals(email.reply_to, reply_to)
+
+    def test_couple_reply_to(self):
+        reply_to = ["email@mit.edu", "email@smith.edu"]
+        email = send_mail(
+            template_name="empty",
+            subject="subject",
+            to_addresses="to_addresses",
+            reply_to=reply_to,
+        )
+        self.assertEquals(email.reply_to, reply_to)
