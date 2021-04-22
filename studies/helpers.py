@@ -15,7 +15,14 @@ logger = logging.getLogger(__name__)
 
 @app.task
 def send_mail(
-    template_name, subject, to_addresses, cc=None, bcc=None, from_email=None, **context
+    template_name,
+    subject,
+    to_addresses,
+    cc=None,
+    bcc=None,
+    from_email=None,
+    reply_to=None,
+    **context,
 ):
     """
     Helper for sending templated email
@@ -52,7 +59,13 @@ def send_mail(
 
     from_address = from_email or EMAIL_FROM_ADDRESS
     email = EmailMultiAlternatives(
-        subject, text_content, from_address, to_addresses, cc=cc, bcc=bcc
+        subject,
+        text_content,
+        from_address,
+        to_addresses,
+        cc=cc,
+        bcc=bcc,
+        reply_to=reply_to,
     )
 
     # For HTML version: Replace inline images with attachments referenced. See
@@ -138,12 +151,12 @@ class FrameActionDispatcher(object):
 
     def consent(self, response, frame_data: dict, current_frame_id, *args, **kwargs):
         """Upon saving data from a consent frame, mark the video collected as consent footage.
-        This means the participant will have to proceed from the consent frame before 
+        This means the participant will have to proceed from the consent frame before
         consent footage is accessible to researchers. Video model is ALSO marked as consent
         footage upon creation if exp_data already has the consent frame added. This hook
         covers the case where the Video is created first and then exp_data is updated; that
         hook covers the case where exp_data is updated before the Video model is created.
-        
+
         Args:
             response: Response Model.
             frame_data: dictionary of frame data.
