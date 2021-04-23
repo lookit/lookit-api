@@ -1096,9 +1096,7 @@ class StudyLog(Log):
     )
 
     def __str__(self):
-        return (
-            f"<StudyLog: {self.action} on {self.study.name} at {self.created_at}"
-        )  # noqa
+        return f"<StudyLog: {self.action} on {self.study.name} at {self.created_at}"  # noqa
 
     class JSONAPIMeta:
         resource_name = "study-logs"
