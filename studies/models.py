@@ -512,7 +512,7 @@ class Study(models.Model):
                     name=SiteAdminGroup.LOOKIT_ADMIN.name
                 ).user_set.values_list("username", flat=True)
             ),
-            reply_to=[self.request.user.username],
+            reply_to=[ev.kwargs.get("user")],
             **context,
         )
 
