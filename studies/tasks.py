@@ -312,6 +312,7 @@ def cleanup_docker_images():
     logger.debug("Cleaning up docker images...")
     DOCKER_CLIENT.images.prune(filters={"dangling": True})
 
+
 @app.task
 def cleanup_docker_containers():
     logger.debug("Cleaning up docker containers...")

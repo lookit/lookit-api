@@ -373,7 +373,7 @@ class LabUpdateView(
 
 
 class LabCreateView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.CreateView,
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.CreateView
 ):
     """
     LabCreateView allows creating a new lab.
@@ -411,6 +411,7 @@ class LabCreateView(
                     name=SiteAdminGroup.LOOKIT_ADMIN.name
                 ).user_set.values_list("username", flat=True)
             ),
+            reply_to=[self.request.user.username],
             **email_context,
         )
 

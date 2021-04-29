@@ -512,6 +512,7 @@ class Study(models.Model):
                     name=SiteAdminGroup.LOOKIT_ADMIN.name
                 ).user_set.values_list("username", flat=True)
             ),
+            reply_to=[ev.kwargs.get("user").username],
             **context,
         )
 
@@ -1262,7 +1263,7 @@ class Video(models.Model):
 @receiver(pre_delete, sender=Video)
 def delete_video_on_s3(sender, instance, using, **kwargs):
     """Delete video from S3 when deleting Video object.
-    
+
     Do this in a pre_delete hook rather than a custom delete function because this will
     be called when cascading deletion from responses."""
     delete_video_from_cloud.apply_async(
