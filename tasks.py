@@ -40,7 +40,7 @@ MESSAGE_ALREADY_INSTALLED = "already installed"
 SERVE_CELERY = "celery worker --app=project --loglevel=INFO -Q builds,email,cleanup"
 SERVE_HTTPS_SERVER = "python manage.py runsslserver --certificate certs/local_lookit.mit.edu.pem --key certs/local_lookit.mit.edu-key.pem"
 SERVE_HTTP_SERVER = "python manage.py runserver"
-SERVE_NGROK = "ngrok http https://127.0.0.1:8000"
+SERVE_NGROK = "ngrok http https://localhost:8000"
 BASE_DIR = os.getcwd()
 PATH_TO_CERTS = os.path.join(BASE_DIR, "certs")
 
@@ -83,18 +83,7 @@ def system_setup(c, verbose=False):
     """
 
     run("echo '*** SYSTEM SETUP ***'")
-    run("echo 'Installing pipenv, brew, and docutils & Configuring local settings'")
-    packages = ("pipenv", "docutils", "celery")
-
-    for package in packages:
-
-        if run("pip install {}".format(package), hide=not verbose, warn=True).ok:
-
-            run('echo "===> {} {}"'.format(package, MESSAGE_OK))
-
-        else:
-
-            run('echo "===> {} {}"'.format(package, MESSAGE_FAILED))
+    run("echo 'Installing & Configuring local settings'")
 
     # installing linuxbrew
     if PLATFORM == "Linux":
@@ -131,11 +120,6 @@ def system_setup(c, verbose=False):
         else:
             run('echo "===> brew {}"'.format(MESSAGE_FAILED))
 
-    if PLATFORM == "Darwin":
-        if run("brew tap homebrew/cask", hide=not verbose, warn=True).ok:
-            run('echo "===> homebrew/cask is installed"')
-        else:
-            run('echo "===> homebrew/cask is not working."')
 
     # creating a local setting file
     if run("test -f .env", warn=True).ok:
@@ -146,38 +130,6 @@ def system_setup(c, verbose=False):
         run(
             "cp env_dist .env && echo '===> Created local settings file .env based on env-dist'"
         )
-
-
-@task
-def install_dependencies(c, verbose=False):
-    """Install-dependencies invoke task. 
-
-    This func installs all the dependencies listed in the pipfile + djangosslserver.
-
-    Args:
-        c (obj): Context-aware API wrapper & state-passing object.
-        verbose (bool): states whether stdout should be printed.
-
-    Returns:
-        None.
-
-        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
-        depending on the state of the installation process.
-
-    Note:
-        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
-
-    usage: 
-        invoke install-dependencies or invoke install-dependencies --verbose
-
-    """
-
-    run("echo '*** INSTALLING ALL DEPENDENCIES ***'")
-
-    if run("pipenv install --dev", hide=not verbose, warn=True).ok:
-        run('echo "===> all dependencies {}"'.format(MESSAGE_OK))
-    else:
-        run('echo "===> some dependencies {}"'.format(MESSAGE_FAILED))
 
 
 @task
@@ -499,24 +451,6 @@ def postgresql(c, verbose=False):
         else:
             run('echo "====> Migration failed"')
     elif PLATFORM == "Darwin":
-        if run("command -v psql", warn=True, hide=not verbose):
-            run("echo '===> postgresql {}'".format(MESSAGE_ALREADY_INSTALLED))
-        else:
-            if run("brew install postgresql", warn=True, hide=not verbose).ok:
-                run('echo "===> postgresql {}"'.format(MESSAGE_OK))
-            else:
-                run('echo "===> postgresql {}"'.format(MESSAGE_FAILED))
-
-        if run("brew services start postgresql", warn=True, hide=not verbose).ok:
-            run('echo "=====> postgresql successfully started!"')
-        else:
-            run('echo "=====> postgresql failed to start!"')
-        res = run("createdb lookit", warn=True, hide=not verbose)
-        if res.exited == 0:
-            run('echo "=====> Database "lookit" Successfully created!"')
-        else:
-            run('echo "=====> Database "lookit" already existed"')
-
         if run("python manage.py migrate", warn=True, hide=not verbose).ok:
             run('echo "====> Migrated Django models to lookit db"')
         else:
@@ -733,15 +667,7 @@ def docker(c, verbose=False):
                 run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
     elif PLATFORM == "Darwin":
-        if run("command -v docker", hide=not verbose, warn=True).ok:
-            run('echo "===> docker {}"'.format(MESSAGE_ALREADY_INSTALLED))
-        else:
-            if run("brew cask install docker", hide=not verbose, warn=True).ok:
-                run('echo "===> docker {}"'.format(MESSAGE_OK))
-            else:
-                run('echo "===> docker {}"'.format(MESSAGE_FAILED))
-        run("open /Applications/Docker.app")
-
+        pass
     else:
         run("echo {}".format(MESSAGE_WRONG_PLATFORM))
 
@@ -765,14 +691,14 @@ def server(c):
 
     if os.listdir(PATH_TO_CERTS):
         run(
-            "echo -e '\a Serving at https://127.0.0.1:8000\a'"
+            "echo -e '\a Serving at https://localhost:8000\a'"
             + "&&"
             + SERVE_HTTPS_SERVER,
             hide=False,
         )
     else:
         run(
-            "echo -e '\a Serving at http://127.0.0.1:8000\a'"
+            "echo -e '\a Serving at http://localhost:8000\a'"
             + "&&"
             + SERVE_HTTP_SERVER,
             hide=False,
@@ -820,7 +746,6 @@ def celery_service(c):
 
 @task(
     system_setup,
-    install_dependencies,
     pygraphviz,
     rabbitmq,
     postgresql,
