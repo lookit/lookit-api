@@ -50,7 +50,6 @@ urllib3 = "1.24.3"
 [tool.poetry.dev-dependencies]
 invoke = "^1.5.0"
 semantic-version = "^2.8.5"
-pipenv-poetry-migrate = "^0.1.4"
 black = "19.10b0"
 django-debug-toolbar = "2.2.1"
 django-pdb = "0.6.2"
