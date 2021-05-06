@@ -93,7 +93,7 @@ def rabbitmq(c):
 def postgresql(c):
     """Postgresql invoke task.
 
-    This func installs postgresql, create the database of the API and create required tables. 
+    Runs django db migrations. 
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
