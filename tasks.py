@@ -142,7 +142,11 @@ def ssl_certificate(c, verbose=False):
         if run(
             "cd certs && mkcert local_lookit.mit.edu", warn=True, hide=not verbose
         ).ok:
-            run('echo "certificates successfully created at {}/certs"'.format(BASE_DIR))
+            run(
+                'echo "certificates successfully created at {}/certs"'.format(
+                    Path.cwd()
+                )
+            )
         else:
             run('echo "certificates {}"'.format(MESSAGE_FAILED))
     elif PLATFORM == "Darwin":
@@ -160,7 +164,7 @@ def ssl_certificate(c, verbose=False):
         ).ok:
             run(
                 'echo "=====> certificates successfully created at {}/certs"'.format(
-                    os.getcwd()
+                    Path.cwd()
                 )
             )
         else:
