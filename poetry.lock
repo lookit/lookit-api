@@ -1553,6 +1553,28 @@ python-versions = "*"
 sendgrid = ">=3.5,<4"
 
 [[package]]
+name = "sendgrid"
+version = "3.6.5"
+description = "SendGrid library for Python"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+python-http-client = ">=2.1.1"
+
+[[package]]
+name = "sendgrid-django"
+version = "4.2.0"
+description = "SendGrid Backend for Django"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+sendgrid = ">=3.5,<4"
+
+[[package]]
 name = "sentry-sdk"
 version = "1.3.0"
 description = "Python client for Sentry (https://sentry.io)"
@@ -2410,6 +2432,9 @@ protobuf = [
 psycogreen = [
     {file = "psycogreen-1.0.2.tar.gz", hash = "sha256:c429845a8a49cf2f76b71265008760bcd7c7c77d80b806db4dc81116dbcd130d"},
 ]
+psycogreen = [
+    {file = "psycogreen-1.0.2.tar.gz", hash = "sha256:c429845a8a49cf2f76b71265008760bcd7c7c77d80b806db4dc81116dbcd130d"},
+]
 psycopg2-binary = [
     {file = "psycopg2-binary-2.8.5.tar.gz", hash = "sha256:ccdc6a87f32b491129ada4b87a43b1895cf2c20fdb7f98ad979647506ffc41b6"},
     {file = "psycopg2_binary-2.8.5-cp27-cp27m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl", hash = "sha256:96d3038f5bd061401996614f65d27a4ecb62d843eb4f48e212e6d129171a721f"},
@@ -2582,6 +2607,9 @@ python-dotenv = [
 python-http-client = [
     {file = "python_http_client-3.3.2.tar.gz", hash = "sha256:67e6a7bea19b03e14dc971480d3531b80becfc203d6c69478561bf7844d52661"},
 ]
+python-http-client = [
+    {file = "python_http_client-3.3.2.tar.gz", hash = "sha256:67e6a7bea19b03e14dc971480d3531b80becfc203d6c69478561bf7844d52661"},
+]
 python-stdnum = [
     {file = "python-stdnum-1.16.tar.gz", hash = "sha256:4248d898042a801fc4eff96fbfe4bf63a43324854efe3b5534718c1c195c6f43"},
     {file = "python_stdnum-1.16-py2.py3-none-any.whl", hash = "sha256:2e2c56c548ca166b95547a8d748f4d71320a5b4896960717c8e6380e08d993a5"},
@@ -2700,6 +2728,13 @@ rsa = [
 s3transfer = [
     {file = "s3transfer-0.3.7-py2.py3-none-any.whl", hash = "sha256:efa5bd92a897b6a8d5c1383828dca3d52d0790e0756d49740563a3fb6ed03246"},
     {file = "s3transfer-0.3.7.tar.gz", hash = "sha256:35627b86af8ff97e7ac27975fe0a98a312814b46c6333d8a6b889627bcd80994"},
+]
+sendgrid = [
+    {file = "sendgrid-3.6.5-py2.py3-none-any.whl", hash = "sha256:9fba62068dd13922004b6a1676e21c6435709aaf7c2b978cdf1206e3d2196c60"},
+    {file = "sendgrid-3.6.5.tar.gz", hash = "sha256:d1af52f8cbb900bf79e28aa08102a503f5e26489c7b9f1d9750758a4b27c84d1"},
+]
+sendgrid-django = [
+    {file = "sendgrid-django-4.2.0.tar.gz", hash = "sha256:fef60ba37d588e5e1c4dcbb3b8b7f8c16920e3e89432de357f6abd6157c4f5f4"},
 ]
 sendgrid = [
     {file = "sendgrid-3.6.5-py2.py3-none-any.whl", hash = "sha256:9fba62068dd13922004b6a1676e21c6435709aaf7c2b978cdf1206e3d2196c60"},
