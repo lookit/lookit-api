@@ -12,14 +12,11 @@ Requirement:
     invoke library 
 
 Attributes:
+    HOSTNAME (str): This holds the value of the current hostname.  Usually 'localhost'.
     PLATFORM (str): holds OS details of the working env. ex: 'Linux'
     MESSAGE_FAILED (str): holds the message that displays when a package fails to install
     MESSAGE_WRONG_PLATFORM (str): holds a message that displays when the OS being used is not supported by the tasks. 
     MESSAGE_ALREADY_INSTALLED (str): holds a message that displays when the package is already available in the system.
-    SERVE_NGROK (str): holds a command that serves ngrok
-    BASE_DIR (str): holds the path to the current working directory
-    PATH_TO_CERTS (str): holds the path to certificates used to serve the django application securely.
-
 """
 import json
 import os
@@ -54,26 +51,15 @@ PRE_RELEASE_TAGS = (ALPHA, BETA, RELEASE_CANDIDATE)
 
 @task
 def dotenv(_):
-    """System-setup invoke task.
-    
-    This func installs pipenv, brew, docutils, and celery.
-    This func also sets the debug to True in a local setting file for serving locally.
+    """Dotenv invoke task.
+
+    Copies env_dist to .env if .env doesn't exist.
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
-        verbose (bool): states whether stdout should be printed.
 
     Returns:
         None.
-
-        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
-        depending on the state of the installation process.
-
-    Note:
-        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
-
-    Usage:
-        invoke system-setup or invoke system-setup --verbose
 
     """
     if not Path(".env").exists():
@@ -84,24 +70,10 @@ def dotenv(_):
 def rabbitmq(c):
     """Rabbitmq invoke task.
 
-    This func installs rabbitmq and creates users and queues for the API.
+    This func creates users and queues for the API.
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
-        verbose (bool): states whether stdout should be printed.
-
-    Returns:
-        None.
-
-        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
-        depending on the state of the installation process.
-
-    Note:
-        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
-
-    Usage: 
-        invoke rabbitmq or invoke rabbitmq --verbose
-
     """
     # Get list of users and check if we've created our 'lookit-admin' yet.
     users = c.run("rabbitmqctl list_users --formatter json", hide="stdout").stdout
@@ -120,25 +92,11 @@ def rabbitmq(c):
 @task
 def postgresql(c):
     """Postgresql invoke task.
-    
+
     This func installs postgresql, create the database of the API and create required tables. 
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
-        verbose (bool): states whether stdout should be printed.
-
-    Returns:
-        None.
-
-        However, this func echoes MESSAGE_FAILED, MESSAGE_OK, or MESSAGE_ALREADY_INSTALLED
-        depending on the state of the installation process.
-
-    Note:
-        For debugging purposes, set verbose (bool) to True to print the stdout responses for the run process.
-
-    Usage: 
-        invoke postgresql or invoke postgresql --verbose
-
     """
     c.run("python manage.py migrate", hide="stdout")
 
@@ -216,18 +174,11 @@ def server(c, https=False):
     """Serving invoke task.
 
     This func serves django application server.
-    
+
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
-
-    Returns:
-        None.
-
-    usage:
-        invoke server
-
+        https (bool, optional): Use the ssl version of the local development server. Defaults to False.
     """
-
     certs_path = Path.cwd() / "certs"
     key = certs_path / "local_lookit.mit.edu-key.pem"
     certificate = certs_path / "local_lookit.mit.edu.pem"
@@ -253,13 +204,6 @@ def ngrok_service(c):
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
-
-    Returns:
-        None.
-
-    Usage: 
-        invoke ngrok_service
-
     """
     c.run(f"ngrok http https://{HOSTNAME}:8000")
 
@@ -272,13 +216,6 @@ def celery_service(c):
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
-
-    Returns:
-        None.
-
-    usage: 
-        invoke celery 
-
     """
     c.run("celery worker --app=project --loglevel=INFO -Q builds,email,cleanup")
 
@@ -291,16 +228,6 @@ def setup(_):
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
-
-    Returns:
-        None.
-    
-    Note: 
-        This func does not serve celery and ngrok. 
-
-    usage: 
-        invoke setup
-
     """
     pass
 
