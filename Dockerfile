@@ -14,8 +14,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends gosu \
     && rm -rf /var/lib/apt/lists/* \
     && gosu nobody true \
-    && update-ca-certificates \
-    && python -m pip install -U pip wheel setuptools
+    && update-ca-certificates 
 
 RUN wget https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -O /tmp/get-poetry.py \
     && cat /tmp/get-poetry.py | python - \
