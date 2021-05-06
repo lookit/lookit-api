@@ -1,7 +1,0 @@
--r ./defaults.txt
-
-uwsgi==2.0.19.1
-gevent==20.9.0
-greenlet==0.4.17
-psycogreen==1.0.2
-sendgrid-django==4.2.0
