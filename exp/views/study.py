@@ -657,13 +657,32 @@ class ChangeStudyStatusView(StudyDetailView):
 
         """
         try:
-            update_trigger(self)
+            self.update_trigger()
         except Exception as e:
             messages.error(self.request, f"TRANSITION ERROR: {e}")
 
         return HttpResponseRedirect(
             reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
         )
+
+    def update_trigger(self):
+        """Transition to next state in study workflow.
+
+        :param self: An instance of the django view.
+        :type self: StudyDetailView or StudyUpdateView
+        """
+        trigger = self.request.POST.get("trigger")
+        object = self.get_object()
+        if trigger:
+            if hasattr(object, trigger):
+                if "comments-text" in self.request.POST.keys():
+                    object.comments = self.request.POST["comments-text"]
+                    object.save()
+                # transition through workflow state
+                getattr(object, trigger)(user=self.request.user)
+        displayed_state = object.state if object.state != "active" else "activated"
+        messages.success(self.request, f"Study {object.name} {displayed_state}.")
+        return object
 
 
 class CloneStudyView(StudyDetailView):
@@ -916,26 +935,3 @@ def get_permitted_triggers(view_instance, triggers):
         permitted_triggers.append(trigger)
 
     return permitted_triggers
-
-
-def update_trigger(view_instance):
-    """Transition to next state in study workflow.
-
-    TODO: Comments text is a bit silly to have here - let's move it to the proper Edit
-    View to be in the appropriate functional location once we do a refactor.
-
-    :param view_instance: An instance of the django view.
-    :type view_instance: StudyDetailView or StudyUpdateView
-    """
-    trigger = view_instance.request.POST.get("trigger")
-    object = view_instance.get_object()
-    if trigger:
-        if hasattr(object, trigger):
-            if "comments-text" in view_instance.request.POST.keys():
-                object.comments = view_instance.request.POST["comments-text"]
-                object.save()
-            # transition through workflow state
-            getattr(object, trigger)(user=view_instance.request.user)
-    displayed_state = object.state if object.state != "active" else "activated"
-    messages.success(view_instance.request, f"Study {object.name} {displayed_state}.")
-    return object
