@@ -550,7 +550,7 @@
         </div>
     </div>
     {#  MODALS #}
-    <form class="modal fade" id="study-state-modal" method="POST">{% csrf_token %}
+    <form class="modal fade" id="study-state-modal" action="{% url 'exp:change-study-status' study.id %}" method="POST">{% csrf_token %}
         <input type="hidden" name="trigger"/>
         <div class="modal-content">
             <div class="modal-header">

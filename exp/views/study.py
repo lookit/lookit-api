@@ -380,8 +380,6 @@ class StudyDetailView(
                 return user.has_study_perms(
                     StudyPermission.MANAGE_STUDY_RESEARCHERS, study
                 )
-            if "trigger" in self.request.POST:
-                return user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
         else:
             # If we're not one of the two allowed methods this should be caught
             # earlier
@@ -634,6 +632,50 @@ class StudyDetailView(
         """Builds paginated search results for researchers."""
         page = self.request.GET.get("page")
         return self.paginated_queryset(researchers_result, page, 10)
+
+
+class ChangeStudyStatusView(StudyDetailView):
+    def user_can_see_or_edit_study_details(self):
+        """Checks based on method, with fallback to umbrella lab perms.
+
+        Returns:
+            A boolean indicating whether or not the user should be able to see
+            this view.
+        """
+        user = self.request.user
+        method = self.request.method
+        study = self.get_object()
+
+        if not user.is_researcher:
+            return False
+
+        if method == "POST":
+            return user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
+        else:
+            # If we're not one of the two allowed methods this should be caught
+            # earlier
+            return False
+
+    # Make PyCharm happy - otherwise we'd just override
+    # UserPassesTestMixin.get_test_func()
+    test_func = user_can_see_or_edit_study_details
+
+    def post(self, *args, **kwargs):
+        """
+        Post method can:
+         - update the trigger if the state of the study has changed
+         - clone study and redirect to the clone
+         - add, remove, or update permissions for a researcher
+        TODO: these should be broken out into three separate views!
+        """
+        try:
+            update_trigger(self)
+        except Exception as e:
+            messages.error(self.request, f"TRANSITION ERROR: {e}")
+
+        return HttpResponseRedirect(
+            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
+        )
 
 
 class CloneStudyView(StudyDetailView):
