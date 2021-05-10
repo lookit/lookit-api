@@ -346,8 +346,8 @@ class StudyDetailView(
     generic.DetailView,
 ):
     """
-    StudyDetailView shows information about a study. Can view basic metadata about a study,
-    view study logs, manage study researchers, and change a study's state.
+    StudyDetailView shows information about a study. It can view basic metadata about a study and
+    view study logs.
     """
 
     model = Study
@@ -355,7 +355,7 @@ class StudyDetailView(
     raise_exception = True
 
     def user_can_see_or_edit_study_details(self):
-        """Checks based on method, with fallback to umbrella lab perms.
+        """Checks if user has permission to view study details.
 
         Returns:
             A boolean indicating whether or not the user should be able to see
@@ -378,18 +378,6 @@ class StudyDetailView(
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
     test_func = user_can_see_or_edit_study_details
-
-    def post(self, *args, **kwargs):
-        """
-        Post method can:
-         - update the trigger if the state of the study has changed
-         - clone study and redirect to the clone
-         - add, remove, or update permissions for a researcher
-        TODO: these should be broken out into three separate views!
-        """
-        return HttpResponseRedirect(
-            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
-        )
 
     def manage_researcher_permissions(self):
         """
@@ -602,11 +590,10 @@ class StudyDetailView(
 
 class ManageResearcherPermissionsView(StudyDetailView):
     def user_can_see_or_edit_study_details(self):
-        """Checks based on method, with fallback to umbrella lab perms.
+        """Checks if user has permission to update researcher permissions.
 
         Returns:
-            A boolean indicating whether or not the user should be able to see
-            this view.
+            bool: Returns false if user does not have permission.
         """
         user = self.request.user
         method = self.request.method
@@ -627,12 +614,8 @@ class ManageResearcherPermissionsView(StudyDetailView):
     test_func = user_can_see_or_edit_study_details
 
     def post(self, *args, **kwargs):
-        """
-        Post method can:
-         - update the trigger if the state of the study has changed
-         - clone study and redirect to the clone
-         - add, remove, or update permissions for a researcher
-        TODO: these should be broken out into three separate views!
+        """Updates user permissions on form submission.
+
         """
         try:
             self.manage_researcher_permissions()
@@ -646,11 +629,10 @@ class ManageResearcherPermissionsView(StudyDetailView):
 
 class ChangeStudyStatusView(StudyDetailView):
     def user_can_see_or_edit_study_details(self):
-        """Checks based on method, with fallback to umbrella lab perms.
+        """Checks that the user has permission to change study status.
 
         Returns:
-            A boolean indicating whether or not the user should be able to see
-            this view.
+            bool: Returns false if user does not have permission.
         """
         user = self.request.user
         method = self.request.method
@@ -671,12 +653,8 @@ class ChangeStudyStatusView(StudyDetailView):
     test_func = user_can_see_or_edit_study_details
 
     def post(self, *args, **kwargs):
-        """
-        Post method can:
-         - update the trigger if the state of the study has changed
-         - clone study and redirect to the clone
-         - add, remove, or update permissions for a researcher
-        TODO: these should be broken out into three separate views!
+        """Update study status on form submission.
+
         """
         try:
             update_trigger(self)
@@ -690,11 +668,10 @@ class ChangeStudyStatusView(StudyDetailView):
 
 class CloneStudyView(StudyDetailView):
     def user_can_see_or_edit_study_details(self):
-        """Checks based on method, with fallback to umbrella lab perms.
+        """Checks if user has permissions to clone study.
 
         Returns:
-            A boolean indicating whether or not the user should be able to see
-            this view.
+            bool: Returns false if user does not have permission.
         """
         user = self.request.user
         method = self.request.method
@@ -713,12 +690,8 @@ class CloneStudyView(StudyDetailView):
     test_func = user_can_see_or_edit_study_details
 
     def post(self, *args, **kwargs):
-        """
-        Post method can:
-         - update the trigger if the state of the study has changed
-         - clone study and redirect to the clone
-         - add, remove, or update permissions for a researcher
-        TODO: these should be broken out into three separate views!
+        """Clone study on form submission. 
+
         """
         orig_study = self.get_object()
         clone = orig_study.clone()
