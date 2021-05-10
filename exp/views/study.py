@@ -382,8 +382,6 @@ class StudyDetailView(
                 )
             if "trigger" in self.request.POST:
                 return user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
-            if "clone_study" in self.request.POST:
-                return user.can_create_study()
         else:
             # If we're not one of the two allowed methods this should be caught
             # earlier
@@ -424,36 +422,6 @@ class StudyDetailView(
                 return HttpResponseRedirect(
                     reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
                 )
-        # Clone study case
-        if self.request.POST.get("clone_study"):
-            orig_study = self.get_object()
-            clone = orig_study.clone()
-            clone.creator = self.request.user
-            # Clone within the current lab if user is allowed to. Otherwise, choose the first possible
-            if self.request.user.has_perm(
-                LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=orig_study.lab
-            ):
-                clone.lab = orig_study.lab
-            else:
-                for lab in self.request.user.labs.only("id"):
-                    if clone.creator.has_perm(
-                        LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
-                    ):
-                        clone.lab = lab
-                        break
-                else:
-                    # Shouldn't end up here because we checked can_create_study, but just in case
-                    return HttpResponseForbidden()
-            clone.study_type = orig_study.study_type
-            clone.built = False
-            clone.is_building = False
-            clone.save()
-            # Adds success message when study is cloned
-            messages.success(self.request, f"{orig_study.name} copied.")
-            self.add_creator_to_study_admin_group(clone)
-            return HttpResponseRedirect(
-                reverse("exp:study-edit", kwargs=dict(pk=clone.pk))
-            )
 
         return HttpResponseRedirect(
             reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
@@ -666,6 +634,69 @@ class StudyDetailView(
         """Builds paginated search results for researchers."""
         page = self.request.GET.get("page")
         return self.paginated_queryset(researchers_result, page, 10)
+
+
+class CloneStudyView(StudyDetailView):
+    def user_can_see_or_edit_study_details(self):
+        """Checks based on method, with fallback to umbrella lab perms.
+
+        Returns:
+            A boolean indicating whether or not the user should be able to see
+            this view.
+        """
+        user = self.request.user
+        method = self.request.method
+        study = self.get_object()
+
+        if not user.is_researcher:
+            return False
+
+        if method == "POST":
+            return user.can_create_study()
+        else:
+            # If we're not one of the two allowed methods this should be caught
+            # earlier
+            return False
+
+    test_func = user_can_see_or_edit_study_details
+
+    def post(self, *args, **kwargs):
+        """
+        Post method can:
+         - update the trigger if the state of the study has changed
+         - clone study and redirect to the clone
+         - add, remove, or update permissions for a researcher
+        TODO: these should be broken out into three separate views!
+        """
+        orig_study = self.get_object()
+        clone = orig_study.clone()
+        clone.creator = self.request.user
+
+        # Clone within the current lab if user is allowed to. Otherwise, choose the first possible
+        if self.request.user.has_perm(
+            LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=orig_study.lab
+        ):
+            clone.lab = orig_study.lab
+        else:
+            for lab in self.request.user.labs.only("id"):
+                if clone.creator.has_perm(
+                    LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
+                ):
+                    clone.lab = lab
+                    break
+            else:
+                # Shouldn't end up here because we checked can_create_study, but just in case
+                return HttpResponseForbidden()
+
+        clone.study_type = orig_study.study_type
+        clone.built = False
+        clone.is_building = False
+        clone.save()
+
+        # Adds success message when study is cloned
+        messages.success(self.request, f"{orig_study.name} copied.")
+        self.add_creator_to_study_admin_group(clone)
+        return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=clone.pk)))
 
 
 class StudyBuildView(

@@ -14,6 +14,7 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from exp.views.study import CloneStudyView
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
@@ -84,7 +85,10 @@ urlpatterns = [
         name="study-participant-analytics",
     ),
     path("studies/create/", StudyCreateView.as_view(), name="study-create"),
+    ########################### So I can find these in this file... I will remove them.
     path("studies/<int:pk>/", StudyDetailView.as_view(), name="study-detail"),
+    path("studies/<int:pk>/clone-study", CloneStudyView.as_view(), name="clone-study"),
+    ###########################
     path(
         "studies/<int:pk>/contact/",
         StudyParticipantContactView.as_view(),

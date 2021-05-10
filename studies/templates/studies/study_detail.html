@@ -302,7 +302,7 @@
                         {% if can_create_study %}
                             {#  Here we have a hidden clone form so we can maintain dropdown styling. #}
                             {#  TODO: actually use this form to let the user clone the study in a specific lab. #}
-                            <form id="cloneForm" method="POST" style="display:none;">{% csrf_token %}
+                            <form id="cloneForm" action="{% url 'exp:clone-study' study.id %}" method="POST" style="display:none;">{% csrf_token %}
                                 <input type="hidden" name="clone_study" value="{{ study.id }}"/>
                             </form>
                             <a type="button" class="btn btn-default" role="button" onclick="cloneStudy()">
