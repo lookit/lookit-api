@@ -305,3 +305,24 @@ def new_version(c, kind="", pre="", build="", dry_run=False):
             version_file.write(release_output)
 
     print(release_output)
+
+
+@task
+def coverage(c):
+    """Generate test coverage data.
+
+    Args:
+        c (Context): Context-aware API wrapper & state-passing object.
+    """
+    c.run("poetry run coverage run --source='.' manage.py test")
+    coverage_report(c)
+
+
+@task
+def coverage_report(c):
+    """View basic CLI test coverage report.
+
+    Args:
+        c (Context): Context-aware API wrapper & state-passing object.
+    """
+    c.run("poetry run coverage report -i")
