@@ -17,6 +17,7 @@ Including another URLconf
 from exp.views.study import (
     ChangeStudyStatusView,
     CloneStudyView,
+    ManageResearcherPermissionsView,
 )
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
@@ -88,7 +89,6 @@ urlpatterns = [
         name="study-participant-analytics",
     ),
     path("studies/create/", StudyCreateView.as_view(), name="study-create"),
-    ########################### So I can find these in this file... I will remove them.
     path("studies/<int:pk>/", StudyDetailView.as_view(), name="study-detail"),
     path("studies/<int:pk>/clone-study", CloneStudyView.as_view(), name="clone-study"),
     path(
@@ -96,7 +96,11 @@ urlpatterns = [
         ChangeStudyStatusView.as_view(),
         name="change-study-status",
     ),
-    ###########################
+    path(
+        "studies/<int:pk>/manage-researcher-permissions",
+        ManageResearcherPermissionsView.as_view(),
+        name="manage-researcher-permissions",
+    ),
     path(
         "studies/<int:pk>/contact/",
         StudyParticipantContactView.as_view(),

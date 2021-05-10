@@ -463,7 +463,7 @@
                                                         <a href="#" data-name="update_user"
                                                            class="researcher_permissions"
                                                            data-type="select"
-                                                           data-url="{% url 'exp:study-detail' pk=study.id %}"
+                                                           data-url="{% url 'exp:manage-researcher-permissions' study.id %}"
                                                            data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
                                                            data-id="{{ researcher.user.get_short_name }}"
                                                            data-pk="{{ researcher.user.id }}"
