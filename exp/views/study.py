@@ -596,18 +596,9 @@ class ManageResearcherPermissionsView(StudyDetailView):
             bool: Returns false if user does not have permission.
         """
         user = self.request.user
-        method = self.request.method
-        study = self.get_object()
-
-        if not user.is_researcher:
-            return False
-
-        if method == "POST":
-            return user.has_study_perms(StudyPermission.MANAGE_STUDY_RESEARCHERS, study)
-        else:
-            # If we're not one of the two allowed methods this should be caught
-            # earlier
-            return False
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.MANAGE_STUDY_RESEARCHERS, self.get_object()
+        )
 
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
@@ -635,18 +626,9 @@ class ChangeStudyStatusView(StudyDetailView):
             bool: Returns false if user does not have permission.
         """
         user = self.request.user
-        method = self.request.method
-        study = self.get_object()
-
-        if not user.is_researcher:
-            return False
-
-        if method == "POST":
-            return user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
-        else:
-            # If we're not one of the two allowed methods this should be caught
-            # earlier
-            return False
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.CHANGE_STUDY_STATUS, self.get_object()
+        )
 
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
@@ -693,18 +675,7 @@ class CloneStudyView(StudyDetailView):
             bool: Returns false if user does not have permission.
         """
         user = self.request.user
-        method = self.request.method
-        study = self.get_object()
-
-        if not user.is_researcher:
-            return False
-
-        if method == "POST":
-            return user.can_create_study()
-        else:
-            # If we're not one of the two allowed methods this should be caught
-            # earlier
-            return False
+        return user.is_researcher and user.can_create_study()
 
     test_func = user_can_clone_study
 
