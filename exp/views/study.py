@@ -481,11 +481,7 @@ class StudyDetailView(
 
 
 class ManageResearcherPermissionsView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    PaginatorMixin,
-    SingleObjectFetchProtocol[Study],
-    generic.DetailView,
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
 ):
     model = Study
 
@@ -610,11 +606,7 @@ class ManageResearcherPermissionsView(
 
 
 class ChangeStudyStatusView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    PaginatorMixin,
-    SingleObjectFetchProtocol[Study],
-    generic.DetailView,
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
 ):
     model = Study
 
@@ -667,11 +659,7 @@ class ChangeStudyStatusView(
 
 
 class CloneStudyView(
-    ExperimenterLoginRequiredMixin,
-    UserPassesTestMixin,
-    PaginatorMixin,
-    SingleObjectFetchProtocol[Study],
-    generic.DetailView,
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
 ):
     model = Study
 
