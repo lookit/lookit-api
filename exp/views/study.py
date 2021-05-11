@@ -589,7 +589,7 @@ class StudyDetailView(
 
 
 class ManageResearcherPermissionsView(StudyDetailView):
-    def user_can_see_or_edit_study_details(self):
+    def user_can_change_study_permissions(self):
         """Checks if user has permission to update researcher permissions.
 
         Returns:
@@ -611,7 +611,7 @@ class ManageResearcherPermissionsView(StudyDetailView):
 
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
-    test_func = user_can_see_or_edit_study_details
+    test_func = user_can_change_study_permissions
 
     def post(self, *args, **kwargs):
         """Updates user permissions on form submission.
@@ -628,7 +628,7 @@ class ManageResearcherPermissionsView(StudyDetailView):
 
 
 class ChangeStudyStatusView(StudyDetailView):
-    def user_can_see_or_edit_study_details(self):
+    def user_can_change_study_status(self):
         """Checks that the user has permission to change study status.
 
         Returns:
@@ -650,7 +650,7 @@ class ChangeStudyStatusView(StudyDetailView):
 
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
-    test_func = user_can_see_or_edit_study_details
+    test_func = user_can_change_study_status
 
     def post(self, *args, **kwargs):
         """Update study status on form submission.
@@ -686,7 +686,7 @@ class ChangeStudyStatusView(StudyDetailView):
 
 
 class CloneStudyView(StudyDetailView):
-    def user_can_see_or_edit_study_details(self):
+    def user_can_clone_study(self):
         """Checks if user has permissions to clone study.
 
         Returns:
@@ -706,7 +706,7 @@ class CloneStudyView(StudyDetailView):
             # earlier
             return False
 
-    test_func = user_can_see_or_edit_study_details
+    test_func = user_can_clone_study
 
     def post(self, *args, **kwargs):
         """Clone study on form submission. 
