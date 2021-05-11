@@ -480,7 +480,15 @@ class StudyDetailView(
         return self.paginated_queryset(researchers_result, page, 10)
 
 
-class ManageResearcherPermissionsView(StudyDetailView):
+class ManageResearcherPermissionsView(
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    PaginatorMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.DetailView,
+):
+    model = Study
+
     def user_can_change_study_permissions(self):
         """Checks if user has permission to update researcher permissions.
 
@@ -601,7 +609,15 @@ class ManageResearcherPermissionsView(StudyDetailView):
             )
 
 
-class ChangeStudyStatusView(StudyDetailView):
+class ChangeStudyStatusView(
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    PaginatorMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.DetailView,
+):
+    model = Study
+
     def user_can_change_study_status(self):
         """Checks that the user has permission to change study status.
 
@@ -650,7 +666,15 @@ class ChangeStudyStatusView(StudyDetailView):
         return object
 
 
-class CloneStudyView(StudyDetailView):
+class CloneStudyView(
+    ExperimenterLoginRequiredMixin,
+    UserPassesTestMixin,
+    PaginatorMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.DetailView,
+):
+    model = Study
+
     def user_can_clone_study(self):
         """Checks if user has permissions to clone study.
 

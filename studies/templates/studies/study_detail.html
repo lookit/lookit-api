@@ -406,7 +406,7 @@
                                                         </div>
                                                         <div class="col-xs-3">
                                                             <form method="POST"
-                                                                  action="./#manage-researchers">{% csrf_token %}
+                                                                  action="{% url 'exp:manage-researcher-permissions' study.id %}">{% csrf_token %}
                                                                 <input type="hidden" name="add_user"
                                                                        value="{{ user.id }}"/>
                                                                 <button aria-label="Add researcher to study"
@@ -473,7 +473,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-2 researcher-delete">
-                                                    <form method="POST" action="./#manage-researchers">{% csrf_token %}
+                                                    <form method="POST" action="{% url 'exp:manage-researcher-permissions' study.id %}">{% csrf_token %}
                                                         <input type="hidden" name="remove_user"
                                                                value="{{ researcher.user.id }}"/>
                                                         <button aria-label="Remove researcher from study" type="submit"
