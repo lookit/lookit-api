@@ -362,121 +362,13 @@ class StudyDetailView(
             this view.
         """
         user = self.request.user
-        method = self.request.method
-        study = self.get_object()
-
-        if not user.is_researcher:
-            return False
-
-        if method == "GET":
-            return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
-        else:
-            # If we're not one of the two allowed methods this should be caught
-            # earlier
-            return False
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.READ_STUDY_DETAILS, self.get_object()
+        )
 
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
     test_func = user_can_see_or_edit_study_details
-
-    def manage_researcher_permissions(self):
-        """
-        Handles adding, updating, and deleting researcher from study. Users are
-        added to study read group by default.
-        """
-        study = self.get_object()
-        study_admin_group = study.admin_group
-        id_of_user_to_add = self.request.POST.get("add_user")
-        id_of_user_to_remove = self.request.POST.get("remove_user")
-
-        roles_to_groups = {
-            "study_preview": study.preview_group,
-            "study_design": study.design_group,
-            "study_analysis": study.analysis_group,
-            "study_submission_processor": study.submission_processor_group,
-            "study_researcher": study.researcher_group,
-            "study_manager": study.manager_group,
-            "study_admin": study.admin_group,
-        }
-
-        if self.request.POST.get("name") == "update_user":
-            id_of_user_to_update = self.request.POST.get("pk")
-            name_of_role_to_enable = self.request.POST.get("value")
-
-            if id_of_user_to_update:
-                user_to_update = User.objects.get(pk=id_of_user_to_update)
-                if name_of_role_to_enable in roles_to_groups:
-                    # Enforce not changing a current admin unless there's another admin
-                    if study_admin_group in user_to_update.groups.all():
-                        if study_admin_group.user_set.count() <= 1:
-                            messages.error(
-                                self.request,
-                                "Could not change permissions for this researcher. There must be at least one study admin.",
-                                extra_tags="user_removed",
-                            )
-                        assert study_admin_group.user_set.count() > 1
-                    for gr in study.all_study_groups():
-                        gr.user_set.remove(user_to_update)
-                    user_to_update.groups.add(roles_to_groups[name_of_role_to_enable])
-                    self.send_study_email(
-                        user_to_update, name_of_role_to_enable
-                    )  # TODO: format role name for email
-        if id_of_user_to_add:
-            # Adds user to study read by default
-            user_to_add = User.objects.get(pk=id_of_user_to_add)
-            user_to_add.groups.add(study.preview_group)
-            messages.success(
-                self.request,
-                f"{user_to_add.get_short_name()} given {study.name} Preview Permissions.",
-                extra_tags="user_added",
-            )
-            self.send_study_email(user_to_add, "study_preview")
-        if id_of_user_to_remove:
-            # Removes user from both study read and study admin groups
-            user_to_remove = User.objects.get(pk=id_of_user_to_remove)
-            if (
-                study_admin_group in user_to_remove.groups.all()
-                and study_admin_group.user_set.count() <= 1
-            ):
-                messages.error(
-                    self.request,
-                    "Could not delete this researcher. There must be at least one study admin.",
-                    extra_tags="user_removed",
-                )
-                return
-            for gr in study.all_study_groups():
-                gr.user_set.remove(user_to_remove)
-            messages.success(
-                self.request,
-                f"{user_to_remove.get_short_name()} removed from {study.name}.",
-                extra_tags="user_removed",
-            )
-
-    def send_study_email(self, user, permission):
-        study = self.get_object()
-        context = {
-            "permission": permission,
-            "study_name": study.name,
-            "study_id": study.id,
-            "lab_name": study.lab.name,
-            "researcher_name": user.get_short_name(),
-        }
-        send_mail.delay(
-            "notify_researcher_of_study_permissions",
-            f"New access granted for study {self.get_object().name}",
-            user.username,
-            from_email=study.lab.contact_email,
-            **context,
-        )
-
-    def add_creator_to_study_admin_group(self, clone):
-        """
-        Add the study's creator to the clone's study admin group.
-        """
-        user = self.request.user
-        study_admin_group = clone.admin_group
-        user.groups.add(study_admin_group)
-        return study_admin_group
 
     @property
     def study_logs(self):
@@ -617,6 +509,97 @@ class ManageResearcherPermissionsView(StudyDetailView):
             reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
         )
 
+    def send_study_email(self, user, permission):
+        study = self.get_object()
+        context = {
+            "permission": permission,
+            "study_name": study.name,
+            "study_id": study.id,
+            "lab_name": study.lab.name,
+            "researcher_name": user.get_short_name(),
+        }
+        send_mail.delay(
+            "notify_researcher_of_study_permissions",
+            f"New access granted for study {self.get_object().name}",
+            user.username,
+            from_email=study.lab.contact_email,
+            **context,
+        )
+
+    def manage_researcher_permissions(self):
+        """
+        Handles adding, updating, and deleting researcher from study. Users are
+        added to study read group by default.
+        """
+        change_requester = self.request.user
+        study = self.get_object()
+        study_admin_group = study.admin_group
+        id_of_user_to_add = self.request.POST.get("add_user")
+        id_of_user_to_remove = self.request.POST.get("remove_user")
+
+        roles_to_groups = {
+            "study_preview": study.preview_group,
+            "study_design": study.design_group,
+            "study_analysis": study.analysis_group,
+            "study_submission_processor": study.submission_processor_group,
+            "study_researcher": study.researcher_group,
+            "study_manager": study.manager_group,
+            "study_admin": study.admin_group,
+        }
+
+        if self.request.POST.get("name") == "update_user":
+            id_of_user_to_update = self.request.POST.get("pk")
+            name_of_role_to_enable = self.request.POST.get("value")
+
+            if id_of_user_to_update:
+                user_to_update = User.objects.get(pk=id_of_user_to_update)
+                if name_of_role_to_enable in roles_to_groups:
+                    # Enforce not changing a current admin unless there's another admin
+                    if study_admin_group in user_to_update.groups.all():
+                        if study_admin_group.user_set.count() <= 1:
+                            messages.error(
+                                self.request,
+                                "Could not change permissions for this researcher. There must be at least one study admin.",
+                                extra_tags="user_removed",
+                            )
+                        assert study_admin_group.user_set.count() > 1
+                    for gr in study.all_study_groups():
+                        gr.user_set.remove(user_to_update)
+                    user_to_update.groups.add(roles_to_groups[name_of_role_to_enable])
+                    self.send_study_email(
+                        user_to_update, name_of_role_to_enable
+                    )  # TODO: format role name for email
+        if id_of_user_to_add:
+            # Adds user to study read by default
+            user_to_add = User.objects.get(pk=id_of_user_to_add)
+            user_to_add.groups.add(study.preview_group)
+            messages.success(
+                self.request,
+                f"{user_to_add.get_short_name()} given {study.name} Preview Permissions.",
+                extra_tags="user_added",
+            )
+            self.send_study_email(user_to_add, "study_preview")
+        if id_of_user_to_remove:
+            # Removes user from both study read and study admin groups
+            user_to_remove = User.objects.get(pk=id_of_user_to_remove)
+            if (
+                study_admin_group in user_to_remove.groups.all()
+                and study_admin_group.user_set.count() <= 1
+            ):
+                messages.error(
+                    self.request,
+                    "Could not delete this researcher. There must be at least one study admin.",
+                    extra_tags="user_removed",
+                )
+                return
+            for gr in study.all_study_groups():
+                gr.user_set.remove(user_to_remove)
+            messages.success(
+                self.request,
+                f"{user_to_remove.get_short_name()} removed from {study.name}.",
+                extra_tags="user_removed",
+            )
+
 
 class ChangeStudyStatusView(StudyDetailView):
     def user_can_change_study_status(self):
@@ -678,6 +661,15 @@ class CloneStudyView(StudyDetailView):
         return user.is_researcher and user.can_create_study()
 
     test_func = user_can_clone_study
+
+    def add_creator_to_study_admin_group(self, clone):
+        """
+        Add the study's creator to the clone's study admin group.
+        """
+        user = self.request.user
+        study_admin_group = clone.admin_group
+        user.groups.add(study_admin_group)
+        return study_admin_group
 
     def post(self, *args, **kwargs):
         """Clone study on form submission. 
