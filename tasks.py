@@ -224,7 +224,17 @@ def celery_service(c):
     c.run("celery worker --app=project --loglevel=INFO -Q builds,email,cleanup")
 
 
-@task(dotenv, postgresql, rabbitmq, ssl_certificate)
+@task
+def pre_commit_hooks(c):
+    """Add pre-commit git hooks
+
+    Args:
+        c (Context): Context-aware API wrapper & state-passing object.
+    """
+    c.run("poetry run pre-commit install --install-hooks")
+
+
+@task(dotenv, postgresql, rabbitmq, ssl_certificate, pre_commit_hooks)
 def setup(_):
     """Setup invoke task.
 
