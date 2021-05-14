@@ -3,7 +3,7 @@ repos:
     rev: v1.4
     hooks:
       - id: autoflake
-        args: ['--in-place', '--recursive', '--remove-all-unused-imports', '--expand-star-imports', '--remove-duplicate-keys', '--ignore-init-module-imports']
+        args: ['--in-place', '--recursive', '--remove-all-unused-imports', '--expand-star-imports', '--remove-duplicate-keys', '--ignore-init-module-imports', '--remove-unused-variables']
   - repo: https://github.com/asottile/seed-isort-config
     rev: v2.2.0
     hooks:
