@@ -73,6 +73,7 @@ python_dotenv = "0.14.0"
 watchdog = "0.10.2"
 werkzeug = "1.0.1"
 coverage = "^5.5"
+autoflake = "1.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
