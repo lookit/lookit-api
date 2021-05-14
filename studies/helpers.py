@@ -128,7 +128,6 @@ class FrameActionDispatcher(object):
             frame_data: dictionary of frame data.
             current_frame_id: ID of the current frame (e.g. 1-my-video-consent)
         """
-        pass
 
     def exit(self, response, frame_data: dict, *args, **kwargs):
         """Exit frame hook.

@@ -1052,7 +1052,6 @@ class ResponseDataDownloadTestCase(TestCase):
             content,
             "Missing expected signaling to user that only preview data is shown on demographics view",
         )
-        pass
 
     def test_get_appropriate_participants_in_demographic_csv_as_researcher(self):
         self.client.force_login(self.study_reader)

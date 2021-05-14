@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, signals, update_session_auth_hash
+from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Prefetch
 from django.dispatch import receiver

@@ -1,7 +1,6 @@
 import json
 import uuid
 
-from django.test import TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm

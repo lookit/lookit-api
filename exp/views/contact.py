@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.utils.text import slugify

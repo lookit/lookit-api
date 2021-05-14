@@ -12,7 +12,6 @@ from guardian.shortcuts import assign_perm, get_objects_for_user
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, User
-from project import settings
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 

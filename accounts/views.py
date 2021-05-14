@@ -5,7 +5,7 @@ from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.core.handlers.wsgi import WSGIRequest
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.http.request import QueryDict
 from django.urls.base import reverse, reverse_lazy
 from django.views import generic

@@ -8,7 +8,6 @@ from django.urls import reverse
 from django_dynamic_fixture import G
 
 from accounts.models import Child, DemographicData, User
-from project import settings
 from studies.models import Lab, Study, StudyType
 
 

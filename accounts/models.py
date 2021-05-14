@@ -1,5 +1,4 @@
 import base64
-import functools
 import hashlib
 import uuid
 from io import BytesIO
@@ -10,7 +9,7 @@ import pyotp
 from bitfield import BitField
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import Group, Permission, PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
@@ -21,8 +20,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import get_objects_for_user, get_perms
-from kombu.utils import cached_property
+from guardian.shortcuts import get_perms
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
