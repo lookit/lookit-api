@@ -320,7 +320,7 @@ class LabViewsTestCase(TestCase):
             "irb_contact_info": "how to reach the IRB",
             "approved_to_test": True,
         }
-        page = self.client.post(self.lab_update_url, post_data)
+        self.client.post(self.lab_update_url, post_data)
         updated_lab = Lab.objects.get(pk=self.lab.pk)
         self.assertFalse(
             updated_lab.approved_to_test,
