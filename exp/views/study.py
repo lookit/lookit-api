@@ -464,7 +464,6 @@ class StudyDetailView(
         Handles adding, updating, and deleting researcher from study. Users are
         added to study read group by default.
         """
-        self.request.user
         study = self.get_object()
         study_admin_group = study.admin_group
         id_of_user_to_add = self.request.POST.get("add_user")

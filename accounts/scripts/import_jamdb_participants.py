@@ -157,7 +157,6 @@ def create_child(user, profile, apps):
     Creates child and links to user
     """
     Child = apps.get_model("accounts", "Child")
-    profile.get("gender")
     birthday = profile.get("birthday")
     Child.objects.create(
         given_name=profile.get("firstName", ""),

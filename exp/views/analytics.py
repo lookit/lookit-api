@@ -141,7 +141,6 @@ def get_flattened_responses(response_qs, studies_for_child):
     for page_num in paginator.page_range:
         page_of_responses = paginator.page(page_num)
         for resp in page_of_responses:
-            resp["date_created"]
             child_age_in_days = (
                 resp["date_created"].date() - resp["child__birthday"]
             ).days
