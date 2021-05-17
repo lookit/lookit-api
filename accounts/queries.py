@@ -2,10 +2,9 @@
 
 import ast
 import operator
-from datetime import date, timedelta
+from datetime import date
 from functools import reduce
 from itertools import chain
-from operator import attrgetter
 
 from django.db import models
 from django.db.models import F, Q

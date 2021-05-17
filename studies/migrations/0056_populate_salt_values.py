@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import uuid
 
-from django.db import migrations, models
+from django.db import migrations
 
 
 def gen_salt(apps, schema_editor):

@@ -288,7 +288,7 @@ class ResponseViewsTestCase(TestCase):
         self.assertEqual(
             self.study.responses.filter(is_preview=True).count(), self.n_previews
         )
-        response = self.client.post(url, {})
+        self.client.post(url, {})
         self.assertEqual(self.study.responses.filter(is_preview=True).count(), 0)
 
 
@@ -986,7 +986,7 @@ class ResponseDataDownloadTestCase(TestCase):
         content = csv_response.content.decode("utf-8")
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
-        csv_headers = csv_body.pop(0)
+        csv_body.pop(0)
         self.assertEqual(len(csv_body), self.n_preview_children)
         self.assertNotIn(
             self.poison_string,
@@ -1009,7 +1009,7 @@ class ResponseDataDownloadTestCase(TestCase):
         content = csv_response.content.decode("utf-8")
         csv_reader = csv.reader(io.StringIO(content), quoting=csv.QUOTE_ALL)
         csv_body = list(csv_reader)
-        csv_headers = csv_body.pop(0)
+        csv_body.pop(0)
         self.assertEqual(len(csv_body), self.n_total_children)
         self.assertNotIn(
             self.poison_string,
@@ -1052,7 +1052,6 @@ class ResponseDataDownloadTestCase(TestCase):
             content,
             "Missing expected signaling to user that only preview data is shown on demographics view",
         )
-        pass
 
     def test_get_appropriate_participants_in_demographic_csv_as_researcher(self):
         self.client.force_login(self.study_reader)

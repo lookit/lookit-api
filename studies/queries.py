@@ -6,7 +6,6 @@ from functools import reduce
 from django.db import models
 from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery, Value
 from django.db.models.functions import Coalesce, Concat, Lower
-from django.utils import timezone
 from django.utils.timezone import now
 from guardian.shortcuts import get_objects_for_user
 

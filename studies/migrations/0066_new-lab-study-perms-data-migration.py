@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from guardian.shortcuts import assign_perm
 
 from studies.permissions import LabGroup, SiteAdminGroup, StudyGroup
 
@@ -178,8 +177,6 @@ def revert_migration(apps, schema_editor):
         apps: instance of django.apps.registry.Apps
         schema_editor: instance of django.db.backends.base.schema.BaseDatabaseSchemaEditor
     """
-    Lab = apps.get_model("studies", "Lab")
-    Study = apps.get_model("studies", "Study")
     Group = apps.get_model("auth", "Group")
     Permission = apps.get_model("auth", "Permission")
     Organization = apps.get_model("accounts", "Organization")

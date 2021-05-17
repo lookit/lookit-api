@@ -1,12 +1,9 @@
 import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.flatpages.models import FlatPage
-from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http import HttpRequest
 from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse

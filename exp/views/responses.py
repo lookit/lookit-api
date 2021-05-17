@@ -1955,7 +1955,6 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
         Downloads study video
         """
         match = self.request.GET.get("match", "")
-        orderby = self.get_ordering()
         study = self.study
 
         if self.request.POST.get("all-attachments"):

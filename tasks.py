@@ -243,7 +243,6 @@ def setup(_):
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
     """
-    pass
 
 
 @task
