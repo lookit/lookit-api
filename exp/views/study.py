@@ -535,11 +535,23 @@ class ManageResearcherPermissionsView(
         Handles adding, updating, and deleting researcher from study. Users are
         added to study read group by default.
         """
-        change_requester = self.request.user
+        self.request.user
         study = self.get_object()
-        study_admin_group = study.admin_group
-        id_of_user_to_add = self.request.POST.get("add_user")
-        id_of_user_to_remove = self.request.POST.get("remove_user")
+        add_user_id = self.request.POST.get("add_user")
+        remove_user_id = self.request.POST.get("remove_user")
+
+        if self.request.POST.get("name") == "update_user":
+            self.update_user(study)
+
+        if add_user_id:
+            self.add_user(study, add_user_id)
+
+        if remove_user_id:
+            self.remove_user(study, remove_user_id)
+
+    def update_user(self, study: Study):
+        user_update_id = self.request.POST.get("pk")
+        enable_role = self.request.POST.get("value")
 
         roles_to_groups = {
             "study_preview": study.preview_group,
@@ -551,58 +563,59 @@ class ManageResearcherPermissionsView(
             "study_admin": study.admin_group,
         }
 
-        if self.request.POST.get("name") == "update_user":
-            id_of_user_to_update = self.request.POST.get("pk")
-            name_of_role_to_enable = self.request.POST.get("value")
+        if user_update_id:
+            update_user = User.objects.get(pk=user_update_id)
 
-            if id_of_user_to_update:
-                user_to_update = User.objects.get(pk=id_of_user_to_update)
-                if name_of_role_to_enable in roles_to_groups:
-                    # Enforce not changing a current admin unless there's another admin
-                    if study_admin_group in user_to_update.groups.all():
-                        if study_admin_group.user_set.count() <= 1:
-                            messages.error(
-                                self.request,
-                                "Could not change permissions for this researcher. There must be at least one study admin.",
-                                extra_tags="user_removed",
-                            )
-                        assert study_admin_group.user_set.count() > 1
-                    for gr in study.all_study_groups():
-                        gr.user_set.remove(user_to_update)
-                    user_to_update.groups.add(roles_to_groups[name_of_role_to_enable])
-                    self.send_study_email(
-                        user_to_update, name_of_role_to_enable
-                    )  # TODO: format role name for email
-        if id_of_user_to_add:
-            # Adds user to study read by default
-            user_to_add = User.objects.get(pk=id_of_user_to_add)
-            user_to_add.groups.add(study.preview_group)
-            messages.success(
+            if enable_role in roles_to_groups:
+                # Enforce not changing a current admin unless there's another admin
+                if self.user_only_admin(study, update_user):
+                    messages.error(
+                        self.request,
+                        "Could not change permissions for this researcher. There must be at least one study admin.",
+                        extra_tags="user_removed",
+                    )
+
+                for study_group in study.all_study_groups():
+                    study_group.user_set.remove(update_user)
+
+                update_user.groups.add(roles_to_groups[enable_role])
+                self.send_study_email(update_user, enable_role)
+                # TODO: format role name for email
+
+    def add_user(self, study: Study, add_user_id):
+        # Adds user to study read by default
+        user_to_add = User.objects.get(pk=add_user_id)
+        user_to_add.groups.add(study.preview_group)
+        messages.success(
+            self.request,
+            f"{user_to_add.get_short_name()} given {study.name} Preview Permissions.",
+            extra_tags="user_added",
+        )
+        self.send_study_email(user_to_add, "study_preview")
+
+    def remove_user(self, study: Study, remove_user_id):
+        # Removes user from both study read and study admin groups
+        remove_user = User.objects.get(pk=remove_user_id)
+        if self.user_only_admin(study, remove_user):
+            messages.error(
                 self.request,
-                f"{user_to_add.get_short_name()} given {study.name} Preview Permissions.",
-                extra_tags="user_added",
-            )
-            self.send_study_email(user_to_add, "study_preview")
-        if id_of_user_to_remove:
-            # Removes user from both study read and study admin groups
-            user_to_remove = User.objects.get(pk=id_of_user_to_remove)
-            if (
-                study_admin_group in user_to_remove.groups.all()
-                and study_admin_group.user_set.count() <= 1
-            ):
-                messages.error(
-                    self.request,
-                    "Could not delete this researcher. There must be at least one study admin.",
-                    extra_tags="user_removed",
-                )
-                return
-            for gr in study.all_study_groups():
-                gr.user_set.remove(user_to_remove)
-            messages.success(
-                self.request,
-                f"{user_to_remove.get_short_name()} removed from {study.name}.",
+                "Could not delete this researcher. There must be at least one study admin.",
                 extra_tags="user_removed",
             )
+            return
+        for study_group in study.all_study_groups():
+            study_group.user_set.remove(remove_user)
+        messages.success(
+            self.request,
+            f"{remove_user.get_short_name()} removed from {study.name}.",
+            extra_tags="user_removed",
+        )
+
+    def user_only_admin(self, study: Study, user: User):
+        return (
+            study.admin_group in user.groups.all()
+            and study.admin_group.user_set.count() <= 1
+        )
 
 
 class ChangeStudyStatusView(
