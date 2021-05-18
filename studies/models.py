@@ -1132,7 +1132,6 @@ class Video(models.Model):
         null=True
     )  # Sad that we don't keep this metadata elsewhere...
     frame_id = models.CharField(max_length=255, blank=False)
-    size = models.PositiveIntegerField(null=True)
     full_name = models.CharField(
         max_length=255, blank=False, unique=True, db_index=True
     )

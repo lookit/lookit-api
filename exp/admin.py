@@ -83,7 +83,6 @@ class VideoAdmin(GuardedModelAdmin):
         "study",
         "response",
         "full_name",
-        "size",
         "is_consent_footage",
     )
     list_filter = ("study",)
