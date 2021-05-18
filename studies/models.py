@@ -1234,7 +1234,6 @@ class Video(models.Model):
             pipe_numeric_id=data["id"],
             s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=pytz.utc),
             frame_id=frame_id,
-            size=data["size"],
             full_name=new_full_name,
             study=study,
             response=response,
