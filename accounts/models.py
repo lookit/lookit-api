@@ -78,7 +78,7 @@ class Organization(models.Model):
             ("can_edit_organization", _("Can Edit Organization")),
             ("can_create_organization", _("Can Create Organization")),
             ("can_remove_organization", _("Can Remove Organization")),
-            ("can_view_researcher", _("Can View Researcher")),
+            ("can_view_experimenter", _("Can View Experimenter")),
             ("can_view_analytics", _("Can View Analytics")),
         )
         ordering = ["name"]

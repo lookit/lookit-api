@@ -262,7 +262,7 @@ msgid "Can Remove Organization"
 msgstr "Kann die Organisation entfernen"
 
 #: accounts/models.py:70
-msgid "Can View Researcher"
+msgid "Can View Experimenter"
 msgstr "Kann den Experimentator sehen"
 
 #: accounts/models.py:71

@@ -126,7 +126,7 @@ AUTHENTICATION_BACKENDS = (
 
 ROOT_URLCONF = "project.urls"
 LOGIN_URL = "/login/"
-RESEARCHER_LOGIN_URL = "/accounts/login/"
+EXPERIMENTER_LOGIN_URL = "/accounts/login/"
 
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 

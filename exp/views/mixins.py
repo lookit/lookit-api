@@ -60,12 +60,12 @@ class ResearcherLoginRequiredMixin(LookitHandlerBase, LoginRequiredMixin):
         else:
             if user.is_authenticated:
                 return HttpResponseForbidden(
-                    f"Researcher account required to see Researcher app."
+                    f"Researcher account required to see Experimenter app."
                 )
             else:
                 messages.info(
                     request,
-                    "Please sign in with your researcher account to see Researcher app.",
+                    "Please sign in with your researcher account to see Experimenter app.",
                 )
                 return HttpResponseRedirect(reverse("login"))
 
