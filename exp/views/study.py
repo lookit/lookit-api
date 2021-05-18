@@ -481,7 +481,7 @@ class StudyDetailView(
 
 
 class ManageResearcherPermissionsView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
 ):
     model = Study
 
@@ -619,7 +619,7 @@ class ManageResearcherPermissionsView(
 
 
 class ChangeStudyStatusView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
 ):
     model = Study
 
@@ -672,7 +672,7 @@ class ChangeStudyStatusView(
 
 
 class CloneStudyView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
 ):
     model = Study
 
