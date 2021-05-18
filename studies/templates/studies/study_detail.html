@@ -32,17 +32,22 @@
                 infoText = transitionHelpData[trigger];
                 commentsHelpText = commentsHelpData[trigger];
 
-            stateChangeCommentsInput.hide();
-            if (trigger === 'reject' || trigger === 'submit' || trigger === 'resubmit') {
-                stateChangeCommentsInput.show();
-                if (trigger === 'reject') {
-                    stateChangeCommentsInput.attr('placeholder', 'List requested changes here');
-                } else if (trigger === 'resubmit') {
+            switch(trigger) {
+                case 'reject':
+                    stateChangeCommentsInput.attr('placeholder', 'List requested changes here');    
+                    break;
+                case 'resubmit':
                     stateChangeCommentsInput.attr('placeholder', 'List changes here');
-                } else if (trigger === 'submit') {
+                    break;
+                case 'submit':
                     stateChangeCommentsInput.attr('placeholder', 'Provide information about peer review and any nonstandard elements here');
+                    break;
+                case 'approve':
+                    stateChangeCommentsInput.attr('placeholder', 'List approval comments here');
+                    break;
+                default:
+                    stateChangeCommentsInput.hide();
                 }
-            }
 
             let $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
             $additionalInfoSpan.text(infoText);
