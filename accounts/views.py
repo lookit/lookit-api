@@ -65,7 +65,7 @@ class TwoFactorAuthLoginView(UserPassesTestMixin, LoginView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_redirect_url(self) -> str:
-        """Have a good default for experimenters - the study list."""
+        """Have a good default for researchers - the study list."""
         return super().get_redirect_url() or reverse("exp:study-list")
 
 

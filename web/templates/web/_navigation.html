@@ -14,7 +14,7 @@
       {% if user.is_researcher %}
         <ul class="nav navbar-nav navbar-left">
           <li class="nav-item active"><a class="navbar-item" href="{% url 'web:home' %}">{% trans "Lookit" %}</a></li>
-          <li class="nav-item"><a class="navbar-item active" href="{% url 'exp:study-list' %}">{% trans "Experimenter" %}</a></li>
+          <li class="nav-item"><a class="navbar-item active" href="{% url 'exp:study-list' %}">{% trans "Researcher" %}</a></li>
           <li class="divider-vertical"></li>
         </ul>
       {% else %}

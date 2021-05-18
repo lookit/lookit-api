@@ -867,7 +867,7 @@ class EligibilityTestCase(TestCase):
 
 
 class Force2FAClient(Client):
-    """For convenience when testing experimenter views, let's just pretend everyone is two-factor auth'd."""
+    """For convenience when testing researcher views, let's just pretend everyone is two-factor auth'd."""
 
     @property
     def session(self):

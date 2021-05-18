@@ -13,7 +13,7 @@ One sentence description of what we want to add to the platform.
 # Narrative
 What is the user story for this feature? the format should be as follows, e.g.: 
 
-"As an Experimenter, I would like to have a new view to see all consented videos for a given experiment."
+"As a Researcher, I would like to have a new view to see all consented videos for a given experiment."
 
 <details>
 <summary>Feature Request fields</summary>

@@ -16,7 +16,7 @@ from revproxy.views import ProxyView
 from accounts.models import Child, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.views.mixins import (
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     SingleObjectFetchProtocol,
     StudyTypeMixin,
 )
@@ -86,7 +86,7 @@ KEY_DISPLAY_NAMES = {
 
 
 class StudyCreateView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     StudyTypeMixin,
     generic.CreateView,
@@ -160,7 +160,7 @@ class StudyCreateView(
 
 
 class StudyUpdateView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     StudyTypeMixin,
     SingleObjectFetchProtocol[Study],
@@ -296,7 +296,7 @@ class StudyUpdateView(
 
 
 class StudyListView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.ListView
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.ListView
 ):
     """
     StudyListView shows a list of studies that a user has permission to.
@@ -339,7 +339,7 @@ class StudyListView(
 
 
 class StudyDetailView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     PaginatorMixin,
     SingleObjectFetchProtocol[Study],
@@ -732,7 +732,7 @@ class CloneStudyView(
 
 
 class StudyBuildView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     SingleObjectMixin,
@@ -779,7 +779,7 @@ class StudyBuildView(
 
 
 class StudyPreviewDetailView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     generic.DetailView,
@@ -829,14 +829,14 @@ class StudyPreviewDetailView(
         """POST override to act as GET would in RedirectView.
 
         TODO: No more POST masquerading as GET, rewrite the template and both the
-            web and experimenter views to be more reasonably sane.
+            web and researcher views to be more reasonably sane.
         """
         child_id = self.request.POST.get("child_id")
         kwargs["child_id"] = child_id
         return HttpResponseRedirect(reverse("exp:preview-proxy", kwargs=kwargs))
 
 
-class PreviewProxyView(ExperimenterLoginRequiredMixin, UserPassesTestMixin, ProxyView):
+class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyView):
     """
     Proxy view to forward researcher to preview page in the Ember app
     """

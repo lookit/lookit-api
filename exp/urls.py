@@ -18,7 +18,6 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from exp.views import (
-    ExperimenterDashboardView,
     LabCreateView,
     LabDetailView,
     LabListView,
@@ -29,6 +28,7 @@ from exp.views import (
     ParticipantListView,
     PreviewProxyView,
     RenameVideoView,
+    ResearcherDashboardView,
     StudyAttachments,
     StudyBuildView,
     StudyChildrenCSV,
@@ -218,5 +218,5 @@ urlpatterns = [
         PreviewProxyView.as_view(),
         name="preview-proxy",
     ),
-    path("", ExperimenterDashboardView.as_view(), name="dashboard"),
+    path("", ResearcherDashboardView.as_view(), name="dashboard"),
 ]

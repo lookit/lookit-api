@@ -41,7 +41,7 @@ from exp.utils import (
 )
 from exp.views.mixins import (
     CanViewStudyResponsesMixin,
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     SingleObjectFetchProtocol,
     StudyLookupMixin,
 )
@@ -1174,7 +1174,7 @@ class StudySingleResponseDownload(ResponseDownloadMixin, View):
 
 
 class StudyResponseVideoAttachment(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin, View
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin, View
 ):
     """
     View that redirects to a requested video for a study response.
@@ -1284,7 +1284,7 @@ class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
 
 
 class StudyResponsesConsentManager(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     generic.DetailView,
@@ -1445,7 +1445,7 @@ class StudyResponsesAll(
 
 
 class StudyDeletePreviewResponses(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     SingleObjectMixin,

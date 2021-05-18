@@ -9,7 +9,7 @@ from django.views import generic
 
 from accounts.models import Child, User
 from exp.utils import RESPONSE_PAGE_SIZE
-from exp.views.mixins import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ResearcherLoginRequiredMixin
 from studies.fields import (
     CONDITIONS,
     GESTATIONAL_AGE_ENUM_MAP,
@@ -25,7 +25,7 @@ CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDI
 
 
 class StudyParticipantAnalyticsView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.TemplateView
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.TemplateView
 ):
     template_name = "studies/study_participant_analytics.html"
     model = Study
