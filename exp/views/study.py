@@ -346,8 +346,8 @@ class StudyDetailView(
     generic.DetailView,
 ):
     """
-    StudyDetailView shows information about a study. Can view basic metadata about a study,
-    view study logs, manage study researchers, and change a study's state.
+    StudyDetailView shows information about a study. It can view basic metadata about a study and
+    view study logs.
     """
 
     model = Study
@@ -355,208 +355,20 @@ class StudyDetailView(
     raise_exception = True
 
     def user_can_see_or_edit_study_details(self):
-        """Checks based on method, with fallback to umbrella lab perms.
+        """Checks if user has permission to view study details.
 
         Returns:
             A boolean indicating whether or not the user should be able to see
             this view.
         """
         user = self.request.user
-        method = self.request.method
-        study = self.get_object()
-
-        if not user.is_researcher:
-            return False
-
-        if method == "GET":
-            return user.has_study_perms(StudyPermission.READ_STUDY_DETAILS, study)
-        # TODO: this is very goofy, will make more sense in separate views
-        elif method == "POST":
-            if (
-                "add_user" in self.request.POST
-                or "remove_user" in self.request.POST
-                or self.request.POST.get("name") == "update_user"
-            ):
-                return user.has_study_perms(
-                    StudyPermission.MANAGE_STUDY_RESEARCHERS, study
-                )
-            if "trigger" in self.request.POST:
-                return user.has_study_perms(StudyPermission.CHANGE_STUDY_STATUS, study)
-            if "clone_study" in self.request.POST:
-                return user.can_create_study()
-        else:
-            # If we're not one of the two allowed methods this should be caught
-            # earlier
-            return False
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.READ_STUDY_DETAILS, self.get_object()
+        )
 
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
     test_func = user_can_see_or_edit_study_details
-
-    def post(self, *args, **kwargs):
-        """
-        Post method can:
-         - update the trigger if the state of the study has changed
-         - clone study and redirect to the clone
-         - add, remove, or update permissions for a researcher
-        TODO: these should be broken out into three separate views!
-        """
-        # Manage researchers case
-        if (
-            "add_user" in self.request.POST
-            or "remove_user" in self.request.POST
-            or self.request.POST.get("name") == "update_user"
-        ):
-
-            try:
-                self.manage_researcher_permissions()
-                HttpResponseRedirect(
-                    reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
-                )
-            except AssertionError:
-                return HttpResponseForbidden()
-        # Change study status case
-        if "trigger" in self.request.POST:
-            try:
-                update_trigger(self)
-            except Exception as e:
-                messages.error(self.request, f"TRANSITION ERROR: {e}")
-                return HttpResponseRedirect(
-                    reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
-                )
-        # Clone study case
-        if self.request.POST.get("clone_study"):
-            orig_study = self.get_object()
-            clone = orig_study.clone()
-            clone.creator = self.request.user
-            # Clone within the current lab if user is allowed to. Otherwise, choose the first possible
-            if self.request.user.has_perm(
-                LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=orig_study.lab
-            ):
-                clone.lab = orig_study.lab
-            else:
-                for lab in self.request.user.labs.only("id"):
-                    if clone.creator.has_perm(
-                        LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
-                    ):
-                        clone.lab = lab
-                        break
-                else:
-                    # Shouldn't end up here because we checked can_create_study, but just in case
-                    return HttpResponseForbidden()
-            clone.study_type = orig_study.study_type
-            clone.built = False
-            clone.is_building = False
-            clone.save()
-            # Adds success message when study is cloned
-            messages.success(self.request, f"{orig_study.name} copied.")
-            self.add_creator_to_study_admin_group(clone)
-            return HttpResponseRedirect(
-                reverse("exp:study-edit", kwargs=dict(pk=clone.pk))
-            )
-
-        return HttpResponseRedirect(
-            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
-        )
-
-    def manage_researcher_permissions(self):
-        """
-        Handles adding, updating, and deleting researcher from study. Users are
-        added to study read group by default.
-        """
-        study = self.get_object()
-        study_admin_group = study.admin_group
-        id_of_user_to_add = self.request.POST.get("add_user")
-        id_of_user_to_remove = self.request.POST.get("remove_user")
-
-        roles_to_groups = {
-            "study_preview": study.preview_group,
-            "study_design": study.design_group,
-            "study_analysis": study.analysis_group,
-            "study_submission_processor": study.submission_processor_group,
-            "study_researcher": study.researcher_group,
-            "study_manager": study.manager_group,
-            "study_admin": study.admin_group,
-        }
-
-        if self.request.POST.get("name") == "update_user":
-            id_of_user_to_update = self.request.POST.get("pk")
-            name_of_role_to_enable = self.request.POST.get("value")
-
-            if id_of_user_to_update:
-                user_to_update = User.objects.get(pk=id_of_user_to_update)
-                if name_of_role_to_enable in roles_to_groups:
-                    # Enforce not changing a current admin unless there's another admin
-                    if study_admin_group in user_to_update.groups.all():
-                        if study_admin_group.user_set.count() <= 1:
-                            messages.error(
-                                self.request,
-                                "Could not change permissions for this researcher. There must be at least one study admin.",
-                                extra_tags="user_removed",
-                            )
-                        assert study_admin_group.user_set.count() > 1
-                    for gr in study.all_study_groups():
-                        gr.user_set.remove(user_to_update)
-                    user_to_update.groups.add(roles_to_groups[name_of_role_to_enable])
-                    self.send_study_email(
-                        user_to_update, name_of_role_to_enable
-                    )  # TODO: format role name for email
-        if id_of_user_to_add:
-            # Adds user to study read by default
-            user_to_add = User.objects.get(pk=id_of_user_to_add)
-            user_to_add.groups.add(study.preview_group)
-            messages.success(
-                self.request,
-                f"{user_to_add.get_short_name()} given {study.name} Preview Permissions.",
-                extra_tags="user_added",
-            )
-            self.send_study_email(user_to_add, "study_preview")
-        if id_of_user_to_remove:
-            # Removes user from both study read and study admin groups
-            user_to_remove = User.objects.get(pk=id_of_user_to_remove)
-            if (
-                study_admin_group in user_to_remove.groups.all()
-                and study_admin_group.user_set.count() <= 1
-            ):
-                messages.error(
-                    self.request,
-                    "Could not delete this researcher. There must be at least one study admin.",
-                    extra_tags="user_removed",
-                )
-                return
-            for gr in study.all_study_groups():
-                gr.user_set.remove(user_to_remove)
-            messages.success(
-                self.request,
-                f"{user_to_remove.get_short_name()} removed from {study.name}.",
-                extra_tags="user_removed",
-            )
-
-    def send_study_email(self, user, permission):
-        study = self.get_object()
-        context = {
-            "permission": permission,
-            "study_name": study.name,
-            "study_id": study.id,
-            "lab_name": study.lab.name,
-            "researcher_name": user.get_short_name(),
-        }
-        send_mail.delay(
-            "notify_researcher_of_study_permissions",
-            f"New access granted for study {self.get_object().name}",
-            user.username,
-            from_email=study.lab.contact_email,
-            **context,
-        )
-
-    def add_creator_to_study_admin_group(self, clone):
-        """
-        Add the study's creator to the clone's study admin group.
-        """
-        user = self.request.user
-        study_admin_group = clone.admin_group
-        user.groups.add(study_admin_group)
-        return study_admin_group
 
     @property
     def study_logs(self):
@@ -666,6 +478,257 @@ class StudyDetailView(
         """Builds paginated search results for researchers."""
         page = self.request.GET.get("page")
         return self.paginated_queryset(researchers_result, page, 10)
+
+
+class ManageResearcherPermissionsView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+):
+    model = Study
+
+    def user_can_change_study_permissions(self):
+        """Checks if user has permission to update researcher permissions.
+
+        Returns:
+            bool: Returns false if user does not have permission.
+        """
+        user = self.request.user
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.MANAGE_STUDY_RESEARCHERS, self.get_object()
+        )
+
+    # Make PyCharm happy - otherwise we'd just override
+    # UserPassesTestMixin.get_test_func()
+    test_func = user_can_change_study_permissions
+
+    def post(self, *args, **kwargs):
+        """Updates user permissions on form submission.
+
+        """
+        try:
+            self.manage_researcher_permissions()
+        except AssertionError:
+            return HttpResponseForbidden()
+
+        return HttpResponseRedirect(
+            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
+        )
+
+    def send_study_email(self, user, permission):
+        study = self.get_object()
+        context = {
+            "permission": permission,
+            "study_name": study.name,
+            "study_id": study.id,
+            "lab_name": study.lab.name,
+            "researcher_name": user.get_short_name(),
+        }
+        send_mail.delay(
+            "notify_researcher_of_study_permissions",
+            f"New access granted for study {self.get_object().name}",
+            user.username,
+            from_email=study.lab.contact_email,
+            **context,
+        )
+
+    def manage_researcher_permissions(self):
+        """
+        Handles adding, updating, and deleting researcher from study. Users are
+        added to study read group by default.
+        """
+        self.request.user
+        study = self.get_object()
+        add_user_id = self.request.POST.get("add_user")
+        remove_user_id = self.request.POST.get("remove_user")
+
+        if self.request.POST.get("name") == "update_user":
+            self.update_user(study)
+
+        if add_user_id:
+            self.add_user(study, add_user_id)
+
+        if remove_user_id:
+            self.remove_user(study, remove_user_id)
+
+    def update_user(self, study: Study):
+        user_update_id = self.request.POST.get("pk")
+        enable_role = self.request.POST.get("value")
+
+        roles_to_groups = {
+            "study_preview": study.preview_group,
+            "study_design": study.design_group,
+            "study_analysis": study.analysis_group,
+            "study_submission_processor": study.submission_processor_group,
+            "study_researcher": study.researcher_group,
+            "study_manager": study.manager_group,
+            "study_admin": study.admin_group,
+        }
+
+        if user_update_id:
+            update_user = User.objects.get(pk=user_update_id)
+
+            if enable_role in roles_to_groups:
+                # Enforce not changing a current admin unless there's another admin
+                if self.user_only_admin(study, update_user):
+                    messages.error(
+                        self.request,
+                        "Could not change permissions for this researcher. There must be at least one study admin.",
+                        extra_tags="user_removed",
+                    )
+
+                for study_group in study.all_study_groups():
+                    study_group.user_set.remove(update_user)
+
+                update_user.groups.add(roles_to_groups[enable_role])
+                self.send_study_email(update_user, enable_role)
+                # TODO: format role name for email
+
+    def add_user(self, study: Study, add_user_id):
+        # Adds user to study read by default
+        user_to_add = User.objects.get(pk=add_user_id)
+        user_to_add.groups.add(study.preview_group)
+        messages.success(
+            self.request,
+            f"{user_to_add.get_short_name()} given {study.name} Preview Permissions.",
+            extra_tags="user_added",
+        )
+        self.send_study_email(user_to_add, "study_preview")
+
+    def remove_user(self, study: Study, remove_user_id):
+        # Removes user from both study read and study admin groups
+        remove_user = User.objects.get(pk=remove_user_id)
+        if self.user_only_admin(study, remove_user):
+            messages.error(
+                self.request,
+                "Could not delete this researcher. There must be at least one study admin.",
+                extra_tags="user_removed",
+            )
+            return
+        for study_group in study.all_study_groups():
+            study_group.user_set.remove(remove_user)
+        messages.success(
+            self.request,
+            f"{remove_user.get_short_name()} removed from {study.name}.",
+            extra_tags="user_removed",
+        )
+
+    def user_only_admin(self, study: Study, user: User):
+        return (
+            study.admin_group in user.groups.all()
+            and study.admin_group.user_set.count() <= 1
+        )
+
+
+class ChangeStudyStatusView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+):
+    model = Study
+
+    def user_can_change_study_status(self):
+        """Checks that the user has permission to change study status.
+
+        Returns:
+            bool: Returns false if user does not have permission.
+        """
+        user = self.request.user
+        return user.is_researcher and user.has_study_perms(
+            StudyPermission.CHANGE_STUDY_STATUS, self.get_object()
+        )
+
+    # Make PyCharm happy - otherwise we'd just override
+    # UserPassesTestMixin.get_test_func()
+    test_func = user_can_change_study_status
+
+    def post(self, *args, **kwargs):
+        """Update study status on form submission.
+
+        """
+        try:
+            self.update_trigger()
+        except Exception as e:
+            messages.error(self.request, f"TRANSITION ERROR: {e}")
+
+        return HttpResponseRedirect(
+            reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
+        )
+
+    def update_trigger(self):
+        """Transition to next state in study workflow.
+
+        :param self: An instance of the django view.
+        :type self: StudyDetailView or StudyUpdateView
+        """
+        trigger = self.request.POST.get("trigger")
+        object = self.get_object()
+        if trigger:
+            if hasattr(object, trigger):
+                if "comments-text" in self.request.POST.keys():
+                    object.comments = self.request.POST["comments-text"]
+                    object.save()
+                # transition through workflow state
+                getattr(object, trigger)(user=self.request.user)
+        displayed_state = object.state if object.state != "active" else "activated"
+        messages.success(self.request, f"Study {object.name} {displayed_state}.")
+        return object
+
+
+class CloneStudyView(
+    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+):
+    model = Study
+
+    def user_can_clone_study(self):
+        """Checks if user has permissions to clone study.
+
+        Returns:
+            bool: Returns false if user does not have permission.
+        """
+        user = self.request.user
+        return user.is_researcher and user.can_create_study()
+
+    test_func = user_can_clone_study
+
+    def add_creator_to_study_admin_group(self, clone):
+        """
+        Add the study's creator to the clone's study admin group.
+        """
+        user = self.request.user
+        study_admin_group = clone.admin_group
+        user.groups.add(study_admin_group)
+        return study_admin_group
+
+    def post(self, *args, **kwargs):
+        """Clone study on form submission. 
+
+        """
+        orig_study = self.get_object()
+        clone = orig_study.clone()
+        clone.creator = self.request.user
+
+        # Clone within the current lab if user is allowed to. Otherwise, choose the first possible
+        if self.request.user.has_perm(
+            LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=orig_study.lab
+        ):
+            clone.lab = orig_study.lab
+        else:
+            for lab in self.request.user.labs.only("id"):
+                if clone.creator.has_perm(
+                    LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=lab
+                ):
+                    clone.lab = lab
+                    break
+            else:
+                # Shouldn't end up here because we checked can_create_study, but just in case
+                return HttpResponseForbidden()
+
+        clone.study_type = orig_study.study_type
+        clone.built = False
+        clone.is_building = False
+        clone.save()
+
+        # Adds success message when study is cloned
+        messages.success(self.request, f"{orig_study.name} copied.")
+        self.add_creator_to_study_admin_group(clone)
+        return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=clone.pk)))
 
 
 class StudyBuildView(
@@ -860,26 +923,3 @@ def get_permitted_triggers(view_instance, triggers):
         permitted_triggers.append(trigger)
 
     return permitted_triggers
-
-
-def update_trigger(view_instance):
-    """Transition to next state in study workflow.
-
-    TODO: Comments text is a bit silly to have here - let's move it to the proper Edit
-    View to be in the appropriate functional location once we do a refactor.
-
-    :param view_instance: An instance of the django view.
-    :type view_instance: StudyDetailView or StudyUpdateView
-    """
-    trigger = view_instance.request.POST.get("trigger")
-    object = view_instance.get_object()
-    if trigger:
-        if hasattr(object, trigger):
-            if "comments-text" in view_instance.request.POST.keys():
-                object.comments = view_instance.request.POST["comments-text"]
-                object.save()
-            # transition through workflow state
-            getattr(object, trigger)(user=view_instance.request.user)
-    displayed_state = object.state if object.state != "active" else "activated"
-    messages.success(view_instance.request, f"Study {object.name} {displayed_state}.")
-    return object

@@ -302,7 +302,7 @@
                         {% if can_create_study %}
                             {#  Here we have a hidden clone form so we can maintain dropdown styling. #}
                             {#  TODO: actually use this form to let the user clone the study in a specific lab. #}
-                            <form id="cloneForm" method="POST" style="display:none;">{% csrf_token %}
+                            <form id="cloneForm" action="{% url 'exp:clone-study' study.id %}" method="POST" style="display:none;">{% csrf_token %}
                                 <input type="hidden" name="clone_study" value="{{ study.id }}"/>
                             </form>
                             <a type="button" class="btn btn-default" role="button" onclick="cloneStudy()">
@@ -406,7 +406,7 @@
                                                         </div>
                                                         <div class="col-xs-3">
                                                             <form method="POST"
-                                                                  action="./#manage-researchers">{% csrf_token %}
+                                                                  action="{% url 'exp:manage-researcher-permissions' study.id %}">{% csrf_token %}
                                                                 <input type="hidden" name="add_user"
                                                                        value="{{ user.id }}"/>
                                                                 <button aria-label="Add researcher to study"
@@ -463,7 +463,7 @@
                                                         <a href="#" data-name="update_user"
                                                            class="researcher_permissions"
                                                            data-type="select"
-                                                           data-url="{% url 'exp:study-detail' pk=study.id %}"
+                                                           data-url="{% url 'exp:manage-researcher-permissions' study.id %}"
                                                            data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
                                                            data-id="{{ researcher.user.get_short_name }}"
                                                            data-pk="{{ researcher.user.id }}"
@@ -473,7 +473,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-2 researcher-delete">
-                                                    <form method="POST" action="./#manage-researchers">{% csrf_token %}
+                                                    <form method="POST" action="{% url 'exp:manage-researcher-permissions' study.id %}">{% csrf_token %}
                                                         <input type="hidden" name="remove_user"
                                                                value="{{ researcher.user.id }}"/>
                                                         <button aria-label="Remove researcher from study" type="submit"
@@ -550,7 +550,7 @@
         </div>
     </div>
     {#  MODALS #}
-    <form class="modal fade" id="study-state-modal" method="POST">{% csrf_token %}
+    <form class="modal fade" id="study-state-modal" action="{% url 'exp:change-study-status' study.id %}" method="POST">{% csrf_token %}
         <input type="hidden" name="trigger"/>
         <div class="modal-content">
             <div class="modal-header">
