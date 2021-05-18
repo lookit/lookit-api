@@ -1,6 +1,7 @@
 {% load bootstrap3 %}
 {% load static %}
 {% load guardian_tags %}
+{% load web_extras %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -34,6 +35,7 @@
     <script src="{% static 'exp/js/bootstrap-editable.min.js' %}"></script>
     <script src="{% static 'exp/js/clipboard.min.js' %}"></script>
     <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-z9ZOvGHHo21RqN5De4rfJMoAxYpaVoiYhuJXPyVmSs8yn20IE3PmBM534CffwSJI"></script>
+    {% google_analytics %}
   </head>
   <body>
     <div class="container-fluid">

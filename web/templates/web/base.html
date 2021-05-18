@@ -1,6 +1,7 @@
 {% load bootstrap3 %}
 {% load static %}
 {% load i18n %}
+{% load web_extras %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -21,6 +22,7 @@
     <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" />
     <script src="{% static 'js/moment.min.js' %}"></script>
     <link type="text/css" rel="stylesheet" href="{% static "base.css" %}" />
+    {% google_analytics %}
     {% block head %}
     {% endblock %}
 
