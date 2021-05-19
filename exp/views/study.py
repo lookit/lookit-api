@@ -421,7 +421,14 @@ class StudyDetailView(
         context["can_create_study"] = self.request.user.can_create_study()
         # Since get_obj_perms template tag doesn't collect study + lab perms
         context["study_perms"] = self.request.user.perms_for_study(study)
+        context["comments"] = self.comments(study)
         return context
+
+    def comments(self, study: Study):
+        if not study.lab.approved_to_test:
+            return f"It is not possible to submit or start this study until the lab {study.lab.name} is approved to test."
+        else:
+            return study.comments
 
     def get_study_researchers(self):
         """Pulls researchers that belong to any study access groups for displaying/managing that access

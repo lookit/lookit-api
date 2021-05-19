@@ -350,15 +350,14 @@
 
                                 </div>
                             </li>
-                            <li class="list-group-item">
-                                {% if not study.lab.approved_to_test %}
-                                    <em> It is not possible to submit or start this study until the lab {{study.lab.name}}
-                                        is approved to test. </em>
-                                {% endif %}
-                                {% if study.comments %}
-                                <p><em>Comments: {{ study.comments }}</em></p>
-                                {% endif %}
+                            {% if comments %}
+                            <li class="list-group-item panel-heading">
+                                <h1 class="panel-title">Comments</h1>
                             </li>
+                            <li class="list-group-item">
+                                <em>{{comments|linebreaks}}</em>
+                            </li>
+                            {% endif %}
                             <li class="list-group-item list-group-item-{{ build_ui_tag }}">
                                 <div class="row">
                                     <div class="col-xs-9">
