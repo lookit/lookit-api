@@ -1132,7 +1132,6 @@ class Video(models.Model):
         null=True
     )  # Sad that we don't keep this metadata elsewhere...
     frame_id = models.CharField(max_length=255, blank=False)
-    size = models.PositiveIntegerField(null=True)
     full_name = models.CharField(
         max_length=255, blank=False, unique=True, db_index=True
     )
@@ -1235,7 +1234,6 @@ class Video(models.Model):
             pipe_numeric_id=data["id"],
             s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=pytz.utc),
             frame_id=frame_id,
-            size=data["size"],
             full_name=new_full_name,
             study=study,
             response=response,
