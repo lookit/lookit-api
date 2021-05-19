@@ -355,8 +355,8 @@
                                     <em> It is not possible to submit or start this study until the lab {{study.lab.name}}
                                         is approved to test. </em>
                                 {% endif %}
-                                {% if study.state == "rejected" %}
-                                    <p><em>Rejection Reason: {{ study.comments }}</em></p>
+                                {% if study.comments %}
+                                <p><em>Comments: {{ study.comments }}</em></p>
                                 {% endif %}
                             </li>
                             <li class="list-group-item list-group-item-{{ build_ui_tag }}">
