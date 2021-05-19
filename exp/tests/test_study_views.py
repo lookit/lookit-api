@@ -21,7 +21,7 @@ from guardian.shortcuts import assign_perm, get_objects_for_user
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, User
-from exp.views.mixins import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ResearcherLoginRequiredMixin
 from exp.views.study import (
     ChangeStudyStatusView,
     CloneStudyView,
@@ -528,8 +528,8 @@ class CloneStudyViewTestCase(TestCase):
 
     def test_permissions(self):
         self.assertTrue(
-            issubclass(CloneStudyView, ExperimenterLoginRequiredMixin),
-            "CloneStudyView must have ExperimenterLoginRequiredMixin",
+            issubclass(CloneStudyView, ResearcherLoginRequiredMixin),
+            "CloneStudyView must have ResearcherLoginRequiredMixin",
         )
         self.assertTrue(
             issubclass(CloneStudyView, UserPassesTestMixin),
@@ -633,8 +633,8 @@ class ChangeStudyStatusViewTestCase(TestCase):
 
     def test_permissions(self):
         self.assertTrue(
-            issubclass(ChangeStudyStatusView, ExperimenterLoginRequiredMixin),
-            "ChangeStudyStatusView must have ExperimenterLoginRequiredMixin",
+            issubclass(ChangeStudyStatusView, ResearcherLoginRequiredMixin),
+            "ChangeStudyStatusView must have ResearcherLoginRequiredMixin",
         )
         self.assertTrue(
             issubclass(ChangeStudyStatusView, UserPassesTestMixin),
@@ -771,8 +771,8 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
 
     def test_permissions(self) -> None:
         self.assertTrue(
-            issubclass(ManageResearcherPermissionsView, ExperimenterLoginRequiredMixin),
-            "ManageResearcherPermissionsView must have ExperimenterLoginRequiredMixin",
+            issubclass(ManageResearcherPermissionsView, ResearcherLoginRequiredMixin),
+            "ManageResearcherPermissionsView must have ResearcherLoginRequiredMixin",
         )
         self.assertTrue(
             issubclass(ManageResearcherPermissionsView, UserPassesTestMixin),

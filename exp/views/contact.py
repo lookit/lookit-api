@@ -7,13 +7,13 @@ from django.views import generic
 
 from accounts.models import Message, User
 from accounts.utils import hash_id
-from exp.views.mixins import ExperimenterLoginRequiredMixin, SingleObjectFetchProtocol
+from exp.views.mixins import ResearcherLoginRequiredMixin, SingleObjectFetchProtocol
 from studies.models import Study
 from studies.permissions import StudyPermission
 
 
 class StudyParticipantContactView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     generic.DetailView,

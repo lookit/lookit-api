@@ -38,8 +38,8 @@ class LookitHandlerBase:
     kwargs: Dict
 
 
-class ExperimenterLoginRequiredMixin(LookitHandlerBase, LoginRequiredMixin):
-    """Require logged-in user; if not logged in, redirect to experimenter login."""
+class ResearcherLoginRequiredMixin(LookitHandlerBase, LoginRequiredMixin):
+    """Require logged-in user; if not logged in, redirect to researcher login."""
 
     def dispatch(self, request, *args, **kwargs):
         """Dispatch override."""
@@ -53,7 +53,7 @@ class ExperimenterLoginRequiredMixin(LookitHandlerBase, LoginRequiredMixin):
             else:
                 messages.error(
                     request,
-                    "In order to access experimenter pages, you must have two-factor "
+                    "In order to access researcher pages, you must have two-factor "
                     "authentication enabled, and have logged in with your OTP key.",
                 )
                 return redirect("accounts:2fa-login")
@@ -77,7 +77,7 @@ class StudyLookupMixin(LookitHandlerBase):
 
 
 class CanViewStudyResponsesMixin(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin
 ):
 
     raise_exception = True

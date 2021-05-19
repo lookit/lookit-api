@@ -118,7 +118,7 @@ LANGUAGES = (
 # XXX: These are only *mostly* copied and pasted the corresponding choices in the Child model - do not try to
 # create a single source of truth from these!
 # As noted in studies/models.py, we want to enable the choice "Marked as N/A" (by participant) and have null be
-# "Nothing specified." (by the experimenter generating the query model).
+# "Nothing specified." (by the researcher generating the query model).
 GENDER_OPTIONS = (
     (0, "na", _("Not answered")),
     (1, "o", _("Other")),

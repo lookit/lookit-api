@@ -127,7 +127,7 @@ class TOTPLoginForm(AuthenticationForm):
 
         # Auth code is "Optional" in the sense that TwoFactorAuthenticationBackend
         # will just flip a `using_2FA` flag as a signal to later requests - without
-        # this flag, Experimenters will be blocked from experimenter views.
+        # this flag, Researchers will be blocked from researcher views.
         auth_code = self.cleaned_data.get("auth_code")
 
         if username is not None and password:

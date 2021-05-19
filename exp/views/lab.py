@@ -12,7 +12,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from accounts.models import User
 from exp.mixins.paginator_mixin import PaginatorMixin
-from exp.views.mixins import ExperimenterLoginRequiredMixin, SingleObjectFetchProtocol
+from exp.views.mixins import ResearcherLoginRequiredMixin, SingleObjectFetchProtocol
 from project import settings
 from studies.forms import LabApprovalForm, LabForm
 from studies.helpers import send_mail
@@ -21,7 +21,7 @@ from studies.permissions import LabPermission, SiteAdminGroup
 
 
 class LabDetailView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Lab],
     generic.DetailView,
@@ -74,7 +74,7 @@ class LabDetailView(
 
 
 class LabMembersView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Lab],
     PaginatorMixin,
@@ -336,7 +336,7 @@ class LabMembersView(
 
 
 class LabUpdateView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Lab],
     generic.UpdateView,
@@ -373,7 +373,7 @@ class LabUpdateView(
 
 
 class LabCreateView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.CreateView
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.CreateView
 ):
     """
     LabCreateView allows creating a new lab.
@@ -385,7 +385,7 @@ class LabCreateView(
     model = Lab
     raise_exception = True
 
-    # This is just duplicating the experimenter login requirement; leaving as a
+    # This is just duplicating the researcher login requirement; leaving as a
     # placeholder in case we institute requirements beyond that or want to decouple
     # the login form from user permissions in the future
     def user_can_create_lab(self):
@@ -431,7 +431,7 @@ class LabCreateView(
 
 
 class LabMembershipRequestView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Lab],
     SingleObjectMixin,
@@ -491,9 +491,7 @@ class LabMembershipRequestView(
         return super().post(request, *args, **kwargs)
 
 
-class LabListView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.ListView
-):
+class LabListView(ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.ListView):
     """
     Shows a list of all labs.
     """
