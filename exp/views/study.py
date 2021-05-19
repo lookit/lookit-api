@@ -724,6 +724,7 @@ class CloneStudyView(
         clone.study_type = orig_study.study_type
         clone.built = False
         clone.is_building = False
+        clone.comments = ""
         clone.save()
 
         # Adds success message when study is cloned
