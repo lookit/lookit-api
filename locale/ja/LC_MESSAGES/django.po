@@ -303,7 +303,7 @@ msgid "Can Remove Organization"
 msgstr "組織を削除することができます"
 
 #: accounts/models.py:70
-msgid "Can View Researcher"
+msgid "Can View Experimenter"
 msgstr "実験者を見ることができます"
 
 #: accounts/models.py:71
@@ -637,10 +637,10 @@ msgstr "ログイン失敗"
 msgid ""
 "A Lookit study participant exists with the email address for your OSF user "
 "account. Create an OSF user with a different email address and try logging "
-"into Researcher with that. "
+"into Experimenter with that. "
 msgstr ""
 "OSFユーザーアカウントのメールアドレスを持つLookit研究参加者が存在します。別の"
-"メールアドレスでOSFユーザーを作成し、そのメールアドレスでResearcherにログイ"
+"メールアドレスでOSFユーザーを作成し、そのメールアドレスでExperimenterにログイ"
 "ンしてみてください。"
 
 #: accounts/templates/account/local_user_exists.html:19
@@ -653,7 +653,7 @@ msgstr ""
 
 #: accounts/templates/account/local_user_exists.html:22
 #: accounts/templates/account/login_errored_cancelled.html:19
-msgid "Return to Researcher"
+msgid "Return to Experimenter"
 msgstr "実験者を見ることができます"
 
 #: accounts/templates/account/login.html:7
@@ -1062,7 +1062,7 @@ msgid "Lookit"
 msgstr "ルキット"
 
 #: web/templates/web/_navigation.html:17
-msgid "Researcher"
+msgid "Experimenter"
 msgstr "実験者を見ることができます"
 
 #: web/templates/web/_navigation.html:30 web/templates/web/studies-list.html:4

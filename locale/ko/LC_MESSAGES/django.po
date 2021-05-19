@@ -277,7 +277,7 @@ msgid "Can Remove Organization"
 msgstr "조직 제거 가능"
 
 #: accounts/models.py:70
-msgid "Can View Researcher"
+msgid "Can View Experimenter"
 msgstr "실험자 보기 가능"
 
 #: accounts/models.py:71
@@ -614,8 +614,8 @@ msgid "Login Unsuccessful"
 msgstr "로그인 실패"
 
 #: accounts/templates/account/local_user_exists.html:16
-msgid "A Lookit study participant exists with the email address for your OSF user account. Create an OSF user with a different email address and try logging into Researcher with that. "
-msgstr "귀하의 OSF 사용자 계정의 이메일 주소를 가진 Lookit 연구 참가자가 존재합니다. 다른 이메일 주소로 OSF 사용자를 만들고 그 주소로 Researcher에 로그인 해보십시오. "
+msgid "A Lookit study participant exists with the email address for your OSF user account. Create an OSF user with a different email address and try logging into Experimenter with that. "
+msgstr "귀하의 OSF 사용자 계정의 이메일 주소를 가진 Lookit 연구 참가자가 존재합니다. 다른 이메일 주소로 OSF 사용자를 만들고 그 주소로 Experimenter에 로그인 해보십시오. "
 
 #: accounts/templates/account/local_user_exists.html:19
 #, fuzzy
@@ -624,7 +624,7 @@ msgstr "이 문제가 지속되면 <a href=에보고하십시오."
 
 #: accounts/templates/account/local_user_exists.html:22
 #: accounts/templates/account/login_errored_cancelled.html:19
-msgid "Return to Researcher"
+msgid "Return to Experimenter"
 msgstr "실험자에게 돌아가기"
 
 #: accounts/templates/account/login.html:7
@@ -1018,7 +1018,7 @@ msgid "Lookit"
 msgstr "Lookit"
 
 #: web/templates/web/_navigation.html:17
-msgid "Researcher"
+msgid "Experimenter"
 msgstr "실험자"
 
 #: web/templates/web/_navigation.html:30 web/templates/web/studies-list.html:4
