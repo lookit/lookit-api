@@ -829,24 +829,21 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
         )
         mock_manage_researcher_permissions.assert_called_once_with()
 
-    @patch.object(SingleObjectMixin, "get_object")
     @patch(
-        "exp.views.study.ManageResearcherPermissionsView.manage_researcher_permissions"
+        "exp.views.study.ManageResearcherPermissionsView.manage_researcher_permissions",
+        return_value=False,
     )
     @patch("exp.views.study.HttpResponseForbidden")
-    @patch("exp.views.study.reverse")
-    def test_post_assertion_error(
+    def test_post_403(
         self,
-        mock_reverse: Mock,
         mock_https_response_forbidden: Mock,
         mock_manage_researcher_permissions: Mock,
-        mock_get_object: Mock,
     ):
-        mock_manage_researcher_permissions.side_effect = [AssertionError()]
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
         self.assertEqual(
             manage_researcher_permissions_view.post(), mock_https_response_forbidden()
         )
+        mock_manage_researcher_permissions.assert_called_once_with()
 
     @patch("exp.views.study.send_mail")
     @patch.object(SingleObjectMixin, "get_object")
@@ -872,7 +869,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
     @patch("exp.views.study.ManageResearcherPermissionsView.update_user")
     @patch.object(ManageResearcherPermissionsView, "request", create=True)
     @patch.object(SingleObjectMixin, "get_object")
-    def test_manage_researcher_permissions(
+    def test_manage_researcher_permissions_update_user(
         self,
         mock_get_object: Mock,
         mock_request: Mock,
@@ -880,17 +877,60 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
         mock_add_user: Mock,
         mock_remove_user: Mock,
     ) -> None:
-
-        mock_request.POST.get = MagicMock(
-            side_effect=[sentinel.add_user_id, sentinel.remove_user_id, "update_user",]
-        )
+        mock_request.POST.get = MagicMock(side_effect=[None, None, "update_user"])
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
         manage_researcher_permissions_view.manage_researcher_permissions()
         mock_update_user.assert_called_once_with(mock_get_object())
-        mock_add_user.assert_called_once_with(mock_get_object(), sentinel.add_user_id)
+        mock_add_user.assert_not_called()
+        mock_remove_user.assert_not_called()
+
+    @patch("exp.views.study.ManageResearcherPermissionsView.remove_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.add_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.update_user")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_manage_researcher_permissions_remove_user(
+        self,
+        mock_get_object: Mock,
+        mock_request: Mock,
+        mock_update_user: Mock,
+        mock_add_user: Mock,
+        mock_remove_user: Mock,
+    ) -> None:
+        mock_request.POST.get = MagicMock(
+            side_effect=[None, sentinel.remove_user_id, None]
+        )
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        manage_researcher_permissions_view.manage_researcher_permissions()
+        mock_update_user.assert_not_called()
+        mock_add_user.assert_not_called()
         mock_remove_user.assert_called_once_with(
             mock_get_object(), sentinel.remove_user_id
         )
+
+    @patch("exp.views.study.ManageResearcherPermissionsView.remove_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.add_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.update_user")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_manage_researcher_permissions_add_user(
+        self,
+        mock_get_object: Mock,
+        mock_request: Mock,
+        mock_update_user: Mock,
+        mock_add_user: Mock,
+        mock_remove_user: Mock,
+    ) -> None:
+        mock_request.POST.get = MagicMock(
+            side_effect=[sentinel.update_user_id, None, None]
+        )
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        manage_researcher_permissions_view.manage_researcher_permissions()
+        mock_update_user.assert_not_called()
+        mock_add_user.assert_called_once_with(
+            mock_get_object(), sentinel.update_user_id
+        )
+        mock_remove_user.assert_not_called()
 
     @patch("exp.views.study.messages")
     @patch.object(ManageResearcherPermissionsView, "send_study_email")
@@ -918,7 +958,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
 
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
 
-        self.assertIsNone(manage_researcher_permissions_view.update_user(mock_study))
+        self.assertTrue(manage_researcher_permissions_view.update_user(mock_study))
 
         mock_update_user.groups.all.assert_called_once_with()
         mock_study.admin_group.user_set.count.assert_called_once_with()
@@ -930,42 +970,30 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
 
     @patch.object(ManageResearcherPermissionsView, "user_only_admin", return_value=True)
     @patch("exp.views.study.messages")
-    @patch.object(ManageResearcherPermissionsView, "send_study_email")
     @patch("accounts.models.User.objects")
     @patch.object(ManageResearcherPermissionsView, "request", create=True)
     def test_update_user_not_enough_admins(
         self,
         mock_request: Mock,
         mock_user_objects: Mock,
-        mock_send_study_email: Mock,
         mock_messages: Mock,
         mock_user_only_admin: Mock,
     ):
 
-        user_group = "study_preview"
-
         mock_update_user = MagicMock(name="update_user")
-        mock_study_group = MagicMock(name="study_group")
         mock_study = MagicMock(name="study")
 
-        mock_request.POST.get.side_effect = [sentinel.user_update_id, user_group]
-
         mock_user_objects.get.return_value = mock_update_user
-        mock_study.all_study_groups.return_value = [mock_study_group]
 
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
 
-        self.assertIsNone(manage_researcher_permissions_view.update_user(mock_study))
+        self.assertFalse(manage_researcher_permissions_view.update_user(mock_study))
 
         mock_messages.error.assert_called_once_with(
             mock_request,
             "Could not change permissions for this researcher. There must be at least one study admin.",
             extra_tags="user_removed",
         )
-        mock_study.all_study_groups.assert_called_once_with()
-        mock_study_group.user_set.remove.assert_called_once_with(mock_update_user)
-        mock_update_user.groups.add.assert_called_once_with(mock_study.preview_group)
-        mock_send_study_email.assert_called_once_with(mock_update_user, user_group)
         mock_user_only_admin.assert_called_once_with(mock_study, mock_update_user)
 
     @patch.object(
@@ -996,7 +1024,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
 
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
 
-        self.assertIsNone(manage_researcher_permissions_view.update_user(mock_study))
+        self.assertTrue(manage_researcher_permissions_view.update_user(mock_study))
 
         mock_messages.error.assert_not_called()
         mock_study.all_study_groups.assert_called_once_with()
@@ -1019,7 +1047,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
         mock_study = MagicMock(name="study")
 
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
-        self.assertIsNone(
+        self.assertTrue(
             manage_researcher_permissions_view.add_user(
                 mock_study, sentinel.add_user_id
             )
@@ -1054,7 +1082,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
         mock_study.all_study_groups.return_value = [mock_study_group]
 
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
-        self.assertIsNone(
+        self.assertTrue(
             manage_researcher_permissions_view.remove_user(
                 mock_study, sentinel.remove_user_id
             )
@@ -1088,7 +1116,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
         mock_study.all_study_groups.return_value = [mock_study_group]
 
         manage_researcher_permissions_view = ManageResearcherPermissionsView()
-        self.assertIsNone(
+        self.assertFalse(
             manage_researcher_permissions_view.remove_user(
                 mock_study, sentinel.remove_user_id
             )
