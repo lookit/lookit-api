@@ -504,9 +504,7 @@ class ManageResearcherPermissionsView(
         """Updates user permissions on form submission.
 
         """
-        try:
-            self.manage_researcher_permissions()
-        except AssertionError:
+        if not self.manage_researcher_permissions():
             return HttpResponseForbidden()
 
         return HttpResponseRedirect(
@@ -530,29 +528,28 @@ class ManageResearcherPermissionsView(
             **context,
         )
 
-    def manage_researcher_permissions(self):
+    def manage_researcher_permissions(self) -> bool:
         """
         Handles adding, updating, and deleting researcher from study. Users are
         added to study read group by default.
         """
-        self.request.user
         study = self.get_object()
         add_user_id = self.request.POST.get("add_user")
         remove_user_id = self.request.POST.get("remove_user")
 
         if self.request.POST.get("name") == "update_user":
-            self.update_user(study)
+            return self.update_user(study)
 
-        if add_user_id:
-            self.add_user(study, add_user_id)
+        elif add_user_id:
+            return self.add_user(study, add_user_id)
 
-        if remove_user_id:
-            self.remove_user(study, remove_user_id)
+        elif remove_user_id:
+            return self.remove_user(study, remove_user_id)
 
-    def update_user(self, study: Study):
-        user_update_id = self.request.POST.get("pk")
-        enable_role = self.request.POST.get("value")
+        else:
+            return True
 
+    def update_user(self, study: Study) -> bool:
         roles_to_groups = {
             "study_preview": study.preview_group,
             "study_design": study.design_group,
@@ -563,26 +560,27 @@ class ManageResearcherPermissionsView(
             "study_admin": study.admin_group,
         }
 
-        if user_update_id:
-            update_user = User.objects.get(pk=user_update_id)
+        update_user = User.objects.get(pk=self.request.POST.get("pk"))
 
-            if enable_role in roles_to_groups:
-                # Enforce not changing a current admin unless there's another admin
-                if self.user_only_admin(study, update_user):
-                    messages.error(
-                        self.request,
-                        "Could not change permissions for this researcher. There must be at least one study admin.",
-                        extra_tags="user_removed",
-                    )
+        # Enforce not changing a current admin unless there's another admin
+        if self.user_only_admin(study, update_user):
+            messages.error(
+                self.request,
+                "Could not change permissions for this researcher. There must be at least one study admin.",
+                extra_tags="user_removed",
+            )
+            return False
+        else:
+            for study_group in study.all_study_groups():
+                study_group.user_set.remove(update_user)
 
-                for study_group in study.all_study_groups():
-                    study_group.user_set.remove(update_user)
+            enable_role = self.request.POST.get("value")
+            update_user.groups.add(roles_to_groups[enable_role])
+            self.send_study_email(update_user, enable_role)
+            # TODO: format role name for email
+            return True
 
-                update_user.groups.add(roles_to_groups[enable_role])
-                self.send_study_email(update_user, enable_role)
-                # TODO: format role name for email
-
-    def add_user(self, study: Study, add_user_id):
+    def add_user(self, study: Study, add_user_id) -> bool:
         # Adds user to study read by default
         user_to_add = User.objects.get(pk=add_user_id)
         user_to_add.groups.add(study.preview_group)
@@ -592,8 +590,9 @@ class ManageResearcherPermissionsView(
             extra_tags="user_added",
         )
         self.send_study_email(user_to_add, "study_preview")
+        return True
 
-    def remove_user(self, study: Study, remove_user_id):
+    def remove_user(self, study: Study, remove_user_id) -> bool:
         # Removes user from both study read and study admin groups
         remove_user = User.objects.get(pk=remove_user_id)
         if self.user_only_admin(study, remove_user):
@@ -602,7 +601,8 @@ class ManageResearcherPermissionsView(
                 "Could not delete this researcher. There must be at least one study admin.",
                 extra_tags="user_removed",
             )
-            return
+            return False
+
         for study_group in study.all_study_groups():
             study_group.user_set.remove(remove_user)
         messages.success(
@@ -610,6 +610,7 @@ class ManageResearcherPermissionsView(
             f"{remove_user.get_short_name()} removed from {study.name}.",
             extra_tags="user_removed",
         )
+        return True
 
     def user_only_admin(self, study: Study, user: User):
         return (
