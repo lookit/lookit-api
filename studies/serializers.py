@@ -29,7 +29,7 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
             "name",
             # "date_modified",
             "short_description",
-            "long_description",
+            "purpose",
             "criteria",
             "duration",
             "contact_info",

@@ -152,7 +152,7 @@ class StudyFormTestCase(TestCase):
         empty_field_values = {
             "name": "",
             "short_description": "",
-            "long_description": "",
+            "purpose": "",
             "criteria": "",
             "duration": "",
             "contact_info": "",

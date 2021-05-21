@@ -37,7 +37,7 @@ class StudiesTestCase(APITestCase):
             creator=self.researcher,
             name="Test Name",
             short_description="Short description",
-            long_description="Longer description",
+            purpose="Longer description",
             criteria="Five years or older",
             duration="Twenty minutes",
             contact_info="my email",

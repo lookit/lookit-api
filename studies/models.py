@@ -218,7 +218,7 @@ class Study(models.Model):
         "use_generator",
         "name",
         "short_description",
-        "long_description",
+        "purpose",
         "duration",
         "contact_info",
         "image",
@@ -238,7 +238,7 @@ class Study(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
     short_description = models.TextField()
-    long_description = models.TextField()
+    purpose = models.TextField()
     criteria = models.TextField()
     duration = models.TextField()
     contact_info = models.TextField()
