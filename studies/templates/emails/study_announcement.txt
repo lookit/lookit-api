@@ -8,7 +8,7 @@ Who: {{ study.criteria }}
 
 What happens: {{ study.short_description }}
 
-Why: {{ study.long_description }}
+Why: {{ study.purpose }}
 
 Compensation: {{ study.compensation_description|default:"This is a volunteer-based study." }}
 
