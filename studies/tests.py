@@ -91,7 +91,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             max_age_months=0,
             max_age_days=0,
             short_description="How fast can your child hand-compute integrals?",
-            long_description="We are interested in seeing how fast your child can hand-compute integrals.",
+            purpose="We are interested in seeing how fast your child can hand-compute integrals.",
             compensation_description="You child will receive exactly $1 for each integral computed.",
         )
         self.study_two.state = "active"
@@ -498,7 +498,7 @@ class TestAnnouncementEmailFunctionality(TestCase):
             max_age_months=0,
             max_age_days=0,
             short_description="How fast can your child hand-compute integrals?",
-            long_description="We are interested in seeing how fast your child can hand-compute integrals.",
+            purpose="We are interested in seeing how fast your child can hand-compute integrals.",
             compensation_description="You child will receive exactly $1 for each integral computed.",
         )
         long_name_study.state = "active"
