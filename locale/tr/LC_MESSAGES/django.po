@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 14:30-0500\n"
+"POT-Creation-Date: 2021-05-23 23:21+0200\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12,35 +12,45 @@ msgstr ""
 #: accounts/forms.py:55
 msgid "Enter a valid 6-digit one-time password from Google Authenticator"
 msgstr ""
+"Google Authenticator'dan 6 basamaklı geçerli bir tek kullanımlık şifre girin"
 
 #: accounts/forms.py:106
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Please enter a correct %(username)s and password. Note that email and "
+#| "password fields may be case-sensitive. If you have turned on two-factor "
+#| "authentication, you will need a one-time password (OTP code) from Google "
+#| "Authenticator as well. "
 msgid ""
 "Please enter a correct %(username)s and password. Note that email and "
 "password fields may be case-sensitive. If you have turned on two-factor "
 "authentication, you will need a one-time password (OTP code) from Google "
 "Authenticator as well. "
 msgstr ""
+"Lütfen doğru bir %(kullanıcı ad(lar)ı) ve şifre girin. E-mail ve şifre "
+"alanlarının büyük/ küçük harfe duyarlı olabileceğini unutmayın. İki faktörlü "
+"kimlik doğrulamayı açtıysanız, Google Authenticator'dan tek kullanımlık bir "
+"şifreye (OTP kodu) de ihtiyaç duyacaksınız. "
 
 #: accounts/forms.py:111
 msgid "This account is inactive."
-msgstr ""
+msgstr "Bu hesap aktif değil."
 
 #: accounts/forms.py:194
 msgid "Your password can’t be too similar to your other personal information."
-msgstr ""
+msgstr "Şifreniz diğer kişisel bilgilerinizle çok benzer olamaz. "
 
 #: accounts/forms.py:195
 msgid "Your password must contain at least 16 characters."
-msgstr ""
+msgstr "Şifreniz en az 16 karakter içermelidir."
 
 #: accounts/forms.py:196
 msgid "Your password can’t be a commonly used password."
-msgstr ""
+msgstr "Şifreniz sık kullanılan bir şifre olamaz."
 
 #: accounts/forms.py:197
 msgid "Your password can’t be entirely numeric."
-msgstr ""
+msgstr "Şifreniz tamamen sayısal olamaz."
 
 #: accounts/forms.py:213 accounts/forms.py:229 accounts/models.py:140
 msgid "Email address"
@@ -50,7 +60,7 @@ msgstr "Email adresi"
 #: accounts/templates/accounts/participant_list.html:37
 #: accounts/templates/accounts/participant_list.html:58
 msgid "Nickname"
-msgstr "Kullanıcı adı"
+msgstr "Takma ad"
 
 #: accounts/forms.py:254
 msgid ""
@@ -191,7 +201,7 @@ msgstr "Cinsiyet"
 #: accounts/forms.py:379 accounts/forms.py:431
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
-msgstr "Doğumdaki Gebelik Dönemi"
+msgstr "Doğum Haftası"
 
 #: accounts/forms.py:381 accounts/forms.py:433
 msgid "Any additional information you'd like us to know"
@@ -672,7 +682,7 @@ msgstr "Hesap Bilgisi"
 
 #: accounts/templates/accounts/_account-navigation.html:2
 msgid "Change your login credentials and/or nickname."
-msgstr ""
+msgstr "Oturum açma bilgilerinizi ve/veya takma adınızı değiştirin."
 
 #: accounts/templates/accounts/_account-navigation.html:3
 msgid "Demographic Survey"
@@ -700,7 +710,7 @@ msgid "Edit when you can be contacted."
 msgstr "İletişime geçilebileceğiniz zamanları düzenle"
 
 #: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
 #: web/templates/web/children-list.html:67
 #: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
@@ -721,17 +731,20 @@ msgstr "Şifreni değiştir"
 
 #: accounts/templates/accounts/account-update.html:68
 msgid "Manage Two-Factor Authentication"
-msgstr ""
+msgstr "İki Faktörlü Kimlik Doğrulamayı Yönetin"
 
 #: accounts/templates/accounts/account-update.html:83
 msgid ""
 "If you'd like, you can turn two-factor authentication off here. Just enter "
 "your one-time password here, hit submit, and it'll get deleted for you!"
 msgstr ""
+"İsterseniz, iki faktörlü kimlik doğrulamayı buradan kapatabilirsiniz. Tek "
+"seferlik şifrenizi buraya girin, gönder düğmesine basın ve sizin için "
+"silinecek!"
 
 #: accounts/templates/accounts/account-update.html:108
 msgid "Set up Two-Factor Authentication"
-msgstr ""
+msgstr "İki Faktörlü Kimlik Doğrulamayı ayarlayın."
 
 #: accounts/templates/accounts/participant_detail.html:15
 msgid "All Participants"
@@ -812,101 +825,99 @@ msgstr "Gösterge Paneli"
 
 #: project/settings.py:228 studies/fields.py:68
 msgid "German"
-msgstr ""
+msgstr "Alman"
 
 #: project/settings.py:229 studies/fields.py:57
 msgid "English"
-msgstr ""
+msgstr "İngilizce"
 
 #: project/settings.py:230 studies/fields.py:101
 msgid "Spanish"
-msgstr ""
+msgstr "İspanyolca"
 
 #: project/settings.py:231
 msgid "Argentinian Spanish"
-msgstr ""
+msgstr "Arjantin İspanyolcası"
 
 #: project/settings.py:232 studies/fields.py:66
 msgid "French"
-msgstr ""
+msgstr "Fransız"
 
 #: project/settings.py:233
 msgid "Canadian French"
-msgstr ""
+msgstr "Kanada Fransızcası"
 
 #: project/settings.py:234
 msgid "Hebrew"
-msgstr ""
+msgstr "İbranice"
 
 #: project/settings.py:235 studies/fields.py:76
 msgid "Italian"
-msgstr ""
+msgstr "İtalyanca"
 
 #: project/settings.py:236 studies/fields.py:77
 msgid "Japanese"
-msgstr ""
+msgstr "Japonca"
 
 #: project/settings.py:237 studies/fields.py:82
 msgid "Korean"
-msgstr ""
+msgstr "Korece"
 
 #: project/settings.py:238
 msgid "Norwegian Bokmål"
-msgstr ""
+msgstr "Norveççe Bokmål"
 
 #: project/settings.py:239 studies/fields.py:94
 msgid "Polish"
-msgstr ""
+msgstr "Lehçe"
 
 #: project/settings.py:240 studies/fields.py:95
 msgid "Portuguese"
-msgstr ""
+msgstr "Portekizce"
 
 #: project/settings.py:241
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Brezilya Portekizcesi"
 
 #: project/settings.py:242 studies/fields.py:96
 msgid "Romanian"
-msgstr ""
+msgstr "Romence"
 
 #: project/settings.py:243 studies/fields.py:97
-#, fuzzy
-#| msgid "Asian"
 msgid "Russian"
-msgstr "Asyalı"
+msgstr "Rusça"
 
 #: project/settings.py:244 studies/fields.py:107
 msgid "Turkish"
-msgstr ""
+msgstr "Türkçe"
 
 #: project/settings.py:245
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Basitleştirilmiş Çince"
 
 #: project/settings.py:246 studies/fields.py:64
 msgid "Dutch"
-msgstr ""
+msgstr "Flemenkçe"
 
 #: studies/fields.py:7
 msgid "Autism Spectrum Disorder"
-msgstr ""
+msgstr "Otizm Spektrum Bozukluğu"
 
 #: studies/fields.py:8
 msgid "Deaf"
-msgstr ""
+msgstr "Sağır"
 
 #: studies/fields.py:9
 msgid "Hard of Hearing"
-msgstr ""
+msgstr "İşitme Güçlüğü"
 
 #: studies/fields.py:10
 msgid "Dyslexia"
-msgstr ""
+msgstr "Disleksi"
 
 #: studies/fields.py:11
 msgid "Multiple Birth (twin, triplet, or higher order)"
-msgstr ""
+msgstr "Çoklu Doğum (ikiz,üçüz veya daha fazla)"
 
 #: studies/fields.py:45
 msgid "Twin"
@@ -938,191 +949,187 @@ msgstr "Sekiziz"
 
 #: studies/fields.py:58
 msgid "Amharic"
-msgstr ""
+msgstr "Amharca"
 
 #: studies/fields.py:59
 msgid "Bengali"
-msgstr ""
+msgstr "Bengalce"
 
 #: studies/fields.py:60
 msgid "Bhojpuri"
-msgstr ""
+msgstr "Bhojpuri"
 
 #: studies/fields.py:61
 msgid "Burmese"
-msgstr ""
+msgstr "Birmanya dili"
 
 #: studies/fields.py:62
 msgid "Cebuano"
-msgstr ""
+msgstr "Cebuano"
 
 #: studies/fields.py:63
 msgid "Chhattisgarhi"
-msgstr ""
+msgstr "Chhattisgarhi"
 
 #: studies/fields.py:65
 msgid "Egyptian Spoken Arabic"
-msgstr ""
+msgstr "Mısırda Konuşulan Arapça"
 
 #: studies/fields.py:67
 msgid "Gan"
-msgstr ""
+msgstr "Gan"
 
 #: studies/fields.py:69
-#, fuzzy
-#| msgid "Duration"
 msgid "Gujarati"
-msgstr "Süre"
+msgstr "Gujarati"
 
 #: studies/fields.py:70
 msgid "Hakka"
-msgstr ""
+msgstr "Hakka"
 
 #: studies/fields.py:71
 msgid "Hausa"
-msgstr ""
+msgstr "Hausa"
 
 #: studies/fields.py:72
 msgid "Hindi"
-msgstr ""
+msgstr "Hintçe"
 
 #: studies/fields.py:73
 msgid "Igbo"
-msgstr ""
+msgstr "Igbo"
 
 #: studies/fields.py:74
 msgid "Indonesian"
-msgstr ""
+msgstr "Endonezya dili"
 
 #: studies/fields.py:75
 msgid "Iranian Persian"
-msgstr ""
+msgstr "İran Farsçası"
 
 #: studies/fields.py:78
 msgid "Javanese"
-msgstr ""
+msgstr "Cava dili"
 
 #: studies/fields.py:79
 msgid "Jinyu"
-msgstr ""
+msgstr "Jinyu"
 
 #: studies/fields.py:80
 msgid "Kannada"
-msgstr ""
+msgstr "Kannada"
 
 #: studies/fields.py:81
 msgid "Khmer"
-msgstr ""
+msgstr "Khmer"
 
 #: studies/fields.py:83
 msgid "Magahi"
-msgstr ""
+msgstr "Magahi"
 
 #: studies/fields.py:84
 msgid "Maithili"
-msgstr ""
+msgstr "Maithili"
 
 #: studies/fields.py:85
 msgid "Malay"
-msgstr ""
+msgstr "Malayca"
 
 #: studies/fields.py:86
 msgid "Malayalam"
-msgstr ""
+msgstr "Malayalam dili"
 
 #: studies/fields.py:87
 msgid "Mandarin"
-msgstr ""
+msgstr "Mandarin"
 
 #: studies/fields.py:88
 msgid "Marathi"
-msgstr ""
+msgstr "Marathi"
 
 #: studies/fields.py:89
 msgid "Min Nan"
-msgstr ""
+msgstr "Min Nan"
 
 #: studies/fields.py:90
 msgid "Moroccan Spoken Arabic"
-msgstr ""
+msgstr "Fas Arapçası"
 
 #: studies/fields.py:91
 msgid "Northern Pashto"
-msgstr ""
+msgstr "Kuzey Peştuca"
 
 #: studies/fields.py:92
 msgid "Northern Uzbek"
-msgstr ""
+msgstr "Kuzey Özbekçe"
 
 #: studies/fields.py:93
 msgid "Odia"
-msgstr ""
+msgstr "Odia"
 
 #: studies/fields.py:98
 msgid "Saraiki"
-msgstr ""
+msgstr "Saraiki"
 
 #: studies/fields.py:99
 msgid "Sindhi"
-msgstr ""
+msgstr "Sindice"
 
 #: studies/fields.py:100
 msgid "Somali"
-msgstr ""
+msgstr "Somali dili"
 
 #: studies/fields.py:102
 msgid "Sunda"
-msgstr ""
+msgstr "Sunda"
 
 #: studies/fields.py:103
 msgid "Tagalog"
-msgstr ""
+msgstr "Tagalog"
 
 #: studies/fields.py:104
 msgid "Tamil"
-msgstr ""
+msgstr "Tamilce"
 
 #: studies/fields.py:105
 msgid "Telugu"
-msgstr ""
+msgstr "Telugu"
 
 #: studies/fields.py:106
 msgid "Thai"
-msgstr ""
+msgstr "Tay dili"
 
 #: studies/fields.py:108
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukraynaca"
 
 #: studies/fields.py:109
 msgid "Urdu"
-msgstr ""
+msgstr "Urduca"
 
 #: studies/fields.py:110
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnam dili"
 
 #: studies/fields.py:111
 msgid "Western Punjabi"
-msgstr ""
+msgstr "Batı Pencap dili"
 
 #: studies/fields.py:112
 msgid "Wu"
-msgstr ""
+msgstr "Wu"
 
 #: studies/fields.py:113
 msgid "Xiang Chinese"
-msgstr ""
+msgstr "Xiang Çince"
 
 #: studies/fields.py:114
 msgid "Yoruba"
-msgstr ""
+msgstr "Yoruba"
 
 #: studies/fields.py:115
-#, fuzzy
-#| msgid "Yes"
 msgid "Yue"
-msgstr "Evet"
+msgstr "Yue"
 
 #: studies/fields.py:123
 msgid "Not answered"
@@ -1154,21 +1161,19 @@ msgstr "Bu Lab'a katılmayı talep eden kullanıcılar"
 
 #: web/templates/flatpages/contact.html:15
 msgid "Technical difficulties"
-msgstr ""
+msgstr "Teknik zorluklar"
 
 #: web/templates/flatpages/contact.html:18
 msgid "Questions about the studies"
-msgstr ""
+msgstr "Çalışmalarla ilgili sorular"
 
 #: web/templates/flatpages/contact.html:22
 #: web/templates/flatpages/privacy.html:140
-#, fuzzy
-#| msgid "researcher login"
 msgid "For researchers"
-msgstr "Araştırmacı üye girişi"
+msgstr "Araştırmacılar için"
 
 #: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
@@ -1183,34 +1188,37 @@ msgid ""
 "those of the authors(s) and do not necessarily reflect the views of the "
 "National Science Foundation."
 msgstr ""
+"Bu materyal, National Science Foundation (NSF) tarafından Grants 1429216 ve "
+"1823919 kapsamında desteklenen çalışmaya dayanmaktadır; NSF STC tarafından "
+"finanse edilen Center for Brains, Minds and Machines (CBMM), CCF-1231216 "
+"ödülü ve 1122374 numaralı Hibe altında bir NSF Lisansüstü Araştırma Bursu "
+"tarafından finanse edilmiştir. Bu materyalde ifade edilen herhangi bir "
+"fikir, bulgu ve sonuç veya öneri yazar(lar)a aittir ve National Science "
+"Foundation'ın görüşlerini yansıtmayabilir."
 
 #: web/templates/flatpages/default.html:58
 msgid "Privacy"
-msgstr ""
+msgstr "Gizlilik"
 
 #: web/templates/flatpages/default.html:59
-#, fuzzy
-#| msgid "Contact:"
 msgid "Contact us"
-msgstr "İletişim:"
+msgstr "Bizimle iletişime geçin"
 
 #: web/templates/flatpages/default.html:60
 msgid "Connect"
-msgstr ""
+msgstr "Bağlan"
 
 #: web/templates/flatpages/faq.html:11
 msgid "Frequently Asked Questions"
-msgstr ""
+msgstr "Sıkça Sorulan Sorular"
 
 #: web/templates/flatpages/faq.html:16
-#, fuzzy
-#| msgid "Participate"
 msgid "Participation"
-msgstr "Katıl"
+msgstr "Katılım"
 
 #: web/templates/flatpages/faq.html:20
 msgid "What is a 'study' about cognitive development?"
-msgstr ""
+msgstr "Bilişsel gelişimle ilgili \"çalışma\" nedir?"
 
 #: web/templates/flatpages/faq.html:25
 msgid ""
@@ -1231,12 +1239,27 @@ msgid ""
 "'Do three-month-olds recognize their parents' faces?'</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Bilişsel gelişim, çocukların neyi "
+"anladıklarının ve nasıl öğrendiklerinin bilimidir. Bilişsel gelişimdeki "
+"araştırmacılar aşağıdaki gibi sorularla ilgilenirler</p>\n"
+"                                <ul>\n"
+"                                    <li>bebekler hangi bilgi ve becerilerle "
+"doğarlar; neleri deneyimle öğrenmeleri gerekir</li>\n"
+"                                    <li>matematiksel akıl yürütme gibi "
+"beceriler nasıl organize edilir ve zaman içinde nasıl gelişirler</li>\n"
+"                                    <li>çocuklar gözlemledikleri çok çeşitli "
+"verilerden öğrenmek için hangi stratejileri kullanırlar</li>\n"
+"                                </ul>\n"
+"                                <p>Bir çalışma, çocukların nasıl "
+"öğrendikleri veya bildikleriyle ilgili çok spesifik bir soruyu yanıtlamak "
+"anlamına gelir: örneğin, 'Üç aylıklar ebeveynlerinin yüzlerini tanır mı?'</"
+"p>\n"
+"                                "
 
 #: web/templates/flatpages/faq.html:40
-#, fuzzy
-#| msgid "Log in to participate"
 msgid "How can we participate online?"
-msgstr "Katılmak için giriş yapın:"
+msgstr "Çevrimiçi olarak nasıl katılabiliriz?"
 
 #: web/templates/flatpages/faq.html:45
 msgid ""
@@ -1258,10 +1281,31 @@ msgid ""
 "children to learn more about how kids think!</p>\n"
 "                            "
 msgstr ""
+"\n"
+"                            <p>Eğer çocuğunuz varsa ve katılmak "
+"istiyorsanız, bir hesap oluşturarak çocuğunuzun yaş aralığında katılımcı "
+"aranan çalışmalarımıza göz atabilirsiniz. Çalışmalara katılabilmek için "
+"çalışır durumda bir bilgisayar kameranızın bulunması gerekmektedir.</p>\n"
+"                                <p>Bir çalışmayı seçtiğinizde, bir onay "
+"formu okumanız ve sizin ve çocuğunuzun çalışmaya katılmayı kabul ettiğinizi "
+"belirttiğiniz bir video kaydı göndermeniz istenecektir. Sonrasında, çalışma "
+"sırasında yapılacaklar konusunda sizi yönlendiriyor olacağız. Çocuğunuzun "
+"yaşına bağlı olarak çocuğunuz sorulan sorulara doğrudan kendisi cevap "
+"verebilir, ya da çocuğunuzun ne düşündüğüyle ilgili çıkarımlarda "
+"bulunabileceğimiz dolaylı işaretleri inceleriz – şaşırtıcı bir sonuca ne "
+"kadar uzun süre baktığı gibi.</p>\n"
+"                                <p>Çalışmanın kamerayla kayıt altına alınan "
+"bazı kısımları otomatik olarak kaydedilip güvenli bir şekilde Lookit "
+"arayüzüne aktarılacaktır. Bu videoları alanında eğitimli araştırmacılar "
+"inceleyecek ve çocuğunuzun birtakım tepkilerini kaydedecektir- örneğin "
+"parmağıyla gösterdiği yön ya da resimlere bakma süresi gibi. Çocukların "
+"nasıl düşündükleri hakkında daha çok şey öğrenmek için bu tepkileri diğer "
+"birçok çocuktan gelen bu tepkiler ile birleştireceğiz!</p>\n"
+"                            "
 
 #: web/templates/flatpages/faq.html:56
 msgid "Who can create studies on Lookit?"
-msgstr ""
+msgstr "Kimler Lookit'te çalışma yaratabilir?"
 
 #: web/templates/flatpages/faq.html:61
 msgid ""
@@ -1272,12 +1316,18 @@ msgid ""
 "board. Studies are also subject to approval by Lookit. As of June 2020 we "
 "have agreements with 20 universities!"
 msgstr ""
+"Çocukların nasıl öğrendiği ve büyüdüğü hakkında soruları olan her "
+"araştırmacı bir Lookit çalışması önerebilir! Lookit kullanan her kurum MIT "
+"ile <a \n"
+"href='/termsofuse'> Kullanım Şartları </a> 'nı kabul ettikleri ve "
+"çalışmalarının bir bağımsız etik komitesi tarafından incelenip "
+"onaylanacağını kabul ettikleri bir sözleşme imzalamalıdır. Çalışmalar "
+"Lookit'in de onayına tabidir. Haziran 2020 itibariyle 20 üniversite ile "
+"anlaşmamız var!"
 
 #: web/templates/flatpages/faq.html:69
-#, fuzzy
-#| msgid "Log in to participate"
 msgid "How do we provide consent to participate?"
-msgstr "Katılmak için giriş yapın:"
+msgstr "Katılmak için nasıl onay veririz?"
 
 #: web/templates/flatpages/faq.html:74
 msgid ""
@@ -1297,14 +1347,31 @@ msgid ""
 "audio--they may contact you to check, depending on your email settings.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Bir ebeveyn ya da yasal vasinin "
+"imzalayacağı bir form yerine sizden bilgisayar kameranızı kullanarak onay "
+"formunu sesli (ya da işaret dili ile) okuduğunuz bir video kaydetmenizi "
+"istiyoruz. Bu sözlü beyan imzalı bir onay belgesiyle aynı geçerliliği "
+"taşımaktadır ve amacı sizi olabildiğince az uğraştırmaktır. Ayrıca bu sizin "
+"Türkçe okuryazarlığınızı doğrulamamızı ve kayıt altına alınacağınızı "
+"anladığınızı göstermiş olur.</p>\n"
+"                                <p>Araştırmacılar bu onay videolarını sadece "
+"araştırmacı arayüzüne özel bir sayfada görüntüleyebilir ve herbir videonun "
+"bilgilendirilmiş onay gösterip göstermediğini kaydeder. Katılmaya onay "
+"verdiğinizi doğrulamadan katıldığınız çalışmanın diğer videolarına "
+"erişemezler ya da bir oturumun verilerini indiremezler! Eğer açık bir "
+"şekilde onay verdiğinizi ortaya KOYMAYAN bir video görürlerse--örneğin; "
+"teknik bir problemden var ve videonun sesi yoksa--araştırmacılar size "
+"iletişim tercihlerinize bağlı olarak ulaşıp doğrulama yapmak isteyebilir.</p>"
 
 #: web/templates/flatpages/faq.html:80
 msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 msgstr ""
+"https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 
 #: web/templates/flatpages/faq.html:89
 msgid "How is our information kept secure and confidential?"
-msgstr ""
+msgstr "Bilgilerimiz nasıl güvenli ve gizli tutulacak?"
 
 #: web/templates/flatpages/faq.html:94
 msgid ""
@@ -1331,12 +1398,36 @@ msgid ""
 "                                <p>See also 'Who will see our video?'</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>\n"
+"                                Lookit'i kullanan araştırmacılar "
+"bilgilerinizin saklanıp paylaşılmasıyla ilgili bir dizi kurala uymayı kabul "
+"ederler. Örneğin, akademik yayınlarında çocukların isimlerini, doğum "
+"tarihlerini yahut doğum tarihlerini belli edecek bir bilgiyi asla "
+"paylaşmazlar.</p>\n"
+"                                <p>Lookit araştırmacı arayüzü katılımcıların "
+"bilgilerinin korunması birincil öncelik olacak şekilde tasarlanmıştır. "
+"Örneğin, özel arayüz araştırmacıların onay videolarınızı doğrulamadan "
+"tamamladığınız çalışmanın diğer verilerine ulaşamamasını sağlar. Araştırma "
+"grupları verilerin hangi kısımlarının kimler tarafından ulaşılabilir "
+"olduğunu hassasiyetle kontrol ederler; örneğin, bir araştırma asistanı onay "
+"videolarınızı doğrulayabilir ve çalışma sonucunda alacağınız hediye "
+"çeklerini size yollayabilir, ama çalışmanın verilerini indirme yetkisi "
+"yoktur.</p>\n"
+"                                <p>Videolar da dahil olmak üzere bütün "
+"verileriniz güvenli bir HTTPS bağlantısı üzerinden Lookit deposuna aktarılır "
+"ve şifrelenmiş halde saklanır. Güvenliği çok ciddiye alıyoruz; kullandığımız "
+"yazılımların güncelliğinden emin olmanın yanında, bulut sunucuları güvenli "
+"bir biçimde yapılandırılmakta ve birim testleri verilere ulaşımın doğru "
+"izinler gerektirdiğinin kontrol edilmesini de içermektedir. 2020 "
+"lansmanımızdan önce bir güvenlik üstlenicisi ile bir risk değerlendirmesi ve "
+"ayrıntılı manuel sızma testi gerçekleştirdik.</p>\n"
+"                                <p>Ayrıca şurayı inceleyin: ‘Videomuzu "
+"kimler görecek?’</p>"
 
 #: web/templates/flatpages/faq.html:107
-#, fuzzy
-#| msgid "What is your gender?"
 msgid "Who will see our video?"
-msgstr "Cinsiyetiniz nedir?"
+msgstr "Videomuzu kim görecek?"
 
 #: web/templates/flatpages/faq.html:112
 msgid ""
@@ -1408,10 +1499,82 @@ msgid ""
 "lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>MIT’deki Lookit çalışanları arayüzü "
+"geliştirme ve sıkıntıları giderme amacıyla videonuza ve diğer verilerinize "
+"erişebilecektir. Katıldığınız çalışmayı yürüten araştırmacılar da "
+"çalışmalarında kullanmak amacıyla video ve diğer verilerinize (çalışma "
+"sırasında sorulara verilen cevaplar ve çocuğunuzu kaydederken doldurduğunuz "
+"bilgiler gibi) erişebilir. Araştırmacılar videoların belirli kısımlarını "
+"seyredip araştırmalarıyla ilişkili spesifik bilgileri not ederler – "
+"çocuğunuzun ne söylediği ya da ekranın soluna ya da sağına ne kadar uzun "
+"süre baktığı gibi. Bu araştırma grubu MIT’den ya da başka bir kurumdan "
+"olabilirler. Lookit üzerinden yürütülen çalışmaların tamamı bir bağımsız "
+"etik komitesi tarafından katılımcı haklarının ve refahının korunacağına dair "
+"onay almış olmalıdır. Ayrıca Lookit kullanan tüm araştırmacılar hangi "
+"verileri paylaşabilecekleri ve Lookit’te ne tür çalışmalar "
+"yürütebileceklerini denetleyen Kullanım Koşulları’nı onaylarlar; bu koşullar "
+"bazen araştırmacıların mensubu olduğu kurumların koşullarından bile daha "
+"sert olabilir. </p>\n"
+"                                <p>Videolarınıza başka birinin erişip "
+"erişemeyeceği çalışmanın sonunda belirttiğiniz gizlilik tercihlerine "
+"bağlıdır. Gizlilik tercihlerinde vermeniz gereken iki karar bulunmaktadır: "
+"ilki, verilerinizin Databrary ile paylaşılıp paylaşılmayacağı, diğeri ise "
+"video kliplerinizin seçtiğiniz araştırmacılar tarafından kullanılmasına "
+"nasıl izin vereceğiniz.</p>\n"
+"                                <p>Öncelikle size, verilerinizi (video da "
+"dahil olmak üzere) veri kütüphanesi Databrary’de saklanmak üzere yetkili "
+"kullanıcılarla paylaşmak isteyip istemediğinizi sorarız. Veri paylaşımı, "
+"insan gelişimi ve davranışına ilişkin araştırmalarda daha hızlı ilerlemeyi "
+"sağlayacaktır. Databrary’ye erişim izni olan araştırmacılar verilerinizi "
+"kendi laboratuvarlarındaki verileri korudukları hassasiyetle korumayı kabul "
+"etmelidirler. Databrary hakkında daha fazla bilgi için tıklayın <a href="
+"\"https://databrary.org/about/mission.html\">misyon</a> ya da <a href="
+"\"https://databrary.org/access/responsibilities/investigators.html\">yetkili "
+"kullanıcılar için yükümlülükler</a>.</p> \n"
+"                                <p>Sonrasında, videonuzun hangi amaçlarla "
+"kullanılmasını istediğinizi sorarız.</p>\n"
+"                                <ul>\n"
+"                                    <li><strong>Gizli</strong> Bu gizlilik "
+"seviyesi video kliplerinizin yalnızca yetkili bilim insanları (Lookit "
+"çalışanları, çalışmayı yürüten araştırma grubu ve eğer verilerinizi "
+"Databrary ile paylaşmayı seçerseniz, yetkili Databrary kullanıcıları) "
+"tarafından görüntülenebileceğini garantiler. Videoları çocuğunuzun çalışma "
+"sırasında neler yaptığına dair bilgileri kaydetmek için seyredecekler – "
+"örneğin, bir görsele 9 saniye bakarken başka bir görsele 7 saniye bakması "
+"gibi.</li>\n"
+"                                    <li><strong>Bilimsel ve Eğitimsel</"
+"strong> Bu gizlilik seviyesi video kliplerinizi bilim ya da eğitim amacıyla "
+"başka araştırmacı ya da öğrencilerle paylaşma iznini verir. Örneğin, "
+"araştırmacılar çalışmalardaki video kliplerini bilimsel bir konferansta "
+"yaptıkları konuşmalarda ya da bilişsel gelişim konulu bir derste "
+"gösterebilir ya da bilimsel bir makaleye çalışmalarından görsel ya da video "
+"ekleyebilir. Bazı durumlarda video ya da görseller bilimsel bir makalenin ek "
+"materyali olarak çevrimiçi erişime açık olabilir. Videoları diğer "
+"araştırmacılarla paylaşmak diğer grupların çalışmalarımıza güvenmesine ve "
+"kendi çalışmalarını bu çalışmalar üzerine inşaa edebilmesine yardımcı olur.</"
+"li>\n"
+"                                    <li><strong>Tanıtım</strong> Bu gizlilik "
+"seviyesi çocuklarını Lookit websitesinde ya da haberlerde görmekten mutluluk "
+"duyacak aileler içindir! Bu gizlilik seviyesini seçerek video kliplerinizin "
+"gelişimsel çalışmalar ve Lookit arayüzü hakkında kamuoyunu bilgilendirmek "
+"amacıyla kullanılmasına izin vermiş olursunuz. Örneğin, Lookit websitesinde, "
+"Facebook sayfamızda ya da basında kısa bir video klibi paylaşabiliriz. "
+"Videonuz hiçbir zaman ticari amaçlarla kullanılmayacaktır.</li>\n"
+"                                </ul>\n"
+"                                <p>Eğer herhangi bir nedenden ötürü bir "
+"gizlilik seviyesi seçmezseniz, verilerinizi otomatik olarak ‘Gizli’ olarak "
+"ele alır ve Databrary ile paylaşmayız. Katılımcıların aynı zamanda "
+"gerektiğinde (örneğin arka planda birileri devlet sırlarını tartıştığı için) "
+"onay videosu dışındaki bütün videolarını geri çekme seçeneği vardır, ve bu "
+"durumda videolar otomatik olarak silinir. Tamamlanmış oturumların gizlilik "
+"ayarları geri dönülerek değiştirilemez. Gizlilik hakkında daha fazla sorunuz "
+"ya da endişeniz varsa, lütfen ekibimiz ile buradan iletişime geçin <a href="
+"\"mailto:lookit@mit.edu\">lookit@mit.edu</a>.</p>"
 
 #: web/templates/flatpages/faq.html:130
 msgid "What information do researchers use from our video?"
-msgstr ""
+msgstr "Araştırmacılar videomuzdaki hangi bilgiyi kullanacak?"
 
 #: web/templates/flatpages/faq.html:136
 msgid ""
@@ -1422,12 +1585,21 @@ msgid ""
 "idea of what it looks like when your child is looking to the right or the "
 "left, so we can code the rest of the video."
 msgstr ""
+"Yaklaşık iki yaşın altındaki çocuklar için, çalışmalarımızı genellikle "
+"gözlerinin konuşmasına izin verecek şekilde tasarlarız! Çocuğunuzun ekranın "
+"neresine baktığı ve/veya çocuğunuzun uzağa bakmak yerine ekrana ne kadar "
+"süreyle baktığı ile ilgileniyoruz. Kalibrasyon videolarımız (aşağıda örnek "
+"gösterilmiştir), çocuğunuz sağa veya sola bakarken nasıl göründüğüne dair "
+"bir fikir edinmemize yardımcı olur, böylece videonun geri kalanını "
+"kodlayabiliriz."
 
 #: web/templates/flatpages/faq.html:143
 msgid ""
 "Here's an example of a few children watching our calibration video--it's "
 "easy to see that they look to one side and then the other."
 msgstr ""
+"İşte kalibrasyon videomuzu izleyen birkaç çocuğun bir örneği-- önce bir "
+"tarafa sonra diğerine baktıklarını görmek kolay."
 
 #: web/templates/flatpages/faq.html:149
 msgid ""
@@ -1435,12 +1607,13 @@ msgid ""
 "about what he or she understands. Here are some of the techniques labs use "
 "to learn more about how children learn."
 msgstr ""
+"Çocuğunuzun nereye bakacağına ilişkin kararları, ne anladığı hakkında bize "
+"pek çok bilgi verebilir. İşte laboratuvarların çocukların nasıl öğrendikleri "
+"hakkında daha fazla bilgi edinmek için kullandıkları tekniklerden bazıları."
 
 #: web/templates/flatpages/faq.html:150
-#, fuzzy
-#| msgid "Duration"
 msgid "Habituation"
-msgstr "Süre"
+msgstr "Alıştırma"
 
 #: web/templates/flatpages/faq.html:151
 msgid ""
@@ -1469,10 +1642,34 @@ msgid ""
 "you would choose to listen to anything else.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Bir alıştırma çalışmasında, bebeklere "
+"önce ilgilerini yitirene dek bir obje ya da olayın birçok örneğini "
+"gösteririz, ve zaman geçtikçe ilgilerini yitirirler. Bebekler genelde ilk "
+"resimleri uzunca bir süre izlerler fakat daha sonrasında çabucak başka "
+"yönlere bakmaya başlarlar. İzleme süreleri başlangıçtakine göre çok daha "
+"kısa olduğunda, ya yeni bir kategoriden ya da tanıdık kategoriden bir resim "
+"gösteririz. Eğer bebekler bu yeni örneği daha uzun süre izlerlerlerse, "
+"başlangıçta gösterdiğimiz kategoriyi anladıklarını– ve sıkıldıklarını – "
+"söyleyebiliriz.</p>\n"
+"                                <p>Alıştırma her bir bebeğin bir \"sıkılma\" "
+"eşiğine ulaşmasını beklemeyi gerektirir - örneğin, bir resmi başlangıçta "
+"izlediği sürenin yarısı kadar süre izlemesi.Bazen bu pratik değildir ve "
+"bunun yerine tanıtmayı kullanırız.Bir tanıtma çalışmasında, tüm bebeklere "
+"aynı sayıda örnek gösterir ve sonrasında tanıdıklara karşı yeni bir "
+"kategoriyle ne kadar ilgilendiklerine bakarız. Daha küçük bebekler ve çok az "
+"örnek görmüş olanlar bir tanıdıklık tercihi gösterme eğilimindedirler - daha "
+"önce gördüklerine benzer görüntüleri daha uzun süre izlerler. Daha büyük "
+"bebekler ve birçok örnek görmüş olanlar bir yenilik tercihi gösterme "
+"eğilimindedirler - daha önce gördüklerinden farklı görüntüleri daha uzun "
+"süre izlerler. Radyoda yeni bir şarkı duyduğunuzda muhtemelen aynı olguyu "
+"fark edeceksiniz: başlangıçta onu tanımazsınız; birkaç kez çalındıktan sonra "
+"beğenebilir ve şarkıyı söyleyebilirsiniz; yüzlerce kez oynatıldıktan sonra "
+"artık başka bir şey dinlemeyi seçersiniz.</p>"
 
 #: web/templates/flatpages/faq.html:156
 msgid "Violation of expectation"
-msgstr ""
+msgstr "Beklenti İhlali"
 
 #: web/templates/flatpages/faq.html:157
 msgid ""
@@ -1481,10 +1678,14 @@ msgid ""
 "find surprising, so in some cases, we can take their looking times as a "
 "measure of how surprised they are."
 msgstr ""
+"Bebekler ve çocuklar, işlerin nasıl gittiğine dair zaten zengin beklentilere "
+"sahiptir. Çocuklar (ve bu konuda yetişkinler) şaşırtıcı buldukları şeylere "
+"daha uzun süre bakma eğilimindedirler, bu nedenle bazı durumlarda ne kadar "
+"şaşırdıklarının bir ölçüsü olarak bakma sürelerini alabiliriz."
 
 #: web/templates/flatpages/faq.html:158
 msgid "Preferential looking"
-msgstr ""
+msgstr "Tercihli İzleme"
 
 #: web/templates/flatpages/faq.html:159
 msgid ""
@@ -1496,10 +1697,17 @@ msgid ""
 "shows a participant looking to her left when asked to 'find clapping'; the "
 "display she's watching is shown at the top."
 msgstr ""
+"Pasif gözlemciler gibi görünseler de çocuklar nereye bakacakları ve nelere "
+"dikkat edecekleri konusunda pek çok karar veriyorlar. Bu teknikte, çocuklara "
+"yan yana iki resim veya video arasında bir seçim sunuyoruz ve çocukların "
+"bunlardan birine daha fazla zaman harcayıp harcamadığını görüyoruz. Ayrıca "
+"videolardan biriyle eşleşen sesi de oynatabiliriz. Aşağıdaki video, "
+"'alkışlamayı bulması' istendiğinde sola bakan bir katılımcıyı "
+"göstermektedir; izlediği ekran en üstte gösterilir."
 
 #: web/templates/flatpages/faq.html:165
 msgid "Predictive looking"
-msgstr ""
+msgstr "Öngörücü İzleme"
 
 #: web/templates/flatpages/faq.html:166
 msgid ""
@@ -1513,6 +1721,16 @@ msgid ""
 "we can see whether children learn these relationships, and how they "
 "generalize, by watching where they look when they hear a syllable."
 msgstr ""
+"Çocuklar, daha sonra görmeyi veya duymayı bekledikleri şey hakkında "
+"genellikle gelişmiş tahminlerde bulunabilirler. Küçük çocuklarda bu "
+"tahminleri görebilmemizin bir yolu, onların göz hareketlerine bakmaktır. "
+"Örneğin, bir çocuk bariyerin arkasında bir topun yuvarladığını görürse, "
+"topun oradan çıkmasını bekleyerek bariyerin diğer kenarına bakabilir. Ayrıca "
+"yapay öngörücü ilişkiler kurabiliriz - örneğin, 'da' hecesi ekranın solunda "
+"bir oyuncağın görüneceği, 'ba' ise sağda bir oyuncağın görüneceği anlamına "
+"gelir. Bu durumda çocukların nereye baktıklarını izleyerek bu ilişkileri "
+"öğrenip öğrenmediklerini ve bir hece duyduklarında nasıl "
+"genelleştirdiklerini görebiliriz."
 
 #: web/templates/flatpages/faq.html:168
 msgid ""
@@ -1521,6 +1739,10 @@ msgid ""
 "object two different made-up names, and children were asked which is the "
 "correct name for the object."
 msgstr ""
+"Daha büyük çocuklar, neler olduğunu düşündükleri hakkındaki sözlü soruları "
+"cevaplayabilirler. Örneğin, son zamanlarda yapılan bir çalışmada, iki kadın "
+"bir nesneye iki farklı uydurma isim vermiş ve çocuklara nesnenin doğru "
+"adının hangisi olduğu sorulmuştur."
 
 #: web/templates/flatpages/faq.html:174
 msgid ""
@@ -1530,12 +1752,15 @@ msgid ""
 "square appears, and then look at factors that influence how quickly they "
 "press a key."
 msgstr ""
+"Daha büyük çocukların (ve yetişkinlerin) nasıl düşündüğünü öğrenmenin bir "
+"başka yolu da tepki sürelerini ölçmektir. Örneğin, çocuğunuzun bir daire "
+"göründüğünde bir tuşa, bir kare göründüğünde başka bir tuşa basmayı "
+"öğrenmesine yardımcı olmanızı isteyebilir ve ardından bir tuşa ne kadar "
+"hızlı bastığını etkileyen faktörlere bakarız."
 
 #: web/templates/flatpages/faq.html:181
-#, fuzzy
-#| msgid "We are not running any studies at this time!"
 msgid "Why are you running studies online instead of in person?"
-msgstr "Şu anda herhangi bir çalışma yürütmüyoruz!"
+msgstr "Çalışmaları neden yüz yüze yapmak yerine çevrimiçi yürütüyorsunuz?"
 
 #: web/templates/flatpages/faq.html:186
 msgid ""
@@ -1544,6 +1769,11 @@ msgid ""
 "part and schedule an appointment for them to come visit the lab. Why "
 "complement these in-lab studies with online ones? We're hoping to..."
 msgstr ""
+"Geleneksel olarak, gelişim çalışmaları bir üniversite laboratuvarındaki "
+"sessiz bir odada yapılır. Araştırmacılar, yer almak isteyip istemediklerini "
+"öğrenmek ve bir laboratuvar ziyareti randevusu ayarlamak için ebeveynleri "
+"arar veya email gönderir. Bu laboratuvar içi çalışmaları neden çevrimiçi "
+"araştırmalarla tamamlamayalım? Umuyoruz ki ..."
 
 #: web/templates/flatpages/faq.html:187
 msgid ""
@@ -1574,10 +1804,36 @@ msgid ""
 "                                </ul>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <ul>\n"
+"                                    <li>Araştırmalarda yer almanızı "
+"kolaylaştırır, özellikle her iki ebeveynin de çalıştığı aileler için</"
+"li>                                   \n"
+"                                    <li>İhtiyacınız olduğunda daha fazla "
+"çocukla çalışın—şu anda çalışmaları tasarlamada sınırlayıcı bir faktör, "
+"katılımcı toplamak için geçen süredir</li>\n"
+"                                    <li>Daha temsili bir aile "
+"popülasyonundan sonuçlar çıkarın - sadece bir üniversitenin yakınında "
+"yaşayan ve gün içinde laboratuvarı ziyaret edebilenlerden değil.\n"
+"                                    </li>\n"
+"                                    <li>Ailelerin birkaç ay ya da yıl ile "
+"birbirinden ayrılmış birden fazla test oturumlarını içerebilecek boylamsal "
+"çalışmalara devam edebilmesini kolaylaştırın</li>\n"
+"                                    <li>Çocuklar yabancı bir yerde değil "
+"evlerinde oldukları için daha doğal davranışlar gözlemleyin</li>\n"
+"                                    <li>Özel popülasyonları öğrenmek için "
+"bir sistem oluşturun--örneğin, belirli gelişimsel bozuklukları olan "
+"çocuklar</li>\n"
+"                                    <li>Araştırma yaparken kullandığımız "
+"prosedürleri daha şeffaf hale getirin ve bulgularımızı replike etmeyi "
+"kolaylaştırın</li>\n"
+"                                    <li>Yaptığımız araştırma ve bu "
+"araştırmadan ne öğrenebileceğimiz hakkında ailelerle iletişim kurun</li>\n"
+"                                </ul>"
 
 #: web/templates/flatpages/faq.html:206
 msgid "When will we see the results of the study?"
-msgstr ""
+msgstr "Çalışmanın sonuçlarını ne zaman göreceğiz?"
 
 #: web/templates/flatpages/faq.html:211
 msgid ""
@@ -1587,12 +1843,19 @@ msgid ""
 "preferences to be notified when we have results from studies you "
 "participated in."
 msgstr ""
+"Veri toplamaya başlamaktan makaleyi bir dergide görmeye kadar bilimsel bir "
+"çalışma yayınlama süreci birkaç yıl sürebilir. Belgelerle ilgili "
+"güncellemeler için Lookit ana sayfasını kontrol edebilir veya katıldığınız "
+"çalışmalardan sonuçlar aldığımızda bilgilendirilmek üzere iletişim "
+"tercihlerinizi ayarlayabilirsiniz."
 
 #: web/templates/flatpages/faq.html:218
 msgid ""
 "My child wasn't paying attention, or we were interrupted. Can we try the "
 "study again?"
 msgstr ""
+"Çocuğum dikkatini vermiyor, veya kesildik. Çalışmayı yeniden deneyebilir "
+"miyiz?"
 
 #: web/templates/flatpages/faq.html:223
 msgid ""
@@ -1601,12 +1864,17 @@ msgid ""
 "ignore it. You don't need to tell us that you tried the study before; we'll "
 "have a record of your previous participation."
 msgstr ""
+"Kesinlikle--özveriniz için teşekkürler! Tekrar denemeye çalıştığınızda "
+"araştırmaya zaten katıldığınıza dair bir uyarı görebilirsiniz, ancak bunu "
+"görmezden gelebilirsiniz. Çalışmayı daha önce denediğinizi bize söylemenize "
+"gerek yok; önceki katılımınızın bir kaydını alacağız."
 
 #: web/templates/flatpages/faq.html:230
 msgid ""
 "My child is outside the age range. Can he/she still participate in this "
 "study?"
 msgstr ""
+"Çocuğum yaş aralığının dışında kalıyor. Bu çalışmaya yine de katılabilir mi?"
 
 #: web/templates/flatpages/faq.html:235
 msgid ""
@@ -1616,10 +1884,15 @@ msgid ""
 "minimum age for a study, however, we encourage you to wait so that we'll be "
 "able to use the data."
 msgstr ""
+"Elbette! Onun verilerini doğrudan araştırmamızda kullanamayabiliriz, ancak "
+"merak ediyorsanız, çalışmayı yine de deneyebilirsiniz. (Gerçekten bazen "
+"büyük kardeşler sıranın kendilerine gelmesini isterler!) Bununla birlikte, "
+"çocuğunuzun yaşı bir çalışma için minimum yaşın hemen altındaysa beklemenizi "
+"öneririz, bu sayede verileri kullanabiliriz."
 
 #: web/templates/flatpages/faq.html:242
 msgid "My child was born prematurely. Should we use his/her adjusted age?"
-msgstr ""
+msgstr "Çocuğum prematüre doğdu. Düzeltilmiş yaşını mı kullanmalıyız?"
 
 #: web/templates/flatpages/faq.html:247
 msgid ""
@@ -1627,12 +1900,17 @@ msgid ""
 "since birth), even for premature babies. If adjusted age is important for a "
 "particular study, we will make that clear in the study eligibility criteria."
 msgstr ""
+"Çalışmaya uygunluk için, prematüre bebekler için bile genellikle çocuğun "
+"kronolojik yaşını (doğumdan itibaren geçen süre) kullanırız. Belirli bir "
+"çalışma için düzeltilmiş yaş önemliyse, bunu çalışmaya uygunluk "
+"kriterlerinde açıklığa kavuşturacağız."
 
 #: web/templates/flatpages/faq.html:254
 msgid ""
 "Our family speaks a language other than English at home. Can my child "
 "participate?"
 msgstr ""
+"Ailemiz evde İngilizce dışında bir dil konuşuyor. Çocuğum katılabilir mi? "
 
 #: web/templates/flatpages/faq.html:259
 msgid ""
@@ -1644,12 +1922,21 @@ msgid ""
 "can also indicate the languages your child speaks or is learning to speak on "
 "your demographic survey."
 msgstr ""
+"Elbette! Şu anda çocuklar ve aileler için yönergeler yalnızca İngilizce "
+"yazılmış durumda, dolayısıyla düzenli olarak İngilizce duymayan bir çocuk "
+"için kafa karıştırıcı olabilir. Ancak, herhangi bir çalışmayı deneyebilir ve "
+"yapabilirseniz çocuğunuz için tercüme edebilirsiniz. Eğer çalışma için "
+"çocuğunuzun İngilizce dışında bir dili konuşması fark ediyorsa, özel olarak "
+"soracağız. Ayrıca demografik ankette çocuğunuzun konuştuğu veya öğrenmekte "
+"olduğu dilleri belirtebilirsiniz. "
 
 #: web/templates/flatpages/faq.html:266
 msgid ""
 "My child has been diagnosed with a developmental disorder or has special "
 "needs. Can he/she still participate?"
 msgstr ""
+"Çocuğuma gelişimsel bir bozukluk teşhisi kondu veya özel ihtiyaçları var. "
+"Yine de katılabilir mi?"
 
 #: web/templates/flatpages/faq.html:271
 msgid ""
@@ -1666,12 +1953,25 @@ msgid ""
 "signing.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Elbette! Çocukların nasıl öğrendikleri ve "
+"büyüdükleri ile ilgileniyoruz. Eğer isterseniz, çalışmanın sonundaki "
+"yorumlar bölümüne herhangi bir gelişimsel bozukluk notu ekleyebilirsiniz. "
+"Gelecekte, çevrimiçi çalışmalar araştırmalara katılan daha çok ailenin kendi "
+"çocuklarının tanılarını daha iyi anlamasına yardımcı olacağı için "
+"heyecanlıyız.</p>\n"
+"                                <p>Bir not: çalışmalarımızın çoğu hem "
+"görüntü hem ses içerir, eğer çocuğunuz görme veya işitme engelliyse anlamak "
+"onun için zor olabilir. Yapabiliyorsanız, lütfen resimleri açıklayarak veya "
+"işaret diliyle yardımcı olmaktan çekinmeyin.</p>"
 
 #: web/templates/flatpages/faq.html:281
 msgid ""
 "I have multiple children in the age range for a study. Can they participate "
 "together?"
 msgstr ""
+"Çalışmanın yaş aralığında olan birden fazla çocuğum var. Birlikte "
+"katılabilirler mi?"
 
 #: web/templates/flatpages/faq.html:286
 msgid ""
@@ -1680,10 +1980,14 @@ msgid ""
 "fascinating subject in its own right but usually not the focus of our "
 "research."
 msgstr ""
+"Mümkünse her çocuğun ayrı ayrı katılmasını istiyoruz. Çocuklar birlikte "
+"katıldıklarında genellikle birbirlerini etkilerler. Bu başlı başına "
+"büyüleyici bir konu ama genellikle araştırmamızın odak noktası değildir."
 
 #: web/templates/flatpages/faq.html:293
 msgid "But I've heard that young children should avoid 'screen time.'"
 msgstr ""
+"Fakat küçük çocukların 'ekran süresi'nden kaçınması gerektiğini duydum."
 
 #: web/templates/flatpages/faq.html:298
 msgid ""
@@ -1700,10 +2004,22 @@ msgid ""
 "feedback on our studies!</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Çocukların en iyi ekranlardan değil, "
+"insanlardan öğrendiği konusunda Amerikan Pediatri Akademisi’nin <a href="
+"\"https://pediatrics.aappublications.org/content/138/5/e20162591\" target="
+"\"_blank\">tavsiyesine</a> katılıyoruz! Ancak, çalışmalarımız çocukları "
+"eğitmeyi değil, onlardan öğrenmeyi amaçlıyor.</p>\n"
+"                                <p>Gün içinde ekrana maruz kaldıkları "
+"sınırlı sürenin içine katabileceğiniz çalışmalarımızın, aile içinde sohbet "
+"etmeyi ve bilimle uğraşmayı teşvik ederek, oyun oynamak yerine video "
+"izleyerek geçirecekleri bu kısa vakti telafi edeceğini umuyoruz. Ayrıca biz "
+"de işe koyuluyoruz—kendi küçük çocuklarımız çalışmalarımızla ilgili çok "
+"sayıda geri bildirim sağlıyor!</p>"
 
 #: web/templates/flatpages/faq.html:308
 msgid "Will we be paid for our participation?"
-msgstr ""
+msgstr "Katılımımız için bize ödeme yapılacak mı?"
 
 #: web/templates/flatpages/faq.html:313
 msgid ""
@@ -1712,13 +2028,37 @@ msgid ""
 "rules of the university that's doing the research.) This information will be "
 "listed on the study description page."
 msgstr ""
+"Bazı araştırma grupları, çalışmalarını tamamlamak için hediye kartları veya "
+"başka ödemeler sağlarken, diğerleri gönüllülere güveniyor. (Bu genellikle "
+"araştırmayı yapan üniversitenin kurallarına bağlıdır.) Bu bilgiler "
+"çalışmanın açıklama sayfasında listelenecektir."
 
 #: web/templates/flatpages/faq.html:320
 msgid "Can I get my child's results?"
-msgstr ""
+msgstr "Çocuğumun sonuçlarını alabilir miyim?"
 
 #: web/templates/flatpages/faq.html:325
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "                                <p>For some studies, yes! Usually, "
+#| "developmental researchers only interpret children's abilities and "
+#| "developmental trends at a group level, and the individual data collected "
+#| "just isn't very interpretable. But for \"Your baby, the physicist\" and "
+#| "other longitudinal studies (where you come back for more than one "
+#| "session), we can sometimes collect enough data to give you a report of "
+#| "your child's responses after you complete all the sessions.</p>\n"
+#| "                                <p>Please note that none of the measures "
+#| "we collect are diagnostic! For instance, while we hope you'll be "
+#| "interested to learn that your child looked 70%% of the time at videos "
+#| "where things fell up versus falling down, we won't be able to tell you "
+#| "whether this means your child is going to be especially good at physics.</"
+#| "p>\n"
+#| "                                <p>If you're interested in getting "
+#| "individual results right away, please see our <a "
+#| "href='resources'>Resources</a> section for fun at-home activities you can "
+#| "try with your child.</p>\n"
+#| "                                "
 msgid ""
 "\n"
 "                                <p>For some studies, yes! Usually, "
@@ -1738,24 +2078,44 @@ msgid ""
 "a> section for fun at-home activities you can try with your child.</p>\n"
 "                                "
 msgstr ""
+"\n"
+"                                <p>Bazı çalışmalar için, evet! Genellikle, "
+"gelişim araştırmacıları çocukların becerilerini ve gelişimsel trendleri "
+"yalnızca grup seviyesinde yorumlar, ve toplanan bireysel veriler pek "
+"yorumlanamaz. Ancak “Fizikçi Bebeğiniz” çalışması ve diğer boylamsal (birden "
+"fazla oturum için geri geldiğiniz) çalışmalarda bazen siz tüm seansları "
+"tamamladıktan sonra çocuğunuzun yanıtları hakkında size bir rapor vermek "
+"için yeterli veri toplayabiliyoruz.</p>\n"
+"                                <p>Lütfen topladığımız ölçümlerin hiçbirinin "
+"teşhis amaçlı olmadığını unutmayın! Örneğin, çocuğunuzun nesnelerin yukarı "
+"doğru düştüğü (aşağı doğru düşmek yerine) videolarda zamanın %70’inde ekranı "
+"izlediğini öğrenmek ilginizi çekebilir, ancak size çocuğunuzun özellikle "
+"fizik dersinde başarılı olup olamayacağını söyleyebileceğimiz anlamına "
+"gelmez.</p>\n"
+"                                <p>Eğer hemen bireysel sonuçlar almakla "
+"ilgileniyorsanız, lütfen çocuğunuzla birlikte deneyebileceğiniz evde "
+"eğlenceli aktiviteler için <a href='resources'>Kaynaklar</a> bölümüne bakın."
+"</p>"
 
 #: web/templates/flatpages/faq.html:335
 msgid "Technical"
-msgstr ""
+msgstr "Teknik"
 
 #: web/templates/flatpages/faq.html:339
 msgid "What browsers are supported?"
-msgstr ""
+msgstr "Hangi tarayıcılar destekleniyor?"
 
 #: web/templates/flatpages/faq.html:344
 msgid ""
 "Lookit supports recent versions of Chrome and Firefox. We are not currently "
 "able to support Internet Explorer or Safari."
 msgstr ""
+"Lookit Chrome ve Firefox'un güncel versiyonlarını destekler. Şu anda Safari "
+"ve Internet Explorer'ı destekleyemiyoruz."
 
 #: web/templates/flatpages/faq.html:351
 msgid "Can we do a study on my phone or tablet?"
-msgstr ""
+msgstr "Telefon veya tabletimden çalışma yapabilir miyiz?"
 
 #: web/templates/flatpages/faq.html:357
 msgid ""
@@ -1765,111 +2125,63 @@ msgid ""
 "excited about the potential for touchscreen studies that allow us to observe "
 "infants and toddlers exploring, though!"
 msgstr ""
+"Henüz değil! Çocukların bakış modellerini ölçtüğümüz için, gözlerinin "
+"oldukça dengeli bir görüntüsüne ve soluna mı yoksa sağına mı baktıklarını "
+"anlayabileceğimiz yeterince büyük bir ekrana ihtiyacımız var. Yine de "
+"keşfeden bebekleri ve küçük çocukları gözlemlememizi sağlayan dokunmatik "
+"ekran çalışmalarının potansiyeli bizi heyecanlandırıyor!"
 
 #: web/templates/flatpages/home.html:11
 msgid "the online child lab"
-msgstr ""
+msgstr "çevrimiçi çocuk laboratuvarı"
 
 #: web/templates/flatpages/home.html:12
 msgid "A project of the MIT Early Childhood Cognition Lab"
-msgstr ""
+msgstr "MIT Erken Çocukluk Biliş Lab'ı projesi"
 
 #: web/templates/flatpages/home.html:22
 msgid "Bringing science home"
-msgstr ""
+msgstr "Bilimi eve getirmek"
 
 #: web/templates/flatpages/home.html:23
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
 msgstr ""
+"MIT'nin Erken Çocukluk Biliş Laboratuvarı'nda gelişim psikolojisinde yeni "
+"bir yaklaşım deniyoruz: deneyleri size getirmek."
 
 #: web/templates/flatpages/home.html:29
 msgid "Help us understand how your child thinks"
-msgstr ""
+msgstr "Çocuğunuzun nasıl düşündüğünüz anlamamızda bize yardımcı olun"
 
 #: web/templates/flatpages/home.html:30
 msgid ""
 "Your family can contribute to research about how children learn by doing fun "
 "activities together, right in your web browser."
 msgstr ""
+"Aileniz, doğrudan web tarayıcınızdan birlikte eğlenceli aktiviteler yaparak "
+"çocukların nasıl öğrendiklerine ilişkin araştırmalara katkıda bulunabilir."
 
 #: web/templates/flatpages/home.html:36
 msgid "Participate whenever and wherever"
-msgstr ""
+msgstr "Ne zaman ve nerede olursa olsun katılın"
 
 #: web/templates/flatpages/home.html:37
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
 msgstr ""
-
-#: web/templates/flatpages/home.html:45
-msgid "News"
-msgstr ""
-
-#: web/templates/flatpages/home.html:49
-msgid "June 29, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:52
-msgid "We're now accepting new studies from research groups around the world!"
-msgstr ""
-
-#: web/templates/flatpages/home.html:57
-msgid "May 4, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:60
-#, fuzzy
-#| msgid ""
-#| "Looking for more ways to contribute to research from home? Check out <a "
-#| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#| "\"noreferrer noopener\">Children Helping Science</a> for even more "
-#| "studies!"
-msgid ""
-"For even more ways to participate in science with your kids at home, check "
-"out the newly launched site <a href='https://childrenhelpingscience.com/' "
-"target='_blank'>Children Helping Science"
-msgstr ""
-"Araştırmalara evden katkıda bulunmanın daha fazla yollarını mı arıyorsunuz? "
-"Daha çok çalışma için <a href=\"https://childrenhelpingscience.com/\" target="
-"\"_blank\" rel=\"noreferrer noopener\">Children Helping Science</a> sitesine "
-"göz atın."
-
-#: web/templates/flatpages/home.html:65
-msgid "March 27, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:68
-msgid ""
-"We're gearing up to open up Lookit to more research labs! Our first study "
-"for newborns, 'Baby See, Baby Do?' is live, and 'Baby Euclid' is back for 7-"
-"month-olds. And we're still recruiting for Flurps and Zazzes, Your Baby the "
-"Physicist, and Baby Laughter - please help us spread the word!"
-msgstr ""
-
-#: web/templates/flatpages/home.html:73
-msgid "September 18, 2019"
-msgstr ""
-
-#: web/templates/flatpages/home.html:76
-msgid ""
-"Data collection is complete for the Lookit studies 'Baby Euclid,' 'Mind and "
-"Manners', 'Flurps and Zazzes,' and 'Words and Objects' (but stay tuned for "
-"follow-ups!). We're still looking families with babies to participate in "
-"'Look and Listen,' 'Your Baby the Physicist,' and 'Baby Laughter Games.'"
-msgstr ""
+"Başlamak için giriş yapın veya sağ üstten bir hesap oluşturun! Çocuğunuzla "
+"birlikte  kamerası olan herhangi bir bilgisayardan katılabilirsiniz."
 
 #: web/templates/flatpages/privacy.html:11
-#, fuzzy
-#| msgid "Privacy Statement"
 msgid "Privacy statement"
-msgstr "Gizlilik Bildirimi"
+msgstr "Gizlilik Beyanı"
 
 #: web/templates/flatpages/privacy.html:17
 msgid "Introduction"
-msgstr ""
+msgstr "Giriş"
 
 #: web/templates/flatpages/privacy.html:18
 msgid ""
@@ -1880,12 +2192,16 @@ msgid ""
 "                personal information we collect about our researchers and "
 "research participant community."
 msgstr ""
+"Lookit, araştırma yürütmek veya araştırma öznesi olarak görev almak için\n"
+"               Platformumuza kaydolan kişilerin mahremiyetini desteklemeye "
+"kararlıdır. Bu Gizlilik Beyanı, araştırmacılarımız ve araştırma "
+"katılımcısı \n"
+"               topluluğumuz hakkında topladığımız kişisel bilgileri nasıl "
+"işlediğimizi ve kullandığımızı açıklamaktadır."
 
 #: web/templates/flatpages/privacy.html:22
-#, fuzzy
-#| msgid "All Participants"
 msgid "For participants"
-msgstr "Tüm Katılımcılar"
+msgstr "Katılımcılar için"
 
 #: web/templates/flatpages/privacy.html:24
 msgid ""
@@ -1897,15 +2213,21 @@ msgid ""
 "studies only access your personal information\n"
 "                if you choose to participate in their study."
 msgstr ""
+"Lookit, pek çok farklı araştırmacının çocukların nasıl öğrendiği ve "
+"geliştiği konusunda araştırmalar yapmak için kullandığı bir platformdur.\n"
+"                Lookit'te toplanan tüm verilere erişebilen MIT Erken "
+"Çocukluk Biliş Laboratuvarı tarafından yürütülmektedir.\n"
+"                Lookit'i araştırma yapmak için kullanan araştırmacılar, "
+"kişisel bilgilerinize yalnızca çalışmalarına katılmayı seçerseniz erişirler."
 
 #: web/templates/flatpages/privacy.html:29
 #: web/templates/flatpages/privacy.html:142
 msgid "What personal information we collect"
-msgstr ""
+msgstr "Hangi kişisel bilgileri topluyoruz"
 
 #: web/templates/flatpages/privacy.html:31
 msgid "We collect the following kinds of personal information:"
-msgstr ""
+msgstr "Aşağıdaki kişisel bilgileri topluyoruz:"
 
 #: web/templates/flatpages/privacy.html:32
 msgid ""
@@ -1928,11 +2250,26 @@ msgid ""
 "etc.</li>\n"
 "            </ul>"
 msgstr ""
+"<ul>\n"
+"                <li>Hesap verileri: e-mail adresinizi, takma adınızı, posta "
+"adresinizi ve iletişim tercihlerinizi içerebilecek temel iletişim bilgileri</"
+"li>\n"
+"                <li>Çocuk verileri: takma ad, doğum tarihi ve doğum haftası "
+"dahil olmak üzere çocuğunuz /çocuklarınız hakkında temel biyografik bilgiler."
+"</li>\n"
+"                <li>Demografik bilgiler: ana diliniz, ırkınız, yaşınız, "
+"eğitim durumunuz ve belirli tıbbi durumların aile öyküsü gibi bilgileri "
+"içeren arka plan ve biyografik bilgiler</li>\n"
+"                <li>Çalışma verileri: ailenizin çalışmaya katıldığı videosu, "
+"formlara girilen metinler, gösterilen belirli görüntüler, çalışma boyunca "
+"ilerlemenin zamanlaması vb. Lookit’te yürütülen belirli çalışmalar sırasında "
+"toplanan yanıtlar</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:44
 #: web/templates/flatpages/privacy.html:147
 msgid "How we collect personal information about you"
-msgstr ""
+msgstr "Sizin hakkınızdaki kişisel bilgileri nasıl topluyoruz"
 
 #: web/templates/flatpages/privacy.html:46
 msgid ""
@@ -1943,17 +2280,23 @@ msgid ""
 "                completing or updating surveys, or participating in "
 "individual Lookit studies."
 msgstr ""
+"Hakkınızda topladığımız ve sakladığımız bilgiler, bir Lookit hesabına "
+"kaydolurken, çocuklarınızı kaydederken, hesabınızı veya çocuklarınızın "
+"profillerini güncellerken, anketleri tamamlarken veya güncellerken ya da "
+"bireysel Lookit çalışmalarına katılırken bize sağladığınız bilgilerdir."
 
 #: web/templates/flatpages/privacy.html:50
 #: web/templates/flatpages/privacy.html:167
 msgid "When we share your personal information"
-msgstr ""
+msgstr "Kişisel bilgilerinizi ne zaman paylaşıyoruz"
 
 #: web/templates/flatpages/privacy.html:52
 msgid ""
 "When you participate in a Lookit study, we share the following information "
 "with the research group conducting the study:"
 msgstr ""
+"Bir Lookit çalışmasına katıldığınızda, çalışmayı yürüten araştırma grubuyla "
+"aşağıdaki bilgileri paylaşıyoruz:"
 
 #: web/templates/flatpages/privacy.html:54
 msgid ""
@@ -1965,12 +2308,22 @@ msgid ""
 "                <li>The study data for this particular study session</li>\n"
 "            </ul>"
 msgstr ""
+"\n"
+"            <ul>\n"
+"                <li>Hesap verileriniz </li>\n"
+"                <li>Katılan çocuğun çocuk verileri</li>\n"
+"                <li>Demografik verileriniz</i>\n"
+"                <li>Bu çalışma oturumuna özel çalışma verileri</li>\n"
+"            </ul>"
 
 #: web/templates/flatpages/privacy.html:61
 msgid ""
 "Your email address is not shared directly with the research group, although "
 "they can contact you via Lookit in accordance with your contact preferences."
 msgstr ""
+"E-mail adresiniz doğrudan araştırma grubu ile paylaşılmaz, ancak iletişim "
+"tercihlerinize uygun olarak sizinle Lookit aracılığıyla iletişim "
+"kurabilirler."
 
 #: web/templates/flatpages/privacy.html:63
 msgid ""
@@ -1980,6 +2333,11 @@ msgid ""
 "participant birthdates (or information that\n"
 "                could be used to calculate birthdates)."
 msgstr ""
+"Araştırmacılar, bireysel yanıtlar da dahil olmak üzere bir çalışmanın "
+"sonuçlarını yayınlayabilirler. Ancak,\n"
+"               katılımcıların yaşlarını yayınlasalar da, katılımcıların "
+"doğum tarihlerini  (veya doğum tarihlerini hesaplamak \n"
+"                için kullanılabilecek bilgileri) yayınlayamazlar."
 
 #: web/templates/flatpages/privacy.html:67
 msgid ""
@@ -1996,6 +2354,17 @@ msgid ""
 "                researchers must also agree not to do so in order to use "
 "Lookit."
 msgstr ""
+"Biz ve / veya bir araştırmadan sorumlu araştırmacılar, ailenizin katılımının "
+"videosunu bilimsel, eğitimsel ve / veya tanıtım amaçlı paylaşabilir, ancak "
+"yalnızca bir çalışmanın sonunda bu tür kullanıma izin vermeyi seçerseniz.\n"
+"                Ayrıca araştırmacılar, bir çalışmanın sonunda buna izin "
+"vermeyi seçerseniz videonuzu ve diğer verilerinizi Databrary ile de "
+"paylaşabilir.\n"
+"                Katılımcıların videolarını bireysel demografik verilerle "
+"bağlantılı (örneğin, hane geliri veya ebeveyn / veli sayısı) bir şekilde "
+"yayınlamayız ve\n"
+"                araştırmacılar da Lookit'i kullanmak için bunu yapmamayı "
+"kabul etmelidir."
 
 #: web/templates/flatpages/privacy.html:74
 msgid ""
@@ -2005,17 +2374,25 @@ msgid ""
 "Researchers must also agree not to disclose\n"
 "                your contact information in order to use Lookit."
 msgstr ""
+"İletişim bilgilerinizi (e-mail ve / veya posta adresi) bir çalışmaya dahil "
+"olan araştırmacılar dışında herhangi biriyle paylaşmayız, satmayız, "
+"yayınlamayız \n"
+"                 veya başka bir şekilde ifşa etmeyiz . Ayrıca araştırmacılar "
+"Lookit'i kullanmak için\n"
+"                 iletişim bilgileriniz ifşa etmemeyi kabul etmelidir."
 
 #: web/templates/flatpages/privacy.html:78
 #: web/templates/flatpages/privacy.html:152
 msgid "How we use your personal information"
-msgstr ""
+msgstr "Kişisel bilgilerinizi nasıl kullanıyoruz"
 
 #: web/templates/flatpages/privacy.html:80
 msgid ""
 "We may use your personal information (account, child, demographic, and study "
 "data) for a variety of purposes, including to:"
 msgstr ""
+"Kişisel bilgilerinizi (hesap, çocuk, demografik ve çalışma verileri) şunlar "
+"dahil çeşitli amaçlar için kullanabiliriz:"
 
 #: web/templates/flatpages/privacy.html:81
 msgid ""
@@ -2047,6 +2424,31 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+" <ul>\n"
+"                <li>Kaydolduğunuz araştırmalar ve çocuklarınızın hangi "
+"çalışmalara uygun olduğu hakkında bilgi verir</li>\n"
+"                <li>İletişim tercihlerinize göre; ilgilenebileceğiniz "
+"çalışmalar hakkında bilgiler,  çok parçalı çalışmalara katılmayı unutmamanız "
+"için hatırlatıcılar ve/veya katıldığınız çalışmaların sonuçlarını gönderir\n"
+"                </li>\n"
+"                <li>Lookit platformunu geliştirir: örneğin, teknik "
+"problemleri tespit edip düzeltir ya da yardımcı olabilecek yeni özellikler "
+"oluşturur</li>\n"
+"                <li>Lookit araştırmacıları için veri analizi araçları "
+"geliştirir </li>\n"
+"                <li>Çalışma araştırmacılarına teknik destek sağlar</li>\n"
+"                <li>Platformda toplanan verilerin kalitesini değerlendirir "
+"(örneğin gözlemci, çocuğun hangi yöne baktığını ne kadar iyi "
+"söyleyebiliyor)</li>\n"
+"                <li>Katılımcı toplama ve ailelerin katılım süreçlerini "
+"inceler (örneğin., kırsal ve kentsel bölgelerden kaç katılımcının geldiğini "
+"görür)</li>\n"
+"                <li>Lookit'i kullanmaları için katılımcı ve araştırmacılar "
+"toplar(örneğin, çocuğunuzun eğlendiği kısa bir video klibi paylaşır– "
+"YALNIZCA videonuzun tanıtım amaçlı kullanılmasına izin vermeyi seçtiyseniz)</"
+"li>\n"
+"            </ul>\n"
+"            "
 
 #: web/templates/flatpages/privacy.html:100
 msgid ""
@@ -2060,12 +2462,23 @@ msgid ""
 "up online session for an in-person study –\n"
 "                they must tell you that in the study consent form."
 msgstr ""
+"Araştırmacılar, çalışmalarında toplanan verileri belirli bilimsel soruları "
+"ele almak için kullanırlar.\n"
+"                Ayrıca bir çalışma için toplanan verilerin daha sonra ilgili "
+"bir soruyu yanıtlamaya yardımcı olabileceği ortaya çıkabilir. Eğer "
+"araştırmacılar, Lookit araştırmalarında toplananların ötesinde, sizinle "
+"ilgili ek bilgileri kullanıyorlar ise - örneğin, yüz yüze bir çalışmanın "
+"çevrimiçi tamamlayıcı oturuma katılıyorsanız- bunu çalışma onay formunda "
+"size söylemelidirler."
 
 #: web/templates/flatpages/privacy.html:106
 msgid ""
 "There are some basic rules about how personal information may be used that "
 "all Lookit researchers agree to, including:"
 msgstr ""
+"Şunlar dahil olmak üzere, tüm Lookit araştırmacılarının kabul ettiği, "
+"kişisel bilgilerin nasıl kullanılabileceğine ilişkin bazı temel kurallar "
+"vardır:"
 
 #: web/templates/flatpages/privacy.html:107
 msgid ""
@@ -2079,6 +2492,15 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+"\n"
+"<ul>\n"
+"                <li>Kullanıcı adlarını, çocuk takma adlarını veya iletişim "
+"bilgilerini araştırma konusu olarak kullanamazlar.</li>\n"
+"                <li>Ailelerle, posta yoluyla yalnızca çalışmaya katılım için "
+"ödeme veya katılım için gerekli materyalleri göndermek için \n"
+"                     iletişim kurabilirler.</li>\n"
+"            </ul>\n"
+"            "
 
 #: web/templates/flatpages/privacy.html:114
 #: web/templates/flatpages/privacy.html:163
@@ -2089,14 +2511,39 @@ msgid ""
 "you to stop processing your personal\n"
 "                information (subject to our legal obligations)."
 msgstr ""
+"Bu amaçlardan herhangi biri veya sizinle nasıl iletişim kurduğumuz hakkında "
+"endişeleriniz varsa, lütfen bizimle şuradan iletişime geçin\n"
+"                 dataprotection@mit.edu. Kişisel bilgilerinizi işlemeyi "
+"durdurma isteğinize her zaman saygı duyacağız\n"
+"                 (yasal yükümlülüklerimize tabidir)."
 
 #: web/templates/flatpages/privacy.html:118
 #: web/templates/flatpages/privacy.html:171
 msgid "How your information is stored and secured"
-msgstr ""
+msgstr "Bilgileriniz nasıl saklanır ve gizli tutulur"
 
 #: web/templates/flatpages/privacy.html:120
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "We have implemented industry-standard security safeguards designed to "
+#| "protect the personal information\n"
+#| "                that you may provide. We also periodically monitor our "
+#| "system for possible vulnerabilities and attacks,\n"
+#| "                consistent with industry standards. Only authenticated "
+#| "users with specific permissions may access the\n"
+#| "                data. All data is transmitted via a secure https "
+#| "connection, and all video data is encrypted at rest on\n"
+#| "                the storage systems used by Lookit to provide data to "
+#| "researchers. Researchers are responsible for their\n"
+#| "                own secure storage of data once they obtain it from "
+#| "Lookit. You should be aware, however, that since the\n"
+#| "                internet is not a 100%% secure environment, there’s no "
+#| "guarantee that information may not be accessed,\n"
+#| "                disclosed, altered, or destroyed by breach of any of our "
+#| "physical, technical, or managerial safeguards.\n"
+#| "                It's your responsibility to protect the security of your "
+#| "account details, including your username and\n"
+#| "                password."
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
 "protect the personal information\n"
@@ -2118,11 +2565,29 @@ msgid ""
 "account details, including your username and\n"
 "                password."
 msgstr ""
+"Sağlayabileceğiniz kişisel bilgileri korumak için tasarlanmış endüstri "
+"standardı güvenlik önlemleri uyguladık\n"
+"                Ayrıca olası güvenlik açıkları ve saldırılara karşı "
+"sistemimizi  endüstri standartlarıyla uyumlu şekilde periyodik olarak "
+"izliyoruz.\n"
+"              Yalnızca belirli izinlere sahip kimliği doğrulanmış "
+"kullanıcılar verilere erişebilir.\n"
+"               Tüm veriler güvenli bir https bağlantısıyla iletilir ve tüm "
+"video verileri, Lookit tarafından araştırmacılara veri sağlamak için "
+"kullanılan depolama sistemlerinde şifrelenir.\n"
+"                 Araştırmacılar Lookit'ten aldıktan sonra verilerin güvenli "
+"depolanmasından kendileri sorumludur. Bununla birlikte,\n"
+"                İnternet % 100 güvenli bir ortam değildir, fiziksel, teknik "
+"veya yönetimsel korumalarımızın ihlal edilmesiyle bilgilere "
+"erişilemeyeceğine, ifşa edilmeyeceğine, değiştirilemeyeceğine veya yok "
+"edilmeyeceğine dair bir garanti yoktur.\n"
+"                Kullanıcı adınız ve şifreniz dahil olmak üzere hesap "
+"detaylarınızın güvenliğini korumak sizin sorumluluğunuzdadır."
 
 #: web/templates/flatpages/privacy.html:131
 #: web/templates/flatpages/privacy.html:182
 msgid "How long we keep your personal information"
-msgstr ""
+msgstr "Kişisel bilgilerinizi ne kadar süre saklıyoruz"
 
 #: web/templates/flatpages/privacy.html:133
 msgid ""
@@ -2139,6 +2604,16 @@ msgid ""
 "                dataset and removing your data could affect already "
 "published findings."
 msgstr ""
+"Araştırma topluluğumuzla ilişkimizin ömür boyu süreceğini düşünüyoruz. Bu, "
+"iletişimde kalmamızı istemediğinizi söyleyene kadar sizin için bir kaydı "
+"koruyacağımız anlamına gelir.\n"
+"               Hesabınızı kaldırmak isterseniz, idari görevleri ve yasal "
+"yükümlülükleri yerine getirmek için sizinle ilgili temel bilgileri "
+"saklayacağız.\n"
+"Lookit çalışmalarına katıldıysanız, araştırmacılarla hali hazırda "
+"paylaşılmış olan kişisel bilgiler, bilimsel bir veri setinin parçası "
+"olduğundan ve verilerinizin kaldırılması önceden yayınlanmış bulguları "
+"etkileyebileceğinden, genellikle \"geri alınamayabilir\"."
 
 #: web/templates/flatpages/privacy.html:144
 msgid ""
@@ -2147,6 +2622,10 @@ msgid ""
 "                including name, title, business addresses, phone numbers, "
 "and email addresses."
 msgstr ""
+"Siz ve temsilci kuruluşunuz hakkındaki temel biyografik/ iletişim "
+"bilgilerini toplayabiliriz,\n"
+"                 ad, unvan, iş adresleri, telefon numaraları ve email "
+"adresleri dahil."
 
 #: web/templates/flatpages/privacy.html:149
 msgid ""
@@ -2155,6 +2634,9 @@ msgid ""
 "                to use Lookit, updating your profile, or creating or editing "
 "a study."
 msgstr ""
+"Hakkınızda topladığımız ve sakladığımız bilgiler,  Lookit'i kullanmak için \n"
+"                kayıt olurken, profilinizi güncellerken veya bir çalışma "
+"oluştururken ya da düzenlerken bize sağladığınız bilgilerdir."
 
 #: web/templates/flatpages/privacy.html:154
 msgid ""
@@ -2162,6 +2644,9 @@ msgid ""
 "including the performance of contractual obligations. Specifically, we use "
 "your personal information to:"
 msgstr ""
+"Kişisel bilgilerinizi, sözleşmeden doğan yükümlülüklerin yerine getirilmesi "
+"dahil olmak üzere bir dizi meşru amaç için kullanıyoruz. Kişisel "
+"bilgilerinizi özellikle şu amaçlarla kullanırız:"
 
 #: web/templates/flatpages/privacy.html:155
 msgid ""
@@ -2176,13 +2661,39 @@ msgid ""
 "            </ul>\n"
 "            "
 msgstr ""
+" <ul>\n"
+"                <li>Kaydolduğunuz araştırmalar için araştırma hizmetlerini "
+"size sağlar.</li>\n"
+"                <li>İdari görevleri yerine getirir ve dahili kayıt tutma "
+"amaçları için.</li>\n"
+"                <li>Misyonumuzu desteklemek için istatistiksel araştırma "
+"amacıyla kullanıcılarımız hakkında toplu (tamamen anonimleştirilmiş) "
+"bilgiler oluşturur ve analiz eder.</li>\n"
+"            </ul>\n"
+"            "
 
 #: web/templates/flatpages/privacy.html:169
 msgid "We do not share your personal information with any third parties."
-msgstr ""
+msgstr "Kişisel bilgilerinizi üçüncü partilerle paylaşmayız."
 
 #: web/templates/flatpages/privacy.html:173
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "We have implemented industry-standard security safeguards designed to "
+#| "protect the personal information\n"
+#| "                that you may provide. We also periodically monitor our "
+#| "system for possible vulnerabilities and attacks,\n"
+#| "                consistent with industry standards. Only authenticated "
+#| "users with specific permissions may access the\n"
+#| "                data. All data is transmitted via a secure https "
+#| "connection. You should be aware, however, that since\n"
+#| "                the internet is not a 100%% secure environment, there’s "
+#| "no guarantee that information may not be\n"
+#| "                accessed, disclosed, altered, or destroyed by breach of "
+#| "any of our physical, technical, or managerial\n"
+#| "                safeguards. It's your responsibility to protect the "
+#| "security of your account details, including your\n"
+#| "                username and password."
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
 "protect the personal information\n"
@@ -2200,6 +2711,20 @@ msgid ""
 "of your account details, including your\n"
 "                username and password."
 msgstr ""
+"Sağlayabileceğiniz kişisel bilgileri korumak için tasarlanmış endüstri "
+"standardı güvenlik önlemleri uyguladık\n"
+"                Ayrıca olası güvenlik açıkları ve saldırılara karşı "
+"sistemimizi  endüstri standartlarıyla uyumlu şekilde periyodik olarak "
+"izliyoruz.\n"
+"              Yalnızca belirli izinlere sahip kimliği doğrulanmış "
+"kullanıcılar verilere erişebilir.\n"
+"               Tüm veriler güvenli bir https bağlantısıyla iletilir. Bununla "
+"birlikte, bilmelisiniz ki internet % 100 güvenli bir ortam değildir, "
+"fiziksel, teknik veya yönetimsel korumalarımızın ihlal edilmesiyle bilgilere "
+"erişilemeyeceğine, ifşa edilmeyeceğine, değiştirilemeyeceğine veya yok "
+"edilmeyeceğine dair bir garanti yoktur.\n"
+"                Kullanıcı adınız ve şifreniz dahil olmak üzere hesap "
+"detaylarınızın güvenliğini korumak sizin sorumluluğunuzdadır."
 
 #: web/templates/flatpages/privacy.html:184
 msgid ""
@@ -2211,14 +2736,21 @@ msgid ""
 "of information about you to fulfill\n"
 "                administrative tasks and legal obligations."
 msgstr ""
+"Araştırma topluluğumuzla ilişkimizin ömür boyu süreceğini düşünüyoruz. Bu, "
+"koruyacağımız anlamına gelir\n"
+"                Bize artık iletişimde kalmamızı istemediğinizi söyleyene "
+"kadar sizin için bir kayıt. Eğer hayırsan\n"
+"                Lookit'ten daha uzun süre haber almak isteriz, yerine "
+"getirmeniz için sizinle ilgili temel bilgileri saklayacağız\n"
+"                idari görevler ve yasal yükümlülükler."
 
 #: web/templates/flatpages/privacy.html:189
 msgid "For everyone"
-msgstr ""
+msgstr "Herkes için"
 
 #: web/templates/flatpages/privacy.html:191
 msgid "Rights for individuals in the European Economic Area"
-msgstr ""
+msgstr "Avrupa Ekonomik Bölgesindeki bireylerin hakları"
 
 #: web/templates/flatpages/privacy.html:192
 msgid ""
@@ -2232,6 +2764,14 @@ msgid ""
 "lodge complaints with your national or\n"
 "                regional data protection authority."
 msgstr ""
+"Bazı durumlarda (1) kişisel bilgilerinize erişme; (2) bilgileri düzeltme "
+"veya silme; (3) işlemeyi kısıtlama; ve (4) iletişime, doğrudan pazarlamaya "
+"veya\n"
+"                profil oluşturmaya itiraz hakkına sahipsiniz. "
+"Uygulanabildiği ölçüde, AB'nin Genel Veri Koruma Yönetmeliği haklarınız "
+"hakkında daha fazla bilgi sağlar.\n"
+"                Ayrıca ulusal veya bölgesel veri koruma kurumunuza şikayette "
+"bulunma hakkına da sahipsiniz."
 
 #: web/templates/flatpages/privacy.html:198
 msgid ""
@@ -2251,6 +2791,18 @@ msgid ""
 "defending against or exercising our rights with\n"
 "                respect to such claim."
 msgstr ""
+"Bu hakları kullanma eğilimindeyseniz, endişelerinizi sizinle görüşmek için "
+"bir fırsat talep ediyoruz.\n"
+"                Elimizde tuttuğumuz kişisel bilgileri koruma amacıyla, bu "
+"hakları kullanırken kimliğinizi doğrulamak için daha fazla bilgi talep "
+"edebiliriz. Bilgilerin silinmesine yönelik bir talep üzerine, gelecekte "
+"sizinle istem dışı olarak iletişime geçmememiz için temel bir kişisel veri "
+"setini ve ayrıca arşivleme amaçları için gerekli olan herhangi bir bilgiyi "
+"muhafaza edeceğiz. Ayrıca, ABD Vergi Dairesi uyumluluğu dahil olmak üzere, "
+"yasal amaçlarla bazı finansal bilgileri saklamamız gerekebilir. Fiili veya "
+"tehdit içeren bir yasal talep durumunda, bilgilerinizi bu tür iddialara "
+"ilişkin haklarımızı tesis etmek, savunmak veya kullanmak amacıyla "
+"saklayabiliriz."
 
 #: web/templates/flatpages/privacy.html:207
 msgid ""
@@ -2262,16 +2814,23 @@ msgid ""
 "level of protection as the data and privacy\n"
 "                laws and regulations of the EEA."
 msgstr ""
+"Doğrudan Lookit'e bilgi sağlayarak, kişisel bilgilerinizin Avrupa Ekonomik "
+"Alanı dışındaki Amerika Birleşik Devletleri'ne \n"
+"                 aktarılmasına izin vermiş olursunuz. Amerika Birleşik "
+"Devletleri'nin mevcut yasalarının ve\n"
+"                 düzenlemelerinin, AEA yasaları ve düzenlemeleri ile aynı "
+"düzeyde \n"
+"                 koruma sağlamayabileceğini bilmelisiniz."
 
 #: web/templates/flatpages/privacy.html:212
 msgid ""
 "You are under no statutory or contractual obligation to provide any personal "
 "data to us."
 msgstr ""
+"Bize herhangi bir kişisel veri sağlama konusunda hiçbir yasal veya "
+"sözleşmeye dayalı yükümlülük altında değilsiniz."
 
 #: web/templates/flatpages/privacy.html:214
-#, fuzzy
-#| msgid "Additional Info"
 msgid "Additional Information"
 msgstr "Ek Bilgi"
 
@@ -2282,30 +2841,38 @@ msgid ""
 "                treat your personal information we will make this clear on "
 "our website or by contacting you directly."
 msgstr ""
+"Bu Gizlilik Beyanını zaman zaman değiştirebiliriz. Kişisel bilgilerinizi ele "
+"alışımızda\n"
+"                 önemli bir değişiklik yaparsak bunu web sitemizde veya "
+"sizinle doğrudan iletişime geçerek açıklığa kavuşturacağız."
 
 #: web/templates/flatpages/privacy.html:220
 msgid ""
 "The controller for your personal information is MIT. We can be contacted at "
 "dataprotection@mit.edu."
 msgstr ""
+"Kişisel bilgilerinizin denetleyicisi MIT'dir. Bize dataprotection@mit.edu. "
+"adresinden ulaşabilirsiniz."
 
 #: web/templates/flatpages/privacy.html:222
 msgid "This policy was last updated in June 2018."
-msgstr ""
+msgstr "Anlaşma şartları en son Haziran 2018'de güncellenmiştir."
 
 #: web/templates/flatpages/scientists.html:27
 msgid "Meet the Lookit team"
-msgstr ""
+msgstr "Lookit ekibiyle tanışın"
 
 #: web/templates/flatpages/scientists.html:33
 msgid "Core Team"
-msgstr ""
+msgstr "Çekirdek Ekip"
 
 #: web/templates/flatpages/scientists.html:38
 msgid ""
 "Rico is Lookit's lead software engineer, working on planning and adding "
 "features for both participants and researchers."
 msgstr ""
+"Rico Lookit'in lider yazılım mühendisidir, hem katılımcılar hem de "
+"araştırmacılar için yeni özellikler planlama ve ekleme üzerine çalışıyor."
 
 #: web/templates/flatpages/scientists.html:43
 msgid ""
@@ -2313,6 +2880,9 @@ msgid ""
 "about how children arrive at a common-sense understanding of the physical "
 "and social world through exploration and instruction."
 msgstr ""
+"Laura, Erken Çocukluk Biliş Laboratuvarı'nın baş araştırmacısıdır. Keşif ve "
+"öğretim yoluyla çocukların fiziksel ve sosyal dünyanın sağduyulu bir "
+"anlayışına nasıl ulaştıkları hakkında araştırma yapıyor."
 
 #: web/templates/flatpages/scientists.html:49
 msgid ""
@@ -2320,16 +2890,21 @@ msgid ""
 "research scientist in the Early Childhood Cognition Lab. Her three children "
 "frequently provide feedback on studies."
 msgstr ""
+"Kim, Lookit'e yüksek lisans öğrencisi olarak başladı ve şimdi projeyi Erken "
+"Çocukluk Biliş Laboratuvarı'nda araştırmacı bilim insanı olarak yürütüyor. "
+"Üç çocuğu, çalışmaları hakkında sık sık geri bildirimde bulunuyor."
 
 #: web/templates/flatpages/scientists.html:54
 msgid ""
 "Mark organizes the Lookit Working Groups, which are groups of researchers "
 "working to improve Lookit in a variety of ways."
 msgstr ""
+"Mark Lookit Çalışma Gruplarını organize ediyor, bu gruplar Lookit'in çeşitli "
+"yollardan geliştirilmesi için çalışan araştırmacılardan oluşur."
 
 #: web/templates/flatpages/scientists.html:58
 msgid "Alumni &amp; Collaborators"
-msgstr ""
+msgstr "Mezunlar &amp; İşbirlikçiler"
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
@@ -2338,20 +2913,18 @@ msgstr "Başarılı bir şekilde çıkış yaptınız."
 #: web/templates/registration/login.html:8
 #: web/templates/web/studies-history.html:9
 #: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
-#, fuzzy
-#| msgid "Your username and password didn't match. Please try again."
 msgid "Your login credentials didn't work. Please try again."
-msgstr "Kullanıcı adınız ve şifreniz eşleşmedi. Lütfen tekrar deneyiniz."
+msgstr "Giriş kimlik bilgileriniz çalışmadı. Lütfen tekrar deneyin."
 
 #: web/templates/registration/login.html:18
 #: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:50
+#: web/templates/web/_navigation.html:45
 msgid "Login"
 msgstr "Giriş yap"
 
 #: web/templates/registration/login.html:34
 msgid "Forgot password?"
-msgstr "Şifremi unuttum?"
+msgstr "Şifrenizi mi unuttunuz?"
 
 #: web/templates/registration/login.html:36
 msgid "New to Lookit?"
@@ -2359,7 +2932,7 @@ msgstr "Lookit'te yeni misiniz?"
 
 #: web/templates/registration/login.html:36
 msgid "Register your family!"
-msgstr ""
+msgstr "Ailenizi kaydedin!"
 
 #: web/templates/registration/password_change_done.html:11
 msgid "Password changed"
@@ -2452,36 +3025,26 @@ msgstr ""
 "kullanıldı. Lütfen yeni bir şifre sıfırlama isteği gönderin."
 
 #: web/templates/registration/password_reset_done.html:11
-#, fuzzy
-#| msgid "Password reset complete"
 msgid "Password reset link sent"
-msgstr "Şifre sıfırlama tamamlandı"
+msgstr "Şifre sıfırlama linki gönderildi"
 
 #: web/templates/registration/password_reset_done.html:15
-#, fuzzy
-#| msgid ""
-#| "We've emailed you instructions for setting your password, if an account "
-#| "exists with the email you entered. You should receive them shortly."
 msgid ""
 "If an account exists with the email you entered, we've emailed instructions "
 "for resetting your password and you should receive them shortly."
 msgstr ""
-"Şifrenizi sıfırlamanız için gerekli yönergeleri email adresinize gönderdik. "
-"Eğer girdiğiniz email adresi ile bir hesap mevcutsa, kısa bir süre içinde "
-"posta kutunuzda olması gerekiyor."
+"Eğer girdiğiniz email ile bir hesap mevcutsa, şifre sıfırlama yönergelerini "
+"size email ile gönderdik bu emaili kısa sürede almış olmalısınız."
 
 #: web/templates/registration/password_reset_done.html:17
-#, fuzzy
-#| msgid ""
-#| "If you don't receive an email, please make sure you've entered the "
-#| "address you registered with, and check your spam folder."
 msgid ""
 "If you don't receive an email, please check your spam folder and make sure "
 "you've entered the address you registered with. (You won't get an email "
 "unless there's already an account for that email address!)"
 msgstr ""
-"Email'i almadıysanız lütfen kayıt yaptığınız email adresini yazdığınızdan "
-"emin olun ve e-posta adresinizin spam/gereksiz klasörünü kontrol edin."
+"Eğer email almadıysanız, lütfen spam klasörünü kontrol edin ve kayıt "
+"olduğunuz email adresini girdiğinizden emin olun. (Eğer o email adresi için "
+"bir hesap mevcut değilse email almayacaksınız!)"
 
 #: web/templates/registration/password_reset_email.html:2
 #, fuzzy, python-format
@@ -2514,10 +3077,8 @@ msgid "The %(site_name)s team"
 msgstr "%(site_name)nın takımı"
 
 #: web/templates/registration/password_reset_form.html:11
-#, fuzzy
-#| msgid "Password reset complete"
 msgid "Password reset"
-msgstr "Şifre sıfırlama tamamlandı"
+msgstr "Şifre sıfırlama"
 
 #: web/templates/registration/password_reset_form.html:15
 msgid ""
@@ -2535,35 +3096,35 @@ msgstr "Email adresi:"
 msgid "Reset my password"
 msgstr "Şifremi sıfırla"
 
-#: web/templates/web/_navigation.html:22
+#: web/templates/web/_navigation.html:17
 msgid "Experimenter"
 msgstr "Deneyci"
 
-#: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
+#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
 msgid "Studies"
 msgstr "Çalışmalar"
 
-#: web/templates/web/_navigation.html:34
+#: web/templates/web/_navigation.html:29
 msgid "FAQ"
 msgstr "SSS"
 
-#: web/templates/web/_navigation.html:35
+#: web/templates/web/_navigation.html:30
 msgid "The Scientists"
 msgstr "Bilim insanları"
 
-#: web/templates/web/_navigation.html:36
+#: web/templates/web/_navigation.html:31
 msgid "Resources"
 msgstr "Kaynaklar"
 
-#: web/templates/web/_navigation.html:45
+#: web/templates/web/_navigation.html:40
 msgid "Hi"
 msgstr "Merhaba"
 
-#: web/templates/web/_navigation.html:47
+#: web/templates/web/_navigation.html:42
 msgid "Logout"
-msgstr "Çıkış yapma"
+msgstr "Çıkış yap"
 
-#: web/templates/web/_navigation.html:49
+#: web/templates/web/_navigation.html:44
 msgid "Sign up"
 msgstr "Kayıt ol"
 
@@ -2573,10 +3134,8 @@ msgid "Child"
 msgstr "Çocuk"
 
 #: web/templates/web/child-update.html:26
-#, fuzzy
-#| msgid "Back to list"
 msgid "Back to Children List"
-msgstr "Listeye geri dön"
+msgstr "Çocuk Listesi'ne Geri Dön"
 
 #: web/templates/web/child-update.html:31
 msgid "Update"
@@ -2678,28 +3237,24 @@ msgid "I would like to be contacted when:"
 msgstr "Şu durumda iletişime geçilmesini isterim:"
 
 #: web/templates/web/participant-signup.html:18
-#, fuzzy
-#| msgid "Participant account"
 msgid "Create Participant Account"
-msgstr "Katılımcı hesabı"
+msgstr "Katılımcı Hesabı Oluştur"
 
 #: web/templates/web/participant-signup.html:22
 msgid "Create a family account to start participating in Lookit studies!"
-msgstr ""
+msgstr "Lookit çalışmalarına katılmaya başlamak için bir aile hesabı oluştur!"
 
 #: web/templates/web/participant-signup.html:23
 msgid "To register as a researcher, please use"
-msgstr ""
+msgstr "Araştırmacı olarak kayıt olmak için, lütfen kullanın"
 
 #: web/templates/web/participant-signup.html:23
 msgid "this form"
-msgstr ""
+msgstr "bu formu"
 
 #: web/templates/web/participant-signup.html:23
-#, fuzzy
-#| msgid "instead?"
 msgid "instead"
-msgstr "onun yerine?"
+msgstr "yerine"
 
 #: web/templates/web/participant-signup.html:28
 msgid ""
@@ -2776,7 +3331,7 @@ msgstr "Hayır"
 
 #: web/templates/web/studies-history.html:82
 msgid "Compensation: "
-msgstr "Ödeme:"
+msgstr "Ödeme: "
 
 #: web/templates/web/studies-history.html:87
 msgid "Study Responses"
@@ -2784,7 +3339,7 @@ msgstr "Çalışma Yanıtları"
 
 #: web/templates/web/studies-history.html:107
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: web/templates/web/studies-history.html:118
 msgid "Date"
@@ -2832,11 +3387,11 @@ msgstr "Onay videosunun değerlendirilme durumuyla ilgili bilgi bulunmuyor."
 
 #: web/templates/web/studies-history.html:133
 msgid "Feedback"
-msgstr ""
+msgstr "Geri bildirim"
 
 #: web/templates/web/studies-history.html:139
 msgid "None"
-msgstr ""
+msgstr "Hiçbiri"
 
 #: web/templates/web/studies-history.html:154
 msgid "You have not yet participated in any studies."
@@ -2874,18 +3429,16 @@ msgstr ""
 "göz atın."
 
 #: web/templates/web/study-detail.html:53
-#, fuzzy
-#| msgid " days"
 msgid "days"
 msgstr "günler"
 
 #: web/templates/web/study-detail.html:53
 msgid " until "
-msgstr ""
+msgstr " 'e dek "
 
 #: web/templates/web/study-detail.html:53
 msgid " when "
-msgstr ""
+msgstr " ne zaman "
 
 #: web/templates/web/study-detail.html:93
 msgid "Study overview"
@@ -2928,28 +3481,22 @@ msgid "Log in to participate"
 msgstr "Katılmak için giriş yapın:"
 
 #: web/templates/web/study-detail.html:142
-#, fuzzy
-#| msgid "No child profiles registered!"
 msgid "Add child profile to "
-msgstr "Hiçbir çocuk profili kaydedilmedi!"
+msgstr "Şuraya çocuk profili ekle "
 
 #: web/templates/web/study-detail.html:142
 #: web/templates/web/study-detail.html:144
 msgid "preview"
-msgstr ""
+msgstr "önizleme"
 
 #: web/templates/web/study-detail.html:142
 #: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Participate"
 msgid "participate"
-msgstr "Katıl"
+msgstr "katıl"
 
 #: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Demographic Survey"
 msgid "Complete demographic survey to "
-msgstr "Demografik Anket"
+msgstr "Demografik anketi tamamlayın "
 
 #: web/templates/web/study-detail.html:148
 msgid "Select a child:"
@@ -2966,7 +3513,7 @@ msgid ""
 "we'll be able to use the collected data in our research!"
 msgstr ""
 "Çocuğunuz bu çalışma için önerilen yaş aralığından küçük. Eğer çocuğunuz "
-"uygun yaş aralığına gelene kadar <span id='wait-until'>until</span> "
+"uygun yaş aralığına gelene <span id='wait-until'>kadar</span> "
 "bekleyebilirseniz, toplanan veriyi araştırmamızda kullanabileceğiz."
 
 #: web/templates/web/study-detail.html:162
@@ -3000,7 +3547,7 @@ msgstr "Katıl"
 
 #: web/templates/web/study-detail.html:167
 msgid "now"
-msgstr ""
+msgstr "şimdi"
 
 #: web/templates/web/study-detail.html:168
 msgid ""
@@ -3011,36 +3558,28 @@ msgstr ""
 "yukarıdaki butonun size göndereceği bağlantıyı yer imi çubuğuna ekleyin."
 
 #: web/views.py:63
-#, fuzzy
-#| msgid "Participant account"
 msgid "Participant created."
-msgstr "Katılımcı hesabı"
+msgstr "Katılımcı oluşturuldu."
 
 #: web/views.py:88
-#, fuzzy
-#| msgid "Demographic Survey"
 msgid "Demographic data saved."
-msgstr "Demografik Anket"
+msgstr "Demografik veri kaydedildi."
 
 #: web/views.py:156
-#, fuzzy
-#| msgid "Children"
 msgid "Child added."
-msgstr "Çocuk"
+msgstr "Çocuk eklendi."
 
 #: web/views.py:192
 msgid "Child deleted."
-msgstr ""
+msgstr "Çocuk silindi."
 
 #: web/views.py:194
 msgid "Child updated."
-msgstr ""
+msgstr "Çocuk güncellendi."
 
 #: web/views.py:217
-#, fuzzy
-#| msgid "Email Preferences"
 msgid "Email preferences saved."
-msgstr "Email tercihleri"
+msgstr "Email tercihleri kaydedildi."
 
 #: web/views.py:311
 #, python-brace-format
@@ -3049,88 +3588,6 @@ msgid ""
 "either completed or paused. If you think this is an error, please contact "
 "{study.contact_info}"
 msgstr ""
-
-#, fuzzy
-#~| msgid "Birthday"
-#~ msgid "Birthday test"
-#~ msgstr "Doğum tarihi"
-
-#, fuzzy
-#~| msgid "Birthday"
-#~ msgid "Birthday test2"
-#~ msgstr "Doğum tarihi"
-
-#~ msgid "Login Unsuccessful"
-#~ msgstr "Giriş Başarısız"
-
-#~ msgid ""
-#~ "A Lookit study participant exists with the email address for your OSF "
-#~ "user account. Create an OSF user with a different email address and try "
-#~ "logging into Experimenter with that. "
-#~ msgstr ""
-#~ "OSF kullanıcı hesabınız için kullandığınız email adresi ile bir Lookit "
-#~ "çalışması katılımcısı mevcuttur. Farklı bir email adresi ile bir OSF "
-#~ "kullanıcısı oluşturun ve Deneyci'ye bununla oturum açmayı deneyin."
-
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href="
-#~ msgstr ""
-#~ "Eğer bunun olmaması gerekiyorsa ve problem devam ediyorsa lütfen <a "
-#~ "href='a rapor ediniz."
-
-#~ msgid "Return to Experimenter"
-#~ msgstr "Deneyci'ye geri dön"
-
-#~ msgid "Sign In"
-#~ msgstr "Oturum aç"
-
-#~ msgid ""
-#~ "\n"
-#~ "          Please sign in to the Open Science Framework or register for an "
-#~ "account and sign in below.\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "        By using or requesting access to Lookit, you agree that you have "
-#~ "read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of "
-#~ "Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</"
-#~ "a>.\n"
-#~ "        "
-#~ msgstr ""
-#~ "\n"
-#~ "\tLütfen Open Science Framework'te oturum açın ya da bir hesap için "
-#~ "kaydolun ve aşağıdan oturum açın.\n"
-#~ "</p>\n"
-#~ "<p>\n"
-#~ "Lookit'i kullanarak veya erişim talep ederek, <a href=\"/termsofuse/\" "
-#~ "target=\"_blank\">Terms of Use</a> and <a href=\"/privacy/\" target="
-#~ "\"_blank\">Privacy Statement</a> i okuyup kabul ettiğinizi onaylamış "
-#~ "olursunuz."
-
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href=\"mailto:support@osf.io\">support@osf.io</a>"
-#~ msgstr ""
-#~ "Eğer bunun olmaması gerekiyorsa ve problem devam ediyorsa lütfen <a href="
-#~ "\"mailto:support@osf.io\">support@osf.io</a>'a rapor ediniz."
-
-#~ msgid "Participant Login"
-#~ msgstr "Katılımcı üye girişi"
-
-#~ msgid "Looking for "
-#~ msgstr "Şunu arıyorum"
-
-#~ msgid "Create an account!"
-#~ msgstr "Hesap oluştur!"
-
-#~ msgid "Account information"
-#~ msgstr "Hesap bilgisi"
-
-#~ msgid "Change your name, email, or password."
-#~ msgstr "İsminizi, email adresinizi veya şifrenizi değiştirin."
-
-#~ msgid "Signup"
-#~ msgstr "Kaydol"
-
-#~ msgid "Update account information"
-#~ msgstr "Hesap bilgisini güncelle"
+"{study.name} çalışması şu anda veri toplamıyor- bu çalışma tamamlandı veya "
+"durduruldu. Bunun bir hata olduğunu düşünüyorsanız, lütfen {study."
+"contact_info} ile iletişime geçin."
