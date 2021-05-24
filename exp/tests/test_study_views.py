@@ -18,6 +18,7 @@ from django.urls import reverse
 from django.views.generic.detail import SingleObjectMixin
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm, get_objects_for_user
+from parameterized import parameterized
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, User
@@ -1195,18 +1196,27 @@ class StudyDetailViewTestCase(TestCase):
             "StudyDetailView.test_func must be set to StudyDetailView.user_can_see_or_edit_study_details",
         )
 
+    @parameterized.expand(
+        [(True, True, True), (True, False, False), (False, True, False)]
+    )
     @patch.object(StudyDetailView, "request", create=True)
     @patch.object(SingleObjectMixin, "get_object")
     def test_user_can_see_or_edit_study_details(
-        self, mock_get_object: Mock, mock_request: Mock,
+        self,
+        has_study_perms: bool,
+        is_researcher: bool,
+        expected: bool,
+        mock_get_object: Mock,
+        mock_request: Mock,
     ) -> None:
-        mock_request.user.has_study_perms.return_value = True
-        mock_is_researcher = PropertyMock(return_value=True)
+
+        mock_request.user.has_study_perms.return_value = has_study_perms
+        mock_is_researcher = PropertyMock(return_value=is_researcher)
         type(mock_request.user).is_researcher = mock_is_researcher
 
         study_detail_view = StudyDetailView()
 
-        self.assertIs(study_detail_view.user_can_see_or_edit_study_details(), True)
+        self.assertIs(study_detail_view.user_can_see_or_edit_study_details(), expected)
 
         mock_request.user.has_study_perms.assert_called_once_with(
             StudyPermission.READ_STUDY_DETAILS, mock_get_object()

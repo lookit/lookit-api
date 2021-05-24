@@ -361,10 +361,11 @@ class StudyDetailView(
             A boolean indicating whether or not the user should be able to see
             this view.
         """
-        user = self.request.user
-        return user.is_researcher and user.has_study_perms(
+        is_researcher = self.request.user.is_researcher
+        has_perms = self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_DETAILS, self.get_object()
         )
+        return is_researcher and has_perms
 
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
