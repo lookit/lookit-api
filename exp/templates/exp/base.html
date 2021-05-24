@@ -35,9 +35,10 @@
     <script src="{% static 'exp/js/bootstrap-editable.min.js' %}"></script>
     <script src="{% static 'exp/js/clipboard.min.js' %}"></script>
     <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-z9ZOvGHHo21RqN5De4rfJMoAxYpaVoiYhuJXPyVmSs8yn20IE3PmBM534CffwSJI"></script>
-    {% google_analytics %}
+    {% google_tag_manager_head %}
   </head>
   <body>
+    {% google_tag_manager_body %}
     <div class="container-fluid">
       <header class="row">
           {% block header %}
