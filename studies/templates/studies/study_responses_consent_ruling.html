@@ -284,7 +284,7 @@
 
             $videoSource.on("error", function (event) {
                 if ($videoSource.attr("src").length) {
-                    $currentVideoInfo.addClass("bg-danger").text("Uh oh, we can't load the video.");
+                    $currentVideoInfo.addClass("bg-danger").text("The video is not loading. Try refreshing this page.");
                 } else {
                     $currentVideoInfo.text("Please select a response from the list on the left.");
                 }
