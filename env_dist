@@ -75,3 +75,6 @@ EMAIL_FROM_ADDRESS=lookit.robot@some.domain
 # SENDGRID_API_KEY=SG.KEY-HERE
 # SSL_CERT_FILE=/path/to/cacert.pem
 # REQUESTS_CA_BUNDLE=/path/to/cacert.pem
+
+# Google tag manager.  You will have to goto https://tagmanager.google.com/ to find the ID.
+GOOGLE_TAG_MANAGER_ID=
