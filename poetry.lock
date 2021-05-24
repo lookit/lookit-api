@@ -1544,14 +1544,6 @@ python-versions = "*"
 botocore = ">=1.12.36,<2.0a.0"
 
 [[package]]
-name = "semantic-version"
-version = "2.8.5"
-description = "A library implementing the 'SemVer' scheme."
-category = "dev"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-
-[[package]]
 name = "sendgrid"
 version = "3.6.5"
 description = "SendGrid library for Python"
@@ -2712,10 +2704,6 @@ rsa = [
 s3transfer = [
     {file = "s3transfer-0.3.7-py2.py3-none-any.whl", hash = "sha256:efa5bd92a897b6a8d5c1383828dca3d52d0790e0756d49740563a3fb6ed03246"},
     {file = "s3transfer-0.3.7.tar.gz", hash = "sha256:35627b86af8ff97e7ac27975fe0a98a312814b46c6333d8a6b889627bcd80994"},
-]
-semantic-version = [
-    {file = "semantic_version-2.8.5-py2.py3-none-any.whl", hash = "sha256:45e4b32ee9d6d70ba5f440ec8cc5221074c7f4b0e8918bdab748cc37912440a9"},
-    {file = "semantic_version-2.8.5.tar.gz", hash = "sha256:d2cb2de0558762934679b9a104e82eca7af448c9f4974d1f3eeccff651df8a54"},
 ]
 sendgrid = [
     {file = "sendgrid-3.6.5-py2.py3-none-any.whl", hash = "sha256:9fba62068dd13922004b6a1676e21c6435709aaf7c2b978cdf1206e3d2196c60"},
