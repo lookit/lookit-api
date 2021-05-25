@@ -26,7 +26,7 @@ def child_is_valid_for_study_criteria_expression(child, study):
 
 
 @register.simple_tag
-def google_tag_manager_head() -> Text:
+def google_tag_manager() -> Text:
     return format(
         f"""
     <script>(function(w,d,s,l,i){{w[l]=w[l]||[];w[l].push({{'gtm.start':
@@ -34,15 +34,5 @@ def google_tag_manager_head() -> Text:
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     }})(window,document,'script','dataLayer','{GOOGLE_TAG_MANAGER_ID}');</script>
-    """
-    )
-
-
-@register.simple_tag
-def google_tag_manager_body() -> Text:
-    return format(
-        f"""
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={GOOGLE_TAG_MANAGER_ID}"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     """
     )
