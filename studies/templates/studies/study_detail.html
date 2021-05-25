@@ -32,17 +32,22 @@
                 infoText = transitionHelpData[trigger];
                 commentsHelpText = commentsHelpData[trigger];
 
-            stateChangeCommentsInput.hide();
-            if (trigger === 'reject' || trigger === 'submit' || trigger === 'resubmit') {
-                stateChangeCommentsInput.show();
-                if (trigger === 'reject') {
-                    stateChangeCommentsInput.attr('placeholder', 'List requested changes here');
-                } else if (trigger === 'resubmit') {
+            switch(trigger) {
+                case 'reject':
+                    stateChangeCommentsInput.attr('placeholder', 'List requested changes here');    
+                    break;
+                case 'resubmit':
                     stateChangeCommentsInput.attr('placeholder', 'List changes here');
-                } else if (trigger === 'submit') {
+                    break;
+                case 'submit':
                     stateChangeCommentsInput.attr('placeholder', 'Provide information about peer review and any nonstandard elements here');
+                    break;
+                case 'approve':
+                    stateChangeCommentsInput.attr('placeholder', 'List approval comments here');
+                    break;
+                default:
+                    stateChangeCommentsInput.hide();
                 }
-            }
 
             let $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
             $additionalInfoSpan.text(infoText);
@@ -345,15 +350,14 @@
 
                                 </div>
                             </li>
-                            <li class="list-group-item">
-                                {% if not study.lab.approved_to_test %}
-                                    <em> It is not possible to submit or start this study until the lab {{study.lab.name}}
-                                        is approved to test. </em>
-                                {% endif %}
-                                {% if study.state == "rejected" %}
-                                    <p><em>Rejection Reason: {{ study.comments }}</em></p>
-                                {% endif %}
+                            {% if comments %}
+                            <li class="list-group-item panel-heading">
+                                <h1 class="panel-title">Comments</h1>
                             </li>
+                            <li class="list-group-item">
+                                <em>{{comments|linebreaks}}</em>
+                            </li>
+                            {% endif %}
                             <li class="list-group-item list-group-item-{{ build_ui_tag }}">
                                 <div class="row">
                                     <div class="col-xs-9">

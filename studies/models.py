@@ -667,17 +667,12 @@ class Study(models.Model):
 
     # Runs for every transition to log action
     def _log_action(self, ev):
-        if ev.event.name in ["submit", "resubmit", "reject"]:
-            StudyLog.objects.create(
-                action=ev.state.name,
-                study=ev.model,
-                user=ev.kwargs.get("user"),
-                extra={"comments": ev.model.comments},
-            )
-        else:
-            StudyLog.objects.create(
-                action=ev.state.name, study=ev.model, user=ev.kwargs.get("user")
-            )
+        StudyLog.objects.create(
+            action=ev.state.name,
+            study=ev.model,
+            user=ev.kwargs.get("user"),
+            extra={"comments": ev.model.comments},
+        )
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
@@ -748,16 +743,6 @@ def check_modification_of_approved_study(
         # Don't store a user because it's confusing unless that person is actually the one who made the change,
         # and we don't have access to who made the change from this signal.
         StudyLog.objects.create(action="rejected", study=instance)
-
-
-@receiver(post_save, sender=Study)
-def remove_rejection_comments_after_approved(sender, instance, created, **kwargs):
-    """
-    If study moved into approved state, remove any previous rejection comments
-    """
-    if instance.state == "approved" and instance.comments != "":
-        instance.comments = ""
-        instance.save()
 
 
 @receiver(post_save, sender=Study)

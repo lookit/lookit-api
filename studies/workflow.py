@@ -133,6 +133,7 @@ COMMENTS_HELP_TEXT = {
     "submit": "Please list researchers outside your group who have provided feedback on your study prior to submission, and what changes you made in response to their feedback. Please also note here any elements of your study that require additional review (see Terms of Use), including: deception, incorporation of participant information from other sources, longer than usual sessions, or nonstandard elements in the consent form.",
     "resubmit": "Please list all changes you have made since your study was last approved. This will speed up the review process.",
     "reject": "Please list any changes that need to be made before the study can be approved.",
+    "approve": "Please feel free to leave any comments here.",
 }
 
 TRANSITION_LABELS = {

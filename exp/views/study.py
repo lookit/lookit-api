@@ -361,10 +361,11 @@ class StudyDetailView(
             A boolean indicating whether or not the user should be able to see
             this view.
         """
-        user = self.request.user
-        return user.is_researcher and user.has_study_perms(
+        is_researcher = self.request.user.is_researcher
+        has_perms = self.request.user.has_study_perms(
             StudyPermission.READ_STUDY_DETAILS, self.get_object()
         )
+        return is_researcher and has_perms
 
     # Make PyCharm happy - otherwise we'd just override
     # UserPassesTestMixin.get_test_func()
@@ -421,7 +422,14 @@ class StudyDetailView(
         context["can_create_study"] = self.request.user.can_create_study()
         # Since get_obj_perms template tag doesn't collect study + lab perms
         context["study_perms"] = self.request.user.perms_for_study(study)
+        context["comments"] = self.comments(study)
         return context
+
+    def comments(self, study: Study):
+        if not study.lab.approved_to_test:
+            return f"It is not possible to submit or start this study until the lab {study.lab.name} is approved to test."
+        else:
+            return study.comments
 
     def get_study_researchers(self):
         """Pulls researchers that belong to any study access groups for displaying/managing that access
@@ -724,6 +732,7 @@ class CloneStudyView(
         clone.study_type = orig_study.study_type
         clone.built = False
         clone.is_building = False
+        clone.comments = ""
         clone.save()
 
         # Adds success message when study is cloned
