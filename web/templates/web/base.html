@@ -22,13 +22,11 @@
     <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" />
     <script src="{% static 'js/moment.min.js' %}"></script>
     <link type="text/css" rel="stylesheet" href="{% static "base.css" %}" />
-    {% google_analytics %}
     {% block head %}
     {% endblock %}
-
+    {% google_tag_manager %}
   </head>
   <body>
-
     <div class="container-fluid">
       <header class="row">
           {% block header %}
