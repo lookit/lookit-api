@@ -315,6 +315,24 @@ class TestAnnouncementEmailFunctionality(TestCase):
             )
         )
 
+    def test_potential_message_targets_deleted_children(self):
+        user = User(is_active=True)
+        user.save()
+
+        child = Child(user=user)
+        child.save()
+
+        self.assertTrue(
+            any(m.child_id == child.id for m in potential_message_targets())
+        )
+
+        child.deleted = True
+        child.save()
+
+        self.assertFalse(
+            any(m.child_id == child.id for m in potential_message_targets())
+        )
+
     def test_target_creation_e2e(self):
         targets = list(acquire_potential_announcement_email_targets())
 
