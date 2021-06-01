@@ -262,8 +262,8 @@ class StudyForm(ModelForm):
             "exit_url": "Exit URL",
             "criteria": "Participant Eligibility Description",
             "contact_info": "Researcher Contact Information",
-            "public": "Discoverable - List this study on the 'Studies' page once you start it?",
-            "shared_preview": "Share preview - Allow other Lookit researchers to preview your study and give feedback?",
+            "public": "Discoverable",
+            "shared_preview": "Share Preview",
             "study_type": "Experiment Runner Type",
             "compensation_description": "Compensation",
             "use_generator": "Use protocol generator (advanced)",
@@ -309,6 +309,8 @@ class StudyForm(ModelForm):
                 "For more information on how to structure criteria expressions, please visit our "
                 f"<a href={CRITERIA_EXPRESSION_HELP_LINK}>documentation</a>."
             ),
+            "public": "List this study on the 'Studies' page once you start it.",
+            "shared_preview": "Allow other Lookit researchers to preview your study and give feedback.",
         }
 
 
