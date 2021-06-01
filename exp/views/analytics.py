@@ -108,10 +108,13 @@ class StudyParticipantAnalyticsView(
         )
 
         if self.request.user.has_perm("accounts.can_view_all_children_in_analytics"):
-            children_queryset = Child.objects.filter(user__is_researcher=False)
+            children_queryset = Child.objects.filter(
+                user__is_researcher=False, deleted=False
+            )
             ctx["can_view_all_children"] = True
         else:
             children_queryset = Child.objects.filter(
+                deleted=False,
                 user__is_researcher=False,
                 id__in=annotated_responses.values_list(
                     "child_id", flat=True
