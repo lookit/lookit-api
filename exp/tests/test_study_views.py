@@ -28,6 +28,7 @@ from exp.views.study import (
     CloneStudyView,
     ManageResearcherPermissionsView,
     StudyDetailView,
+    StudyPreviewDetailView,
 )
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -1222,6 +1223,15 @@ class StudyDetailViewTestCase(TestCase):
             StudyPermission.READ_STUDY_DETAILS, mock_get_object()
         )
         mock_is_researcher.assert_called_with()
+
+
+class StudyPreviewDetailViewTestCase(TestCase):
+    @patch.object(StudyPreviewDetailView, "request", create=True)
+    def test_get_context_data_not_deleted_children(self, mock_request):
+        with patch.object(StudyPreviewDetailView, "object", create=True):
+            study_preview_detail_view = StudyPreviewDetailView()
+            study_preview_detail_view.get_context_data()
+            mock_request.user.children.filter.assert_called_once_with(deleted=False)
 
 
 # TODO: StudyCreateView

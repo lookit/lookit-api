@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import patch
 
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
@@ -9,6 +10,7 @@ from django_dynamic_fixture import G
 
 from accounts.models import Child, DemographicData, User
 from studies.models import Lab, Study, StudyType
+from web.views import ChildrenListView, DemographicDataUpdateView, StudyDetailView
 
 
 class ParticipantAccountViewsTestCase(TestCase):
@@ -248,6 +250,20 @@ class ParticipantAccountViewsTestCase(TestCase):
         self.assertEqual(self.participant.demographics.count(), 3)
 
 
+class ChildrenListViewTestCase(TestCase):
+    @patch.object(ChildrenListView, "request", create=True)
+    @patch("accounts.models.Child.objects", name="child_objects")
+    def test_get_context_data_not_deleted_children(
+        self, mock_child_objects, mock_request
+    ):
+        with patch.object(ChildrenListView, "object", create=True):
+            children_list_view = ChildrenListView()
+            children_list_view.get_context_data()
+            mock_child_objects.filter.assert_called_once_with(
+                deleted=False, user=mock_request.user
+            )
+
+
 # TODO: ParticipantUpdateView
 # - check can update password (participant, researcher)
 # - check can update email but only to unused (otherwise reloads, no update), can update nickname
@@ -406,6 +422,24 @@ class ParticipantStudyViewsTestCase(TestCase):
             .filter(uuid=self.public_inactive_study.uuid)
             .exists()
         )
+
+
+class StudyDetailViewTestCase(TestCase):
+    @patch.object(StudyDetailView, "request", create=True)
+    def test_get_context_not_deleted_children(self, mock_request):
+        with patch.object(StudyDetailView, "object", create=True):
+            study_detail_view = StudyDetailView()
+            study_detail_view.get_context_data()
+            mock_request.user.children.filter.assert_called_once_with(deleted=False)
+
+
+class DemographicDataUpdateViewTestCase(TestCase):
+    @patch.object(DemographicDataUpdateView, "request", create=True)
+    def test_get_success_url_not_deleted_children(self, mock_request):
+        demographic_data_update_view = DemographicDataUpdateView()
+        demographic_data_update_view.get_success_url()
+        mock_request.user.children.filter.assert_called_once_with(deleted=False)
+        mock_request.user.children.filter().exists.assert_called_once_with()
 
 
 # TODO: StudyDetailView
