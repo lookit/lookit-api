@@ -787,6 +787,24 @@ class StudiesListViewTestCase(TestCase):
         self.assertListEqual(mock_studies, [mock_study_b, mock_study_a, mock_study_c])
 
 
+class StudyDetailViewTestCase(TestCase):
+    @patch.object(StudyDetailView, "request", create=True)
+    def test_get_context_not_deleted_children(self, mock_request):
+        with patch.object(StudyDetailView, "object", create=True):
+            study_detail_view = StudyDetailView()
+            study_detail_view.get_context_data()
+            mock_request.user.children.filter.assert_called_once_with(deleted=False)
+
+
+class DemographicDataUpdateViewTestCase(TestCase):
+    @patch.object(DemographicDataUpdateView, "request", create=True)
+    def test_get_success_url_not_deleted_children(self, mock_request):
+        demographic_data_update_view = DemographicDataUpdateView()
+        demographic_data_update_view.get_success_url()
+        mock_request.user.children.filter.assert_called_once_with(deleted=False)
+        mock_request.user.children.filter().exists.assert_called_once_with()
+
+
 # TODO: StudyDetailView
 # - check can see for public or private active study, unauthenticated or authenticated
 # - check context[children] has own children
