@@ -18,7 +18,6 @@ Attributes:
     MESSAGE_WRONG_PLATFORM (str): holds a message that displays when the OS being used is not supported by the tasks. 
     MESSAGE_ALREADY_INSTALLED (str): holds a message that displays when the package is already available in the system.
 """
-import json
 import os
 import platform
 import shutil
@@ -51,29 +50,6 @@ def dotenv(_):
     """
     if not Path(".env").exists():
         shutil.copy("env_dist", ".env")
-
-
-@task
-def rabbitmq(c):
-    """Rabbitmq invoke task.
-
-    This func creates users and queues for the API.
-
-    Args:
-        c (obj): Context-aware API wrapper & state-passing object.
-    """
-    # Get list of users and check if we've created our 'lookit-admin' yet.
-    users = c.run("rabbitmqctl list_users --formatter json", hide="stdout").stdout
-    users = json.loads(users)
-    if not any(u["user"] == "lookit-admin" for u in users):
-        c.run("rabbitmqctl add_user lookit-admin admin")
-
-    c.run("rabbitmqctl set_user_tags lookit-admin administrator", hide="stdout")
-    c.run("rabbitmqctl set_permissions -p / lookit-admin '.*' '.*' '.*'", hide="stdout")
-    c.run("rabbitmq-plugins enable rabbitmq_management", hide="stdout")
-    c.run("rabbitmqadmin declare queue  --vhost=/ name=email", hide="stdout")
-    c.run("rabbitmqadmin declare queue  --vhost=/ name=builds", hide="stdout")
-    c.run("rabbitmqadmin declare queue  --vhost=/ name=cleanup", hide="stdout")
 
 
 @task
@@ -221,7 +197,7 @@ def pre_commit_hooks(c):
     c.run("poetry run pre-commit install --install-hooks")
 
 
-@task(dotenv, postgresql, rabbitmq, ssl_certificate, pre_commit_hooks)
+@task(dotenv, postgresql, ssl_certificate, pre_commit_hooks)
 def setup(_):
     """Setup invoke task.
 
