@@ -18,7 +18,6 @@ Attributes:
     MESSAGE_WRONG_PLATFORM (str): holds a message that displays when the OS being used is not supported by the tasks. 
     MESSAGE_ALREADY_INSTALLED (str): holds a message that displays when the package is already available in the system.
 """
-import json
 import os
 import platform
 import shutil
