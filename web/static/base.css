@@ -242,87 +242,27 @@ button.account-row {
 
 
 /* STUDIES PAGE */
+
 .study-list-panel {
-    height: 450px;
-    overflow: hidden;
-    -ms-touch-action: manipulation;
-    touch-action: manipulation;
-    cursor: pointer;
-    -webkit-user-select: none;
+    background-color: #f8f8f8;
 }
-.study-list-thumbnail {
-    max-height: 200px;
-    max-width: 90%;
-    margin: 5%;
+.study-list-right {
+    border-left: 1px solid #ddd;
 }
-.study-list-panel .caption h3 {
-    margin-top: 10px;
+.study-list-panel h1 {
+    font-size: x-large; 
+    font-weight: bold
 }
-.study-list-thumbnail-wrapper {
-    min-height: 225px;
+.study-list-panel h2 {
+    font-size: large;
+    font-weight: bold
 }
-.study-list-placeholder {
-    font-size: 200px;
-    text-align: center;
-    color: #333333;
+.study-list-panel h3 {
+    font-size: large; 
+    font-weight: normal;
 }
-
-.study-list-panel .caption {
-    min-height: 150px;
-    max-height: 150px;
-}
-.study-list-panel .fadeout {
-    content: '';
-    width: 100%;
-    height: 70%;
-    position: absolute;
-    left: 0;
-    bottom: 21px;
-    background: linear-gradient(transparent 150px, white);
-}
-.study-list-panel .full {
-    content: '';
-    width: 100%;
-    height: auto;
-    text-align: center;
-    position: absolute;
-    left: 0;
-    bottom: 25px;
-}
-
-.study-feedback-label {
-    margin-top: 5px;
-}
-
-.study-feedback-text {
-    padding: 8px;
-}
-
-.study-feedback-experiment-info {
-    margin-top: 8px;
-}
-
-.study-feedback-thumbnail-wrapper {
-    display: inline-block;
-    max-height: 300px;
-    max-width: 300px;
-    margin-right: 8px;
-}
-
-.study-feedback-thumbnail {
-    height: 150px;
-    width: 225px;
-}
-
-.study-feedback-description-wrapper {
-    display: inline-block;
-    height: 150px;
-    width: 800px;
-}
-
-a.no-link-formatting {
-  color: black;
-  text-decoration: none;
+.study-list-description {
+    padding-left: 15px;
 }
 
 /* STUDY DETAIL */
@@ -526,3 +466,5 @@ li.response-feedback {
 .response-feedback-none {
     margin-left: -40px;
 }
+
+

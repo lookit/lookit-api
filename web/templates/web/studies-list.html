@@ -4,96 +4,105 @@
 {% block title %}{% trans "Studies" %}{% endblock %}
 
 {% block flash %}
-  {% if form.errors %}
-  <div class="alert alert-danger" role="alert">
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
     <p>{% trans "Your login credentials didn't work. Please try again." %}</p>
-  </div>
-  {% endif %}
+</div>
+{% endif %}
 
-  {% if next %}
-  <div class="alert alert-danger" role="alert">
-      {% if user.is_authenticated %}
-      <p>{% trans "Your account doesn't have access to this page. To proceed, please login with an account that has access." %}</p>
-      {% else %}
-      <p>{% trans "Please login to see this page." %}</p>
-      {% endif %}
-  </div>
-  {% endif %}
+{% if next %}
+<div class="alert alert-danger" role="alert">
+    {% if user.is_authenticated %}
+    <p>
+        {% blocktrans %}
+        Your account doesn't have access to this page. To proceed, please login with an account that has access.
+        {% endblocktrans %}
+    </p>
+    {% else %}
+    <p>{% trans "Please login to see this page." %}</p>
+    {% endif %}
+</div>
+{% endif %}
 {% endblock %}
+
 {% block content %}
-    <script>
-        function imgError(image, index) {
-            image.style.display = 'none';
-            var placeholder = document.getElementById('image-placeholder-' + index);
-            placeholder.style.display = 'block';
-        }
-    </script>
-    <div class='lookit-row lookit-page-title'>
-        <h2 class='container'>{% trans "Current Studies" %}</h2>
-    </div>
-    {% bootstrap_messages %}
+<div class="lookit-row lookit-page-title">
     <div class="container">
-        <ul class="pt-sm nav nav-tabs">
-            <li class="active">
-                <a href="{% url 'web:studies-list'%}">{% trans "Current studies" %}</a>
-            </li>
-            <li>
-                <a href="{% url 'web:studies-history'%}">{% trans "Your past studies" %}</a>
-            </li>
-        </ul>
+        <h2>{% trans "Current Studies" %}</h2>
     </div>
-    
-    <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active">
-            <div class="lookit-row studies-row">
-                <div class="container">
-                    <div id="suggested-studies">
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <p class="study-detail-caption">{% trans "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate." %}</p>
+</div>
+
+{% bootstrap_messages %}
+
+<ul class="pt-sm nav nav-tabs">
+    <li class="active">
+        <a href="{% url 'web:studies-list'%}">{% trans "Current studies" %}</a>
+    </li>
+    <li>
+        <a href="{% url 'web:studies-history'%}">{% trans "Your past studies" %}</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active">
+
+        <div class="panel-default">
+            <div class="panel-body">
+                {% blocktrans %}
+                Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to
+                participate.
+                {% endblocktrans %}
+            </div>
+        </div>
+
+
+        {% for study in object_list %}
+        <div class="panel panel-default study-list-panel">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <img src="{{study.image.url}}" class="img-responsive img-rounded" alt="Responsive image">
+                        <div style="padding: 5px 5px 0 5px;">
+                            <p><small>{{study.criteria}}</small></p>
+                            <div class="text-center">
+                                <a class="btn btn-default text-center"
+                                    href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
+                                    {% trans "See details" %}
+                                </a>
                             </div>
-                              {% for obj in object_list %}
-                              <div class="col-xs-4">
-                                  <div class="study-list-panel thumbnail">
-                                      <a class="no-link-formatting" href="{% url 'web:study-detail' uuid=obj.uuid %}">
-                                          <div class="study-list-thumbnail-wrapper text-center">
-                                            {% if obj.image %}
-                                              <div class="image-block">
-                                                  <img class="study-list-thumbnail" onerror="imgError(this, {{ forloop.counter }})"  src="{{ obj.image.url }}">
-                                                  <div style="display:none;" class="study-list-placeholder" id="image-placeholder-{{ forloop.counter }}">
-                                                    	<i aria-hidden="true" class="fas fa-image"></i>
-                                                  </div>
-                                              </div>
-                                            {% else %}
-                                              <div class="study-list-placeholder">
-                                                  <i aria-hidden="true" class="fas fa-image"></i>
-                                              </div>
-                                            {% endif %}
-                                          </div>
-                                          <div class="caption">
-                                              <h3>{{obj.name}}</h3>
-                                              <p><em>{{obj.criteria}}</em></p>
-                                              <p>{{obj.short_description}}</p>
-                                              <div class="fadeout"></div>
-                                          </div>
-                                          <div class="full">
-                                              <p class="text-center"><a href="{% url 'web:study-detail' uuid=obj.uuid %}">{% trans "See details" %}</a></p>
-                                          </div>
-                                      </a>
-                                  </div>
-                                </div>
-                              {% empty %}
-                                <div class="col-xs-12">
-                                    <p><em> {% trans "We are not running any studies at this time!" %} </em></p>
-                                </div>
-                              {% endfor %}
                         </div>
                     </div>
-                    <div class="col-xs-12">
-                        <p class="study-detail-caption">{% trans 'Looking for more ways to contribute to research from home? Check out <a href="https://childrenhelpingscience.com/" target="_blank" rel="noreferrer noopener">Children Helping Science</a> for even more studies!' %}</p>
+                    <div class="col-md-9 study-list-right">
+                        <h1>{{study.name}}</h1>
+                        <h2>{{study.lab.name}}</h2>
+                        <div class="study-list-description">
+                            <h3>Short Description</h3>
+                            <p>{{study.short_description|linebreaks}}</p>
+                            <h3>Purpose</h3>
+                            <p>{{study.purpose|linebreaks}}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-xs-12">
+            <p><em> {% trans "We are not running any studies at this time!" %} </em></p>
+        </div>
+        {% endfor %}
+
+
+        <div class="panel-default">
+            <div class="panel-body">
+                {% blocktrans %}
+                Looking for more ways to contribute to research from home? Check out <a
+                    href="https://childrenhelpingscience.com/" target="_blank" rel="noreferrer noopener">Children
+                    Helping Science</a> for even more studies!
+                {% endblocktrans %}
+            </div>
+        </div>
+
     </div>
+</div>
+
 {% endblock %}
