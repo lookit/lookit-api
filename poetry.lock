@@ -369,17 +369,14 @@ tests = ["flake8", "mysqlclient", "psycopg2 (>=2.3)", "pytest-django"]
 
 [[package]]
 name = "django-bootstrap3"
-version = "14.0.0"
+version = "15.0.0"
 description = "Bootstrap 3 support for Django projects"
 category = "main"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.6"
 
 [package.dependencies]
-django = ">=2.2,<4.0"
-
-[package.extras]
-docs = ["sphinx (>=2.4,<3.0)", "sphinx_rtd_theme (>=0.4.3,<0.5.0)", "m2r (>=0.2.1,<0.3.0)"]
+Django = ">=2.2"
 
 [[package]]
 name = "django-celery-beat"
@@ -1785,7 +1782,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.8.3"
-content-hash = "b7aa4b6d4f624f0794097a00cfd567c457c30ae2138769494c8bb6c71d5ee3e2"
+content-hash = "2a23607c163a65a6394950a6f8008c2f0beab50e99acb7e6cafdfd4df4b03490"
 
 [metadata.files]
 amqp = [
@@ -2017,8 +2014,8 @@ django-bitfield = [
     {file = "django_bitfield-2.0.1-py2.py3-none-any.whl", hash = "sha256:83bfa27da718caff436f646369ce58e2d9f922e1f3d65a93f0b731a835cbfc58"},
 ]
 django-bootstrap3 = [
-    {file = "django-bootstrap3-14.0.0.tar.gz", hash = "sha256:504dddb563c18f1fbb423a07001948f08d509eac6dbc7a0c08959c05b6026d1f"},
-    {file = "django_bootstrap3-14.0.0-py3-none-any.whl", hash = "sha256:60ad56186a48ebb7a70f87e1d9e8120b017977be30289444bf3eda304bdaa875"},
+    {file = "django-bootstrap3-15.0.0.tar.gz", hash = "sha256:f803efd5605046b8f467523dbe94653a4a8d6bcf97ad480b386ba5cf8f94fe6b"},
+    {file = "django_bootstrap3-15.0.0-py3-none-any.whl", hash = "sha256:601c918a466e6a702f7b394a94826ba9f53c9cc879ccfc26579e3473eef80f53"},
 ]
 django-celery-beat = [
     {file = "django-celery-beat-2.0.0.tar.gz", hash = "sha256:fdf1255eecfbeb770c6521fe3e69989dfc6373cd5a7f0fe62038d37f80f47e48"},
