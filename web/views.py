@@ -1,3 +1,5 @@
+from hashlib import sha1
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -211,7 +213,16 @@ class StudiesListView(generic.ListView):
     def get_queryset(self):
         # TODO if we need to filter by study demographics vs user demographics
         # or by if they've taken the study before this is the spot
-        return super().get_queryset().filter(state="active", public=True).order_by("?")
+
+        qs = super().get_queryset().filter(state="active", public=True)
+        user = self.request.user
+
+        if user.is_anonymous:
+            sort_fn = lambda s: sha1(s.uuid.bytes).hexdigest()
+        else:
+            sort_fn = lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
+
+        return sorted(qs, key=sort_fn)
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
