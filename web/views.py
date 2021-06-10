@@ -17,6 +17,7 @@ from revproxy.views import ProxyView
 from accounts import forms
 from accounts.models import Child, DemographicData, User
 from project import settings
+from studies.forms import StudyListSearchForm
 from studies.models import Response, Study, Video
 
 
@@ -218,11 +219,16 @@ class StudiesListView(generic.ListView):
         user = self.request.user
 
         if user.is_anonymous:
-            sort_fn = lambda s: sha1(s.uuid.bytes).hexdigest()
+            sort_fn = lambda s: s.uuid
         else:
             sort_fn = lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
 
         return sorted(qs, key=sort_fn)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_form"] = StudyListSearchForm()
+        return context
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView):

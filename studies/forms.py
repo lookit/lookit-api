@@ -364,3 +364,11 @@ class StudyCreateForm(StudyForm):
                 user, LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename
             ).only("id")
         )
+
+
+class StudyListSearchForm(forms.Form):
+    children = forms.ChoiceField(
+        choices=[(0, "Find studies for..."), (1, "Bob"), (1, "Sally")]
+    )
+    show_experiments_already_done = forms.BooleanField(initial=True)
+    search = forms.CharField()
