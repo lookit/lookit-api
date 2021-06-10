@@ -243,26 +243,40 @@ button.account-row {
 
 /* STUDIES PAGE */
 
-.study-list-panel {
+.panel.study-list {
     background-color: #f8f8f8;
 }
-.study-list-right {
+
+.panel.study-list .right {
     border-left: 1px solid #ddd;
 }
-.study-list-panel h1 {
-    font-size: x-large; 
+
+.panel.study-list h1 {
+    font-size: x-large;
     font-weight: bold
 }
-.study-list-panel h2 {
+
+.panel.study-list h2 {
     font-size: large;
     font-weight: bold
 }
-.study-list-panel h3 {
-    font-size: large; 
+
+.panel.study-list h3 {
+    font-size: large;
     font-weight: normal;
 }
-.study-list-description {
+
+.panel.study-list .description {
     padding-left: 15px;
+}
+
+.form-inline.study-list .btn.clear {
+    margin-left: 5px;
+}
+
+.form-inline.study-list .form-group.show-experiments {
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 /* STUDY DETAIL */

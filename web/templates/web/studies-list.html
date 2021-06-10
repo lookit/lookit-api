@@ -48,6 +48,18 @@
 
         <div class="panel-default">
             <div class="panel-body">
+                <form action="/url/to/submit/" method="post" class="form-inline study-list">
+                    {% csrf_token %}
+                    {% bootstrap_field search_form.children show_label=False %}
+                    {% bootstrap_field search_form.show_experiments_already_done form_group_class="form-group show-experiments" %}
+                    {% bootstrap_button "Clear" "reset" button_class="btn btn-default pull-right clear" %}
+                    {% bootstrap_field search_form.search show_label=False form_group_class="form-group pull-right" %}
+                </form>
+            </div>
+        </div>
+
+        <div class="panel-default">
+            <div class="panel-body">
                 {% blocktrans %}
                 Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to
                 participate.
@@ -55,9 +67,8 @@
             </div>
         </div>
 
-
         {% for study in object_list %}
-        <div class="panel panel-default study-list-panel">
+        <div class="panel panel-default study-list">
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-3">
@@ -65,17 +76,17 @@
                         <div style="padding: 5px 5px 0 5px;">
                             <p><small>{{study.criteria}}</small></p>
                             <div class="text-center">
-                                <a class="btn btn-default text-center"
-                                    href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
+                                <a class="btn btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}"
+                                    role="button">
                                     {% trans "See details" %}
                                 </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-9 study-list-right">
+                    <div class="col-md-9 right">
                         <h1>{{study.name}}</h1>
                         <h2>{{study.lab.name}}</h2>
-                        <div class="study-list-description">
+                        <div class="description">
                             <h3>Short Description</h3>
                             <p>{{study.short_description|linebreaks}}</p>
                             <h3>Purpose</h3>
@@ -95,8 +106,8 @@
         <div class="panel-default">
             <div class="panel-body">
                 {% blocktrans %}
-                Looking for more ways to contribute to research from home? Check out <a
-                    href="https://childrenhelpingscience.com/" target="_blank" rel="noreferrer noopener">Children
+                Looking for more ways to contribute to research from home? Check out <a href="https://childrenhelpingscience.com/"
+                    target="_blank" rel="noreferrer noopener">Children
                     Helping Science</a> for even more studies!
                 {% endblocktrans %}
             </div>
