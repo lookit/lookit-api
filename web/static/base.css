@@ -279,6 +279,43 @@ button.account-row {
     margin-right: 5px;
 }
 
+/* FEEDBACK */
+
+.study-feedback-label {
+    margin-top: 5px;
+}
+
+.study-feedback-text {
+    padding: 8px;
+}
+
+.study-feedback-experiment-info {
+    margin-top: 8px;
+}
+
+.study-feedback-thumbnail-wrapper {
+    display: inline-block;
+    max-height: 300px;
+    max-width: 300px;
+    margin-right: 8px;
+}
+
+.study-feedback-thumbnail {
+    height: 150px;
+    width: 225px;
+}
+
+.study-feedback-description-wrapper {
+    display: inline-block;
+    height: 150px;
+    width: 800px;
+}
+
+a.no-link-formatting {
+  color: black;
+  text-decoration: none;
+}
+
 /* STUDY DETAIL */
 
 .back-to-list-button {
