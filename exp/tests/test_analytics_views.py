@@ -16,8 +16,6 @@ class StudyParticipantAnalyticsViewTestCase(TestCase):
         view = StudyParticipantAnalyticsView()
         view.get_context_data()
 
-        print(mock_child_objects)
-
         mock_child_objects.filter.assert_called_once_with(
             user__is_researcher=False, deleted=False
         )
