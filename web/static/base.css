@@ -270,6 +270,10 @@ button.account-row {
     padding-left: 15px;
 }
 
+.panel.study-list .left .study-criteria {
+    padding: 5px 5px 0 5px;
+}
+
 .form-inline.study-list .btn.clear {
     margin-left: 5px;
 }

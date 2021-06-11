@@ -71,9 +71,9 @@
         <div class="panel panel-default study-list">
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-3 left">
                         <img src="{{study.image.url}}" class="img-responsive img-rounded" alt="Responsive image">
-                        <div style="padding: 5px 5px 0 5px;">
+                        <div class="study-criteria">
                             <p><small>{{study.criteria}}</small></p>
                             <div class="text-center">
                                 <a class="btn btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}"
