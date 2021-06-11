@@ -14,9 +14,7 @@
 <div class="alert alert-danger" role="alert">
     {% if user.is_authenticated %}
     <p>
-        {% blocktrans %}
-        Your account doesn't have access to this page. To proceed, please login with an account that has access.
-        {% endblocktrans %}
+        {% trans "Your account doesn't have access to this page. To proceed, please login with an account that has access." %}
     </p>
     {% else %}
     <p>{% trans "Please login to see this page." %}</p>
@@ -60,10 +58,7 @@
 
         <div class="panel-default">
             <div class="panel-body">
-                {% blocktrans %}
-                Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to
-                participate.
-                {% endblocktrans %}
+                {% trans "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate." %}
             </div>
         </div>
 
@@ -76,8 +71,7 @@
                         <div class="study-criteria">
                             <p><small>{{study.criteria}}</small></p>
                             <div class="text-center">
-                                <a class="btn btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}"
-                                    role="button">
+                                <a class="btn btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
                                     {% trans "See details" %}
                                 </a>
                             </div>
@@ -105,11 +99,7 @@
 
         <div class="panel-default">
             <div class="panel-body">
-                {% blocktrans %}
-                Looking for more ways to contribute to research from home? Check out <a href="https://childrenhelpingscience.com/"
-                    target="_blank" rel="noreferrer noopener">Children
-                    Helping Science</a> for even more studies!
-                {% endblocktrans %}
+                {% trans 'Looking for more ways to contribute to research from home? Check out <a href="https://childrenhelpingscience.com/" target="_blank" rel="noreferrer noopener">Children Helping Science</a> for even more studies!' %}
             </div>
         </div>
 
