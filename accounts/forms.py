@@ -440,3 +440,21 @@ class ChildUpdateForm(forms.ModelForm):
                 attrs={"class": "column-checkbox"}
             ),
         }
+
+
+class StudyListSearchForm(forms.Form):
+    children = forms.ChoiceField(
+        # choices=[(0, "Find studies for..."), (1, "Bob"), (1, "Sally")]
+    )
+    show_experiments_already_done = forms.BooleanField(initial=True)
+    search = forms.CharField()
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user.is_authenticated and user.children.count():
+            self.fields["children"].choices = [(-1, "Find studies for...")] + [
+                (c.pk, c.given_name) for c in user.children.filter(deleted=False)
+            ]
+        else:
+            self.fields["children"].widget = forms.HiddenInput()
+            self.fields["show_experiments_already_done"].widget = forms.HiddenInput()
