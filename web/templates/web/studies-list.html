@@ -46,7 +46,7 @@
 
         <div class="panel-default">
             <div class="panel-body">
-                <form action="/url/to/submit/" method="post" class="form-inline study-list">
+                <form action method="post" class="form-inline study-list">
                     {% csrf_token %}
                     {% bootstrap_field search_form.children show_label=False %}
                     {% bootstrap_field search_form.show_experiments_already_done form_group_class="form-group show-experiments" %}
