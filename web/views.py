@@ -17,7 +17,6 @@ from revproxy.views import ProxyView
 from accounts import forms
 from accounts.models import Child, DemographicData, User
 from project import settings
-from studies.forms import StudyListSearchForm
 from studies.models import Response, Study, Video
 
 
@@ -208,15 +207,20 @@ class StudiesListView(generic.ListView):
     List all active, public studies.
     """
 
+    form_class = forms.StudyListSearchForm
     template_name = "web/studies-list.html"
     model = Study
 
-    def get_queryset(self):
-        # TODO if we need to filter by study demographics vs user demographics
-        # or by if they've taken the study before this is the spot
+    def post(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-        qs = super().get_queryset().filter(state="active", public=True)
+    def get_queryset(self):
         user = self.request.user
+        qs = super().get_queryset().filter(state="active", public=True)
+
+        if self.request.POST:
+            search = self.search_form().data["search"]
+            qs = qs.filter(name__icontains=search)
 
         if user.is_anonymous:
             sort_fn = lambda s: s.uuid
@@ -227,8 +231,16 @@ class StudiesListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["search_form"] = StudyListSearchForm()
+        context["search_form"] = self.search_form()
         return context
+
+    def search_form(self):
+        if self.request.POST:
+            form = self.form_class(self.request.POST, user=self.request.user)
+            if form.is_valid():
+                return form
+
+        return self.form_class(user=self.request.user)
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView):

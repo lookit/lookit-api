@@ -443,15 +443,14 @@ class ChildUpdateForm(forms.ModelForm):
 
 
 class StudyListSearchForm(forms.Form):
-    children = forms.ChoiceField(
-        # choices=[(0, "Find studies for..."), (1, "Bob"), (1, "Sally")]
-    )
-    show_experiments_already_done = forms.BooleanField(initial=True)
-    search = forms.CharField()
+    children = forms.ChoiceField(required=False)
+    show_experiments_already_done = forms.BooleanField(initial=True, required=False)
+    search = forms.CharField(required=False)
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        if user.is_authenticated and user.children.count():
+        if user and user.is_authenticated and user.children.count():
             self.fields["children"].choices = [(-1, "Find studies for...")] + [
                 (c.pk, c.given_name) for c in user.children.filter(deleted=False)
             ]
