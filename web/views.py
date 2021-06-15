@@ -15,7 +15,7 @@ from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
 
 from accounts import forms
-from accounts.models import Child, DemographicData, User
+from accounts.models import Child, DemographicData, User, create_string_listing_children
 from accounts.queries import get_child_eligibility_for_study
 from project import settings
 from studies.models import Response, Study, Video
@@ -217,12 +217,15 @@ class StudiesListView(generic.ListView):
 
     def get_queryset(self):
         user = self.request.user
-        studies = super().get_queryset().filter(state="active", public=True)
+        qs = super().get_queryset().filter(state="active", public=True)
         form = self.search_form()
 
         if self.request.POST:
             search = form.data["search"]
-            studies = studies.filter(name__icontains=search)
+            qs = qs.filter(name__icontains=search)
+
+        # convert to list as it's no longer being treated as a queryset
+        studies = list(qs)
 
         if user.is_anonymous:
             sort_fn = lambda s: s.uuid
@@ -231,16 +234,28 @@ class StudiesListView(generic.ListView):
             child_pk = int(form.data.get("children", 0))
             if child_pk:
                 child = Child.objects.get(pk=child_pk)
-                studies = (
+                studies = [
                     s for s in studies if get_child_eligibility_for_study(child, s)
-                )
+                ]
 
-        return sorted(studies, key=sort_fn)
+        self.child_eligibility(studies)
+        studies.sort(key=sort_fn)
+
+        return studies
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["search_form"] = self.search_form()
         return context
+
+    def child_eligibility(self, studies):
+        children = self.request.user.children.filter(deleted=False)
+
+        # add eligible children to study object
+        for study in studies:
+            study.eligible_children = create_string_listing_children(
+                [c for c in children if get_child_eligibility_for_study(c, study)]
+            )
 
     def search_form(self):
         if self.request.POST:
