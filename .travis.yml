@@ -42,7 +42,7 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker pull $DOCKER_IMAGE_URL:$TRAVIS_COMMIT || docker pull $DOCKER_IMAGE_URL:$DOCKER_BRANCH || true
         - docker build
-            --file travis.Dockerfile
+            --file dev.Dockerfile
             --cache-from $DOCKER_IMAGE_URL:$TRAVIS_COMMIT --cache-from $DOCKER_IMAGE_URL:$DOCKER_BRANCH
             --build-arg GIT_COMMIT=$TRAVIS_COMMIT --build-arg GIT_TAG=$TRAVIS_TAG
             --pull -t $DOCKER_IMAGE_URL:$TRAVIS_COMMIT .
