@@ -16,6 +16,7 @@ from revproxy.views import ProxyView
 
 from accounts import forms
 from accounts.models import Child, DemographicData, User
+from accounts.queries import get_child_eligibility_for_study
 from project import settings
 from studies.models import Response, Study, Video
 
@@ -216,18 +217,25 @@ class StudiesListView(generic.ListView):
 
     def get_queryset(self):
         user = self.request.user
-        qs = super().get_queryset().filter(state="active", public=True)
+        studies = super().get_queryset().filter(state="active", public=True)
+        form = self.search_form()
 
         if self.request.POST:
-            search = self.search_form().data["search"]
-            qs = qs.filter(name__icontains=search)
+            search = form.data["search"]
+            studies = studies.filter(name__icontains=search)
 
         if user.is_anonymous:
             sort_fn = lambda s: s.uuid
         else:
             sort_fn = lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
+            child_pk = int(form.data.get("children", 0))
+            if child_pk:
+                child = Child.objects.get(pk=child_pk)
+                studies = (
+                    s for s in studies if get_child_eligibility_for_study(child, s)
+                )
 
-        return sorted(qs, key=sort_fn)
+        return sorted(studies, key=sort_fn)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
