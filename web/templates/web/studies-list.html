@@ -77,9 +77,14 @@
                     <div class="col-md-3 left">
                         <img src="{{study.image.url}}" class="img-responsive img-rounded" alt="Responsive image">
                         <div class="study-criteria">
-                            <p><small>{{study.criteria}}</small></p>
+                            <small>
+                                <p>{{study.criteria}}</p>
+                                {% if study.eligible_children %}
+                                <p>{{ study.eligible_children }} maybe eligible for this study.</p>
+                                {% endif %}
+                                </small>
                             <div class="text-center">
-                                <a class="btn btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
+                                <a class="btn {% if study.eligible_children %}btn-success{% endif %} btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
                                     {% trans "See details" %}
                                 </a>
                             </div>
