@@ -44,6 +44,14 @@
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane active">
 
+        {% if user.is_anonymous %}
+        <div class="panel-default">
+            <div class="panel-body">
+                {% trans "Log in to find studies just right for your child!" %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="panel-default">
             <div class="panel-body">
                 <form action method="post" class="form-inline study-list">

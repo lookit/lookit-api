@@ -443,7 +443,20 @@ class ChildUpdateForm(forms.ModelForm):
 
 
 class StudyListSearchForm(forms.Form):
-    children = forms.ChoiceField(required=False)
+    choices = [
+        (i, x)
+        for i, x in enumerate(
+            (
+                "Find studies for...",
+                "babies (under 1)",
+                "toddlers (1-2)",
+                "preschoolers (3-4)",
+                "school-age kids(5-18)",
+                "adults (18+)",
+            )
+        )
+    ]
+    children = forms.ChoiceField(choices=choices, required=False)
     show_experiments_already_done = forms.BooleanField(initial=True, required=False)
     search = forms.CharField(required=False)
 
@@ -451,9 +464,8 @@ class StudyListSearchForm(forms.Form):
         user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         if user and user.is_authenticated and user.children.count():
-            self.fields["children"].choices = [(-1, "Find studies for...")] + [
+            self.fields["children"].choices = [self.choices[0]] + [
                 (c.pk, c.given_name) for c in user.children.filter(deleted=False)
             ]
         else:
-            self.fields["children"].widget = forms.HiddenInput()
             self.fields["show_experiments_already_done"].widget = forms.HiddenInput()
