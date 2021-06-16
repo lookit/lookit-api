@@ -232,7 +232,7 @@ class StudiesListView(generic.ListView):
 
         if user.is_anonymous:
             sort_fn = lambda s: s.uuid.bytes
-            age_range = form.data.get("children", 0)
+            age_range = form.data.get("children", "")
             if age_range:
                 age_range = tuple(map(int, age_range.split(",")))
                 studies = [
@@ -240,7 +240,7 @@ class StudiesListView(generic.ListView):
                 ]
         else:
             sort_fn = lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
-            child_pk = int(form.data.get("children", 0))
+            child_pk = form.data.get("children", "")
             if child_pk:
                 child = Child.objects.get(pk=child_pk)
                 studies = [
