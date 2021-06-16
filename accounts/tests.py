@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
@@ -9,10 +9,15 @@ from django.test.client import Client
 from django.urls import reverse
 from django_dynamic_fixture import G
 from lark.exceptions import UnexpectedCharacters
+from parameterized import parameterized
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, GoogleAuthenticatorTOTP, User
-from accounts.queries import get_child_eligibility, get_child_eligibility_for_study
+from accounts.queries import (
+    age_range_eligibility_for_study,
+    get_child_eligibility,
+    get_child_eligibility_for_study,
+)
 from studies.fields import GESTATIONAL_AGE_CHOICES
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
@@ -864,6 +869,69 @@ class EligibilityTestCase(TestCase):
                 ),
                 "Child just above upper age bound is eligible",
             )
+
+    @parameterized.expand(
+        [
+            # Study 0-5 yrs, Child is 0-1 yrs
+            (
+                MagicMock(
+                    min_age_years=0,
+                    min_age_months=0,
+                    min_age_days=0,
+                    max_age_years=5,
+                    max_age_months=0,
+                    max_age_days=0,
+                ),
+                [0, 1],
+                True,
+            ),
+            # Study 1-5 yrs, Child is 0-1 yrs
+            (
+                MagicMock(
+                    min_age_years=1,
+                    min_age_months=0,
+                    min_age_days=0,
+                    max_age_years=5,
+                    max_age_months=0,
+                    max_age_days=0,
+                ),
+                [0, 1],
+                True,
+            ),
+            # Study 2-5 yrs, Child is 0-1 yrs
+            (
+                MagicMock(
+                    min_age_years=2,
+                    min_age_months=0,
+                    min_age_days=0,
+                    max_age_years=5,
+                    max_age_months=0,
+                    max_age_days=0,
+                ),
+                [0, 1],
+                False,
+            ),
+            # Study 0-24 months, Child is 0-1 yrs
+            (
+                MagicMock(
+                    min_age_years=0,
+                    min_age_months=0,
+                    min_age_days=0,
+                    max_age_years=0,
+                    max_age_months=12 * 2,
+                    max_age_days=0,
+                ),
+                [0, 1],
+                True,
+            ),
+        ]
+    )
+    def test_get_child_eligibility_for_study(
+        self, mock_study, child_age_range, expected
+    ):
+        self.assertIs(
+            age_range_eligibility_for_study(child_age_range, mock_study), expected
+        )
 
 
 class Force2FAClient(Client):

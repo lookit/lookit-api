@@ -16,7 +16,10 @@ from revproxy.views import ProxyView
 
 from accounts import forms
 from accounts.models import Child, DemographicData, User, create_string_listing_children
-from accounts.queries import get_child_eligibility_for_study
+from accounts.queries import (
+    age_range_eligibility_for_study,
+    get_child_eligibility_for_study,
+)
 from project import settings
 from studies.models import Response, Study, Video
 
@@ -228,7 +231,13 @@ class StudiesListView(generic.ListView):
         studies = list(qs)
 
         if user.is_anonymous:
-            sort_fn = lambda s: s.uuid
+            sort_fn = lambda s: s.uuid.bytes
+            age_range = form.data.get("children", 0)
+            if age_range:
+                age_range = tuple(map(int, age_range.split(",")))
+                studies = [
+                    s for s in studies if age_range_eligibility_for_study(age_range, s)
+                ]
         else:
             sort_fn = lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
             child_pk = int(form.data.get("children", 0))
@@ -237,8 +246,8 @@ class StudiesListView(generic.ListView):
                 studies = [
                     s for s in studies if get_child_eligibility_for_study(child, s)
                 ]
+            self.child_eligibility(studies)
 
-        self.child_eligibility(studies)
         studies.sort(key=sort_fn)
 
         return studies

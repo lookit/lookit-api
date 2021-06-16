@@ -444,17 +444,12 @@ class ChildUpdateForm(forms.ModelForm):
 
 class StudyListSearchForm(forms.Form):
     choices = [
-        (i, x)
-        for i, x in enumerate(
-            (
-                "Find studies for...",
-                "babies (under 1)",
-                "toddlers (1-2)",
-                "preschoolers (3-4)",
-                "school-age kids(5-18)",
-                "adults (18+)",
-            )
-        )
+        ("", "Find studies for..."),
+        ("0,1", "babies (under 1)"),
+        ("1,2", "toddlers (1-2)"),
+        ("3,4", "preschoolers (3-4)"),
+        ("5,18", "school-age kids(5-18)"),
+        ("18,999", "adults (18+)"),
     ]
     children = forms.ChoiceField(choices=choices, required=False)
     show_experiments_already_done = forms.BooleanField(initial=True, required=False)
