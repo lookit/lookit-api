@@ -20,6 +20,7 @@ from accounts.queries import (
     age_range_eligibility_for_study,
     get_child_eligibility_for_study,
 )
+from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 from studies.models import Response, Study, Video
 
@@ -206,7 +207,7 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
 
 
-class StudiesListView(generic.ListView):
+class StudiesListView(generic.ListView, PaginatorMixin):
     """
     List all active, public studies.
     """
@@ -222,6 +223,7 @@ class StudiesListView(generic.ListView):
         user = self.request.user
         qs = super().get_queryset().filter(state="active", public=True)
         form = self.search_form()
+        page = self.request.GET.get("page", 1)
 
         if self.request.POST:
             search = form.data["search"]
@@ -250,7 +252,7 @@ class StudiesListView(generic.ListView):
 
         studies.sort(key=sort_fn)
 
-        return studies
+        return self.paginated_queryset(studies, page)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

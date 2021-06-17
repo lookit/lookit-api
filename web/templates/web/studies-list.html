@@ -113,9 +113,9 @@
                         <h2>{{study.lab.name}}</h2>
                         <div class="description">
                             <h3>Short Description</h3>
-                            <p>{{study.short_description|linebreaks}}</p>
+                            {{study.short_description|linebreaks}}
                             <h3>Purpose</h3>
-                            <p>{{study.purpose|linebreaks}}</p>
+                            {{study.purpose|linebreaks}}
                         </div>
                     </div>
                 </div>
@@ -127,6 +127,9 @@
         </div>
         {% endfor %}
 
+        {% if object_list %}
+        {% bootstrap_pagination object_list %}
+        {% endif %}
 
         <div class="panel-default">
             <div class="panel-body">
