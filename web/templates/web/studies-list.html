@@ -29,25 +29,6 @@
         <h2>{% trans "Current Studies" %}</h2>
     </div>
 </div>
-
-<script>
-    $(function() {        
-        $('form').on('reset', function(event){
-            resetForm(function(){
-                $('form').submit()
-            });
-        })
-        function resetForm(callbackFn){
-            const $this = $('form');
-            $this.find('input[type=text]').attr('value', '')
-            $this.find('input[type=checkbox]').attr('checked', true);
-            $this.find('select option:selected').removeAttr('selected');    
-            callbackFn()
-        }
-    });
-</script>
-
-
 {% bootstrap_messages %}
 
 <ul class="pt-sm nav nav-tabs">
@@ -139,5 +120,27 @@
 
     </div>
 </div>
+
+<script>
+    $(function() {        
+        $('form').on('reset', function(event){
+            resetForm(function(){
+                $('form').submit()
+            });
+        })
+
+        function resetForm(callbackFn){
+            const $this = $('form');
+            $this.find('input:text').attr('value', '')
+            $this.find('input:checkbox').attr('checked', true);
+            $this.find('select option:selected').removeAttr('selected');    
+            callbackFn()
+        }
+
+        $('select, input:checkbox').on('change', function(event){
+            $('form').submit()
+        })
+    });
+</script>
 
 {% endblock %}
