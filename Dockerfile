@@ -20,7 +20,7 @@ RUN wget https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetr
     && cat /tmp/get-poetry.py | python - \
     && source $HOME/.poetry/env \
     && poetry config virtualenvs.create false \
-    && poetry install --no-dev \
+    && poetry install \
     && python /tmp/get-poetry.py --uninstall -y \
     && rm /tmp/get-poetry.py 
 
