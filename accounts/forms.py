@@ -448,7 +448,7 @@ class StudyListSearchForm(forms.Form):
         ("0,1", "babies (under 1)"),
         ("1,2", "toddlers (1-2)"),
         ("3,4", "preschoolers (3-4)"),
-        ("5,18", "school-age kids(5-18)"),
+        ("5,17", "school-age kids (5-17)"),
         ("18,999", "adults (18+)"),
     ]
     children = forms.ChoiceField(choices=choices, required=False)
