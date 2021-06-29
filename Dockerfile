@@ -11,7 +11,7 @@ COPY ./ ./
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gosu \
+    && apt-get install -y --no-install-recommends gosu libgraphviz-dev \
     && rm -rf /var/lib/apt/lists/* \
     && gosu nobody true \
     && update-ca-certificates 
