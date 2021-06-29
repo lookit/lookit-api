@@ -222,35 +222,43 @@ class StudiesListView(generic.ListView, PaginatorMixin):
     def get_queryset(self):
         user = self.request.user
         qs = super().get_queryset().filter(state="active", public=True)
-        form = self.search_form()
         page = self.request.GET.get("page", 1)
 
-        if self.request.POST:
-            search = form.data["search"]
-            qs = qs.filter(name__icontains=search)
+        # Form will return different value depending if the user is logged in.
+        form = self.search_form()
+
+        # values from form
+        search_value = form.data.get("search", "")
+        children_value = form.data.get("children", "")
+        show_experiments_already_done_value = (
+            form.data.get("show_experiments_already_done") == "on"
+        )
+
+        if search_value:
+            qs = qs.filter(name__icontains=search_value)
 
         # convert to list as it's no longer being treated as a queryset
         studies = list(qs)
 
-        if user.is_anonymous:
-            sort_fn = lambda s: s.uuid.bytes
-            age_range = form.data.get("children", "")
-            if age_range:
-                age_range = tuple(map(int, age_range.split(",")))
+        if children_value:
+            if user.is_anonymous:
+                # when user is anonymous, children value is an age range.
+                age_range = [int(c) for c in children_value.split(",")]
                 studies = [
                     s for s in studies if age_range_eligibility_for_study(age_range, s)
                 ]
-        else:
-            sort_fn = lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
-            child_pk = form.data.get("children", "")
-            if child_pk:
-                child = Child.objects.get(pk=child_pk)
-                studies = [
-                    s for s in studies if get_child_eligibility_for_study(child, s)
-                ]
-            self.child_eligibility(studies)
+            else:
+                # when user is authenticated, children value is a child pk
+                child = Child.objects.get(pk=children_value)
 
-        studies.sort(key=sort_fn)
+                if not show_experiments_already_done_value:
+                    studies = self.completed_consent_frame(studies, child)
+
+            studies = [s for s in studies if get_child_eligibility_for_study(child, s)]
+
+        self.child_eligibility(studies)
+
+        studies.sort(key=self.sort_fn())
 
         return self.paginated_queryset(studies, page)
 
@@ -259,14 +267,25 @@ class StudiesListView(generic.ListView, PaginatorMixin):
         context["search_form"] = self.search_form()
         return context
 
-    def child_eligibility(self, studies):
-        children = self.request.user.children.filter(deleted=False)
+    def completed_consent_frame(self, studies, child):
+        return [
+            r.study
+            for r in Response.objects.filter(
+                study__in=studies, child=child, completed_consent_frame=True,
+            ).distinct("study_id")
+        ]
 
-        # add eligible children to study object
-        for study in studies:
-            study.eligible_children = create_string_listing_children(
-                [c for c in children if get_child_eligibility_for_study(c, study)]
-            )
+    def child_eligibility(self, studies):
+        user = self.request.user
+
+        if user.is_authenticated:
+            children = user.children.filter(deleted=False)
+
+            # add eligible children to study object
+            for study in studies:
+                study.eligible_children = create_string_listing_children(
+                    [c for c in children if get_child_eligibility_for_study(c, study)]
+                )
 
     def search_form(self):
         if self.request.POST:
@@ -275,6 +294,13 @@ class StudiesListView(generic.ListView, PaginatorMixin):
                 return form
 
         return self.form_class(user=self.request.user)
+
+    def sort_fn(self):
+        user = self.request.user
+        if user.is_anonymous:
+            return lambda s: s.uuid.bytes
+        else:
+            return lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
