@@ -403,24 +403,28 @@ class ParticipantStudyViewsTestCase(TestCase):
         self.assertNotIn("PrivateActiveStudy", content)
         self.assertNotIn("PublicInactiveStudy", content)
         self.assertTrue(
-            response.context["study_list"]
-            .filter(uuid=self.public_active_study_1.uuid)
-            .exists()
+            any(
+                s.uuid == self.public_active_study_1.uuid
+                for s in response.context["object_list"]
+            )
         )
         self.assertTrue(
-            response.context["study_list"]
-            .filter(uuid=self.public_active_study_2.uuid)
-            .exists()
+            any(
+                s.uuid == self.public_active_study_2.uuid
+                for s in response.context["object_list"]
+            )
         )
         self.assertFalse(
-            response.context["study_list"]
-            .filter(uuid=self.private_active_study.uuid)
-            .exists()
+            any(
+                s.uuid == self.private_active_study.uuid
+                for s in response.context["object_list"]
+            )
         )
         self.assertFalse(
-            response.context["study_list"]
-            .filter(uuid=self.public_inactive_study.uuid)
-            .exists()
+            any(
+                s.uuid == self.public_inactive_study.uuid
+                for s in response.context["object_list"]
+            )
         )
 
 
