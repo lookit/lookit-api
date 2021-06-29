@@ -822,8 +822,6 @@ class Response(models.Model):
                 "View all response data in analytics",
             ),
         )
-        # TODO:  Does this need to be here?
-        # ordering = ["-demographic_snapshot__created_at"]
         base_manager_name = "related_manager"
 
     class JSONAPIMeta:
