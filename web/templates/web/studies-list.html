@@ -26,95 +26,82 @@
 {% block content %}
 {% bootstrap_messages %}
 
-<ul class="pt-sm nav nav-tabs">
-    <li class="active">
-        <a href="{% url 'web:studies-list'%}">{% trans "Current studies" %}</a>
-    </li>
-    <li>
-        <a href="{% url 'web:studies-history'%}">{% trans "Your past studies" %}</a>
-    </li>
-</ul>
+{% if user.is_anonymous %}
+<div class="panel-default">
+    <div class="panel-body">
+        {% trans "Log in to find studies just right for your child!" %}
+    </div>
+</div>
+{% endif %}
 
-<div class="tab-content">
-    <div role="tabpanel" class="tab-pane active">
+<div class="panel-default">
+    <div class="panel-body">
+        <form action method="post" class="form-inline study-list">
+            {% csrf_token %}
+            {% bootstrap_field search_form.children show_label=False %}
+            {% bootstrap_field search_form.show_experiments_already_done form_group_class="form-group show-experiments" %}
+            {% bootstrap_button "Clear" "reset" button_class="btn btn-default pull-right clear" %}
+            {% bootstrap_field search_form.search show_label=False form_group_class="form-group pull-right" %}
+        </form>
+    </div>
+</div>
 
-        {% if user.is_anonymous %}
-        <div class="panel-default">
-            <div class="panel-body">
-                {% trans "Log in to find studies just right for your child!" %}
-            </div>
-        </div>
-        {% endif %}
+<div class="panel-default">
+    <div class="panel-body">
+        {% trans "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate." %}
+    </div>
+</div>
 
-        <div class="panel-default">
-            <div class="panel-body">
-                <form action method="post" class="form-inline study-list">
-                    {% csrf_token %}
-                    {% bootstrap_field search_form.children show_label=False %}
-                    {% bootstrap_field search_form.show_experiments_already_done form_group_class="form-group show-experiments" %}
-                    {% bootstrap_button "Clear" "reset" button_class="btn btn-default pull-right clear" %}
-                    {% bootstrap_field search_form.search show_label=False form_group_class="form-group pull-right" %}
-                </form>
-            </div>
-        </div>
-
-        <div class="panel-default">
-            <div class="panel-body">
-                {% trans "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate." %}
-            </div>
-        </div>
-
-        {% for study in object_list %}
-        <div class="panel panel-default study-list">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-3 left">
-                        <img src="{{study.image.url}}" class="img-responsive img-rounded" alt="Responsive image">
-                        <div class="study-criteria">
-                            <small>
-                                <p>{{study.criteria}}</p>
-                                {% if study.eligible_children %}
-                                <p>{{ study.eligible_children }} maybe eligible for this study.</p>
-                                {% endif %}
-                                </small>
-                            <div class="text-center">
-                                <a class="btn {% if study.eligible_children %}btn-success{% endif %} btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
-                                    {% trans "See details" %}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-9 right">
-                        <h1>{{study.name}}</h1>
-                        <h2>{{study.lab.name}}</h2>
-                        <div class="description">
-                            <h3>Short Description</h3>
-                            {{study.short_description|linebreaks}}
-                            <h3>Purpose</h3>
-                            {{study.purpose|linebreaks}}
-                        </div>
+{% for study in object_list %}
+<div class="panel panel-default study-list">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-3 left">
+                <img src="{{study.image.url}}" class="img-responsive img-rounded" alt="Responsive image">
+                <div class="study-criteria">
+                    <small>
+                        <p>{{study.criteria}}</p>
+                        {% if study.eligible_children %}
+                        <p>{{ study.eligible_children }} maybe eligible for this study.</p>
+                        {% endif %}
+                        </small>
+                    <div class="text-center">
+                        <a class="btn {% if study.eligible_children %}btn-success{% endif %} btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
+                            {% trans "See details" %}
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
-        {% empty %}
-        <div class="col-xs-12">
-            <p><em> {% trans "We are not running any studies at this time!" %} </em></p>
-        </div>
-        {% endfor %}
-
-        {% if object_list %}
-        {% bootstrap_pagination object_list %}
-        {% endif %}
-
-        <div class="panel-default">
-            <div class="panel-body">
-                {% trans 'Looking for more ways to contribute to research from home? Check out <a href="https://childrenhelpingscience.com/" target="_blank" rel="noreferrer noopener">Children Helping Science</a> for even more studies!' %}
+            <div class="col-md-9 right">
+                <h1>{{study.name}}</h1>
+                <h2>{{study.lab.name}}</h2>
+                <div class="description">
+                    <h3>Short Description</h3>
+                    {{study.short_description|linebreaks}}
+                    <h3>Purpose</h3>
+                    {{study.purpose|linebreaks}}
+                </div>
             </div>
         </div>
-
     </div>
 </div>
+{% empty %}
+<div class="col-xs-12">
+    <p><em> {% trans "We are not running any studies at this time!" %} </em></p>
+</div>
+{% endfor %}
+
+{% if object_list %}
+{% bootstrap_pagination object_list %}
+{% endif %}
+
+<div class="panel-default">
+    <div class="panel-body">
+        {% trans 'Looking for more ways to contribute to research from home? Check out <a href="https://childrenhelpingscience.com/" target="_blank" rel="noreferrer noopener">Children Helping Science</a> for even more studies!' %}
+    </div>
+</div>
+
+ 
 
 <script>
     $(function() {        
