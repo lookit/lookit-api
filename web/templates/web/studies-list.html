@@ -40,7 +40,8 @@
             {% csrf_token %}
             {% bootstrap_field search_form.children show_label=False %}
             {% bootstrap_field search_form.show_experiments_already_done form_group_class="form-group show-experiments" %}
-            {% bootstrap_button "Clear" "reset" button_class="btn btn-default pull-right clear" %}
+            {% trans "Clear" as clear_button_text %}
+            {% bootstrap_button clear_button_text "reset" button_class="btn btn-default pull-right clear" %}
             {% bootstrap_field search_form.search show_label=False form_group_class="form-group pull-right" %}
         </form>
     </div>
