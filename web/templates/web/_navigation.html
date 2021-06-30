@@ -36,7 +36,7 @@
             {% else %}
             {% nav_item request 'accounts:manage-account' 'Hi '|add:user.nickname %}
             {% endif %}
-            {% nav_item request 'web:studies-history' 'Your Past Studies' %}
+            {% nav_item request 'web:studies-history' 'My Past Studies' %}
             <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
           {% else %}
             {% nav_item request 'web:participant-signup' 'Sign up' %}
