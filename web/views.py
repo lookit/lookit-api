@@ -254,7 +254,9 @@ class StudiesListView(generic.ListView, PaginatorMixin):
                 if not show_experiments_already_done_value:
                     studies = self.completed_consent_frame(studies, child)
 
-            studies = [s for s in studies if get_child_eligibility_for_study(child, s)]
+                studies = [
+                    s for s in studies if get_child_eligibility_for_study(child, s)
+                ]
 
         self.child_eligibility(studies)
 
