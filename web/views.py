@@ -249,7 +249,7 @@ class StudiesListView(generic.ListView, PaginatorMixin):
                 ]
             else:
                 # when user is authenticated, children value is a child pk
-                child = Child.objects.get(pk=children_value)
+                child = Child.objects.get(pk=children_value, user=user)
 
                 if not show_experiments_already_done_value:
                     studies = self.completed_consent_frame(studies, child)
