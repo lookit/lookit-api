@@ -9,6 +9,7 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
+from django.views.generic.edit import FormView
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
 from localflavor.us.us_states import USPS_CHOICES
@@ -207,7 +208,7 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
 
 
-class StudiesListView(generic.ListView, PaginatorMixin):
+class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     """
     List all active, public studies.
     """
@@ -217,21 +218,28 @@ class StudiesListView(generic.ListView, PaginatorMixin):
     model = Study
 
     def post(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+        form = self.get_form()
+
+        if form.is_valid():
+            for field in self.form_class().fields:
+                request.session[field] = form.data.get(field, "")
+
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_queryset(self):
+        session = self.request.session
         user = self.request.user
-        qs = super().get_queryset().filter(state="active", public=True)
         page = self.request.GET.get("page", 1)
 
-        # Form will return different value depending if the user is logged in.
-        form = self.search_form()
+        qs = super().get_queryset().filter(state="active", public=True)
 
-        # values from form
-        search_value = form.data.get("search", "")
-        children_value = form.data.get("children", "")
+        # values from session
+        search_value = session.get("search", "")
+        child_value = session.get("child", "")
         show_experiments_already_done_value = (
-            form.data.get("show_experiments_already_done") == "on"
+            session.get("show_experiments_already_done", "") == "on"
         )
 
         if search_value:
@@ -240,16 +248,16 @@ class StudiesListView(generic.ListView, PaginatorMixin):
         # convert to list as it's no longer being treated as a queryset
         studies = list(qs)
 
-        if children_value:
+        if child_value:
             if user.is_anonymous:
-                # when user is anonymous, children value is an age range.
-                age_range = [int(c) for c in children_value.split(",")]
+                # when user is anonymous, child value is an age range.
+                age_range = [int(c) for c in child_value.split(",")]
                 studies = [
                     s for s in studies if age_range_eligibility_for_study(age_range, s)
                 ]
             else:
-                # when user is authenticated, children value is a child pk
-                child = Child.objects.get(pk=children_value, user=user)
+                # when user is authenticated, child value is a child pk
+                child = Child.objects.get(pk=child_value, user=user)
 
                 if not show_experiments_already_done_value:
                     studies = self.completed_consent_frame(studies, child)
@@ -264,10 +272,23 @@ class StudiesListView(generic.ListView, PaginatorMixin):
 
         return self.paginated_queryset(studies, page)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["search_form"] = self.search_form()
-        return context
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_initial(self):
+        kwargs = super().get_initial()
+
+        # When field values are retrieved from session to populate form, they are removed from session
+        for field in self.form_class().fields:
+            if field in self.request.session:
+                kwargs[field] = self.request.session.pop(field)
+
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("web:studies-list")
 
     def completed_consent_frame(self, studies, child):
         return [
@@ -288,14 +309,6 @@ class StudiesListView(generic.ListView, PaginatorMixin):
                 study.eligible_children = create_string_listing_children(
                     [c for c in children if get_child_eligibility_for_study(c, study)]
                 )
-
-    def search_form(self):
-        if self.request.POST:
-            form = self.form_class(self.request.POST, user=self.request.user)
-            if form.is_valid():
-                return form
-
-        return self.form_class(user=self.request.user)
 
     def sort_fn(self):
         user = self.request.user
