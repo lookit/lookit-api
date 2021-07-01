@@ -61,12 +61,10 @@
                 <h1>{{study.name}}</h1>
                 <p><em>{{study.lab.name}} ({{study.lab.institution}})</em></p>
             </div>
-            <div class="col-sm-2 col-xs-12">
-                <div class="text-center">
-                    <a class="btn {% if study.eligible_children %}btn-success{% endif %} btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
-                        {% trans "See details" %}
-                    </a>
-                </div>
+            <div class="col-xs-2">
+                <a class="btn {% if study.eligible_children %}btn-success{% endif %} btn-default text-center details-button" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
+                    {% trans "See details" %}
+                </a>
             </div>
         </div>
         <div class="row">

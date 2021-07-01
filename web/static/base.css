@@ -273,6 +273,10 @@ button.account-row {
     padding: 5px 5px 0 5px;
 }
 
+.panel.study-list .details-button {
+    margin-bottom: 10px;
+}
+
 .form-inline.study-list .btn.clear {
     margin-left: 5px;
 }
