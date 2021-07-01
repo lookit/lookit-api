@@ -52,7 +52,7 @@
                                         {% endif %}
                                     </div>
                                     <div class="study-feedback-description-wrapper">
-                                        {{ study.short_description }}
+                                        {{ study.short_description|linebreaks }}
                                         <div class="pt-sm">
                                             <strong>{% trans "Eligibility:" %}</strong> {{ study.criteria }}<br>
                                             <strong>{% trans "Contact:" %}</strong> {{study.contact_info}} <br>
