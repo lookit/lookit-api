@@ -1,16 +1,24 @@
 import datetime
-from unittest.mock import patch
+import uuid
+from unittest.mock import MagicMock, PropertyMock, patch, sentinel
 
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
+from django.views.generic.list import MultipleObjectMixin
 from django_dynamic_fixture import G
+from parameterized import parameterized
 
 from accounts.models import Child, DemographicData, User
 from studies.models import Lab, Study, StudyType
-from web.views import ChildrenListView, DemographicDataUpdateView, StudyDetailView
+from web.views import (
+    ChildrenListView,
+    DemographicDataUpdateView,
+    StudiesListView,
+    StudyDetailView,
+)
 
 
 class ParticipantAccountViewsTestCase(TestCase):
@@ -444,6 +452,244 @@ class DemographicDataUpdateViewTestCase(TestCase):
         demographic_data_update_view.get_success_url()
         mock_request.user.children.filter.assert_called_once_with(deleted=False)
         mock_request.user.children.filter().exists.assert_called_once_with()
+
+
+class StudiesListViewTestCase(TestCase):
+    @parameterized.expand([(True, 302), (False, 200)])
+    @patch("web.views.StudiesListView.get_form")
+    @patch.object(StudiesListView, "request", create=True)
+    def test_post(self, is_value, status_code, mock_request, mock_get_form):
+        with patch.object(StudiesListView, "object_list", create=True):
+            mock_get_form().is_valid.return_value = is_value
+            view = StudiesListView()
+            response = view.post(mock_request)
+            self.assertEqual(response.status_code, status_code)
+
+    @patch.object(StudiesListView, "sort_fn")
+    @patch.object(MultipleObjectMixin, "get_queryset")
+    @patch.object(StudiesListView, "child_eligibility")
+    @patch("web.views.get_child_eligibility_for_study")
+    @patch.object(StudiesListView, "completed_consent_frame")
+    @patch("accounts.models.Child.objects")
+    @patch.object(StudiesListView, "request", create=True)
+    def test_get_queryset_auth_user(
+        self,
+        mock_request,
+        mock_child_objects,
+        mock_completed_consent_frame,
+        mock_get_child_eligibility_for_study,
+        mock_child_eligibility,
+        mock_super_get_queryset,
+        mock_sort_fn,
+    ):
+        mock_study = MagicMock(name="study")
+        mock_studies = [mock_study]
+
+        mock_request.session.get.side_effect = [
+            sentinel.search_value,
+            sentinel.child_pk,
+            "",
+        ]
+        type(mock_request.user).is_anonymous = PropertyMock(return_value=False)
+        mock_super_get_queryset().filter().filter.return_value = mock_studies
+        mock_completed_consent_frame.return_value = mock_studies
+
+        view = StudiesListView()
+        page = view.get_queryset()
+
+        mock_super_get_queryset().filter.assert_called_with(state="active", public=True)
+        mock_super_get_queryset().filter().filter.assert_called_once_with(
+            name__icontains=sentinel.search_value
+        )
+        mock_child_objects.get.assert_called_once_with(
+            pk=sentinel.child_pk, user=mock_request.user
+        )
+        mock_completed_consent_frame.assert_called_once_with(
+            mock_studies, mock_child_objects.get()
+        )
+        mock_get_child_eligibility_for_study.assert_called_once_with(
+            mock_child_objects.get(), mock_study
+        )
+        mock_child_eligibility.assert_called_once_with(mock_studies)
+        mock_sort_fn.assert_called_once_with()
+
+        self.assertEqual(page.number, 1)
+        self.assertListEqual(page.object_list, mock_studies)
+
+    @patch("web.views.age_range_eligibility_for_study", return_value=True)
+    @patch.object(StudiesListView, "sort_fn")
+    @patch.object(MultipleObjectMixin, "get_queryset")
+    @patch.object(StudiesListView, "child_eligibility")
+    @patch.object(StudiesListView, "completed_consent_frame")
+    @patch.object(StudiesListView, "request", create=True)
+    def test_get_queryset_anon_user(
+        self,
+        mock_request,
+        mock_completed_consent_frame,
+        mock_child_eligibility,
+        mock_super_get_queryset,
+        mock_sort_fn,
+        mock_age_range_eligibility_for_study,
+    ):
+        mock_study = MagicMock(name="study")
+        mock_studies = [mock_study]
+
+        mock_request.session.get.side_effect = [
+            sentinel.search_value,
+            "1,2",
+            "",
+        ]
+        type(mock_request.user).is_anonymous = PropertyMock(return_value=True)
+        mock_super_get_queryset().filter().filter.return_value = mock_studies
+        mock_completed_consent_frame.return_value = mock_studies
+
+        view = StudiesListView()
+        page = view.get_queryset()
+
+        mock_super_get_queryset().filter.assert_called_with(state="active", public=True)
+        mock_super_get_queryset().filter().filter.assert_called_once_with(
+            name__icontains=sentinel.search_value
+        )
+        mock_age_range_eligibility_for_study.assert_called_once_with([1, 2], mock_study)
+        mock_child_eligibility.assert_called_once_with(mock_studies)
+        mock_sort_fn.assert_called_once_with()
+
+        self.assertEqual(page.number, 1)
+        self.assertListEqual(page.object_list, mock_studies)
+
+    @patch.object(StudiesListView, "request", create=True)
+    def test_get_form_kwargs(self, mock_request):
+        view = StudiesListView()
+        kwargs = view.get_form_kwargs()
+
+        self.assertIn("user", kwargs)
+        self.assertEqual(kwargs["user"], mock_request.user)
+
+    @patch.object(StudiesListView, "request", create=True)
+    @patch.object(StudiesListView, "form_class")
+    def test_get_initial(self, mock_form_class, mock_request):
+        mock_form_class().fields.__iter__.return_value = [sentinel.field]
+        type(mock_request).session = PropertyMock(
+            return_value={sentinel.field: sentinel.field}
+        )
+
+        view = StudiesListView()
+        kwargs = view.get_initial()
+
+        mock_form_class().fields.__iter__.assert_called_once_with()
+
+        self.assertIn(sentinel.field, kwargs)
+        self.assertNotIn(sentinel.field, mock_request.session)
+
+    def test_get_success_url(self):
+        view = StudiesListView()
+        url = view.get_success_url()
+        self.assertEqual(url, "/studies/")
+
+    @patch("studies.models.Response.objects")
+    def test_completed_consent_frame(self, mock_response_objects):
+        mock_response = MagicMock(name="response")
+        mock_responses = [mock_response]
+        mock_studies = MagicMock()
+        mock_child = MagicMock(name="child")
+        mock_response_objects.filter().distinct.return_value = mock_responses
+
+        view = StudiesListView()
+        studies = view.completed_consent_frame(mock_studies, mock_child)
+
+        self.assertListEqual(studies, [mock_response.study])
+
+        mock_response_objects.filter.assert_called_with(
+            study__in=mock_studies, child=mock_child, completed_consent_frame=True
+        )
+        mock_response_objects.filter().distinct.assert_called_once_with("study_id")
+
+    @patch.object(StudiesListView, "request", create=True)
+    def test_child_eligibility_anon_user(self, mock_request):
+        mock_studies = MagicMock()
+        mock_request.user.is_authenticated.return_value = False
+
+        view = StudiesListView()
+        view.child_eligibility(mock_studies)
+
+        mock_request.user.children.assert_not_called()
+
+    @patch("web.views.get_child_eligibility_for_study")
+    @patch.object(StudiesListView, "request", create=True)
+    def test_child_eligibility_auth_user(
+        self, mock_request, mock_get_child_eligibility_for_study
+    ):
+        mock_study = MagicMock()
+        mock_studies = [mock_study]
+        mock_child = MagicMock()
+        type(mock_child).given_name = PropertyMock(return_value="child name")
+        mock_children = [mock_child]
+        mock_request.user.is_authenticated.return_value = True
+        mock_request.user.children.filter.return_value = mock_children
+
+        view = StudiesListView()
+        view.child_eligibility(mock_studies)
+
+        mock_request.user.children.filter.assert_called_once_with(deleted=False)
+        self.assertEqual(mock_study.eligible_children, "child name")
+        mock_get_child_eligibility_for_study.assert_called_once_with(
+            mock_child, mock_study
+        )
+
+    @patch.object(StudiesListView, "request", create=True)
+    def test_sort_fn_anon_user(self, mock_request):
+        type(mock_request.user).is_anonymous = PropertyMock(return_value=True)
+
+        mock_user_a = MagicMock(name="a")
+        type(mock_user_a).uuid = PropertyMock(
+            return_value=uuid.UUID("{11111111-1234-5678-1234-567812345678}")
+        )
+
+        mock_user_b = MagicMock(name="b")
+        type(mock_user_b).uuid = PropertyMock(
+            return_value=uuid.UUID("{33333333-1234-5678-1234-567812345678}")
+        )
+
+        mock_user_c = MagicMock(name="c")
+        type(mock_user_c).uuid = PropertyMock(
+            return_value=uuid.UUID("{22222222-1234-5678-1234-567812345678}")
+        )
+
+        mock_users = [mock_user_a, mock_user_b, mock_user_c]
+
+        view = StudiesListView()
+        mock_users.sort(key=view.sort_fn())
+
+        self.assertListEqual(mock_users, [mock_user_a, mock_user_c, mock_user_b])
+
+    @patch.object(StudiesListView, "request", create=True)
+    def test_sort_fn_auth_user(self, mock_request):
+        type(mock_request.user).is_anonymous = PropertyMock(return_value=False)
+        type(mock_request.user).uuid = PropertyMock(
+            return_value=uuid.UUID("{12345678-1234-5678-1234-567812345678}")
+        )
+
+        mock_user_a = MagicMock(name="a")
+        type(mock_user_a).uuid = PropertyMock(
+            return_value=uuid.UUID("{11111111-1234-5678-1234-567812345678}")
+        )
+
+        mock_user_b = MagicMock(name="b")
+        type(mock_user_b).uuid = PropertyMock(
+            return_value=uuid.UUID("{33333333-1234-5678-1234-567812345678}")
+        )
+
+        mock_user_c = MagicMock(name="c")
+        type(mock_user_c).uuid = PropertyMock(
+            return_value=uuid.UUID("{22222222-1234-5678-1234-567812345678}")
+        )
+
+        mock_users = [mock_user_a, mock_user_b, mock_user_c]
+
+        view = StudiesListView()
+        mock_users.sort(key=view.sort_fn())
+
+        self.assertListEqual(mock_users, [mock_user_b, mock_user_a, mock_user_c])
 
 
 # TODO: StudyDetailView
