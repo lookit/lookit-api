@@ -109,24 +109,33 @@
  
 
 <script>
-    $(function() {        
-        $('form').on('reset', function(event){
-            resetForm(function(){
-                $('form').submit()
-            });
+    $(function() {       
+        const $form = $('form');
+        const $checkbox = $form.find('input:checkbox')
+        const $dropdownSelected = $form.find('select option:selected')
+
+        if ($dropdownSelected.val() === '') {
+            $checkbox.attr('disabled', true);
+        }
+        
+        $form.on('reset', function(event){
+            resetForm(submitForm);
         })
 
         function resetForm(callbackFn){
-            const $this = $('form');
-            $this.find('input:text').attr('value', '')
-            $this.find('input:checkbox').attr('checked', true);
-            $this.find('select option:selected').removeAttr('selected');    
+
+            $form.find('input:text').attr('value', '')
+            $checkbox.attr('checked', true);
+            $dropdownSelected.removeAttr('selected');    
             callbackFn()
         }
 
-        $('select, input:checkbox').on('change', function(event){
-            $('form').submit()
-        })
+        function submitForm(){
+            $checkbox.attr('disabled', false);
+            $form.submit()
+        }
+
+        $('select, input:checkbox').on('change', submitForm)
     });
 </script>
 
