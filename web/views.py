@@ -266,9 +266,9 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
                     s for s in studies if get_child_eligibility_for_study(child, s)
                 ]
 
-        self.child_eligibility(studies)
-
         studies.sort(key=self.sort_fn())
+
+        self.child_eligibility(studies)
 
         return self.paginated_queryset(studies, page)
 

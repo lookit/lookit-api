@@ -458,12 +458,32 @@ class StudiesListViewTestCase(TestCase):
     @parameterized.expand([(True, 302), (False, 200)])
     @patch("web.views.StudiesListView.get_form")
     @patch.object(StudiesListView, "request", create=True)
-    def test_post(self, is_value, status_code, mock_request, mock_get_form):
+    def test_post(self, is_valid, status_code, mock_request, mock_get_form):
         with patch.object(StudiesListView, "object_list", create=True):
-            mock_get_form().is_valid.return_value = is_value
+            mock_get_form().is_valid.return_value = is_valid
             view = StudiesListView()
             response = view.post(mock_request)
             self.assertEqual(response.status_code, status_code)
+
+    def test_search_options_auth_user(self):
+        mock_request = MagicMock(method="GET")
+        type(mock_request.user).is_authenticated = PropertyMock(return_value=True)
+
+        response = StudiesListView.as_view()(mock_request).render()
+
+        self.assertIn(b'for="id_show_experiments_already_done"', response.content)
+        self.assertIn(b'for="id_child"', response.content)
+        self.assertIn(b'for="id_search"', response.content)
+
+    def test_search_options_anon_user(self):
+        mock_request = MagicMock(method="GET")
+        type(mock_request.user).is_authenticated = PropertyMock(return_value=False)
+
+        response = StudiesListView.as_view()(mock_request).render()
+
+        self.assertNotIn(b'for="id_show_experiments_already_done"', response.content)
+        self.assertIn(b'for="id_child"', response.content)
+        self.assertIn(b'for="id_search"', response.content)
 
     @patch.object(StudiesListView, "sort_fn")
     @patch.object(MultipleObjectMixin, "get_queryset")
