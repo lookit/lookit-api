@@ -273,6 +273,13 @@ button.account-row {
     padding: 5px 5px 0 5px;
 }
 
+.panel.study-list .left {
+    max-width: 400px;  
+    display: block;
+    margin-left: auto; 
+    margin-right: auto;
+}
+
 .panel.study-list .details-button {
     margin-bottom: 10px;
 }
