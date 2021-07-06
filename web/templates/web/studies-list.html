@@ -57,26 +57,29 @@
 <div class="panel panel-default study-list">
     <div class="panel-body">
         <div class="row">
+            <div class="col-sm-10 col-xs-12">
+                <h1>{{study.name}}</h1>
+                <p><em>{{study.lab.name}} ({{study.lab.institution}})</em></p>
+            </div>
+            <div class="col-xs-2">
+                <a class="btn {% if study.eligible_children %}btn-success{% endif %} btn-default text-center details-button" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
+                    {% trans "See details" %}
+                </a>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-3 left">
                 <img src="{{study.image.url}}" class="img-responsive img-rounded" alt="Responsive image">
                 <div class="study-criteria">
                     <small>
                         <p>{{study.criteria}}</p>
                         {% if study.eligible_children %}
-                        <p>{{ study.eligible_children }} {% trans 'may be eligible for this study.' %}</p>
+                        <p><strong>{{ study.eligible_children }} {% trans 'may be eligible.' %}</strong></p>
                         {% endif %}
                         </small>
-                    <div class="text-center">
-                        <a class="btn {% if study.eligible_children %}btn-success{% endif %} btn-default text-center" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
-                            {% trans "See details" %}
-                        </a>
-                    </div>
                 </div>
             </div>
             <div class="col-md-9 right">
-                <h1>{{study.name}}</h1>
-                <h2>{{study.lab.name}}</h2>
-                <h2>{{study.lab.institution}}</h2>
                 <div class="description">
                     <h3>{% trans 'What happens' %}</h3>
                     {{study.short_description|linebreaks}}

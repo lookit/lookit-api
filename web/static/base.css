@@ -249,17 +249,20 @@ button.account-row {
 
 .panel.study-list h1 {
     font-size: x-large;
-    font-weight: bold
+    font-weight: bold;
+    margin-top: 0px;
 }
 
 .panel.study-list h2 {
     font-size: large;
-    font-weight: bold
+    font-weight: bold;
+    margin-top: 0px;
 }
 
 .panel.study-list h3 {
     font-size: large;
     font-weight: normal;
+    margin-top: 0px;
 }
 
 .panel.study-list .description {
@@ -270,12 +273,16 @@ button.account-row {
     padding: 5px 5px 0 5px;
 }
 
+.panel.study-list .details-button {
+    margin-bottom: 10px;
+}
+
 .form-inline.study-list .btn.clear {
     margin-left: 5px;
 }
 
 .form-inline.study-list .form-group.show-experiments {
-    margin-left: 5px;
+    margin-left: 15px;
     margin-right: 5px;
 }
 
