@@ -455,7 +455,9 @@ CHILD_CHOICES = [
 class StudyListSearchForm(forms.Form):
 
     child = forms.ChoiceField(choices=CHILD_CHOICES, required=False)
-    show_experiments_already_done = forms.BooleanField(initial=True, required=False)
+    hide_studies_we_have_done = forms.BooleanField(
+        label="Hide Studies We've Done", required=False
+    )
     search = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
@@ -466,4 +468,4 @@ class StudyListSearchForm(forms.Form):
                 (c.pk, c.given_name) for c in user.children.filter(deleted=False)
             ]
         else:
-            self.fields["show_experiments_already_done"].widget = forms.HiddenInput()
+            self.fields["hide_studies_we_have_done"].widget = forms.HiddenInput()

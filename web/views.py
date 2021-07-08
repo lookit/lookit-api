@@ -238,8 +238,8 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         # values from session
         search_value = session.get("search", "")
         child_value = session.get("child", "")
-        show_experiments_already_done_value = (
-            session.get("show_experiments_already_done", "") == "on"
+        hide_studies_we_have_done_value = (
+            session.get("hide_studies_we_have_done", "") == "on"
         )
 
         if search_value:
@@ -259,7 +259,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
                 # when user is authenticated, child value is a child pk
                 child = Child.objects.get(pk=child_value, user=user)
 
-                if not show_experiments_already_done_value:
+                if hide_studies_we_have_done_value:
                     studies = self.completed_consent_frame(studies, child)
 
                 studies = [
