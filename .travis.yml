@@ -52,6 +52,8 @@ language: python
 python:
   - "3.8"
 
+cache: pip
+
 services:
   - postgresql
 
@@ -60,10 +62,11 @@ addons:
 
 before_install:
   - pip install poetry
+  - poetry config virtualenvs.create false
 
 install:
   - poetry install
 
 script:
-  - poetry run pre-commit run --all-files
-  - poetry run ./manage.py test
+  - pre-commit run --all-files
+  - python manage.py test
