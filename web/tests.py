@@ -650,66 +650,82 @@ class StudiesListViewTestCase(TestCase):
         view = StudiesListView()
         view.child_eligibility(mock_studies)
 
-        mock_request.user.children.filter.assert_called_once_with(deleted=False)
         self.assertEqual(mock_study.eligible_children, "child name")
+        mock_request.user.children.filter.assert_called_once_with(deleted=False)
         mock_get_child_eligibility_for_study.assert_called_once_with(
             mock_child, mock_study
         )
 
     @patch.object(StudiesListView, "request", create=True)
     def test_sort_fn_anon_user(self, mock_request):
+        """Ordering of the studies needs to be seemingly random, but constant. To ensure a "random"
+        ordering, the method will sort by a study's UUID.  This will verify that the ordering is 
+        constant.
+
+        Args:
+            mock_request (mock.Mock): mocked out request object
+        """
         type(mock_request.user).is_anonymous = PropertyMock(return_value=True)
 
-        mock_user_a = MagicMock(name="a")
-        type(mock_user_a).uuid = PropertyMock(
+        mock_study_a = MagicMock(name="a")
+        type(mock_study_a).uuid = PropertyMock(
             return_value=uuid.UUID("{11111111-1234-5678-1234-567812345678}")
         )
 
-        mock_user_b = MagicMock(name="b")
-        type(mock_user_b).uuid = PropertyMock(
+        mock_study_b = MagicMock(name="b")
+        type(mock_study_b).uuid = PropertyMock(
             return_value=uuid.UUID("{33333333-1234-5678-1234-567812345678}")
         )
 
-        mock_user_c = MagicMock(name="c")
-        type(mock_user_c).uuid = PropertyMock(
+        mock_study_c = MagicMock(name="c")
+        type(mock_study_c).uuid = PropertyMock(
             return_value=uuid.UUID("{22222222-1234-5678-1234-567812345678}")
         )
 
-        mock_users = [mock_user_a, mock_user_b, mock_user_c]
+        mock_studies = [mock_study_a, mock_study_b, mock_study_c]
 
         view = StudiesListView()
-        mock_users.sort(key=view.sort_fn())
+        mock_studies.sort(key=view.sort_fn())
 
-        self.assertListEqual(mock_users, [mock_user_a, mock_user_c, mock_user_b])
+        self.assertListEqual(mock_studies, [mock_study_a, mock_study_c, mock_study_b])
 
     @patch.object(StudiesListView, "request", create=True)
     def test_sort_fn_auth_user(self, mock_request):
+        """Ordering of the studies needs to be seemingly random, but constant.  Additionally, the 
+        "random" order needs to be different for each authenticated user.  To ensure a "random"
+        ordering, the method will hash a study's UUID and seed it with the user's UUID.  This test 
+        will verify that the ordering is constant.
+
+        Args:
+            mock_request (mock.Mock): mocked out request object
+        """
+
         type(mock_request.user).is_anonymous = PropertyMock(return_value=False)
         type(mock_request.user).uuid = PropertyMock(
             return_value=uuid.UUID("{12345678-1234-5678-1234-567812345678}")
         )
 
-        mock_user_a = MagicMock(name="a")
-        type(mock_user_a).uuid = PropertyMock(
+        mock_study_a = MagicMock(name="a")
+        type(mock_study_a).uuid = PropertyMock(
             return_value=uuid.UUID("{11111111-1234-5678-1234-567812345678}")
         )
 
-        mock_user_b = MagicMock(name="b")
-        type(mock_user_b).uuid = PropertyMock(
+        mock_study_b = MagicMock(name="b")
+        type(mock_study_b).uuid = PropertyMock(
             return_value=uuid.UUID("{33333333-1234-5678-1234-567812345678}")
         )
 
-        mock_user_c = MagicMock(name="c")
-        type(mock_user_c).uuid = PropertyMock(
+        mock_study_c = MagicMock(name="c")
+        type(mock_study_c).uuid = PropertyMock(
             return_value=uuid.UUID("{22222222-1234-5678-1234-567812345678}")
         )
 
-        mock_users = [mock_user_a, mock_user_b, mock_user_c]
+        mock_studies = [mock_study_a, mock_study_b, mock_study_c]
 
         view = StudiesListView()
-        mock_users.sort(key=view.sort_fn())
+        mock_studies.sort(key=view.sort_fn())
 
-        self.assertListEqual(mock_users, [mock_user_b, mock_user_a, mock_user_c])
+        self.assertListEqual(mock_studies, [mock_study_b, mock_study_a, mock_study_c])
 
 
 # TODO: StudyDetailView
