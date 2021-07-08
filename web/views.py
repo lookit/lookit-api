@@ -268,7 +268,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
 
         studies.sort(key=self.sort_fn())
 
-        self.child_eligibility(studies)
+        self.set_eligible_children_per_study(studies)
 
         return self.paginated_queryset(studies, page)
 
@@ -298,7 +298,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
             ).distinct("study_id")
         ]
 
-    def child_eligibility(self, studies):
+    def set_eligible_children_per_study(self, studies):
         user = self.request.user
 
         if user.is_authenticated:
