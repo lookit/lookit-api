@@ -2,7 +2,18 @@
 name = "lookit-api"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["MIT <mit@mit.com>"]
+
+packages = [
+    { include = "accounts" },
+    { include = "api" },
+    { include = "exp" },
+    { include = "project" },
+    { include = "studies" },
+    { include = "web" },
+]
+
+include = ['build/*', "ember_build/**/*", "locale/**/*"]
 
 [tool.poetry.dependencies]
 python = "3.8.3"
