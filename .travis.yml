@@ -17,7 +17,7 @@ before_install:
   - poetry config virtualenvs.create false
 
 install:
-  - poetry install
+  - poetry install --quiet --remove-untracked
 
 script:
   - pre-commit run --all-files
