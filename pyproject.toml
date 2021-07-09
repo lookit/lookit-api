@@ -2,7 +2,7 @@
 name = "lookit-api"
 version = "0.1.0"
 description = ""
-authors = ["MIT <mit@mit.com>"]
+authors = ["MIT <lookit@mit.edu>"]
 
 packages = [
     { include = "accounts" },
