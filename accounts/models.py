@@ -99,7 +99,7 @@ class GoogleAuthenticatorTOTP(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    secret = models.CharField(max_length=16, db_index=True, default=pyotp.random_base32)
+    secret = models.CharField(max_length=32, db_index=True, default=pyotp.random_base32)
     activated = models.BooleanField(default=False)
 
     @property
@@ -114,7 +114,7 @@ class GoogleAuthenticatorTOTP(models.Model):
         with BytesIO() as stream:
             make_qrcode(
                 pyotp.utils.build_uri(
-                    self.secret, name=self.user.username, issuer_name=self.issuer
+                    self.secret, name=self.user.username, issuer=self.issuer
                 ),
                 image_factory=SvgPathImage,
                 box_size=10,
