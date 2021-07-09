@@ -55,7 +55,7 @@ uWSGI = "2.0.19.1"
 
 [tool.poetry.dev-dependencies]
 autoflake = "1.4"
-black = "19.10b0"
+black = "21.6b0"
 coverage = "^5.5"
 django-debug-toolbar = "2.2.1"
 django-pdb = "0.6.2"
