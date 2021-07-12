@@ -205,6 +205,10 @@ class StudyType(models.Model):
     def __str__(self):
         return f"<Study Type: {self.name}>"
 
+    @classmethod
+    def default_pk(cls):
+        return cls.objects.get(name="Ember Frame Player (default)").pk
+
 
 def default_study_structure():
     return {"frames": {}, "sequence": []}
@@ -811,6 +815,9 @@ class Response(models.Model):
     )  # Allow deleting a demographic snapshot even though a response points to it
     objects = models.Manager()
     related_manager = ResponseApiManager()
+    study_type = models.ForeignKey(
+        StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
+    )
 
     def __str__(self):
         return self.display_name
