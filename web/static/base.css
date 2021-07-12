@@ -38,10 +38,6 @@ body {
     padding: 1em 0;
 
 }
-.lookit-page-title {
-    background: #337ab7;
-    color: #FFF;
-}
 
 .policy p.last-update {
 	text-align: center;
@@ -242,53 +238,62 @@ button.account-row {
 
 
 /* STUDIES PAGE */
-.study-list-panel {
-    height: 450px;
-    overflow: hidden;
-    -ms-touch-action: manipulation;
-    touch-action: manipulation;
-    cursor: pointer;
-    -webkit-user-select: none;
-}
-.study-list-thumbnail {
-    max-height: 200px;
-    max-width: 90%;
-    margin: 5%;
-}
-.study-list-panel .caption h3 {
-    margin-top: 10px;
-}
-.study-list-thumbnail-wrapper {
-    min-height: 225px;
-}
-.study-list-placeholder {
-    font-size: 200px;
-    text-align: center;
-    color: #333333;
+
+.panel.study-list {
+    background-color: #f8f8f8;
 }
 
-.study-list-panel .caption {
-    min-height: 150px;
-    max-height: 150px;
+.panel.study-list .right {
+    border-left: 1px solid #ddd;
 }
-.study-list-panel .fadeout {
-    content: '';
-    width: 100%;
-    height: 70%;
-    position: absolute;
-    left: 0;
-    bottom: 21px;
-    background: linear-gradient(transparent 150px, white);
+
+.panel.study-list h1 {
+    font-size: x-large;
+    font-weight: bold;
+    margin-top: 0px;
 }
-.study-list-panel .full {
-    content: '';
-    width: 100%;
-    height: auto;
-    text-align: center;
-    position: absolute;
-    left: 0;
-    bottom: 25px;
+
+.panel.study-list h2 {
+    font-size: large;
+    font-weight: bold;
+    margin-top: 0px;
 }
+
+.panel.study-list h3 {
+    font-size: large;
+    font-weight: normal;
+    margin-top: 0px;
+}
+
+.panel.study-list .description {
+    padding-left: 15px;
+}
+
+.panel.study-list .left .study-criteria {
+    padding: 5px 5px 0 5px;
+}
+
+.panel.study-list .left {
+    max-width: 400px;  
+    display: block;
+    margin-left: auto; 
+    margin-right: auto;
+}
+
+.panel.study-list .details-button {
+    margin-bottom: 10px;
+}
+
+.form-inline.study-list .btn.clear {
+    margin-left: 5px;
+}
+
+.form-inline.study-list .form-group.show-experiments {
+    margin-left: 15px;
+    margin-right: 5px;
+}
+
+/* FEEDBACK */
 
 .study-feedback-label {
     margin-top: 5px;
@@ -526,3 +531,5 @@ li.response-feedback {
 .response-feedback-none {
     margin-left: -40px;
 }
+
+

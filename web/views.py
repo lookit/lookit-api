@@ -1,3 +1,5 @@
+from hashlib import sha1
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -7,13 +9,19 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
+from django.views.generic.edit import FormView
 from django_countries import countries
 from guardian.mixins import LoginRequiredMixin
 from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
 
 from accounts import forms
-from accounts.models import Child, DemographicData, User
+from accounts.models import Child, DemographicData, User, create_string_listing_children
+from accounts.queries import (
+    age_range_eligibility_for_study,
+    get_child_eligibility_for_study,
+)
+from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 from studies.models import Response, Study, Video
 
@@ -200,18 +208,114 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
 
 
-class StudiesListView(generic.ListView):
+class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     """
     List all active, public studies.
     """
 
+    form_class = forms.StudyListSearchForm
     template_name = "web/studies-list.html"
     model = Study
 
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            for field in self.form_class().fields:
+                request.session[field] = form.data.get(field, "")
+
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
     def get_queryset(self):
-        # TODO if we need to filter by study demographics vs user demographics
-        # or by if they've taken the study before this is the spot
-        return super().get_queryset().filter(state="active", public=True).order_by("?")
+        session = self.request.session
+        user = self.request.user
+        page = self.request.GET.get("page", 1)
+
+        qs = super().get_queryset().filter(state="active", public=True)
+
+        # values from session
+        search_value = session.get("search", "")
+        child_value = session.get("child", "")
+        hide_studies_we_have_done_value = (
+            session.get("hide_studies_we_have_done", "") == "on"
+        )
+
+        if search_value:
+            qs = qs.filter(name__icontains=search_value)
+
+        # convert to list as it's no longer being treated as a queryset
+        studies = list(qs)
+
+        if child_value:
+            if user.is_anonymous:
+                # when user is anonymous, child value is an age range.
+                age_range = [int(c) for c in child_value.split(",")]
+                studies = [
+                    s for s in studies if age_range_eligibility_for_study(age_range, s)
+                ]
+            else:
+                # when user is authenticated, child value is a child pk
+                child = Child.objects.get(pk=child_value, user=user)
+
+                if hide_studies_we_have_done_value:
+                    studies = self.completed_consent_frame(studies, child)
+
+                studies = [
+                    s for s in studies if get_child_eligibility_for_study(child, s)
+                ]
+
+        studies.sort(key=self.sort_fn())
+
+        self.set_eligible_children_per_study(studies)
+
+        return self.paginated_queryset(studies, page)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def get_initial(self):
+        kwargs = super().get_initial()
+
+        # When field values are retrieved from session to populate form, they are removed from session
+        for field in self.form_class().fields:
+            if field in self.request.session:
+                kwargs[field] = self.request.session.pop(field)
+
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("web:studies-list")
+
+    def completed_consent_frame(self, studies, child):
+        return [
+            r.study
+            for r in Response.objects.filter(
+                study__in=studies, child=child, completed_consent_frame=True,
+            ).distinct("study_id")
+        ]
+
+    def set_eligible_children_per_study(self, studies):
+        user = self.request.user
+
+        if user.is_authenticated:
+            children = user.children.filter(deleted=False)
+
+            # add eligible children to study object
+            for study in studies:
+                study.eligible_children = create_string_listing_children(
+                    [c for c in children if get_child_eligibility_for_study(c, study)]
+                )
+
+    def sort_fn(self):
+        user = self.request.user
+        if user.is_anonymous:
+            return lambda s: s.uuid.bytes
+        else:
+            return lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView):

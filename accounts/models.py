@@ -658,15 +658,16 @@ class Message(models.Model):
 def create_string_listing_children(children):
     child_names = [child.given_name for child in children]
     num_children = len(child_names)
+    and_string = _("and")
 
     if not num_children:
         return ""
     elif num_children == 1:
         return child_names[0]
     elif num_children == 2:
-        return " and ".join(child_names)
+        return f" {and_string} ".join(child_names)
     else:
-        return ", ".join(child_names[:-1]) + f", and {child_names[-1]}"
+        return ", ".join(child_names[:-1]) + f", {and_string} {child_names[-1]}"
 
 
 def create_subject_for_study_notification(study, children):
