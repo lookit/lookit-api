@@ -75,9 +75,6 @@ pyopenssl = "19.1.0"
 python_dotenv = "0.18.0"
 watchdog = "0.10.2"
 werkzeug = "1.0.1"
-coverage = "^5.5"
-autoflake = "1.4"
-parameterized = "^0.8.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

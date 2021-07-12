@@ -73,7 +73,7 @@
                         {% if study.eligible_children %}
                         <p><strong>{{ study.eligible_children }} {% trans 'may be eligible.' %}</strong></p>
                         {% endif %}
-                        </small>
+                    </small>
                 </div>
             </div>
             <div class="col-md-9 right">
@@ -104,7 +104,7 @@
 </div>
 
 <script>
-    $(function() {       
+    $(function () {
         const $form = $('form');
         const $checkbox = $form.find('input:checkbox')
         const $dropdownSelected = $form.find('select option:selected')
@@ -112,19 +112,19 @@
         if ($dropdownSelected.val() === '') {
             $checkbox.attr('disabled', true);
         }
-        
-        $form.on('reset', function(event){
+
+        $form.on('reset', function (event) {
             resetForm(submitForm);
         })
 
-        function resetForm(callbackFn){
+        function resetForm(callbackFn) {
             $form.find('input:text').attr('value', '')
             $checkbox.attr('checked', false);
-            $dropdownSelected.removeAttr('selected');    
+            $dropdownSelected.removeAttr('selected');
             callbackFn()
         }
 
-        function submitForm(){
+        function submitForm() {
             $checkbox.attr('disabled', false);
             $form.submit()
         }
