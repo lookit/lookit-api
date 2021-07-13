@@ -10,7 +10,9 @@ class ParticipantDetailViewTestCase(TestCase):
     @patch.object(ParticipantDetailView, "valid_responses")
     @patch.object(ContextMixin, "get_context_data")
     def test_get_context_data_all_children(
-        self, mock_super_get_context_data, mock_valid_responses,
+        self,
+        mock_super_get_context_data,
+        mock_valid_responses,
     ):
         with patch.object(ParticipantDetailView, "object", create=True), patch.object(
             ParticipantDetailView, "get_study_info"

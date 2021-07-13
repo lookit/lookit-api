@@ -7,7 +7,7 @@ class PaginatorMixin(object):
     paginator_class = Paginator
 
     def paginated_queryset(self, resource_list, page=1, count=10):
-        """ Returns a page object with a subset of the queryset"""
+        """Returns a page object with a subset of the queryset"""
         paginator = self.paginator_class(resource_list, count)
         try:
             results = paginator.page(page)

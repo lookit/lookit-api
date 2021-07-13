@@ -294,7 +294,9 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         return [
             r.study
             for r in Response.objects.filter(
-                study__in=studies, child=child, completed_consent_frame=True,
+                study__in=studies,
+                child=child,
+                completed_consent_frame=True,
             ).distinct("study_id")
         ]
 

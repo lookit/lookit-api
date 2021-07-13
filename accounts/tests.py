@@ -248,7 +248,8 @@ class AuthenticationTestCase(TestCase):
 
     def test_researcher_regular_login_cannot_access_exp_views(self):
         self.client.login(
-            username=self.researcher_email, password=self.test_password,
+            username=self.researcher_email,
+            password=self.test_password,
         )
         for url in self.mfa_protected_get_views:
             response = self.client.get(url, follow=True)
@@ -299,7 +300,8 @@ class AuthenticationTestCase(TestCase):
         two_factor_auth_url = reverse("accounts:2fa-login")
         # Test a bad auth code
         response = self.client.post(
-            two_factor_auth_url, {"otp_code": str(int(self.otp.provider.now()) + 1)},
+            two_factor_auth_url,
+            {"otp_code": str(int(self.otp.provider.now()) + 1)},
         )
 
         # We just reloaded the page, so we should get a 200
@@ -761,7 +763,8 @@ class EligibilityTestCase(TestCase):
         )
 
         self.unborn_child = G(
-            Child, birthday=datetime.date.today() + datetime.timedelta(days=30),
+            Child,
+            birthday=datetime.date.today() + datetime.timedelta(days=30),
         )
 
     def test_criteria_expression_used(self):
@@ -1138,7 +1141,9 @@ class ParticipantViewsTestCase(TestCase):
         self.client.force_login(self.participant)
         page = self.client.get(url)
         self.assertNotEqual(
-            page.status_code, 200, "Participant can see participant list view: " + url,
+            page.status_code,
+            200,
+            "Participant can see participant list view: " + url,
         )
 
     def test_can_see_participant_list_as_researcher(self):

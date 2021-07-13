@@ -11,7 +11,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name="study", name="generator", field=models.TextField(default=""),
+            model_name="study",
+            name="generator",
+            field=models.TextField(default=""),
         ),
         migrations.AddField(
             model_name="study",

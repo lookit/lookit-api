@@ -27,7 +27,7 @@ except ImportError:
 
 class LookitSendGridBackend(SendGridBackend):
     def _build_sg_mail(self, email):
-        """Custom SG email builder that handles image attachment correctly to allow inline images. """
+        """Custom SG email builder that handles image attachment correctly to allow inline images."""
 
         ############# FROM SendGridBackend._build_sg_mail: ############################################################
         mail = Mail()

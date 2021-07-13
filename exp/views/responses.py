@@ -1412,7 +1412,9 @@ class StudyResponsesConsentManager(
 
 
 class StudyResponsesAll(
-    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView,
+    CanViewStudyResponsesMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.DetailView,
 ):
     """
     StudyResponsesAll shows a variety of download options for response and child data
@@ -1726,7 +1728,9 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
 
 
 class StudyDemographics(
-    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView,
+    CanViewStudyResponsesMixin,
+    SingleObjectFetchProtocol[Study],
+    generic.DetailView,
 ):
     """
     StudyDemographics view shows participant demographic snapshots associated
@@ -1837,7 +1841,8 @@ class StudyDemographicsDictCSV(DemographicDownloadMixin, generic.list.ListView):
         cleaned_data = output.getvalue()
 
         filename = "{}_{}.csv".format(
-            study_name_for_files(self.study.name), "all-demographic-snapshots-dict",
+            study_name_for_files(self.study.name),
+            "all-demographic-snapshots-dict",
         )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
