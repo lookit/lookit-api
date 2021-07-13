@@ -277,18 +277,14 @@ class StudyUpdateView(
         context = super().get_context_data(**kwargs)
 
         context["study_types"] = StudyType.objects.all()
-        context["study_metadata"] = self.object.metadata
         context["key_display_names"] = KEY_DISPLAY_NAMES
-        context["types"] = [
-            exp_type.configuration["metadata"]["fields"]
-            for exp_type in context["study_types"]
-        ]
         context["save_confirmation"] = self.object.state in [
             "approved",
             "active",
             "paused",
             "deactivated",
         ]
+
         return context
 
     def get_success_url(self):
