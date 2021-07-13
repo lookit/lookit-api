@@ -316,7 +316,7 @@ class StudyFormTestCase(TestCase):
     def test_lab_options_as_user_with_sitewide_perm(self):
         data = model_to_dict(self.study)
         admin = G(
-            User, is_active=True, is_researcher=True, given_name="super researcher",
+            User, is_active=True, is_researcher=True, given_name="super researcher"
         )
         assign_perm(LabPermission.CREATE_LAB_ASSOCIATED_STUDY.prefixed_codename, admin)
         self.main_lab.member_group.user_set.add(
@@ -367,7 +367,7 @@ class StudyFormTestCase(TestCase):
     def test_lab_options_as_user_who_can_create_studies_in_two_labs(self):
         data = model_to_dict(self.study)
         researcher = G(
-            User, is_active=True, is_researcher=True, given_name="super researcher",
+            User, is_active=True, is_researcher=True, given_name="super researcher"
         )
         assign_perm(
             LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename,

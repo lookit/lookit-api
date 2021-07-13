@@ -214,7 +214,7 @@ class ParticipantAccountViewsTestCase(TestCase):
         ]
 
         for url_name in login_required_views:
-            response = self.client.get(reverse(url_name), follow=True,)
+            response = self.client.get(reverse(url_name), follow=True)
             # Redirected to login view with next set if unauthenticated
             self.assertEqual(
                 response.redirect_chain,
@@ -241,9 +241,7 @@ class ParticipantAccountViewsTestCase(TestCase):
         response = self.client.post(
             reverse("web:demographic-data-update"), cleaned_data, follow=True
         )
-        self.assertEqual(
-            response.redirect_chain, [(reverse("web:studies-list"), 302)],
-        )
+        self.assertEqual(response.redirect_chain, [(reverse("web:studies-list"), 302)])
         self.assertEqual(response.status_code, 200)
 
         # Make sure we can retrieve updated data
@@ -659,7 +657,7 @@ class StudiesListViewTestCase(TestCase):
     @patch.object(StudiesListView, "request", create=True)
     def test_sort_fn_anon_user(self, mock_request):
         """Ordering of the studies needs to be seemingly random, but constant. To ensure a "random"
-        ordering, the method will sort by a study's UUID.  This will verify that the ordering is 
+        ordering, the method will sort by a study's UUID.  This will verify that the ordering is
         constant.
 
         Args:
@@ -691,9 +689,9 @@ class StudiesListViewTestCase(TestCase):
 
     @patch.object(StudiesListView, "request", create=True)
     def test_sort_fn_auth_user(self, mock_request):
-        """Ordering of the studies needs to be seemingly random, but constant.  Additionally, the 
+        """Ordering of the studies needs to be seemingly random, but constant.  Additionally, the
         "random" order needs to be different for each authenticated user.  To ensure a "random"
-        ordering, the method will hash a study's UUID and seed it with the user's UUID.  This test 
+        ordering, the method will hash a study's UUID and seed it with the user's UUID.  This test
         will verify that the ordering is constant.
 
         Args:

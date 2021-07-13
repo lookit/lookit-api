@@ -103,8 +103,7 @@ def get_child_eligibility_for_study(child_obj, study_obj):
 
 
 def _child_in_age_range_for_study(child, study):
-    """Check if child in age range for study, using same age calculations as in study detail and response data.
-    """
+    """Check if child in age range for study, using same age calculations as in study detail and response data."""
     if not child.birthday:
         return False
 
