@@ -1010,7 +1010,7 @@ class StudiesListViewTestCase(TestCase):
     @patch.object(StudiesListView, "request", create=True)
     def test_sort_fn_anon_user(self, mock_request):
         """Ordering of the studies needs to be seemingly random, but constant. To ensure a "random"
-        ordering, the method will sort by a study's UUID.  This will verify that the ordering is 
+        ordering, the method will sort by a study's UUID.  This will verify that the ordering is
         constant.
 
         Args:
@@ -1042,9 +1042,9 @@ class StudiesListViewTestCase(TestCase):
 
     @patch.object(StudiesListView, "request", create=True)
     def test_sort_fn_auth_user(self, mock_request):
-        """Ordering of the studies needs to be seemingly random, but constant.  Additionally, the 
+        """Ordering of the studies needs to be seemingly random, but constant.  Additionally, the
         "random" order needs to be different for each authenticated user.  To ensure a "random"
-        ordering, the method will hash a study's UUID and seed it with the user's UUID.  This test 
+        ordering, the method will hash a study's UUID and seed it with the user's UUID.  This test
         will verify that the ordering is constant.
 
         Args:
