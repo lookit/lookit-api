@@ -126,7 +126,7 @@ def _grouped_by_user(potential_targets):
             tuple(pair),
         )  # Apparently, valuefunc gets wrapped to return a map object?
         for user_id, pair in groupby_transform(
-            potential_targets, keyfunc=get_user_id, valuefunc=get_child_study_pair,
+            potential_targets, keyfunc=get_user_id, valuefunc=get_child_study_pair
         )
     )
 
@@ -202,7 +202,7 @@ def limit_email_targets(
 
     This is done AFTER deserializing to actual model objects so that we've already checked eligibility;
     otherwise we'd have to select a random sample of families to MAYBE email if they turn out to be
-    eligible each time. """
+    eligible each time."""
 
     from studies.models import Study
 

@@ -373,7 +373,7 @@ class StudyDetailView(
 
     @property
     def study_logs(self):
-        """ Returns a page object with 10 study logs"""
+        """Returns a page object with 10 study logs"""
         logs_list = self.object.logs.select_related("user").order_by("-created_at")
         page = self.request.GET.get("page")
         return self.paginated_queryset(logs_list, page, 10)
@@ -489,7 +489,7 @@ class StudyDetailView(
 
 
 class ManageResearcherPermissionsView(
-    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
 ):
     model = Study
 
@@ -509,9 +509,7 @@ class ManageResearcherPermissionsView(
     test_func = user_can_change_study_permissions
 
     def post(self, *args, **kwargs):
-        """Updates user permissions on form submission.
-
-        """
+        """Updates user permissions on form submission."""
         if not self.manage_researcher_permissions():
             return HttpResponseForbidden()
 
@@ -628,7 +626,7 @@ class ManageResearcherPermissionsView(
 
 
 class ChangeStudyStatusView(
-    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
 ):
     model = Study
 
@@ -648,9 +646,7 @@ class ChangeStudyStatusView(
     test_func = user_can_change_study_status
 
     def post(self, *args, **kwargs):
-        """Update study status on form submission.
-
-        """
+        """Update study status on form submission."""
         try:
             self.update_trigger()
         except Exception as e:
@@ -681,7 +677,7 @@ class ChangeStudyStatusView(
 
 
 class CloneStudyView(
-    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView,
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.DetailView
 ):
     model = Study
 
@@ -706,9 +702,7 @@ class CloneStudyView(
         return study_admin_group
 
     def post(self, *args, **kwargs):
-        """Clone study on form submission. 
-
-        """
+        """Clone study on form submission."""
         orig_study = self.get_object()
         clone = orig_study.clone()
         clone.creator = self.request.user

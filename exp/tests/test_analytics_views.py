@@ -9,7 +9,7 @@ class StudyParticipantAnalyticsViewTestCase(TestCase):
     @patch.object(StudyParticipantAnalyticsView, "request", create=True)
     @patch("accounts.models.Child.objects")
     def test_get_context_data_deleted_children_perms_true(
-        self, mock_child_objects, mock_request,
+        self, mock_child_objects, mock_request
     ):
         mock_request.user.has_perm.return_value = True
 

@@ -56,7 +56,7 @@ def dotenv(_):
 def postgresql(c):
     """Postgresql invoke task.
 
-    Runs django db migrations. 
+    Runs django db migrations.
 
     Args:
         c (obj): Context-aware API wrapper & state-passing object.
@@ -66,7 +66,7 @@ def postgresql(c):
 
 @task
 def ssl_certificate(c, verbose=False):
-    """Ssl-certificate invoke task. 
+    """Ssl-certificate invoke task.
 
     this func sets up local https development env.
 
@@ -151,9 +151,7 @@ def server(c, https=False):
     certificate = certs_path / "local_lookit.mit.edu.pem"
 
     if https and os.listdir(certs_path):
-        c.run(
-            f"echo -e '\a Serving at https://{HOSTNAME}:8000\a'", hide=False,
-        )
+        c.run(f"echo -e '\a Serving at https://{HOSTNAME}:8000\a'", hide=False)
         c.run(
             f"python manage.py runsslserver --certificate {certificate} --key {key}",
             hide=False,

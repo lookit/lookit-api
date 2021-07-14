@@ -10,5 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="video", name="size",),
+        migrations.RemoveField(model_name="video", name="size"),
     ]

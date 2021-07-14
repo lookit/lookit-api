@@ -327,7 +327,7 @@ class StudyViewsTestCase(TestCase):
         response = self.client.get(url)
         content = response.content.decode("utf-8")
         self.assertEqual(
-            response.status_code, 200, "Study edit view returns invalid response",
+            response.status_code, 200, "Study edit view returns invalid response"
         )
         self.assertIn(
             self.generator_function_string,
@@ -372,7 +372,7 @@ class StudyViewsTestCase(TestCase):
         )
         updated_study = Study.objects.get(id=self.study.id)
         self.assertEqual(
-            updated_study.study_type, self.other_study_type, "Study type not updated",
+            updated_study.study_type, self.other_study_type, "Study type not updated"
         )
         self.assertFalse(
             updated_study.built,
@@ -785,7 +785,7 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
     @patch.object(ManageResearcherPermissionsView, "request", create=True)
     @patch.object(SingleObjectMixin, "get_object")
     def test_user_can_change_study_permissions(
-        self, mock_get_object: Mock, mock_request: Mock,
+        self, mock_get_object: Mock, mock_request: Mock
     ) -> None:
         mock_request.user.has_study_perms = MagicMock(return_value=True)
         mock_is_researcher = PropertyMock(return_value=True)

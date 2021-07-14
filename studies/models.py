@@ -471,7 +471,7 @@ class Study(models.Model):
     # WORKFLOW CALLBACKS
 
     def clone(self):
-        """ Create a new, unsaved copy of the study. """
+        """Create a new, unsaved copy of the study."""
         copy = self.__class__.objects.get(pk=self.pk)
         copy.id = None
         copy.salt = uuid.uuid4()
@@ -921,7 +921,7 @@ class Response(models.Model):
 
     @property
     def birthdate_difference(self):
-        """Difference between birthdate on exit survey (if any) and registered child's birthday, """
+        """Difference between birthdate on exit survey (if any) and registered child's birthday."""
         exit_survey_birthdate = self.exit_frame_properties("birthDate")
         registered_birthdate = self.child.birthday
         if exit_survey_birthdate and registered_birthdate:

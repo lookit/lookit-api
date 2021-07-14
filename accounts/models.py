@@ -604,7 +604,7 @@ class Message(models.Model):
         text_content = get_template("emails/study_announcement.txt").render(context)
         html_content = get_template("emails/study_announcement.html").render(context)
         announcement_message = cls.objects.create(
-            subject=subject, body=text_content, related_study=study,
+            subject=subject, body=text_content, related_study=study
         )
 
         announcement_message.recipients.add(user)
