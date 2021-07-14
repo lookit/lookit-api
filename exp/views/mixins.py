@@ -141,8 +141,10 @@ class StudyTypeMixin:
 
         metadata = {}
 
-        for key in type_fields:
-            metadata[key] = self.request.POST.get(key, None)
+        for type_field in type_fields:
+            metadata[type_field["name"]] = self.request.POST.get(
+                type_field["name"], None
+            )
 
         return metadata
 

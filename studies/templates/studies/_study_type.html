@@ -138,11 +138,13 @@
         <div class="col-xs-10 col-xs-offset-1">
             {% for study_type in study_types %}
                 <div class='type-fields' id='type-metadata-{{ study_type.id }}'>
-                    {% for key, value in study_type.configuration.metadata.fields.items %}
+                    {% for field in study_type.configuration.metadata.fields %}
+                    {% with field.name as key %}
+                    {% with field.value as value %}
                         <div class="form-group metadata-key" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
                             <label>{{key_display_names|get_key:key|default:key}} </label>
                             <div class="input-container">
-                                <input name="{{key}}" type="text" value="{% if study_type.id == currentType and not create %}{{study.metadata|get_key:key|default:""}}{% else %}{{value | default:""}}{% endif %}" class="form-control">
+                                <input name="{{key}}" type="text" value="{% if study_type.id == currentType and not create %}{{study.metadata|get_key:key|default:''}}{% else %}{{value | default:''}}{% endif %}" class="form-control">
                             </div>
                         </div>
                         {% if key == "last_known_player_sha" %}
@@ -162,6 +164,8 @@
                               </div>
                             </div>
                         {% endif %}
+                    {% endwith %}
+                    {% endwith %}
                     {% endfor %}
                 </div>
             {% endfor %}

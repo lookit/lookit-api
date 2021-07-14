@@ -7,7 +7,22 @@ def set_study_types(apps, schema_editor):
     StudyType = apps.get_model("studies.StudyType")
     StudyType.objects.create(
         name="External",
-        configuration={"metadata": {"fields": {"scheduled": False, "url": ""}}},
+        configuration={
+            "metadata": {
+                "fields": [
+                    {
+                        "name": "url",
+                        "value": "",
+                        "input_type": "url",
+                    },
+                    {
+                        "name": "scheduled",
+                        "value": False,
+                        "input_type": "checkbox",
+                    },
+                ]
+            }
+        },
     )
 
 
