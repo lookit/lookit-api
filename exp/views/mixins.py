@@ -142,9 +142,12 @@ class StudyTypeMixin:
         metadata = {}
 
         for type_field in type_fields:
-            metadata[type_field["name"]] = self.request.POST.get(
-                type_field["name"], None
-            )
+            if type_field["input_type"] == "checkbox":
+                metadata[type_field["name"]] = type_field["name"] in self.request.POST
+            else:
+                metadata[type_field["name"]] = self.request.POST.get(
+                    type_field["name"], None
+                )
 
         return metadata
 
