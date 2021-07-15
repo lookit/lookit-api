@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-11 13:52+0200\n"
+"POT-Creation-Date: 2021-07-15 18:49+0000\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -710,7 +710,7 @@ msgid "Edit when you can be contacted."
 msgstr "İletişime geçilebileceğiniz zamanları düzenle"
 
 #: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
+#: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
 #: web/templates/web/children-list.html:67
 #: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
@@ -1163,17 +1163,46 @@ msgstr "Bu Lab'a katılmayı talep eden kullanıcılar"
 msgid "Technical difficulties"
 msgstr "Teknik zorluklar"
 
-#: web/templates/flatpages/contact.html:18
+#: web/templates/flatpages/contact.html:16
+msgid ""
+"To report any technical difficulties during participation, please contact "
+"our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
+msgstr ""
+
+#: web/templates/flatpages/contact.html:17
 msgid "Questions about the studies"
 msgstr "Çalışmalarla ilgili sorular"
 
-#: web/templates/flatpages/contact.html:22
+#: web/templates/flatpages/contact.html:18
+msgid ""
+"If you have any questions or concerns about the studies, please first check "
+"our FAQ. With any additional questions, please contact us at <a href='mailto:"
+"lookit@mit.edu'>lookit@mit.edu</a>."
+msgstr ""
+
+#: web/templates/flatpages/contact.html:19
 #: web/templates/flatpages/privacy.html:140
 msgid "For researchers"
 msgstr "Araştırmacılar için"
 
+#: web/templates/flatpages/contact.html:20
+msgid ""
+"Lookit is available to all developmental researchers, and the code is "
+"entirely open- To learn more about running your own studies or contributing, "
+"please check out the <a href='https://lookit.readthedocs.io/en/develop' "
+"target='_blank'>documentation</a>."
+msgstr ""
+
+#: web/templates/flatpages/contact.html:21
+msgid ""
+"Several initial test studies of a prototype Lookit platform were completed "
+"in 2015; you can read about the results, and strengths and limitations of "
+"the platform, in <a href='http://www.mitpressjournals.org/toc/"
+"opmi/1/1'>these papers</a>."
+msgstr ""
+
 #: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
+#: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
@@ -2139,6 +2168,12 @@ msgstr "çevrimiçi çocuk laboratuvarı"
 msgid "A project of the MIT Early Childhood Cognition Lab"
 msgstr "MIT Erken Çocukluk Biliş Lab'ı projesi"
 
+#: web/templates/flatpages/home.html:12
+#, fuzzy
+#| msgid "Participation"
+msgid "Participate in a Study"
+msgstr "Katılım"
+
 #: web/templates/flatpages/home.html:22
 msgid "Bringing science home"
 msgstr "Bilimi eve getiriyoruz"
@@ -2907,7 +2942,7 @@ msgstr "Giriş kimlik bilgileriniz çalışmadı. Lütfen tekrar deneyin."
 
 #: web/templates/registration/login.html:18
 #: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:45
+#: web/templates/web/_navigation.html:50
 msgid "Login"
 msgstr "Giriş yap"
 
@@ -3085,35 +3120,35 @@ msgstr "Email adresi:"
 msgid "Reset my password"
 msgstr "Şifremi sıfırla"
 
-#: web/templates/web/_navigation.html:17
+#: web/templates/web/_navigation.html:22
 msgid "Experimenter"
 msgstr "Deneyci"
 
-#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
+#: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
 msgid "Studies"
 msgstr "Çalışmalar"
 
-#: web/templates/web/_navigation.html:29
+#: web/templates/web/_navigation.html:34
 msgid "FAQ"
 msgstr "SSS"
 
-#: web/templates/web/_navigation.html:30
+#: web/templates/web/_navigation.html:35
 msgid "The Scientists"
 msgstr "Bilim insanları"
 
-#: web/templates/web/_navigation.html:31
+#: web/templates/web/_navigation.html:36
 msgid "Resources"
 msgstr "Kaynaklar"
 
-#: web/templates/web/_navigation.html:40
+#: web/templates/web/_navigation.html:45
 msgid "Hi"
 msgstr "Merhaba"
 
-#: web/templates/web/_navigation.html:42
+#: web/templates/web/_navigation.html:47
 msgid "Logout"
 msgstr "Çıkış yap"
 
-#: web/templates/web/_navigation.html:44
+#: web/templates/web/_navigation.html:49
 msgid "Sign up"
 msgstr "Kayıt ol"
 

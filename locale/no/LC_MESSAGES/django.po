@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-30 14:30-0500\n"
+"POT-Creation-Date: 2021-07-15 18:49+0000\n"
 "Language: no\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1195,13 +1195,42 @@ msgstr "Brukerene som har bedt om arbeide i labben"
 msgid "Technical difficulties"
 msgstr ""
 
-#: web/templates/flatpages/contact.html:18
+#: web/templates/flatpages/contact.html:16
+msgid ""
+"To report any technical difficulties during participation, please contact "
+"our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
+msgstr ""
+
+#: web/templates/flatpages/contact.html:17
 msgid "Questions about the studies"
 msgstr ""
 
-#: web/templates/flatpages/contact.html:22
+#: web/templates/flatpages/contact.html:18
+msgid ""
+"If you have any questions or concerns about the studies, please first check "
+"our FAQ. With any additional questions, please contact us at <a href='mailto:"
+"lookit@mit.edu'>lookit@mit.edu</a>."
+msgstr ""
+
+#: web/templates/flatpages/contact.html:19
 #: web/templates/flatpages/privacy.html:140
 msgid "For researchers"
+msgstr ""
+
+#: web/templates/flatpages/contact.html:20
+msgid ""
+"Lookit is available to all developmental researchers, and the code is "
+"entirely open- To learn more about running your own studies or contributing, "
+"please check out the <a href='https://lookit.readthedocs.io/en/develop' "
+"target='_blank'>documentation</a>."
+msgstr ""
+
+#: web/templates/flatpages/contact.html:21
+msgid ""
+"Several initial test studies of a prototype Lookit platform were completed "
+"in 2015; you can read about the results, and strengths and limitations of "
+"the platform, in <a href='http://www.mitpressjournals.org/toc/"
+"opmi/1/1'>these papers</a>."
 msgstr ""
 
 #: web/templates/flatpages/default.html:10
@@ -1816,6 +1845,12 @@ msgstr ""
 msgid "A project of the MIT Early Childhood Cognition Lab"
 msgstr ""
 
+#: web/templates/flatpages/home.html:12
+#, fuzzy
+#| msgid "Participate"
+msgid "Participate in a Study"
+msgstr "Delta"
+
 #: web/templates/flatpages/home.html:22
 msgid "Bringing science home"
 msgstr ""
@@ -1844,62 +1879,6 @@ msgstr ""
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
-msgstr ""
-
-#: web/templates/flatpages/home.html:45
-msgid "News"
-msgstr ""
-
-#: web/templates/flatpages/home.html:49
-msgid "June 29, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:52
-msgid "We're now accepting new studies from research groups around the world!"
-msgstr ""
-
-#: web/templates/flatpages/home.html:57
-msgid "May 4, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:60
-#, fuzzy
-#| msgid ""
-#| "Looking for more ways to contribute to research from home? Check out <a "
-#| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#| "\"noreferrer noopener\">Children Helping Science</a> for even more "
-#| "studies!"
-msgid ""
-"For even more ways to participate in science with your kids at home, check "
-"out the newly launched site <a href='https://childrenhelpingscience.com/' "
-"target='_blank'>Children Helping Science"
-msgstr ""
-"Ser du etter flere måter å bidra til forskning hjemmefra? Sjekk ut <a href="
-"\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer "
-"noopener\">Children Helping Science</a> for flere studier!"
-
-#: web/templates/flatpages/home.html:65
-msgid "March 27, 2020"
-msgstr ""
-
-#: web/templates/flatpages/home.html:68
-msgid ""
-"We're gearing up to open up Lookit to more research labs! Our first study "
-"for newborns, 'Baby See, Baby Do?' is live, and 'Baby Euclid' is back for 7-"
-"month-olds. And we're still recruiting for Flurps and Zazzes, Your Baby the "
-"Physicist, and Baby Laughter - please help us spread the word!"
-msgstr ""
-
-#: web/templates/flatpages/home.html:73
-msgid "September 18, 2019"
-msgstr ""
-
-#: web/templates/flatpages/home.html:76
-msgid ""
-"Data collection is complete for the Lookit studies 'Baby Euclid,' 'Mind and "
-"Manners', 'Flurps and Zazzes,' and 'Words and Objects' (but stay tuned for "
-"follow-ups!). We're still looking families with babies to participate in "
-"'Look and Listen,' 'Your Baby the Physicist,' and 'Baby Laughter Games.'"
 msgstr ""
 
 #: web/templates/flatpages/privacy.html:11
@@ -3083,6 +3062,21 @@ msgstr ""
 "Studien {study.name} samler for tiden ikke data - studien er enten ferdig "
 "eller midlertidig stoppet. Hvis du tror dette kan være feil, kan du kontakte "
 "{study.contact_info}"
+
+#, fuzzy
+#~| msgid ""
+#~| "Looking for more ways to contribute to research from home? Check out <a "
+#~| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
+#~| "\"noreferrer noopener\">Children Helping Science</a> for even more "
+#~| "studies!"
+#~ msgid ""
+#~ "For even more ways to participate in science with your kids at home, "
+#~ "check out the newly launched site <a href='https://childrenhelpingscience."
+#~ "com/' target='_blank'>Children Helping Science"
+#~ msgstr ""
+#~ "Ser du etter flere måter å bidra til forskning hjemmefra? Sjekk ut <a "
+#~ "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
+#~ "\"noreferrer noopener\">Children Helping Science</a> for flere studier!"
 
 #~ msgid "Birthday test"
 #~ msgstr "Bursdagstest"
