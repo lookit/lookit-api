@@ -487,14 +487,14 @@ class StudiesListViewTestCase(TestCase):
     @patch.object(MultipleObjectMixin, "get_queryset")
     @patch.object(StudiesListView, "set_eligible_children_per_study")
     @patch("web.views.get_child_eligibility_for_study")
-    @patch.object(StudiesListView, "completed_consent_frame")
+    @patch.object(StudiesListView, "studies_without_completed_consent_frame")
     @patch("accounts.models.Child.objects")
     @patch.object(StudiesListView, "request", create=True)
     def test_get_queryset_auth_user(
         self,
         mock_request,
         mock_child_objects,
-        mock_completed_consent_frame,
+        mock_studies_without_completed_consent_frame,
         mock_get_child_eligibility_for_study,
         mock_set_eligible_children_per_study,
         mock_super_get_queryset,
@@ -510,7 +510,7 @@ class StudiesListViewTestCase(TestCase):
         ]
         type(mock_request.user).is_anonymous = PropertyMock(return_value=False)
         mock_super_get_queryset().filter().filter.return_value = mock_studies
-        mock_completed_consent_frame.return_value = mock_studies
+        mock_studies_without_completed_consent_frame.return_value = mock_studies
 
         view = StudiesListView()
         page = view.get_queryset()
@@ -522,7 +522,7 @@ class StudiesListViewTestCase(TestCase):
         mock_child_objects.get.assert_called_once_with(
             pk=sentinel.child_pk, user=mock_request.user
         )
-        mock_completed_consent_frame.assert_called_once_with(
+        mock_studies_without_completed_consent_frame.assert_called_once_with(
             mock_studies, mock_child_objects.get()
         )
         mock_get_child_eligibility_for_study.assert_called_once_with(
@@ -538,12 +538,12 @@ class StudiesListViewTestCase(TestCase):
     @patch.object(StudiesListView, "sort_fn")
     @patch.object(MultipleObjectMixin, "get_queryset")
     @patch.object(StudiesListView, "set_eligible_children_per_study")
-    @patch.object(StudiesListView, "completed_consent_frame")
+    @patch.object(StudiesListView, "studies_without_completed_consent_frame")
     @patch.object(StudiesListView, "request", create=True)
     def test_get_queryset_anon_user(
         self,
         mock_request,
-        mock_completed_consent_frame,
+        mock_studies_without_completed_consent_frame,
         mock_set_eligible_children_per_study,
         mock_super_get_queryset,
         mock_sort_fn,
@@ -559,7 +559,7 @@ class StudiesListViewTestCase(TestCase):
         ]
         type(mock_request.user).is_anonymous = PropertyMock(return_value=True)
         mock_super_get_queryset().filter().filter.return_value = mock_studies
-        mock_completed_consent_frame.return_value = mock_studies
+        mock_studies_without_completed_consent_frame.return_value = mock_studies
 
         view = StudiesListView()
         page = view.get_queryset()
@@ -605,7 +605,7 @@ class StudiesListViewTestCase(TestCase):
         self.assertEqual(url, "/studies/")
 
     @patch("studies.models.Response.objects")
-    def test_completed_consent_frame(self, mock_response_objects):
+    def test_studies_without_completed_consent_frame(self, mock_response_objects):
         mock_response = MagicMock(name="response")
         mock_responses = [mock_response]
         mock_studies = MagicMock()
@@ -613,12 +613,12 @@ class StudiesListViewTestCase(TestCase):
         mock_response_objects.filter().distinct.return_value = mock_responses
 
         view = StudiesListView()
-        studies = view.completed_consent_frame(mock_studies, mock_child)
+        studies = view.studies_without_completed_consent_frame(mock_studies, mock_child)
 
         self.assertListEqual(studies, [mock_response.study])
 
         mock_response_objects.filter.assert_called_with(
-            study__in=mock_studies, child=mock_child, completed_consent_frame=True
+            study__in=mock_studies, child=mock_child, completed_consent_frame=False
         )
         mock_response_objects.filter().distinct.assert_called_once_with("study_id")
 

@@ -260,7 +260,9 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
                 child = Child.objects.get(pk=child_value, user=user)
 
                 if hide_studies_we_have_done_value:
-                    studies = self.completed_consent_frame(studies, child)
+                    studies = self.studies_without_completed_consent_frame(
+                        studies, child
+                    )
 
                 studies = [
                     s for s in studies if get_child_eligibility_for_study(child, s)
@@ -290,11 +292,11 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     def get_success_url(self):
         return reverse("web:studies-list")
 
-    def completed_consent_frame(self, studies, child):
+    def studies_without_completed_consent_frame(self, studies, child):
         return [
             r.study
             for r in Response.objects.filter(
-                study__in=studies, child=child, completed_consent_frame=True
+                study__in=studies, child=child, completed_consent_frame=False
             ).distinct("study_id")
         ]
 
