@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, PropertyMock, patch, sentinel
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db.models import Q
 from django.test import TestCase
 from django.urls import reverse
 from django.views.generic.list import MultipleObjectMixin
@@ -604,23 +605,21 @@ class StudiesListViewTestCase(TestCase):
         url = view.get_success_url()
         self.assertEqual(url, "/studies/")
 
-    @patch("studies.models.Response.objects")
-    def test_studies_without_completed_consent_frame(self, mock_response_objects):
-        mock_response = MagicMock(name="response")
-        mock_responses = [mock_response]
-        mock_studies = MagicMock()
+    def test_studies_without_completed_consent_frame(self):
+        mock_studies = MagicMock(name="studies")
         mock_child = MagicMock(name="child")
-        mock_response_objects.filter().distinct.return_value = mock_responses
+
+        mock_studies.exclude.return_value = sentinel.studies
 
         view = StudiesListView()
         studies = view.studies_without_completed_consent_frame(mock_studies, mock_child)
 
-        self.assertListEqual(studies, [mock_response.study])
+        self.assertEqual(studies, sentinel.studies)
 
-        mock_response_objects.filter.assert_called_with(
-            study__in=mock_studies, child=mock_child, completed_consent_frame=False
+        mock_studies.exclude.assert_called_once_with(
+            Q(responses__child=mock_child, responses__completed_consent_frame=True)
         )
-        mock_response_objects.filter().distinct.assert_called_once_with("study_id")
+        mock_child.assert_not_called()
 
     @patch.object(StudiesListView, "request", create=True)
     def test_child_eligibility_anon_user(self, mock_request):
