@@ -26,19 +26,16 @@
 {% block content %}
 {% bootstrap_messages %}
 
-{% if user.is_anonymous %}
-<div class="panel-default">
-    <div class="panel-body">
-        {% trans "Log in to find studies just right for your child!" %}
-    </div>
-</div>
-{% endif %}
+
 
 <div class="panel-default">
     <div class="panel-body">
         <form action method="post" class="form-inline study-list">
             {% csrf_token %}
             {% bootstrap_field form.child show_label=False %}
+            {% if user.is_anonymous %}
+            <div class="form-group login-message">Log in to find studies just right for your child!</div>
+            {% endif %}
             {% bootstrap_field form.hide_studies_we_have_done form_group_class="form-group show-experiments" %}
             {% trans "Clear" as clear_button_text %}
             {% bootstrap_button clear_button_text "reset" button_class="btn btn-default pull-right clear" %}

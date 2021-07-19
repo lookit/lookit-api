@@ -293,6 +293,10 @@ button.account-row {
     margin-right: 5px;
 }
 
+.form-inline.study-list .form-group.login-message {
+    margin-left: 15px ;
+}
+
 /* FEEDBACK */
 
 .study-feedback-label {
