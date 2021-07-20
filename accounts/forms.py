@@ -445,9 +445,9 @@ class ChildUpdateForm(forms.ModelForm):
 CHILD_CHOICES = [
     ("", "Find studies for..."),
     ("0,1", "babies (under 1)"),
-    ("1,2", "toddlers (1-2)"),
-    ("3,4", "preschoolers (3-4)"),
-    ("5,17", "school-age kids (5-17)"),
+    ("1,3", "toddlers (1-2)"),
+    ("3,5", "preschoolers (3-4)"),
+    ("5,18", "school-age kids (5-17)"),
     ("18,999", "adults (18+)"),
 ]
 
