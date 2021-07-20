@@ -3,7 +3,7 @@ from hashlib import sha1
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
@@ -233,7 +233,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         user = self.request.user
         page = self.request.GET.get("page", 1)
 
-        qs = super().get_queryset().filter(state="active", public=True)
+        studies = super().get_queryset().filter(state="active", public=True)
 
         # values from session
         search_value = session.get("search", "")
@@ -243,10 +243,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         )
 
         if search_value:
-            qs = qs.filter(name__icontains=search_value)
-
-        # convert to list as it's no longer being treated as a queryset
-        studies = list(qs)
+            studies = studies.filter(name__icontains=search_value)
 
         if child_value:
             if user.is_anonymous:
@@ -260,13 +257,15 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
                 child = Child.objects.get(pk=child_value, user=user)
 
                 if hide_studies_we_have_done_value:
-                    studies = self.completed_consent_frame(studies, child)
+                    studies = self.studies_without_completed_consent_frame(
+                        studies, child
+                    )
 
                 studies = [
                     s for s in studies if get_child_eligibility_for_study(child, s)
                 ]
 
-        studies.sort(key=self.sort_fn())
+        studies = sorted(studies, key=self.sort_fn())
 
         self.set_eligible_children_per_study(studies)
 
@@ -290,13 +289,9 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     def get_success_url(self):
         return reverse("web:studies-list")
 
-    def completed_consent_frame(self, studies, child):
-        return [
-            r.study
-            for r in Response.objects.filter(
-                study__in=studies, child=child, completed_consent_frame=True
-            ).distinct("study_id")
-        ]
+    def studies_without_completed_consent_frame(self, studies, child):
+        query = Q(responses__child=child, responses__completed_consent_frame=True)
+        return studies.exclude(query)
 
     def set_eligible_children_per_study(self, studies):
         user = self.request.user
