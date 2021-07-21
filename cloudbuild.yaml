@@ -50,8 +50,24 @@ steps:
     '.'
   ]
 
+- id: build-image
+  name: gcr.io/cloud-builders/docker
+  args: [
+    'build',
+    '--tag',
+    'lookit-test',
+    '--build-arg',
+    'GIT_COMMIT=$COMMIT_SHA',
+    '--build-arg',
+    'GIT_TAG=$TAG_NAME',
+    '--network=cloudbuild',
+    '--file',
+    'dev.Dockerfile'
+    '.'
+  ]
+
 - id: run-tests
-  name: lookit
+  name: lookit-test
   args: ['python', 'manage.py', 'test']
   env:
     - 'DB_HOST=lookitdb'
