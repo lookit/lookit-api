@@ -473,8 +473,8 @@ class Study(models.Model):
             return None
 
     @property
-    def should_be_built(self):
-        return self.study_type.name == "Ember Frame Player (default)"
+    def needs_to_be_built(self):
+        return self.study_type.name == "Ember Frame Player (default)" and not self.built
 
     # WORKFLOW CALLBACKS
 
@@ -605,7 +605,7 @@ class Study(models.Model):
         :type ev: transitions.core.EventData
         :raise: RuntimeError
         """
-        if not self.built and self.should_be_built:
+        if self.needs_to_be_built:
             raise RuntimeError(
                 f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
             )

@@ -150,7 +150,7 @@
                             <p class="text-warning" style="display:none" id='criteria-not-met'>
                                 {% blocktrans with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktrans %}
                             </p>
-                            {% if preview_mode and not object.built %}
+                            {% if preview_mode and object.needs_to_be_built %}
                                 <a id="participate-button" class="btn btn-lg btn-default" href="{% url 'exp:study-detail' object.pk %}">{% trans "Build experiment runner to preview" %}</a>
                             {% else %} 
                                 <button type="submit" disabled class="btn-lg btn-primary" id="participate-button"> {% if preview_mode %} {% trans "Preview" %} {% else %} {% trans "Participate" %} {% endif %} {% trans "now" %}! </button>
