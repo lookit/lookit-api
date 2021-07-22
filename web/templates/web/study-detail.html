@@ -6,162 +6,159 @@
 {% block title %}{{ object.name }}{% endblock %}
 
 {% block head %}
-    {{ block.super }}
-    <script type="application/javascript">
-        $(document).ready(function(){
-            $('.text-warning').hide();
-            $(".childDropdown").val("none");
-        });
-    </script>
-    {{ form.media }}
+{{ block.super }}
+<script type="application/javascript">
+    $(document).ready(function () {
+        $('.text-warning').hide();
+        $(".childDropdown").val("none");
+    });
+</script>
+{{ form.media }}
 {% endblock %}
 
 {% block flash %}
-  {% if form.errors %}
-  <div class="alert alert-danger" role="alert">
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
     <p>{% trans "Your login credentials didn't work. Please try again." %}</p>
-  </div>
-  {% endif %}
+</div>
+{% endif %}
 
 {% endblock %}
 
 {% block content %}
-    <script>
-        function childSelected(selectElement) {
-            var participateButton = document.getElementById('participate-button');
-            if (selectElement.value === 'none') {
-                participateButton.disabled = true;
-                document.getElementById('too-old').style.display = 'none';
-                document.getElementById('too-young').style.display = 'none';
-                document.getElementById('criteria-not-met').style.display = 'none';
-            } else {
-                participateButton.disabled = false;
-            }
-            participateButton.value = selectElement.value;
-            
+<script>
+    function childSelected(selectElement) {
+        var participateButton = document.getElementById('participate-button');
+        if (selectElement.value === 'none') {
+            participateButton.disabled = true;
             document.getElementById('too-old').style.display = 'none';
             document.getElementById('too-young').style.display = 'none';
             document.getElementById('criteria-not-met').style.display = 'none';
-            let birthday                  = selectElement.selectedOptions[0].dataset["birthdate"],
-                age                       = calculateAgeInDays(birthday),
-                ineligibleBasedOnAge      = ageCheck(age),
-                ineligibleBasedOnCriteria = selectElement.selectedOptions[0].dataset["eligible"] === "False";
-
-            if (ineligibleBasedOnAge > 0) { // Too old
-                document.getElementById('too-old').style.display = 'inline-block';
-            } else if (ineligibleBasedOnAge < 0 && !ineligibleBasedOnCriteria) { // Too young, but otherwise eligible
-                document.getElementById('too-young').style.display = 'inline-block';
-            } else if (ineligibleBasedOnCriteria) {
-                document.getElementById('criteria-not-met').style.display = 'inline-block';
-            }
+        } else {
+            participateButton.disabled = false;
         }
+        participateButton.value = selectElement.value;
 
-        function calculateAgeInDays(birthday) {
-            // Warning: do NOT use moment.duration in the calculation of age! Use diffs
-            // instead to get ACTUAL time difference, without passing through an 
-            // approximation where each month is 30 days and each year is 365.
-            return moment(moment()._d).diff(new Date(birthday), 'days');
+        document.getElementById('too-old').style.display = 'none';
+        document.getElementById('too-young').style.display = 'none';
+        document.getElementById('criteria-not-met').style.display = 'none';
+        let birthday = selectElement.selectedOptions[0].dataset["birthdate"],
+            age = calculateAgeInDays(birthday),
+            ineligibleBasedOnAge = ageCheck(age),
+            ineligibleBasedOnCriteria = selectElement.selectedOptions[0].dataset["eligible"] === "False";
+
+        if (ineligibleBasedOnAge > 0) { // Too old
+            document.getElementById('too-old').style.display = 'inline-block';
+        } else if (ineligibleBasedOnAge < 0 && !ineligibleBasedOnCriteria) { // Too young, but otherwise eligible
+            document.getElementById('too-young').style.display = 'inline-block';
+        } else if (ineligibleBasedOnCriteria) {
+            document.getElementById('criteria-not-met').style.display = 'inline-block';
         }
+    }
 
-        function ageCheck(age) {
-            // Adapted from experiment model in exp-addons
-            var minDays;
-            var maxDays;
-            // These are now hard-coded to avoid unpredictable behavior from moment.duration().asDays()
-            // e.g. 1 year = 365 days, 1 month = 30 days, and 1 year + 1 month = 396 days.
-            minDays = Number("{{study.min_age_days}}") + 30 * Number("{{study.min_age_months}}") + 365 * Number("{{study.min_age_years}}");
-            maxDays = Number("{{study.max_age_days}}") + 30 * Number("{{study.max_age_months}}") + 365 * Number("{{study.max_age_years}}");
+    function calculateAgeInDays(birthday) {
+        // Warning: do NOT use moment.duration in the calculation of age! Use diffs
+        // instead to get ACTUAL time difference, without passing through an 
+        // approximation where each month is 30 days and each year is 365.
+        return moment(moment()._d).diff(new Date(birthday), 'days');
+    }
 
-            minDays = minDays || -1;
-            maxDays = maxDays || Number.MAX_SAFE_INTEGER;
+    function ageCheck(age) {
+        // Adapted from experiment model in exp-addons
+        var minDays;
+        var maxDays;
+        // These are now hard-coded to avoid unpredictable behavior from moment.duration().asDays()
+        // e.g. 1 year = 365 days, 1 month = 30 days, and 1 year + 1 month = 396 days.
+        minDays = Number("{{study.min_age_days}}") + 30 * Number("{{study.min_age_months}}") + 365 * Number("{{study.min_age_years}}");
+        maxDays = Number("{{study.max_age_days}}") + 30 * Number("{{study.max_age_months}}") + 365 * Number("{{study.max_age_years}}");
 
-            if (age <= minDays) {
-                return age - minDays;
-            } else if (age >= maxDays) {
-                return age - maxDays;
-            } else {
-                return 0;
-            }
+        minDays = minDays || -1;
+        maxDays = maxDays || Number.MAX_SAFE_INTEGER;
+
+        if (age <= minDays) {
+            return age - minDays;
+        } else if (age >= maxDays) {
+            return age - maxDays;
+        } else {
+            return 0;
         }
+    }
 
-    </script>
-    
-    {% bootstrap_messages %}
-  <div class='container'>
-        <div class="lookit-row row">
-            <div class='col-md-11'>
-                <div class='row'>
-                    <div class='col-md-9'>
-                        <div class="caption">
-                          {% include "studies/_image_display.html" with object=object %}
-                              <table class="study-detail-infotable">
-                                  <tr>
-                                      <td>{% trans "Eligibility criteria" %}</td>
-                                      <td>{{ object.criteria|linebreaks }}</td>
-                                  </tr>
-                                  <tr>
-                                      <td>{% trans "Duration" %}</td>
-                                      <td>{{ object.duration }}</td>
-                                  </tr>
-                                  {% if object.compensation_description %}
-                                  <tr>
-                                      <td>{% trans "Compensation" %}</td>
-                                      <td>{{ object.compensation_description|linebreaks }}</td>
-                                  </tr>
-                                  {% endif %}
-                                  <tr>
-                                      <td>{% trans "What happens" %}</td>
-                                      <td>{{ object.short_description|linebreaks }}</td>
-                                  </tr>
-                                  <tr>
-                                      <td>{% trans "What we're studying" %}</td>
-                                      <td>{{ object.purpose|linebreaks }}</td>
-                                  </tr>
-                              </table>
-                          <p class="study-detail-contactinfo"><em>{% trans "This study is conducted by" %} {{object.contact_info}} </em></p>
-                        </div>
+</script>
+
+{% bootstrap_messages %}
+<div class='container'>
+    <div class="lookit-row row">
+        <div class='col-md-11'>
+            <div class='row'>
+                <div class='col-md-9'>
+                    <div class="caption">
+                        {% include "studies/_image_display.html" with object=object %}
+                        <table class="study-detail-infotable">
+                            <tr>
+                                <td>{% trans "Eligibility criteria" %}</td>
+                                <td>{{ object.criteria|linebreaks }}</td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "Duration" %}</td>
+                                <td>{{ object.duration }}</td>
+                            </tr>
+                            {% if object.compensation_description %}
+                            <tr>
+                                <td>{% trans "Compensation" %}</td>
+                                <td>{{ object.compensation_description|linebreaks }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td>{% trans "What happens" %}</td>
+                                <td>{{ object.short_description|linebreaks }}</td>
+                            </tr>
+                            <tr>
+                                <td>{% trans "What we're studying" %}</td>
+                                <td>{{ object.purpose|linebreaks }}</td>
+                            </tr>
+                        </table>
+                        <p class="study-detail-contactinfo"><em>{% trans "This study is conducted by" %} {{object.contact_info}} </em></p>
                     </div>
-                    <div class='col-md-3'>
-                        <h4>{% trans "Would you like to participate in this study?" %}</h4>
-                        {% if not request.user.is_authenticated %}
-                            <a class="btn btn-lg btn-default" href="{% url 'login' %}">{% trans "Log in to participate" %}</a>
-                        {% elif not children %}
-                            <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}</a>
-                        {% elif not has_demographic %}
-                            <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">{% trans "Complete demographic survey to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}" %}</a>
-                        {% else %}
-                        <div class="form-group">
+                </div>
+                <div class='col-md-3'>
+                    <h4>{% trans "Would you like to participate in this study?" %}</h4>
+                    {% if not request.user.is_authenticated %}
+                    <a class="btn btn-lg btn-default" href="{% url 'login' %}">{% trans "Log in to participate" %}</a>
+                    {% elif not children %}
+                    <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}</a>
+                    {% elif not has_demographic %}
+                    <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">{% trans "Complete demographic survey to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}" %}</a>
+                    {% else %}
+                    <div class="form-group">
                         <form method="POST">{% csrf_token %}
                             <label for="child-dropdown">{% trans "Select a child:" %}</label>
                             <select id="child-dropdown" name="child_id" class="childDropdown form-control" onchange="childSelected(this)">
-                                <option value=none >{% trans "None Selected" %}</option>
+                                <option value=none>{% trans "None Selected" %}</option>
                                 {% for child in children %}
-                                    {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
-                                    <option onemptied=""
-                                            value="{{child.uuid}}"
-                                            data-birthdate="{{child.birthday|date:'c'}}"
-                                            data-eligible="{{ child_is_eligible }}">
-                                        {{child.given_name}}
-                                    </option>
+                                {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
+                                <option onemptied="" value="{{child.uuid}}" data-birthdate="{{child.birthday|date:'c'}}" data-eligible="{{ child_is_eligible }}">
+                                    {{child.given_name}}
+                                </option>
                                 {% endfor %}
                             </select>
                             <p class="text-warning" style="display:none" id='too-young'>{% trans "Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research!" %} </p>
-            	            <p class="text-warning" style="display:none" id='too-old'>{% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research." %}</p>
+                            <p class="text-warning" style="display:none" id='too-old'>{% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research." %}</p>
                             <p class="text-warning" style="display:none" id='criteria-not-met'>
                                 {% blocktrans with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktrans %}
                             </p>
                             {% if preview_mode and object.needs_to_be_built %}
-                                <a id="participate-button" class="btn btn-lg btn-default" href="{% url 'exp:study-detail' object.pk %}">{% trans "Build experiment runner to preview" %}</a>
-                            {% else %} 
-                                <button type="submit" disabled class="btn-lg btn-primary" id="participate-button"> {% if preview_mode %} {% trans "Preview" %} {% else %} {% trans "Participate" %} {% endif %} {% trans "now" %}! </button>
-                                {% if preview_mode %}<p>{% trans "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to." %}</p> {% endif %}
+                            <a id="participate-button" class="btn btn-lg btn-default" href="{% url 'exp:study-detail' object.pk %}">{% trans "Build experiment runner to preview" %}</a>
+                            {% else %}
+                            <button type="submit" disabled class="btn-lg btn-primary" id="participate-button"> {% if preview_mode %} {% trans "Preview" %} {% else %} {% trans "Participate" %} {% endif %} {% trans "now" %}! </button>
+                            {% if preview_mode %}<p>{% trans "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to." %}</p> {% endif %}
                             {% endif %}
                         </form>
-                        </div>
-                        {% endif %}
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
