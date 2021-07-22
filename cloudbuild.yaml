@@ -98,6 +98,8 @@ steps:
     'BRANCH_NAME=$BRANCH_NAME',
     '--env',
     'TAG_NAME=$TAG_NAME',
+    '--env',
+    'POETRY_INSTALL_ARG="--no-dev"'
     'gcr.io/$PROJECT_ID/lookit-orchestrator',
   ]
 
