@@ -209,6 +209,14 @@ class StudyType(models.Model):
     def default_pk(cls):
         return cls.objects.get(name="Ember Frame Player (default)").pk
 
+    @property
+    def is_ember_frame_player(self):
+        return self.name == "Ember Frame Player (default)"
+
+    @property
+    def is_external(self):
+        return self.name == "External"
+
 
 def default_study_structure():
     return {"frames": {}, "sequence": []}
@@ -474,7 +482,7 @@ class Study(models.Model):
 
     @property
     def needs_to_be_built(self):
-        return self.study_type.name == "Ember Frame Player (default)" and not self.built
+        return self.study_type.is_ember_frame_player and not self.built
 
     # WORKFLOW CALLBACKS
 

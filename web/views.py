@@ -1,4 +1,5 @@
 from hashlib import sha1
+from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
@@ -391,9 +392,16 @@ class StudyDetailView(generic.DetailView):
         study = self.get_object()
         if study.state == "active":
             if request.method == "POST":
-                return redirect(
-                    "web:experiment-proxy", study.uuid, request.POST["child_id"]
-                )
+                if study.study_type.is_external:
+                    url = urlparse(study.metadata["url"])
+                    qs = parse_qs(url.query)
+                    qs["child"] = request.POST["child_id"]
+                    url = url._replace(query=urlencode(qs, doseq=True))
+                    return HttpResponseRedirect(url.geturl())
+                else:
+                    return redirect(
+                        "web:experiment-proxy", study.uuid, request.POST["child_id"]
+                    )
             return super().dispatch(request)
         else:
             return HttpResponseForbidden(
