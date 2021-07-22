@@ -472,6 +472,10 @@ class Study(models.Model):
         except AttributeError:
             return None
 
+    @property
+    def should_be_built(self):
+        return self.study_type.name == "Ember Frame Player (default)"
+
     # WORKFLOW CALLBACKS
 
     def clone(self):
@@ -601,7 +605,7 @@ class Study(models.Model):
         :type ev: transitions.core.EventData
         :raise: RuntimeError
         """
-        if not self.built:
+        if not self.built and self.should_be_built:
             raise RuntimeError(
                 f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
             )
