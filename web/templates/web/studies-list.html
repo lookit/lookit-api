@@ -103,8 +103,6 @@
     </div>
 </div>
 
- 
-
 <script>
     $(function() {       
         const $form = $('form');
@@ -120,9 +118,8 @@
         })
 
         function resetForm(callbackFn){
-
             $form.find('input:text').attr('value', '')
-            $checkbox.attr('checked', true);
+            $checkbox.attr('checked', false);
             $dropdownSelected.removeAttr('selected');    
             callbackFn()
         }
