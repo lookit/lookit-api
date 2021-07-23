@@ -399,7 +399,7 @@ class StudyDetailView(generic.DetailView):
                 child_uuid = request.POST["child_id"]
                 if study.study_type.is_external:
                     child = Child.objects.get(uuid=child_uuid)
-                    response = Response.objects.create(
+                    response, _ = Response.objects.get_or_create(
                         study=study,
                         child=child,
                         demographic_snapshot=user.latest_demographics,
