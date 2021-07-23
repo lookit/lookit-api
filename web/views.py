@@ -1,4 +1,5 @@
 from hashlib import sha1
+from typing import Text
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.contrib import messages
@@ -390,18 +391,22 @@ class StudyDetailView(generic.DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
+        user = self.request.user
+        child_uuid = request.POST["child_id"]
+
         if study.state == "active":
             if request.method == "POST":
                 if study.study_type.is_external:
-                    url = urlparse(study.metadata["url"])
-                    qs = parse_qs(url.query)
-                    qs["child"] = request.POST["child_id"]
-                    url = url._replace(query=urlencode(qs, doseq=True))
-                    return HttpResponseRedirect(url.geturl())
-                else:
-                    return redirect(
-                        "web:experiment-proxy", study.uuid, request.POST["child_id"]
+                    child = Child.objects.get(uuid=child_uuid)
+                    response = Response.objects.create(
+                        study=study,
+                        child=child,
+                        demographic_snapshot=user.latest_demographics,
                     )
+                    external_url = self.external_url(study, response)
+                    return HttpResponseRedirect(external_url)
+                else:
+                    return redirect("web:experiment-proxy", study.uuid, child_uuid)
             return super().dispatch(request)
         else:
             return HttpResponseForbidden(
@@ -410,6 +415,24 @@ class StudyDetailView(generic.DetailView):
                 )
                 % (study.name, study.contact_info)
             )
+
+    def external_url(self, study: Study, response: Response) -> Text:
+        """Get the external url for this study.  Additionally, while preserving the existing query
+        string, add our hashed child id.
+
+        Args:
+            study (Study): Study model object
+            child_id (Text): Hashed child id for study
+
+        Returns:
+            Text: External study url
+        """
+        url = urlparse(study.metadata["url"])
+        qs = parse_qs(url.query)
+        # qs["child"] = hash_child_id(response)
+        qs["child"] = "ABCDEFG"
+        url = url._replace(query=urlencode(qs, doseq=True))
+        return url.geturl()
 
 
 class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
