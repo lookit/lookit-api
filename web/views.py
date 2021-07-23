@@ -23,6 +23,7 @@ from accounts.queries import (
     age_range_eligibility_for_study,
     get_child_eligibility_for_study,
 )
+from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 from studies.models import Response, Study, Video
@@ -392,10 +393,10 @@ class StudyDetailView(generic.DetailView):
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
         user = self.request.user
-        child_uuid = request.POST["child_id"]
 
         if study.state == "active":
             if request.method == "POST":
+                child_uuid = request.POST["child_id"]
                 if study.study_type.is_external:
                     child = Child.objects.get(uuid=child_uuid)
                     response = Response.objects.create(
@@ -429,8 +430,12 @@ class StudyDetailView(generic.DetailView):
         """
         url = urlparse(study.metadata["url"])
         qs = parse_qs(url.query)
-        # qs["child"] = hash_child_id(response)
-        qs["child"] = "ABCDEFG"
+        qs["child"] = hash_id(
+            response.child.uuid,
+            response.study.uuid,
+            response.study.salt,
+            response.study.hash_digits,
+        )
         url = url._replace(query=urlencode(qs, doseq=True))
         return url.geturl()
 
