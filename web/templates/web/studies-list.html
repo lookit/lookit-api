@@ -71,6 +71,10 @@
                         {% if study.eligible_children %}
                         <p><strong>{{ study.eligible_children }} {% trans 'may be eligible.' %}</strong></p>
                         {% endif %}
+                        {% if study.study_type.is_external %}
+                        <em>External study</em>
+                        {% endif %}
+                        <p></p>
                     </small>
                 </div>
             </div>
