@@ -1,6 +1,6 @@
 from rest_framework_json_api import serializers
 
-from accounts.models import Child, DemographicData, User
+from accounts.models import Child
 from api.serializers import (
     PatchedHyperlinkedRelatedField,
     PatchedResourceRelatedField,
@@ -29,7 +29,7 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
             "name",
             # "date_modified",
             "short_description",
-            "long_description",
+            "purpose",
             "criteria",
             "duration",
             "contact_info",

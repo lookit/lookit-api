@@ -9,7 +9,7 @@ from django.views import generic
 
 from accounts.models import Child, User
 from exp.utils import RESPONSE_PAGE_SIZE
-from exp.views.mixins import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ResearcherLoginRequiredMixin
 from studies.fields import (
     CONDITIONS,
     GESTATIONAL_AGE_ENUM_MAP,
@@ -25,7 +25,7 @@ CONDITIONS_MAP = {snake_cased: title_cased for snake_cased, title_cased in CONDI
 
 
 class StudyParticipantAnalyticsView(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, generic.TemplateView
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, generic.TemplateView
 ):
     template_name = "studies/study_participant_analytics.html"
     model = Study
@@ -108,10 +108,13 @@ class StudyParticipantAnalyticsView(
         )
 
         if self.request.user.has_perm("accounts.can_view_all_children_in_analytics"):
-            children_queryset = Child.objects.filter(user__is_researcher=False)
+            children_queryset = Child.objects.filter(
+                user__is_researcher=False, deleted=False
+            )
             ctx["can_view_all_children"] = True
         else:
             children_queryset = Child.objects.filter(
+                deleted=False,
                 user__is_researcher=False,
                 id__in=annotated_responses.values_list(
                     "child_id", flat=True
@@ -141,7 +144,6 @@ def get_flattened_responses(response_qs, studies_for_child):
     for page_num in paginator.page_range:
         page_of_responses = paginator.page(page_num)
         for resp in page_of_responses:
-            participation_date = resp["date_created"]
             child_age_in_days = (
                 resp["date_created"].date() - resp["child__birthday"]
             ).days

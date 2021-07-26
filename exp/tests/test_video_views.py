@@ -1,17 +1,14 @@
-import json
 import urllib.parse
-import uuid
 from unittest import skip
 
 from django.test import TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
-from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import Feedback, Lab, Response, Study, StudyType, Video
+from studies.models import Lab, Response, Study, StudyType, Video
 
 
 class RenameVideoTestCase(APITestCase):

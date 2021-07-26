@@ -8,11 +8,11 @@ from django.views import generic
 
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.mixins.participant_mixin import ParticipantMixin
-from exp.views.mixins import ExperimenterLoginRequiredMixin
+from exp.views.mixins import ResearcherLoginRequiredMixin
 
 
 class ParticipantListView(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     ParticipantMixin,
     generic.ListView,
@@ -65,7 +65,7 @@ class ParticipantListView(
 
 
 class ParticipantDetailView(
-    ExperimenterLoginRequiredMixin, ParticipantMixin, generic.DetailView, PaginatorMixin
+    ResearcherLoginRequiredMixin, ParticipantMixin, generic.DetailView, PaginatorMixin
 ):
     """
     ParticipantDetailView shows demographic information, children information, and

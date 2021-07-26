@@ -218,7 +218,7 @@ class Study(models.Model):
         "use_generator",
         "name",
         "short_description",
-        "long_description",
+        "purpose",
         "duration",
         "contact_info",
         "image",
@@ -238,7 +238,7 @@ class Study(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
     short_description = models.TextField()
-    long_description = models.TextField()
+    purpose = models.TextField()
     criteria = models.TextField()
     duration = models.TextField()
     contact_info = models.TextField()
@@ -471,7 +471,7 @@ class Study(models.Model):
     # WORKFLOW CALLBACKS
 
     def clone(self):
-        """ Create a new, unsaved copy of the study. """
+        """Create a new, unsaved copy of the study."""
         copy = self.__class__.objects.get(pk=self.pk)
         copy.id = None
         copy.salt = uuid.uuid4()
@@ -512,6 +512,7 @@ class Study(models.Model):
                     name=SiteAdminGroup.LOOKIT_ADMIN.name
                 ).user_set.values_list("username", flat=True)
             ),
+            reply_to=[ev.kwargs.get("user").username],
             **context,
         )
 
@@ -666,17 +667,12 @@ class Study(models.Model):
 
     # Runs for every transition to log action
     def _log_action(self, ev):
-        if ev.event.name in ["submit", "resubmit", "reject"]:
-            StudyLog.objects.create(
-                action=ev.state.name,
-                study=ev.model,
-                user=ev.kwargs.get("user"),
-                extra={"comments": ev.model.comments},
-            )
-        else:
-            StudyLog.objects.create(
-                action=ev.state.name, study=ev.model, user=ev.kwargs.get("user")
-            )
+        StudyLog.objects.create(
+            action=ev.state.name,
+            study=ev.model,
+            user=ev.kwargs.get("user"),
+            extra={"comments": ev.model.comments},
+        )
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
@@ -747,16 +743,6 @@ def check_modification_of_approved_study(
         # Don't store a user because it's confusing unless that person is actually the one who made the change,
         # and we don't have access to who made the change from this signal.
         StudyLog.objects.create(action="rejected", study=instance)
-
-
-@receiver(post_save, sender=Study)
-def remove_rejection_comments_after_approved(sender, instance, created, **kwargs):
-    """
-    If study moved into approved state, remove any previous rejection comments
-    """
-    if instance.state == "approved" and instance.comments != "":
-        instance.comments = ""
-        instance.save()
 
 
 @receiver(post_save, sender=Study)
@@ -836,7 +822,6 @@ class Response(models.Model):
                 "View all response data in analytics",
             ),
         )
-        ordering = ["-demographic_snapshot__created_at"]
         base_manager_name = "related_manager"
 
     class JSONAPIMeta:
@@ -936,7 +921,7 @@ class Response(models.Model):
 
     @property
     def birthdate_difference(self):
-        """Difference between birthdate on exit survey (if any) and registered child's birthday, """
+        """Difference between birthdate on exit survey (if any) and registered child's birthday."""
         exit_survey_birthdate = self.exit_frame_properties("birthDate")
         registered_birthdate = self.child.birthday
         if exit_survey_birthdate and registered_birthdate:
@@ -1131,7 +1116,6 @@ class Video(models.Model):
         null=True
     )  # Sad that we don't keep this metadata elsewhere...
     frame_id = models.CharField(max_length=255, blank=False)
-    size = models.PositiveIntegerField(null=True)
     full_name = models.CharField(
         max_length=255, blank=False, unique=True, db_index=True
     )
@@ -1234,7 +1218,6 @@ class Video(models.Model):
             pipe_numeric_id=data["id"],
             s3_timestamp=datetime.fromtimestamp(int(timestamp) / 1000, tz=pytz.utc),
             frame_id=frame_id,
-            size=data["size"],
             full_name=new_full_name,
             study=study,
             response=response,
@@ -1262,7 +1245,7 @@ class Video(models.Model):
 @receiver(pre_delete, sender=Video)
 def delete_video_on_s3(sender, instance, using, **kwargs):
     """Delete video from S3 when deleting Video object.
-    
+
     Do this in a pre_delete hook rather than a custom delete function because this will
     be called when cascading deletion from responses."""
     delete_video_from_cloud.apply_async(

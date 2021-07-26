@@ -1,7 +1,0 @@
-lookit.dev:80, lookit.dev:443 {
-	root ./project/static
-	proxy / localhost:8000 {
-		transparent
-	}
-	tls self_signed
-}

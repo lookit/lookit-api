@@ -1,15 +1,10 @@
-import json
-import uuid
-
-from django.test import TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
-from guardian.shortcuts import assign_perm
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from accounts.models import Child, User
-from studies.models import Feedback, Lab, Response, Study
+from accounts.models import User
+from studies.models import Lab
 
 
 class LabTestCase(APITestCase):

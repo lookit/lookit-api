@@ -64,6 +64,17 @@ DB_PORT=5432
 DB_USER=postgres
 
 # Email settings for emails to researchers/participants. By default we just print "emails" to the console. To use
-# smtp instead, you would also define EMAIL_HOST_USER and EMAIL_HOST_PASSWORD.
-EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+# smtp instead, you would also define EMAIL_HOST_USER and EMAIL_HOST_PASSWORD. The EMAIL_BACKEND is selected in
+# settings.py: django.core.mail.backends.console.EmailBackend in DEBUG mode otherwise SendGrid, so we don't set it here
+# explicitly.
 EMAIL_FROM_ADDRESS=lookit.robot@some.domain
+
+# If you want to run the SendGrid email backend locally, add an API key. Find where the certs are by running
+# python -m certifi from the lookit-api pipenv shell, then put that path under SSL_CERT_FILE and REQUESTS_CA_BUNDLE
+# to avoid errors where a local certificate file is not found upon  making the request.
+# SENDGRID_API_KEY=SG.KEY-HERE
+# SSL_CERT_FILE=/path/to/cacert.pem
+# REQUESTS_CA_BUNDLE=/path/to/cacert.pem
+
+# Google tag manager.  You will have to goto https://tagmanager.google.com/ to find the ID.
+GOOGLE_TAG_MANAGER_ID=

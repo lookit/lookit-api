@@ -2,10 +2,9 @@
 
 import ast
 import operator
-from datetime import date, timedelta
+from datetime import date
 from functools import reduce
 from itertools import chain
-from operator import attrgetter
 
 from django.db import models
 from django.db.models import F, Q
@@ -89,6 +88,14 @@ UNSPECIFIED: "na"i | "n/a"i
 QUERY_DSL_PARSER = Lark(QUERY_GRAMMAR, parser="earley")
 
 
+def age_range_eligibility_for_study(child_age_range, study) -> bool:
+    study_start, study_end = study_age_range(study)
+    child_start = child_age_range[0] * 365
+    child_end = child_age_range[-1] * 365
+
+    return study_start <= child_end and study_end >= child_start
+
+
 def get_child_eligibility_for_study(child_obj, study_obj):
     return _child_in_age_range_for_study(
         child_obj, study_obj
@@ -96,8 +103,7 @@ def get_child_eligibility_for_study(child_obj, study_obj):
 
 
 def _child_in_age_range_for_study(child, study):
-    """Check if child in age range for study, using same age calculations as in study detail and response data.
-    """
+    """Check if child in age range for study, using same age calculations as in study detail and response data."""
     if not child.birthday:
         return False
 
@@ -107,6 +113,13 @@ def _child_in_age_range_for_study(child, study):
     # help-text provided to researchers in studies/templates/studies/_study_fields.html,
     # and documentation for researchers at
     # https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#minimum-and-maximum-age-cutoffs
+
+    min_age_in_days_estimate, max_age_in_days_estimate = study_age_range(study)
+    age_in_days = (date.today() - child.birthday).days
+    return min_age_in_days_estimate <= age_in_days <= max_age_in_days_estimate
+
+
+def study_age_range(study):
     min_age_in_days_estimate = (
         (study.min_age_years * 365) + (study.min_age_months * 30) + study.min_age_days
     )
@@ -114,9 +127,7 @@ def _child_in_age_range_for_study(child, study):
     max_age_in_days_estimate = (
         (study.max_age_years * 365) + (study.max_age_months * 30) + study.max_age_days
     )
-    age_in_days = (date.today() - child.birthday).days
-
-    return min_age_in_days_estimate <= age_in_days <= max_age_in_days_estimate
+    return min_age_in_days_estimate, max_age_in_days_estimate
 
 
 def get_child_eligibility(child_obj, criteria_expr):

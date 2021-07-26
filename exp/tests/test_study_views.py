@@ -1,18 +1,35 @@
 import datetime
 import json
 from unittest import skip
-from unittest.mock import patch
+from unittest.mock import (
+    MagicMock,
+    Mock,
+    PropertyMock,
+    create_autospec,
+    patch,
+    sentinel,
+)
 
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+from django.views.generic.detail import SingleObjectMixin
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm, get_objects_for_user
+from parameterized import parameterized
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, User
-from project import settings
+from exp.views.mixins import ResearcherLoginRequiredMixin
+from exp.views.study import (
+    ChangeStudyStatusView,
+    CloneStudyView,
+    ManageResearcherPermissionsView,
+    StudyDetailView,
+    StudyPreviewDetailView,
+)
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
@@ -310,7 +327,7 @@ class StudyViewsTestCase(TestCase):
         response = self.client.get(url)
         content = response.content.decode("utf-8")
         self.assertEqual(
-            response.status_code, 200, "Study edit view returns invalid response",
+            response.status_code, 200, "Study edit view returns invalid response"
         )
         self.assertIn(
             self.generator_function_string,
@@ -355,7 +372,7 @@ class StudyViewsTestCase(TestCase):
         )
         updated_study = Study.objects.get(id=self.study.id)
         self.assertEqual(
-            updated_study.study_type, self.other_study_type, "Study type not updated",
+            updated_study.study_type, self.other_study_type, "Study type not updated"
         )
         self.assertFalse(
             updated_study.built,
@@ -507,6 +524,716 @@ class StudyViewsTestCase(TestCase):
         )
 
 
+class CloneStudyViewTestCase(TestCase):
+    def test_model(self):
+        clone_study_view = CloneStudyView()
+        self.assertIs(clone_study_view.model, Study)
+
+    def test_permissions(self):
+        self.assertTrue(
+            issubclass(CloneStudyView, ResearcherLoginRequiredMixin),
+            "CloneStudyView must have ResearcherLoginRequiredMixin",
+        )
+        self.assertTrue(
+            issubclass(CloneStudyView, UserPassesTestMixin),
+            "CloneStudyView must have UserPassesTestMixin",
+        )
+
+    def test_user_can_clone_study(self):
+        with patch.object(CloneStudyView, "request", create=True):
+            mock_is_researcher = PropertyMock(return_value=True)
+            mock_can_create_study = MagicMock(return_value=True)
+
+            clone_study_view = CloneStudyView()
+            type(clone_study_view.request.user).is_researcher = mock_is_researcher
+            clone_study_view.request.user.can_create_study = mock_can_create_study
+
+            self.assertIs(clone_study_view.user_can_clone_study(), True)
+            mock_can_create_study.assert_called_with()
+            mock_is_researcher.assert_called_with()
+
+    def test_test_func(self):
+        clone_study_view = CloneStudyView()
+        self.assertEqual(
+            clone_study_view.test_func,
+            clone_study_view.user_can_clone_study,
+            "CloneStudyView.test_func must be set to CloneStudyView.user_can_clone_study",
+        )
+
+    @patch.object(CloneStudyView, "request", create=True)
+    def test_add_creator_to_study_admin_group(self, mock_request):
+        clone_study_view = CloneStudyView()
+        mock_study = create_autospec(Study)
+        self.assertEquals(
+            clone_study_view.add_creator_to_study_admin_group(mock_study),
+            mock_study.admin_group,
+        )
+        mock_request.user.groups.add.assert_called_with(mock_study.admin_group)
+
+    @patch.object(CloneStudyView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    @patch("exp.views.study.HttpResponseRedirect")
+    @patch("exp.views.study.reverse")
+    def test_post_redirect(
+        self, mock_reverse, mock_http_response_redirect, mock_get_object, mock_request
+    ):
+        mock_redirect_to = mock_reverse(
+            "exp:study-edit", kwargs={"pk": mock_get_object().clone().pk}
+        )
+        mock_response = mock_http_response_redirect(mock_redirect_to)
+
+        clone_study_view = CloneStudyView()
+
+        self.assertEqual(clone_study_view.post(), mock_response)
+        self.assertEqual(mock_request.user, mock_get_object().clone().creator)
+        mock_request.user.has_perm.assert_called_with(
+            LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename,
+            obj=mock_get_object().lab,
+        )
+
+    @patch.object(CloneStudyView, "request", create=True)
+    @patch("exp.views.study.HttpResponseForbidden")
+    def test_post_forbidden(self, mock_http_response_forbidden, mock_request):
+        with patch.object(SingleObjectMixin, "get_object"):
+            mock_request.user.has_perm = MagicMock(return_value=False)
+            mock_request.user.labs.only = MagicMock(return_value=[])
+
+            clone_study_view = CloneStudyView()
+
+            self.assertEqual(clone_study_view.post(), mock_http_response_forbidden())
+            mock_request.user.labs.only.assert_called_with("id")
+
+    @patch.object(CloneStudyView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    @patch("exp.views.study.HttpResponseRedirect")
+    @patch("exp.views.study.reverse")
+    def test_post_first_lab(
+        self, mock_reverse, mock_http_response_redirect, mock_get_object, mock_request
+    ):
+        mock_has_perm = MagicMock(side_effect=[False, True])
+        mock_labs_only = MagicMock(return_value=(sentinel.lab,))
+        mock_redirect_to = mock_reverse(
+            "exp:study-edit", kwargs={"pk": mock_get_object().clone().pk}
+        )
+        mock_response = mock_http_response_redirect(mock_redirect_to)
+
+        mock_request.user.has_perm = mock_has_perm
+        mock_request.user.labs.only = mock_labs_only
+
+        clone_study_view = CloneStudyView()
+
+        self.assertEqual(clone_study_view.post(), mock_response)
+        mock_request.user.labs.only.assert_called_with("id")
+        mock_get_object().clone().creator.has_perm.assert_called_with(
+            LabPermission.CREATE_LAB_ASSOCIATED_STUDY.codename, obj=sentinel.lab
+        )
+
+
+class ChangeStudyStatusViewTestCase(TestCase):
+    def test_model(self):
+        change_study_status_view = ChangeStudyStatusView()
+        self.assertIs(change_study_status_view.model, Study)
+
+    def test_permissions(self):
+        self.assertTrue(
+            issubclass(ChangeStudyStatusView, ResearcherLoginRequiredMixin),
+            "ChangeStudyStatusView must have ResearcherLoginRequiredMixin",
+        )
+        self.assertTrue(
+            issubclass(ChangeStudyStatusView, UserPassesTestMixin),
+            "ChangeStudyStatusView must have UserPassesTestMixin",
+        )
+
+    @patch.object(ChangeStudyStatusView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_user_can_change_study_status(
+        self, mock_get_object: Mock, mock_request: Mock
+    ):
+        mock_is_researcher = PropertyMock(return_value=True)
+
+        type(mock_request.user).is_researcher = mock_is_researcher
+        mock_request.user.has_study_perms = MagicMock(return_value=True)
+
+        change_study_status_view = ChangeStudyStatusView()
+
+        self.assertIs(change_study_status_view.user_can_change_study_status(), True)
+        mock_is_researcher.assert_called_with()
+        mock_request.user.has_study_perms.assert_called_with(
+            StudyPermission.CHANGE_STUDY_STATUS, mock_get_object()
+        )
+
+    def test_test_func(self):
+        change_study_status_view = ChangeStudyStatusView()
+        self.assertEqual(
+            change_study_status_view.test_func,
+            change_study_status_view.user_can_change_study_status,
+            "CloneStudyView.test_func must be set to CloneStudyView.user_can_change_study_status",
+        )
+
+    @patch.object(SingleObjectMixin, "get_object")
+    @patch("exp.views.study.HttpResponseRedirect")
+    @patch("exp.views.study.reverse")
+    def test_post(
+        self,
+        mock_reverse: Mock,
+        mock_http_response_redirect: Mock,
+        mock_get_object: Mock,
+    ):
+        change_study_status_view = ChangeStudyStatusView()
+
+        change_study_status_view.update_trigger = MagicMock(return_value=True)
+
+        self.assertEqual(change_study_status_view.post(), mock_http_response_redirect())
+        mock_http_response_redirect.assert_called_with()
+        mock_reverse.assert_called_with(
+            "exp:study-detail", kwargs={"pk": mock_get_object().pk}
+        )
+        change_study_status_view.update_trigger.assert_called_with()
+
+    @patch.object(ChangeStudyStatusView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    @patch("exp.views.study.HttpResponseRedirect")
+    @patch("exp.views.study.reverse")
+    @patch("exp.views.study.messages")
+    def test_post_exception(
+        self,
+        mock_messages: Mock,
+        mock_reverse: Mock,
+        mock_http_response_redirect: Mock,
+        mock_get_object: Mock,
+        mock_request: Mock,
+    ):
+        change_study_status_view = ChangeStudyStatusView()
+        change_study_status_view.update_trigger = MagicMock(
+            side_effect=Exception(sentinel.error_message)
+        )
+        self.assertEqual(change_study_status_view.post(), mock_http_response_redirect())
+        mock_messages.error.assert_called_with(
+            mock_request, f"TRANSITION ERROR: {sentinel.error_message}"
+        )
+        mock_reverse.assert_called_with(
+            "exp:study-detail", kwargs={"pk": mock_get_object().pk}
+        )
+
+    @patch.object(ChangeStudyStatusView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    @patch("exp.views.study.messages")
+    def test_update_trigger(
+        self, mock_messages: Mock, mock_get_object: Mock, mock_request: Mock
+    ):
+        mock_request.POST.get = MagicMock(return_value="trigger_attr")
+        mock_request.POST.keys = MagicMock(return_value=("comments-text",))
+
+        change_study_status_view = ChangeStudyStatusView()
+
+        self.assertEqual(change_study_status_view.update_trigger(), mock_get_object())
+        mock_request.POST.get.assert_called_with("trigger")
+        mock_request.POST.keys.assert_called_with()
+        mock_messages.success.assert_called_with(
+            mock_request, f"Study {mock_get_object().name} {mock_get_object().state}."
+        )
+        mock_get_object().save.assert_called_with()
+        mock_get_object().trigger_attr.assert_called_with(user=mock_request.user)
+
+    @patch.object(ChangeStudyStatusView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    @patch("exp.views.study.messages")
+    def test_update_trigger_trigger_is_none(
+        self, mock_messages: Mock, mock_get_object: Mock, mock_request: Mock
+    ):
+        mock_request.POST.get = MagicMock(return_value=None)
+
+        change_study_status_view = ChangeStudyStatusView()
+
+        self.assertEqual(change_study_status_view.update_trigger(), mock_get_object())
+        mock_messages.success.assert_called_with(
+            mock_request, f"Study {mock_get_object().name} {mock_get_object().state}."
+        )
+        mock_get_object().save.assert_not_called()
+        mock_get_object().trigger_attr.assert_not_called()
+
+    @patch.object(ChangeStudyStatusView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_update_trigger_object_no_attr(
+        self, mock_get_object: Mock, mock_request: Mock
+    ):
+        mock_request.POST.get = MagicMock(return_value="trigger_attr")
+        del mock_get_object().trigger_attr
+
+        change_study_status_view = ChangeStudyStatusView()
+
+        self.assertEqual(change_study_status_view.update_trigger(), mock_get_object())
+        mock_get_object().save.assert_not_called()
+        mock_request.POST.keys.assert_not_called()
+
+
+class ManageResearcherPermissionsViewTestCase(TestCase):
+    def test_model(self) -> None:
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertIs(manage_researcher_permissions_view.model, Study)
+
+    def test_permissions(self) -> None:
+        self.assertTrue(
+            issubclass(ManageResearcherPermissionsView, ResearcherLoginRequiredMixin),
+            "ManageResearcherPermissionsView must have ResearcherLoginRequiredMixin",
+        )
+        self.assertTrue(
+            issubclass(ManageResearcherPermissionsView, UserPassesTestMixin),
+            "ManageResearcherPermissionsView must have UserPassesTestMixin",
+        )
+
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_user_can_change_study_permissions(
+        self, mock_get_object: Mock, mock_request: Mock
+    ) -> None:
+        mock_request.user.has_study_perms = MagicMock(return_value=True)
+        mock_is_researcher = PropertyMock(return_value=True)
+        type(mock_request.user).is_researcher = mock_is_researcher
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+
+        self.assertIs(
+            manage_researcher_permissions_view.user_can_change_study_permissions(), True
+        )
+        mock_request.user.has_study_perms.assert_called_once_with(
+            StudyPermission.MANAGE_STUDY_RESEARCHERS, mock_get_object()
+        )
+        mock_is_researcher.assert_called_with()
+
+    def test_test_func(self):
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertEqual(
+            manage_researcher_permissions_view.test_func,
+            manage_researcher_permissions_view.user_can_change_study_permissions,
+            "ManageResearcherPermissionsView.test_func must be set to ManageResearcherPermissionsView.user_can_change_study_permissions",
+        )
+
+    @patch.object(SingleObjectMixin, "get_object")
+    @patch(
+        "exp.views.study.ManageResearcherPermissionsView.manage_researcher_permissions"
+    )
+    @patch("exp.views.study.HttpResponseRedirect")
+    @patch("exp.views.study.reverse")
+    def test_post(
+        self,
+        mock_reverse: Mock,
+        mock_https_response_redirect: Mock,
+        mock_manage_researcher_permissions: Mock,
+        mock_get_object: Mock,
+    ):
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertEqual(
+            manage_researcher_permissions_view.post(), mock_https_response_redirect()
+        )
+        mock_https_response_redirect.assert_called_with()
+        mock_reverse.assert_called_once_with(
+            "exp:study-detail", kwargs={"pk": mock_get_object().pk}
+        )
+        mock_manage_researcher_permissions.assert_called_once_with()
+
+    @patch(
+        "exp.views.study.ManageResearcherPermissionsView.manage_researcher_permissions",
+        return_value=False,
+    )
+    @patch("exp.views.study.HttpResponseForbidden")
+    def test_post_403(
+        self,
+        mock_https_response_forbidden: Mock,
+        mock_manage_researcher_permissions: Mock,
+    ):
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertEqual(
+            manage_researcher_permissions_view.post(), mock_https_response_forbidden()
+        )
+        mock_manage_researcher_permissions.assert_called_once_with()
+
+    @patch("exp.views.study.send_mail")
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_send_study_email(self, mock_get_object: Mock, mock_send_mail: Mock):
+        mock_user = MagicMock()
+        mock_permission = MagicMock()
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        manage_researcher_permissions_view.send_study_email(mock_user, mock_permission)
+        mock_send_mail.delay.assert_called_with(
+            "notify_researcher_of_study_permissions",
+            f"New access granted for study {mock_get_object().name}",
+            mock_user.username,
+            from_email=mock_get_object().lab.contact_email,
+            permission=mock_permission,
+            study_name=mock_get_object().name,
+            study_id=mock_get_object().id,
+            lab_name=mock_get_object().lab.name,
+            researcher_name=mock_user.get_short_name(),
+        )
+
+    @patch("exp.views.study.ManageResearcherPermissionsView.remove_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.add_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.update_user")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_manage_researcher_permissions_update_user(
+        self,
+        mock_get_object: Mock,
+        mock_request: Mock,
+        mock_update_user: Mock,
+        mock_add_user: Mock,
+        mock_remove_user: Mock,
+    ) -> None:
+        mock_request.POST.get = MagicMock(side_effect=[None, None, "update_user"])
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        manage_researcher_permissions_view.manage_researcher_permissions()
+        mock_update_user.assert_called_once_with(mock_get_object())
+        mock_add_user.assert_not_called()
+        mock_remove_user.assert_not_called()
+
+    @patch("exp.views.study.ManageResearcherPermissionsView.remove_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.add_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.update_user")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_manage_researcher_permissions_remove_user(
+        self,
+        mock_get_object: Mock,
+        mock_request: Mock,
+        mock_update_user: Mock,
+        mock_add_user: Mock,
+        mock_remove_user: Mock,
+    ) -> None:
+        mock_request.POST.get = MagicMock(
+            side_effect=[None, sentinel.remove_user_id, None]
+        )
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        manage_researcher_permissions_view.manage_researcher_permissions()
+        mock_update_user.assert_not_called()
+        mock_add_user.assert_not_called()
+        mock_remove_user.assert_called_once_with(
+            mock_get_object(), sentinel.remove_user_id
+        )
+
+    @patch("exp.views.study.ManageResearcherPermissionsView.remove_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.add_user")
+    @patch("exp.views.study.ManageResearcherPermissionsView.update_user")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_manage_researcher_permissions_add_user(
+        self,
+        mock_get_object: Mock,
+        mock_request: Mock,
+        mock_update_user: Mock,
+        mock_add_user: Mock,
+        mock_remove_user: Mock,
+    ) -> None:
+        mock_request.POST.get = MagicMock(
+            side_effect=[sentinel.update_user_id, None, None]
+        )
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        manage_researcher_permissions_view.manage_researcher_permissions()
+        mock_update_user.assert_not_called()
+        mock_add_user.assert_called_once_with(
+            mock_get_object(), sentinel.update_user_id
+        )
+        mock_remove_user.assert_not_called()
+
+    @patch("exp.views.study.messages")
+    @patch.object(ManageResearcherPermissionsView, "send_study_email")
+    @patch("accounts.models.User.objects")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    def test_update_user(
+        self,
+        mock_request: Mock,
+        mock_user_objects: Mock,
+        mock_send_study_email: Mock,
+        mock_messages: None,
+    ):
+        user_group = "study_preview"
+
+        mock_update_user = MagicMock(name="update_user")
+        mock_study_group = MagicMock(name="study_group")
+        mock_study = MagicMock(name="study")
+
+        mock_request.POST.get.side_effect = [sentinel.user_update_id, user_group]
+        mock_user_objects.get.side_effect = [mock_update_user]
+
+        mock_update_user.groups.all.return_value = [mock_study.admin_group]
+        mock_study.all_study_groups.return_value = [mock_study_group]
+        mock_study.admin_group.user_set.count.return_value = 2
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+
+        self.assertTrue(manage_researcher_permissions_view.update_user(mock_study))
+
+        mock_update_user.groups.all.assert_called_once_with()
+        mock_study.admin_group.user_set.count.assert_called_once_with()
+        mock_messages.error.assert_not_called()
+        mock_study.all_study_groups.assert_called_once_with()
+        mock_study_group.user_set.remove.assert_called_once_with(mock_update_user)
+        mock_update_user.groups.add.assert_called_once_with(mock_study.preview_group)
+        mock_send_study_email.assert_called_once_with(mock_update_user, user_group)
+
+    @patch.object(ManageResearcherPermissionsView, "user_only_admin", return_value=True)
+    @patch("exp.views.study.messages")
+    @patch("accounts.models.User.objects")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    def test_update_user_not_enough_admins(
+        self,
+        mock_request: Mock,
+        mock_user_objects: Mock,
+        mock_messages: Mock,
+        mock_user_only_admin: Mock,
+    ):
+
+        mock_update_user = MagicMock(name="update_user")
+        mock_study = MagicMock(name="study")
+
+        mock_user_objects.get.return_value = mock_update_user
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+
+        self.assertFalse(manage_researcher_permissions_view.update_user(mock_study))
+
+        mock_messages.error.assert_called_once_with(
+            mock_request,
+            "Could not change permissions for this researcher. There must be at least one study admin.",
+            extra_tags="user_removed",
+        )
+        mock_user_only_admin.assert_called_once_with(mock_study, mock_update_user)
+
+    @patch.object(
+        ManageResearcherPermissionsView, "user_only_admin", return_value=False
+    )
+    @patch("exp.views.study.messages")
+    @patch.object(ManageResearcherPermissionsView, "send_study_email")
+    @patch("accounts.models.User.objects")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    def test_update_user_already_one_admin(
+        self,
+        mock_request: Mock,
+        mock_user_objects: Mock,
+        mock_send_study_email: Mock,
+        mock_messages: Mock,
+        mock_user_only_admin: Mock,
+    ):
+        user_group = "study_admin"
+
+        mock_study = MagicMock(name="study")
+        mock_update_user = MagicMock(name="update_user")
+        mock_study_group = MagicMock(name="study_group")
+
+        mock_study.all_study_groups.return_value = [mock_study_group]
+        mock_user_objects.get.return_value = mock_update_user
+
+        mock_request.POST.get.side_effect = [sentinel.user_update_id, user_group]
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+
+        self.assertTrue(manage_researcher_permissions_view.update_user(mock_study))
+
+        mock_messages.error.assert_not_called()
+        mock_study.all_study_groups.assert_called_once_with()
+        mock_study_group.user_set.remove.assert_called_once_with(mock_update_user)
+        mock_update_user.groups.add.assert_called_once_with(mock_study.admin_group)
+        mock_send_study_email.assert_called_once_with(mock_update_user, user_group)
+        mock_user_only_admin.assert_called_once_with(mock_study, mock_update_user)
+
+    @patch("exp.views.study.messages")
+    @patch.object(ManageResearcherPermissionsView, "send_study_email")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch("accounts.models.User.objects")
+    def test_add_user(
+        self,
+        mock_user_objects: Mock,
+        mock_request: Mock,
+        mock_send_study_email: Mock,
+        mock_messages: Mock,
+    ):
+        mock_study = MagicMock(name="study")
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertTrue(
+            manage_researcher_permissions_view.add_user(
+                mock_study, sentinel.add_user_id
+            )
+        )
+        mock_user_objects.get().groups.add.assert_called_once_with(
+            mock_study.preview_group
+        )
+        mock_messages.success.assert_called_once_with(
+            mock_request,
+            f"{mock_user_objects.get().get_short_name()} given {mock_study.name} Preview Permissions.",
+            extra_tags="user_added",
+        )
+        mock_send_study_email.assert_called_once_with(
+            mock_user_objects.get(), "study_preview"
+        )
+
+    @patch("exp.views.study.messages")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch.object(
+        ManageResearcherPermissionsView, "user_only_admin", return_value=False
+    )
+    @patch("accounts.models.User.objects")
+    def test_remove_user(
+        self,
+        mock_user_objects: Mock,
+        mock_user_only_admin: Mock,
+        mock_request: Mock,
+        mock_messages: Mock,
+    ):
+        mock_study = MagicMock(name="study")
+        mock_study_group = MagicMock(name="study_group")
+        mock_study.all_study_groups.return_value = [mock_study_group]
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertTrue(
+            manage_researcher_permissions_view.remove_user(
+                mock_study, sentinel.remove_user_id
+            )
+        )
+        mock_messages.error.assert_not_called()
+        mock_user_only_admin.assert_called_once_with(
+            mock_study, mock_user_objects.get()
+        )
+        mock_study_group.user_set.remove.assert_called_once_with(
+            mock_user_objects.get()
+        )
+        mock_messages.success.assert_called_once_with(
+            mock_request,
+            f"{mock_user_objects.get().get_short_name()} removed from {mock_study.name}.",
+            extra_tags="user_removed",
+        )
+
+    @patch("exp.views.study.messages")
+    @patch.object(ManageResearcherPermissionsView, "request", create=True)
+    @patch.object(ManageResearcherPermissionsView, "user_only_admin", return_value=True)
+    @patch("accounts.models.User.objects")
+    def test_remove_user_one_admin(
+        self,
+        mock_user_objects: Mock,
+        mock_user_only_admin: Mock,
+        mock_request: Mock,
+        mock_messages: Mock,
+    ):
+        mock_study = MagicMock(name="study")
+        mock_study_group = MagicMock(name="study_group")
+        mock_study.all_study_groups.return_value = [mock_study_group]
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertFalse(
+            manage_researcher_permissions_view.remove_user(
+                mock_study, sentinel.remove_user_id
+            )
+        )
+
+        mock_user_only_admin.assert_called_once_with(
+            mock_study, mock_user_objects.get()
+        )
+        mock_study_group.user_set.remove.assert_not_called()
+        mock_messages.error.assert_called_once_with(
+            mock_request,
+            "Could not delete this researcher. There must be at least one study admin.",
+            extra_tags="user_removed",
+        )
+
+    def test_user_only_admin_user_not_admin(self):
+        mock_study = MagicMock()
+        mock_user = MagicMock()
+
+        mock_user.groups.all.return_value = []
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertFalse(
+            manage_researcher_permissions_view.user_only_admin(mock_study, mock_user)
+        )
+        mock_user.groups.all.assert_called_once_with()
+
+    def test_user_only_admin_user_no_other_admins(self):
+        mock_study = MagicMock()
+        mock_user = MagicMock()
+
+        mock_user.groups.all.return_value = [mock_study.admin_group]
+        mock_study.admin_group.user_set.count.return_value = 1
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertTrue(
+            manage_researcher_permissions_view.user_only_admin(mock_study, mock_user)
+        )
+        mock_user.groups.all.assert_called_once_with()
+
+    def test_only_one_admin_user_other_admins(self):
+        mock_study = MagicMock()
+        mock_user = MagicMock()
+
+        mock_user.groups.all.return_value = [mock_study.admin_group]
+        mock_study.admin_group.user_set.count.return_value = 2
+
+        manage_researcher_permissions_view = ManageResearcherPermissionsView()
+        self.assertFalse(
+            manage_researcher_permissions_view.user_only_admin(mock_study, mock_user)
+        )
+        mock_user.groups.all.assert_called_once_with()
+
+
+class StudyDetailViewTestCase(TestCase):
+    def test_model(self) -> None:
+        study_list_view = StudyDetailView()
+        self.assertIs(study_list_view.model, Study)
+
+    def test_permissions(self) -> None:
+        self.assertTrue(
+            issubclass(StudyDetailView, ResearcherLoginRequiredMixin),
+            "StudyDetailView must have ResearcherLoginRequiredMixin",
+        )
+        self.assertTrue(
+            issubclass(StudyDetailView, UserPassesTestMixin),
+            "StudyDetailView must have UserPassesTestMixin",
+        )
+
+    def test_test_func(self):
+        manage_researcher_permissions_view = StudyDetailView()
+        self.assertEqual(
+            manage_researcher_permissions_view.test_func,
+            manage_researcher_permissions_view.user_can_see_or_edit_study_details,
+            "StudyDetailView.test_func must be set to StudyDetailView.user_can_see_or_edit_study_details",
+        )
+
+    @parameterized.expand(
+        [(True, True, True), (True, False, False), (False, True, False)]
+    )
+    @patch.object(StudyDetailView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_user_can_see_or_edit_study_details(
+        self,
+        has_study_perms: bool,
+        is_researcher: bool,
+        expected: bool,
+        mock_get_object: Mock,
+        mock_request: Mock,
+    ) -> None:
+
+        mock_request.user.has_study_perms.return_value = has_study_perms
+        mock_is_researcher = PropertyMock(return_value=is_researcher)
+        type(mock_request.user).is_researcher = mock_is_researcher
+
+        study_detail_view = StudyDetailView()
+
+        self.assertIs(study_detail_view.user_can_see_or_edit_study_details(), expected)
+
+        mock_request.user.has_study_perms.assert_called_once_with(
+            StudyPermission.READ_STUDY_DETAILS, mock_get_object()
+        )
+        mock_is_researcher.assert_called_with()
+
+
+class StudyPreviewDetailViewTestCase(TestCase):
+    @patch.object(StudyPreviewDetailView, "request", create=True)
+    def test_get_context_data_not_deleted_children(self, mock_request):
+        with patch.object(StudyPreviewDetailView, "object", create=True):
+            study_preview_detail_view = StudyPreviewDetailView()
+            study_preview_detail_view.get_context_data()
+            mock_request.user.children.filter.assert_called_once_with(deleted=False)
+
+
 # TODO: StudyCreateView
 # - check user has to be in a lab with perms to create study to get
 # TODO: StudyUpdateView
@@ -517,10 +1244,6 @@ class StudyViewsTestCase(TestCase):
 # TODO: StudyListView
 # - check can get as researcher only
 # - check you see exactly studies you have view details perms for
-# TODO: StudyDetailView
-# - check can get as researcher only
-# - check correct links are shown given perms
-# - [postpone checks of POST which will be refactored]
 # TODO: StudyPreviewProxyView
 # - add checks analogous to preview detail view
 # - check for correct redirect

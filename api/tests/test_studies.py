@@ -1,7 +1,3 @@
-import json
-import uuid
-
-from django.test import TestCase
 from django.urls import reverse
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
@@ -9,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import ConsentRuling, Feedback, Lab, Response, Study, StudyType
+from studies.models import ConsentRuling, Lab, Response, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -41,7 +37,7 @@ class StudiesTestCase(APITestCase):
             creator=self.researcher,
             name="Test Name",
             short_description="Short description",
-            long_description="Longer description",
+            purpose="Longer description",
             criteria="Five years or older",
             duration="Twenty minutes",
             contact_info="my email",

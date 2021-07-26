@@ -123,11 +123,6 @@ def post_migrate_create_flatpages(sender, **kwargs):
             title="FAQ",
             content=f"""
         <div class="main">
-        	<div class="lookit-row lookit-page-title">
-        		<div class="container">
-        			<h2>Frequently Asked Questions</h2>
-        		</div>
-        	</div>
         	<div class="lookit-row faq-row">
         		<div class="container">
         			<h3>Participation</h3>
@@ -448,11 +443,6 @@ def post_migrate_create_flatpages(sender, **kwargs):
             title="The Scientists",
             content=f"""
         <div class="main">
-        	<div class="lookit-row lookit-page-title">
-        		<div class="container">
-        			<h2>Meet the Scientists</h2>
-        		</div>
-        	</div>
         	<div class="lookit-row scientists-row">
         		<div class="container">
         			<div class="row">
@@ -564,11 +554,6 @@ def post_migrate_create_flatpages(sender, **kwargs):
             title="Resources",
             content=f"""
         <div class="main">
-        	<div class="lookit-row lookit-page-title">
-        		<div class="container">
-        			<h2>Resources</h2>
-        		</div>
-        	</div>
         	<div class="lookit-row resources-row">
         		<div class="container">
         			<div class="resources-item">
@@ -1245,11 +1230,6 @@ def post_migrate_create_flatpages(sender, **kwargs):
             title="Contact Us",
             content="""
         <div class="main">
-        	<div class="lookit-row lookit-page-title">
-        		<div class="container">
-        			<h2>Contact</h2>
-        		</div>
-        	</div>
         	<div class="lookit-row contact-row">
         		<div class="container">
         			<h3>Technical difficulties</h3>

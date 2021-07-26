@@ -1,7 +1,6 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from guardian.shortcuts import get_objects_for_user
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_json_api import views
@@ -317,7 +316,7 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
         # GET /api/v1/studies/{STUDY_ID}/responses/?{Query string with pagination and child id}
         # This route gets accessed by:
         #     1) Participant sessions GETting history of responses for a study and a given child.
-        #     2) Experimenters/parents programmatically GETting the responses facet of the *Study*
+        #     2) Researchers/parents programmatically GETting the responses facet of the *Study*
         #        API to retrieve responses for a given study.
         if "study_uuid" in self.kwargs:
             study_uuid = self.kwargs["study_uuid"]
@@ -335,7 +334,7 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
                     child__uuid=child_id, child__in=children_belonging_to_user
                 )
 
-            # CASE 2: Experimenters/parents getting responses for study.
+            # CASE 2: Researchers/parents getting responses for study.
             else:
                 if self.request.user.has_study_perms(
                     StudyPermission.READ_STUDY_RESPONSE_DATA, study
@@ -370,7 +369,7 @@ class ResponseViewSet(ConvertUuidToIdMixin, views.ModelViewSet):
             # GET '/api/v1/responses/' or PATCH '/api/v1/responses/{RESPONSE_UUID}'.
             # This route gets accessed by:
             #     1) Participant sessions PATCHing (partial updating) ongoing response-sessions.
-            #     2) Experimenters/parents programmatically GETting the Responses API
+            #     2) Researchers/parents programmatically GETting the Responses API
 
             studies_for_data = studies_for_which_user_has_perm(
                 self.request.user, StudyPermission.READ_STUDY_RESPONSE_DATA

@@ -101,7 +101,7 @@ class PatchedResourceRelatedField(
 class PatchedHyperlinkedRelatedField(
     DotPropertyRelatedLookupHyperlinkedMixin, HyperlinkedRelatedField
 ):
-    """"Shoo-in for rest_framework_json_api.relations.HyperlinkedRelatedField, with better get_links behavior."""
+    """Shoo-in for rest_framework_json_api.relations.HyperlinkedRelatedField, with better get_links behavior."""
 
 
 # Serializers.

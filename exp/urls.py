@@ -18,7 +18,6 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 
 from exp.views import (
-    ExperimenterDashboardView,
     LabCreateView,
     LabDetailView,
     LabListView,
@@ -29,6 +28,7 @@ from exp.views import (
     ParticipantListView,
     PreviewProxyView,
     RenameVideoView,
+    ResearcherDashboardView,
     StudyAttachments,
     StudyBuildView,
     StudyChildrenCSV,
@@ -58,6 +58,11 @@ from exp.views import (
     StudySingleResponseDownload,
     StudyUpdateView,
 )
+from exp.views.study import (
+    ChangeStudyStatusView,
+    CloneStudyView,
+    ManageResearcherPermissionsView,
+)
 
 app_name = "exp"
 
@@ -85,6 +90,17 @@ urlpatterns = [
     ),
     path("studies/create/", StudyCreateView.as_view(), name="study-create"),
     path("studies/<int:pk>/", StudyDetailView.as_view(), name="study-detail"),
+    path("studies/<int:pk>/clone-study", CloneStudyView.as_view(), name="clone-study"),
+    path(
+        "studies/<int:pk>/change-study-status",
+        ChangeStudyStatusView.as_view(),
+        name="change-study-status",
+    ),
+    path(
+        "studies/<int:pk>/manage-researcher-permissions",
+        ManageResearcherPermissionsView.as_view(),
+        name="manage-researcher-permissions",
+    ),
     path(
         "studies/<int:pk>/contact/",
         StudyParticipantContactView.as_view(),
@@ -202,5 +218,5 @@ urlpatterns = [
         PreviewProxyView.as_view(),
         name="preview-proxy",
     ),
-    path("", ExperimenterDashboardView.as_view(), name="dashboard"),
+    path("", ResearcherDashboardView.as_view(), name="dashboard"),
 ]

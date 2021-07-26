@@ -8,15 +8,15 @@ RESPONSE_PAGE_SIZE = 500  # for pagination of responses when processing for down
 def flatten_dict(d):
     """Flatten a dictionary where values may be other dictionaries
 
-	The dictionary returned will have keys created by joining higher- to lower-level keys with dots. e.g. if the original dict d is
-	{'a': {'x':3, 'y':4}, 'b':{'z':5}, 'c':{} }
-	then the dict returned will be
-	{'a.x':3, 'a.y': 4, 'b.z':5}
+    The dictionary returned will have keys created by joining higher- to lower-level keys with dots. e.g. if the original dict d is
+    {'a': {'x':3, 'y':4}, 'b':{'z':5}, 'c':{} }
+    then the dict returned will be
+    {'a.x':3, 'a.y': 4, 'b.z':5}
 
-	Note that if a key is mapped to an empty dict or list, NO key in the returned dict is created for this key.
+    Note that if a key is mapped to an empty dict or list, NO key in the returned dict is created for this key.
 
-	Also note that values may be overwritten if there is conflicting dot notation in the input dictionary, e.g. {'a': {'x': 3}, 'a.x': 4}.
-	"""
+    Also note that values may be overwritten if there is conflicting dot notation in the input dictionary, e.g. {'a': {'x': 3}, 'a.x': 4}.
+    """
     # http://codereview.stackexchange.com/a/21035
 
     def expand(key, value):
@@ -36,7 +36,7 @@ def flatten_dict(d):
 
 def csv_namedtuple_writer(named_tuple_class):
     output = io.StringIO()
-    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC,)
+    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(named_tuple_class._fields)
     return output, writer
 

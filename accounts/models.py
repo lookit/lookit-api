@@ -1,5 +1,4 @@
 import base64
-import functools
 import hashlib
 import uuid
 from io import BytesIO
@@ -10,7 +9,7 @@ import pyotp
 from bitfield import BitField
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import Group, Permission, PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
@@ -21,8 +20,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import get_objects_for_user, get_perms
-from kombu.utils import cached_property
+from guardian.shortcuts import get_perms
 from localflavor.us.models import USStateField
 from localflavor.us.us_states import USPS_CHOICES
 from model_utils import Choices
@@ -101,7 +99,7 @@ class GoogleAuthenticatorTOTP(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    secret = models.CharField(max_length=16, db_index=True, default=pyotp.random_base32)
+    secret = models.CharField(max_length=32, db_index=True, default=pyotp.random_base32)
     activated = models.BooleanField(default=False)
 
     @property
@@ -116,7 +114,7 @@ class GoogleAuthenticatorTOTP(models.Model):
         with BytesIO() as stream:
             make_qrcode(
                 pyotp.utils.build_uri(
-                    self.secret, name=self.user.username, issuer_name=self.issuer
+                    self.secret, name=self.user.username, issuer=self.issuer
                 ),
                 image_factory=SvgPathImage,
                 box_size=10,
@@ -606,7 +604,7 @@ class Message(models.Model):
         text_content = get_template("emails/study_announcement.txt").render(context)
         html_content = get_template("emails/study_announcement.html").render(context)
         announcement_message = cls.objects.create(
-            subject=subject, body=text_content, related_study=study,
+            subject=subject, body=text_content, related_study=study
         )
 
         announcement_message.recipients.add(user)
@@ -660,15 +658,16 @@ class Message(models.Model):
 def create_string_listing_children(children):
     child_names = [child.given_name for child in children]
     num_children = len(child_names)
+    and_string = _("and")
 
     if not num_children:
         return ""
     elif num_children == 1:
         return child_names[0]
     elif num_children == 2:
-        return " and ".join(child_names)
+        return f" {and_string} ".join(child_names)
     else:
-        return ", ".join(child_names[:-1]) + f", and {child_names[-1]}"
+        return ", ".join(child_names[:-1]) + f", {and_string} {child_names[-1]}"
 
 
 def create_subject_for_study_notification(study, children):

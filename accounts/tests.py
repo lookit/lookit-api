@@ -1,21 +1,23 @@
 import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.flatpages.models import FlatPage
-from django.contrib.sessions.backends.db import SessionStore
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http import HttpRequest
 from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 from django_dynamic_fixture import G
 from lark.exceptions import UnexpectedCharacters
+from parameterized import parameterized
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, GoogleAuthenticatorTOTP, User
-from accounts.queries import get_child_eligibility, get_child_eligibility_for_study
+from accounts.queries import (
+    age_range_eligibility_for_study,
+    get_child_eligibility,
+    get_child_eligibility_for_study,
+)
 from studies.fields import GESTATIONAL_AGE_CHOICES
 from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
@@ -245,9 +247,7 @@ class AuthenticationTestCase(TestCase):
         )
 
     def test_researcher_regular_login_cannot_access_exp_views(self):
-        self.client.login(
-            username=self.researcher_email, password=self.test_password,
-        )
+        self.client.login(username=self.researcher_email, password=self.test_password)
         for url in self.mfa_protected_get_views:
             response = self.client.get(url, follow=True)
             self.assertEqual(
@@ -297,7 +297,7 @@ class AuthenticationTestCase(TestCase):
         two_factor_auth_url = reverse("accounts:2fa-login")
         # Test a bad auth code
         response = self.client.post(
-            two_factor_auth_url, {"otp_code": str(int(self.otp.provider.now()) + 1)},
+            two_factor_auth_url, {"otp_code": str(int(self.otp.provider.now()) + 1)}
         )
 
         # We just reloaded the page, so we should get a 200
@@ -759,7 +759,7 @@ class EligibilityTestCase(TestCase):
         )
 
         self.unborn_child = G(
-            Child, birthday=datetime.date.today() + datetime.timedelta(days=30),
+            Child, birthday=datetime.date.today() + datetime.timedelta(days=30)
         )
 
     def test_criteria_expression_used(self):
@@ -868,9 +868,72 @@ class EligibilityTestCase(TestCase):
                 "Child just above upper age bound is eligible",
             )
 
+    @parameterized.expand(
+        [
+            # Study 0-5 yrs, Child is 0-1 yrs
+            (
+                MagicMock(
+                    min_age_years=0,
+                    min_age_months=0,
+                    min_age_days=0,
+                    max_age_years=5,
+                    max_age_months=0,
+                    max_age_days=0,
+                ),
+                [0, 1],
+                True,
+            ),
+            # Study 1-5 yrs, Child is 0-1 yrs
+            (
+                MagicMock(
+                    min_age_years=1,
+                    min_age_months=0,
+                    min_age_days=0,
+                    max_age_years=5,
+                    max_age_months=0,
+                    max_age_days=0,
+                ),
+                [0, 1],
+                True,
+            ),
+            # Study 2-5 yrs, Child is 0-1 yrs
+            (
+                MagicMock(
+                    min_age_years=2,
+                    min_age_months=0,
+                    min_age_days=0,
+                    max_age_years=5,
+                    max_age_months=0,
+                    max_age_days=0,
+                ),
+                [0, 1],
+                False,
+            ),
+            # Study 0-24 months, Child is 0-1 yrs
+            (
+                MagicMock(
+                    min_age_years=0,
+                    min_age_months=0,
+                    min_age_days=0,
+                    max_age_years=0,
+                    max_age_months=12 * 2,
+                    max_age_days=0,
+                ),
+                [0, 1],
+                True,
+            ),
+        ]
+    )
+    def test_get_child_eligibility_for_study(
+        self, mock_study, child_age_range, expected
+    ):
+        self.assertIs(
+            age_range_eligibility_for_study(child_age_range, mock_study), expected
+        )
+
 
 class Force2FAClient(Client):
-    """For convenience when testing experimenter views, let's just pretend everyone is two-factor auth'd."""
+    """For convenience when testing researcher views, let's just pretend everyone is two-factor auth'd."""
 
     @property
     def session(self):
@@ -1073,7 +1136,7 @@ class ParticipantViewsTestCase(TestCase):
         self.client.force_login(self.participant)
         page = self.client.get(url)
         self.assertNotEqual(
-            page.status_code, 200, "Participant can see participant list view: " + url,
+            page.status_code, 200, "Participant can see participant list view: " + url
         )
 
     def test_can_see_participant_list_as_researcher(self):

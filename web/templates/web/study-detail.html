@@ -85,19 +85,7 @@
         }
 
     </script>
-    <div class='lookit-row lookit-page-title'>
-        <div class='container'>
-            <div class='row'>
-                <div class='col-sm-10'>
-                    <h2 class="study-detail-title">"{{ object.name }}": {% trans "Study overview" %}</h2>
-                </div>
-                <div class='col-sm-1'>
-                    <a href="{% url 'web:studies-list' %}" class="active btn btn-lg btn-primary pull-right back-to-list-button">{% trans "Back to list" %}</a>
-                </div>
-                
-            </div>
-        </div>
-    </div>
+    
     {% bootstrap_messages %}
   <div class='container'>
         <div class="lookit-row row">
@@ -127,7 +115,7 @@
                                   </tr>
                                   <tr>
                                       <td>{% trans "What we're studying" %}</td>
-                                      <td>{{ object.long_description|linebreaks }}</td>
+                                      <td>{{ object.purpose|linebreaks }}</td>
                                   </tr>
                               </table>
                           <p class="study-detail-contactinfo"><em>{% trans "This study is conducted by" %} {{object.contact_info}} </em></p>
@@ -138,7 +126,7 @@
                         {% if not request.user.is_authenticated %}
                             <a class="btn btn-lg btn-default" href="{% url 'login' %}">{% trans "Log in to participate" %}</a>
                         {% elif not children %}
-                            <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %} %}</a>
+                            <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}</a>
                         {% elif not has_demographic %}
                             <a class="btn btn-lg btn-default" href="{% url 'web:demographic-data-update' %}">{% trans "Complete demographic survey to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}" %}</a>
                         {% else %}

@@ -41,7 +41,7 @@ from exp.utils import (
 )
 from exp.views.mixins import (
     CanViewStudyResponsesMixin,
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     SingleObjectFetchProtocol,
     StudyLookupMixin,
 )
@@ -1174,7 +1174,7 @@ class StudySingleResponseDownload(ResponseDownloadMixin, View):
 
 
 class StudyResponseVideoAttachment(
-    ExperimenterLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin, View
+    ResearcherLoginRequiredMixin, UserPassesTestMixin, StudyLookupMixin, View
 ):
     """
     View that redirects to a requested video for a study response.
@@ -1284,7 +1284,7 @@ class StudyResponseSubmitFeedback(StudyLookupMixin, UserPassesTestMixin, View):
 
 
 class StudyResponsesConsentManager(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     generic.DetailView,
@@ -1412,7 +1412,7 @@ class StudyResponsesConsentManager(
 
 
 class StudyResponsesAll(
-    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView,
+    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView
 ):
     """
     StudyResponsesAll shows a variety of download options for response and child data
@@ -1445,7 +1445,7 @@ class StudyResponsesAll(
 
 
 class StudyDeletePreviewResponses(
-    ExperimenterLoginRequiredMixin,
+    ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     SingleObjectMixin,
@@ -1726,7 +1726,7 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
 
 
 class StudyDemographics(
-    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView,
+    CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView
 ):
     """
     StudyDemographics view shows participant demographic snapshots associated
@@ -1837,7 +1837,7 @@ class StudyDemographicsDictCSV(DemographicDownloadMixin, generic.list.ListView):
         cleaned_data = output.getvalue()
 
         filename = "{}_{}.csv".format(
-            study_name_for_files(self.study.name), "all-demographic-snapshots-dict",
+            study_name_for_files(self.study.name), "all-demographic-snapshots-dict"
         )
         response = HttpResponse(cleaned_data, content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
@@ -1955,7 +1955,6 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
         Downloads study video
         """
         match = self.request.GET.get("match", "")
-        orderby = self.get_ordering()
         study = self.study
 
         if self.request.POST.get("all-attachments"):

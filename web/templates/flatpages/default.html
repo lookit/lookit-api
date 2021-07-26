@@ -1,6 +1,7 @@
 {% load bootstrap3 %}
 {% load static %}
 {% load i18n %}
+{% load web_extras %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -18,6 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
     <link type="text/css" rel="stylesheet" href="{% static "base.css" %}" />
     <script src="https://use.fontawesome.com/41c082d3c2.js"></script>
+    {% google_tag_manager %}
   </head>
   <body>
     <div class="container-fluid">

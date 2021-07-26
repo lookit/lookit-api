@@ -5,7 +5,7 @@ from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.core.handlers.wsgi import WSGIRequest
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.http.request import QueryDict
 from django.urls.base import reverse, reverse_lazy
 from django.views import generic
@@ -65,7 +65,7 @@ class TwoFactorAuthLoginView(UserPassesTestMixin, LoginView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_redirect_url(self) -> str:
-        """Have a good default for experimenters - the study list."""
+        """Have a good default for researchers - the study list."""
         return super().get_redirect_url() or reverse("exp:study-list")
 
 

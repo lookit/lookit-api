@@ -1,45 +1,23 @@
 FROM python:3.8.3-buster
 
-RUN apt-get update \
-    && apt-get install -y \
-        ca-certificates \
-        gcc \
-        git \
-        libev4 \
-        libev-dev \
-        libevent-dev \
-        libxml2-dev \
-        libxslt1-dev \
-        libffi-dev \
-        python-dev \
-        libpq-dev \
-        graphviz \
-        libgraphviz-dev \
-        pkg-config \
-        curl \
-        gosu \
-    && gosu nobody true \
-    && apt-get clean \
-    && apt-get autoremove -y \
-        curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && pip install -U pip \
-    && update-ca-certificates \
-    && mkdir -p /code
-
-WORKDIR /code
-
-COPY ./requirements/ ./requirements/
-RUN pip install --no-cache-dir -r ./requirements/release.txt \
-    && apt-get autoremove -y \
-        gcc \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY ./ ./
-
 ARG GIT_TAG
 ARG GIT_COMMIT
+ARG POETRY_INSTALL_ARG
 ENV VERSION=${GIT_TAG} \
-    GIT_COMMIT=${GIT_COMMIT}
+    GIT_COMMIT=${GIT_COMMIT} 
 
-CMD ["python", "manage.py", "--help"]
+WORKDIR /code
+COPY ./ ./
+
+SHELL ["/bin/bash", "-c"]
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gosu=1.10-1+b23 libgraphviz-dev=2.40.1-6+deb10u1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && gosu nobody true \
+    && update-ca-certificates \
+    && wget https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -q -O /tmp/get-poetry.py \
+    && python /tmp/get-poetry.py  \
+    && source "$HOME/.poetry/env" \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-dev
