@@ -243,10 +243,6 @@ button.account-row {
     background-color: #f8f8f8;
 }
 
-.panel.study-list .right {
-    border-left: 1px solid #ddd;
-}
-
 .panel.study-list h1 {
     font-size: x-large;
     font-weight: bold;
@@ -263,10 +259,6 @@ button.account-row {
     font-size: large;
     font-weight: normal;
     margin-top: 0px;
-}
-
-.panel.study-list .description {
-    padding-left: 15px;
 }
 
 .panel.study-list .left .study-criteria {
