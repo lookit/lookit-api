@@ -276,17 +276,19 @@ button.account-row {
     margin-bottom: 10px;
 }
 
-.form-inline.study-list .btn.clear {
-    margin-left: 5px;
-}
-
-.form-inline.study-list .form-group.show-experiments {
-    margin-left: 15px;
-    margin-right: 5px;
-}
-
 .form-inline.study-list .form-group.login-message {
     margin-left: 15px ;
+}
+
+.filter-chip {
+    font-size: 11px;
+    border-radius: 15px;
+}
+
+.filter-chip-container {
+    padding-top: 12px;
+    border-top-width: 1px;
+    border-top-color: black;
 }
 
 /* FEEDBACK */

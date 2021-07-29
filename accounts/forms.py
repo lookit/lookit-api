@@ -452,13 +452,32 @@ CHILD_CHOICES = [
 ]
 
 
+class FilterChipField(forms.BooleanField):
+    def __init__(self, *args, **kwargs):
+        kwargs["required"] = False
+        kwargs["widget"] = forms.CheckboxInput(attrs={"class": "hidden"})
+        super().__init__(*args, **kwargs)
+
+
 class StudyListSearchForm(forms.Form):
 
     child = forms.ChoiceField(choices=CHILD_CHOICES, required=False)
-    hide_studies_we_have_done = forms.BooleanField(
-        label="Hide Studies We've Done", required=False
-    )
     search = forms.CharField(required=False)
+
+    hide_studies_we_have_done = FilterChipField(label=_("Hide Studies We've Done"))
+    lookit_studies = FilterChipField(initial=True)
+    studies_outside_of_lookit = FilterChipField(
+        initial=True, label=_("Studies hosted outside Lookit")
+    )
+    synchronous_studies = FilterChipField(
+        initial=True, label=_("Studies where we can participate right now")
+    )
+    asynchronous_studies = FilterChipField(
+        initial=True,
+        label=_(
+            "Studies where we can participate at a scheduled time with a researcher"
+        ),
+    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)

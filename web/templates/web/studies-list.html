@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
 {% load i18n %}
+{% load web_extras %}
 {% block title %}{% trans "Studies" %}{% endblock %}
 
 {% block flash %}
@@ -25,21 +26,31 @@
 
 {% block content %}
 {% bootstrap_messages %}
-
 <div class="panel-default">
     <div class="panel-body">
-        <form action method="post" class="form-inline study-list">
+        <form action method="post" class="study-list">
             {% csrf_token %}
-            {% bootstrap_field form.child show_label=False %}
-            {% if user.is_anonymous %}
-            <div class="form-group login-message">Log in to find studies just right for your child!</div>
-            {% endif %}
-            {% bootstrap_field form.hide_studies_we_have_done form_group_class="form-group show-experiments" %}
-            {% trans "Clear" as clear_button_text %}
-            {% bootstrap_button clear_button_text "reset" button_class="btn btn-default pull-right clear" %}
-            {% bootstrap_field form.search show_label=False form_group_class="form-group pull-right" %}
-        </form>
+            <div class="form-inline">
+                {% bootstrap_field form.child show_label=False %}
+                {% filter_chip form.hide_studies_we_have_done %}
+                {% if user.is_anonymous %}
+                <div class="form-group login-message">Log in to find studies just right for your child!</div>
+                {% endif %}
+                <div class="pull-right">
+                    {% trans "Clear" as clear_button_text %}
+                    {% bootstrap_field form.search show_label=False %}
+                    {% bootstrap_button clear_button_text "reset" button_class="btn btn-default" %}
+                </div>
+            </div>
+            <div class="filter-chip-container text-center">
+                {% filter_chip form.lookit_studies %}
+                {% filter_chip form.studies_outside_of_lookit %}
+                {% filter_chip form.synchronous_studies %}
+                {% filter_chip form.asynchronous_studies %}
+            </div>
     </div>
+    </form>
+</div>
 </div>
 
 <div class="panel-default">
@@ -108,11 +119,12 @@
 <script>
     $(function () {
         const $form = $('form');
-        const $checkbox = $form.find('input:checkbox')
+        const $hideStudiesCheckbox = $form.find('input:checkbox[name=hide_studies_we_have_done]')
+        const $checkboxes = $form.find('input:checkbox')
         const $dropdownSelected = $form.find('select option:selected')
 
         if ($dropdownSelected.val() === '') {
-            $checkbox.attr('disabled', true);
+            $hideStudiesCheckbox.attr('disabled', true);
         }
 
         $form.on('reset', function (event) {
@@ -121,17 +133,40 @@
 
         function resetForm(callbackFn) {
             $form.find('input:text').attr('value', '')
-            $checkbox.attr('checked', false);
+            $checkboxes.attr('checked', true);
+            $hideStudiesCheckbox.attr('checked', false)
             $dropdownSelected.removeAttr('selected');
             callbackFn()
         }
 
         function submitForm() {
-            $checkbox.attr('disabled', false);
+            $checkboxes.attr('disabled', false);
             $form.submit()
         }
 
         $('select, input:checkbox').on('change', submitForm)
+
+        document.querySelectorAll(".filter-chip").forEach(function (filterChip) {
+            const checkbox = document.querySelector(`[name=${filterChip.dataset.name}]`);
+
+            if (checkbox.hasAttribute('disabled')) {
+                filterChip.setAttribute('disabled', '')
+            }
+
+            if (checkbox.checked) {
+                filterChip.classList.add('btn-primary')
+            }
+
+            filterChip.addEventListener('click', function (event) {
+                event.preventDefault()
+
+                if (!filterChip.hasAttribute('disabled')) {
+                    filterChip.classList.toggle('btn-primary');
+                    checkbox.checked = !checkbox.checked;
+                    submitForm()
+                }
+            })
+        })
     });
 </script>
 
