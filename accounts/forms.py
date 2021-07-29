@@ -466,7 +466,7 @@ class StudyListSearchForm(forms.Form):
 
     hide_studies_we_have_done = FilterChipField(label=_("Hide Studies We've Done"))
     lookit_studies = FilterChipField(initial=True)
-    studies_outside_of_lookit = FilterChipField(
+    external_studies = FilterChipField(
         initial=True, label=_("Studies hosted outside Lookit")
     )
     synchronous_studies = FilterChipField(
