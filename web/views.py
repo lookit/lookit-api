@@ -221,12 +221,10 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         form = self.get_form()
 
         if form.is_valid():
-            for field in self.form_class().fields:
-                request.session[field] = form.data.get(field, "")
+            for field, value in form.clean().items():
+                request.session[field] = value
 
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+        return self.form_valid(form)
 
     def get_queryset(self):
         session = self.request.session
@@ -238,9 +236,8 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         # values from session
         search_value = session.get("search", "")
         child_value = session.get("child", "")
-        hide_studies_we_have_done_value = (
-            session.get("hide_studies_we_have_done", "") == "on"
-        )
+        hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
+        print(hide_studies_we_have_done_value)
 
         if search_value:
             studies = studies.filter(name__icontains=search_value)

@@ -461,11 +461,22 @@ class StudyListSearchForm(forms.Form):
     search = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user", None)
+        self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        if user and user.is_authenticated and user.children.count():
+        if self.user and self.user.is_authenticated and self.user.children.count():
             self.fields["child"].choices = [CHILD_CHOICES[0]] + [
-                (c.pk, c.given_name) for c in user.children.filter(deleted=False)
+                (c.pk, c.given_name) for c in self.user.children.filter(deleted=False)
             ]
         else:
             self.fields["hide_studies_we_have_done"].widget = forms.HiddenInput()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        child = cleaned_data["child"]
+        if not child or (
+            (self.user.is_authenticated and child.isnumeric())
+            or (self.user.is_anonymous and "," in child)
+        ):
+            return cleaned_data
+        else:
+            raise ValidationError("Child data doesn't match user authentication state.")
