@@ -30,9 +30,10 @@
     <div class="panel-body">
         <form action method="post" class="study-list">
             {% csrf_token %}
+            {{ form.tabs }}
             <div class="form-inline">
                 {% bootstrap_field form.child show_label=False %}
-                {% filter_chip form.hide_studies_we_have_done %}
+                {% bootstrap_field form.hide_studies_we_have_done form_group_class="form-group show-experiments" %}
                 {% if user.is_anonymous %}
                 <div class="form-group login-message">Log in to find studies just right for your child!</div>
                 {% endif %}
@@ -42,16 +43,15 @@
                     {% bootstrap_button clear_button_text "reset" button_class="btn btn-default" %}
                 </div>
             </div>
-            <div class="filter-chip-container text-center">
-                {% filter_chip form.lookit_studies %}
-                {% filter_chip form.external_studies %}
-                {% filter_chip form.synchronous_studies %}
-                {% filter_chip form.asynchronous_studies %}
-            </div>
+        </form>
     </div>
-    </form>
 </div>
-</div>
+
+<ul class="nav nav-tabs">
+    {% for tab in form.tabs %}
+    <li role="tabs" data-value="{{ tab.data.value }}"><a href="">{{ tab.data.label }}</a></li>
+    {% endfor %}
+</ul>
 
 <div class="panel-default">
     <div class="panel-body">
@@ -146,28 +146,25 @@
 
         $('select, input:checkbox').on('change', submitForm)
 
-        document.querySelectorAll(".filter-chip").forEach(function (filterChip) {
-            const checkbox = document.querySelector(`[name=${filterChip.dataset.name}]`);
+        // Set active tab based on which "tabs" radio button is checked.
+        checked_radio = document.querySelector('input[name=tabs]:checked')
+        active_tab = document.querySelector(`[data-value="${checked_radio.value}"]`)
+        active_tab.classList.add('active')
 
-            if (checkbox.hasAttribute('disabled')) {
-                filterChip.setAttribute('disabled', '')
-            }
-
-            if (checkbox.checked) {
-                filterChip.classList.add('btn-primary')
-            }
-
-            filterChip.addEventListener('click', function (event) {
+        document.querySelectorAll('[role=tabs]').forEach(function (tab) {
+            tab.addEventListener('click', function (event) {
                 event.preventDefault()
-
-                if (!filterChip.hasAttribute('disabled')) {
-                    filterChip.classList.toggle('btn-primary');
-                    checkbox.checked = !checkbox.checked;
+                const radio = document.querySelector(`[name="tabs"][value="${tab.dataset.value}"]`)
+                if (!radio.hasAttribute('checked')) {
+                    radio.checked = true
                     submitForm()
                 }
             })
         })
+
     });
+
+
 </script>
 
 {% endblock %}

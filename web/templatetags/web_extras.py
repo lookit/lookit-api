@@ -3,7 +3,6 @@ import textwrap
 from typing import Text
 
 from django import template
-from django.forms.widgets import HiddenInput
 from django.urls.base import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
@@ -50,16 +49,3 @@ def nav_item(request, url_name, text):
         li_class = "active"
 
     return mark_safe(f'<li class="{li_class}"><a href="{url}">{_(text)}</a></li>')
-
-
-@register.simple_tag
-def filter_chip(field):
-    if isinstance(field.field.widget, HiddenInput):
-        return str(field)
-    else:
-        return mark_safe(
-            f"""
-            <a class="filter-chip btn btn-default" data-name="{field.name}">{field.label}</a>
-            {field}
-        """
-        )

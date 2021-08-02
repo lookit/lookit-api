@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
@@ -452,31 +453,26 @@ CHILD_CHOICES = [
 ]
 
 
-class FilterChipField(forms.BooleanField):
-    def __init__(self, *args, **kwargs):
-        kwargs["required"] = False
-        kwargs["widget"] = forms.CheckboxInput(attrs={"class": "hidden"})
-        super().__init__(*args, **kwargs)
+class TabChoices(Enum):
+    all_studies = ("0", _("All studies"))
+    look_studies = ("1", _("Lookit studies"))
+    external_studies = ("2", _("External studies"))
+    synchronous_studies = ("3", _("Synchronous studies"))
+    asynchronous_studies = ("4", _("Asynchronous studies"))
 
 
 class StudyListSearchForm(forms.Form):
 
     child = forms.ChoiceField(choices=CHILD_CHOICES, required=False)
     search = forms.CharField(required=False)
-
-    hide_studies_we_have_done = FilterChipField(label=_("Hide Studies We've Done"))
-    lookit_studies = FilterChipField(initial=True)
-    external_studies = FilterChipField(
-        initial=True, label=_("Studies hosted outside Lookit")
+    hide_studies_we_have_done = forms.BooleanField(
+        label=_("Hide Studies We've Done"), required=False
     )
-    synchronous_studies = FilterChipField(
-        initial=True, label=_("Studies where we can participate right now")
-    )
-    asynchronous_studies = FilterChipField(
-        initial=True,
-        label=_(
-            "Studies where we can participate at a scheduled time with a researcher"
-        ),
+    tabs = forms.ChoiceField(
+        choices=[tc.value for tc in TabChoices],
+        initial=0,
+        widget=forms.RadioSelect(attrs={"class": "hidden"}),
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):

@@ -9,7 +9,7 @@ from django.db.models import Prefetch
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
 from django_countries import countries
@@ -414,7 +414,7 @@ class StudyDetailView(generic.DetailView):
                 "The study %s is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact %s"
                 % (study.name, study.contact_info)
             )
-            return HttpResponseForbidden(gettext_lazy(response_text))
+            return HttpResponseForbidden(_(response_text))
 
     def external_url(self, study: Study, response: Response) -> Text:
         """Get the external url for this study.  Additionally, while preserving the existing query
