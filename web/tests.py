@@ -598,7 +598,7 @@ class StudiesListViewTestCase(TestCase):
         mock_form_class().fields.__iter__.assert_called_once_with()
 
         self.assertIn(sentinel.field, kwargs)
-        self.assertNotIn(sentinel.field, mock_request.session)
+        self.assertIn(sentinel.field, mock_request.session)
 
     def test_get_success_url(self):
         view = StudiesListView()

@@ -279,10 +279,9 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     def get_initial(self):
         kwargs = super().get_initial()
 
-        # When field values are retrieved from session to populate form, they are removed from session
         for field in self.form_class().fields:
             if field in self.request.session:
-                kwargs[field] = self.request.session.pop(field)
+                kwargs[field] = self.request.session.get(field)
 
         return kwargs
 
