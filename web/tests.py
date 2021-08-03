@@ -467,6 +467,7 @@ class StudiesListViewTestCase(TestCase):
     def test_search_options_auth_user(self):
         mock_request = MagicMock(method="GET")
         type(mock_request.user).is_authenticated = PropertyMock(return_value=True)
+        mock_request.session.get.side_effect = ["", "", ""]
 
         response = StudiesListView.as_view()(mock_request).render()
 
@@ -506,10 +507,10 @@ class StudiesListViewTestCase(TestCase):
 
         mock_request.session.get.side_effect = [
             sentinel.search_value,
-            sentinel.child_pk,
-            "on",
+            "1",
+            True,
         ]
-        type(mock_request.user).is_anonymous = PropertyMock(return_value=False)
+        type(mock_request.user).is_authenticated = PropertyMock(return_value=True)
         mock_super_get_queryset().filter().filter.return_value = mock_studies
         mock_studies_without_completed_consent_frame.return_value = mock_studies
 
@@ -520,9 +521,9 @@ class StudiesListViewTestCase(TestCase):
         mock_super_get_queryset().filter().filter.assert_called_once_with(
             name__icontains=sentinel.search_value
         )
-        mock_child_objects.get.assert_called_once_with(
-            pk=sentinel.child_pk, user=mock_request.user
-        )
+
+        mock_child_objects.get.assert_called_once_with(pk="1", user=mock_request.user)
+
         mock_studies_without_completed_consent_frame.assert_called_once_with(
             mock_studies, mock_child_objects.get()
         )
@@ -558,7 +559,7 @@ class StudiesListViewTestCase(TestCase):
             "1,2",
             "",
         ]
-        type(mock_request.user).is_anonymous = PropertyMock(return_value=True)
+        type(mock_request.user).is_authenticated = PropertyMock(return_value=False)
         mock_super_get_queryset().filter().filter.return_value = mock_studies
         mock_studies_without_completed_consent_frame.return_value = mock_studies
 
