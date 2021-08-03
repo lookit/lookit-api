@@ -463,9 +463,14 @@ class StudyListSearchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        if self.user and self.user.is_authenticated and self.user.children.count():
+
+        children = None
+        if self.user and self.user.is_authenticated:
+            children = self.user.children.filter(deleted=False)
+
+        if children and children.count():
             self.fields["child"].choices = [CHILD_CHOICES[0]] + [
-                (c.pk, c.given_name) for c in self.user.children.filter(deleted=False)
+                (c.pk, c.given_name) for c in children
             ]
         else:
             self.fields["hide_studies_we_have_done"].widget = forms.HiddenInput()
@@ -473,9 +478,10 @@ class StudyListSearchForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         child = cleaned_data["child"]
-        if not child or (
-            (self.user.is_authenticated and child.isnumeric())
-            or (self.user.is_anonymous and "," in child)
+        if (
+            not child
+            or "," in child
+            or (self.user.is_authenticated and child.isnumeric())
         ):
             return cleaned_data
         else:
