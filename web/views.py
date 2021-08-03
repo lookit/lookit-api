@@ -224,7 +224,9 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
             for field, value in form.clean().items():
                 request.session[field] = value
 
-        return self.form_valid(form)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_queryset(self):
         session = self.request.session
@@ -237,20 +239,21 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         search_value = session.get("search", "")
         child_value = session.get("child", "")
         hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
-        print(hide_studies_we_have_done_value)
 
         if search_value:
             studies = studies.filter(name__icontains=search_value)
 
+        # Covers the corner case where user has filter set and then logs in.  This will clear the
+        # age range filter that would have been previously set while logged out.
+        if (
+            user.is_authenticated
+            and user.children.filter(deleted=False).count()
+            and "," in child_value
+        ):
+            child_value = ""
+
         if child_value:
-            if user.is_anonymous:
-                # when user is anonymous, child value is an age range.
-                age_range = [int(c) for c in child_value.split(",")]
-                studies = [
-                    s for s in studies if age_range_eligibility_for_study(age_range, s)
-                ]
-            else:
-                # when user is authenticated, child value is a child pk
+            if child_value.isnumeric() and user.is_authenticated:
                 child = Child.objects.get(pk=child_value, user=user)
 
                 if hide_studies_we_have_done_value:
@@ -260,6 +263,12 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
 
                 studies = [
                     s for s in studies if get_child_eligibility_for_study(child, s)
+                ]
+
+            else:
+                age_range = [int(c) for c in child_value.split(",")]
+                studies = [
+                    s for s in studies if age_range_eligibility_for_study(age_range, s)
                 ]
 
         studies = sorted(studies, key=self.sort_fn())
