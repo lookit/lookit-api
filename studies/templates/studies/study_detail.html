@@ -358,6 +358,7 @@
                                 <em>{{comments|linebreaks}}</em>
                             </li>
                             {% endif %}
+                            {% if not study.study_type.is_external %}
                             <li class="list-group-item list-group-item-{{ build_ui_tag }}">
                                 <div class="row">
                                     <div class="col-xs-9">
@@ -371,9 +372,9 @@
                                             </button>
                                         </form>
                                     </div>
-
                                 </div>
                             </li>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
