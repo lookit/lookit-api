@@ -298,11 +298,13 @@
                                 <i class="fas fa-mail-bulk" aria-hidden="true"></i> Message Participants
                             </a>
                         {%  endif %}
+                        {% if not study.study_type.is_external %}
                         {% if "edit_study__responses__consent_rulings" in study_perms or "edit_study__responses__consent_rulings(is_preview=True)" in study_perms %}
                             <a type="button" class="btn btn-default"
                                href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_created' %}">
                                 <i aria-hidden="true" class="fa fas fa-address-card"></i> Review Consent
                             </a>
+                        {% endif %}
                         {% endif %}
                         {% if can_create_study %}
                             {#  Here we have a hidden clone form so we can maintain dropdown styling. #}
