@@ -135,12 +135,7 @@ class StudyCreateView(
         Adds study types to get_context_data
         """
         context = super().get_context_data(**kwargs)
-        context["types"] = [
-            study_type["metadata"]["fields"]
-            for study_type in StudyType.objects.all().values_list(
-                "configuration", flat=True
-            )
-        ]
+        context["study_types"] = StudyType.objects.all()
         context["key_display_names"] = KEY_DISPLAY_NAMES
         return context
 

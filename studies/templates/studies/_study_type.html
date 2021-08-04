@@ -144,7 +144,7 @@
 
                 {% if field.input_type == "checkbox" %}
                 <div class="form-group" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
-                    <input name="{{key}}" type="{{field.input_type}}" {% if study.metadata|get_key:key %}checked{% endif %}>
+                    <input name="{{key}}" type="{{field.input_type}}" {% if study and study.metadata|get_key:key %}checked{% endif %}>
                     <label>{{key_display_names|get_key:key|default:key}}</label>
                 </div>
                 {% else %}
