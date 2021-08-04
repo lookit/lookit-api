@@ -4,7 +4,7 @@
 
     // Show the generator function field only if use_generator is checked.
     function updateGeneratorDisplay() {
-        if ($('#id_use_generator')[0].checked) {
+        if ($('#id_use_generator:checked').length) {
             $('#generator-container').show();
         } else {
             $('#generator-container').hide();
@@ -137,7 +137,9 @@
 {% bootstrap_field form.short_description %}
 {% bootstrap_field form.purpose %}
 {% bootstrap_field form.compensation_description %}
+{% if not study.study_type.is_external %}
 {% bootstrap_field form.exit_url %}
+{% endif %}
 {% bootstrap_field form.criteria %}
 {% bootstrap_field form.criteria_expression %}
 <div class="row">
@@ -226,6 +228,7 @@
 {% bootstrap_field form.duration %}
 {% bootstrap_field form.contact_info %}
 {% bootstrap_field form.lab %}
+{% if not study.study_type.is_external %}
 <div id="structure-container">
     {% bootstrap_field form.structure %}
 </div>
@@ -233,3 +236,4 @@
 <div id="generator-container">
     {% bootstrap_field form.generator %}
 </div>
+{% endif %}
