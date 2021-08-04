@@ -298,6 +298,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         return reverse("web:studies-list")
 
     def studies_without_completed_consent_frame(self, studies, child):
+        ### TODO: Add in support for external studies
         return studies.exclude(
             responses__in=Response.objects.filter(
                 child=child, completed_consent_frame=True
@@ -402,6 +403,7 @@ class StudyDetailView(generic.DetailView):
                     response, _ = Response.objects.get_or_create(
                         study=study,
                         child=child,
+                        study_type=study.study_type,
                         demographic_snapshot=user.latest_demographics,
                     )
                     external_url = self.external_url(study, response)
