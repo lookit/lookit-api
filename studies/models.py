@@ -484,6 +484,14 @@ class Study(models.Model):
     def needs_to_be_built(self):
         return self.study_type.is_ember_frame_player and not self.built
 
+    @property
+    def expressed_interest_count(self):
+        return self.responses.count()
+
+    @property
+    def confirmed_participation_count(self):
+        return self.responses.filter(confirmed=True).count()
+
     # WORKFLOW CALLBACKS
 
     def clone(self):
