@@ -225,3 +225,51 @@ def coverage_report(c):
         c (Context): Context-aware API wrapper & state-passing object.
     """
     c.run("poetry run coverage report -i")
+
+
+@task
+def remove_db(c):
+    """Remove existing postgres instance from Docker.
+
+    Args:
+        c (Context): Context-aware API wrapper & state-passing object.
+    """
+    c.run("docker stop lookit-postgres")
+    c.run("docker rm lookit-postgres")
+
+
+@task
+def create_db(c):
+    """Create postgres container in Docker.
+
+    Args:
+        c (Context): Context-aware API wrapper & state-passing object.
+    """
+    c.run(
+        """
+        docker run \
+            --name lookit-postgres \
+            -d \
+            -e POSTGRES_HOST_AUTH_METHOD="trust" \
+            -e POSTGRES_DB="lookit" \
+            -p 5432:5432 \
+            postgres:9.6
+        """
+    )
+
+
+@task
+def reset_db(c, sql_file=None):
+    """Remove, create, and populate Postgres container in Docker.
+
+    Args:
+        c (Context): Context-aware API wrapper & state-passing object.
+        sql_file (String, optional): SQL file from existing Postgres database. Defaults to None.
+    """
+    remove_db(c)
+    create_db(c)
+    c.run("sleep 3")
+    if sql_file:
+        c.run(
+            f'cat "{sql_file}" | docker exec -i lookit-postgres psql -U postgres -d lookit'
+        )
