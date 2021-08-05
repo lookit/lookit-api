@@ -18,6 +18,7 @@ from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
 
 from accounts import forms
+from accounts.forms import PastStudiesForm, StudyListSearchFormTabChoices
 from accounts.models import Child, DemographicData, User, create_string_listing_children
 from accounts.queries import (
     age_range_eligibility_for_study,
@@ -242,6 +243,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         search_value = session.get("search", "")
         child_value = session.get("child", "")
         hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
+        tab_value = session.get("tabs", "")
 
         if search_value:
             studies = studies.filter(name__icontains=search_value)
@@ -254,6 +256,22 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
             and "," in child_value
         ):
             child_value = ""
+
+        query = None
+
+        if tab_value == StudyListSearchFormTabChoices.lookit_studies.value[0]:
+            query = Q(study_type__name="Ember Frame Player (default)")
+        elif tab_value == StudyListSearchFormTabChoices.external_studies.value[0]:
+            query = Q(study_type__name="External")
+        elif tab_value == StudyListSearchFormTabChoices.synchronous_studies.value[0]:
+            query = Q(study_type__name="External", metadata__scheduled=False) | Q(
+                study_type__name="Ember Frame Player (default)"
+            )
+        elif tab_value == StudyListSearchFormTabChoices.asynchronous_studies.value[0]:
+            query = Q(study_type__name="External", metadata__scheduled=True)
+
+        if query:
+            studies = studies.filter(query)
 
         if child_value:
             if child_value.isnumeric() and user.is_authenticated:
@@ -325,13 +343,25 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
             return lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
 
 
-class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
+class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
     """
     List all active, public studies.
     """
 
     template_name = "web/studies-history.html"
     model = Study
+    form_class = PastStudiesForm
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            for field, value in form.clean().items():
+                request.session[field] = value
+
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_queryset(self):
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
@@ -358,6 +388,18 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
         return Study.objects.filter(id__in=study_ids).prefetch_related(
             Prefetch("responses", queryset=responses)
         )
+
+    def get_success_url(self):
+        return reverse("web:studies-history")
+
+    def get_initial(self):
+        kwargs = super().get_initial()
+
+        for field in self.form_class().fields:
+            if field in self.request.session:
+                kwargs[field] = self.request.session.get(field)
+
+        return kwargs
 
 
 class StudyDetailView(generic.DetailView):

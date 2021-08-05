@@ -453,9 +453,9 @@ CHILD_CHOICES = [
 ]
 
 
-class TabChoices(Enum):
+class StudyListSearchFormTabChoices(Enum):
     all_studies = ("0", _("All studies"))
-    look_studies = ("1", _("Lookit studies"))
+    lookit_studies = ("1", _("Lookit studies"))
     external_studies = ("2", _("External studies"))
     synchronous_studies = ("3", _("Synchronous studies"))
     asynchronous_studies = ("4", _("Asynchronous studies"))
@@ -469,7 +469,7 @@ class StudyListSearchForm(forms.Form):
         label=_("Hide Studies We've Done"), required=False
     )
     tabs = forms.ChoiceField(
-        choices=[tc.value for tc in TabChoices],
+        choices=[tc.value for tc in StudyListSearchFormTabChoices],
         initial=0,
         widget=forms.RadioSelect(attrs={"class": "hidden"}),
         required=False,
@@ -501,3 +501,17 @@ class StudyListSearchForm(forms.Form):
             return cleaned_data
         else:
             raise ValidationError("Child data doesn't match user authentication state.")
+
+
+class PastStudiesFormTabChoices(Enum):
+    lookit_studies = ("0", _("Lookit studies"))
+    external_studies = ("1", _("External studies"))
+
+
+class PastStudiesForm(forms.Form):
+    tabs = forms.ChoiceField(
+        choices=[tc.value for tc in PastStudiesFormTabChoices],
+        initial=0,
+        widget=forms.RadioSelect,
+        required=False,
+    )

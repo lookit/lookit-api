@@ -151,6 +151,7 @@
         active_tab = document.querySelector(`[data-value="${checked_radio.value}"]`)
         active_tab.classList.add('active')
 
+        // On click, update radio group 
         document.querySelectorAll('[role=tabs]').forEach(function (tab) {
             tab.addEventListener('click', function (event) {
                 event.preventDefault()
