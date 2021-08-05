@@ -18,7 +18,11 @@ from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
 
 from accounts import forms
-from accounts.forms import PastStudiesForm, StudyListSearchFormTabChoices
+from accounts.forms import (
+    PastStudiesForm,
+    PastStudiesFormTabChoices,
+    StudyListSearchFormTabChoices,
+)
 from accounts.models import Child, DemographicData, User, create_string_listing_children
 from accounts.queries import (
     age_range_eligibility_for_study,
@@ -385,7 +389,14 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
 
         study_ids = responses.values_list("study_id", flat=True)
 
-        return Study.objects.filter(id__in=study_ids).prefetch_related(
+        tab_value = self.request.session.get("tabs", "")
+
+        if tab_value == PastStudiesFormTabChoices.lookit_studies.value[0]:
+            query = Q(study_type__name="Ember Frame Player (default)")
+        elif tab_value == PastStudiesFormTabChoices.external_studies.value[0]:
+            query = Q(study_type__name="External")
+
+        return Study.objects.filter(Q(id__in=study_ids) & query).prefetch_related(
             Prefetch("responses", queryset=responses)
         )
 
