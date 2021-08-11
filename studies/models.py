@@ -406,7 +406,10 @@ class Study(models.Model):
 
     @property
     def judgeable_responses(self):
-        return self.responses.filter(completed_consent_frame=True)
+        if self.study_type.is_external:
+            return self.responses
+        else:
+            return self.responses.filter(completed_consent_frame=True)
 
     @property
     def responses_with_consent_videos(self):
