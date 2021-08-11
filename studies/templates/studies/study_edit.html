@@ -72,26 +72,8 @@
                         <form id="study-details-form" action="" enctype="multipart/form-data"
                               method="post">{% csrf_token %}
                             {% include "studies/_study_fields.html" with form=form study=study %}
-                            
-                            <div class="form-group">
-                                <label class="control-label" for="id_study_type">Experiment runner type</label>
-                                <select name="study_type" class="form-control" title="" required="" id="id_study_type" data-previous="{{study.study_type.id}}" {% if study.responses.count %}disabled{% endif %}>
-                                    <option value="">---------</option>
-                                    {% for option in study_types %}
-                                        <option{% if option.name == study.study_type.name %} selected {% endif %} value="{{ option.id }}">{{ option.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <div class="help-block">
-                                    Study type can only be changed as long as there are no responses for this study. 
-                                </div>
-                                <div class="help-block">
-                                    {% autoescape off %}
-                                    {{form.Meta.help_texts.study_type}}
-                                    {% endautoescape %}
-                                </div>
-                                {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}   
-                            </div>
-                            
+                            {% bootstrap_field form.study_type %}
+                            {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}   
                             <div class="pull-right">
                                 {% buttons %}
                                     <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">

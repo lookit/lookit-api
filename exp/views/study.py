@@ -21,7 +21,7 @@ from exp.views.mixins import (
     StudyTypeMixin,
 )
 from project import settings
-from studies.forms import StudyCreateForm, StudyEditForm
+from studies.forms import StudyCreateForm, StudyEditForm, StudyExternalEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -185,6 +185,12 @@ class StudyUpdateView(
             StudyPermission.WRITE_STUDY_DETAILS, study
         )
 
+    def get_form_class(self):
+        if self.object.study_type.is_external:
+            return StudyExternalEditForm
+        else:
+            return StudyEditForm
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({"user": self.request.user})
@@ -226,12 +232,8 @@ class StudyUpdateView(
         """
         study = self.get_object()
 
-        # TODO: why is this not in the form's clean function?
-        target_study_type_id = int(self.request.POST["study_type"])
-        target_study_type = StudyType.objects.get(id=target_study_type_id)
-
         metadata, meta_errors = self.validate_and_fetch_metadata(
-            study_type=target_study_type
+            study_type=study.study_type
         )
 
         if meta_errors:
@@ -240,17 +242,7 @@ class StudyUpdateView(
                 f"WARNING: Experiment runner version not saved: {meta_errors}",
             )
         else:
-            # Check that study type hasn't changed.
-            if not (
-                study.study_type_id == target_study_type_id
-                and metadata == study.metadata
-            ):
-                # Invalidate the previous build
-                study.built = False
-                # May still be building, but we're now good to allow another build
-                study.is_building = False
             study.metadata = metadata
-            study.study_type_id = target_study_type_id
             study.save()
 
             return super().post(request, *args, **kwargs)
@@ -264,6 +256,11 @@ class StudyUpdateView(
         ret = super().form_valid(form)
         messages.success(self.request, f"{self.get_object().name} study details saved.")
         return ret
+
+    def form_invalid(self, form):
+        if not form.is_valid():
+            messages.error(self.request, form.errors)
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         """
