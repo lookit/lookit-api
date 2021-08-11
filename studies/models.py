@@ -203,7 +203,7 @@ class StudyType(models.Model):
     configuration = DateTimeAwareJSONField(default=default_configuration)
 
     def __str__(self):
-        return f"<Study Type: {self.name}>"
+        return self.name
 
     @classmethod
     def default_pk(cls):
@@ -234,7 +234,6 @@ class Study(models.Model):
         "duration",
         "contact_info",
         "image",
-        "exit_url",
         "metadata",
         "study_type",
         "compensation_description",
@@ -280,7 +279,6 @@ class Study(models.Model):
     use_generator = models.BooleanField(default=False)
     generator = models.TextField(default="")
     display_full_screen = models.BooleanField(default=True)
-    exit_url = models.URLField(default="")
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
