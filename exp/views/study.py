@@ -34,6 +34,7 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
+from web.views import get_external_url
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -874,13 +875,18 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         path replacement manually. Great! Just wonderful.
         """
 
-        _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
-        path = f"{study_uuid}/{'/'.join(rest)}"
-        if not rest:
-            path += "index.html"
-        path = f"{kwargs['uuid']}/index.html"
+        study = Study.objects.get(uuid=kwargs.get("uuid", None))
 
-        return super().dispatch(request, path)
+        if study.study_type.is_external:
+            return HttpResponseRedirect(get_external_url(study))
+        else:
+            _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
+            path = f"{study_uuid}/{'/'.join(rest)}"
+            if not rest:
+                path += "index.html"
+            path = f"{kwargs['uuid']}/index.html"
+
+            return super().dispatch(request, path)
 
 
 # UTILITY FUNCTIONS

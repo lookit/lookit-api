@@ -39,6 +39,32 @@ def on_user_logged_out(sender, request, **kwargs):
     messages.success(request, "You've successfully logged out.")
 
 
+def get_external_url(study: Study, response: Response = None) -> Text:
+    """Get the external url for this study.  Additionally, while preserving the existing query
+    string, add our hashed child id.
+
+    Args:
+        study (Study): Study model object
+        child_id (Text): Hashed child id for study
+
+    Returns:
+        Text: External study url
+    """
+    url = urlparse(study.metadata["url"])
+    qs = parse_qs(url.query)
+
+    if response:
+        qs["child"] = hash_id(
+            response.child.uuid,
+            response.study.uuid,
+            response.study.salt,
+            response.study.hash_digits,
+        )
+
+    url = url._replace(query=urlencode(qs, doseq=True))
+    return url.geturl()
+
+
 class ParticipantSignupView(generic.CreateView):
     """
     Allows a participant to sign up. Redirects them to a page to add their demographic data.
@@ -459,7 +485,7 @@ class StudyDetailView(generic.DetailView):
                         study_type=study.study_type,
                         demographic_snapshot=user.latest_demographics,
                     )
-                    external_url = self.external_url(study, response)
+                    external_url = get_external_url(study, response)
                     return HttpResponseRedirect(external_url)
                 else:
                     return redirect("web:experiment-proxy", study.uuid, child_uuid)
@@ -470,28 +496,6 @@ class StudyDetailView(generic.DetailView):
                 % (study.name, study.contact_info)
             )
             return HttpResponseForbidden(_(response_text))
-
-    def external_url(self, study: Study, response: Response) -> Text:
-        """Get the external url for this study.  Additionally, while preserving the existing query
-        string, add our hashed child id.
-
-        Args:
-            study (Study): Study model object
-            child_id (Text): Hashed child id for study
-
-        Returns:
-            Text: External study url
-        """
-        url = urlparse(study.metadata["url"])
-        qs = parse_qs(url.query)
-        qs["child"] = hash_id(
-            response.child.uuid,
-            response.study.uuid,
-            response.study.salt,
-            response.study.hash_digits,
-        )
-        url = url._replace(query=urlencode(qs, doseq=True))
-        return url.geturl()
 
 
 class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
