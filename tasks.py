@@ -53,18 +53,6 @@ def dotenv(_):
 
 
 @task
-def postgresql(c):
-    """Postgresql invoke task.
-
-    Runs django db migrations.
-
-    Args:
-        c (obj): Context-aware API wrapper & state-passing object.
-    """
-    c.run("python manage.py migrate", hide="stdout")
-
-
-@task
 def ssl_certificate(c, verbose=False):
     """Ssl-certificate invoke task.
 
@@ -153,12 +141,12 @@ def server(c, https=False):
     if https and os.listdir(certs_path):
         c.run(f"echo -e '\a Serving at https://{HOSTNAME}:8000\a'", hide=False)
         c.run(
-            f"python manage.py runsslserver --certificate {certificate} --key {key}",
+            f"python -u manage.py runsslserver --certificate {certificate} --key {key}",
             hide=False,
         )
     else:
         c.run(f"echo -e '\a Serving at http://{HOSTNAME}:8000\a'", hide=False)
-        c.run("python manage.py runserver", hide=False)
+        c.run("python -u manage.py runserver", hide=False)
 
 
 @task
@@ -193,17 +181,6 @@ def pre_commit_hooks(c):
         c (Context): Context-aware API wrapper & state-passing object.
     """
     c.run("poetry run pre-commit install --install-hooks")
-
-
-@task(dotenv, postgresql, ssl_certificate, pre_commit_hooks)
-def setup(_):
-    """Setup invoke task.
-
-    This func runs the tasks specified in the task decorator.
-
-    Args:
-        c (obj): Context-aware API wrapper & state-passing object.
-    """
 
 
 @task
@@ -259,6 +236,18 @@ def create_db(c):
 
 
 @task
+def migrate_db(c):
+    """Postgresql invoke task.
+
+    Runs django db migrations.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+    """
+    c.run("python -u manage.py migrate")
+
+
+@task
 def reset_db(c, sql_file=None):
     """Remove, create, and populate Postgres container in Docker.
 
@@ -268,8 +257,20 @@ def reset_db(c, sql_file=None):
     """
     remove_db(c)
     create_db(c)
-    c.run("sleep 3")
     if sql_file:
+        c.run("sleep 3")
         c.run(
             f'cat "{sql_file}" | docker exec -i lookit-postgres psql -U postgres -d lookit'
         )
+    migrate_db(c)
+
+
+@task(dotenv, migrate_db, ssl_certificate, pre_commit_hooks)
+def setup(_):
+    """Setup invoke task.
+
+    This func runs the tasks specified in the task decorator.
+
+    Args:
+        c (obj): Context-aware API wrapper & state-passing object.
+    """
