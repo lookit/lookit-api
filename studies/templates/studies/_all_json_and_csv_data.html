@@ -142,6 +142,7 @@
                 
                     <hr>
                 
+                    {% if not study.study_type.is_external %}
                     <div class="row">
                         <div class="col-md-7 col-sm-6">
                             Frame data
@@ -170,7 +171,8 @@
                     </div>
                     
                     <hr>
-                    
+                    {% endif %}
+
                     <div class="row">
                         <div class="col-md-7 col-sm-6">
                             Child data

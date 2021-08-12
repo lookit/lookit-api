@@ -31,7 +31,7 @@ from accounts.queries import (
 from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
-from studies.models import ConsentRuling, Response, Study, Video
+from studies.models import ACCEPTED, ConsentRuling, Response, Study, Video
 
 
 @receiver(signals.user_logged_out)
@@ -485,7 +485,9 @@ class StudyDetailView(generic.DetailView):
                         study_type=study.study_type,
                         demographic_snapshot=user.latest_demographics,
                     )
-                    ConsentRuling.objects.get_or_create(response=response)
+                    ConsentRuling.objects.get_or_create(
+                        response=response, action=ACCEPTED
+                    )
                     external_url = get_external_url(study, response)
                     return HttpResponseRedirect(external_url)
                 else:

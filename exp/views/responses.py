@@ -1681,6 +1681,12 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
         paginator = context["paginator"]
         study = self.study
 
+        if study.study_type.is_external:
+            messages.error(
+                self.request, "Frame data is not available for External Studies."
+            )
+            return redirect(reverse("exp:study-responses-all", kwargs={"pk": study.pk}))
+
         zipped_file = io.BytesIO()  # import io
         with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
             for page_num in paginator.page_range:
@@ -1700,6 +1706,7 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
                 study_name_for_files(study.name)
             ),
         )
+
         return response
 
 
@@ -1711,15 +1718,22 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
 
     def get(self, request, *args, **kwargs):
         study = self.study
-        filename = "{}_{}_{}".format(
-            study_name_for_files(study.name), study.uuid, "all-frames-dict"
-        )
 
-        build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
-        messages.success(
-            request,
-            f"A frame data dictionary for {study.name} is being generated. You will be emailed a link when it's completed.",
-        )
+        if study.study_type.is_external:
+            messages.error(
+                request, "Frame data dictionary is not available for external studies"
+            )
+        else:
+            filename = "{}_{}_{}".format(
+                study_name_for_files(study.name), study.uuid, "all-frames-dict"
+            )
+
+            build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
+            messages.success(
+                request,
+                f"A frame data dictionary for {study.name} is being generated. You will be emailed a link when it's completed.",
+            )
+
         return HttpResponseRedirect(
             reverse("exp:study-responses-all", kwargs=self.kwargs)
         )

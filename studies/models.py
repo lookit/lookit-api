@@ -1302,4 +1302,9 @@ class ConsentRuling(models.Model):
         index_together = (("response", "action"), ("response", "arbiter"))
 
     def __str__(self):
-        return f"<{self.arbiter.get_short_name()}: {self.action} {self.response} @ {self.created_at:%c}>"
+
+        if self.arbiter:
+            arbitor_name = self.arbiter.get_short_name()
+        else:
+            arbitor_name = None
+        return f"<{arbitor_name}: {self.action} {self.response} @ {self.created_at:%c}>"
