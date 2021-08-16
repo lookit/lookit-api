@@ -406,10 +406,7 @@ class Study(models.Model):
 
     @property
     def judgeable_responses(self):
-        if self.study_type.is_external:
-            return self.responses
-        else:
-            return self.responses.filter(completed_consent_frame=True)
+        return self.responses.filter(completed_consent_frame=True)
 
     @property
     def responses_with_consent_videos(self):
@@ -458,7 +455,12 @@ class Study(models.Model):
 
     def responses_for_researcher(self, user):
         """Return all responses to this study that the researcher has access to read"""
-        responses = self.consented_responses
+
+        if self.study_type.is_external:
+            responses = self.responses
+        else:
+            responses = self.consented_responses
+
         if not user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, self):
             responses = responses.filter(is_preview=True)
         if not user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, self):
