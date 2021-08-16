@@ -189,6 +189,7 @@
                 </section>
             </div>
 
+            {% if not study.study_type.is_external %}
             <section class="mt-md well">
                 <h4> Videos </h4>
                 {% for response in response_data %}
@@ -209,6 +210,7 @@
                 </div>
                 {% endfor %}
             </section>
+            {% endif %}
 
         </div>
         <div class="col-md-6 col-xs-12">
