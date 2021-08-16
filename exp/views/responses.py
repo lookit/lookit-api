@@ -405,6 +405,12 @@ RESPONSE_COLUMNS = [
             for (cond_frame, conds) in resp.conditions.items()
         ],
     ),
+    ResponseDataColumn(
+        id="response__confirmed",
+        description="Response confirmed.",
+        extractor=lambda resp: resp.confirmed,
+        name="Confirmed",
+    ),
 ]
 
 # Columns for demographic data downloads. Extractor functions expect Response values dict,
