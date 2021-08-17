@@ -484,6 +484,7 @@ class StudyDetailView(generic.DetailView):
                         child=child,
                         study_type=study.study_type,
                         demographic_snapshot=user.latest_demographics,
+                        confirmed=True,
                     )
                     external_url = get_external_url(study, response)
                     return HttpResponseRedirect(external_url)
