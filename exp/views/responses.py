@@ -1041,6 +1041,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context["study"] = study = self.study
         paginated_responses = context["object_list"]
+
         columns_included_in_summary = [
             "response__id",
             "response__uuid",
@@ -1075,6 +1076,18 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             "response__completed",
             "response__is_preview",
         ]
+
+        # Removing unneeded columns by index, as removing by value is significantly slower.
+        # Columns we don't want in external studies:
+        # response__sequence        idx 10
+        # response__video_privacy   idx 7
+        # response__withdrawn       idx 4
+        # response__completed       idx 3
+
+        if study.study_type.is_external:
+            for column in (10, 7, 4, 3):
+                columns_included_in_summary.pop(column)
+
         response_data = []
         for resp in paginated_responses:
             # Info needed for table display of individual responses
