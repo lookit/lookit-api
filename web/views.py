@@ -3,7 +3,7 @@ from hashlib import sha1
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
@@ -295,8 +295,11 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         return reverse("web:studies-list")
 
     def studies_without_completed_consent_frame(self, studies, child):
-        query = Q(responses__child=child, responses__completed_consent_frame=True)
-        return studies.exclude(query)
+        return studies.exclude(
+            responses__in=Response.objects.filter(
+                child=child, completed_consent_frame=True
+            )
+        )
 
     def set_eligible_children_per_study(self, studies):
         user = self.request.user

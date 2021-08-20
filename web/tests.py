@@ -5,7 +5,6 @@ from unittest.mock import MagicMock, PropertyMock, patch, sentinel
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.db.models import Q
 from django.test import TestCase
 from django.urls import reverse
 from django.views.generic.list import MultipleObjectMixin
@@ -13,7 +12,7 @@ from django_dynamic_fixture import G
 from parameterized import parameterized
 
 from accounts.models import Child, DemographicData, User
-from studies.models import Lab, Study, StudyType
+from studies.models import Lab, Response, Study, StudyType
 from web.views import (
     ChildrenListView,
     DemographicDataUpdateView,
@@ -606,7 +605,8 @@ class StudiesListViewTestCase(TestCase):
         url = view.get_success_url()
         self.assertEqual(url, "/studies/")
 
-    def test_studies_without_completed_consent_frame(self):
+    @patch("studies.models.Response.objects", name="response_objects")
+    def test_studies_without_completed_consent_frame(self, response_objects):
         mock_studies = MagicMock(name="studies")
         mock_child = MagicMock(name="child")
 
@@ -618,9 +618,70 @@ class StudiesListViewTestCase(TestCase):
         self.assertEqual(studies, sentinel.studies)
 
         mock_studies.exclude.assert_called_once_with(
-            Q(responses__child=mock_child, responses__completed_consent_frame=True)
+            responses__in=response_objects.filter()
         )
-        mock_child.assert_not_called()
+
+    def test_studies_without_completed_consent_frame_functional(self):
+        number_of_studies = 3
+
+        # Create user
+        user = User.objects.create()
+
+        # Create child
+        child = Child.objects.create(user=user)
+
+        # Get study type
+        study_type = StudyType.objects.get(name="Ember Frame Player (default)")
+
+        # Create studies
+        for name in range(number_of_studies):
+            Study.objects.create(study_type=study_type, name=str(name))
+
+        view = StudiesListView()
+
+        # Check that all studies return with no responses
+        self.assertEqual(Response.objects.count(), 0)
+        studies_no_ccf = view.studies_without_completed_consent_frame(
+            Study.objects.all(), child
+        )
+        self.assertEqual(studies_no_ccf.count(), number_of_studies)
+
+        study1 = Study.objects.get(name="1")
+        Response.objects.create(study=study1, child=child)
+
+        # Check that all studies return even with one response for study "1"
+        self.assertEqual(Response.objects.count(), 1)
+        studies_no_ccf = view.studies_without_completed_consent_frame(
+            Study.objects.all(), child
+        )
+        self.assertEqual(studies_no_ccf.count(), number_of_studies)
+
+        # Set completed consent frame in response.
+        response = Response.objects.first()
+        response.completed_consent_frame = True
+        response.save()
+
+        # Check that study "1" is not returned
+        studies_no_ccf = view.studies_without_completed_consent_frame(
+            Study.objects.all(), child
+        )
+        self.assertEqual(studies_no_ccf.count(), number_of_studies - 1)
+        self.assertEqual(studies_no_ccf.filter(name="1").count(), 0)
+
+        # Create second response without completed consent frame
+        Response.objects.create(study=study1, child=child)
+        self.assertEqual(Response.objects.count(), 2)
+
+        # Check that the same experiments return
+        studies_no_ccf = view.studies_without_completed_consent_frame(
+            Study.objects.all(), child
+        )
+        self.assertEqual(studies_no_ccf.count(), number_of_studies - 1)
+        self.assertEqual(studies_no_ccf.filter(name="1").count(), 0)
+
+        # Finally, check the name of the two studies that return
+        self.assertEqual(studies_no_ccf.filter(name="0").count(), 1)
+        self.assertEqual(studies_no_ccf.filter(name="2").count(), 1)
 
     @patch.object(StudiesListView, "request", create=True)
     def test_child_eligibility_anon_user(self, mock_request):
