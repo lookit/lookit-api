@@ -5,67 +5,70 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{% block title %}{% endblock %} &mdash; Experimenter</title>
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-    <meta name="apple-touch-fullscreen" content="yes">
-    {% bootstrap_css %}
-    {% bootstrap_javascript jquery=True %}
-    <link href="{% static 'exp/css/app.css' %}" rel="stylesheet" />
-    {% if request.user.is_superuser %}
-    <style>
-      body {
-          background: url('{% static 'exp/img/su-mode.svg' %}') repeat transparent;
-          background-size: 400px 400px;
-      }
-    </style>
-    {% endif %}
-    {% block head %}
-    {% endblock %}
-    {% block css %}
-        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    {% endblock %}
-    <link href="{% static 'exp/css/bootstrap-editable.css' %}" rel="stylesheet"/>
-    <script src="{% static 'exp/js/bootstrap-editable.min.js' %}"></script>
-    <script src="{% static 'exp/js/clipboard.min.js' %}"></script>
-    <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-z9ZOvGHHo21RqN5De4rfJMoAxYpaVoiYhuJXPyVmSs8yn20IE3PmBM534CffwSJI"></script>
-    {% google_tag_manager %}
-  </head>
-  <body>
-    <div class="container-fluid">
-      <header class="row">
-          {% block header %}
-            {% include 'exp/_navigation.html' %}
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>{% block title %}{% endblock %} &mdash; Experimenter</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
+  <meta name="apple-touch-fullscreen" content="yes">
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery=True %}
+  <link href="{% static 'exp/css/app.css' %}" rel="stylesheet" />
+  {% if request.user.is_superuser %}
+  <style>
+    body {
+      background: url('{% static 'exp/img/su-mode.svg' %}') repeat transparent;
+      background-size: 400px 400px;
+    }
+  </style>
+  {% endif %}
+  {% block head %}
+  {% endblock %}
+  {% block css %}
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  {% endblock %}
+  <link href="{% static 'exp/css/bootstrap-editable.css' %}" rel="stylesheet" />
+  <script src="{% static 'exp/js/bootstrap-editable.min.js' %}"></script>
+  <script src="{% static 'exp/js/clipboard.min.js' %}"></script>
+  <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-z9ZOvGHHo21RqN5De4rfJMoAxYpaVoiYhuJXPyVmSs8yn20IE3PmBM534CffwSJI"></script>
+  {% google_tag_manager %}
+</head>
+
+<body>
+  <div class="container-fluid">
+    <header class="row">
+      {% block header %}
+      {% include 'exp/_navigation.html' %}
+      {% endblock %}
+    </header>
+    <section id="flash-messages">
+      {% block flash %}
+      {% endblock %}
+    </section>
+    <section>
+      <article class="row">
+        <div>
+          {% block content %}
           {% endblock %}
-      </header>
-      <section id="flash-messages">
-        {% block flash %}
-        {% endblock %}
-      </section>
-      <section>
-          <article class="row">
-              <div>
-                  {% block content %}
-                  {% endblock %}
-              </div>
-          </article>
-      </section>
-      {% block footer %}
-        <footer class="row">
-          <div class="col">
-          <p class="text-center">
-            <a href="/termsofuse/">Terms of Use</a> | 
-            <a href="/privacy/">Privacy</a>
-          </p>
-          </div>
-        </footer>
-      {% endblock %}
-      {% block footerjs %}
-      {% endblock %}
+        </div>
+      </article>
+    </section>
+    {% block footer %}
+    <footer class="row">
+      <div class="col">
+        <p class="text-center">
+          <a href="/termsofuse/">Terms of Use</a> |
+          <a href="/privacy/">Privacy</a>
+        </p>
       </div>
-  </body>
+    </footer>
+    {% endblock %}
+    {% block footerjs %}
+    {% endblock %}
+  </div>
+</body>
+
 </html>
