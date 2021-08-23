@@ -468,7 +468,7 @@ class StudyListSearchForm(forms.Form):
     hide_studies_we_have_done = forms.BooleanField(
         label=_("Hide Studies We've Done"), required=False
     )
-    tabs = forms.ChoiceField(
+    study_list_tabs = forms.ChoiceField(
         choices=[tc.value for tc in StudyListSearchFormTabChoices],
         initial=0,
         widget=forms.RadioSelect(attrs={"class": "hidden"}),
@@ -509,7 +509,7 @@ class PastStudiesFormTabChoices(Enum):
 
 
 class PastStudiesForm(forms.Form):
-    tabs = forms.ChoiceField(
+    past_studies_tabs = forms.ChoiceField(
         choices=[tc.value for tc in PastStudiesFormTabChoices],
         initial=0,
         widget=forms.RadioSelect,

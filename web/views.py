@@ -273,7 +273,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         search_value = session.get("search", "")
         child_value = session.get("child", "")
         hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
-        tab_value = session.get("tabs", "")
+        tab_value = session.get("study_list_tabs", "0")
 
         if search_value:
             studies = studies.filter(name__icontains=search_value)
@@ -394,6 +394,15 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
             return self.form_invalid(form)
 
     def get_queryset(self):
+        tab_value = self.request.session.get("past_studies_tabs", "0")
+
+        if tab_value == PastStudiesFormTabChoices.lookit_studies.value[0]:
+            study_query = Q(study_type__name="Ember Frame Player (default)")
+            response_query = Q(completed_consent_frame=True)
+        elif tab_value == PastStudiesFormTabChoices.external_studies.value[0]:
+            study_query = Q(study_type__name="External")
+            response_query = Q()
+
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
             "id", flat=True
         )

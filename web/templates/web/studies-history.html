@@ -14,8 +14,8 @@
     </form>
 
     <ul class="nav nav-tabs">
-        {% for tab in form.tabs %}
-        <li role="tabs" data-value="{{ tab.data.value }}"><a href="">{{ tab.data.label }}</a></li>
+        {% for tab in form.past_studies_tabs %}
+        <li role="past_studies_tabs" data-value="{{ tab.data.value }}"><a href="">{{ tab.data.label }}</a></li>
         {% endfor %}
     </ul>
 
@@ -145,15 +145,15 @@
     document.getElementById('past-studies').addEventListener('click', handleVideoRotation);
 
     // Set active tab based on which "tabs" radio button is checked.
-    checked_radio = document.querySelector('input[name=tabs]:checked')
+    checked_radio = document.querySelector('input[name=past_studies_tabs]:checked')
     active_tab = document.querySelector(`[data-value="${checked_radio.value}"]`)
     active_tab.classList.add('active')
 
     // On click, update radio group 
-    document.querySelectorAll('[role=tabs]').forEach(function (tab) {
+    document.querySelectorAll('[role=past_studies_tabs]').forEach(function (tab) {
         tab.addEventListener('click', function (event) {
             event.preventDefault()
-            const radio = document.querySelector(`[name="tabs"][value="${tab.dataset.value}"]`)
+            const radio = document.querySelector(`[name="past_studies_tabs"][value="${tab.dataset.value}"]`)
             if (!radio.hasAttribute('checked')) {
                 radio.checked = true
                 document.querySelector('form').submit()
