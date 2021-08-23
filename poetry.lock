@@ -48,17 +48,6 @@ python-versions = "*"
 pyflakes = ">=1.1.0"
 
 [[package]]
-name = "autoflake"
-version = "1.4"
-description = "Removes unused imports and unused variables"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-pyflakes = ">=1.1.0"
-
-[[package]]
 name = "backcall"
 version = "0.2.0"
 description = "Specifications for callback functions passed in to an API"
@@ -1540,28 +1529,6 @@ python-versions = "*"
 
 [package.dependencies]
 botocore = ">=1.12.36,<2.0a.0"
-
-[[package]]
-name = "sendgrid"
-version = "3.6.5"
-description = "SendGrid library for Python"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-python-http-client = ">=2.1.1"
-
-[[package]]
-name = "sendgrid-django"
-version = "4.2.0"
-description = "SendGrid Backend for Django"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-sendgrid = ">=3.5,<4"
 
 [[package]]
 name = "sendgrid"
