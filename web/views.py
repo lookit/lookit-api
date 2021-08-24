@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Prefetch
+from django.db.models.query_utils import Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
@@ -407,9 +408,7 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
             "id", flat=True
         )
         responses = (
-            Response.objects.filter(
-                completed_consent_frame=True, child__id__in=children_ids
-            )
+            Response.objects.filter(Q(child__id__in=children_ids) & response_query)
             .select_related("child")
             .prefetch_related(
                 Prefetch(
@@ -424,14 +423,7 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
 
         study_ids = responses.values_list("study_id", flat=True)
 
-        tab_value = self.request.session.get("tabs", "")
-
-        if tab_value == PastStudiesFormTabChoices.lookit_studies.value[0]:
-            query = Q(study_type__name="Ember Frame Player (default)")
-        elif tab_value == PastStudiesFormTabChoices.external_studies.value[0]:
-            query = Q(study_type__name="External")
-
-        return Study.objects.filter(Q(id__in=study_ids) & query).prefetch_related(
+        return Study.objects.filter(Q(id__in=study_ids) & study_query).prefetch_related(
             Prefetch("responses", queryset=responses)
         )
 
@@ -493,7 +485,6 @@ class StudyDetailView(generic.DetailView):
                         child=child,
                         study_type=study.study_type,
                         demographic_snapshot=user.latest_demographics,
-                        confirmed=True,
                     )
                     external_url = get_external_url(study, response)
                     return HttpResponseRedirect(external_url)

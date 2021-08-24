@@ -64,6 +64,7 @@
                                     {% for response in study.responses.all %}
                                     {% with videos=response.videos.all %}
                                     <div class="media">
+                                        {% if response.study_type.is_ember_frame_player %}
                                         <div class="media-left media-top">
                                             {% if videos.0.download_url %}
                                             <video controls class="media-object" width="200">
@@ -79,12 +80,14 @@
                                             <i aria-hidden="true" class="fas fa-question-circle fa-5x"></i>
                                             {% endif %}
                                         </div>
+                                        {% endif %}
                                         <div class="media-body">
                                             <dl class="dl-horizontal">
                                                 <dt>{% trans "Child" %}</dt>
                                                 <dd>{{ response.child.given_name }}</dd>
                                                 <dt>{% trans "Date" %}</dt>
                                                 <dd>{{ response.date_created }}</dd>
+                                                {% if response.study_type.is_ember_frame_player %}
                                                 <dt>{% trans "Consent status" %}</dt>
                                                 <dd>
                                                     {% if response.most_recent_ruling == 'accepted' %}
@@ -97,6 +100,7 @@
                                                     {% trans "No information about consent video review status." %}
                                                     {% endif %}
                                                 </dd>
+                                                {% endif %}
                                                 {% if response.feedback.all %}
                                                 <dt>{% trans "Feedback" %}</dt>
                                                 <dd>
