@@ -257,8 +257,8 @@ def reset_db(c, sql_file=None):
     """
     remove_db(c)
     create_db(c)
+    c.run("sleep 3")
     if sql_file:
-        c.run("sleep 3")
         c.run(
             f'cat "{sql_file}" | docker exec -i lookit-postgres psql -U postgres -d lookit'
         )

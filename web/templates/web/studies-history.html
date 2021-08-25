@@ -64,7 +64,7 @@
                                     {% for response in study.responses.all %}
                                     {% with videos=response.videos.all %}
                                     <div class="media">
-                                        {% if response.study_type.is_ember_frame_player %}
+                                        {% if is_lookit_study %}
                                         <div class="media-left media-top">
                                             {% if videos.0.download_url %}
                                             <video controls class="media-object" width="200">
@@ -87,7 +87,7 @@
                                                 <dd>{{ response.child.given_name }}</dd>
                                                 <dt>{% trans "Date" %}</dt>
                                                 <dd>{{ response.date_created }}</dd>
-                                                {% if response.study_type.is_ember_frame_player %}
+                                                {% if is_lookit_study %}
                                                 <dt>{% trans "Consent status" %}</dt>
                                                 <dd>
                                                     {% if response.most_recent_ruling == 'accepted' %}
@@ -123,7 +123,15 @@
                         </div>
                     </div>
                     {% empty %}
-                    <p><em> {% trans "You have not yet participated in any studies." %} </em></p>
+                    <div class="panel-default">
+                        <div class="panel-body">
+                            {% if is_lookit_study %}
+                            <em> {% trans "You have not yet participated in any Lookit studies." %} </em>
+                            {% else %}
+                            <em> {% trans "You have not yet participated in any external studies." %} </em>
+                            {% endif %}
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>

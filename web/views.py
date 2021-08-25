@@ -439,6 +439,14 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
 
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_lookit_study"] = (
+            self.request.session.get("past_studies_tabs", "0")
+            == PastStudiesFormTabChoices.lookit_studies.value[0]
+        )
+        return context
+
 
 class StudyDetailView(generic.DetailView):
     """
