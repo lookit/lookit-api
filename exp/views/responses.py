@@ -1429,6 +1429,13 @@ class StudyResponsesConsentManager(
             )
         )
 
+    def get(self, request, *args, **kwargs):
+        if self.get_object().study_type.is_external:
+            messages.error(request, "There is no consent manager for external studies.")
+            return HttpResponseRedirect(reverse("exp:study-detail", kwargs=kwargs))
+        else:
+            return super().get(request, *args, **kwargs)
+
 
 class StudyResponsesAll(
     CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView
