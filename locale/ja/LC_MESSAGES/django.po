@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-15 18:49+0000\n"
+"POT-Creation-Date: 2021-08-28 15:48+0200\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -64,25 +64,28 @@ msgstr "ユーザー名"
 #: accounts/forms.py:254
 msgid ""
 "It's time for another session of a study we are currently participating in"
-msgstr "参加されている研究の続きの時間です"
+msgstr "参加した研究・調査の続きがあるとき"
 
 #: accounts/forms.py:256
 msgid "A new study is available for one of my children"
-msgstr "私の子供ができる新しい研究があります"
+msgstr "私の子どもが参加できる新しい研究・調査があるとき"
 
 #: accounts/forms.py:258
 #, fuzzy
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
-msgstr "参加した研究の更新があります（例えば、結果が公開されています）"
+msgstr ""
+"参加した研究・調査に関するお知らせがあるとき (例：結果をまとめた学術論文が出"
+"版された場合など)"
 
 #: accounts/forms.py:261
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
 msgstr ""
-"研究者が私の回答に質問がある（例えば、研究中に技術的な問題を報告した場合）"
+"参加した研究・調査における私の回答に対して、研究者から質問があるとき (例：web"
+"カメラがうまく接続できなかったなど技術的な問題を報告していた場合など)"
 
 #: accounts/forms.py:270 accounts/forms.py:317
 msgid "What category(ies) does your family identify as?"
@@ -704,10 +707,10 @@ msgstr "メールの設定"
 
 #: accounts/templates/accounts/_account-navigation.html:5
 msgid "Edit when you can be contacted."
-msgstr "連絡可能な時間帯を編集する。"
+msgstr "どのような場合にお知らせを受け取るかを編集する。"
 
 #: accounts/templates/accounts/account-update.html:14
-#: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
 #: web/templates/web/children-list.html:67
 #: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
@@ -1165,6 +1168,9 @@ msgid ""
 "To report any technical difficulties during participation, please contact "
 "our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
 msgstr ""
+"研究・調査への参加中に技術的な問題が発生した場合は、Lookit（ルックイット）"
+"チームまでご連絡ください。 <a href='mailto:lookit-tech@mit.edu'>lookit-"
+"tech@mit.edu"
 
 #: web/templates/flatpages/contact.html:17
 msgid "Questions about the studies"
@@ -1176,6 +1182,9 @@ msgid ""
 "our FAQ. With any additional questions, please contact us at <a href='mailto:"
 "lookit@mit.edu'>lookit@mit.edu</a>."
 msgstr ""
+"研究・調査の内容に関するご質問やご不明な点がございましたら、「よくある質問」"
+"をご覧ください。その他ご不明な点がございましたら、 <a href='mailto:"
+"lookit@mit.edu'>lookit@mit.edu</a> までご連絡ください。"
 
 #: web/templates/flatpages/contact.html:19
 #: web/templates/flatpages/privacy.html:140
@@ -1189,6 +1198,10 @@ msgid ""
 "please check out the <a href='https://lookit.readthedocs.io/en/develop' "
 "target='_blank'>documentation</a>."
 msgstr ""
+"Lookitは、すべての発達研究者が利用でき、コードは完全にオープンソースとなって"
+"おります。ご自身の研究や開発のためにさらに詳しい情報をお求めの方は、 <a "
+"href='https://lookit.readthedocs.io/en/develop' target='_blank'> こちらの資"
+"料 </a> をご覧ください。"
 
 #: web/templates/flatpages/contact.html:21
 msgid ""
@@ -1197,9 +1210,13 @@ msgid ""
 "the platform, in <a href='http://www.mitpressjournals.org/toc/"
 "opmi/1/1'>these papers</a>."
 msgstr ""
+"Lookiウェブシステムのプロトタイプ版に関する初期の検証研究のいくつかは、2015年"
+"に完了しました。その結果や、このウェブシステムの利点・欠点については、<a "
+"href='http://www.mitpressjournals.org/toc/opmi/1/1'> こちらの論文 </a> をご覧"
+"ください。"
 
 #: web/templates/flatpages/default.html:10
-#: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
@@ -1265,7 +1282,6 @@ msgid ""
 "                                "
 msgstr ""
 "\n"
-"\n"
 "                                <p>認知発達とは、子供が何を理解し、どのように"
 "学習するかについての科学です。認知発達の研究者は、次のような疑問に興味を持っ"
 "ています。\n"
@@ -1306,7 +1322,6 @@ msgid ""
 "children to learn more about how kids think!</p>\n"
 "                            "
 msgstr ""
-"\n"
 "\n"
 "                            <p>あなたにお子さんがいて、もし研究・調査に参加し"
 "てくださる場合は、まずアカウントを新規作成して、お子さんの年齢に合う研究・調"
@@ -1382,7 +1397,8 @@ msgstr ""
 "ドしたりすることはできません。インフォームド・コンセントが明確に示されていな"
 "い同意録画があった場合（例：技術的なトラブルのために音声が記録されていない場"
 "合）、研究者があなたのメール設定に応じた形で、確認のための連絡することがあり"
-"ます。</p>"
+"ます。</p>\n"
+"                                "
 
 #: web/templates/flatpages/faq.html:80
 msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
@@ -1437,7 +1453,8 @@ msgstr ""
 "サービス開始に先立ち、セキュリティ業者とリスク評価を行い、詳細な手動での侵入"
 "テストを実施しました。</p>\n"
 "        \t\t\t\t\t\t\t\t<p>「録画データを見るのはどんな人ですか？」の項目もご"
-"覧ください。</p>"
+"覧ください。</p>\n"
+"                                "
 
 #: web/templates/flatpages/faq.html:107
 msgid "Who will see our video?"
@@ -1833,7 +1850,8 @@ msgstr ""
 "高いものにし、研究・調査結果の再現可能性を高める。</li>\n"
 "        \t\t\t\t\t\t\t\t\t<li>私たちが行っている研究・調査と、それらから学べ"
 "る事柄について、ご家庭とコミュニケーションをとる。</li>\n"
-"                                </ul>"
+"                                </ul>\n"
+"                                "
 
 #: web/templates/flatpages/faq.html:206
 msgid "When will we see the results of the study?"
@@ -2126,10 +2144,8 @@ msgid "A project of the MIT Early Childhood Cognition Lab"
 msgstr "MIT子ども認知発達研究室のプロジェクト"
 
 #: web/templates/flatpages/home.html:12
-#, fuzzy
-#| msgid "Participation"
 msgid "Participate in a Study"
-msgstr "参加"
+msgstr "研究・調査に参加する"
 
 #: web/templates/flatpages/home.html:22
 msgid "Bringing science home"
@@ -2296,7 +2312,7 @@ msgid ""
 "            </ul>"
 msgstr ""
 "\n"
-"            <ul>\n"
+"<ul> \n"
 "<li>アカウントデータ </li>\n"
 "<li>研究・調査に参加するお子さんのデータ</li>\n"
 "<li>あなたの人口統計に関するデータ</li>\n"
@@ -2464,12 +2480,12 @@ msgid ""
 "            "
 msgstr ""
 "\n"
-"            <ul>\n"
+"<ul>\n"
 "<li>ユーザ名、お子さんのニックネーム、連絡先情報などを研究・調査の対象として"
 "使用することはできません</li>\n"
 "<li>研究者は、研究・調査への参加報酬や、研究・調査への参加に必要な資料を送付"
 "するためにのみ、郵送にて参加者に連絡を取ることができます</li>\n"
-"            </ul>\n"
+"</ul>\n"
 "            "
 
 #: web/templates/flatpages/privacy.html:114
@@ -2820,7 +2836,7 @@ msgstr "ログイン認証に失敗しました。再度行ってください。
 
 #: web/templates/registration/login.html:18
 #: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:50
+#: web/templates/web/_navigation.html:45
 msgid "Login"
 msgstr "ログイン"
 
@@ -2991,35 +3007,35 @@ msgstr "メールアドレス:"
 msgid "Reset my password"
 msgstr "パスワードをリセットする"
 
-#: web/templates/web/_navigation.html:22
+#: web/templates/web/_navigation.html:17
 msgid "Experimenter"
 msgstr "研究者"
 
-#: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
+#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
 msgid "Studies"
 msgstr "研究・調査"
 
-#: web/templates/web/_navigation.html:34
+#: web/templates/web/_navigation.html:29
 msgid "FAQ"
 msgstr "FAQ"
 
-#: web/templates/web/_navigation.html:35
+#: web/templates/web/_navigation.html:30
 msgid "The Scientists"
 msgstr "研究者"
 
-#: web/templates/web/_navigation.html:36
+#: web/templates/web/_navigation.html:31
 msgid "Resources"
 msgstr "参考資料"
 
-#: web/templates/web/_navigation.html:45
+#: web/templates/web/_navigation.html:40
 msgid "Hi"
 msgstr "こんにちは"
 
-#: web/templates/web/_navigation.html:47
+#: web/templates/web/_navigation.html:42
 msgid "Logout"
 msgstr "ログアウト"
 
-#: web/templates/web/_navigation.html:49
+#: web/templates/web/_navigation.html:44
 msgid "Sign up"
 msgstr "登録する"
 
@@ -3129,7 +3145,7 @@ msgstr ""
 
 #: web/templates/web/participant-email-preferences.html:27
 msgid "I would like to be contacted when:"
-msgstr "以下の場合に連絡を受けることを希望します。"
+msgstr "以下の場合にお知らせを受け取ることを希望します。"
 
 #: web/templates/web/participant-signup.html:18
 msgid "Create Participant Account"
@@ -3141,7 +3157,7 @@ msgstr "家族アカウントを作成してLookitの研究・調査に参加し
 
 #: web/templates/web/participant-signup.html:23
 msgid "To register as a researcher, please use"
-msgstr "研究者として登録する場合は、こちらを使ってください。"
+msgstr "研究者として登録する場合は、このフォームを使用してください"
 
 #: web/templates/web/participant-signup.html:23
 msgid "this form"
