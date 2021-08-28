@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-28 19:30+0200\n"
+"POT-Creation-Date: 2021-08-28 19:40+0200\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -105,12 +105,10 @@ msgid "What state do you live in?"
 msgstr "¿En qué provincia vivís?"
 
 #: accounts/forms.py:307
-#, fuzzy
 msgid "How would you describe the area where you live?"
 msgstr "¿Cómo describirías la zona donde vivís?"
 
 #: accounts/forms.py:309
-#, fuzzy
 msgid "What language(s) does your family speak at home?"
 msgstr "¿Qué idioma(s) habla vuestra familia en casa?"
 
@@ -211,7 +209,6 @@ msgid "Characteristics and conditions"
 msgstr "Características y condiciones"
 
 #: accounts/forms.py:385 accounts/forms.py:437
-#, fuzzy
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
@@ -799,7 +796,6 @@ msgid "Area description"
 msgstr "Descripción del área"
 
 #: accounts/templates/accounts/participant_detail.html:110
-#, fuzzy
 msgid "Languages Spoken at Home"
 msgstr "Idiomas que se hablan en casa"
 
@@ -816,7 +812,6 @@ msgid "Number of Guardians"
 msgstr "Número de tutores/as"
 
 #: accounts/templates/accounts/participant_detail.html:142
-#, fuzzy
 msgid "Explanation for Guardians:"
 msgstr "Explicación sobre tutores/as:"
 
@@ -977,7 +972,6 @@ msgid "Chhattisgarhi"
 msgstr "Chhattisgarhi"
 
 #: studies/fields.py:65
-#, fuzzy
 msgid "Egyptian Spoken Arabic"
 msgstr "Árabe egipcio hablado"
 
@@ -1058,7 +1052,6 @@ msgid "Min Nan"
 msgstr "Min Nan"
 
 #: studies/fields.py:90
-#, fuzzy
 msgid "Moroccan Spoken Arabic"
 msgstr "Árabe marroquí hablado"
 
@@ -1760,7 +1753,6 @@ msgid "Predictive looking"
 msgstr "Mirada predictiva"
 
 #: web/templates/flatpages/faq.html:166
-#, fuzzy
 msgid ""
 "Children can often make sophisticated predictions about what they expect to "
 "see or hear next. One way we can see those predictions in young children is "
@@ -1799,7 +1791,6 @@ msgstr ""
 "creían que era el nombre correcto para el objeto."
 
 #: web/templates/flatpages/faq.html:174
-#, fuzzy
 msgid ""
 "Another way we can learn about how older children (and adults) think is to "
 "measure their reaction times. For instance, we might ask you to help your "
@@ -1834,7 +1825,6 @@ msgstr ""
 "Esperamos..."
 
 #: web/templates/flatpages/faq.html:187
-#, fuzzy
 msgid ""
 "\n"
 "                                <ul>\n"
@@ -1863,6 +1853,7 @@ msgid ""
 "                                </ul>\n"
 "                                "
 msgstr ""
+"\n"
 "<ul>\n"
 "        \t\t\t\t\t\t\t\t\t<li>Facilitar vuestra participación en nuestros "
 "estudios, especialmente la de familias en las que ningún adulto se queda en "
@@ -1889,7 +1880,7 @@ msgstr ""
 "        \t\t\t\t\t\t\t\t\t<li>Comunicar a las familias nuestra labor "
 "investigadora y sobre lo que aprendemos de ella.</li>\n"
 "        \t\t\t\t\t\t\t\t</ul>\n"
-"        \t\t\t\t\t\t\t"
+"                                "
 
 #: web/templates/flatpages/faq.html:206
 msgid "When will we see the results of the study?"
@@ -2205,7 +2196,6 @@ msgid "Bringing science home"
 msgstr "Llevando la ciencia a casa"
 
 #: web/templates/flatpages/home.html:23
-#, fuzzy
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
@@ -3302,12 +3292,10 @@ msgid "To register as a researcher, please use"
 msgstr "Para registrarte como investigador/a, utiliza"
 
 #: web/templates/web/participant-signup.html:23
-#, fuzzy
 msgid "this form"
 msgstr "este formulario"
 
 #: web/templates/web/participant-signup.html:23
-#, fuzzy
 msgid "instead"
 msgstr "en lugar de"
 
@@ -3441,7 +3429,6 @@ msgstr ""
 "No hay información sobre el estado de revisión del video de consentimiento."
 
 #: web/templates/web/studies-history.html:133
-#, fuzzy
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -3517,7 +3504,6 @@ msgid "Compensation"
 msgstr "Compensación"
 
 #: web/templates/web/study-detail.html:126
-#, fuzzy
 msgid "What happens"
 msgstr "Qué sucede"
 
