@@ -243,8 +243,15 @@ class StudyUpdateView(
                 f"WARNING: Experiment runner version not saved: {meta_errors}",
             )
         else:
-            study.metadata = metadata
-            study.save()
+            # Check that study type hasn't changed.
+            if metadata != study.metadata:
+                # Invalidate the previous build
+                study.built = False
+                # May still be building, but we're now good to allow another build
+                study.is_building = False
+                # Update metadata
+                study.metadata = metadata
+                study.save()
 
             return super().post(request, *args, **kwargs)
 
