@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import ConsentRuling, Lab, Response, Study, StudyType
+from studies.models import ConsentRuling, Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -19,13 +19,10 @@ class ChildrenTestCase(APITestCase):
         self.child_without_consented_response = G(
             Child, user=self.participant, given_name="Jane"
         )
-        self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="ECCL")
         self.lab.researchers.add(self.researcher)
         self.lab.save()
-        self.study = G(
-            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
-        )
+        self.study = G(Study, creator=self.researcher, lab=self.lab)
         self.response_consented = G(
             Response,
             child=self.child_with_consented_response,

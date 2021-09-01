@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import ConsentRuling, Feedback, Lab, Response, Study, StudyType
+from studies.models import ConsentRuling, Feedback, Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -17,13 +17,10 @@ class FeedbackTestCase(APITestCase):
         self.researcher = G(User, is_active=True, is_researcher=True)
         self.participant = G(User, is_active=True)
         self.child = G(Child, user=self.participant)
-        self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT")
         self.lab.researchers.add(self.researcher)
         self.lab.save()
-        self.study = G(
-            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
-        )
+        self.study = G(Study, creator=self.researcher, lab=self.lab)
         # completed_consent_frame is important - won't be included in queryset regardless of consent ruling if not
         self.response = G(
             Response,

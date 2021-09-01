@@ -105,7 +105,6 @@ class StudyViewsTestCase(TestCase):
             use_generator=False,
             generator=self.generator_function_string,
             criteria_expression="",
-            exit_url="https://lookit.mit.edu/studies/history",
             metadata={
                 "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
                 "last_known_player_sha": "fakecommitsha",
@@ -346,6 +345,7 @@ class StudyViewsTestCase(TestCase):
         )
 
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    @skip("Not able to change study type on in study edit view.")
     def test_study_edit_change_study_type(self, mock_validate):
         mock_validate.return_value = {"fake": "metadata"}, []
         # Mock validation function - we should test that unit separately

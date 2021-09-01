@@ -9,7 +9,7 @@ from guardian.shortcuts import assign_perm
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, Message, User
-from studies.models import Lab, Response, Study, StudyType
+from studies.models import Lab, Response, Study
 from studies.permissions import StudyPermission
 
 
@@ -36,12 +36,10 @@ class ContactViewTestCase(TestCase):
         )
 
         # Create main study
-        self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT")
         self.study = G(
             Study,
             creator=self.researcher_without_perm,
-            study_type=self.study_type,
             name="Main Study",
             lab=self.lab,
         )
@@ -50,7 +48,6 @@ class ContactViewTestCase(TestCase):
         self.other_study = G(
             Study,
             creator=self.researcher_without_perm,
-            study_type=self.study_type,
             name="Other Study",
             lab=self.lab,
         )

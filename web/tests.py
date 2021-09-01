@@ -466,7 +466,7 @@ class StudiesListViewTestCase(TestCase):
     def test_search_options_auth_user(self):
         mock_request = MagicMock(method="GET")
         type(mock_request.user).is_authenticated = PropertyMock(return_value=True)
-        mock_request.session.get.side_effect = ["", "", ""]
+        mock_request.session.get.side_effect = ["", "", "", ""]
 
         response = StudiesListView.as_view()(mock_request).render()
 
@@ -504,11 +504,7 @@ class StudiesListViewTestCase(TestCase):
         mock_study = MagicMock(name="study")
         mock_studies = [mock_study]
 
-        mock_request.session.get.side_effect = [
-            sentinel.search_value,
-            "1",
-            True,
-        ]
+        mock_request.session.get.side_effect = [sentinel.search_value, "1", True, ""]
         type(mock_request.user).is_authenticated = PropertyMock(return_value=True)
         mock_super_get_queryset().filter().filter.return_value = mock_studies
         mock_studies_without_completed_consent_frame.return_value = mock_studies
@@ -553,11 +549,7 @@ class StudiesListViewTestCase(TestCase):
         mock_study = MagicMock(name="study")
         mock_studies = [mock_study]
 
-        mock_request.session.get.side_effect = [
-            sentinel.search_value,
-            "1,2",
-            "",
-        ]
+        mock_request.session.get.side_effect = [sentinel.search_value, "1,2", "", ""]
         type(mock_request.user).is_authenticated = PropertyMock(return_value=False)
         mock_super_get_queryset().filter().filter.return_value = mock_studies
         mock_studies_without_completed_consent_frame.return_value = mock_studies

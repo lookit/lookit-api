@@ -3,7 +3,7 @@ from django.test import TestCase
 from django_dynamic_fixture import G
 
 from accounts.models import Child, User
-from studies.models import Lab, Response, Study, StudyType, Video
+from studies.models import Lab, Response, Study, Video
 
 
 class ResponseSaveHandlingTestCase(TestCase):
@@ -14,11 +14,8 @@ class ResponseSaveHandlingTestCase(TestCase):
         self.participant = G(User, is_active=True, given_name="Participant 1")
         self.participant.save()
         self.child = G(Child, user=self.participant, given_name="Sally")
-        self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT")
-        self.study = G(
-            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
-        )
+        self.study = G(Study, creator=self.researcher, lab=self.lab)
         self.response_after_consent_frame = G(
             Response,
             child=self.child,
