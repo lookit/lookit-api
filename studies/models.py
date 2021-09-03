@@ -207,7 +207,15 @@ class StudyType(models.Model):
 
     @classmethod
     def default_pk(cls):
-        return cls.objects.get(name="Ember Frame Player (default)").pk
+        return cls.get_ember_frame_player().pk
+
+    @classmethod
+    def get_ember_frame_player(cls):
+        return cls.objects.get(name="Ember Frame Player (default)")
+
+    @classmethod
+    def get_external(cls):
+        return cls.objects.get(name="External")
 
     @property
     def is_ember_frame_player(self):
