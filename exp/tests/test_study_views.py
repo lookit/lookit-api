@@ -1175,6 +1175,54 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
 
 
 class StudyDetailViewTestCase(TestCase):
+    def setUp(self):
+        self.client = Force2FAClient()
+
+        user = G(User, is_active=True, is_researcher=True, username="lab researcher")
+        self.client.force_login(user)
+
+        lab = Lab.objects.get(name="Early Childhood Cognition Lab")
+
+        self.frame_player_study = G(
+            Study,
+            image=SimpleUploadedFile(
+                name="small.gif", content="", content_type="image/gif"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            public=True,
+            lab=lab,
+            built=True,
+        )
+
+        self.external_study = G(
+            Study,
+            image=SimpleUploadedFile(
+                name="small.gif", content="", content_type="image/gif"
+            ),
+            study_type=StudyType.get_external(),
+            public=True,
+            lab=lab,
+            built=True,
+        )
+
+        # set permissions for both external and frame player studies
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.codename, user, self.frame_player_study
+        )
+        assign_perm(
+            StudyPermission.CODE_STUDY_CONSENT.prefixed_codename,
+            user,
+            self.frame_player_study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.codename, user, self.external_study
+        )
+        assign_perm(
+            StudyPermission.CODE_STUDY_CONSENT.prefixed_codename,
+            user,
+            self.external_study,
+        )
+
     def test_model(self) -> None:
         study_list_view = StudyDetailView()
         self.assertIs(study_list_view.model, Study)
@@ -1223,6 +1271,21 @@ class StudyDetailViewTestCase(TestCase):
             StudyPermission.READ_STUDY_DETAILS, mock_get_object()
         )
         mock_is_researcher.assert_called_with()
+
+    def test_study_detail_review_consent(self):
+        # check if review consent is viewable on a frame player study
+        response = self.client.get(
+            reverse("exp:study-detail", kwargs={"pk": self.frame_player_study.pk})
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertIn(b"Review Consent", response.content)
+
+        # check that review consent is not view on an external study
+        response = self.client.get(
+            reverse("exp:study-detail", kwargs={"pk": self.external_study.pk})
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertNotIn(b"Review Consent", response.content)
 
 
 class StudyPreviewDetailViewTestCase(TestCase):
