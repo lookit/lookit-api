@@ -9,6 +9,9 @@ from django.core.exceptions import ValidationError
 from django.forms import EmailField
 from django.utils.translation import gettext_lazy as _
 
+from django_countries.fields import CountryField
+from django_countries import countries
+    
 from accounts.backends import two_factor_auth_backend
 from accounts.models import Child, DemographicData, User
 
@@ -270,6 +273,8 @@ class DemographicDataForm(forms.ModelForm):
         label=_("What category(ies) does your family identify as?"),
         required=False,
     )
+
+    country = CountryField(_(u'Country'), choices=countries, blank=True)
 
     class Meta:
         model = DemographicData

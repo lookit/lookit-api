@@ -19,6 +19,7 @@ from django.utils.html import mark_safe
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django_countries.fields import CountryField
+from django_countries import countries
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user, get_perms
 from kombu.utils import cached_property
@@ -39,7 +40,7 @@ from studies.permissions import (
     StudyPermission,
 )
 
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 class UserManager(BaseUserManager):
     def get_by_natural_key(self, username):
@@ -523,7 +524,7 @@ class DemographicData(models.Model):
     former_lookit_annual_income = models.CharField(max_length=30, blank=True)
     number_of_books = models.IntegerField(null=True, blank=True, default=None)
     additional_comments = models.TextField(blank=True)
-    country = CountryField(blank=True)
+    country = CountryField(_(u'Country'), choices=countries, blank=True)
     state = USStateField(
         blank=True, choices=("XX", _("Select a State")) + USPS_CHOICES[:]
     )
