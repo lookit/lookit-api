@@ -12,7 +12,7 @@ from django_dynamic_fixture import G
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, User
 from accounts.utils import hash_id
-from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
+from studies.models import ConsentRuling, Lab, Response, Study, Video
 
 
 class Force2FAClient(Client):
@@ -46,14 +46,12 @@ class ResponseViewsTestCase(TestCase):
         self.participants = [
             G(User, is_active=True, given_name="Mom") for i in range(n_participants)
         ]
-        self.study_type = G(StudyType, name="default", id=1)
 
         self.lab = G(Lab, name="MIT")
         self.study = G(
             Study,
             creator=self.study_admin,
             shared_preview=False,
-            study_type=self.study_type,
             name="Test Study",
             lab=self.lab,
         )
@@ -64,7 +62,6 @@ class ResponseViewsTestCase(TestCase):
             Study,
             creator=self.study_admin,
             shared_preview=True,
-            study_type=self.study_type,
             name="Test Study",
             lab=self.lab,
         )
@@ -305,13 +302,12 @@ class ResponseDataDownloadTestCase(TestCase):
         self.study_previewer = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 3"
         )
-        self.study_type = G(StudyType, name="default", id=1)
+
         self.lab = G(Lab, name="MIT")
         self.study = G(
             Study,
             creator=self.study_reader,
             shared_preview=False,
-            study_type=self.study_type,
             name="Test Study",
             lab=self.lab,
         )
@@ -319,7 +315,6 @@ class ResponseDataDownloadTestCase(TestCase):
             Study,
             creator=self.study_reader,
             shared_preview=False,
-            study_type=self.study_type,
             name="Test Study 2",
             lab=self.lab,
         )

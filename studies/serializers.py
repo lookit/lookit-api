@@ -1,3 +1,4 @@
+from django.urls.base import reverse
 from rest_framework_json_api import serializers
 
 from accounts.models import Child
@@ -14,6 +15,7 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="api:study-detail", lookup_field="uuid"
     )
+    exit_url = serializers.SerializerMethodField()
     responses = PatchedHyperlinkedRelatedField(
         queryset=Response.objects,
         many=True,
@@ -27,7 +29,6 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
         fields = (
             "url",
             "name",
-            # "date_modified",
             "short_description",
             "purpose",
             "criteria",
@@ -41,10 +42,13 @@ class StudySerializer(UuidHyperlinkedModelSerializer):
             "exit_url",
             "state",
             "public",
-            # "organization",
-            # "creator",
             "responses",
             "pk",
+        )
+
+    def get_exit_url(self, obj):
+        return self.context["request"].build_absolute_uri(
+            reverse("web:studies-history")
         )
 
 

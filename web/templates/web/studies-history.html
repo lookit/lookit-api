@@ -3,32 +3,29 @@
 {% load i18n %}
 {% block title %}{% trans "Past Studies" %}{% endblock %}
 
-{% block flash %}
-{% if form.errors %}
-<div class="alert alert-danger" role="alert">
-    <p>{% trans "Your login credentials didn't work. Please try again." %}</p>
-</div>
-{% endif %}
-
-{% if next %}
-<div class="alert alert-danger" role="alert">
-    {% if user.is_authenticated %}
-    <p>{% trans "Your account doesn't have access to this page. To proceed, please login with an account that has access." %}</p>
-    {% else %}
-    <p>{% trans "Please login to see this page." %}</p>
-    {% endif %}
-</div>
-{% endif %}
-{% endblock %}
 {% block content %}
 {% bootstrap_messages %}
 
 <div class="lookit-row studies-row">
+
+    <form action method="post" class="hidden">
+        {% csrf_token %}
+        {{ form }}
+    </form>
+
+    <ul class="nav nav-tabs">
+        {% for tab in form.past_studies_tabs %}
+        <li role="past_studies_tabs" data-value="{{ tab.data.value }}"><a href="">{{ tab.data.label }}</a></li>
+        {% endfor %}
+    </ul>
+
     <div class="container">
         <div id="past-studies">
             {% if object_list %}
-            <div class="row study-detail-caption mb-lg">
-                {% trans "Here you can view your studies and see comments left by researchers:" %}
+            <div class="panel-default">
+                <div class="panel-body">
+                    {% trans "Here you can view your studies and see comments left by researchers:" %}
+                </div>
             </div>
             {% endif %}
             <div class="row">
@@ -67,6 +64,7 @@
                                     {% for response in study.responses.all %}
                                     {% with videos=response.videos.all %}
                                     <div class="media">
+                                        {% if is_lookit_study %}
                                         <div class="media-left media-top">
                                             {% if videos.0.download_url %}
                                             <video controls class="media-object" width="200">
@@ -82,12 +80,14 @@
                                             <i aria-hidden="true" class="fas fa-question-circle fa-5x"></i>
                                             {% endif %}
                                         </div>
+                                        {% endif %}
                                         <div class="media-body">
                                             <dl class="dl-horizontal">
                                                 <dt>{% trans "Child" %}</dt>
                                                 <dd>{{ response.child.given_name }}</dd>
                                                 <dt>{% trans "Date" %}</dt>
                                                 <dd>{{ response.date_created }}</dd>
+                                                {% if is_lookit_study %}
                                                 <dt>{% trans "Consent status" %}</dt>
                                                 <dd>
                                                     {% if response.most_recent_ruling == 'accepted' %}
@@ -100,6 +100,7 @@
                                                     {% trans "No information about consent video review status." %}
                                                     {% endif %}
                                                 </dd>
+                                                {% endif %}
                                                 {% if response.feedback.all %}
                                                 <dt>{% trans "Feedback" %}</dt>
                                                 <dd>
@@ -122,7 +123,15 @@
                         </div>
                     </div>
                     {% empty %}
-                    <p><em> {% trans "You have not yet participated in any studies." %} </em></p>
+                    <div class="panel-default">
+                        <div class="panel-body">
+                            {% if is_lookit_study %}
+                            <em> {% trans "You have not yet participated in any Lookit studies." %} </em>
+                            {% else %}
+                            <em> {% trans "You have not yet participated in any external studies." %} </em>
+                            {% endif %}
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
@@ -146,5 +155,22 @@
     }
 
     document.getElementById('past-studies').addEventListener('click', handleVideoRotation);
+
+    // Set active tab based on which "tabs" radio button is checked.
+    checked_radio = document.querySelector('input[name=past_studies_tabs]:checked')
+    active_tab = document.querySelector(`[data-value="${checked_radio.value}"]`)
+    active_tab.classList.add('active')
+
+    // On click, update radio group 
+    document.querySelectorAll('[role=past_studies_tabs]').forEach(function (tab) {
+        tab.addEventListener('click', function (event) {
+            event.preventDefault()
+            const radio = document.querySelector(`[name="past_studies_tabs"][value="${tab.dataset.value}"]`)
+            if (!radio.hasAttribute('checked')) {
+                radio.checked = true
+                document.querySelector('form').submit()
+            }
+        })
+    })
 </script>
 {% endblock %}

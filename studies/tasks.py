@@ -70,7 +70,9 @@ WITH message_targets AS ( -- all valid user-child-study triplets
                         sr.study_id
         FROM studies_response sr
                  INNER JOIN accounts_child ac on sr.child_id = ac.id
-        WHERE sr.completed_consent_frame = true
+                 INNER JOIN studies_studytype sst on sr.study_type_id = sst.id
+        WHERE (sr.completed_consent_frame = true AND sst."name" = 'Ember Frame Player (default)')
+	            OR (sst."name" = 'External')
     )
 ),
      latest_study_notifications_for_children AS (

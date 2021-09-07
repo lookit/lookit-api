@@ -203,7 +203,27 @@ class StudyType(models.Model):
     configuration = DateTimeAwareJSONField(default=default_configuration)
 
     def __str__(self):
-        return f"<Study Type: {self.name}>"
+        return self.name
+
+    @classmethod
+    def default_pk(cls):
+        return cls.get_ember_frame_player().pk
+
+    @classmethod
+    def get_ember_frame_player(cls):
+        return cls.objects.get(name="Ember Frame Player (default)")
+
+    @classmethod
+    def get_external(cls):
+        return cls.objects.get(name="External")
+
+    @property
+    def is_ember_frame_player(self):
+        return self.name == "Ember Frame Player (default)"
+
+    @property
+    def is_external(self):
+        return self.name == "External"
 
 
 def default_study_structure():
@@ -222,7 +242,6 @@ class Study(models.Model):
         "duration",
         "contact_info",
         "image",
-        "exit_url",
         "metadata",
         "study_type",
         "compensation_description",
@@ -268,7 +287,6 @@ class Study(models.Model):
     use_generator = models.BooleanField(default=False)
     generator = models.TextField(default="")
     display_full_screen = models.BooleanField(default=True)
-    exit_url = models.URLField(default="")
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
@@ -445,7 +463,12 @@ class Study(models.Model):
 
     def responses_for_researcher(self, user):
         """Return all responses to this study that the researcher has access to read"""
-        responses = self.consented_responses
+
+        if self.study_type.is_external:
+            responses = self.responses
+        else:
+            responses = self.consented_responses
+
         if not user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, self):
             responses = responses.filter(is_preview=True)
         if not user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, self):
@@ -467,6 +490,14 @@ class Study(models.Model):
             return self.logs.filter(action="deactivated").first().created_at
         except AttributeError:
             return None
+
+    @property
+    def needs_to_be_built(self):
+        return self.study_type.is_ember_frame_player and not self.built
+
+    @property
+    def expressed_interest_count(self):
+        return self.responses.count()
 
     # WORKFLOW CALLBACKS
 
@@ -597,7 +628,7 @@ class Study(models.Model):
         :type ev: transitions.core.EventData
         :raise: RuntimeError
         """
-        if not self.built:
+        if self.needs_to_be_built:
             raise RuntimeError(
                 f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
             )
@@ -811,6 +842,9 @@ class Response(models.Model):
     )  # Allow deleting a demographic snapshot even though a response points to it
     objects = models.Manager()
     related_manager = ResponseApiManager()
+    study_type = models.ForeignKey(
+        StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
+    )
 
     def __str__(self):
         return self.display_name
@@ -1274,4 +1308,9 @@ class ConsentRuling(models.Model):
         index_together = (("response", "action"), ("response", "arbiter"))
 
     def __str__(self):
-        return f"<{self.arbiter.get_short_name()}: {self.action} {self.response} @ {self.created_at:%c}>"
+
+        if self.arbiter:
+            arbitor_name = self.arbiter.get_short_name()
+        else:
+            arbitor_name = None
+        return f"<{arbitor_name}: {self.action} {self.response} @ {self.created_at:%c}>"

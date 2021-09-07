@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 from django import forms
@@ -452,13 +453,27 @@ CHILD_CHOICES = [
 ]
 
 
+class StudyListSearchFormTabChoices(Enum):
+    all_studies = ("0", _("All studies"))
+    lookit_studies = ("1", _("Lookit studies"))
+    external_studies = ("2", _("External studies"))
+    synchronous_studies = ("3", _("Synchronous studies"))
+    asynchronous_studies = ("4", _("Asynchronous studies"))
+
+
 class StudyListSearchForm(forms.Form):
 
     child = forms.ChoiceField(choices=CHILD_CHOICES, required=False)
-    hide_studies_we_have_done = forms.BooleanField(
-        label="Hide Studies We've Done", required=False
-    )
     search = forms.CharField(required=False)
+    hide_studies_we_have_done = forms.BooleanField(
+        label=_("Hide Studies We've Done"), required=False
+    )
+    study_list_tabs = forms.ChoiceField(
+        choices=[tc.value for tc in StudyListSearchFormTabChoices],
+        initial=0,
+        widget=forms.RadioSelect(attrs={"class": "hidden"}),
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -486,3 +501,17 @@ class StudyListSearchForm(forms.Form):
             return cleaned_data
         else:
             raise ValidationError("Child data doesn't match user authentication state.")
+
+
+class PastStudiesFormTabChoices(Enum):
+    lookit_studies = ("0", _("Lookit studies"))
+    external_studies = ("1", _("External studies"))
+
+
+class PastStudiesForm(forms.Form):
+    past_studies_tabs = forms.ChoiceField(
+        choices=[tc.value for tc in PastStudiesFormTabChoices],
+        initial=0,
+        widget=forms.RadioSelect,
+        required=False,
+    )

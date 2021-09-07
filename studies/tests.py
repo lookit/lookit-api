@@ -141,6 +141,23 @@ class TestAnnouncementEmailFunctionality(TestCase):
         self.study_four.state = "active"
         self.study_four.save()
 
+        ### Move external tests to it's own class.  It's messing too much with existing tests.
+
+        # self.external_study_type = G(StudyType, name="External")
+        # self.study_five = G(
+        #     Study,
+        #     name="External Study",
+        #     study_type=self.external_study_type,
+        #     image=SimpleUploadedFile(
+        #         "fake_image.png", b"fake-stuff", content_type="image/png"
+        #     ),
+        #     public=True,
+        #     max_age_years=2,
+        #     criteria_expression="",
+        # )
+        # self.study_five.state = "active"
+        # self.study_five.save()
+
         self.participant_one = G(User, is_active=True)
         self.child_one = G(
             Child, given_name="Larry", user=self.participant_one, birthday=one_year_ago
@@ -349,6 +366,30 @@ class TestAnnouncementEmailFunctionality(TestCase):
                 self.study_two: [self.child_two, self.child_three],
             },
         )
+
+    # def test_potential_message_targets_external(self):
+    #     message_target = MessageTarget(
+    #         user_id=self.participant_one.pk,
+    #         child_id=self.child_one.pk,
+    #         study_id=self.study_five.pk,
+    #     )
+
+    #     # Double check this is an external study
+    #     self.assertEqual(self.study_five.study_type.name, "External")
+
+    #     # Check that user/child are potential message targets in new external study
+    #     self.assertIn(message_target, potential_message_targets())
+
+    #     # Add response from this child for this study
+    #     G(
+    #         Response,
+    #         study=self.study_five,
+    #         study_type=self.study_five.study_type,
+    #         child=self.child_one,
+    #     )
+
+    #     # Check that the message target no longer has this child for this study
+    #     self.assertNotIn(message_target, potential_message_targets())
 
     def test_target_emails_limited_to_max_per_study(self):
 

@@ -21,7 +21,7 @@ from exp.views.mixins import (
     StudyTypeMixin,
 )
 from project import settings
-from studies.forms import StudyCreateForm, StudyEditForm
+from studies.forms import StudyCreateForm, StudyEditForm, StudyExternalEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -34,6 +34,7 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
+from web.views import get_external_url
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -135,12 +136,7 @@ class StudyCreateView(
         Adds study types to get_context_data
         """
         context = super().get_context_data(**kwargs)
-        context["types"] = [
-            study_type["metadata"]["fields"]
-            for study_type in StudyType.objects.all().values_list(
-                "configuration", flat=True
-            )
-        ]
+        context["study_types"] = StudyType.objects.all()
         context["key_display_names"] = KEY_DISPLAY_NAMES
         return context
 
@@ -190,6 +186,12 @@ class StudyUpdateView(
             StudyPermission.WRITE_STUDY_DETAILS, study
         )
 
+    def get_form_class(self):
+        if self.object.study_type.is_external:
+            return StudyExternalEditForm
+        else:
+            return StudyEditForm
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({"user": self.request.user})
@@ -231,12 +233,8 @@ class StudyUpdateView(
         """
         study = self.get_object()
 
-        # TODO: why is this not in the form's clean function?
-        target_study_type_id = int(self.request.POST["study_type"])
-        target_study_type = StudyType.objects.get(id=target_study_type_id)
-
         metadata, meta_errors = self.validate_and_fetch_metadata(
-            study_type=target_study_type
+            study_type=study.study_type
         )
 
         if meta_errors:
@@ -246,17 +244,14 @@ class StudyUpdateView(
             )
         else:
             # Check that study type hasn't changed.
-            if not (
-                study.study_type_id == target_study_type_id
-                and metadata == study.metadata
-            ):
+            if metadata != study.metadata:
                 # Invalidate the previous build
                 study.built = False
                 # May still be building, but we're now good to allow another build
                 study.is_building = False
-            study.metadata = metadata
-            study.study_type_id = target_study_type_id
-            study.save()
+                # Update metadata
+                study.metadata = metadata
+                study.save()
 
             return super().post(request, *args, **kwargs)
 
@@ -270,6 +265,11 @@ class StudyUpdateView(
         messages.success(self.request, f"{self.get_object().name} study details saved.")
         return ret
 
+    def form_invalid(self, form):
+        if not form.is_valid():
+            messages.error(self.request, form.errors)
+        return super().form_invalid(form)
+
     def get_context_data(self, **kwargs):
         """
         In addition to the study, adds several items to the context dictionary.
@@ -277,18 +277,14 @@ class StudyUpdateView(
         context = super().get_context_data(**kwargs)
 
         context["study_types"] = StudyType.objects.all()
-        context["study_metadata"] = self.object.metadata
         context["key_display_names"] = KEY_DISPLAY_NAMES
-        context["types"] = [
-            exp_type.configuration["metadata"]["fields"]
-            for exp_type in context["study_types"]
-        ]
         context["save_confirmation"] = self.object.state in [
             "approved",
             "active",
             "paused",
             "deactivated",
         ]
+
         return context
 
     def get_success_url(self):
@@ -886,13 +882,18 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         path replacement manually. Great! Just wonderful.
         """
 
-        _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
-        path = f"{study_uuid}/{'/'.join(rest)}"
-        if not rest:
-            path += "index.html"
-        path = f"{kwargs['uuid']}/index.html"
+        study = Study.objects.get(uuid=kwargs.get("uuid", None))
 
-        return super().dispatch(request, path)
+        if study.study_type.is_external:
+            return HttpResponseRedirect(get_external_url(study))
+        else:
+            _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
+            path = f"{study_uuid}/{'/'.join(rest)}"
+            if not rest:
+                path += "index.html"
+            path = f"{kwargs['uuid']}/index.html"
+
+            return super().dispatch(request, path)
 
 
 # UTILITY FUNCTIONS

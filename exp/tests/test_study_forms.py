@@ -1,3 +1,5 @@
+from unittest.case import skip
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import TestCase
@@ -60,7 +62,6 @@ class StudyFormTestCase(TestCase):
             study_type=self.study_type,
             name="Test Study",
             lab=self.main_lab,
-            exit_url="https://lookit.mit.edu/studies/history",
             criteria_expression="",
             structure={
                 "frames": {"frame-a": {}, "frame-b": {}},
@@ -156,7 +157,6 @@ class StudyFormTestCase(TestCase):
             "criteria": "",
             "duration": "",
             "contact_info": "",
-            "exit_url": "",
         }
         for field_name, empty_value in empty_field_values.items():
             data = model_to_dict(self.study)
@@ -223,6 +223,7 @@ class StudyFormTestCase(TestCase):
         form = StudyEditForm(data=data, instance=self.study, user=self.study_designer)
         self.assertNotIn("study_type", form.errors)
 
+    @skip("Removed study type change in study view")
     def test_study_type_to_nonexistent(self):
         data = model_to_dict(self.study)
         data["study_type"] = self.nonexistent_study_type_id
