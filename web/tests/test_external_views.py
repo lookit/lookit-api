@@ -179,6 +179,59 @@ class ExternalStudiesViewTestCase(ExternalTestCase):
         self.assertIn(external_study_sync_name.encode(), response.content)
         self.assertNotIn(external_study_async_name.encode(), response.content)
 
+    def test_studies_without_completed_consent_frame_functional(self):
+        # Create user
+        user = User.objects.create()
+
+        # Create child
+        child = Child.objects.create(user=user)
+
+        study_type = StudyType.get_external()
+
+        # Create study
+        study = Study.objects.create(study_type=study_type, name="1")
+
+        view = StudiesListView()
+
+        # Check that all studies return with no responses
+        self.assertEqual(Response.objects.count(), 0)
+        studies_no_ccf = view.studies_without_completed_consent_frame(
+            Study.objects.all(), child
+        )
+        self.assertEqual(studies_no_ccf.count(), 1)
+
+        Response.objects.create(study=study, child=child)
+
+        # Check that all studies return even with one response for study "1"
+        self.assertEqual(Response.objects.count(), 1)
+        studies_no_ccf = view.studies_without_completed_consent_frame(
+            Study.objects.all(), child
+        )
+        self.assertEqual(studies_no_ccf.count(), 1)
+
+        # Set completed consent frame in response.
+        response = Response.objects.first()
+        response.completed_consent_frame = True
+        response.save()
+
+        # Check that study "1" is not returned
+        studies_no_ccf = view.studies_without_completed_consent_frame(
+            Study.objects.all(), child
+        )
+        self.assertEqual(studies_no_ccf.count(), 0)
+        self.assertEqual(studies_no_ccf.filter(name="1").count(), 0)
+
+        # Create second response without completed consent frame
+        Response.objects.create(study=study, child=child)
+        self.assertEqual(Response.objects.count(), 2)
+
+        # Check that the same experiments return
+        studies_no_ccf = view.studies_without_completed_consent_frame(
+            Study.objects.all(), child
+        )
+        self.assertEqual(studies_no_ccf.count(), 0)
+        self.assertEqual(studies_no_ccf.filter(name="1").count(), 0)
+
 
 class ExternalParticipantHistoryTestCase(ExternalTestCase):
     def test_lookit_studies_history(self):

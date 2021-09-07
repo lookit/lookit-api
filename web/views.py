@@ -32,7 +32,7 @@ from accounts.queries import (
 from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
-from studies.models import Response, Study, Video
+from studies.models import Response, Study, StudyType, Video
 
 
 @receiver(signals.user_logged_out)
@@ -347,10 +347,14 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         return reverse("web:studies-list")
 
     def studies_without_completed_consent_frame(self, studies, child):
-        ### TODO: Add in support for external studies
         return studies.exclude(
             responses__in=Response.objects.filter(
-                child=child, completed_consent_frame=True
+                Q(
+                    child=child,
+                    completed_consent_frame=True,
+                    study_type=StudyType.get_ember_frame_player(),
+                )
+                | Q(child=child, study_type=StudyType.get_external())
             )
         )
 
