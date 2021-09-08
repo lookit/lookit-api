@@ -5,11 +5,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G
+from guardian.shortcuts import assign_perm
 from more_itertools import quantify
 
 from accounts.models import Child, Message, User
 from studies.helpers import send_mail
-from studies.models import Lab, Response, Study
+from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum
+from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
     acquire_potential_announcement_email_targets,
@@ -649,3 +651,46 @@ class TestSendMail(TestCase):
             reply_to=reply_to,
         )
         self.assertEquals(email.reply_to, reply_to)
+
+
+class StudyTypeModelTestCase(TestCase):
+    def test_default_pk(self):
+        study_type = StudyType.objects.get(name=StudyTypeEnum.ember_frame_player.value)
+        self.assertEqual(study_type.pk, StudyType.default_pk())
+
+    def test_identify_study_type(self):
+        self.assertTrue(
+            StudyType.objects.get(
+                name=StudyTypeEnum.ember_frame_player.value
+            ).is_ember_frame_player
+        )
+        self.assertTrue(
+            StudyType.objects.get(name=StudyTypeEnum.external.value).is_external
+        )
+
+    def test_get_ember_frame_player(self):
+        self.assertTrue(StudyType.get_ember_frame_player().is_ember_frame_player)
+
+    def test_get_external(self):
+        self.assertTrue(StudyType.get_external().is_external)
+
+
+class StudyModelTestCase(TestCase):
+    def test_responses_for_researcher_external_studies(self):
+        study = Study.objects.create(
+            study_type=StudyType.get_external(),
+        )
+        user = User.objects.create(is_active=True, is_researcher=True)
+        child = Child.objects.create(user=user)
+        response = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+        )
+
+        self.assertNotIn(response, study.responses_for_researcher(user))
+
+        assign_perm(StudyPermission.READ_STUDY_RESPONSE_DATA.codename, user, study)
+
+        self.assertIn(response, study.responses_for_researcher(user))
