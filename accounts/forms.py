@@ -443,37 +443,43 @@ class ChildUpdateForm(forms.ModelForm):
         }
 
 
-CHILD_CHOICES = [
-    ("", "Find studies for..."),
-    ("0,1", "babies (under 1)"),
-    ("1,3", "toddlers (1-2)"),
-    ("3,5", "preschoolers (3-4)"),
-    ("5,18", "school-age kids (5-17)"),
-    ("18,999", "adults (18+)"),
-]
-
-
-class StudyListSearchFormTabChoices(Enum):
-    all_studies = ("0", _("All studies"))
-    lookit_studies = ("1", _("Lookit studies"))
-    external_studies = ("2", _("External studies"))
-    synchronous_studies = ("3", _("Synchronous studies"))
-    asynchronous_studies = ("4", _("Asynchronous studies"))
+class FormChoiceEnum(Enum):
+    @classmethod
+    def choices(cls):
+        return [c.value for c in cls]
 
 
 class StudyListSearchForm(forms.Form):
+    class Tabs(FormChoiceEnum):
+        all_studies = ("0", _("All studies"))
+        synchronous_studies = ("1", _("Studies happening right now"))
+        asynchronous_studies = ("2", _("Scheduled studies"))
 
-    child = forms.ChoiceField(choices=CHILD_CHOICES, required=False)
+    class Children(FormChoiceEnum):
+        empty = ("", _("Find studies for..."))
+        babies = ("0,1", _("babies (under 1)"))
+        toddlers = ("1,3", _("toddlers (1-2)"))
+        preschoolers = ("3,5", _("preschoolers (3-4)"))
+        school_age_kids = ("5,18", _("school-age kids (5-17)"))
+        adults = ("18,999", _("adults (18+)"))
+
+    class StudyLocation(FormChoiceEnum):
+        empty = ("0", "Show studies that...")
+        lookit = ("1", "...happen on Lookit")
+        external = ("2", "...happen somewhere else")
+
+    child = forms.ChoiceField(choices=Children.choices(), required=False)
     search = forms.CharField(required=False)
     hide_studies_we_have_done = forms.BooleanField(
         label=_("Hide Studies We've Done"), required=False
     )
     study_list_tabs = forms.ChoiceField(
-        choices=[tc.value for tc in StudyListSearchFormTabChoices],
+        choices=Tabs.choices(),
         initial=0,
         widget=forms.RadioSelect(attrs={"class": "hidden"}),
         required=False,
     )
+    study_location = forms.ChoiceField(choices=StudyLocation.choices(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -484,7 +490,7 @@ class StudyListSearchForm(forms.Form):
             children = self.user.children.filter(deleted=False)
 
         if children and children.count():
-            self.fields["child"].choices = [CHILD_CHOICES[0]] + [
+            self.fields["child"].choices = [self.Children.empty.value] + [
                 (c.pk, c.given_name) for c in children
             ]
         else:

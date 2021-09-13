@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, PropertyMock
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.testcases import TestCase
 
-from accounts.forms import PastStudiesFormTabChoices, StudyListSearchFormTabChoices
+from accounts.forms import PastStudiesFormTabChoices, StudyListSearchForm
 from accounts.models import Child, User
 from studies.models import Lab, Response, Study, StudyType
 from web.views import StudiesHistoryView, StudiesListView
@@ -23,43 +23,31 @@ class ExternalStudiesViewTestCase(ExternalTestCase):
     def set_all_studies_tab(self, mock_request):
         self.set_session(
             mock_request,
-            {"study_list_tabs": StudyListSearchFormTabChoices.all_studies.value[0]},
+            {"study_list_tabs": StudyListSearchForm.Tabs.all_studies.value[0]},
         )
 
-    def set_lookit_studies_tab(self, mock_request):
+    def set_lookit_studies_location(self, mock_request):
         self.set_session(
             mock_request,
-            {"study_list_tabs": StudyListSearchFormTabChoices.lookit_studies.value[0]},
+            {"study_location": StudyListSearchForm.StudyLocation.lookit.value[0]},
         )
 
-    def set_external_studies_tab(self, mock_request):
+    def set_external_studies_location(self, mock_request):
         self.set_session(
             mock_request,
-            {
-                "study_list_tabs": StudyListSearchFormTabChoices.external_studies.value[
-                    0
-                ]
-            },
+            {"study_location": StudyListSearchForm.StudyLocation.external.value[0]},
         )
 
     def set_sync_tab(self, mock_request):
         self.set_session(
             mock_request,
-            {
-                "study_list_tabs": StudyListSearchFormTabChoices.synchronous_studies.value[
-                    0
-                ]
-            },
+            {"study_list_tabs": StudyListSearchForm.Tabs.synchronous_studies.value[0]},
         )
 
     def set_async_tab(self, mock_request):
         self.set_session(
             mock_request,
-            {
-                "study_list_tabs": StudyListSearchFormTabChoices.asynchronous_studies.value[
-                    0
-                ]
-            },
+            {"study_list_tabs": StudyListSearchForm.Tabs.asynchronous_studies.value[0]},
         )
 
     def test_all_studies(self):
@@ -148,7 +136,7 @@ class ExternalStudiesViewTestCase(ExternalTestCase):
         self.assertIn(external_study_async_name.encode(), response.content)
 
         # Check that only frame player is showing on lookit study tab
-        self.set_lookit_studies_tab(mock_request)
+        self.set_lookit_studies_location(mock_request)
         response = StudiesListView.as_view()(mock_request).render()
         self.assertEqual(200, response.status_code)
         self.assertIn(ember_frame_player_study_name.encode(), response.content)
@@ -156,7 +144,7 @@ class ExternalStudiesViewTestCase(ExternalTestCase):
         self.assertNotIn(external_study_async_name.encode(), response.content)
 
         # Check that only external studies are showing on external tab
-        self.set_external_studies_tab(mock_request)
+        self.set_external_studies_location(mock_request)
         response = StudiesListView.as_view()(mock_request).render()
         self.assertEqual(200, response.status_code)
         self.assertNotIn(ember_frame_player_study_name.encode(), response.content)

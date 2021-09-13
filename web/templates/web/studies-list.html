@@ -33,6 +33,7 @@
             {{ form.study_list_tabs }}
             <div class="form-inline">
                 {% bootstrap_field form.child show_label=False %}
+                {% bootstrap_field form.study_location show_label=False %}
                 {% bootstrap_field form.hide_studies_we_have_done form_group_class="form-group show-experiments" %}
                 {% if user.is_anonymous %}
                 <div class="form-group login-message">Log in to find studies just right for your child!</div>
@@ -54,8 +55,8 @@
 </ul>
 
 <div class="panel-default">
-    <div class="panel-body">
-        {% trans "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate." %}
+    <div class="panel-body active-tab-text">
+        {% studies_tab_text form.study_list_tabs %}
     </div>
 </div>
 
