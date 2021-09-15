@@ -464,9 +464,9 @@ class StudyListSearchForm(forms.Form):
         adults = ("18,999", _("adults (18+)"))
 
     class StudyLocation(FormChoiceEnum):
-        empty = ("0", "Show studies that are...")
-        lookit = ("1", "...happening on Lookit")
-        external = ("2", "...happening on other websites")
+        empty = ("0", _("Show studies that are..."))
+        lookit = ("1", _("...happening on Lookit"))
+        external = ("2", _("...happening on other websites"))
 
     child = forms.ChoiceField(choices=Children.choices(), required=False)
     search = forms.CharField(required=False)
