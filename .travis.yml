@@ -20,7 +20,7 @@ before_install:
 
 install:
   - poetry env info
-  - poetry install --quiet > /dev/null
+  - poetry install
 
 script:
   - pre-commit run --all-files
