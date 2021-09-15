@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Prefetch
+from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
@@ -22,7 +23,7 @@ from accounts import forms
 from accounts.forms import (
     PastStudiesForm,
     PastStudiesFormTabChoices,
-    StudyListSearchFormTabChoices,
+    StudyListSearchForm,
 )
 from accounts.models import Child, DemographicData, User, create_string_listing_children
 from accounts.queries import (
@@ -248,7 +249,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     List all active, public studies.
     """
 
-    form_class = forms.StudyListSearchForm
+    form_class = StudyListSearchForm
     template_name = "web/studies-list.html"
     model = Study
 
@@ -270,14 +271,8 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
 
         studies = super().get_queryset().filter(state="active", public=True)
 
-        # values from session
-        search_value = session.get("search", "")
+        # child value from session
         child_value = session.get("child", "")
-        hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
-        tab_value = session.get("study_list_tabs", "0")
-
-        if search_value:
-            studies = studies.filter(name__icontains=search_value)
 
         # Covers the corner case where user has filter set and then logs in.  This will clear the
         # age range filter that would have been previously set while logged out.
@@ -288,23 +283,56 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         ):
             child_value = ""
 
+        studies = self.filter_studies(studies)
+
+        studies = sorted(studies, key=self.sort_fn())
+
+        self.set_eligible_children_per_study(studies)
+
+        return self.paginated_queryset(studies, page)
+
+    def filter_studies(self, studies: QuerySet) -> QuerySet:
+        session = self.request.session
+        user = self.request.user
+
+        # get form values from session
+        search_value = session.get("search", "")
+        child_value = session.get("child", "")
+        hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
+        tab_value = session.get("study_list_tabs", "0")
+        study_location_value = session.get("study_location", "0")
+
+        # title search
+        if search_value:
+            studies = studies.filter(name__icontains=search_value)
+
         query = None
 
-        if tab_value == StudyListSearchFormTabChoices.lookit_studies.value[0]:
+        # study location
+        if study_location_value == StudyListSearchForm.StudyLocation.lookit.value[0]:
             query = Q(study_type__name="Ember Frame Player (default)")
-        elif tab_value == StudyListSearchFormTabChoices.external_studies.value[0]:
+        elif (
+            study_location_value == StudyListSearchForm.StudyLocation.external.value[0]
+        ):
             query = Q(study_type__name="External")
-        elif tab_value == StudyListSearchFormTabChoices.synchronous_studies.value[0]:
+
+        if query:
+            studies = studies.filter(query)
+            query = None
+
+        # Scheduled or unscheduled studies
+        if tab_value == StudyListSearchForm.Tabs.synchronous_studies.value[0]:
             query = Q(study_type__name="External", metadata__scheduled=False) | Q(
                 study_type__name="Ember Frame Player (default)"
             )
-        elif tab_value == StudyListSearchFormTabChoices.asynchronous_studies.value[0]:
+        elif tab_value == StudyListSearchForm.Tabs.asynchronous_studies.value[0]:
             query = Q(study_type__name="External", metadata__scheduled=True)
 
         if query:
             studies = studies.filter(query)
 
         if child_value:
+            # filter for authenticated users that has selected one of their children
             if child_value.isnumeric() and user.is_authenticated:
                 child = Child.objects.get(pk=child_value, user=user)
 
@@ -316,18 +344,14 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
                 studies = [
                     s for s in studies if get_child_eligibility_for_study(child, s)
                 ]
-
+            # filter for unauthenticated users that have selected a child age range
             else:
                 age_range = [int(c) for c in child_value.split(",")]
                 studies = [
                     s for s in studies if age_range_eligibility_for_study(age_range, s)
                 ]
 
-        studies = sorted(studies, key=self.sort_fn())
-
-        self.set_eligible_children_per_study(studies)
-
-        return self.paginated_queryset(studies, page)
+        return studies
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
