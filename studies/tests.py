@@ -5,11 +5,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G
+from guardian.shortcuts import assign_perm
 from more_itertools import quantify
 
 from accounts.models import Child, Message, User
 from studies.helpers import send_mail
-from studies.models import Lab, Response, Study
+from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum
+from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
     acquire_potential_announcement_email_targets,
@@ -140,23 +142,6 @@ class TestAnnouncementEmailFunctionality(TestCase):
         )
         self.study_four.state = "active"
         self.study_four.save()
-
-        ### Move external tests to it's own class.  It's messing too much with existing tests.
-
-        # self.external_study_type = G(StudyType, name="External")
-        # self.study_five = G(
-        #     Study,
-        #     name="External Study",
-        #     study_type=self.external_study_type,
-        #     image=SimpleUploadedFile(
-        #         "fake_image.png", b"fake-stuff", content_type="image/png"
-        #     ),
-        #     public=True,
-        #     max_age_years=2,
-        #     criteria_expression="",
-        # )
-        # self.study_five.state = "active"
-        # self.study_five.save()
 
         self.participant_one = G(User, is_active=True)
         self.child_one = G(
@@ -366,30 +351,6 @@ class TestAnnouncementEmailFunctionality(TestCase):
                 self.study_two: [self.child_two, self.child_three],
             },
         )
-
-    # def test_potential_message_targets_external(self):
-    #     message_target = MessageTarget(
-    #         user_id=self.participant_one.pk,
-    #         child_id=self.child_one.pk,
-    #         study_id=self.study_five.pk,
-    #     )
-
-    #     # Double check this is an external study
-    #     self.assertEqual(self.study_five.study_type.name, "External")
-
-    #     # Check that user/child are potential message targets in new external study
-    #     self.assertIn(message_target, potential_message_targets())
-
-    #     # Add response from this child for this study
-    #     G(
-    #         Response,
-    #         study=self.study_five,
-    #         study_type=self.study_five.study_type,
-    #         child=self.child_one,
-    #     )
-
-    #     # Check that the message target no longer has this child for this study
-    #     self.assertNotIn(message_target, potential_message_targets())
 
     def test_target_emails_limited_to_max_per_study(self):
 
@@ -649,3 +610,90 @@ class TestSendMail(TestCase):
             reply_to=reply_to,
         )
         self.assertEquals(email.reply_to, reply_to)
+
+
+class StudyTypeModelTestCase(TestCase):
+    def test_default_pk(self):
+        study_type = StudyType.objects.get(name=StudyTypeEnum.ember_frame_player.value)
+        self.assertEqual(study_type.pk, StudyType.default_pk())
+
+    def test_identify_study_type(self):
+        self.assertTrue(
+            StudyType.objects.get(
+                name=StudyTypeEnum.ember_frame_player.value
+            ).is_ember_frame_player
+        )
+        self.assertTrue(
+            StudyType.objects.get(name=StudyTypeEnum.external.value).is_external
+        )
+
+    def test_get_ember_frame_player(self):
+        self.assertTrue(StudyType.get_ember_frame_player().is_ember_frame_player)
+
+    def test_get_external(self):
+        self.assertTrue(StudyType.get_external().is_external)
+
+
+class StudyModelTestCase(TestCase):
+    def test_responses_for_researcher_external_studies(self):
+        study = Study.objects.create(
+            study_type=StudyType.get_external(),
+        )
+        user = User.objects.create(is_active=True, is_researcher=True)
+        child = Child.objects.create(user=user)
+        response = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+        )
+
+        self.assertNotIn(response, study.responses_for_researcher(user))
+
+        assign_perm(StudyPermission.READ_STUDY_RESPONSE_DATA.codename, user, study)
+
+        self.assertIn(response, study.responses_for_researcher(user))
+
+
+class ExternalEmailTestCase(TestCase):
+    def test_potential_message_targets_external(self):
+        user = G(User, is_active=True)
+        child = G(
+            Child,
+            user=user,
+            birthday=date.today() - timedelta(days=365),
+        )
+        study = G(
+            Study,
+            name="External Study",
+            study_type=StudyType.get_external(),
+            image=SimpleUploadedFile("fake_image.png", b"", content_type="image/png"),
+            public=True,
+            max_age_years=2,
+            criteria_expression="",
+        )
+        study.state = "active"
+        study.save()
+
+        message_target = MessageTarget(
+            user_id=user.pk,
+            child_id=child.pk,
+            study_id=study.pk,
+        )
+
+        # Double check this is an external study
+        self.assertTrue(study.study_type.is_external)
+
+        # Check that user/child are potential message targets in new external study
+        self.assertIn(message_target, potential_message_targets())
+
+        # Add response from this child for this study
+        G(
+            Response,
+            study=study,
+            study_type=study.study_type,
+            child=child,
+        )
+
+        # Check that the message target no longer has this child for this study
+        self.assertNotIn(message_target, potential_message_targets())

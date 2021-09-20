@@ -1,6 +1,7 @@
 import logging
 import uuid
 from datetime import datetime
+from enum import Enum
 
 import boto3
 import dateutil
@@ -198,6 +199,11 @@ def notify_lab_of_approval(sender, instance, **kwargs):
         )
 
 
+class StudyTypeEnum(Enum):
+    external = "External"
+    ember_frame_player = "Ember Frame Player (default)"
+
+
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     configuration = DateTimeAwareJSONField(default=default_configuration)
@@ -207,23 +213,23 @@ class StudyType(models.Model):
 
     @classmethod
     def default_pk(cls):
-        return cls.get_ember_frame_player().pk
-
-    @classmethod
-    def get_ember_frame_player(cls):
-        return cls.objects.get(name="Ember Frame Player (default)")
-
-    @classmethod
-    def get_external(cls):
-        return cls.objects.get(name="External")
+        return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value).pk
 
     @property
     def is_ember_frame_player(self):
-        return self.name == "Ember Frame Player (default)"
+        return self.name == StudyTypeEnum.ember_frame_player.value
 
     @property
     def is_external(self):
-        return self.name == "External"
+        return self.name == StudyTypeEnum.external.value
+
+    @classmethod
+    def get_ember_frame_player(cls):
+        return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value)
+
+    @classmethod
+    def get_external(cls):
+        return cls.objects.get(name=StudyTypeEnum.external.value)
 
 
 def default_study_structure():
