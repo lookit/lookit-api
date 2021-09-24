@@ -58,6 +58,7 @@
             </div>
         </div>
         {% get_obj_perms user for study as "study_perms" %}
+                     
         <div class="row">
             <div class="col-lg-10 col-lg-offset-1">
                 <div class="panel panel-default mt-xl">
@@ -72,7 +73,6 @@
                         <form id="study-details-form" action="" enctype="multipart/form-data"
                               method="post">{% csrf_token %}
                             {% include "studies/_study_fields.html" with form=form study=study %}
-                            {% bootstrap_field form.study_type %}
                             {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}   
                             <div class="pull-right">
                                 {% buttons %}

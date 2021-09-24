@@ -133,7 +133,7 @@ class StudyTypeMixin:
 
         return metadata, errors
 
-    def extract_type_metadata(self, study_type):
+    def extract_type_metadata(self, study_type: StudyType):
         """
         Pull the metadata related to the selected StudyType from the POST request
         """
@@ -148,6 +148,9 @@ class StudyTypeMixin:
                 metadata[type_field["name"]] = self.request.POST.get(
                     type_field["name"], None
                 )
+
+        if study_type.is_external:
+            metadata["scheduled"] = self.request.POST.get("scheduled", "") == "on"
 
         return metadata
 

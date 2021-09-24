@@ -2,37 +2,11 @@
 
 <script>
     $(document).ready(function () {
-
-        if (parseInt("{{ create }}")) {
-            document.getElementById("id_study_type").value = '';
-            $('#study-type-metadata').hide();
-        } else {
-            revealMetadata("{{ currentType }}")
-        }
-        $('#id_study_type').on('change', function (selected) {
-            if (selected.currentTarget.value) {
-                var selectedVal = parseInt(selected.currentTarget.value);
-                revealMetadata(selectedVal);
-            } else {
-                $('#study-type-metadata').hide()
-                $('.type-fields > .form-group > input').prop("disabled", true);
-            }
-        });
-
-        function revealMetadata(id) {
-            $('#study-type-metadata').show();
-            $('.type-fields').hide();
-            $('.type-fields > .form-group > input').attr("disabled", true);
-            $(`#type-metadata-${id}> .form-group > input`).prop("disabled", false);
-            $(`#type-metadata-${id}`).show();
-        }
-
         var current_commit_date = "";
         var $commit_description = $('#commit-description div.panel-body');
         var $update_info = $('#commit-update-info div.panel-body');
 
         function checkForUpdates(e) {
-
             e.preventDefault();
             var current_repo = $('#study-type-metadata input[name="player_repo_url"]').val().trim();
             var current_sha = $('#study-type-metadata input[name="last_known_player_sha"]').val().trim();
@@ -66,7 +40,6 @@
         }
 
         function updateCommitInfo() {
-
             $('#commit-update-info').hide();
             $('#update-button').prop('disabled', true);
             $('#commit-description').hide();
@@ -133,7 +106,12 @@
     });
 
 </script>
-<div id="study-type-metadata" style="display:none">
+<div id="study-type-metadata">
+    <div class="row">
+    <div class="col-xs-12">
+    <label class="control-label">Experiment Configuration</label>
+    </div>
+    </div>
     <div class="row">
         <div class="col-xs-10 col-xs-offset-1">
             {% for study_type in study_types %}
