@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
@@ -115,15 +116,23 @@ class StudyCreateView(
         Add the logged-in user as the study creator. If the form is valid,
         save the associated study and redirect to the supplied URL
         """
+
         user = self.request.user
-        target_study_type_id = self.request.POST["study_type"]
-        target_study_type = StudyType.objects.get(id=target_study_type_id)
+
+        if form.cleaned_data["external"]:
+            target_study_type = StudyType.get_external()
+        else:
+            target_study_type = StudyType.get_ember_frame_player()
+
         form.instance.metadata = self.extract_type_metadata(target_study_type)
         form.instance.creator = user
+        form.instance.study_type = target_study_type
+
         # Add user to admin group for study.
         new_study = self.object = form.save()
         new_study.admin_group.user_set.add(user)
         new_study.save()
+
         # Adds success message that study has been created.
         messages.success(self.request, f"{self.object.name} created.")
         return HttpResponseRedirect(self.get_success_url())
@@ -153,6 +162,11 @@ class StudyCreateView(
         kwargs = super().get_form_kwargs()
         kwargs.update({"user": self.request.user})
         return kwargs
+
+    def form_invalid(self, form: StudyCreateForm) -> HttpResponse:
+        if not form.is_valid():
+            messages.error(self.request, form.errors)
+        return super().form_invalid(form)
 
 
 class StudyUpdateView(
@@ -225,6 +239,11 @@ class StudyUpdateView(
                 initial["structure"] = json.dumps(structure)
         if not self.object.generator.strip():
             initial["generator"] = StudyEditForm.base_fields["generator"].initial
+
+        if self.object.study_type.is_external:
+            initial["external"] = True
+            initial["scheduled"] = self.object.metadata.get("scheduled", False)
+
         return initial
 
     def post(self, request, *args, **kwargs):
@@ -232,28 +251,34 @@ class StudyUpdateView(
         Handles updating study metadata like name, short_description, etc.
         """
         study = self.get_object()
+        form = self.get_form()
 
-        metadata, meta_errors = self.validate_and_fetch_metadata(
-            study_type=study.study_type
-        )
+        if form.is_valid():
+            if form.cleaned_data["external"]:
+                study_type = StudyType.get_external()
+            else:
+                study_type = StudyType.get_ember_frame_player()
 
-        if meta_errors:
-            messages.error(
-                self.request,
-                f"WARNING: Experiment runner version not saved: {meta_errors}",
+            metadata, meta_errors = self.validate_and_fetch_metadata(
+                study_type=study_type
             )
-        else:
-            # Check that study type hasn't changed.
-            if metadata != study.metadata:
-                # Invalidate the previous build
-                study.built = False
-                # May still be building, but we're now good to allow another build
-                study.is_building = False
-                # Update metadata
-                study.metadata = metadata
-                study.save()
 
-            return super().post(request, *args, **kwargs)
+            if meta_errors:
+                messages.error(
+                    self.request,
+                    f"WARNING: Experiment runner version not saved: {meta_errors}",
+                )
+            else:
+                # Check that study type hasn't changed.
+                if metadata != study.metadata:
+                    # Invalidate the previous build
+                    study.built = False
+                    # May still be building, but we're now good to allow another build
+                    study.is_building = False
+                    # Update metadata
+                    study.metadata = metadata
+                    study.study_type = study_type
+                    study.save()
 
         return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=study.pk)))
 

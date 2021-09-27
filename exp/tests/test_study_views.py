@@ -69,8 +69,6 @@ class StudyViewsTestCase(TestCase):
             time_zone="America/New_York",
         )
         self.participant = G(User, is_active=True, is_researcher=False, nickname="Dada")
-        self.study_type = G(StudyType, name="default", id=1)
-        self.other_study_type = G(StudyType, name="other", id=2)
         self.approved_lab = G(Lab, name="MIT", approved_to_test=True)
 
         self.generator_function_string = (
@@ -92,7 +90,6 @@ class StudyViewsTestCase(TestCase):
             # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
             creator=self.study_admin,
             shared_preview=False,
-            study_type=self.study_type,
             public=True,
             name="Test Study",
             lab=self.approved_lab,
@@ -116,7 +113,6 @@ class StudyViewsTestCase(TestCase):
             Study,
             creator=self.study_admin,
             shared_preview=True,
-            study_type=self.study_type,
             name="Test Study",
             lab=self.approved_lab,
             built=True,

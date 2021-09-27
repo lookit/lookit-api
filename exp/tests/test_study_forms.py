@@ -1,12 +1,16 @@
+from typing import Dict, Text
 from unittest.case import skip
+from unittest.mock import Mock, patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import TestCase
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
+from parameterized import parameterized
 
 from accounts.models import User
+from exp.views.mixins import StudyTypeMixin
 from studies.forms import StudyCreateForm, StudyEditForm
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -419,3 +423,41 @@ class StudyFormTestCase(TestCase):
         self.assertIn(self.second_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn(self.other_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn("lab", edit_form.errors)
+
+
+class StudyMixinsTestCase(TestCase):
+    @parameterized.expand(
+        [
+            ("", "", False),
+            ("", "on", True),
+            ("http://lookit.mit.edu", "", False),
+            ("http://lookit.mit.edu", "on", True),
+        ]
+    )
+    @patch.object(StudyTypeMixin, "request", create=True)
+    def test_validate_and_fetch_metadata(
+        self, url: Text, post_scheduled: Text, meta_scheduled: bool, mock_request: Mock
+    ):
+        type(mock_request).POST = {"url": url, "scheduled": post_scheduled}
+        external = StudyType.get_external()
+        metadata, errors = StudyTypeMixin().validate_and_fetch_metadata(external)
+        self.assertFalse(errors)
+        self.assertEqual({"url": url, "scheduled": meta_scheduled}, metadata)
+
+    @parameterized.expand(
+        [
+            ({},),
+            ({"url": ""},),
+            ({"url": "http://lookit.mit.edu"},),
+            ({"scheduled": False},),
+            ({"scheduled": True},),
+        ]
+    )
+    @patch.object(StudyTypeMixin, "request", create=True)
+    def test_validate_and_fetch_metadata_invalid_metadata(
+        self, post_data: Dict, mock_request: Mock
+    ):
+        type(mock_request).POST = post_data
+        external = StudyType.get_external()
+        _, errors = StudyTypeMixin().validate_and_fetch_metadata(external)
+        self.assertTrue(errors)

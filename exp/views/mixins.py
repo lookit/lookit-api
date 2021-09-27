@@ -15,7 +15,7 @@ from guardian.mixins import LoginRequiredMixin
 
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import User
-from studies.models import Lab, Response, Study, StudyType
+from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum
 from studies.permissions import StudyPermission
 
 LookitUser = Union[User, AnonymousUser]
@@ -133,7 +133,7 @@ class StudyTypeMixin:
 
         return metadata, errors
 
-    def extract_type_metadata(self, study_type):
+    def extract_type_metadata(self, study_type: StudyType):
         """
         Pull the metadata related to the selected StudyType from the POST request
         """
@@ -148,6 +148,10 @@ class StudyTypeMixin:
                 metadata[type_field["name"]] = self.request.POST.get(
                     type_field["name"], None
                 )
+
+        if study_type.is_external:
+            if "scheduled" in self.request.POST:
+                metadata["scheduled"] = self.request.POST.get("scheduled", "") == "on"
 
         return metadata
 
@@ -176,4 +180,18 @@ def is_valid_ember_frame_player(metadata):
     return errors
 
 
-VALIDATIONS = {"Ember Frame Player (default)": is_valid_ember_frame_player}
+def is_valid_external(metadata):
+    errors = []
+
+    if "url" not in metadata or metadata["url"] is None:
+        errors.append("External Study doesn't have URL")
+    if "scheduled" not in metadata:
+        errors.append("External Study doesn't have Scheduled value")
+
+    return errors
+
+
+VALIDATIONS = {
+    StudyTypeEnum.ember_frame_player.value: is_valid_ember_frame_player,
+    StudyTypeEnum.external.value: is_valid_external,
+}

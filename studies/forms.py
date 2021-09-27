@@ -153,6 +153,16 @@ class StudyForm(ModelForm):
         required=False,
     )
 
+    external = forms.BooleanField(
+        required=False,
+        help_text="Check this box if participants will click to access a study at another link, rather than using Lookit's experiment builder.",
+    )
+
+    scheduled = forms.BooleanField(
+        required=False,
+        help_text="Check this box if participants are making an appointment for a live (in person or online) session with a researcher.",
+    )
+
     # Define initial value here rather than providing actual default so that any updates don't
     # require migrations: this isn't a true "default" value that would ever be used, but rather
     # a helpful skeleton to guide the user
@@ -240,7 +250,6 @@ class StudyForm(ModelForm):
             "generator",
             "use_generator",
             "criteria_expression",
-            "study_type",
         ]
         labels = {
             "short_description": "Short Description",
@@ -282,7 +291,7 @@ class StudyForm(ModelForm):
         help_texts = {
             "lab": "Which lab this study will be affiliated with",
             "image": "Please keep your file size less than 1 MB",
-            "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers.",
+            "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of that process!",
             "purpose": "Explain the purpose of your study here. This should address what question this study answers AND why that is an interesting or important question, in layperson-friendly terms.",
             "contact_info": "This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)",
             "criteria": "Text shown to families - this is not used to actually verify eligibility.",
@@ -309,7 +318,6 @@ class StudyEditForm(StudyForm):
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
-        self.fields["study_type"].disabled = True
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(
             StudyPermission.CHANGE_STUDY_LAB, self.instance

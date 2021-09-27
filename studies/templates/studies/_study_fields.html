@@ -71,6 +71,31 @@
         $("#min_age_in_days_val").text(Number($("#id_min_age_years").val()) * 365 + Number($("#id_min_age_months").val()) * 30 + Number($("#id_min_age_days").val()))
     }
 
+    function setExternal() {                
+            document
+                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container')
+                .forEach(e => e.classList.add('hidden'))
+            document
+                .querySelector('#id_use_generator')
+                .closest('.form-group').classList.add('hidden')
+            document.querySelector('#type-metadata-2').classList.remove('hidden')
+            document.querySelector('#id_scheduled').disabled = false
+        }
+
+    function setFramePlayer() {
+            document
+                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container, #id_use_generator')
+                .forEach(e => e.classList.remove('hidden'))
+            document.querySelector('#id_use_generator').closest('.form-group').classList.remove('hidden')
+            document.querySelector('#type-metadata-2').classList.add('hidden')
+            document.querySelector('#id_scheduled').disabled = true
+        }
+
+    function updateStudyType (externalCheckbox) {
+        externalCheckbox.checked ? setExternal() : setFramePlayer()
+    }
+
+
     $(document).ready(function() {
 
         // Do initial validation of structure, generator.
@@ -126,6 +151,11 @@
         $("#id_max_age_years, #id_max_age_months, #id_max_age_days").change(updateMaxAgeDaysDisplay);
         updateMinAgeDaysDisplay();
         updateMaxAgeDaysDisplay();
+
+        // Update study form based on study type
+        const externalCheckbox = document.querySelector('#id_external')
+        externalCheckbox.addEventListener('click', () => updateStudyType(externalCheckbox))
+        updateStudyType(externalCheckbox)
     });
 </script>
 
@@ -133,6 +163,8 @@
 {% bootstrap_field form.name %}
 {% bootstrap_field form.public %}
 {% bootstrap_field form.shared_preview %}
+{% bootstrap_field form.external %}
+{% bootstrap_field form.scheduled %}
 {% bootstrap_field form.image %}
 {% bootstrap_field form.short_description %}
 {% bootstrap_field form.purpose %}
@@ -225,7 +257,6 @@
 {% bootstrap_field form.duration %}
 {% bootstrap_field form.contact_info %}
 {% bootstrap_field form.lab %}
-{% if not study.study_type.is_external %}
 <div id="structure-container">
     {% bootstrap_field form.structure %}
 </div>
@@ -233,4 +264,3 @@
 <div id="generator-container">
     {% bootstrap_field form.generator %}
 </div>
-{% endif %}
