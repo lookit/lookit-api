@@ -291,7 +291,7 @@ class StudyForm(ModelForm):
 
         help_texts = {
             "lab": "Which lab this study will be affiliated with",
-            "image": "Please keep your file size less than 1 MB",
+            "image": "This is the image participants will see when browsing studies. Please keep your file size less than 1 MB.",
             "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of that process!",
             "purpose": "Explain the purpose of your study here. This should address what question this study answers AND why that is an interesting or important question, in layperson-friendly terms.",
             "contact_info": "This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)",
