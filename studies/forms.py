@@ -252,6 +252,7 @@ class StudyForm(ModelForm):
         ]
         labels = {
             "name": "Study Name",
+            "image": "Study Image",
             "short_description": "Short Description",
             "purpose": "Purpose",
             "criteria": "Participant Eligibility Description",
