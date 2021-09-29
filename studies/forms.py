@@ -159,7 +159,7 @@ class StudyForm(ModelForm):
     )
     scheduled = forms.BooleanField(
         required=False,
-        help_text="Check this box if participants are making an appointment for a live (in person or online) session with a researcher.",
+        help_text="Schedule participants for one-on-one appointments with a researcher.",
     )
 
     # Define initial value here rather than providing actual default so that any updates don't
