@@ -252,6 +252,7 @@ class StudyForm(ModelForm):
             "criteria_expression",
         ]
         labels = {
+            "name": "Study Name",
             "short_description": "Short Description",
             "purpose": "Purpose",
             "criteria": "Participant Eligibility Description",
