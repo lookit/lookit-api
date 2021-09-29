@@ -343,7 +343,7 @@ requests-oauthlib = ">=0.3.0"
 
 [[package]]
 name = "django-bitfield"
-version = "2.0.1"
+version = "2.1.0"
 description = "BitField in Django"
 category = "main"
 optional = false
@@ -1778,7 +1778,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.8.3"
-content-hash = "06de704cd84fa53349f4a8a6e1b52235456a9ce09239500fbe15a66b971fd6db"
+content-hash = "43a3146471823d2ed6894a5211197073f0a8281096c908526be48f76eb33456b"
 
 [metadata.files]
 amqp = [
@@ -2004,8 +2004,8 @@ django-allauth = [
     {file = "django-allauth-0.42.0.tar.gz", hash = "sha256:f17209410b7f87da0a84639fd79d3771b596a6d3fc1a8e48ce50dabc7f441d30"},
 ]
 django-bitfield = [
-    {file = "django-bitfield-2.0.1.tar.gz", hash = "sha256:ab340eb50cdb1e8c005594b9f8170a95a698102d06cf3f5031763be2750a8862"},
-    {file = "django_bitfield-2.0.1-py2.py3-none-any.whl", hash = "sha256:83bfa27da718caff436f646369ce58e2d9f922e1f3d65a93f0b731a835cbfc58"},
+    {file = "django-bitfield-2.1.0.tar.gz", hash = "sha256:a55859fd16ce4269d5ceed3e20cf8fc3c2df866f0a78b90c60a19a0e76aa5fd8"},
+    {file = "django_bitfield-2.1.0-py2.py3-none-any.whl", hash = "sha256:158f1056e22cce450d0a49633ea77bfd84b85a2294b1ef03faa775a485f4065d"},
 ]
 django-bootstrap3 = [
     {file = "django-bootstrap3-15.0.0.tar.gz", hash = "sha256:f803efd5605046b8f467523dbe94653a4a8d6bcf97ad480b386ba5cf8f94fe6b"},
