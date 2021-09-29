@@ -7,7 +7,7 @@ from django.forms import ModelForm, Textarea
 from guardian.shortcuts import get_objects_for_user
 
 from accounts.queries import compile_expression
-from studies.models import Lab, Response, Study, default_study_structure
+from studies.models import Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
@@ -317,6 +317,7 @@ class StudyEditForm(StudyForm):
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["external"].disabled = True
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(
@@ -346,14 +347,6 @@ class StudyEditForm(StudyForm):
                 uuid=self.instance.lab.uuid
             )
             self.fields["lab"].disabled = True
-
-
-class StudyExternalEditForm(StudyEditForm):
-    def clean_structure(self):
-        try:
-            return super().clean_structure()
-        except forms.ValidationError:
-            return default_study_structure()
 
 
 class StudyCreateForm(StudyForm):

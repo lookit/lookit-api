@@ -92,6 +92,12 @@
         }
 
     function updateStudyType (externalCheckbox) {
+        // Hide external and scheduled fields when external is disabled
+        if (document.querySelector('#id_external').disabled){
+                document
+                    .querySelectorAll('#id_external, #id_scheduled')
+                    .forEach(e=> e.closest('.form-group').classList.add('hidden'))
+        }
         externalCheckbox.checked ? setExternal() : setFramePlayer()
     }
 

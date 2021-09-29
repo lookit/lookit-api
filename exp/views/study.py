@@ -22,7 +22,7 @@ from exp.views.mixins import (
     StudyTypeMixin,
 )
 from project import settings
-from studies.forms import StudyCreateForm, StudyEditForm, StudyExternalEditForm
+from studies.forms import StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -199,12 +199,6 @@ class StudyUpdateView(
         return user.is_researcher and user.has_study_perms(
             StudyPermission.WRITE_STUDY_DETAILS, study
         )
-
-    def get_form_class(self):
-        if self.object.study_type.is_external:
-            return StudyExternalEditForm
-        else:
-            return StudyEditForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
