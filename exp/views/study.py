@@ -84,6 +84,11 @@ def get_discoverability_text(study):
 KEY_DISPLAY_NAMES = {
     "player_repo_url": "Experiment runner code URL",
     "last_known_player_sha": "Experiment runner version (commit SHA)",
+    "url": "Study URL",
+}
+
+KEY_HELP_TEXT = {
+    "url": "This is the link that participants will be sent to from the Lookit details page."
 }
 
 
@@ -147,6 +152,7 @@ class StudyCreateView(
         context = super().get_context_data(**kwargs)
         context["study_types"] = StudyType.objects.all()
         context["key_display_names"] = KEY_DISPLAY_NAMES
+        context["key_help_text"] = KEY_HELP_TEXT
         return context
 
     def get_initial(self):
@@ -297,6 +303,7 @@ class StudyUpdateView(
 
         context["study_types"] = StudyType.objects.all()
         context["key_display_names"] = KEY_DISPLAY_NAMES
+        context["key_help_text"] = KEY_HELP_TEXT
         context["save_confirmation"] = self.object.state in [
             "approved",
             "active",
