@@ -155,9 +155,8 @@ class StudyForm(ModelForm):
 
     external = forms.BooleanField(
         required=False,
-        help_text="Check this box if participants will click to access a study at another link, rather than using Lookit's experiment builder.",
+        help_text="Post an external link to a study, rather than Lookit's experiment builder.",
     )
-
     scheduled = forms.BooleanField(
         required=False,
         help_text="Check this box if participants are making an appointment for a live (in person or online) session with a researcher.",
