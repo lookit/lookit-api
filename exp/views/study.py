@@ -85,10 +85,14 @@ KEY_DISPLAY_NAMES = {
     "player_repo_url": "Experiment runner code URL",
     "last_known_player_sha": "Experiment runner version (commit SHA)",
     "url": "Study URL",
+    "scheduling": "Scheduling",
+    "study_platform": "Study Platform",
 }
 
 KEY_HELP_TEXT = {
-    "url": "This is the link that participants will be sent to from the Lookit details page."
+    "url": "This is the link that participants will be sent to from the Lookit details page.",
+    "scheduling": "Indicate how participants schedule appointments for your section. Remember that Lookit encourages you to use its messaging system rather than collecting email addresses - this presents a privacy risk for your participants.",
+    "study_platform": "What software or website will you use to present & collect data for your study?",
 }
 
 

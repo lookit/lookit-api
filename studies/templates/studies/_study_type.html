@@ -1,6 +1,11 @@
 {% load exp_extras %}
 
 <script>
+    function toggleOtherTextInput (e) {
+        const otherTextInput = document.querySelector(`input[name=other_${e.name}]`)
+        e.value === "Other" ? otherTextInput.classList.remove('hidden') : otherTextInput.classList.add('hidden')
+    }
+
     $(document).ready(function () {
         var current_commit_date = "";
         var $commit_description = $('#commit-description div.panel-body');
@@ -103,6 +108,14 @@
         // Only run update upon changes to the relevant keys, not other inputs for other player types
         $('#study-type-metadata div.metadata-key input[name="last_known_player_sha"], #study-type-metadata div.metadata-key input[name="player_repo_url"]').on('change paste', updateCommitInfo);
         updateCommitInfo();
+
+        // This is assuming that there are only radio buttons that have an other field. 
+        document.querySelectorAll("input[type=radio]")
+            .forEach(e => e.addEventListener('click', ({target}) => {
+                toggleOtherTextInput(target)
+            }))
+        
+        document.querySelectorAll("input[type=radio]").forEach(toggleOtherTextInput)
     });
 
 </script>
@@ -123,6 +136,19 @@
                 <div class="form-group" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
                     <input name="{{key}}" type="{{field.input_type}}" {% if study and study.metadata|get_key:key %}checked{% endif %}>
                     <label>{{key_display_names|get_key:key|default:key}}</label>
+                </div>
+                {% elif field.input_type == "radio" %}
+                <label class="control-label" title="{{help_text}}">{{key_display_names|get_key:key|default:key}}</label>
+                <div class="form-group">
+                {% for option in field.options %}
+                 <div class="radio">
+                    <label><input name="{{field.name}}" value="{{option}}" type="radio" {% if study and study.metadata|get_key:key == option %}checked{% endif %}>{{option}}</label>
+                </div>
+                {% if option == "Other" %}
+                <input class="form-control hidden" type="text" name="other_{{field.name}}">
+                {% endif %}
+                {% endfor %}
+                <div class="help-block">{{help_text}}</div>
                 </div>
                 {% else %}
                 <div class="form-group metadata-key" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
