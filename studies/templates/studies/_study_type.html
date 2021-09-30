@@ -115,18 +115,13 @@
                 toggleOtherTextInput(target)
             }))
         
-        document.querySelectorAll("input[type=radio]").forEach(toggleOtherTextInput)
+        document.querySelectorAll("input[type=radio]:checked").forEach(toggleOtherTextInput)
     });
 
 </script>
 <div id="study-type-metadata">
     <div class="row">
-    <div class="col-xs-12">
-    <label class="control-label">Experiment Details</label>
-    </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
+        <div class="col-xs-12">
             {% for study_type in study_types %}
             <div class='type-fields' id='type-metadata-{{ study_type.id }}'>
                 {% for field in study_type.configuration.metadata.fields %}

@@ -16,22 +16,8 @@
     </script>
     <script>
         $(document).ready(function(){
-            $('.type-fields > .form-group > input').prop("disabled", true);
             $('form').submit(function() {
                 $('#create-study-button').prop("disabled", "disabled");
-            });
-            $('#id_study_type').on('change', function(selected) {
-                if (selected.currentTarget.value) {
-                    var selectedVal = parseInt(selected.currentTarget.value);
-                    $('#study-type-metadata').show();
-                    $('.type-fields').hide();
-                    $('.type-fields > .form-group > input').attr("disabled", true);
-                    $(`#type-metadata-${selectedVal}> .form-group > input`).prop("disabled", false);
-                    $(`#type-metadata-${selectedVal}`).show();
-                } else {
-                    $('#study-type-metadata').hide()
-                    $('.type-fields > .form-group > input').prop("disabled", true);
-                }
             });
         });
     </script>

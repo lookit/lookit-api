@@ -281,8 +281,8 @@ class StudyUpdateView(
                     study.is_building = False
                     # Update metadata
                     study.metadata = metadata
-                    study.study_type = study_type
-                    study.save()
+
+                study.save()
 
         return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=study.pk)))
 
