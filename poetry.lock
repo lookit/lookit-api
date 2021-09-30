@@ -1261,7 +1261,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "pydenticon"
-version = "0.3"
+version = "0.3.1"
 description = "Library for generating identicons. Port of Sigil (https://github.com/cupcake/sigil) with enhancements."
 category = "main"
 optional = false
@@ -1778,7 +1778,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.8.3"
-content-hash = "43a3146471823d2ed6894a5211197073f0a8281096c908526be48f76eb33456b"
+content-hash = "f949c32a8c2e7c181becf7e660f4e2135664b8d82bf00134e932cb8014834e66"
 
 [metadata.files]
 amqp = [
@@ -2560,7 +2560,7 @@ pycparser = [
     {file = "pycparser-2.20.tar.gz", hash = "sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0"},
 ]
 pydenticon = [
-    {file = "pydenticon-0.3.tar.gz", hash = "sha256:02041c589e629c330e420ded65192c79980b3a68fa91aee6179f46af6ad4e298"},
+    {file = "pydenticon-0.3.1.tar.gz", hash = "sha256:2ef363cdd6f4f0193ce62257486027e36884570f6140bbde51de72df321b77f1"},
 ]
 pyflakes = [
     {file = "pyflakes-2.3.1-py2.py3-none-any.whl", hash = "sha256:7893783d01b8a89811dd72d7dfd4d84ff098e5eed95cfa8905b22bbffe52efc3"},
