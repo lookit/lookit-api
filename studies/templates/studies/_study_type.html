@@ -3,7 +3,14 @@
 <script>
     function toggleOtherTextInput (e) {
         const otherTextInput = document.querySelector(`input[name=other_${e.name}]`)
-        e.value === "Other" ? otherTextInput.classList.remove('hidden') : otherTextInput.classList.add('hidden')
+        if (e.value === "Other"){
+            otherTextInput.classList.remove('hidden') 
+            otherTextInput.disabled = false
+        } else {
+            otherTextInput.classList.add('hidden')
+            otherTextInput.disabled = true
+        }
+         
     }
 
     $(document).ready(function () {
@@ -114,7 +121,6 @@
             .forEach(e => e.addEventListener('click', ({target}) => {
                 toggleOtherTextInput(target)
             }))
-        
         document.querySelectorAll("input[type=radio]:checked").forEach(toggleOtherTextInput)
     });
 
@@ -133,7 +139,6 @@
                     <label>{{key_display_names|get_key:key|default:key}}</label>
                 </div>
                 {% elif field.input_type == "radio" %}
-                
                 <div class="form-group">
                 <label id="id_{{field.name}}" class="control-label" title="{{help_text}}">{{key_display_names|get_key:key|default:key}}</label>
                 {% for option in field.options %}
@@ -141,7 +146,15 @@
                     <label><input name="{{field.name}}" value="{{option}}" type="radio" {% if study and study.metadata|get_key:key == option %}checked{% endif %}>{{option}}</label>
                 </div>
                 {% if option == "Other" %}
+                {% if study %}
+                {% with "other_"|add:field.name as other_field %}
+                {% with study.metadata|get_key:other_field|default:'' as other_value%}
+                <input class="form-control hidden" type="text" name="other_{{field.name}}" value="{{other_value}}">
+                {% endwith %}
+                {% endwith %}
+                {% else %}
                 <input class="form-control hidden" type="text" name="other_{{field.name}}">
+                {% endif %}
                 {% endif %}
                 {% endfor %}
                 <div class="help-block">{{help_text}}</div>
