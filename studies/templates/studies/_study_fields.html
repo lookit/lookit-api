@@ -119,6 +119,14 @@
         externalCheckbox.checked ? setExternal() : setFramePlayer()
     }
 
+    function updateScheduling (scheduledCheckBox) {            
+        const scheduling = document.querySelector("#id_scheduling").closest('.form-group')
+        if (!scheduledCheckBox.disabled && scheduledCheckBox.checked){
+            scheduling.classList.remove("hidden")
+        } else {
+            scheduling.classList.add("hidden")
+        }
+    }
 
     $(document).ready(function() {
         // Do initial validation of structure, generator.
@@ -179,6 +187,12 @@
         const externalCheckbox = document.querySelector('#id_external')
         externalCheckbox.addEventListener('click', () => updateStudyType(externalCheckbox))
         updateStudyType(externalCheckbox)
+        
+        const scheduledCheckBox = document.querySelector("#id_scheduled")
+        scheduledCheckBox.addEventListener('click', ()=>{
+            updateScheduling(scheduledCheckBox)
+        })
+        updateScheduling(scheduledCheckBox)
     });
 </script>
 

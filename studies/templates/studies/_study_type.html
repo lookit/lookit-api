@@ -133,8 +133,9 @@
                     <label>{{key_display_names|get_key:key|default:key}}</label>
                 </div>
                 {% elif field.input_type == "radio" %}
-                <label class="control-label" title="{{help_text}}">{{key_display_names|get_key:key|default:key}}</label>
+                
                 <div class="form-group">
+                <label id="id_{{field.name}}" class="control-label" title="{{help_text}}">{{key_display_names|get_key:key|default:key}}</label>
                 {% for option in field.options %}
                  <div class="radio">
                     <label><input name="{{field.name}}" value="{{option}}" type="radio" {% if study and study.metadata|get_key:key == option %}checked{% endif %}>{{option}}</label>
@@ -154,6 +155,7 @@
                     <div class="help-block">{{help_text}}</div>
                 </div>
                 {% endif %}
+          
 
 
                 {% if key == "last_known_player_sha" %}
