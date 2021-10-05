@@ -131,7 +131,10 @@
             {% for study_type in study_types %}
             <div class='type-fields' id='type-metadata-{{ study_type.id }}'>
                 {% for field in study_type.configuration.metadata.fields %}
-                {% with key=field.name value=field.value help_text=key_help_text|get_key:field.name|default:"" %}
+                {% with field.name as key %}
+                {% with field.value as value %}
+                {% with key_help_text|get_key:key|default:"" as help_text %}
+
 
                 {% if field.input_type == "checkbox" %}
                 <div class="form-group" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
@@ -188,6 +191,8 @@
                     </div>
                 </div>
                 {% endif %}
+                {% endwith %}
+                {% endwith %}
                 {% endwith %}
                 {% endfor %}
             </div>

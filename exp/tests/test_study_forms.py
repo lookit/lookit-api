@@ -428,27 +428,51 @@ class StudyFormTestCase(TestCase):
 class StudyMixinsTestCase(TestCase):
     @parameterized.expand(
         [
-            ("", "", False),
-            ("", "on", True),
-            ("http://lookit.mit.edu", "", False),
-            ("http://lookit.mit.edu", "on", True),
+            ("", "", False, "", "", "", ""),
+            ("", "on", True, "scheduling value", "", "study platform value", ""),
+            ("http://lookit.mit.edu", "", False, "", "", "", ""),
+            (
+                "http://lookit.mit.edu",
+                "on",
+                True,
+                "Other",
+                "Other value",
+                "Other",
+                "Other value",
+            ),
         ]
     )
     @patch.object(StudyTypeMixin, "request", create=True)
     def test_validate_and_fetch_metadata(
-        self, url: Text, post_scheduled: Text, meta_scheduled: bool, mock_request: Mock
+        self,
+        url: Text,
+        post_scheduled: Text,
+        meta_scheduled: bool,
+        scheduling: Text,
+        other_scheduling: Text,
+        study_platform: Text,
+        other_study_platform: Text,
+        mock_request: Mock,
     ):
-        type(mock_request).POST = {"url": url, "scheduled": post_scheduled}
+        type(mock_request).POST = expected_metadata = {
+            "url": url,
+            "scheduled": post_scheduled,
+            "scheduling": scheduling,
+            "other_scheduling": other_scheduling,
+            "study_platform": study_platform,
+            "other_study_platform": other_study_platform,
+        }
         external = StudyType.get_external()
         metadata, errors = StudyTypeMixin().validate_and_fetch_metadata(external)
+
+        expected_metadata["scheduled"] = meta_scheduled
+
         self.assertFalse(errors)
-        self.assertEqual({"url": url, "scheduled": meta_scheduled}, metadata)
+        self.assertEqual(expected_metadata, metadata)
 
     @parameterized.expand(
         [
             ({},),
-            ({"url": ""},),
-            ({"url": "http://lookit.mit.edu"},),
             ({"scheduled": False},),
             ({"scheduled": True},),
         ]

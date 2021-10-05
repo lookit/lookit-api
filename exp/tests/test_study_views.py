@@ -87,7 +87,7 @@ class StudyViewsTestCase(TestCase):
             image=SimpleUploadedFile(
                 name="small.gif", content=small_gif, content_type="image/gif"
             ),
-            # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
+            study_type=StudyType.get_ember_frame_player(),
             creator=self.study_admin,
             shared_preview=False,
             public=True,
@@ -395,7 +395,10 @@ class StudyViewsTestCase(TestCase):
         data["metadata"] = new_metadata
         data["comments"] = "Changed experiment runner version"
         data["structure"] = json.dumps(data["structure"])
+
+        self.assertTrue(self.study.built)
         response = self.client.post(url, data, follow=True)
+
         self.assertEqual(
             response.status_code,
             200,
@@ -405,6 +408,7 @@ class StudyViewsTestCase(TestCase):
             response.redirect_chain,
             [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
+
         updated_study = Study.objects.get(id=self.study.id)
         self.assertFalse(
             updated_study.built,
@@ -438,6 +442,7 @@ class StudyViewsTestCase(TestCase):
             response.redirect_chain,
             [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
+
         updated_study = Study.objects.get(id=self.study.id)
         self.assertTrue(
             updated_study.built, "Study build was invalidated upon editing protocol"

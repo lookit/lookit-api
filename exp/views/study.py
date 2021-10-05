@@ -284,7 +284,7 @@ class StudyUpdateView(
 
                 study.save()
 
-        return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=study.pk)))
+        return HttpResponseRedirect(self.get_success_url())
 
     def form_valid(self, form):
         """
