@@ -22,7 +22,7 @@ from exp.views.mixins import (
     StudyTypeMixin,
 )
 from project import settings
-from studies.forms import StudyCreateForm, StudyEditForm, StudyExternalEditForm
+from studies.forms import StudyCreateForm, StudyEditForm
 from studies.helpers import send_mail
 from studies.models import Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -84,6 +84,15 @@ def get_discoverability_text(study):
 KEY_DISPLAY_NAMES = {
     "player_repo_url": "Experiment runner code URL",
     "last_known_player_sha": "Experiment runner version (commit SHA)",
+    "url": "Study URL",
+    "scheduling": "Scheduling",
+    "study_platform": "Study Platform",
+}
+
+KEY_HELP_TEXT = {
+    "url": "This is the link that participants will be sent to from the Lookit details page.",
+    "scheduling": "Indicate how participants schedule appointments for your section. Remember that Lookit encourages you to use its messaging system rather than collecting email addresses - this presents a privacy risk for your participants.",
+    "study_platform": "What software or website will you use to present & collect data for your study?",
 }
 
 
@@ -147,6 +156,7 @@ class StudyCreateView(
         context = super().get_context_data(**kwargs)
         context["study_types"] = StudyType.objects.all()
         context["key_display_names"] = KEY_DISPLAY_NAMES
+        context["key_help_text"] = KEY_HELP_TEXT
         return context
 
     def get_initial(self):
@@ -199,12 +209,6 @@ class StudyUpdateView(
         return user.is_researcher and user.has_study_perms(
             StudyPermission.WRITE_STUDY_DETAILS, study
         )
-
-    def get_form_class(self):
-        if self.object.study_type.is_external:
-            return StudyExternalEditForm
-        else:
-            return StudyEditForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -277,10 +281,10 @@ class StudyUpdateView(
                     study.is_building = False
                     # Update metadata
                     study.metadata = metadata
-                    study.study_type = study_type
-                    study.save()
 
-        return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=study.pk)))
+                study.save()
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def form_valid(self, form):
         """
@@ -303,6 +307,7 @@ class StudyUpdateView(
 
         context["study_types"] = StudyType.objects.all()
         context["key_display_names"] = KEY_DISPLAY_NAMES
+        context["key_help_text"] = KEY_HELP_TEXT
         context["save_confirmation"] = self.object.state in [
             "approved",
             "active",

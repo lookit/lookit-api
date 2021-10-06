@@ -150,8 +150,11 @@ class StudyTypeMixin:
                 )
 
         if study_type.is_external:
-            if "scheduled" in self.request.POST:
-                metadata["scheduled"] = self.request.POST.get("scheduled", "") == "on"
+            metadata["scheduled"] = self.request.POST.get("scheduled", "") == "on"
+            metadata["other_scheduling"] = self.request.POST.get("other_scheduling", "")
+            metadata["other_study_platform"] = self.request.POST.get(
+                "other_study_platform", ""
+            )
 
         return metadata
 

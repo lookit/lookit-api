@@ -71,10 +71,19 @@
         $("#min_age_in_days_val").text(Number($("#id_min_age_years").val()) * 365 + Number($("#id_min_age_months").val()) * 30 + Number($("#id_min_age_days").val()))
     }
 
-    function setExternal() {                
+    function setExternal() {
+            // hide frame player fields through css                
             document
-                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container')
+                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container, .use-generator.help-block')
                 .forEach(e => e.classList.add('hidden'))
+            // disable frame player metadata fields
+            document
+                .querySelectorAll("#type-metadata-1 input")
+                .forEach(e => e.disabled=true)
+            // enable external fields
+            document
+                .querySelectorAll("#type-metadata-2 input")
+                .forEach(e => e.disabled=false)
             document
                 .querySelector('#id_use_generator')
                 .closest('.form-group').classList.add('hidden')
@@ -83,21 +92,43 @@
         }
 
     function setFramePlayer() {
+            // hide external fields through css
             document
-                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container, #id_use_generator')
+                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container, .use-generator.help-block')
                 .forEach(e => e.classList.remove('hidden'))
+            // enable frame player metadata fields
+            document
+                .querySelectorAll("#type-metadata-1 input")
+                .forEach(e => e.disabled=false)
+            // disable external fields
+            document
+                .querySelectorAll("#type-metadata-2 input")
+                .forEach(e => e.disabled=true)
             document.querySelector('#id_use_generator').closest('.form-group').classList.remove('hidden')
             document.querySelector('#type-metadata-2').classList.add('hidden')
             document.querySelector('#id_scheduled').disabled = true
         }
 
     function updateStudyType (externalCheckbox) {
+        // Hide external and scheduled fields when external is disabled
+        if (document.querySelector('#id_external').disabled){
+                document
+                    .querySelectorAll('#id_external, #id_scheduled')
+                    .forEach(e=> e.closest('.form-group').classList.add('hidden'))
+        }
         externalCheckbox.checked ? setExternal() : setFramePlayer()
     }
 
+    function updateScheduling (scheduledCheckBox) {            
+        const scheduling = document.querySelector("#id_scheduling").closest('.form-group')
+        if (!scheduledCheckBox.disabled && scheduledCheckBox.checked){
+            scheduling.classList.remove("hidden")
+        } else {
+            scheduling.classList.add("hidden")
+        }
+    }
 
     $(document).ready(function() {
-
         // Do initial validation of structure, generator.
         validateStructure($('#id_structure').val());
         validateGenerator($('#id_generator').val());
@@ -156,6 +187,12 @@
         const externalCheckbox = document.querySelector('#id_external')
         externalCheckbox.addEventListener('click', () => updateStudyType(externalCheckbox))
         updateStudyType(externalCheckbox)
+        
+        const scheduledCheckBox = document.querySelector("#id_scheduled")
+        scheduledCheckBox.addEventListener('click', ()=>{
+            updateScheduling(scheduledCheckBox)
+        })
+        updateScheduling(scheduledCheckBox)
     });
 </script>
 
@@ -257,10 +294,18 @@
 {% bootstrap_field form.duration %}
 {% bootstrap_field form.contact_info %}
 {% bootstrap_field form.lab %}
+
+<div class="row">
+    <div class="col-xs-12">
+        <label class="control-label">Experiment Details</label>
+    </div>
+</div>
+
 <div id="structure-container">
     {% bootstrap_field form.structure %}
 </div>
 {% bootstrap_field form.use_generator %}
+<div class="use-generator help-block">{{form.generator.help_text|safe}}</div>
 <div id="generator-container">
-    {% bootstrap_field form.generator %}
+    {% bootstrap_field form.generator show_help=False %}
 </div>

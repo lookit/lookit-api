@@ -7,7 +7,7 @@ from django.forms import ModelForm, Textarea
 from guardian.shortcuts import get_objects_for_user
 
 from accounts.queries import compile_expression
-from studies.models import Lab, Response, Study, default_study_structure
+from studies.models import Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
 CRITERIA_EXPRESSION_HELP_LINK = "https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression"
@@ -155,12 +155,11 @@ class StudyForm(ModelForm):
 
     external = forms.BooleanField(
         required=False,
-        help_text="Check this box if participants will click to access a study at another link, rather than using Lookit's experiment builder.",
+        help_text="Post an external link to a study, rather than Lookit's experiment builder.",
     )
-
     scheduled = forms.BooleanField(
         required=False,
-        help_text="Check this box if participants are making an appointment for a live (in person or online) session with a researcher.",
+        help_text="Schedule participants for one-on-one appointments with a researcher.",
     )
 
     # Define initial value here rather than providing actual default so that any updates don't
@@ -252,6 +251,8 @@ class StudyForm(ModelForm):
             "criteria_expression",
         ]
         labels = {
+            "name": "Study Name",
+            "image": "Study Image",
             "short_description": "Short Description",
             "purpose": "Purpose",
             "criteria": "Participant Eligibility Description",
@@ -290,8 +291,8 @@ class StudyForm(ModelForm):
 
         help_texts = {
             "lab": "Which lab this study will be affiliated with",
-            "image": "Please keep your file size less than 1 MB",
-            "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of that process!",
+            "image": "This is the image participants will see when browsing studies. Please keep your file size less than 1 MB.",
+            "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of how they will sign up and access the study session.",
             "purpose": "Explain the purpose of your study here. This should address what question this study answers AND why that is an interesting or important question, in layperson-friendly terms.",
             "contact_info": "This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)",
             "criteria": "Text shown to families - this is not used to actually verify eligibility.",
@@ -317,6 +318,7 @@ class StudyEditForm(StudyForm):
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["external"].disabled = True
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(
@@ -346,14 +348,6 @@ class StudyEditForm(StudyForm):
                 uuid=self.instance.lab.uuid
             )
             self.fields["lab"].disabled = True
-
-
-class StudyExternalEditForm(StudyEditForm):
-    def clean_structure(self):
-        try:
-            return super().clean_structure()
-        except forms.ValidationError:
-            return default_study_structure()
 
 
 class StudyCreateForm(StudyForm):

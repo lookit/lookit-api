@@ -1,6 +1,18 @@
 {% load exp_extras %}
 
 <script>
+    function toggleOtherTextInput (e) {
+        const otherTextInput = document.querySelector(`input[name=other_${e.name}]`)
+        if (e.value === "Other"){
+            otherTextInput.classList.remove('hidden') 
+            otherTextInput.disabled = false
+        } else {
+            otherTextInput.classList.add('hidden')
+            otherTextInput.disabled = true
+        }
+         
+    }
+
     $(document).ready(function () {
         var current_commit_date = "";
         var $commit_description = $('#commit-description div.panel-body');
@@ -103,36 +115,63 @@
         // Only run update upon changes to the relevant keys, not other inputs for other player types
         $('#study-type-metadata div.metadata-key input[name="last_known_player_sha"], #study-type-metadata div.metadata-key input[name="player_repo_url"]').on('change paste', updateCommitInfo);
         updateCommitInfo();
+
+        // This is assuming that there are only radio buttons that have an other field. 
+        document.querySelectorAll("input[type=radio]")
+            .forEach(e => e.addEventListener('click', ({target}) => {
+                toggleOtherTextInput(target)
+            }))
+        document.querySelectorAll("input[type=radio]:checked").forEach(toggleOtherTextInput)
     });
 
 </script>
 <div id="study-type-metadata">
     <div class="row">
-    <div class="col-xs-12">
-    <label class="control-label">Experiment Configuration</label>
-    </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
+        <div class="col-xs-12">
             {% for study_type in study_types %}
             <div class='type-fields' id='type-metadata-{{ study_type.id }}'>
                 {% for field in study_type.configuration.metadata.fields %}
                 {% with field.name as key %}
                 {% with field.value as value %}
+                {% with key_help_text|get_key:key|default:"" as help_text %}
+
 
                 {% if field.input_type == "checkbox" %}
                 <div class="form-group" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
                     <input name="{{key}}" type="{{field.input_type}}" {% if study and study.metadata|get_key:key %}checked{% endif %}>
                     <label>{{key_display_names|get_key:key|default:key}}</label>
                 </div>
+                {% elif field.input_type == "radio" %}
+                <div class="form-group">
+                <label id="id_{{field.name}}" class="control-label" title="{{help_text}}">{{key_display_names|get_key:key|default:key}}</label>
+                {% for option in field.options %}
+                 <div class="radio">
+                    <label><input name="{{field.name}}" value="{{option}}" type="radio" {% if study and study.metadata|get_key:key == option %}checked{% endif %}>{{option}}</label>
+                </div>
+                {% if option == "Other" %}
+                {% if study %}
+                {% with "other_"|add:field.name as other_field %}
+                {% with study.metadata|get_key:other_field|default:'' as other_value%}
+                <input class="form-control hidden" type="text" name="other_{{field.name}}" value="{{other_value}}">
+                {% endwith %}
+                {% endwith %}
+                {% else %}
+                <input class="form-control hidden" type="text" name="other_{{field.name}}">
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                <div class="help-block">{{help_text}}</div>
+                </div>
                 {% else %}
                 <div class="form-group metadata-key" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
-                    <label>{{key_display_names|get_key:key|default:key}}</label>
+                    <label class="control-label">{{key_display_names|get_key:key|default:key}}</label>
                     <div class="input-container">
-                        <input name="{{key}}" type="{{field.input_type}}" value="{% if study_type.id == currentType and not create %}{{study.metadata|get_key:key|default:''}}{% else %}{{value | default:''}}{% endif %}" class="form-control">
+                        <input class="form-control" title="{{help_text}}" name="{{key}}" type="{{field.input_type}}" value="{% if study_type.id == currentType and not create %}{{study.metadata|get_key:key|default:''}}{% else %}{{value | default:''}}{% endif %}" >
                     </div>
+                    <div class="help-block">{{help_text}}</div>
                 </div>
                 {% endif %}
+          
 
 
                 {% if key == "last_known_player_sha" %}
@@ -152,6 +191,7 @@
                     </div>
                 </div>
                 {% endif %}
+                {% endwith %}
                 {% endwith %}
                 {% endwith %}
                 {% endfor %}

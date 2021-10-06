@@ -29,6 +29,7 @@ from exp.views.study import (
     ManageResearcherPermissionsView,
     StudyDetailView,
     StudyPreviewDetailView,
+    StudyUpdateView,
 )
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -87,7 +88,7 @@ class StudyViewsTestCase(TestCase):
             image=SimpleUploadedFile(
                 name="small.gif", content=small_gif, content_type="image/gif"
             ),
-            # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
+            study_type=StudyType.get_ember_frame_player(),
             creator=self.study_admin,
             shared_preview=False,
             public=True,
@@ -395,7 +396,10 @@ class StudyViewsTestCase(TestCase):
         data["metadata"] = new_metadata
         data["comments"] = "Changed experiment runner version"
         data["structure"] = json.dumps(data["structure"])
+
+        self.assertTrue(self.study.built)
         response = self.client.post(url, data, follow=True)
+
         self.assertEqual(
             response.status_code,
             200,
@@ -405,11 +409,44 @@ class StudyViewsTestCase(TestCase):
             response.redirect_chain,
             [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
+
         updated_study = Study.objects.get(id=self.study.id)
         self.assertFalse(
             updated_study.built,
             "Study build was not invalidated after editing metadata",
         )
+
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    @patch("exp.views.study.HttpResponseRedirect")
+    @patch("exp.views.study.reverse")
+    @patch("exp.views.study.StudyUpdateView.get_form")
+    @patch.object(StudyUpdateView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_study_model_save_on_post(
+        self,
+        mock_get_object,
+        mock_request,
+        mock_get_form,
+        mock_reverse,
+        mock_redirect,
+        mock_validate_and_fetch_metadata,
+    ):
+        # fill mocks with data
+        mock_metadata = MagicMock()
+        mock_validate_and_fetch_metadata.return_value = mock_metadata, []
+        type(mock_get_object()).metadata = PropertyMock(return_value=mock_metadata)
+
+        # run view's post method
+        view = StudyUpdateView()
+        view.post(mock_request)
+
+        # assert mocks
+        mock_get_object().save.assert_called_with()
+        mock_get_form.assert_called_with()
+        mock_reverse.assert_called_with(
+            "exp:study-edit", kwargs={"pk": mock_get_object().id}
+        )
+        mock_redirect.assert_called_with(mock_reverse())
 
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
     def test_change_study_protocol_does_not_affect_build_status(
@@ -438,6 +475,7 @@ class StudyViewsTestCase(TestCase):
             response.redirect_chain,
             [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
+
         updated_study = Study.objects.get(id=self.study.id)
         self.assertTrue(
             updated_study.built, "Study build was invalidated upon editing protocol"
