@@ -29,6 +29,7 @@ from exp.views.study import (
     ManageResearcherPermissionsView,
     StudyDetailView,
     StudyPreviewDetailView,
+    StudyUpdateView,
 )
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -414,6 +415,38 @@ class StudyViewsTestCase(TestCase):
             updated_study.built,
             "Study build was not invalidated after editing metadata",
         )
+
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    @patch("exp.views.study.HttpResponseRedirect")
+    @patch("exp.views.study.reverse")
+    @patch("exp.views.study.StudyUpdateView.get_form")
+    @patch.object(StudyUpdateView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_study_model_save_on_post(
+        self,
+        mock_get_object,
+        mock_request,
+        mock_get_form,
+        mock_reverse,
+        mock_redirect,
+        mock_validate_and_fetch_metadata,
+    ):
+        # fill mocks with data
+        mock_metadata = MagicMock()
+        mock_validate_and_fetch_metadata.return_value = mock_metadata, []
+        type(mock_get_object()).metadata = PropertyMock(return_value=mock_metadata)
+
+        # run view's post method
+        view = StudyUpdateView()
+        view.post(mock_request)
+
+        # assert mocks
+        mock_get_object().save.assert_called_with()
+        mock_get_form.assert_called_with()
+        mock_reverse.assert_called_with(
+            "exp:study-edit", kwargs={"pk": mock_get_object().id}
+        )
+        mock_redirect.assert_called_with(mock_reverse())
 
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
     def test_change_study_protocol_does_not_affect_build_status(
