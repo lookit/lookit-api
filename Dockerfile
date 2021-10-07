@@ -12,7 +12,7 @@ COPY ./ ./
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gosu=1.10-1+b23 \
+    && apt-get install -y --no-install-recommends gosu=1.10-1+b23 gettext=0.19.8.1-9 \
     && rm -rf /var/lib/apt/lists/* \
     && gosu nobody true \
     && update-ca-certificates \
