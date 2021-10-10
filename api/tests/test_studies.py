@@ -54,6 +54,7 @@ class StudiesTestCase(APITestCase):
             study=self.study,
             exp_data={"first": "response"},
             completed_consent_frame=True,
+            study_type=self.study.study_type,
         )
 
         self.positive_consent_ruling = G(
@@ -226,6 +227,7 @@ class StudiesTestCase(APITestCase):
             study=self.study2,
             exp_data={"second": "response"},
             completed_consent_frame=True,
+            study_type=self.study2.study_type,
         )
 
         self.client.force_authenticate(user=self.researcher)
@@ -257,6 +259,7 @@ class StudiesTestCase(APITestCase):
             study=self.study2,
             exp_data={"second": "response"},
             completed_consent_frame=True,
+            study_type=self.study2.study_type,
         )
 
         self.client.force_authenticate(user=self.participant)

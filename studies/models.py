@@ -475,6 +475,8 @@ class Study(models.Model):
         else:
             responses = self.consented_responses
 
+        responses = responses.filter(study_type=self.study_type)
+
         if not user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, self):
             responses = responses.filter(is_preview=True)
         if not user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, self):
