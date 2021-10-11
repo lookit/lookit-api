@@ -746,6 +746,56 @@ class Study(models.Model):
         ev.model.save()
         self._log_action(ev)
 
+    def columns_included_in_summary(self):
+        if self.study_type.is_ember_frame_player:
+            return [
+                "response__id",
+                "response__uuid",
+                "response__date_created",
+                "response__completed",
+                "response__withdrawn",
+                "response__parent_feedback",
+                "response__birthdate_difference",
+                "response__video_privacy",
+                "response__databrary",
+                "response__is_preview",
+                "response__sequence",
+                "participant__global_id",
+                "participant__hashed_id",
+                "participant__nickname",
+                "child__global_id",
+                "child__hashed_id",
+                "child__name",
+                "child__age_rounded",
+                "child__gender",
+                "child__age_at_birth",
+                "child__language_list",
+                "child__condition_list",
+                "child__additional_information",
+            ]
+        if self.study_type.is_external:
+            return [
+                "response__id",
+                "response__uuid",
+                "response__date_created",
+                "response__parent_feedback",
+                "response__birthdate_difference",
+                "response__databrary",
+                "response__is_preview",
+                "participant__global_id",
+                "participant__hashed_id",
+                "participant__nickname",
+                "child__global_id",
+                "child__hashed_id",
+                "child__name",
+                "child__age_rounded",
+                "child__gender",
+                "child__age_at_birth",
+                "child__language_list",
+                "child__condition_list",
+                "child__additional_information",
+            ]
+
 
 # Using Direct foreign keys for guardian, see:
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
