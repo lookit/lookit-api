@@ -1331,6 +1331,31 @@ class StudyPreviewDetailViewTestCase(TestCase):
             mock_request.user.children.filter.assert_called_once_with(deleted=False)
 
 
+class StudyUpdateViewTestCase(TestCase):
+    @patch("exp.views.study.messages")
+    @patch("exp.views.study.StudyUpdateView.get_form")
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    @patch.object(StudyUpdateView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_metadata_error_message(
+        self,
+        mock_get_object,
+        mock_request,
+        mock_validate_and_fetch_metadata,
+        mock_get_form,
+        mock_messages,
+    ):
+        type(mock_get_object()).id = PropertyMock(return_value=1)
+        mock_validate_and_fetch_metadata.return_value = {}, sentinel.errors
+        view = StudyUpdateView()
+        view.post(mock_request)
+
+        mock_messages.error.assert_called_once_with(
+            mock_request,
+            f"WARNING: Changes to experiment were not saved: {sentinel.errors}",
+        )
+
+
 # TODO: StudyCreateView
 # - check user has to be in a lab with perms to create study to get
 # TODO: StudyUpdateView
