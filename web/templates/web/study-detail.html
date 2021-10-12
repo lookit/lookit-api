@@ -152,7 +152,7 @@
                             <a id="participate-button" class="btn btn-lg btn-default" href="{% url 'exp:study-detail' object.pk %}">{% trans "Build experiment runner to preview" %}</a>
                             {% else %}
                             <button type="submit" disabled class="btn-lg btn-primary" id="participate-button">
-                                {% if object.study_type.is_external and object.metadata.scheduled %}
+                                {% if object.show_scheduled %}
                                 {% trans "Schedule a time to participate" %}
                                 {% elif preview_mode %}
                                 {% trans "Preview" %}

@@ -189,7 +189,7 @@
                 </section>
             </div>
 
-            {% if not study.study_type.is_external %}
+            {% if study.show_videos%}
             <section class="mt-md well">
                 <h4> Videos </h4>
                 {% for response in response_data %}
