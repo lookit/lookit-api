@@ -298,7 +298,7 @@
                                 <i class="fas fa-mail-bulk" aria-hidden="true"></i> Message Participants
                             </a>
                         {%  endif %}
-                        {% if not study.study_type.is_external %}
+                        {% if study.show_consent%}
                         {% if "edit_study__responses__consent_rulings" in study_perms or "edit_study__responses__consent_rulings(is_preview=True)" in study_perms %}
                             <a type="button" class="btn btn-default"
                                href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_created' %}">
@@ -360,7 +360,7 @@
                                 <em>{{comments|linebreaks}}</em>
                             </li>
                             {% endif %}
-                            {% if not study.study_type.is_external %}
+                            {% if study.show_build_experiment_runner %}
                             <li class="list-group-item list-group-item-{{ build_ui_tag }}">
                                 <div class="row">
                                     <div class="col-xs-9">

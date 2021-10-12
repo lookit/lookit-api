@@ -505,6 +505,34 @@ class Study(models.Model):
     def expressed_interest_count(self):
         return self.responses.count()
 
+    @property
+    def show_videos(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_frame_data(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_consent(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_responses(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_build_experiment_runner(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_expressed_interest(self):
+        return self.study_type.is_external
+
+    @property
+    def show_scheduled(self):
+        return self.study_type.is_external and self.metadata["scheduled"]
+
     # WORKFLOW CALLBACKS
 
     def clone(self):

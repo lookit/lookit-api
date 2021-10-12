@@ -16,7 +16,7 @@
             Demographic <span class="hidden-xs"> Snapshots </span>
         </a>
     </li>
-    {% if not study.study_type.is_external %}
+    {% if study.show_videos %}
     <li {% if active == 'attachments' %} class="active" {% endif %}>
         <a href="{% url 'exp:study-attachments' study.id %}">
             Videos
