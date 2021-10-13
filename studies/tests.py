@@ -629,9 +629,11 @@ class StudyTypeModelTestCase(TestCase):
 
     def test_get_ember_frame_player(self):
         self.assertTrue(StudyType.get_ember_frame_player().is_ember_frame_player)
+        self.assertFalse(StudyType.get_ember_frame_player().is_external)
 
     def test_get_external(self):
         self.assertTrue(StudyType.get_external().is_external)
+        self.assertFalse(StudyType.get_external().is_ember_frame_player)
 
 
 class StudyModelTestCase(TestCase):
