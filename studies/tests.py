@@ -531,6 +531,48 @@ class TestAnnouncementEmailFunctionality(TestCase):
             "Your child is invited to take part in a new study on Lookit!",
         )
 
+    def test_potential_message_targets_external(self):
+        user = G(User, is_active=True)
+        child = G(
+            Child,
+            user=user,
+            birthday=date.today() - timedelta(days=365),
+        )
+        study = G(
+            Study,
+            name="External Study",
+            study_type=StudyType.get_external(),
+            image=SimpleUploadedFile("fake_image.png", b"", content_type="image/png"),
+            public=True,
+            max_age_years=2,
+            criteria_expression="",
+        )
+        study.state = "active"
+        study.save()
+
+        message_target = MessageTarget(
+            user_id=user.pk,
+            child_id=child.pk,
+            study_id=study.pk,
+        )
+
+        # Double check this is an external study
+        self.assertTrue(study.study_type.is_external)
+
+        # Check that user/child are potential message targets in new external study
+        self.assertIn(message_target, potential_message_targets())
+
+        # Add response from this child for this study
+        G(
+            Response,
+            study=study,
+            study_type=study.study_type,
+            child=child,
+        )
+
+        # Check that the message target no longer has this child for this study
+        self.assertNotIn(message_target, potential_message_targets())
+
 
 class TestSendMail(TestCase):
     def test_send_email_with_image(self):
@@ -655,47 +697,3 @@ class StudyModelTestCase(TestCase):
         assign_perm(StudyPermission.READ_STUDY_RESPONSE_DATA.codename, user, study)
 
         self.assertIn(response, study.responses_for_researcher(user))
-
-
-class ExternalEmailTestCase(TestCase):
-    def test_potential_message_targets_external(self):
-        user = G(User, is_active=True)
-        child = G(
-            Child,
-            user=user,
-            birthday=date.today() - timedelta(days=365),
-        )
-        study = G(
-            Study,
-            name="External Study",
-            study_type=StudyType.get_external(),
-            image=SimpleUploadedFile("fake_image.png", b"", content_type="image/png"),
-            public=True,
-            max_age_years=2,
-            criteria_expression="",
-        )
-        study.state = "active"
-        study.save()
-
-        message_target = MessageTarget(
-            user_id=user.pk,
-            child_id=child.pk,
-            study_id=study.pk,
-        )
-
-        # Double check this is an external study
-        self.assertTrue(study.study_type.is_external)
-
-        # Check that user/child are potential message targets in new external study
-        self.assertIn(message_target, potential_message_targets())
-
-        # Add response from this child for this study
-        G(
-            Response,
-            study=study,
-            study_type=study.study_type,
-            child=child,
-        )
-
-        # Check that the message target no longer has this child for this study
-        self.assertNotIn(message_target, potential_message_targets())
