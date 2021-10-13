@@ -270,7 +270,7 @@ class StudyUpdateView(
             if meta_errors:
                 messages.error(
                     self.request,
-                    f"WARNING: Experiment runner version not saved: {meta_errors}",
+                    f"WARNING: Changes to experiment were not saved: {meta_errors}",
                 )
             else:
                 # Check that study type hasn't changed.
