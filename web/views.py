@@ -62,6 +62,7 @@ def get_external_url(study: Study, response: Response = None) -> Text:
             response.study.salt,
             response.study.hash_digits,
         )
+        qs["response"] = response.uuid
 
     url = url._replace(query=urlencode(qs, doseq=True))
     return url.geturl()
@@ -508,7 +509,7 @@ class StudyDetailView(generic.DetailView):
                 child_uuid = request.POST["child_id"]
                 if study.study_type.is_external:
                     child = Child.objects.get(uuid=child_uuid)
-                    response, _created = Response.objects.get_or_create(
+                    response = Response.objects.create(
                         study=study,
                         child=child,
                         study_type=study.study_type,
