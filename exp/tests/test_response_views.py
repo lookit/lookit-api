@@ -12,7 +12,7 @@ from django_dynamic_fixture import G
 from accounts.backends import TWO_FACTOR_AUTH_SESSION_KEY
 from accounts.models import Child, DemographicData, User
 from accounts.utils import hash_id
-from studies.models import ConsentRuling, Lab, Response, Study, Video
+from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
 
 
 class Force2FAClient(Client):
@@ -54,6 +54,7 @@ class ResponseViewsTestCase(TestCase):
             shared_preview=False,
             name="Test Study",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
         # Note: currently not mocking Study.image field, because I couldn't get any of the
         # approaches outlined at https://stackoverflow.com/questions/26298821/django-testing-model-with-imagefield
@@ -312,6 +313,7 @@ class ResponseDataDownloadTestCase(TestCase):
             shared_preview=False,
             name="Test Study",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.other_study = G(
             Study,
@@ -319,6 +321,7 @@ class ResponseDataDownloadTestCase(TestCase):
             shared_preview=False,
             name="Test Study 2",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
 
         self.study.researcher_group.user_set.add(self.study_reader)
