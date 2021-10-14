@@ -64,7 +64,7 @@
                                     {% for response in study.responses.all %}
                                     {% with videos=response.videos.all %}
                                     <div class="media">
-                                        {% if is_lookit_study %}
+                                        {% if study.show_videos %}
                                         <div class="media-left media-top">
                                             {% if videos.0.download_url %}
                                             <video controls class="media-object" width="200">
@@ -87,7 +87,7 @@
                                                 <dd>{{ response.child.given_name }}</dd>
                                                 <dt>{% trans "Date" %}</dt>
                                                 <dd>{{ response.date_created }}</dd>
-                                                {% if is_lookit_study %}
+                                                {% if study.show_consent %}
                                                 <dt>{% trans "Consent status" %}</dt>
                                                 <dd>
                                                     {% if response.most_recent_ruling == 'accepted' %}
@@ -125,7 +125,7 @@
                     {% empty %}
                     <div class="panel-default">
                         <div class="panel-body">
-                            {% if is_lookit_study %}
+                            {% if study.study_type.is_ember_frame_player %}
                             <em> {% trans "You have not yet participated in any Lookit studies." %} </em>
                             {% else %}
                             <em> {% trans "You have not yet participated in any external studies." %} </em>
