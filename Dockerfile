@@ -20,4 +20,5 @@ RUN apt-get update \
     && python /tmp/get-poetry.py  \
     && source "$HOME/.poetry/env" \
     && poetry config virtualenvs.create false \
-    && poetry install --no-dev
+    && poetry install --no-dev \
+    && python manage.py compilemessages
