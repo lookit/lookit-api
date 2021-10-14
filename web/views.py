@@ -425,12 +425,14 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
     def get_queryset(self):
         tab_value = self.request.session.get("past_studies_tabs", "0")
 
+        response_query = Q()
+        study_query = Q()
+
         if tab_value == PastStudiesFormTabChoices.lookit_studies.value[0]:
             study_query = Q(study_type__name="Ember Frame Player (default)")
             response_query = Q(completed_consent_frame=True)
         elif tab_value == PastStudiesFormTabChoices.external_studies.value[0]:
             study_query = Q(study_type__name="External")
-            response_query = Q()
 
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
             "id", flat=True

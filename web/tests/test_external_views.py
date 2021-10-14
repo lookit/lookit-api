@@ -1,7 +1,8 @@
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.testcases import TestCase
+from django_dynamic_fixture import G
 
 from accounts.forms import PastStudiesFormTabChoices, StudyListSearchForm
 from accounts.models import Child, User
@@ -221,8 +222,8 @@ class ExternalStudiesViewTestCase(ExternalTestCase):
         self.assertEqual(studies_no_ccf.filter(name="1").count(), 0)
 
 
-class ExternalParticipantHistoryTestCase(ExternalTestCase):
-    def test_lookit_studies_history(self):
+class StudiesHistoryViewTestCase(ExternalTestCase):
+    def test_lookit_studies_history_view(self):
         # Request object
         mock_request = MagicMock(method="GET")
 
@@ -292,3 +293,23 @@ class ExternalParticipantHistoryTestCase(ExternalTestCase):
         self.assertEqual(200, response.status_code)
         self.assertNotIn(ember_frame_player_study_name.encode(), response.content)
         self.assertIn(external_study_name.encode(), response.content)
+
+    @patch.object(StudiesHistoryView, "request", create=True)
+    def test_history_view_only_users_responses(self, mock_request):
+
+        user = G(User)
+        child = G(Child, user=user)
+        response = G(Response, child=child)
+
+        other_user = G(User)
+        other_child = G(Child, user=other_user)
+        G(Response, child=other_child)
+
+        type(mock_request).user = PropertyMock(return_value=user)
+        view = StudiesHistoryView()
+
+        # There are two responses
+        self.assertEqual(Response.objects.count(), 2)
+
+        # We only get back the response for our "logged in" user
+        self.assertEqual(list(view.get_queryset()), [response.study])
