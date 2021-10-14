@@ -529,10 +529,15 @@ class StudyDetailView(generic.DetailView):
             return super().dispatch(request)
         else:
             response_text = (
-                "The study %s is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact %s"
-                % (study.name, study.contact_info)
+                _("The study ")
+                + study.name
+                + _(
+                    " is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact "
+                )
+                + study.contact_info
             )
-            return HttpResponseForbidden(_(response_text))
+
+            return HttpResponseForbidden(response_text)
 
 
 class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
