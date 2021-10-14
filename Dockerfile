@@ -12,7 +12,7 @@ COPY ./ ./
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gosu=1.10-1+b23 libgraphviz-dev=2.40.1-6+deb10u1 \
+    && apt-get install -y --no-install-recommends gosu=1.10-1+b23 gettext=0.19.8.1-9 \
     && rm -rf /var/lib/apt/lists/* \
     && gosu nobody true \
     && update-ca-certificates \
@@ -20,4 +20,5 @@ RUN apt-get update \
     && python /tmp/get-poetry.py  \
     && source "$HOME/.poetry/env" \
     && poetry config virtualenvs.create false \
-    && poetry install --no-dev
+    && poetry install --no-dev \
+    && python manage.py compilemessages

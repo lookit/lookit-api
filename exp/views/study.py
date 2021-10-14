@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Q
 from django.db.models.functions import Lower
 from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
@@ -34,6 +35,7 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
+from web.views import get_external_url
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -82,6 +84,15 @@ def get_discoverability_text(study):
 KEY_DISPLAY_NAMES = {
     "player_repo_url": "Experiment runner code URL",
     "last_known_player_sha": "Experiment runner version (commit SHA)",
+    "url": "Study URL",
+    "scheduling": "Scheduling",
+    "study_platform": "Study Platform",
+}
+
+KEY_HELP_TEXT = {
+    "url": "This is the link that participants will be sent to from the Lookit details page.",
+    "scheduling": "Indicate how participants schedule appointments for your section. Remember that Lookit encourages you to use its messaging system rather than collecting email addresses - this presents a privacy risk for your participants.",
+    "study_platform": "What software or website will you use to present & collect data for your study?",
 }
 
 
@@ -114,15 +125,23 @@ class StudyCreateView(
         Add the logged-in user as the study creator. If the form is valid,
         save the associated study and redirect to the supplied URL
         """
+
         user = self.request.user
-        target_study_type_id = self.request.POST["study_type"]
-        target_study_type = StudyType.objects.get(id=target_study_type_id)
+
+        if form.cleaned_data["external"]:
+            target_study_type = StudyType.get_external()
+        else:
+            target_study_type = StudyType.get_ember_frame_player()
+
         form.instance.metadata = self.extract_type_metadata(target_study_type)
         form.instance.creator = user
+        form.instance.study_type = target_study_type
+
         # Add user to admin group for study.
         new_study = self.object = form.save()
         new_study.admin_group.user_set.add(user)
         new_study.save()
+
         # Adds success message that study has been created.
         messages.success(self.request, f"{self.object.name} created.")
         return HttpResponseRedirect(self.get_success_url())
@@ -135,13 +154,9 @@ class StudyCreateView(
         Adds study types to get_context_data
         """
         context = super().get_context_data(**kwargs)
-        context["types"] = [
-            study_type["metadata"]["fields"]
-            for study_type in StudyType.objects.all().values_list(
-                "configuration", flat=True
-            )
-        ]
+        context["study_types"] = StudyType.objects.all()
         context["key_display_names"] = KEY_DISPLAY_NAMES
+        context["key_help_text"] = KEY_HELP_TEXT
         return context
 
     def get_initial(self):
@@ -157,6 +172,11 @@ class StudyCreateView(
         kwargs = super().get_form_kwargs()
         kwargs.update({"user": self.request.user})
         return kwargs
+
+    def form_invalid(self, form: StudyCreateForm) -> HttpResponse:
+        if not form.is_valid():
+            messages.error(self.request, form.errors)
+        return super().form_invalid(form)
 
 
 class StudyUpdateView(
@@ -223,6 +243,11 @@ class StudyUpdateView(
                 initial["structure"] = json.dumps(structure)
         if not self.object.generator.strip():
             initial["generator"] = StudyEditForm.base_fields["generator"].initial
+
+        if self.object.study_type.is_external:
+            initial["external"] = True
+            initial["scheduled"] = self.object.metadata.get("scheduled", False)
+
         return initial
 
     def post(self, request, *args, **kwargs):
@@ -230,37 +255,36 @@ class StudyUpdateView(
         Handles updating study metadata like name, short_description, etc.
         """
         study = self.get_object()
+        form = self.get_form()
 
-        # TODO: why is this not in the form's clean function?
-        target_study_type_id = int(self.request.POST["study_type"])
-        target_study_type = StudyType.objects.get(id=target_study_type_id)
+        if form.is_valid():
+            if form.cleaned_data["external"]:
+                study_type = StudyType.get_external()
+            else:
+                study_type = StudyType.get_ember_frame_player()
 
-        metadata, meta_errors = self.validate_and_fetch_metadata(
-            study_type=target_study_type
-        )
-
-        if meta_errors:
-            messages.error(
-                self.request,
-                f"WARNING: Experiment runner version not saved: {meta_errors}",
+            metadata, meta_errors = self.validate_and_fetch_metadata(
+                study_type=study_type
             )
-        else:
-            # Check that study type hasn't changed.
-            if not (
-                study.study_type_id == target_study_type_id
-                and metadata == study.metadata
-            ):
-                # Invalidate the previous build
-                study.built = False
-                # May still be building, but we're now good to allow another build
-                study.is_building = False
-            study.metadata = metadata
-            study.study_type_id = target_study_type_id
-            study.save()
 
-            return super().post(request, *args, **kwargs)
+            if meta_errors:
+                messages.error(
+                    self.request,
+                    f"WARNING: Changes to experiment were not saved: {meta_errors}",
+                )
+            else:
+                # Check that study type hasn't changed.
+                if metadata != study.metadata:
+                    # Invalidate the previous build
+                    study.built = False
+                    # May still be building, but we're now good to allow another build
+                    study.is_building = False
+                    # Update metadata
+                    study.metadata = metadata
 
-        return HttpResponseRedirect(reverse("exp:study-edit", kwargs=dict(pk=study.pk)))
+                study.save()
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def form_valid(self, form):
         """
@@ -270,6 +294,11 @@ class StudyUpdateView(
         messages.success(self.request, f"{self.get_object().name} study details saved.")
         return ret
 
+    def form_invalid(self, form):
+        if not form.is_valid():
+            messages.error(self.request, form.errors)
+        return super().form_invalid(form)
+
     def get_context_data(self, **kwargs):
         """
         In addition to the study, adds several items to the context dictionary.
@@ -277,18 +306,15 @@ class StudyUpdateView(
         context = super().get_context_data(**kwargs)
 
         context["study_types"] = StudyType.objects.all()
-        context["study_metadata"] = self.object.metadata
         context["key_display_names"] = KEY_DISPLAY_NAMES
-        context["types"] = [
-            exp_type.configuration["metadata"]["fields"]
-            for exp_type in context["study_types"]
-        ]
+        context["key_help_text"] = KEY_HELP_TEXT
         context["save_confirmation"] = self.object.state in [
             "approved",
             "active",
             "paused",
             "deactivated",
         ]
+
         return context
 
     def get_success_url(self):
@@ -886,13 +912,18 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         path replacement manually. Great! Just wonderful.
         """
 
-        _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
-        path = f"{study_uuid}/{'/'.join(rest)}"
-        if not rest:
-            path += "index.html"
-        path = f"{kwargs['uuid']}/index.html"
+        study = Study.objects.get(uuid=kwargs.get("uuid", None))
 
-        return super().dispatch(request, path)
+        if study.study_type.is_external:
+            return HttpResponseRedirect(get_external_url(study))
+        else:
+            _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
+            path = f"{study_uuid}/{'/'.join(rest)}"
+            if not rest:
+                path += "index.html"
+            path = f"{kwargs['uuid']}/index.html"
+
+            return super().dispatch(request, path)
 
 
 # UTILITY FUNCTIONS

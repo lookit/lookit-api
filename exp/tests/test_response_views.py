@@ -46,16 +46,15 @@ class ResponseViewsTestCase(TestCase):
         self.participants = [
             G(User, is_active=True, given_name="Mom") for i in range(n_participants)
         ]
-        self.study_type = G(StudyType, name="default", id=1)
 
         self.lab = G(Lab, name="MIT")
         self.study = G(
             Study,
             creator=self.study_admin,
             shared_preview=False,
-            study_type=self.study_type,
             name="Test Study",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
         # Note: currently not mocking Study.image field, because I couldn't get any of the
         # approaches outlined at https://stackoverflow.com/questions/26298821/django-testing-model-with-imagefield
@@ -64,7 +63,6 @@ class ResponseViewsTestCase(TestCase):
             Study,
             creator=self.study_admin,
             shared_preview=True,
-            study_type=self.study_type,
             name="Test Study",
             lab=self.lab,
         )
@@ -108,6 +106,7 @@ class ResponseViewsTestCase(TestCase):
                     Response,
                     child=child,
                     study=self.study,
+                    study_type=self.study.study_type,
                     completed=False,
                     completed_consent_frame=True,
                     sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -125,6 +124,7 @@ class ResponseViewsTestCase(TestCase):
                     Response,
                     child=child,
                     study=self.study,
+                    study_type=self.study.study_type,
                     completed=False,
                     is_preview=True,
                     completed_consent_frame=True,
@@ -305,23 +305,23 @@ class ResponseDataDownloadTestCase(TestCase):
         self.study_previewer = G(
             User, is_active=True, is_researcher=True, given_name="Researcher 3"
         )
-        self.study_type = G(StudyType, name="default", id=1)
+
         self.lab = G(Lab, name="MIT")
         self.study = G(
             Study,
             creator=self.study_reader,
             shared_preview=False,
-            study_type=self.study_type,
             name="Test Study",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
         self.other_study = G(
             Study,
             creator=self.study_reader,
             shared_preview=False,
-            study_type=self.study_type,
             name="Test Study 2",
             lab=self.lab,
+            study_type=StudyType.get_ember_frame_player(),
         )
 
         self.study.researcher_group.user_set.add(self.study_reader)
@@ -358,6 +358,7 @@ class ResponseDataDownloadTestCase(TestCase):
                     Response,
                     child=child,
                     study=self.study,
+                    study_type=self.study.study_type,
                     completed=False,
                     completed_consent_frame=True,
                     sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -376,6 +377,7 @@ class ResponseDataDownloadTestCase(TestCase):
                     Response,
                     child=child,
                     study=self.study,
+                    study_type=self.study.study_type,
                     completed=False,
                     completed_consent_frame=True,
                     sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -395,6 +397,7 @@ class ResponseDataDownloadTestCase(TestCase):
                     Response,
                     child=child,
                     study=self.study,
+                    study_type=self.study.study_type,
                     completed=False,
                     is_preview=True,
                     completed_consent_frame=True,
@@ -428,6 +431,7 @@ class ResponseDataDownloadTestCase(TestCase):
             Response,
             child=self.non_preview_child,
             study=self.study,
+            study_type=self.study.study_type,
             completed=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -447,6 +451,7 @@ class ResponseDataDownloadTestCase(TestCase):
             Response,
             child=self.children_for_participants[0][0],
             study=self.other_study,
+            study_type=self.other_study.study_type,
             completed=True,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -496,6 +501,7 @@ class ResponseDataDownloadTestCase(TestCase):
             Response,
             child=self.non_preview_child,
             study=self.study,
+            study_type=self.study.study_type,
             completed=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -732,6 +738,7 @@ class ResponseDataDownloadTestCase(TestCase):
             Response,
             child=self.children_for_participants[0][0],
             study=self.study,
+            study_type=self.study.study_type,
             completed=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -773,6 +780,7 @@ class ResponseDataDownloadTestCase(TestCase):
             Response,
             child=self.children_for_participants[0][0],
             study=self.study,
+            study_type=self.study.study_type,
             completed=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],
@@ -911,6 +919,7 @@ class ResponseDataDownloadTestCase(TestCase):
             Response,
             child=self.children_for_participants[0][0],
             study=self.study,
+            study_type=self.study.study_type,
             completed=False,
             completed_consent_frame=True,
             sequence=["0-video-config", "1-video-setup", "2-my-consent-frame"],

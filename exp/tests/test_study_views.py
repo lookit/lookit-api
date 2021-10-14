@@ -29,6 +29,7 @@ from exp.views.study import (
     ManageResearcherPermissionsView,
     StudyDetailView,
     StudyPreviewDetailView,
+    StudyUpdateView,
 )
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -69,8 +70,6 @@ class StudyViewsTestCase(TestCase):
             time_zone="America/New_York",
         )
         self.participant = G(User, is_active=True, is_researcher=False, nickname="Dada")
-        self.study_type = G(StudyType, name="default", id=1)
-        self.other_study_type = G(StudyType, name="other", id=2)
         self.approved_lab = G(Lab, name="MIT", approved_to_test=True)
 
         self.generator_function_string = (
@@ -89,10 +88,9 @@ class StudyViewsTestCase(TestCase):
             image=SimpleUploadedFile(
                 name="small.gif", content=small_gif, content_type="image/gif"
             ),
-            # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
+            study_type=StudyType.get_ember_frame_player(),
             creator=self.study_admin,
             shared_preview=False,
-            study_type=self.study_type,
             public=True,
             name="Test Study",
             lab=self.approved_lab,
@@ -105,7 +103,6 @@ class StudyViewsTestCase(TestCase):
             use_generator=False,
             generator=self.generator_function_string,
             criteria_expression="",
-            exit_url="https://lookit.mit.edu/studies/history",
             metadata={
                 "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
                 "last_known_player_sha": "fakecommitsha",
@@ -117,7 +114,6 @@ class StudyViewsTestCase(TestCase):
             Study,
             creator=self.study_admin,
             shared_preview=True,
-            study_type=self.study_type,
             name="Test Study",
             lab=self.approved_lab,
             built=True,
@@ -346,6 +342,7 @@ class StudyViewsTestCase(TestCase):
         )
 
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    @skip("Not able to change study type on in study edit view.")
     def test_study_edit_change_study_type(self, mock_validate):
         mock_validate.return_value = {"fake": "metadata"}, []
         # Mock validation function - we should test that unit separately
@@ -399,7 +396,10 @@ class StudyViewsTestCase(TestCase):
         data["metadata"] = new_metadata
         data["comments"] = "Changed experiment runner version"
         data["structure"] = json.dumps(data["structure"])
+
+        self.assertTrue(self.study.built)
         response = self.client.post(url, data, follow=True)
+
         self.assertEqual(
             response.status_code,
             200,
@@ -409,11 +409,44 @@ class StudyViewsTestCase(TestCase):
             response.redirect_chain,
             [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
+
         updated_study = Study.objects.get(id=self.study.id)
         self.assertFalse(
             updated_study.built,
             "Study build was not invalidated after editing metadata",
         )
+
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    @patch("exp.views.study.HttpResponseRedirect")
+    @patch("exp.views.study.reverse")
+    @patch("exp.views.study.StudyUpdateView.get_form")
+    @patch.object(StudyUpdateView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_study_model_save_on_post(
+        self,
+        mock_get_object,
+        mock_request,
+        mock_get_form,
+        mock_reverse,
+        mock_redirect,
+        mock_validate_and_fetch_metadata,
+    ):
+        # fill mocks with data
+        mock_metadata = MagicMock()
+        mock_validate_and_fetch_metadata.return_value = mock_metadata, []
+        type(mock_get_object()).metadata = PropertyMock(return_value=mock_metadata)
+
+        # run view's post method
+        view = StudyUpdateView()
+        view.post(mock_request)
+
+        # assert mocks
+        mock_get_object().save.assert_called_with()
+        mock_get_form.assert_called_with()
+        mock_reverse.assert_called_with(
+            "exp:study-edit", kwargs={"pk": mock_get_object().id}
+        )
+        mock_redirect.assert_called_with(mock_reverse())
 
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
     def test_change_study_protocol_does_not_affect_build_status(
@@ -442,6 +475,7 @@ class StudyViewsTestCase(TestCase):
             response.redirect_chain,
             [(reverse("exp:study-edit", kwargs={"pk": self.study.pk}), 302)],
         )
+
         updated_study = Study.objects.get(id=self.study.id)
         self.assertTrue(
             updated_study.built, "Study build was invalidated upon editing protocol"
@@ -1175,6 +1209,54 @@ class ManageResearcherPermissionsViewTestCase(TestCase):
 
 
 class StudyDetailViewTestCase(TestCase):
+    def setUp(self):
+        self.client = Force2FAClient()
+
+        user = G(User, is_active=True, is_researcher=True, username="lab researcher")
+        self.client.force_login(user)
+
+        lab = Lab.objects.get(name="Early Childhood Cognition Lab")
+
+        self.frame_player_study = G(
+            Study,
+            image=SimpleUploadedFile(
+                name="small.gif", content="", content_type="image/gif"
+            ),
+            study_type=StudyType.get_ember_frame_player(),
+            public=True,
+            lab=lab,
+            built=True,
+        )
+
+        self.external_study = G(
+            Study,
+            image=SimpleUploadedFile(
+                name="small.gif", content="", content_type="image/gif"
+            ),
+            study_type=StudyType.get_external(),
+            public=True,
+            lab=lab,
+            built=True,
+        )
+
+        # set permissions for both external and frame player studies
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.codename, user, self.frame_player_study
+        )
+        assign_perm(
+            StudyPermission.CODE_STUDY_CONSENT.prefixed_codename,
+            user,
+            self.frame_player_study,
+        )
+        assign_perm(
+            StudyPermission.READ_STUDY_DETAILS.codename, user, self.external_study
+        )
+        assign_perm(
+            StudyPermission.CODE_STUDY_CONSENT.prefixed_codename,
+            user,
+            self.external_study,
+        )
+
     def test_model(self) -> None:
         study_list_view = StudyDetailView()
         self.assertIs(study_list_view.model, Study)
@@ -1224,6 +1306,21 @@ class StudyDetailViewTestCase(TestCase):
         )
         mock_is_researcher.assert_called_with()
 
+    def test_study_detail_review_consent(self):
+        # check if review consent is viewable on a frame player study
+        response = self.client.get(
+            reverse("exp:study-detail", kwargs={"pk": self.frame_player_study.pk})
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertIn(b"Review Consent", response.content)
+
+        # check that review consent is not view on an external study
+        response = self.client.get(
+            reverse("exp:study-detail", kwargs={"pk": self.external_study.pk})
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertNotIn(b"Review Consent", response.content)
+
 
 class StudyPreviewDetailViewTestCase(TestCase):
     @patch.object(StudyPreviewDetailView, "request", create=True)
@@ -1232,6 +1329,31 @@ class StudyPreviewDetailViewTestCase(TestCase):
             study_preview_detail_view = StudyPreviewDetailView()
             study_preview_detail_view.get_context_data()
             mock_request.user.children.filter.assert_called_once_with(deleted=False)
+
+
+class StudyUpdateViewTestCase(TestCase):
+    @patch("exp.views.study.messages")
+    @patch("exp.views.study.StudyUpdateView.get_form")
+    @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
+    @patch.object(StudyUpdateView, "request", create=True)
+    @patch.object(SingleObjectMixin, "get_object")
+    def test_metadata_error_message(
+        self,
+        mock_get_object,
+        mock_request,
+        mock_validate_and_fetch_metadata,
+        mock_get_form,
+        mock_messages,
+    ):
+        type(mock_get_object()).id = PropertyMock(return_value=1)
+        mock_validate_and_fetch_metadata.return_value = {}, sentinel.errors
+        view = StudyUpdateView()
+        view.post(mock_request)
+
+        mock_messages.error.assert_called_once_with(
+            mock_request,
+            f"WARNING: Changes to experiment were not saved: {sentinel.errors}",
+        )
 
 
 # TODO: StudyCreateView

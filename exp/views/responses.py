@@ -1035,31 +1035,8 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         context["study"] = study = self.study
         paginated_responses = context["object_list"]
-        columns_included_in_summary = [
-            "response__id",
-            "response__uuid",
-            "response__date_created",
-            "response__completed",
-            "response__withdrawn",
-            "response__parent_feedback",
-            "response__birthdate_difference",
-            "response__video_privacy",
-            "response__databrary",
-            "response__is_preview",
-            "response__sequence",
-            "participant__global_id",
-            "participant__hashed_id",
-            "participant__nickname",
-            "child__global_id",
-            "child__hashed_id",
-            "child__name",
-            "child__age_rounded",
-            "child__gender",
-            "child__age_at_birth",
-            "child__language_list",
-            "child__condition_list",
-            "child__additional_information",
-        ]
+
+        columns_included_in_summary = study.columns_included_in_summary()
 
         columns_included_in_table = [
             "child__hashed_id",
@@ -1069,6 +1046,7 @@ class StudyResponsesList(ResponseDownloadMixin, generic.ListView):
             "response__completed",
             "response__is_preview",
         ]
+
         response_data = []
         for resp in paginated_responses:
             # Info needed for table display of individual responses
@@ -1410,6 +1388,13 @@ class StudyResponsesConsentManager(
             )
         )
 
+    def get(self, request, *args, **kwargs):
+        if self.get_object().study_type.is_external:
+            messages.error(request, "There is no consent manager for external studies.")
+            return HttpResponseRedirect(reverse("exp:study-detail", kwargs=kwargs))
+        else:
+            return super().get(request, *args, **kwargs)
+
 
 class StudyResponsesAll(
     CanViewStudyResponsesMixin, SingleObjectFetchProtocol[Study], generic.DetailView
@@ -1681,6 +1666,12 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
         paginator = context["paginator"]
         study = self.study
 
+        if study.study_type.is_external:
+            messages.error(
+                self.request, "Frame data is not available for External Studies."
+            )
+            return redirect(reverse("exp:study-responses-all", kwargs={"pk": study.pk}))
+
         zipped_file = io.BytesIO()  # import io
         with zipfile.ZipFile(zipped_file, "w", zipfile.ZIP_DEFLATED) as zipped:
             for page_num in paginator.page_range:
@@ -1700,6 +1691,7 @@ class StudyResponsesFrameDataCSV(ResponseDownloadMixin, generic.list.ListView):
                 study_name_for_files(study.name)
             ),
         )
+
         return response
 
 
@@ -1711,15 +1703,22 @@ class StudyResponsesFrameDataDictCSV(ResponseDownloadMixin, View):
 
     def get(self, request, *args, **kwargs):
         study = self.study
-        filename = "{}_{}_{}".format(
-            study_name_for_files(study.name), study.uuid, "all-frames-dict"
-        )
 
-        build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
-        messages.success(
-            request,
-            f"A frame data dictionary for {study.name} is being generated. You will be emailed a link when it's completed.",
-        )
+        if study.study_type.is_external:
+            messages.error(
+                request, "Frame data dictionary is not available for external studies"
+            )
+        else:
+            filename = "{}_{}_{}".format(
+                study_name_for_files(study.name), study.uuid, "all-frames-dict"
+            )
+
+            build_framedata_dict.delay(filename, study.uuid, self.request.user.uuid)
+            messages.success(
+                request,
+                f"A frame data dictionary for {study.name} is being generated. You will be emailed a link when it's completed.",
+            )
+
         return HttpResponseRedirect(
             reverse("exp:study-responses-all", kwargs=self.kwargs)
         )

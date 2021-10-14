@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
 from accounts.models import Child, User
-from studies.models import ConsentRuling, Lab, Response, Study, StudyType
+from studies.models import ConsentRuling, Lab, Response, Study
 from studies.permissions import LabPermission, StudyPermission
 
 
@@ -27,7 +27,6 @@ class StudiesTestCase(APITestCase):
         )
         self.participant = G(User, is_active=True)
         self.child = G(Child, user=self.participant)
-        self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT")
         self.lab.researchers.add(self.researcher)
         self.lab.save()
@@ -44,10 +43,8 @@ class StudiesTestCase(APITestCase):
             max_age_years=2,
             min_age_years=4,
             image="asd",
-            exit_url="www.cos.io",
             shared_preview=False,
             state="created",
-            study_type=self.study_type,
         )
         self.study.save()
 
@@ -57,6 +54,7 @@ class StudiesTestCase(APITestCase):
             study=self.study,
             exp_data={"first": "response"},
             completed_consent_frame=True,
+            study_type=self.study.study_type,
         )
 
         self.positive_consent_ruling = G(
@@ -222,15 +220,14 @@ class StudiesTestCase(APITestCase):
 
     def testStudyResponses(self):
         # Accessing study responses restricts queryset to responses of that particular study
-        self.study2 = G(
-            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
-        )
+        self.study2 = G(Study, creator=self.researcher, lab=self.lab)
         self.response2 = self.response = G(
             Response,
             child=self.child,
             study=self.study2,
             exp_data={"second": "response"},
             completed_consent_frame=True,
+            study_type=self.study2.study_type,
         )
 
         self.client.force_authenticate(user=self.researcher)
@@ -255,15 +252,14 @@ class StudiesTestCase(APITestCase):
 
     def testStudyResponsesAsParticipant(self):
         # Participants can only see the study responses they created
-        self.study2 = G(
-            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
-        )
+        self.study2 = G(Study, creator=self.researcher, lab=self.lab)
         self.response2 = G(
             Response,
             child=G(Child, user=self.researcher),
             study=self.study2,
             exp_data={"second": "response"},
             completed_consent_frame=True,
+            study_type=self.study2.study_type,
         )
 
         self.client.force_authenticate(user=self.participant)

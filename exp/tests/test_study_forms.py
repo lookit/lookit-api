@@ -1,10 +1,16 @@
+from typing import Dict, Text
+from unittest.case import skip
+from unittest.mock import Mock, patch
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import TestCase
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm
+from parameterized import parameterized
 
 from accounts.models import User
+from exp.views.mixins import StudyTypeMixin
 from studies.forms import StudyCreateForm, StudyEditForm
 from studies.models import Lab, Study, StudyType
 from studies.permissions import LabPermission, StudyPermission
@@ -60,7 +66,6 @@ class StudyFormTestCase(TestCase):
             study_type=self.study_type,
             name="Test Study",
             lab=self.main_lab,
-            exit_url="https://lookit.mit.edu/studies/history",
             criteria_expression="",
             structure={
                 "frames": {"frame-a": {}, "frame-b": {}},
@@ -156,7 +161,6 @@ class StudyFormTestCase(TestCase):
             "criteria": "",
             "duration": "",
             "contact_info": "",
-            "exit_url": "",
         }
         for field_name, empty_value in empty_field_values.items():
             data = model_to_dict(self.study)
@@ -223,6 +227,7 @@ class StudyFormTestCase(TestCase):
         form = StudyEditForm(data=data, instance=self.study, user=self.study_designer)
         self.assertNotIn("study_type", form.errors)
 
+    @skip("Removed study type change in study view")
     def test_study_type_to_nonexistent(self):
         data = model_to_dict(self.study)
         data["study_type"] = self.nonexistent_study_type_id
@@ -418,3 +423,65 @@ class StudyFormTestCase(TestCase):
         self.assertIn(self.second_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn(self.other_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn("lab", edit_form.errors)
+
+
+class StudyMixinsTestCase(TestCase):
+    @parameterized.expand(
+        [
+            ("", "", False, "", "", "", ""),
+            ("", "on", True, "scheduling value", "", "study platform value", ""),
+            ("http://lookit.mit.edu", "", False, "", "", "", ""),
+            (
+                "http://lookit.mit.edu",
+                "on",
+                True,
+                "Other",
+                "Other value",
+                "Other",
+                "Other value",
+            ),
+        ]
+    )
+    @patch.object(StudyTypeMixin, "request", create=True)
+    def test_validate_and_fetch_metadata(
+        self,
+        url: Text,
+        post_scheduled: Text,
+        meta_scheduled: bool,
+        scheduling: Text,
+        other_scheduling: Text,
+        study_platform: Text,
+        other_study_platform: Text,
+        mock_request: Mock,
+    ):
+        type(mock_request).POST = expected_metadata = {
+            "url": url,
+            "scheduled": post_scheduled,
+            "scheduling": scheduling,
+            "other_scheduling": other_scheduling,
+            "study_platform": study_platform,
+            "other_study_platform": other_study_platform,
+        }
+        external = StudyType.get_external()
+        metadata, errors = StudyTypeMixin().validate_and_fetch_metadata(external)
+
+        expected_metadata["scheduled"] = meta_scheduled
+
+        self.assertFalse(errors)
+        self.assertEqual(expected_metadata, metadata)
+
+    @parameterized.expand(
+        [
+            ({},),
+            ({"scheduled": False},),
+            ({"scheduled": True},),
+        ]
+    )
+    @patch.object(StudyTypeMixin, "request", create=True)
+    def test_validate_and_fetch_metadata_invalid_metadata(
+        self, post_data: Dict, mock_request: Mock
+    ):
+        type(mock_request).POST = post_data
+        external = StudyType.get_external()
+        _, errors = StudyTypeMixin().validate_and_fetch_metadata(external)
+        self.assertTrue(errors)

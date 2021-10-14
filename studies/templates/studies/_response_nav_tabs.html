@@ -16,9 +16,11 @@
             Demographic <span class="hidden-xs"> Snapshots </span>
         </a>
     </li>
+    {% if study.show_videos %}
     <li {% if active == 'attachments' %} class="active" {% endif %}>
         <a href="{% url 'exp:study-attachments' study.id %}">
             Videos
         </a>
     </li>
+    {% endif %}
 </ul>

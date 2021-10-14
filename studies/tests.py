@@ -5,11 +5,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils.safestring import mark_safe
 from django_dynamic_fixture import G
+from guardian.shortcuts import assign_perm
 from more_itertools import quantify
 
 from accounts.models import Child, Message, User
 from studies.helpers import send_mail
-from studies.models import Lab, Response, Study
+from studies.models import Lab, Response, Study, StudyType, StudyTypeEnum
+from studies.permissions import StudyPermission
 from studies.tasks import (
     MessageTarget,
     acquire_potential_announcement_email_targets,
@@ -529,6 +531,48 @@ class TestAnnouncementEmailFunctionality(TestCase):
             "Your child is invited to take part in a new study on Lookit!",
         )
 
+    def test_potential_message_targets_external(self):
+        user = G(User, is_active=True)
+        child = G(
+            Child,
+            user=user,
+            birthday=date.today() - timedelta(days=365),
+        )
+        study = G(
+            Study,
+            name="External Study",
+            study_type=StudyType.get_external(),
+            image=SimpleUploadedFile("fake_image.png", b"", content_type="image/png"),
+            public=True,
+            max_age_years=2,
+            criteria_expression="",
+        )
+        study.state = "active"
+        study.save()
+
+        message_target = MessageTarget(
+            user_id=user.pk,
+            child_id=child.pk,
+            study_id=study.pk,
+        )
+
+        # Double check this is an external study
+        self.assertTrue(study.study_type.is_external)
+
+        # Check that user/child are potential message targets in new external study
+        self.assertIn(message_target, potential_message_targets())
+
+        # Add response from this child for this study
+        G(
+            Response,
+            study=study,
+            study_type=study.study_type,
+            child=child,
+        )
+
+        # Check that the message target no longer has this child for this study
+        self.assertNotIn(message_target, potential_message_targets())
+
 
 class TestSendMail(TestCase):
     def test_send_email_with_image(self):
@@ -608,3 +652,48 @@ class TestSendMail(TestCase):
             reply_to=reply_to,
         )
         self.assertEquals(email.reply_to, reply_to)
+
+
+class StudyTypeModelTestCase(TestCase):
+    def test_default_pk(self):
+        study_type = StudyType.objects.get(name=StudyTypeEnum.ember_frame_player.value)
+        self.assertEqual(study_type.pk, StudyType.default_pk())
+
+    def test_identify_study_type(self):
+        self.assertTrue(
+            StudyType.objects.get(
+                name=StudyTypeEnum.ember_frame_player.value
+            ).is_ember_frame_player
+        )
+        self.assertTrue(
+            StudyType.objects.get(name=StudyTypeEnum.external.value).is_external
+        )
+
+    def test_get_ember_frame_player(self):
+        self.assertTrue(StudyType.get_ember_frame_player().is_ember_frame_player)
+        self.assertFalse(StudyType.get_ember_frame_player().is_external)
+
+    def test_get_external(self):
+        self.assertTrue(StudyType.get_external().is_external)
+        self.assertFalse(StudyType.get_external().is_ember_frame_player)
+
+
+class StudyModelTestCase(TestCase):
+    def test_responses_for_researcher_external_studies(self):
+        study = Study.objects.create(
+            study_type=StudyType.get_external(),
+        )
+        user = User.objects.create(is_active=True, is_researcher=True)
+        child = Child.objects.create(user=user)
+        response = Response.objects.create(
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            demographic_snapshot=user.latest_demographics,
+        )
+
+        self.assertNotIn(response, study.responses_for_researcher(user))
+
+        assign_perm(StudyPermission.READ_STUDY_RESPONSE_DATA.codename, user, study)
+
+        self.assertIn(response, study.responses_for_researcher(user))

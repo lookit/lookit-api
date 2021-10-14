@@ -1,6 +1,7 @@
 {% extends 'web/base.html' %}
 {% load bootstrap3 %}
 {% load i18n %}
+{% load web_extras %}
 {% block title %}{% trans "Studies" %}{% endblock %}
 
 {% block flash %}
@@ -25,28 +26,38 @@
 
 {% block content %}
 {% bootstrap_messages %}
-
-
-
 <div class="panel-default">
     <div class="panel-body">
-        <form action method="post" class="form-inline study-list">
+        <form action method="post" class="study-list">
             {% csrf_token %}
-            {% bootstrap_field form.child show_label=False %}
-            {% if user.is_anonymous %}
-            <div class="form-group login-message">Log in to find studies just right for your child!</div>
-            {% endif %}
-            {% bootstrap_field form.hide_studies_we_have_done form_group_class="form-group show-experiments" %}
-            {% trans "Clear" as clear_button_text %}
-            {% bootstrap_button clear_button_text "reset" button_class="btn btn-default pull-right clear" %}
-            {% bootstrap_field form.search show_label=False form_group_class="form-group pull-right" %}
+            {{ form.study_list_tabs }}
+            <div class="form-inline">
+                {% bootstrap_field form.child show_label=False %}
+                {% bootstrap_field form.study_location show_label=False %}
+                {% bootstrap_field form.hide_studies_we_have_done form_group_class="form-group show-experiments" %}
+                {% if user.is_anonymous %}
+                <div class="form-group login-message">Log in to find studies just right for your child!</div>
+                {% endif %}
+                <div class="pull-right">
+                    {% trans "Clear" as clear_button_text %}
+                    {% bootstrap_field form.search show_label=False %}
+                    {% bootstrap_button clear_button_text "reset" button_class="btn btn-default" %}
+                </div>
+            </div>
         </form>
     </div>
 </div>
 
+<ul class="nav nav-tabs">
+    {% for tab in form.study_list_tabs %}
+    <li role="study_list_tabs" data-value="{{ tab.data.value }}"><a href="">{{ tab.data.label }}</a></li>
+    {% endfor %}
+</ul>
+
 <div class="panel-default">
-    <div class="panel-body">
-        {% trans "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate." %}
+    <div class="panel-body active-tab-text">
+        {% studies_tab_text form.study_list_tabs as tab_text %}
+        {{ tab_text|linebreaks }}
     </div>
 </div>
 
@@ -73,7 +84,11 @@
                         {% if study.eligible_children %}
                         <p><strong>{{ study.eligible_children }} {% trans 'may be eligible.' %}</strong></p>
                         {% endif %}
-                        </small>
+                        {% if study.study_type.is_external %}
+                        <em>External study</em>
+                        {% endif %}
+                        <p></p>
+                    </small>
                 </div>
             </div>
             <div class="col-md-9 right">
@@ -104,33 +119,55 @@
 </div>
 
 <script>
-    $(function() {       
+    $(function () {
         const $form = $('form');
-        const $checkbox = $form.find('input:checkbox')
+        const $hideStudiesCheckbox = $form.find('input:checkbox[name=hide_studies_we_have_done]')
+        const $checkboxes = $form.find('input:checkbox')
         const $dropdownSelected = $form.find('select option:selected')
 
         if ($dropdownSelected.val() === '') {
-            $checkbox.attr('disabled', true);
+            $hideStudiesCheckbox.attr('disabled', true);
         }
-        
-        $form.on('reset', function(event){
+
+        $form.on('reset', function (event) {
             resetForm(submitForm);
         })
 
-        function resetForm(callbackFn){
+        function resetForm(callbackFn) {
             $form.find('input:text').attr('value', '')
-            $checkbox.attr('checked', false);
-            $dropdownSelected.removeAttr('selected');    
+            $checkboxes.attr('checked', true);
+            $hideStudiesCheckbox.attr('checked', false)
+            $dropdownSelected.removeAttr('selected');
             callbackFn()
         }
 
-        function submitForm(){
-            $checkbox.attr('disabled', false);
+        function submitForm() {
+            $checkboxes.attr('disabled', false);
             $form.submit()
         }
 
         $('select, input:checkbox').on('change', submitForm)
+
+        // Set active tab based on which "tabs" radio button is checked.
+        checked_radio = document.querySelector('input[name=study_list_tabs]:checked')
+        active_tab = document.querySelector(`[data-value="${checked_radio.value}"]`)
+        active_tab.classList.add('active')
+
+        // On click, update radio group 
+        document.querySelectorAll('[role=study_list_tabs]').forEach(function (tab) {
+            tab.addEventListener('click', function (event) {
+                event.preventDefault()
+                const radio = document.querySelector(`[name="study_list_tabs"][value="${tab.dataset.value}"]`)
+                if (!radio.hasAttribute('checked')) {
+                    radio.checked = true
+                    submitForm()
+                }
+            })
+        })
+
     });
+
+
 </script>
 
 {% endblock %}

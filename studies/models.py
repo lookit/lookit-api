@@ -1,6 +1,7 @@
 import logging
 import uuid
 from datetime import datetime
+from enum import Enum
 
 import boto3
 import dateutil
@@ -198,12 +199,37 @@ def notify_lab_of_approval(sender, instance, **kwargs):
         )
 
 
+class StudyTypeEnum(Enum):
+    external = "External"
+    ember_frame_player = "Ember Frame Player (default)"
+
+
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     configuration = DateTimeAwareJSONField(default=default_configuration)
 
     def __str__(self):
-        return f"<Study Type: {self.name}>"
+        return self.name
+
+    @classmethod
+    def default_pk(cls):
+        return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value).pk
+
+    @property
+    def is_ember_frame_player(self):
+        return self.name == StudyTypeEnum.ember_frame_player.value
+
+    @property
+    def is_external(self):
+        return self.name == StudyTypeEnum.external.value
+
+    @classmethod
+    def get_ember_frame_player(cls):
+        return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value)
+
+    @classmethod
+    def get_external(cls):
+        return cls.objects.get(name=StudyTypeEnum.external.value)
 
 
 def default_study_structure():
@@ -222,7 +248,6 @@ class Study(models.Model):
         "duration",
         "contact_info",
         "image",
-        "exit_url",
         "metadata",
         "study_type",
         "compensation_description",
@@ -268,7 +293,6 @@ class Study(models.Model):
     use_generator = models.BooleanField(default=False)
     generator = models.TextField(default="")
     display_full_screen = models.BooleanField(default=True)
-    exit_url = models.URLField(default="")
     state = models.CharField(
         choices=workflow.STATE_CHOICES,
         max_length=25,
@@ -445,7 +469,14 @@ class Study(models.Model):
 
     def responses_for_researcher(self, user):
         """Return all responses to this study that the researcher has access to read"""
-        responses = self.consented_responses
+
+        if self.study_type.is_external:
+            responses = self.responses
+        else:
+            responses = self.consented_responses
+
+        responses = responses.filter(study_type=self.study_type)
+
         if not user.has_study_perms(StudyPermission.READ_STUDY_RESPONSE_DATA, self):
             responses = responses.filter(is_preview=True)
         if not user.has_study_perms(StudyPermission.READ_STUDY_PREVIEW_DATA, self):
@@ -467,6 +498,42 @@ class Study(models.Model):
             return self.logs.filter(action="deactivated").first().created_at
         except AttributeError:
             return None
+
+    @property
+    def needs_to_be_built(self):
+        return self.study_type.is_ember_frame_player and not self.built
+
+    @property
+    def expressed_interest_count(self):
+        return self.responses.count()
+
+    @property
+    def show_videos(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_frame_data(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_consent(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_responses(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_build_experiment_runner(self):
+        return self.study_type.is_ember_frame_player
+
+    @property
+    def show_expressed_interest(self):
+        return self.study_type.is_external
+
+    @property
+    def show_scheduled(self):
+        return self.study_type.is_external and self.metadata["scheduled"]
 
     # WORKFLOW CALLBACKS
 
@@ -597,7 +664,7 @@ class Study(models.Model):
         :type ev: transitions.core.EventData
         :raise: RuntimeError
         """
-        if not self.built:
+        if self.needs_to_be_built:
             raise RuntimeError(
                 f'Cannot activate study - experiment runner for "{self.name}" ({self.id}) has not been built!'
             )
@@ -678,6 +745,56 @@ class Study(models.Model):
     def _finalize_state_change(self, ev):
         ev.model.save()
         self._log_action(ev)
+
+    def columns_included_in_summary(self):
+        if self.study_type.is_ember_frame_player:
+            return [
+                "response__id",
+                "response__uuid",
+                "response__date_created",
+                "response__completed",
+                "response__withdrawn",
+                "response__parent_feedback",
+                "response__birthdate_difference",
+                "response__video_privacy",
+                "response__databrary",
+                "response__is_preview",
+                "response__sequence",
+                "participant__global_id",
+                "participant__hashed_id",
+                "participant__nickname",
+                "child__global_id",
+                "child__hashed_id",
+                "child__name",
+                "child__age_rounded",
+                "child__gender",
+                "child__age_at_birth",
+                "child__language_list",
+                "child__condition_list",
+                "child__additional_information",
+            ]
+        if self.study_type.is_external:
+            return [
+                "response__id",
+                "response__uuid",
+                "response__date_created",
+                "response__parent_feedback",
+                "response__birthdate_difference",
+                "response__databrary",
+                "response__is_preview",
+                "participant__global_id",
+                "participant__hashed_id",
+                "participant__nickname",
+                "child__global_id",
+                "child__hashed_id",
+                "child__name",
+                "child__age_rounded",
+                "child__gender",
+                "child__age_at_birth",
+                "child__language_list",
+                "child__condition_list",
+                "child__additional_information",
+            ]
 
 
 # Using Direct foreign keys for guardian, see:
@@ -811,6 +928,9 @@ class Response(models.Model):
     )  # Allow deleting a demographic snapshot even though a response points to it
     objects = models.Manager()
     related_manager = ResponseApiManager()
+    study_type = models.ForeignKey(
+        StudyType, on_delete=models.PROTECT, default=StudyType.default_pk
+    )
 
     def __str__(self):
         return self.display_name

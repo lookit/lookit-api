@@ -1,9 +1,13 @@
 from hashlib import sha1
+from typing import Text
+from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Prefetch
+from django.db.models.query import QuerySet
+from django.db.models.query_utils import Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
@@ -16,19 +20,52 @@ from localflavor.us.us_states import USPS_CHOICES
 from revproxy.views import ProxyView
 
 from accounts import forms
+from accounts.forms import (
+    PastStudiesForm,
+    PastStudiesFormTabChoices,
+    StudyListSearchForm,
+)
 from accounts.models import Child, DemographicData, User, create_string_listing_children
 from accounts.queries import (
     age_range_eligibility_for_study,
     get_child_eligibility_for_study,
 )
+from accounts.utils import hash_id
 from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
-from studies.models import Response, Study, Video
+from studies.models import Response, Study, StudyType, Video
 
 
 @receiver(signals.user_logged_out)
 def on_user_logged_out(sender, request, **kwargs):
     messages.success(request, "You've successfully logged out.")
+
+
+def get_external_url(study: Study, response: Response = None) -> Text:
+    """Get the external url for this study.  Additionally, while preserving the existing query
+    string, add our hashed child id.
+
+    Args:
+        study (Study): Study model object
+        child_id (Text): Hashed child id for study
+
+    Returns:
+        Text: External study url
+    """
+    url = urlparse(study.metadata["url"])
+    qs = parse_qs(url.query)
+
+    if response:
+        qs["child"] = hash_id(
+            response.child.uuid,
+            response.study.uuid,
+            response.study.salt,
+            response.study.hash_digits,
+        )
+        qs["response"] = response.uuid
+
+    url = url._replace(query=urlencode(qs, doseq=True))
+    return url.geturl()
 
 
 class ParticipantSignupView(generic.CreateView):
@@ -213,7 +250,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     List all active, public studies.
     """
 
-    form_class = forms.StudyListSearchForm
+    form_class = StudyListSearchForm
     template_name = "web/studies-list.html"
     model = Study
 
@@ -235,13 +272,8 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
 
         studies = super().get_queryset().filter(state="active", public=True)
 
-        # values from session
-        search_value = session.get("search", "")
+        # child value from session
         child_value = session.get("child", "")
-        hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
-
-        if search_value:
-            studies = studies.filter(name__icontains=search_value)
 
         # Covers the corner case where user has filter set and then logs in.  This will clear the
         # age range filter that would have been previously set while logged out.
@@ -252,7 +284,56 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         ):
             child_value = ""
 
+        studies = self.filter_studies(studies)
+
+        studies = sorted(studies, key=self.sort_fn())
+
+        self.set_eligible_children_per_study(studies)
+
+        return self.paginated_queryset(studies, page)
+
+    def filter_studies(self, studies: QuerySet) -> QuerySet:
+        session = self.request.session
+        user = self.request.user
+
+        # get form values from session
+        search_value = session.get("search", "")
+        child_value = session.get("child", "")
+        hide_studies_we_have_done_value = session.get("hide_studies_we_have_done", "")
+        tab_value = session.get("study_list_tabs", "0")
+        study_location_value = session.get("study_location", "0")
+
+        # title search
+        if search_value:
+            studies = studies.filter(name__icontains=search_value)
+
+        query = None
+
+        # study location
+        if study_location_value == StudyListSearchForm.StudyLocation.lookit.value[0]:
+            query = Q(study_type__name="Ember Frame Player (default)")
+        elif (
+            study_location_value == StudyListSearchForm.StudyLocation.external.value[0]
+        ):
+            query = Q(study_type__name="External")
+
+        if query:
+            studies = studies.filter(query)
+            query = None
+
+        # Scheduled or unscheduled studies
+        if tab_value == StudyListSearchForm.Tabs.synchronous_studies.value[0]:
+            query = Q(study_type__name="External", metadata__scheduled=False) | Q(
+                study_type__name="Ember Frame Player (default)"
+            )
+        elif tab_value == StudyListSearchForm.Tabs.asynchronous_studies.value[0]:
+            query = Q(study_type__name="External", metadata__scheduled=True)
+
+        if query:
+            studies = studies.filter(query)
+
         if child_value:
+            # filter for authenticated users that has selected one of their children
             if child_value.isnumeric() and user.is_authenticated:
                 child = Child.objects.get(pk=child_value, user=user)
 
@@ -264,18 +345,14 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
                 studies = [
                     s for s in studies if get_child_eligibility_for_study(child, s)
                 ]
-
+            # filter for unauthenticated users that have selected a child age range
             else:
                 age_range = [int(c) for c in child_value.split(",")]
                 studies = [
                     s for s in studies if age_range_eligibility_for_study(age_range, s)
                 ]
 
-        studies = sorted(studies, key=self.sort_fn())
-
-        self.set_eligible_children_per_study(studies)
-
-        return self.paginated_queryset(studies, page)
+        return studies
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -297,7 +374,12 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     def studies_without_completed_consent_frame(self, studies, child):
         return studies.exclude(
             responses__in=Response.objects.filter(
-                child=child, completed_consent_frame=True
+                Q(
+                    child=child,
+                    completed_consent_frame=True,
+                    study_type=StudyType.get_ember_frame_player(),
+                )
+                | Q(child=child, study_type=StudyType.get_external())
             )
         )
 
@@ -321,22 +403,43 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
             return lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
 
 
-class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
+class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
     """
     List all active, public studies.
     """
 
     template_name = "web/studies-history.html"
     model = Study
+    form_class = PastStudiesForm
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            for field, value in form.clean().items():
+                request.session[field] = value
+
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get_queryset(self):
+        tab_value = self.request.session.get("past_studies_tabs", "0")
+
+        response_query = Q()
+        study_query = Q()
+
+        if tab_value == PastStudiesFormTabChoices.lookit_studies.value[0]:
+            study_query = Q(study_type__name="Ember Frame Player (default)")
+            response_query = Q(completed_consent_frame=True)
+        elif tab_value == PastStudiesFormTabChoices.external_studies.value[0]:
+            study_query = Q(study_type__name="External")
+
         children_ids = Child.objects.filter(user__id=self.request.user.id).values_list(
             "id", flat=True
         )
         responses = (
-            Response.objects.filter(
-                completed_consent_frame=True, child__id__in=children_ids
-            )
+            Response.objects.filter(Q(child__id__in=children_ids) & response_query)
             .select_related("child")
             .prefetch_related(
                 Prefetch(
@@ -351,9 +454,21 @@ class StudiesHistoryView(LoginRequiredMixin, generic.ListView):
 
         study_ids = responses.values_list("study_id", flat=True)
 
-        return Study.objects.filter(id__in=study_ids).prefetch_related(
+        return Study.objects.filter(Q(id__in=study_ids) & study_query).prefetch_related(
             Prefetch("responses", queryset=responses)
         )
+
+    def get_success_url(self):
+        return reverse("web:studies-history")
+
+    def get_initial(self):
+        kwargs = super().get_initial()
+
+        for field in self.form_class().fields:
+            if field in self.request.session:
+                kwargs[field] = self.request.session.get(field)
+
+        return kwargs
 
 
 class StudyDetailView(generic.DetailView):
@@ -389,19 +504,35 @@ class StudyDetailView(generic.DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
+        user = self.request.user
+
         if study.state == "active":
             if request.method == "POST":
-                return redirect(
-                    "web:experiment-proxy", study.uuid, request.POST["child_id"]
-                )
+                child_uuid = request.POST["child_id"]
+                if study.study_type.is_external:
+                    child = Child.objects.get(uuid=child_uuid)
+                    response = Response.objects.create(
+                        study=study,
+                        child=child,
+                        study_type=study.study_type,
+                        demographic_snapshot=user.latest_demographics,
+                    )
+                    external_url = get_external_url(study, response)
+                    return HttpResponseRedirect(external_url)
+                else:
+                    return redirect("web:experiment-proxy", study.uuid, child_uuid)
             return super().dispatch(request)
         else:
-            return HttpResponseForbidden(
-                _(
-                    "The study %s is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact %s"
+            response_text = (
+                _("The study ")
+                + study.name
+                + _(
+                    " is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact "
                 )
-                % (study.name, study.contact_info)
+                + study.contact_info
             )
+
+            return HttpResponseForbidden(response_text)
 
 
 class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):

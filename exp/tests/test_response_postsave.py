@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.test import TestCase
 from django_dynamic_fixture import G
+from guardian.shortcuts import assign_perm
 
 from accounts.models import Child, User
-from studies.models import Lab, Response, Study, StudyType, Video
+from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
+from studies.permissions import StudyPermission
 
 
 class ResponseSaveHandlingTestCase(TestCase):
@@ -14,11 +16,8 @@ class ResponseSaveHandlingTestCase(TestCase):
         self.participant = G(User, is_active=True, given_name="Participant 1")
         self.participant.save()
         self.child = G(Child, user=self.participant, given_name="Sally")
-        self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT")
-        self.study = G(
-            Study, creator=self.researcher, study_type=self.study_type, lab=self.lab
-        )
+        self.study = G(Study, creator=self.researcher, lab=self.lab)
         self.response_after_consent_frame = G(
             Response,
             child=self.child,
@@ -157,3 +156,50 @@ class ResponseSaveHandlingTestCase(TestCase):
         self.assertEqual(len(self.withdrawn_response_after_exit_frame.videos.all()), 3)
         self.withdrawn_response_after_exit_frame.save()  # to run post-save hook
         self.assertEqual(len(self.withdrawn_response_after_exit_frame.videos.all()), 0)
+
+    def test_responses_per_study_type(self):
+        user = G(User)
+        researcher = G(User, is_active=True, is_researcher=True, username="Researcher")
+        child = G(Child, user=user)
+        study = G(Study, study_type=StudyType.get_ember_frame_player())
+
+        # Create frame player response
+        frame_player_response = G(
+            Response,
+            study=study,
+            child=child,
+            study_type=study.study_type,
+            completed_consent_frame=True,
+        )
+        G(ConsentRuling, response=frame_player_response, action="accepted")
+
+        # Create external response
+        study.study_type = StudyType.get_external()
+        study.save()
+        G(Response, study=study, child=child, study_type=study.study_type)
+
+        # Give researcher perms
+        assign_perm(
+            StudyPermission.READ_STUDY_RESPONSE_DATA.prefixed_codename,
+            researcher,
+            study,
+        )
+
+        # There are two responses for this study
+        self.assertEqual(Response.objects.filter(study=study).count(), 2)
+
+        # The study is already set to external
+        self.assertEqual(study.responses_for_researcher(researcher).count(), 1)
+        self.assertTrue(
+            study.responses_for_researcher(researcher).first().study_type.is_external
+        )
+
+        # Change study back to frame player
+        study.study_type = StudyType.get_ember_frame_player()
+        study.save()
+        self.assertEqual(study.responses_for_researcher(researcher).count(), 1)
+        self.assertTrue(
+            study.responses_for_researcher(researcher)
+            .first()
+            .study_type.is_ember_frame_player
+        )

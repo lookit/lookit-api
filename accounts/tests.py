@@ -44,12 +44,10 @@ class AuthenticationTestCase(TestCase):
         self.researcher.save()
 
         # Lab and study setup for testing view protections
-        self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT")
         self.study = G(
             Study,
             creator=self.researcher,
-            study_type=self.study_type,
             name="Fake Study",
             lab=self.lab,
         )
@@ -956,7 +954,6 @@ class ParticipantViewsTestCase(TestCase):
             User, is_active=True, is_researcher=True, given_name="Researcher 3"
         )
 
-        self.study_type = G(StudyType, name="default", id=1)
         self.lab = G(Lab, name="MIT", approved_to_test=True)
 
         small_gif = (
@@ -972,7 +969,6 @@ class ParticipantViewsTestCase(TestCase):
             # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
             creator=self.study_admin,
             shared_preview=True,
-            study_type=self.study_type,
             public=True,
             name="Test Study",
             lab=self.lab,
@@ -985,7 +981,6 @@ class ParticipantViewsTestCase(TestCase):
             use_generator=False,
             generator="",
             criteria_expression="",
-            exit_url="https://lookit.mit.edu/studies/history",
             metadata={
                 "player_repo_url": "https://github.com/lookit/ember-lookit-frameplayer",
                 "last_known_player_sha": "fakecommitsha",
