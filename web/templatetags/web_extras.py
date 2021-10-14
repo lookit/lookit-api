@@ -59,7 +59,7 @@ def studies_tab_text(tabs):
             value = tab.data["value"]
             if value == StudyListSearchForm.Tabs.all_studies.value[0]:
                 return _(
-                    "Please note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate, unless a specific study says otherwise."
+                    "Lookit is growing! We are now showing links to outside studies along with those happening here on Lookit. Use the tabs above to see activities you can do right now, or scheduled activities you can sign up for.\n\nPlease note you'll need a laptop or desktop computer (not a mobile device) running Chrome or Firefox to participate, unless a specific study says otherwise."
                 )
             elif value == StudyListSearchForm.Tabs.synchronous_studies.value[0]:
                 return _(
