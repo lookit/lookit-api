@@ -504,8 +504,14 @@ class Study(models.Model):
         return self.study_type.is_ember_frame_player and not self.built
 
     @property
-    def expressed_interest_count(self):
-        return self.responses.count()
+    def expressed_interest_count(self) -> int:
+        """Return the number of responses that aren't previews.  This is interpreted as "expressed
+        interest".
+
+        Returns:
+            int: Count of responses
+        """
+        return self.responses.filter(is_preview=False).count()
 
     @property
     def show_videos(self):
