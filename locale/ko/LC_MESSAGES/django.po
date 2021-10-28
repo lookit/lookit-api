@@ -1399,4 +1399,3 @@ msgstr "참여하기"
 #, fuzzy
 msgid "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to."
 msgstr "귀하의 연구 프로토콜을 업데이트할 때 발생하는 상황을 쉽게 보려면 위의 버튼에서 전송하는 URL을 즐겨찾기에 추가하십시오."
-
