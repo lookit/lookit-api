@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock, PropertyMock, patch
+from urllib.parse import parse_qs, urlparse
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.testcases import TestCase
@@ -7,7 +8,12 @@ from django_dynamic_fixture import G
 from accounts.forms import PastStudiesFormTabChoices, StudyListSearchForm
 from accounts.models import Child, User
 from studies.models import Lab, Response, Study, StudyType
-from web.views import StudiesHistoryView, StudiesListView
+from web.views import (
+    StudiesHistoryView,
+    StudiesListView,
+    create_external_response,
+    get_external_url,
+)
 
 
 class ExternalTestCase(TestCase):
@@ -313,3 +319,34 @@ class StudiesHistoryViewTestCase(ExternalTestCase):
 
         # We only get back the response for our "logged in" user
         self.assertEqual(list(view.get_queryset()), [response.study])
+
+
+class ExternalResponseTestCase(TestCase):
+    def test_create_external_response(self):
+        child = G(Child)
+        study = G(Study)
+        response = create_external_response(study, child.uuid)
+
+        # Verify response was created correctly
+        self.assertEqual(child, response.child)
+        self.assertEqual(study, response.study)
+        self.assertEqual(study.study_type, response.study_type)
+        self.assertFalse(response.is_preview)
+
+        # Verify preview response
+        response = create_external_response(study, child.uuid, preview=True)
+        self.assertTrue(response.is_preview)
+
+    def test_get_external_url(self):
+        url = "https://lookit.mit.edu/"
+        study = G(Study, metadata={"url": url})
+        response = G(Response)
+        external_url = get_external_url(study, response)
+        parsed = urlparse(external_url)
+        self.assertEqual(f"{parsed.scheme}://{parsed.netloc}{parsed.path}", url)
+        query = parse_qs(parsed.query)
+
+        # Verify response uuid is in query string
+        self.assertEqual(query["response"], [str(response.uuid)])
+        # Verify child key in query string
+        self.assertIn("child", query)

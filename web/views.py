@@ -1,6 +1,7 @@
 from hashlib import sha1
 from typing import Text
 from urllib.parse import parse_qs, urlencode, urlparse
+from uuid import UUID
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, signals
@@ -41,28 +42,48 @@ def on_user_logged_out(sender, request, **kwargs):
     messages.success(request, "You've successfully logged out.")
 
 
-def get_external_url(study: Study, response: Response = None) -> Text:
-    """Get the external url for this study.  Additionally, while preserving the existing query
-    string, add our hashed child id.
+def create_external_response(study: Study, child_uuid: UUID, preview=False) -> Response:
+    """Creates a response object for an external study.
 
     Args:
-        study (Study): Study model object
-        child_id (Text): Hashed child id for study
+        study (Study): model object
+        child_uuid (UUID): child's UUID
+        preview (bool, optional): Set to True if this is a preview response. Defaults to False.
 
     Returns:
-        Text: External study url
+        Response: model object
+    """
+    child = Child.objects.get(uuid=child_uuid)
+    return Response.objects.create(
+        study=study,
+        child=child,
+        study_type=study.study_type,
+        demographic_snapshot=child.user.latest_demographics,
+        is_preview=preview,
+    )
+
+
+def get_external_url(study: Study, response: Response) -> Text:
+    """Get the external url for a study.  This includes an update to the query string with a child's
+    hashed id and the response uuid.
+
+    Args:
+        study (Study): model object
+        response (Response): model object
+
+    Returns:
+        Text: URL string
     """
     url = urlparse(study.metadata["url"])
     qs = parse_qs(url.query)
 
-    if response:
-        qs["child"] = hash_id(
-            response.child.uuid,
-            response.study.uuid,
-            response.study.salt,
-            response.study.hash_digits,
-        )
-        qs["response"] = response.uuid
+    qs["child"] = hash_id(
+        response.child.uuid,
+        response.study.uuid,
+        response.study.salt,
+        response.study.hash_digits,
+    )
+    qs["response"] = response.uuid
 
     url = url._replace(query=urlencode(qs, doseq=True))
     return url.geturl()
@@ -504,19 +525,12 @@ class StudyDetailView(generic.DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
-        user = self.request.user
 
         if study.state == "active":
             if request.method == "POST":
                 child_uuid = request.POST["child_id"]
                 if study.study_type.is_external:
-                    child = Child.objects.get(uuid=child_uuid)
-                    response = Response.objects.create(
-                        study=study,
-                        child=child,
-                        study_type=study.study_type,
-                        demographic_snapshot=user.latest_demographics,
-                    )
+                    response = create_external_response(study, child_uuid)
                     external_url = get_external_url(study, response)
                     return HttpResponseRedirect(external_url)
                 else:
