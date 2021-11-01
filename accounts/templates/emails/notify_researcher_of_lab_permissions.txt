@@ -6,4 +6,3 @@ Here is a link to this lab: {{ base_url }}{% url 'exp:lab-detail' pk=lab_id %}.
 
 Best,
 {{ lab_name }} Admin
-

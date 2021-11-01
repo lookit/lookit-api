@@ -1327,4 +1327,3 @@ msgstr "Weź udział w projekcie"
 #: web/templates/web/study-detail.html:168
 msgid "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to."
 msgstr "Aby łatwo zobaczyć, co się dzieje podczas aktualizacji protokołu badania, dodaj do zakładki adres URL na który wysyła Cię powyższy przycisk."
-

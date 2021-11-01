@@ -304,4 +304,3 @@ Kim Scott, Lookit Project Head ([kimscott@mit.edu](mailto:kimscott@mit.edu))
 [pipe]: https://addpipe.com/
 [pipe-add-webhook]: https://addpipe.com/webhooks
 [django-i18n]: https://docs.djangoproject.com/en/dev/topics/i18n/
-

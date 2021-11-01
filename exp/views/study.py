@@ -35,7 +35,7 @@ from studies.workflow import (
     TRANSITION_HELP_TEXT,
     TRANSITION_LABELS,
 )
-from web.views import get_external_url
+from web.views import create_external_response, get_external_url
 
 
 class DiscoverabilityKey(NamedTuple):
@@ -915,7 +915,9 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         study = Study.objects.get(uuid=kwargs.get("uuid", None))
 
         if study.study_type.is_external:
-            return HttpResponseRedirect(get_external_url(study))
+            child_uuid = kwargs["child_id"]
+            response = create_external_response(study, child_uuid, preview=True)
+            return HttpResponseRedirect(get_external_url(study, response))
         else:
             _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
             path = f"{study_uuid}/{'/'.join(rest)}"

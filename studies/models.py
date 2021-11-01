@@ -248,6 +248,7 @@ class Study(models.Model):
         "duration",
         "contact_info",
         "image",
+        "exit_url",
         "metadata",
         "study_type",
         "compensation_description",
@@ -274,6 +275,7 @@ class Study(models.Model):
     max_age_months = models.IntegerField(default=0, choices=MONTH_CHOICES)
     max_age_years = models.IntegerField(default=0, choices=YEAR_CHOICES)
     image = models.ImageField(null=True, upload_to="study_images/")
+    exit_url = models.URLField(default="https://lookit.mit.edu/studies/history/")
     comments = models.TextField(blank=True, null=True)
     study_type = models.ForeignKey(
         "StudyType",
@@ -504,8 +506,14 @@ class Study(models.Model):
         return self.study_type.is_ember_frame_player and not self.built
 
     @property
-    def expressed_interest_count(self):
-        return self.responses.count()
+    def expressed_interest_count(self) -> int:
+        """Return the number of responses that aren't previews.  This is interpreted as "expressed
+        interest".
+
+        Returns:
+            int: Count of responses
+        """
+        return self.responses.filter(is_preview=False).count()
 
     @property
     def show_videos(self):
