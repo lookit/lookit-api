@@ -537,15 +537,9 @@ class StudyDetailView(generic.DetailView):
                     return redirect("web:experiment-proxy", study.uuid, child_uuid)
             return super().dispatch(request)
         else:
-            response_text = (
-                _("The study ")
-                + study.name
-                + _(
-                    " is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact "
-                )
-                + study.contact_info
+            response_text = _(
+                f"The study {study.name} is not currently collecting data - the study is either completed or paused. If you think this is an error, please contact {study.contact_info}"
             )
-
             return HttpResponseForbidden(response_text)
 
 
