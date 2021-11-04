@@ -385,9 +385,9 @@ sqlparse = ">=0.2.0"
 
 [[package]]
 name = "django-dynamic-fixture"
-version = "3.1.1"
+version = "3.1.2"
 description = "A full library to create dynamic model instances for testing purposes."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -1451,7 +1451,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.8.3"
-content-hash = "1de8401211da23c28cf215a74493d71cb233677487f211eae3057babbbb16dda"
+content-hash = "11ca285e814ff02f2c3e9486994e2f91d06c22b5470d5bca59fb798ad682017d"
 
 [metadata.files]
 amqp = [
@@ -1672,7 +1672,7 @@ django-debug-toolbar = [
     {file = "django_debug_toolbar-2.2.1-py3-none-any.whl", hash = "sha256:7feaee934608f5cdd95432154be832fe30fda6c1249018191e2c27bc0b6a965e"},
 ]
 django-dynamic-fixture = [
-    {file = "django-dynamic-fixture-3.1.1.tar.gz", hash = "sha256:90d9d68ec373dce97a4a9ba3ec6a39cf10918e9c222fdf231074cfb668d14ea2"},
+    {file = "django-dynamic-fixture-3.1.2.tar.gz", hash = "sha256:08cf0dadb91a1058ef7bf2486e5df2a93571f4517a7de1b806d1a6ee6d78b078"},
 ]
 django-extensions = [
     {file = "django-extensions-2.2.9.tar.gz", hash = "sha256:2f81b618ba4d1b0e58603e25012e5c74f88a4b706e0022a3b21f24f0322a6ce6"},

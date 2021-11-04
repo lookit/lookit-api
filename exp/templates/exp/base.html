@@ -19,7 +19,7 @@
     {% if request.user.is_superuser %}
     <style>
       body {
-          background: url('{% static 'exp/img/su-mode.svg' %}') repeat transparent;
+          background: url('{% static "exp/img/su-mode.svg" %}') repeat transparent;
           background-size: 400px 400px;
       }
     </style>
@@ -30,9 +30,9 @@
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     {% endblock %}
     <link href="{% static 'exp/css/bootstrap-editable.css' %}" rel="stylesheet"/>
-    <script src="{% static 'exp/js/bootstrap-editable.min.js' %}"></script>
-    <script src="{% static 'exp/js/clipboard.min.js' %}"></script>
-    <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-z9ZOvGHHo21RqN5De4rfJMoAxYpaVoiYhuJXPyVmSs8yn20IE3PmBM534CffwSJI"></script>
+    <script src="{% static 'exp/js/bootstrap-editable.min.js' %}" integrity="sha384-U+oyyQtlZ0gWSjCW7DGnSUxmWwo0EtGjKPOG7i8WjkZkErNgccKPLFOlbYwYTPud"></script>
+    <script src="{% static 'exp/js/clipboard.min.js' %}" integrity="sha384-yfYgXC4debH24R+YufOxRYpRWQzZ9Vy/u7bClZYCobaimHiUK+g6msjpjx2ta0Bx"></script>
+    <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-s9KfTj2cVSa5Yc4gOd2/VyMCQCfFHwEoDAiVHgW2xDOlO/U9UcFQ0KXijfnM7qq8"></script>
     {% google_tag_manager %}
   </head>
   <body>

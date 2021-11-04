@@ -5,28 +5,22 @@
 
 {% block head %}
     {{ block.super }}
-    <script src="{% static 'js/jquery-ui.min.js' %}" integrity="sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM="></script>
-
-    <link rel="stylesheet"
-          href="{% static 'css/bootstrap-select.min.css' %}">
-    <script src="{% static 'js/bootstrap-select.min.js' %}"></script>
-
-    <script src="{% static 'studies/js/d3.min.js' %}" integrity="sha256-Xb6SSzhH3wEPC4Vy3W70Lqh9Y3Du/3KxPqI2JHQSpTw="></script>
+    <script src="{% static 'js/jquery-ui.min.js' %}" integrity="sha384-S3zIKOq/nelLqr0KAhub+iP5nyS201AUUfFxfEyKp9cM02cIiVixkZe+g3a10Rav"></script>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}">
+    <script src="{% static 'js/bootstrap-select.min.js' %}" integrity="sha384-8fu9aU0rBHyWhoS96J+3YorJqJZsUp8c3IkInX6NKYi/K/jmG98rDibD+JgkI+fZ"></script>
+    <script src="{% static 'studies/js/d3.min.js' %}" integrity="sha384-M06Cb6r/Yrkprjr7ngOrJlzgekrkkdmGZDES/SUnkUpUol0/qjsaQWQfLzq0mcfg"></script>
     <link rel="stylesheet" href="{% static 'studies/css/metricsgraphics.min.css' %}" />
-    <script src="{% static 'studies/js/metricsgraphics.min.js' %}" integrity="sha256-QFwUntQpro6H+h/btQ+8nVVDqeZnVQSuqsTTUGz2o44="></script>
+    <script src="{% static 'studies/js/metricsgraphics.min.js' %}" integrity="sha384-1tg+Caggw2MOJb5XdqvPWuAdItLy/pYh+OKAUeUp2u3LcAjTuqEUraUNX7wVUgGO"></script>
     {# Moment #}
-    <script type="text/javascript" src="{% static 'js/moment.min.js' %}"></script>
-
+    <script type="text/javascript" src="{% static 'js/moment.min.js' %}" integrity="sha384-pUJlcb0s5ZVM8ujEW3wr2qTVRBbcLEIvcEVEhk9GUd65R3z4uPx9NlB52/4+R3b3"></script>
     {# PivotTable.js #}
-    <script src="{% static 'studies/js/pivot.min.js' %}"></script>
+    <script src="{% static 'studies/js/pivot.min.js' %}" integrity="sha384-vsrhldvbRmpeg/gDxKwKmuOkfVLi4qEzv3pJl9ZCSmfKs6yY01JqFU0m8KzWUYnP"></script>
     <link rel="stylesheet" href="{% static 'studies/css/pivot.min.css' %}" />
-
     {# Google Charts (for PivotTable js rendering) #}
-    <script type="text/javascript" src="{% static 'studies/js/google-charts-loader.js' %}"></script>
-    <script src="{% static 'studies/js/gchart_renderers.min.js' %}"></script>
-
+    <script type="text/javascript" src="{% static 'studies/js/google-charts-loader.js' %}" integrity="sha384-W3/GXTpOFBFHX6YMpQmBB7044yTj4DIU5X4mPmT4CzPttnIIx6Z63qSYzor5FLD8"></script>
+    <script src="{% static 'studies/js/gchart_renderers.min.js' %}" integrity="sha384-MGue9XkTSfyc/uIW6x6YGXpPzZ7rPbs7YOA5kjhf5pALg11XA7rpxifZ+kZgkEkB"></script>
     <!-- Datepicker -->
-    <script type="text/javascript" src="{% static 'js/daterangepicker.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/daterangepicker.min.js' %}" integrity="sha384-ty7j9l9dyFJXResSJqxWIltBRwUxu77rLFQK18vubTvNC+6NUMAeu/xri9AU0WqK"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.min.css' %}"/>
 
     {% comment %}
