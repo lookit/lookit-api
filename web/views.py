@@ -600,7 +600,3 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
             path += "index.html"
 
         return super().dispatch(request, path)
-
-
-class SupportView(generic.TemplateView):
-    template_name = "web/support.html"

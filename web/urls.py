@@ -70,5 +70,4 @@ urlpatterns = [
         name="experiment-fonts-proxy",
     ),
     path("", flatpages_views.flatpage, dict(url=""), name="home"),
-    path("support/", views.SupportView.as_view(), name="support"),
 ]
