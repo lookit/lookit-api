@@ -353,6 +353,17 @@ class StudyEditForm(StudyForm):
             )
             self.fields["lab"].disabled = True
 
+    def clean_external(self):
+        study = self.instance
+        external = self.cleaned_data["external"]
+
+        if (not external and study.study_type.is_external) or (
+            external and study.study_type.is_ember_frame_player
+        ):
+            raise forms.ValidationError("Attempt to change study type not allowed.")
+
+        return external
+
 
 class StudyCreateForm(StudyForm):
     """Form for creating a new study"""

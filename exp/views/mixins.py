@@ -175,10 +175,18 @@ def is_valid_ember_frame_player(metadata):
 
     errors = []
 
-    if not requests.get(player_repo_url).ok:
-        errors.append(f"Frameplayer repo url {player_repo_url} does not work.")
-    if not requests.get(f"{player_repo_url}/commit/{frameplayer_commit_sha}").ok:
-        errors.append(f"Frameplayer commit {frameplayer_commit_sha} does not exist.")
+    if not player_repo_url:
+        errors.append("Frameplayer repo url is not set.")
+    else:
+        if not player_repo_url or not requests.get(player_repo_url).ok:
+            errors.append(f"Frameplayer repo url {player_repo_url} does not work.")
+        if (
+            not player_repo_url
+            or not requests.get(f"{player_repo_url}/commit/{frameplayer_commit_sha}").ok
+        ):
+            errors.append(
+                f"Frameplayer commit {frameplayer_commit_sha} does not exist."
+            )
 
     return errors
 

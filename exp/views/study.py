@@ -250,53 +250,34 @@ class StudyUpdateView(
 
         return initial
 
-    def post(self, request, *args, **kwargs):
-        """
-        Handles updating study metadata like name, short_description, etc.
-        """
-        study = self.get_object()
-        form = self.get_form()
+    def form_valid(self, form: StudyEditForm):
+        study = form.instance
 
-        if form.is_valid():
-            if form.cleaned_data["external"]:
-                study_type = StudyType.get_external()
-            else:
-                study_type = StudyType.get_ember_frame_player()
-
-            metadata, meta_errors = self.validate_and_fetch_metadata(
-                study_type=study_type
+        metadata, meta_errors = self.validate_and_fetch_metadata(
+            study_type=study.study_type
+        )
+        if meta_errors:
+            messages.error(
+                self.request,
+                f'WARNING: Changes to experiment were not saved: {", ".join(meta_errors)}',
             )
+        else:
+            # Check that study type hasn't changed.
+            if metadata != study.metadata:
+                # Invalidate the previous build
+                study.built = False
+                # May still be building, but we're now good to allow another build
+                study.is_building = False
+                # Update metadata
+                study.metadata = metadata
 
-            if meta_errors:
-                messages.error(
-                    self.request,
-                    f"WARNING: Changes to experiment were not saved: {meta_errors}",
-                )
-            else:
-                # Check that study type hasn't changed.
-                if metadata != study.metadata:
-                    # Invalidate the previous build
-                    study.built = False
-                    # May still be building, but we're now good to allow another build
-                    study.is_building = False
-                    # Update metadata
-                    study.metadata = metadata
+            study.save()
+            messages.success(self.request, f"{study.name} study details saved.")
 
-                study.save()
+        return super().form_valid(form)
 
-        return HttpResponseRedirect(self.get_success_url())
-
-    def form_valid(self, form):
-        """
-        Add success message that edits to study have been saved.
-        """
-        ret = super().form_valid(form)
-        messages.success(self.request, f"{self.get_object().name} study details saved.")
-        return ret
-
-    def form_invalid(self, form):
-        if not form.is_valid():
-            messages.error(self.request, form.errors)
+    def form_invalid(self, form: StudyEditForm):
+        messages.error(self.request, form.errors)
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
