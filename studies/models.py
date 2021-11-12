@@ -12,6 +12,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import JSONField
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
@@ -24,7 +25,6 @@ from transitions import Machine
 from accounts.models import Child, DemographicData, User
 from attachment_helpers import get_download_url
 from project import settings
-from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from studies import workflow
 from studies.helpers import FrameActionDispatcher, send_mail
 from studies.permissions import (
@@ -206,7 +206,7 @@ class StudyTypeEnum(Enum):
 
 class StudyType(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
-    configuration = DateTimeAwareJSONField(default=default_configuration)
+    configuration = JSONField(default=default_configuration)
 
     def __str__(self):
         return self.name
@@ -291,7 +291,7 @@ class Study(models.Model):
         related_query_name="study",
         null=True,
     )
-    structure = DateTimeAwareJSONField(default=default_study_structure)
+    structure = JSONField(default=default_study_structure)
     use_generator = models.BooleanField(default=False)
     generator = models.TextField(default="")
     display_full_screen = models.BooleanField(default=True)
@@ -305,7 +305,7 @@ class Study(models.Model):
     shared_preview = models.BooleanField(default=False)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-    metadata = DateTimeAwareJSONField(default=dict)
+    metadata = JSONField(default=dict)
     built = models.BooleanField(default=False)
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
@@ -919,12 +919,12 @@ class Response(models.Model):
     )  # Integrity constraints will also prevent deleting study that has responses
     completed = models.BooleanField(default=False)
     completed_consent_frame = models.BooleanField(default=False)
-    exp_data = DateTimeAwareJSONField(default=dict)
-    conditions = DateTimeAwareJSONField(default=dict)
+    exp_data = JSONField(default=dict)
+    conditions = JSONField(default=dict)
     sequence = ArrayField(models.CharField(max_length=128), blank=True, default=list)
     date_modified = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
-    global_event_timings = DateTimeAwareJSONField(default=dict)
+    global_event_timings = JSONField(default=dict)
     # For now, don't allow deleting Child still associated with responses. If we need to
     # delete all data on parent request, delete the associated responses manually. May want
     # to be able to keep some minimal info about those responses though (e.g. #, # unique
@@ -1199,7 +1199,7 @@ class Log(models.Model):
 
 class StudyLog(Log):
     action = models.CharField(max_length=128, db_index=True)
-    extra = DateTimeAwareJSONField(null=True)
+    extra = JSONField(null=True)
     study = models.ForeignKey(
         Study,
         on_delete=models.CASCADE,  # If a study is deleted, delete its logs also
