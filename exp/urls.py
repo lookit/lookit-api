@@ -57,6 +57,7 @@ from exp.views import (
     StudyResponseVideoAttachment,
     StudySingleResponseDownload,
     StudyUpdateView,
+    SupportView,
 )
 from exp.views.study import (
     ChangeStudyStatusView,
@@ -219,4 +220,5 @@ urlpatterns = [
         name="preview-proxy",
     ),
     path("", ResearcherDashboardView.as_view(), name="dashboard"),
+    path("support/", SupportView.as_view(), name="support"),
 ]

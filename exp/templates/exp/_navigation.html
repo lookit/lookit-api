@@ -21,8 +21,8 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
         {% if request.user.is_authenticated %}
+        {% nav_item request 'exp:support' 'Support Lookit' %}
         {% nav_item request 'exp:study-list' 'Manage Studies' %}
-        {% nav_item request 'exp:lab-list' 'Manage Labs' %}
         {% nav_item request 'exp:participant-list' 'View Participants' %}
 
         {% if perms.accounts.can_view_analytics %}
@@ -44,6 +44,7 @@
           </a>
           <ul class="dropdown-menu">
             <li><a href="{% url 'accounts:manage-account' %}">Manage Account</a></li>
+            {% nav_item request 'exp:lab-list' 'Manage Labs' %}
             <li><a href="{% url 'logout' %}">Logout</a></li>
           </ul>
         </li>
