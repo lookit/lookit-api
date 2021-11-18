@@ -13,7 +13,6 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
-from django.db.models import JSONField
 from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
@@ -520,7 +519,7 @@ class DemographicData(models.Model):
     )
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES, blank=True)
     lookit_referrer = models.TextField(blank=True)
-    extra = JSONField(null=True)
+    extra = models.JSONField(null=True)
 
     class Meta:
         ordering = ["-created_at"]
