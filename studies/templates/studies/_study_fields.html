@@ -88,7 +88,6 @@
                 .querySelector('#id_use_generator')
                 .closest('.form-group').classList.add('hidden')
             document.querySelector('#type-metadata-2').classList.remove('hidden')
-            document.querySelector('#id_scheduled').disabled = false
         }
 
     function setFramePlayer() {
@@ -106,17 +105,17 @@
                 .forEach(e => e.disabled=true)
             document.querySelector('#id_use_generator').closest('.form-group').classList.remove('hidden')
             document.querySelector('#type-metadata-2').classList.add('hidden')
-            document.querySelector('#id_scheduled').disabled = true
         }
 
     function updateStudyType (externalCheckbox) {
-        // Hide external and scheduled fields when external is disabled
-        if (document.querySelector('#id_external').disabled){
-                document
-                    .querySelectorAll('#id_external, #id_scheduled')
-                    .forEach(e=> e.closest('.form-group').classList.add('hidden'))
-        }
         externalCheckbox.checked ? setExternal() : setFramePlayer()
+        updateScheduled()
+    }
+
+    function updateScheduled(){
+        const external = document.querySelector('#id_external')
+        const scheduled = document.querySelector('#id_scheduled')
+        scheduled.disabled = external.disabled || !external.checked
     }
 
     function updateScheduling (scheduledCheckBox) {            

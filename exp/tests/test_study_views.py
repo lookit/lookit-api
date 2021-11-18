@@ -416,9 +416,8 @@ class StudyViewsTestCase(TestCase):
             "Study build was not invalidated after editing metadata",
         )
 
+    @patch("django.views.generic.edit.ModelFormMixin.form_valid")
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
-    @patch("exp.views.study.HttpResponseRedirect")
-    @patch("exp.views.study.reverse")
     @patch("exp.views.study.StudyUpdateView.get_form")
     @patch.object(StudyUpdateView, "request", create=True)
     @patch.object(SingleObjectMixin, "get_object")
@@ -427,9 +426,8 @@ class StudyViewsTestCase(TestCase):
         mock_get_object,
         mock_request,
         mock_get_form,
-        mock_reverse,
-        mock_redirect,
         mock_validate_and_fetch_metadata,
+        mock_form_valid,
     ):
         # fill mocks with data
         mock_metadata = MagicMock()
@@ -441,12 +439,9 @@ class StudyViewsTestCase(TestCase):
         view.post(mock_request)
 
         # assert mocks
-        mock_get_object().save.assert_called_with()
+        mock_get_form().instance.save.assert_called_with()
         mock_get_form.assert_called_with()
-        mock_reverse.assert_called_with(
-            "exp:study-edit", kwargs={"pk": mock_get_object().id}
-        )
-        mock_redirect.assert_called_with(mock_reverse())
+        mock_form_valid.assert_called_with(mock_get_form())
 
     @patch("exp.views.mixins.StudyTypeMixin.validate_and_fetch_metadata")
     def test_change_study_protocol_does_not_affect_build_status(
@@ -1345,14 +1340,15 @@ class StudyUpdateViewTestCase(TestCase):
         mock_get_form,
         mock_messages,
     ):
-        type(mock_get_object()).id = PropertyMock(return_value=1)
-        mock_validate_and_fetch_metadata.return_value = {}, sentinel.errors
+        type(mock_get_form().save()).id = PropertyMock(return_value=1)
+        error_msg = "error message"
+        mock_validate_and_fetch_metadata.return_value = {}, [error_msg]
         view = StudyUpdateView()
         view.post(mock_request)
 
         mock_messages.error.assert_called_once_with(
             mock_request,
-            f"WARNING: Changes to experiment were not saved: {sentinel.errors}",
+            f"WARNING: Changes to experiment were not saved: {error_msg}",
         )
 
 

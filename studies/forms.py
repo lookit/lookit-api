@@ -323,6 +323,7 @@ class StudyEditForm(StudyForm):
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["external"].disabled = True
+        self.fields["scheduled"].disabled = True
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(
@@ -352,6 +353,17 @@ class StudyEditForm(StudyForm):
                 uuid=self.instance.lab.uuid
             )
             self.fields["lab"].disabled = True
+
+    def clean_external(self):
+        study = self.instance
+        external = self.cleaned_data["external"]
+
+        if (not external and study.study_type.is_external) or (
+            external and study.study_type.is_ember_frame_player
+        ):
+            raise forms.ValidationError("Attempt to change study type not allowed.")
+
+        return external
 
 
 class StudyCreateForm(StudyForm):
