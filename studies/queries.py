@@ -5,7 +5,6 @@ from functools import reduce
 
 from django.db import models
 from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery, Value
-from django.db.models.fields import CharField
 from django.db.models.functions import Coalesce, Concat, Lower
 from django.utils.timezone import now
 from guardian.shortcuts import get_objects_for_user
@@ -35,8 +34,7 @@ def get_annotated_responses_qs(include_comments=False, include_time=False):
     newest_ruling_subquery = models.Subquery(
         ConsentRuling.objects.filter(response=models.OuterRef("pk"))
         .order_by("-created_at")
-        .values("action")[:1],
-        output_field=CharField(),
+        .values("action")[:1]
     )
 
     # Annotate that value as "current ruling" on our response queryset.
@@ -52,8 +50,7 @@ def get_annotated_responses_qs(include_comments=False, include_time=False):
         comment_subquery = models.Subquery(
             ConsentRuling.objects.filter(response=models.OuterRef("pk"))
             .order_by("-created_at")
-            .values("comments")[:1],
-            output_field=CharField(),
+            .values("comments")[:1]
         )
         annotated_query = annotated_query.annotate(
             ruling_comments=Coalesce(comment_subquery, models.Value("N/A"))
@@ -63,8 +60,7 @@ def get_annotated_responses_qs(include_comments=False, include_time=False):
         time_subquery = models.Subquery(
             ConsentRuling.objects.filter(response=models.OuterRef("pk"))
             .order_by("-created_at")
-            .values("created_at")[:1],
-            output_field=CharField(),
+            .values("created_at")[:1]
         )
         annotated_query = annotated_query.annotate(time_of_ruling=time_subquery)
 

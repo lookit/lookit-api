@@ -29,6 +29,7 @@ from qrcode import make as make_qrcode
 from qrcode.image.svg import SvgPathImage
 
 from accounts.queries import BitfieldQuerySet
+from project.fields.datetime_aware_jsonfield import DateTimeAwareJSONField
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
 from studies.permissions import (
@@ -519,7 +520,7 @@ class DemographicData(models.Model):
     )
     density = models.CharField(max_length=8, choices=DENSITY_CHOICES, blank=True)
     lookit_referrer = models.TextField(blank=True)
-    extra = models.JSONField(null=True)
+    extra = DateTimeAwareJSONField(null=True)
 
     class Meta:
         ordering = ["-created_at"]
