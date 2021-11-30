@@ -125,6 +125,7 @@
                                             {% endfor %}
                                         </select>
                                     </th>
+                                    <th>{# Recipient UUID Column #}</th>
                                     <th>
                                         {# Not using datetime-local input due to poor support #}
                                         <label class="control-label sr-only" for="date-filter">Date Sent</label>
@@ -413,11 +414,6 @@
          * Main function.
          */
         function initializeView() {
-            // Set up Datatable.
-            MESSAGE_TABLE = $messagesTable.DataTable(DATATABLE_SETTINGS)
-                {#.on("select deselect", handleMessageTableSelection)#}
-                .on('dblclick', 'tr', toggleMessageBody);
-
             // Set up filters.
             $recipientFilter.selectpicker(RECIPIENT_FILTER_SETTINGS)
                 .on('changed.bs.select', handleRecipientFiltering);
@@ -448,6 +444,10 @@
                 .on('click', 'button', handleEmailPreferenceSelection);
 
             $messageParticipantsForm.on('submit', handleMessageFormSubmit);
+
+            // Set up Datatable.
+            MESSAGE_TABLE = $messagesTable.DataTable(DATATABLE_SETTINGS)
+                .on('dblclick', 'tr', toggleMessageBody);
         }
 
         function handleEmailPreferenceSelection() {
@@ -540,6 +540,8 @@
         function datePickerSearchFunctionality(settings, rowArrayData, rowIndex, rowData, counter) {
             let {after, before} = GLOBAL_QUERY_PARAMS,
                 target = rowData.sentDate.asMoment;
+
+            console.log(settings)
 
             return target.isSameOrAfter(after) && target.isSameOrBefore(before);
 
@@ -638,6 +640,7 @@
          * between the daterangepicker plugin and our custom date range search functionality.
          */
         function deserializeSentDateData(row, type, value, meta) {
+            //console.log(new Date(value), value)
             switch (type) {
                 case 'set':
                     let dateObj = new Date(value),
