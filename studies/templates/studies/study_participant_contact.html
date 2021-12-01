@@ -62,13 +62,13 @@
                         <table id="messages-table" class="table table-condensed">
                             <thead>
                             <tr>
-                                <th>UUID</th>
-                                <th>Sender</th>
-                                <th>Subject</th>
-                                <th>Recipients</th>
-                                <th>Recipient UUIDs</th>
-                                <th>Date Sent</th>
-                                <th>Body</th>
+                                <th scope="col">UUID</th>
+                                <th scope="col">Sender</th>
+                                <th scope="col">Subject</th>
+                                <th scope="col">Recipients</th>
+                                <th scope="col">Recipient UUIDs</th>
+                                <th scope="col">Date Sent</th>
+                                <th scope="col">Body</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -94,8 +94,8 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th>{# UUID - unsearchable #}</th>
-                                    <th>
+                                    <th scope="col">{# UUID - unsearchable #}</th>
+                                    <th scope="col">
                                         <label class="control-label sr-only" for="sender-filter">Sender</label>
                                         <select id="sender-filter"
                                                 class="selectpicker form-control"
@@ -107,13 +107,13 @@
                                             {% endfor %}
                                         </select>
                                     </th>
-                                    <th>
+                                    <th scope="col">
                                         <input id="subject-filter"
                                                class="form-control input-sm"
                                                type="text"
                                                placeholder="Filter Subject"/>
                                     </th>
-                                    <th>
+                                    <th scope="col">
                                         <label class="control-label sr-only" for="recipient-filter">Recipients</label>
                                         <select id="recipient-filter"
                                                 class="selectpicker form-control"
@@ -125,13 +125,13 @@
                                             {% endfor %}
                                         </select>
                                     </th>
-                                    <th>{# Recipient UUID Column #}</th>
-                                    <th>
+                                    <th scope="col">{# Recipient UUID Column #}</th>
+                                    <th scope="col">
                                         {# Not using datetime-local input due to poor support #}
                                         <label class="control-label sr-only" for="date-filter">Date Sent</label>
                                         <input id="date-filter" class="form-control input-sm" type="text"/>
                                     </th>
-                                    <th>{# Body - searchable but not present in footer #}</th>
+                                    <th scope="col">{# Body - searchable but not present in footer #}</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -540,11 +540,7 @@
         function datePickerSearchFunctionality(settings, rowArrayData, rowIndex, rowData, counter) {
             let {after, before} = GLOBAL_QUERY_PARAMS,
                 target = rowData.sentDate.asMoment;
-
-            console.log(settings)
-
             return target.isSameOrAfter(after) && target.isSameOrBefore(before);
-
         }
 
         /**
@@ -640,7 +636,6 @@
          * between the daterangepicker plugin and our custom date range search functionality.
          */
         function deserializeSentDateData(row, type, value, meta) {
-            //console.log(new Date(value), value)
             switch (type) {
                 case 'set':
                     let dateObj = new Date(value),
