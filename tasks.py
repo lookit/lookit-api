@@ -265,7 +265,6 @@ def reset_db(c, sql_file=None):
         c (Context): Context-aware API wrapper & state-passing object.
         sql_file (String, optional): SQL file from existing Postgres database. Defaults to None.
     """
-    poetry_install(c)
     remove_db(c)
     create_db(c)
     c.run("sleep 3")

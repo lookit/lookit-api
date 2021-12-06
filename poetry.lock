@@ -492,6 +492,7 @@ description = "Yet another Django reverse proxy application."
 category = "main"
 optional = false
 python-versions = "*"
+develop = false
 
 [package.dependencies]
 django = ">=1.7"
@@ -499,6 +500,12 @@ urllib3 = ">=1.12"
 
 [package.extras]
 diazo = ["diazo (>=1.0.5)", "lxml (>=3.4)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/Innovativity/django-revproxy.git"
+reference = "b9fa8375d03fd68747dcb7273a97c19d788aa51b"
+resolved_reference = "b9fa8375d03fd68747dcb7273a97c19d788aa51b"
 
 [[package]]
 name = "django-shells"
@@ -1451,7 +1458,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.8.3"
-content-hash = "abd052527ca817165becdf83190e530b87655e505c66ea75f7d6e9f1673c18f8"
+content-hash = "f4342f823f7c0ada96c49dc120a00773ddf256e228ae616fa99cc75086c42b9b"
 
 [metadata.files]
 amqp = [
@@ -1706,10 +1713,7 @@ django-prettyjson = [
     {file = "django-prettyjson-0.4.1.tar.gz", hash = "sha256:b758a5f3c073db93e17485b4eb9cb19e9838f6e5d6cb91096d795e015e28d3bd"},
     {file = "django_prettyjson-0.4.1-py2.py3-none-any.whl", hash = "sha256:f9f4d73899947f17a67f61b57216612373195937fa936ba9335549fe878b3355"},
 ]
-django-revproxy = [
-    {file = "django-revproxy-0.10.0.tar.gz", hash = "sha256:5fad9595d0d4d59a0bd217b2c3f3eacb1aaf076bfa66a1b1b513b12ed8822407"},
-    {file = "django_revproxy-0.10.0-py3-none-any.whl", hash = "sha256:4af4a631f808fd68346b807c03404114ee2c3eee04c85d2f90f11d5c1a7ea06b"},
-]
+django-revproxy = []
 django-shells = [
     {file = "django-shells-0.1.0.tar.gz", hash = "sha256:a9315bd5254333829efe012e59cf1e0a69849d9d60996ec1d5b4ecfd823aa64a"},
     {file = "django_shells-0.1.0-py2.py3-none-any.whl", hash = "sha256:52f0adbfdaf480571c383d1665e25e252557a575a8662529ec66b5462cef332b"},
