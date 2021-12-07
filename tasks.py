@@ -205,6 +205,16 @@ def coverage_report(c):
 
 
 @task
+def poetry_install(c):
+    """Install current versions of python packages using 'poetry install'
+
+    Args:
+        c (Context): Context-aware API wrapper & state-passing object.
+    """
+    c.run("poetry install")
+
+
+@task
 def remove_db(c):
     """Remove existing postgres instance from Docker.
 
