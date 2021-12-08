@@ -323,7 +323,7 @@ tests = ["flake8", "mysqlclient", "psycopg2 (>=2.3)", "pytest-django"]
 
 [[package]]
 name = "django-bootstrap3"
-version = "15.0.0"
+version = "21.1"
 description = "Bootstrap 3 support for Django projects"
 category = "main"
 optional = false
@@ -1458,7 +1458,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.8.3"
-content-hash = "557358781a347c8c752fa4d63d85679613afa4d0c8353f72092d09f61f533336"
+content-hash = "f0972b1f667bbc06b0345c1a539808bebe04ab20857f14f37733106c2b4c131a"
 
 [metadata.files]
 amqp = [
@@ -1673,8 +1673,8 @@ django-bitfield = [
     {file = "django_bitfield-2.1.0-py2.py3-none-any.whl", hash = "sha256:158f1056e22cce450d0a49633ea77bfd84b85a2294b1ef03faa775a485f4065d"},
 ]
 django-bootstrap3 = [
-    {file = "django-bootstrap3-15.0.0.tar.gz", hash = "sha256:f803efd5605046b8f467523dbe94653a4a8d6bcf97ad480b386ba5cf8f94fe6b"},
-    {file = "django_bootstrap3-15.0.0-py3-none-any.whl", hash = "sha256:601c918a466e6a702f7b394a94826ba9f53c9cc879ccfc26579e3473eef80f53"},
+    {file = "django-bootstrap3-21.1.tar.gz", hash = "sha256:e63ee3392b1a78e4ccf493397f131f767f675ddc0eaba1e37b258adb18683d5f"},
+    {file = "django_bootstrap3-21.1-py3-none-any.whl", hash = "sha256:20e80c0e528f3b68e48025b7f37a306b7f2499a92718f6e676a03e66fe46624c"},
 ]
 django-celery-beat = [
     {file = "django-celery-beat-2.0.0.tar.gz", hash = "sha256:fdf1255eecfbeb770c6521fe3e69989dfc6373cd5a7f0fe62038d37f80f47e48"},
