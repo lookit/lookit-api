@@ -573,20 +573,21 @@ django = ">=2.2"
 
 [[package]]
 name = "djangorestframework-jsonapi"
-version = "3.1.0"
+version = "4.2.1"
 description = "A Django REST framework API adapter for the JSON API spec."
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
-django = ">=1.11"
-djangorestframework = ">=3.10"
+django = ">=2.2,<3.3"
+djangorestframework = ">=3.12,<3.13"
 inflection = ">=0.3.0"
 
 [package.extras]
 django-filter = ["django-filter (>=2.0)"]
 django-polymorphic = ["django-polymorphic (>=2.0)"]
+openapi = ["pyyaml (>=5.3)", "uritemplate (>=3.0.1)"]
 
 [[package]]
 name = "docker"
@@ -1458,7 +1459,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.8.3"
-content-hash = "557358781a347c8c752fa4d63d85679613afa4d0c8353f72092d09f61f533336"
+content-hash = "faa1fd4e45091bdd43886efa5fb69ac2a392582d0f29565f5e34e9e184d7ebee"
 
 [metadata.files]
 amqp = [
@@ -1748,8 +1749,8 @@ djangorestframework = [
     {file = "djangorestframework-3.12.4.tar.gz", hash = "sha256:f747949a8ddac876e879190df194b925c177cdeb725a099db1460872f7c0a7f2"},
 ]
 djangorestframework-jsonapi = [
-    {file = "djangorestframework-jsonapi-3.1.0.tar.gz", hash = "sha256:894826320cc9e06942b3f6e3604fc5c093854275fab498d52de4a3cd24aac58f"},
-    {file = "djangorestframework_jsonapi-3.1.0-py2.py3-none-any.whl", hash = "sha256:8d61bb16970e6c4b737b166c3888a319f86dad0321a41d801426d24a6ebd9fc7"},
+    {file = "djangorestframework-jsonapi-4.2.1.tar.gz", hash = "sha256:dc08a81af9f0d3676cac47d45f5edd4e4b59ac7f9723c5ef99b2e1a8ac453da8"},
+    {file = "djangorestframework_jsonapi-4.2.1-py2.py3-none-any.whl", hash = "sha256:0463d4bd74233a9e64813571abb8c55fa38ced1dc0ea7875e98861eeb5a857ad"},
 ]
 docker = [
     {file = "docker-4.2.1-py2.py3-none-any.whl", hash = "sha256:672f51aead26d90d1cfce84a87e6f71fca401bbc2a6287be18603583620a28ba"},
