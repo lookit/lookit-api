@@ -115,7 +115,7 @@ def apply_migration(apps, schema_editor):
             principal_investigator_name="Laura Schulz",
             contact_email="eccl@mit.edu",
             contact_phone="(617) 324-4859",
-            lab_website="http://eccl.mit.edu/",
+            lab_website="https://eccl.mit.edu/",
             description="""We study how children construct a commonsense understanding of the physical and social world. 
                 Current lab members are especially interested in how children generate new ideas and choose which problems 
                 are worth working on.
