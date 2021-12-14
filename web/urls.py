@@ -1,5 +1,5 @@
-from django.contrib.flatpages import views as flatpages_views
 from django.urls import path, re_path
+from django.views.generic.base import TemplateView
 
 from web import views
 
@@ -40,25 +40,6 @@ urlpatterns = [
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),
-    path("faq/", flatpages_views.flatpage, dict(url="/faq/"), name="faq"),
-    path(
-        "scientists/",
-        flatpages_views.flatpage,
-        dict(url="/scientists/"),
-        name="scientists",
-    ),
-    path(
-        "resources/",
-        flatpages_views.flatpage,
-        dict(url="/resources/"),
-        name="resources",
-    ),
-    path(
-        "contact_us/",
-        flatpages_views.flatpage,
-        dict(url="/contact_us/"),
-        name="contact_us",
-    ),
     re_path(
         r"^(?P<path>assets/.*)$",
         views.ExperimentAssetsProxyView.as_view(),
@@ -69,5 +50,31 @@ urlpatterns = [
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-fonts-proxy",
     ),
-    path("", flatpages_views.flatpage, dict(url=""), name="home"),
+    path("", TemplateView.as_view(template_name="web/home.html"), name="home"),
+    path("faq/", TemplateView.as_view(template_name="web/faq.html"), name="faq"),
+    path(
+        "scientists/",
+        TemplateView.as_view(template_name="web/scientists.html"),
+        name="scientists",
+    ),
+    path(
+        "resources/",
+        TemplateView.as_view(template_name="web/resources.html"),
+        name="resources",
+    ),
+    path(
+        "contact_us/",
+        TemplateView.as_view(template_name="web/contact-us.html"),
+        name="contact_us",
+    ),
+    path(
+        "privacy/",
+        TemplateView.as_view(template_name="web/privacy.html"),
+        name="privacy",
+    ),
+    path(
+        "termsofuse/",
+        TemplateView.as_view(template_name="web/terms-of-use.html"),
+        name="terms_of_use",
+    ),
 ]

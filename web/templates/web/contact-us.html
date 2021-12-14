@@ -1,0 +1,39 @@
+{% extends 'web/default.html' %}
+
+{% block content %}
+<style>
+    #participant-contact-row {
+        min-height: 10em !important;
+        margin-top: 2em;
+    }
+</style>
+
+<div class="main">
+    <div class="lookit-row lookit-page-title">
+        <div class="container">
+            <h2>Contact</h2>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row" id="participant-contact-row"">
+                <div class=" col-xs-5">
+            <h3>Technical difficulties</h3>
+            <p>To report any technical difficulties during participation, please contact our team by email at <a href="mailto:lookit-tech@mit.edu">lookit-tech@mit.edu</a>.</p>
+        </div>
+        <div class="col-xs-5 col-xs-offset-1">
+            <h3>Questions about the studies</h3>
+            <p>If you have any questions or concerns about the studies, please check our <a href="/faq">FAQ</a>. You can also contact the researchers running a particular study (their contact info is listed on the study page) or the Lookit team at <a href="mailto:lookit@mit.edu">lookit@mit.edu</a>.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10">
+            <h3>For researchers</h3>
+            <p>Lookit is available to all developmental researchers, and the code is entirely open-source. We would love for you to join our community! To learn more about running your own studies or contributing to the project, please check out the <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html" target="_blank" rel="noopener">guide to getting started</a>. </p>
+            <p> Several initial test studies of a prototype Lookit platform were completed in 2015; you can read about the results, and strengths and limitations of the platform,
+                in <a href='http://www.mitpressjournals.org/toc/opmi/1/1'>these papers</a>.</p>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

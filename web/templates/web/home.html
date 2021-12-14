@@ -1,9 +1,42 @@
-{% extends 'web/base.html' %}
-
-{% block title %}{% trans "Home" %}{% endblock %}
+{% extends 'web/default.html' %}
 
 {% block content %}
-  <div class="container">
-      {% trans "Home" %}
+<div class="main">
+  <div class="home-jumbotron">
+    <div class="content">
+      <h1>Lookit<br>
+        <small>the online child lab</small>
+      </h1>
+      <p>A project of the MIT Early Childhood Cognition Lab</p><a class="btn btn-primary btn-lg ember-view" href="/studies" id="ember821">Participate in a Study</a>
+    </div>
   </div>
+  <div class="information-row lookit-row">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="home-content-icon">
+            <i class="fa fa-flask"></i>
+          </div>
+          <h3 class="text-center">Bringing science home</h3>
+          <p>Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in developmental psychology: bringing the experiments to you.</p>
+        </div>
+        <div class="col-md-4">
+          <div class="home-content-icon">
+            <i class="fa fa-cogs"></i>
+          </div>
+          <h3 class="text-center">Help us understand how your child thinks</h3>
+          <p>Your family can contribute to research about how children learn by doing fun activities together, right in your web browser.
+        </div>
+        <div class="col-md-4">
+          <div class="home-content-icon">
+            <i class="fa fa-coffee"></i>
+          </div>
+          <h3 class="text-center">Participate whenever and wherever</h3>
+          <p>Log in or create an account at the top right to get started! You can participate with your child from any computer with a webcam.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
 {% endblock %}
