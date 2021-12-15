@@ -790,7 +790,7 @@ section.form-group.col-md-12 {
 }
 
 .range-bound-detail {
-    font: 400 12px Arial;
+    font: 400 12px Arial, sans-serif;
     color: #888;
     display: block;
     margin: 15px 0;
@@ -806,7 +806,7 @@ section.form-group.col-md-12 {
 }
 
 #age-range-specifier .noUi-pips-horizontal p.tiny-ticks {
-    font: 100 10px Arial;
+    font: 100 10px Arial, sans-serif;
     transform: rotate(-45deg);
     position: relative;
     top: 20px;
