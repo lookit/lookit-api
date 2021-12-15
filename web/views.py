@@ -1,4 +1,4 @@
-from hashlib import sha1
+from hashlib import sha256
 from typing import Text
 from urllib.parse import parse_qs, urlencode, urlparse
 from uuid import UUID
@@ -421,7 +421,7 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
         if user.is_anonymous:
             return lambda s: s.uuid.bytes
         else:
-            return lambda s: sha1(user.uuid.bytes + s.uuid.bytes).hexdigest()
+            return lambda s: sha256(user.uuid.bytes + s.uuid.bytes).hexdigest()
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):

@@ -4,6 +4,7 @@ import hashlib
 import logging
 import os
 import random
+import secrets
 import shutil
 import tempfile
 import time
@@ -211,7 +212,7 @@ def limit_email_targets(
     # Iterate through generator with actual models to build a list of IDs
     all_user_study_children_tuples = []
     for user, study_child_mapping in potential_targets_segmented_by_study:
-        study, child_list = random.choice(list(study_child_mapping.items()))
+        study, child_list = secrets.choice(list(study_child_mapping.items()))
         all_user_study_children_tuples.append(
             (user.id, study.id, [child.id for child in child_list])
         )
