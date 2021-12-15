@@ -430,9 +430,9 @@ class StudyMixinsTestCase(TestCase):
         [
             ("", "", False, "", "", "", ""),
             ("", "on", True, "scheduling value", "", "study platform value", ""),
-            ("http://lookit.mit.edu", "", False, "", "", "", ""),
+            ("https://lookit.mit.edu", "", False, "", "", "", ""),
             (
-                "http://lookit.mit.edu",
+                "https://lookit.mit.edu",
                 "on",
                 True,
                 "Other",
