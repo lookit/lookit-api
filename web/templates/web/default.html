@@ -16,10 +16,10 @@
   <meta name="apple-touch-fullscreen" content="yes">
   {% bootstrap_css %}
   {% bootstrap_javascript jquery=True %}
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+  <link href="{% static 'css/select2.min.css' %}" rel="stylesheet" />
+  <script src="{% static 'js/select2.full.min.js' %}" integrity="sha384-UtbDzTrahVBgY7yeja1g0yA/KSxZcz5KTR8N54NUCc5gYw7yGY9z38Dh5Rb1P85v"></script>
   <link type="text/css" rel="stylesheet" href="{% static 'base.css' %}" />
-  <script src="https://use.fontawesome.com/41c082d3c2.js"></script>
+  <script src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-s9KfTj2cVSa5Yc4gOd2/VyMCQCfFHwEoDAiVHgW2xDOlO/U9UcFQ0KXijfnM7qq8"></script>
   {% google_tag_manager %}
 </head>
 
@@ -51,7 +51,7 @@
     <div class="footer-row lookit-row">
       <div class="container">
         <div class="row">
-          <div class="col-md-1"><img src="https://storage.googleapis.com/lookit-production/static/images/nsf.gif"></div>
+          <div class="col-md-1"><img alt="NSF" src="https://storage.googleapis.com/lookit-production/static/images/nsf.gif"></div>
           <div class="col-md-8 funding-statement">
             {% trans "This material is based upon work supported by the National Science Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, findings, and conclusions or recommendations expressed in this material are those of the authors(s) and do not necessarily reflect the views of the National Science Foundation." %}
           </div>
@@ -62,8 +62,8 @@
               <li><a href="https://accessibility.mit.edu/">{% trans "Accessibility" %}</a></li>
               <li><a href="{% url 'web:contact_us' %}">{% trans "Contact us" %}</a></li>
               <li>{% trans "Connect" %}:
-                <a href="https://www.facebook.com/lookit.mit.edu" target="_blank" rel="noopener"><i class="fa fa-facebook fa-lg social-link"></i> </a>
-                <a href="https://www.instagram.com/babiesoflookit/" target="_blank" rel="noopener"><i class="fa fa-instagram fa-lg social-link"></i> </a>
+                <a href="https://www.facebook.com/lookit.mit.edu" target="_blank" rel="noopener"><em class="fab fa-facebook-f"></em> </a>
+                <a href="https://www.instagram.com/babiesoflookit/" target="_blank" rel="noopener"><em class="fab fa-instagram"></em> </a>
               </li>
             </ul>
           </div>
