@@ -35,7 +35,7 @@
                 <div class="pl-md">
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> {% trans "Birthday" %}: </b>
+                            <strong> {% trans "Birthday" %}: </strong>
                         </div>
                         <div class="col-xs-7">
                             {{child.birthday|date:"n/d/Y"|default:"N/A"}}
@@ -43,7 +43,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> {% trans "Age" %}: </b>
+                            <strong> {% trans "Age" %}: </strong>
                         </div>
                         <div class="col-xs-7">
                             {{child.birthday | timesince}}
@@ -51,7 +51,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> {% trans "Gender" %}: </b>
+                            <strong> {% trans "Gender" %}: </strong>
                         </div>
                         <div class="col-xs-7">
                             {{child.get_gender_display}}
@@ -59,7 +59,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> {% trans "Gestational Age at Birth" %}: </b>
+                            <strong> {% trans "Gestational Age at Birth" %}: </strong>
                         </div>
                         <div class="col-xs-7">
                             {{child.age_at_birth|default:"No response"}}
@@ -67,7 +67,7 @@
                     </div>
                     <div class="row">
                         <div class="col-xs-5">
-                            <b> {% trans "Additional Info" %}: </b>
+                            <strong> {% trans "Additional Info" %}: </strong>
                         </div>
                         <div class="col-xs-7">
                             {{child.additional_information|default:"No response"}}
@@ -83,7 +83,7 @@
             <h3>{% trans "Latest Demographic Data" %}</h3>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> {% trans "Country" %}: </b>
+                    <strong> {% trans "Country" %}: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.country|default:"No Response" }}
@@ -91,7 +91,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> {% trans "State" %}: </b>
+                    <strong> {% trans "State" %}: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.state|default:"No Response" }}
@@ -99,7 +99,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> {% trans "Area description" %}: </b>
+                    <strong> {% trans "Area description" %}: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.density|default:"No Response" }}
@@ -107,7 +107,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> {% trans "Languages Spoken at Home" %}: </b>
+                    <strong> {% trans "Languages Spoken at Home" %}: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.languages_spoken_at_home|default:"No Response" }}
@@ -115,7 +115,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> {% trans "Number of Children" %}: </b>
+                    <strong> {% trans "Number of Children" %}: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.number_of_children|default:"No Response" }}
@@ -123,7 +123,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> {% trans "Children current ages" %}: </b>
+                    <strong> {% trans "Children current ages" %}: </strong>
                 </div>
                 <div class="col-xs-7">
                     {% for birthday in user.latest_demographics.child_birthdays %}{{birthday | timesince|default:"N/A"}}{% if not forloop.last %}; {% endif %}{% empty %}{% trans "No Response" %}{% endfor %}
@@ -131,7 +131,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> {% trans "Number of Guardians" %}: </b>
+                    <strong> {% trans "Number of Guardians" %}: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.number_of_guardians|default:"No Response"}}
@@ -139,7 +139,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> {% trans "Explanation for Guardians:" %} </b>
+                    <strong> {% trans "Explanation for Guardians:" %} </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.number_of_guardians_explanation|default:"No Response" }}
@@ -147,7 +147,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b>{% trans "Race" %}:</b>
+                    <strong>{% trans "Race" %}:</strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.race_identification|default:"No Response" }}
@@ -155,7 +155,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Age: </b>
+                    <strong> Age: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.age|default:"No Response" }}
@@ -163,7 +163,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Gender: </b>
+                    <strong> Gender: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.gender|default:"No Response" }}
@@ -171,7 +171,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Education Level: </b>
+                    <strong> Education Level: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.education_level|default:"No Response" }}
@@ -179,7 +179,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Spouse's Education Level: </b>
+                    <strong> Spouse's Education Level: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.spouse_education_level|default:"No Response" }}
@@ -187,7 +187,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Annual Income: </b>
+                    <strong> Annual Income: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.annual_income|default:"No Response" }}
@@ -195,7 +195,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Children's Books at Home: </b>
+                    <strong> Children's Books at Home: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.number_of_books|default:"No Response" }}
@@ -203,7 +203,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Additional Comments: </b>
+                    <strong> Additional Comments: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.additional_comments|default:"No Response" }}
@@ -211,7 +211,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-5">
-                    <b> Lookit Referrer: </b>
+                    <strong> Lookit Referrer: </strong>
                 </div>
                 <div class="col-xs-7">
                     {{ demographics.lookit_referrer|default:"No Response" }}
