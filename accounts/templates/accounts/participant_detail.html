@@ -5,26 +5,26 @@
 
 {% block title %}{{ user.nickname |default:"Participant Detail" }}{% endblock %}
 {% block flash %}
-  {% bootstrap_messages %}
+{% bootstrap_messages %}
 {% endblock %}
 {% block content %}
-  <div class="container mb-lg">
-      <div class='row'>
-          <div class="col-xs-12">
-              <ol class="breadcrumb">
+<div class="container mb-lg">
+    <div class='row'>
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
                 <li><a href="{% url 'exp:participant-list' %}"> {% trans "All Participants" %} </a></li>
                 <li class="active"> {{ user.nickname |default:"Participant Detail" }} </li>
-              </ol>
-          </div>
-      </div>
+            </ol>
+        </div>
+    </div>
 
-      <div class="row">
-          <div class="col-xs-12">
-              <h1> {{ user.identicon_html }} {% if user.nickname %} {{ user.nickname }}{% else %} {% trans "Participant ID" %} {{ user.id }} {% endif %}</h1>
-              <span><label class='pr-xs'> {% trans "Last Active:" %} </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
-              <div><label class='pr-xs'> {% trans "Participant global ID:" %} </label> {{ user.uuid }} </div>
-          </div>
-      </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <h1> {{ user.identicon_html }} {% if user.nickname %} {{ user.nickname }}{% else %} {% trans "Participant ID" %} {{ user.id }} {% endif %}</h1>
+            <span><label class='pr-xs'> {% trans "Last Active:" %} </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
+            <div><label class='pr-xs'> {% trans "Participant global ID:" %} </label> {{ user.uuid }} </div>
+        </div>
+    </div>
 
     <div class='row'>
         <div class='col-md-6 col-sm-5'>
@@ -46,7 +46,7 @@
                             <b> {% trans "Age" %}: </b>
                         </div>
                         <div class="col-xs-7">
-                             {{child.birthday | timesince}}
+                            {{child.birthday | timesince}}
                         </div>
                     </div>
                     <div class="row">
@@ -54,7 +54,7 @@
                             <b> {% trans "Gender" %}: </b>
                         </div>
                         <div class="col-xs-7">
-                             {{child.get_gender_display}}
+                            {{child.get_gender_display}}
                         </div>
                     </div>
                     <div class="row">
@@ -62,7 +62,7 @@
                             <b> {% trans "Gestational Age at Birth" %}: </b>
                         </div>
                         <div class="col-xs-7">
-                             {{child.age_at_birth|default:"No response"}}
+                            {{child.age_at_birth|default:"No response"}}
                         </div>
                     </div>
                     <div class="row">
@@ -70,13 +70,13 @@
                             <b> {% trans "Additional Info" %}: </b>
                         </div>
                         <div class="col-xs-7">
-                             {{child.additional_information|default:"No response"}}
+                            {{child.additional_information|default:"No response"}}
                         </div>
                     </div>
                 </div>
             </div>
             {% empty %}
-                <p><em> {% trans "No children profiles registered!" %} </em></p>
+            <p><em> {% trans "No children profiles registered!" %} </em></p>
             {% endfor %}
         </div>
         <div class='col-md-6 col-sm-7'>
@@ -94,7 +94,7 @@
                     <b> {% trans "State" %}: </b>
                 </div>
                 <div class="col-xs-7">
-                     {{ demographics.state|default:"No Response" }}
+                    {{ demographics.state|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -118,7 +118,7 @@
                     <b> {% trans "Number of Children" %}: </b>
                 </div>
                 <div class="col-xs-7">
-                     {{ demographics.number_of_children|default:"No Response" }}
+                    {{ demographics.number_of_children|default:"No Response" }}
                 </div>
             </div>
             <div class="row">
@@ -222,94 +222,94 @@
     <hr>
     <h3>{% if user.nickname %} {{ user.nickname }}{% else %} Participant ID {{ user.id }}{% endif %}'s Studies</h3>
     {% if studies %}
-            <div class="row hidden-xs hidden-sm pt-sm">
-                <div class="col-md-4 col-xs-12">
-                    Study Title
-                    <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                    <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+    <div class="row hidden-xs hidden-sm pt-sm">
+        <div class="col-md-4 col-xs-12">
+            Study Title
+            <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+            <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+        </div>
+        <div class="col-md-2 col-xs-12">
+            Response
+        </div>
+        <div class="col-md-2 col-xs-12">
+            Child
+        </div>
+        <div class="col-md-2 col-xs-12">
+            Completion Status
+            <a aria-label="Sort user studies by completion status" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+            <a aria-label="Reverse sort user studies by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+        </div>
+        <div class="col-md-2 col-xs-12">
+            Date of Response
+            <a aria-label="Sort user studies by date created" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+            <a aria-label="Reverse sort user studies by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
+        </div>
+        <hr>
+    </div>
+    <div class="row mt-xs visible-xs visible-sm">
+        <div class="col-xs-12 mt-lg mb-lg">
+            <div class="btn-group">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        Title <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li> <a aria-label="Sort ascending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies">Sort A-Z</a></li>
+                        <li> <a aria-label="Sort descending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies">Sort Z-A</a></li>
+                    </ul>
                 </div>
-                <div class="col-md-2 col-xs-12">
-                    Response
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        Status <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a aria-label="Sort ascending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies">Sort A-Z </a></li>
+                        <li><a aria-label="Sort descending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies">Sort Z-A </a></li>
+                    </ul>
                 </div>
-                <div class="col-md-2 col-xs-12">
-                    Child
-                </div>
-                <div class="col-md-2 col-xs-12">
-                    Completion Status
-                    <a aria-label="Sort user studies by completion status" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                    <a aria-label="Reverse sort user studies by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-                </div>
-                <div class="col-md-2 col-xs-12">
-                    Date of Response
-                    <a aria-label="Sort user studies by date created" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-                    <a aria-label="Reverse sort user studies by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-                </div>
-                <hr>
-            </div>
-            <div class="row mt-xs visible-xs visible-sm">
-                <div class="col-xs-12 mt-lg mb-lg">
-                    <div class="btn-group">
-                        <div class="btn-group">
-                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                             Title <span class="caret"></span>
-                          </button>
-                          <ul class="dropdown-menu" role="menu">
-                            <li> <a aria-label="Sort ascending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies">Sort A-Z</a></li>
-                            <li> <a aria-label="Sort descending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies">Sort Z-A</a></li>
-                          </ul>
-                      </div>
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            Status <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                          <li><a aria-label="Sort ascending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies">Sort A-Z </a></li>
-                          <li><a aria-label="Sort descending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies">Sort Z-A </a></li>
-                        </ul>
-                      </div>
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            Date <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                          <li><a aria-label="Sort ascending by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies">Sort Asc</a></li>
-                          <li><a aria-label="Sort descending by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies">Sort Desc</a></li>
-                        </ul>
-                      </div>
-                   </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        Date <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a aria-label="Sort ascending by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies">Sort Asc</a></li>
+                        <li><a aria-label="Sort descending by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies">Sort Desc</a></li>
+                    </ul>
                 </div>
             </div>
-            {% for study_dict in studies %}
-            <div id="studies" class="row pt-md">
-                <div class="col-md-4 col-xs-12">
-                    <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
-                </div>
-                <div class="col-md-2 col-xs-12">
-                    <span class="visible-xs visible-sm">Response UUID: {{ study_dict.response.uuid }} </span>
-                    <span class="hidden-xs hidden-sm">{{ study_dict.response.uuid|truncatechars:9 }} </span>
-                </div>
-                <div class="col-md-2 col-xs-12">
-                    <span class="visible-xs visible-sm">Child: {{ study_dict.response.child.given_name }} </span>
-                    <span class="hidden-xs hidden-sm">{{ study_dict.response.child.given_name }} </span>
-                </div>
-                <div class="col-md-2 col-xs-12">
+        </div>
+    </div>
+    {% for study_dict in studies %}
+    <div id="studies" class="row pt-md">
+        <div class="col-md-4 col-xs-12">
+            <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
+        </div>
+        <div class="col-md-2 col-xs-12">
+            <span class="visible-xs visible-sm">Response UUID: {{ study_dict.response.uuid }} </span>
+            <span class="hidden-xs hidden-sm">{{ study_dict.response.uuid|truncatechars:9 }} </span>
+        </div>
+        <div class="col-md-2 col-xs-12">
+            <span class="visible-xs visible-sm">Child: {{ study_dict.response.child.given_name }} </span>
+            <span class="hidden-xs hidden-sm">{{ study_dict.response.child.given_name }} </span>
+        </div>
+        <div class="col-md-2 col-xs-12">
 
-                    {% if study_dict.completed %}
-                        <span class="visible-xs visible-sm">Status: Completed </span>
-                        <span class="hidden-xs hidden-sm">Completed </span>
-                    {% else %}
-                        <span class="visible-xs visible-sm">Status: In Progress </span>
-                        <span class="hidden-xs hidden-sm">In Progress </span>
-                    {% endif %}
-                </div>
-                <div class="col-md-2 col-xs-12">
-                    <span class="visible-xs visible-sm">Date: {{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
-                    <span class="hidden-xs hidden-sm">{{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
-                </div>
-            </div>
-          {% endfor %}
+            {% if study_dict.completed %}
+            <span class="visible-xs visible-sm">Status: Completed </span>
+            <span class="hidden-xs hidden-sm">Completed </span>
+            {% else %}
+            <span class="visible-xs visible-sm">Status: In Progress </span>
+            <span class="hidden-xs hidden-sm">In Progress </span>
+            {% endif %}
+        </div>
+        <div class="col-md-2 col-xs-12">
+            <span class="visible-xs visible-sm">Date: {{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
+            <span class="hidden-xs hidden-sm">{{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
+        </div>
+    </div>
+    {% endfor %}
     {% else %}
-      <p><em> {{ user.nickname }} has not participated in any studies yet! </em></p>
+    <p><em> {{ user.nickname }} has not participated in any studies yet! </em></p>
     {% endif %}
     <div class="row pt-xl">
         <div class="col-md-11 col-md-offset-1">
@@ -318,6 +318,6 @@
             </div>
         </div>
     </div>
-  </div>
+</div>
 </div>
 {% endblock %}
