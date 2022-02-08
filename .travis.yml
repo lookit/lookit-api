@@ -16,7 +16,7 @@ addons:
   postgresql: "9.6"
 
 before_install:
-  - pip install poetry 
+  - curl -sSL https://install.python-poetry.org | python3 -
 
 install:
   - poetry env info
