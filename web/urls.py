@@ -45,8 +45,17 @@ urlpatterns = [
     path("privacy/", views.PrivacyView.as_view(), name="privacy"),
     path("scientists/", views.ScientistsView.as_view(), name="scientists"),
     path("contact_us/", views.ContactView.as_view(), name="contact"),
-
-# Remaining flat pages
-    path("resources/", flatpages_views.flatpage , dict(url="/en-us/resources/"), name="resources"),
-    path("termsofuse/", flatpages_views.flatpage , dict(url="/en-us/termsofuse/"), name="termsofuser"),
+    # Remaining flat pages
+    path(
+        "resources/",
+        flatpages_views.flatpage,
+        dict(url="/en-us/resources/"),
+        name="resources",
+    ),
+    path(
+        "termsofuse/",
+        flatpages_views.flatpage,
+        dict(url="/en-us/termsofuse/"),
+        name="termsofuser",
+    ),
 ]
