@@ -182,7 +182,8 @@ class ResearcherRegistrationForm(LowercaseUsernameUserCreationForm):
 
 
 class ParticipantSignupForm(LowercaseUsernameUserCreationForm):
-    nickname = forms.CharField(required=True, max_length=255)
+# Rhodri: I don't know why this was here - nickname is in User model
+#    nickname = forms.CharField(required=True, max_length=255)
 
     def save(self, commit=True):
         user = super().save(commit=False)
