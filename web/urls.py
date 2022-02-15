@@ -40,34 +40,13 @@ urlpatterns = [
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),
-    path("faq/", flatpages_views.flatpage, dict(url="/faq/"), name="faq"),
-    path(
-        "scientists/",
-        flatpages_views.flatpage,
-        dict(url="/scientists/"),
-        name="scientists",
-    ),
-    path(
-        "resources/",
-        flatpages_views.flatpage,
-        dict(url="/resources/"),
-        name="resources",
-    ),
-    path(
-        "contact_us/",
-        flatpages_views.flatpage,
-        dict(url="/contact_us/"),
-        name="contact_us",
-    ),
-    re_path(
-        r"^(?P<path>assets/.*)$",
-        views.ExperimentAssetsProxyView.as_view(),
-        name="experiment-assets-proxy",
-    ),
-    re_path(
-        r"^(?P<path>fonts/.*)$",
-        views.ExperimentAssetsProxyView.as_view(),
-        name="experiment-fonts-proxy",
-    ),
-    path("", flatpages_views.flatpage, dict(url=""), name="home"),
+    path("", views.HomeView.as_view(), name="home"),
+    path("faq/", views.FAQView.as_view(), name="faq"),
+    path("privacy/", views.PrivacyView.as_view(), name="privacy"),
+    path("scientists/", views.ScientistsView.as_view(), name="scientists"),
+    path("contact_us/", views.ContactView.as_view(), name="contact"),
+
+# Remaining flat pages
+    path("resources/", flatpages_views.flatpage , dict(url="/en-us/resources/"), name="resources"),
+    path("termsofuse/", flatpages_views.flatpage , dict(url="/en-us/termsofuse/"), name="termsofuser"),
 ]

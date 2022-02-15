@@ -57,9 +57,10 @@
 					
 					<div class="col-md-3 footer-resources">
 						<ul>
-						<li><a href="/privacy/">{% trans "Privacy" %}</a></li>
-                        <li><a href="https://accessibility.mit.edu/">{% trans "Accessibility" %}</a></li>
-						<li><a href="/contact_us/">{% trans "Contact us" %}</a></li>
+              {% block footerlinks %}
+              <li><a href="../privacy">{% trans "Privacy" %}</a></li>
+              <li><a href="../contact_us">{% trans "Contact us" %}</a></li>
+              {% endblock %}
 						<li>{% trans "Connect" %}:
 						<a href="https://www.facebook.com/lookit.mit.edu" target="_blank"><i class="fa fa-facebook fa-lg social-link"></i> </a>
 						<a href="https://www.instagram.com/babiesoflookit/" target="_blank"><i class="fa fa-instagram fa-lg social-link"></i> </a>
