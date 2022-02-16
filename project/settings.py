@@ -139,7 +139,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                'django.template.context_processors.i18n',
+                "django.template.context_processors.i18n",
             ]
         },
     }
@@ -220,26 +220,26 @@ USE_TZ = True
 
 # Custom language list
 LANGUAGES = [
-    ('de', 'German'),
-    ('en', 'English'),
-    ('es', 'Spanish'),
-    ('es-ar', 'Argentinian Spanish'),
-    ('fr', 'French'),
-    ('fr-ca', 'Canadian French'),
-    ('he', 'Hebrew'),
-    ('it', 'Italian'),
-    ('ja', 'Japanese'),
-    ('ko', 'Korean'),
-    ('nb', 'Norwegian Bokmål'),
-    ('pl', 'Polish'),
-    ('pt', 'Portuguese'),
-    ('pt-br', 'Brazilian Portuguese'),
-    ('ro', 'Romanian'),
-    ('ru', 'Russian'),
-    ('tr', 'Turkish'),
-    ('zh-hans', 'Simplified Chinese'),
-    ('nl', 'Dutch'),
-] 
+    ("de", "German"),
+    ("en", "English"),
+    ("es", "Spanish"),
+    ("es-ar", "Argentinian Spanish"),
+    ("fr", "French"),
+    ("fr-ca", "Canadian French"),
+    ("he", "Hebrew"),
+    ("it", "Italian"),
+    ("ja", "Japanese"),
+    ("ko", "Korean"),
+    ("nb", "Norwegian Bokmål"),
+    ("pl", "Polish"),
+    ("pt", "Portuguese"),
+    ("pt-br", "Brazilian Portuguese"),
+    ("ro", "Romanian"),
+    ("ru", "Russian"),
+    ("tr", "Turkish"),
+    ("zh-hans", "Simplified Chinese"),
+    ("nl", "Dutch"),
+]
 
 SITE_ID = 1
 SITE_DOMAIN = os.environ.get("SITE_DOMAIN", "localhost:8000")
@@ -356,6 +356,6 @@ CELERY_TASK_ROUTES = {
 }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-LOCALE_PATHS = ( os.path.join(BASE_DIR, '../locale'), )
+LOCALE_PATHS = (os.path.join(BASE_DIR, "../locale"),)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

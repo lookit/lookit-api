@@ -12,7 +12,6 @@ from django.db.models.query_utils import Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
@@ -89,6 +88,7 @@ def get_external_url(study: Study, response: Response) -> Text:
     url = url._replace(query=urlencode(qs, doseq=True))
     return url.geturl()
 
+
 class HomeView(generic.TemplateView):
     template_name = "frontpages/home.html"
 
@@ -113,6 +113,7 @@ class ResourcesView(generic.TemplateView):
 
 class TermsOfUseView(generic.TemplateView):
     template_name = "frontpages/termsofuse.html"
+
 
 class ParticipantSignupView(generic.CreateView):
     """
