@@ -1,4 +1,3 @@
-from django.contrib.flatpages import views as flatpages_views
 from django.urls import path, re_path
 
 from web import views
@@ -45,8 +44,6 @@ urlpatterns = [
     path("privacy/", views.PrivacyView.as_view(), name="privacy"),
     path("scientists/", views.ScientistsView.as_view(), name="scientists"),
     path("contact_us/", views.ContactView.as_view(), name="contact"),
-
-# Remaining flat pages
-    path("resources/", flatpages_views.flatpage , dict(url="/en-us/resources/"), name="resources"),
-    path("termsofuse/", flatpages_views.flatpage , dict(url="/en-us/termsofuse/"), name="termsofuser"),
+    path("resources/", views.ResourcesView.as_view(), name="resources"),
+    path("termsofuse/", views.TermsOfUseView.as_view(), name="termsofuse"),
 ]

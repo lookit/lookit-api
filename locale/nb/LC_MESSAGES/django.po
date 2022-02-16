@@ -1192,33 +1192,33 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "Brukerene som har bedt om arbeide i labben"
 
-#: web/templates/flatpages/contact.html:15
+#: web/templates/frontpages/contact.html:15
 msgid "Technical difficulties"
 msgstr ""
 
-#: web/templates/flatpages/contact.html:16
+#: web/templates/frontpages/contact.html:16
 msgid ""
 "To report any technical difficulties during participation, please contact "
 "our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
 msgstr ""
 
-#: web/templates/flatpages/contact.html:17
+#: web/templates/frontpages/contact.html:17
 msgid "Questions about the studies"
 msgstr ""
 
-#: web/templates/flatpages/contact.html:18
+#: web/templates/frontpages/contact.html:18
 msgid ""
 "If you have any questions or concerns about the studies, please first check "
 "our FAQ. With any additional questions, please contact us at <a href='mailto:"
 "lookit@mit.edu'>lookit@mit.edu</a>."
 msgstr ""
 
-#: web/templates/flatpages/contact.html:19
-#: web/templates/flatpages/privacy.html:140
+#: web/templates/frontpages/contact.html:19
+#: web/templates/frontpages/privacy.html:140
 msgid "For researchers"
 msgstr ""
 
-#: web/templates/flatpages/contact.html:20
+#: web/templates/frontpages/contact.html:20
 msgid ""
 "Lookit is available to all developmental researchers, and the code is "
 "entirely open- To learn more about running your own studies or contributing, "
@@ -1226,7 +1226,7 @@ msgid ""
 "target='_blank'>documentation</a>."
 msgstr ""
 
-#: web/templates/flatpages/contact.html:21
+#: web/templates/frontpages/contact.html:21
 msgid ""
 "Several initial test studies of a prototype Lookit platform were completed "
 "in 2015; you can read about the results, and strengths and limitations of "
@@ -1234,14 +1234,14 @@ msgid ""
 "opmi/1/1'>these papers</a>."
 msgstr ""
 
-#: web/templates/flatpages/default.html:10
+#: web/templates/frontpages/default.html:10
 #: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
 #: web/templates/web/base.html:10
 #, fuzzy
 msgid "Lookit"
 msgstr "Lookit"
 
-#: web/templates/flatpages/default.html:53
+#: web/templates/frontpages/default.html:53
 msgid ""
 "This material is based upon work supported by the National Science "
 "Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
@@ -1259,33 +1259,33 @@ msgstr ""
 "forfatterne og reflekterer ikke nødvendigvis synspunktene til National "
 "Science Foundation."
 
-#: web/templates/flatpages/default.html:60 web/templates/flatpages/home.html:48
+#: web/templates/frontpages/default.html:60 web/templates/frontpages/home.html:48
 msgid "Privacy"
 msgstr "Personvern"
 
-#: web/templates/flatpages/default.html:61 web/templates/flatpages/home.html:49
+#: web/templates/frontpages/default.html:61 web/templates/frontpages/home.html:49
 msgid "Contact us"
 msgstr "Kontakt oss"
 
-#: web/templates/flatpages/default.html:63
+#: web/templates/frontpages/default.html:63
 msgid "Connect"
 msgstr "Få kontakt"
 
-#: web/templates/flatpages/faq.html:11
+#: web/templates/frontpages/faq.html:11
 msgid "Frequently Asked Questions"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:16
+#: web/templates/frontpages/faq.html:16
 #, fuzzy
 #| msgid "Participate"
 msgid "Participation"
 msgstr "Delta"
 
-#: web/templates/flatpages/faq.html:20
+#: web/templates/frontpages/faq.html:20
 msgid "What is a 'study' about cognitive development?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:25
+#: web/templates/frontpages/faq.html:25
 msgid ""
 "\n"
 "                                <p>Cognitive development is the science of "
@@ -1305,13 +1305,13 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:40
+#: web/templates/frontpages/faq.html:40
 #, fuzzy
 #| msgid "Log in to participate"
 msgid "How can we participate online?"
 msgstr "Logg inn for å delta"
 
-#: web/templates/flatpages/faq.html:45
+#: web/templates/frontpages/faq.html:45
 msgid ""
 "\n"
 "                            <p>If you have a child and would like to "
@@ -1332,11 +1332,11 @@ msgid ""
 "                            "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:56
+#: web/templates/frontpages/faq.html:56
 msgid "Who can create studies on Lookit?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:61
+#: web/templates/frontpages/faq.html:61
 msgid ""
 "Any researcher with questions about how kids learn and grow can propose a "
 "Lookit study! Each institution using Lookit has to sign a contract with MIT "
@@ -1346,13 +1346,13 @@ msgid ""
 "have agreements with 20 universities!"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:69
+#: web/templates/frontpages/faq.html:69
 #, fuzzy
 #| msgid "Log in to participate"
 msgid "How do we provide consent to participate?"
 msgstr "Logg inn for å delta"
 
-#: web/templates/flatpages/faq.html:74
+#: web/templates/frontpages/faq.html:74
 msgid ""
 "\n"
 "                                <p>Rather than having the parent or legal "
@@ -1371,15 +1371,15 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:80
+#: web/templates/frontpages/faq.html:80
 msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:89
+#: web/templates/frontpages/faq.html:89
 msgid "How is our information kept secure and confidential?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:94
+#: web/templates/frontpages/faq.html:94
 msgid ""
 "\n"
 "                                <p>\n"
@@ -1405,13 +1405,13 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:107
+#: web/templates/frontpages/faq.html:107
 #, fuzzy
 #| msgid "What is your gender?"
 msgid "Who will see our video?"
 msgstr "Hva er ditt kjønn?"
 
-#: web/templates/flatpages/faq.html:112
+#: web/templates/frontpages/faq.html:112
 msgid ""
 "\n"
 "                                <p>Lookit staff at MIT will have access to "
@@ -1482,11 +1482,11 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:130
+#: web/templates/frontpages/faq.html:130
 msgid "What information do researchers use from our video?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:136
+#: web/templates/frontpages/faq.html:136
 msgid ""
 "For children under about two years old, we usually design our studies to let "
 "their eyes do the talking! We're interested in where on the screen your "
@@ -1496,26 +1496,26 @@ msgid ""
 "left, so we can code the rest of the video."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:143
+#: web/templates/frontpages/faq.html:143
 msgid ""
 "Here's an example of a few children watching our calibration video--it's "
 "easy to see that they look to one side and then the other."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:149
+#: web/templates/frontpages/faq.html:149
 msgid ""
 "Your child's decisions about where to look can give us lots of information "
 "about what he or she understands. Here are some of the techniques labs use "
 "to learn more about how children learn."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:150
+#: web/templates/frontpages/faq.html:150
 #, fuzzy
 #| msgid "Duration"
 msgid "Habituation"
 msgstr "Varighet"
 
-#: web/templates/flatpages/faq.html:151
+#: web/templates/frontpages/faq.html:151
 msgid ""
 "\n"
 "                                <p>In a habituation study, we first show "
@@ -1543,11 +1543,11 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:156
+#: web/templates/frontpages/faq.html:156
 msgid "Violation of expectation"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:157
+#: web/templates/frontpages/faq.html:157
 msgid ""
 "Infants and children already have rich expectations about how events work. "
 "Children (and adults for that matter) tend to look longer at things they "
@@ -1555,11 +1555,11 @@ msgid ""
 "measure of how surprised they are."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:158
+#: web/templates/frontpages/faq.html:158
 msgid "Preferential looking"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:159
+#: web/templates/frontpages/faq.html:159
 msgid ""
 "Even when they seem to be passive observers, children are making lots of "
 "decisions about where to look and what to pay attention to. In this "
@@ -1570,11 +1570,11 @@ msgid ""
 "display she's watching is shown at the top."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:165
+#: web/templates/frontpages/faq.html:165
 msgid "Predictive looking"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:166
+#: web/templates/frontpages/faq.html:166
 msgid ""
 "Children can often make sophisticated predictions about what they expect to "
 "see or hear next. One way we can see those predictions in young children is "
@@ -1587,7 +1587,7 @@ msgid ""
 "generalize, by watching where they look when they hear a syllable."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:168
+#: web/templates/frontpages/faq.html:168
 msgid ""
 "Older children may simply be able to answer spoken questions about what they "
 "think is happening. For instance, in a recent study, two women called an "
@@ -1595,7 +1595,7 @@ msgid ""
 "correct name for the object."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:174
+#: web/templates/frontpages/faq.html:174
 msgid ""
 "Another way we can learn about how older children (and adults) think is to "
 "measure their reaction times. For instance, we might ask you to help your "
@@ -1604,12 +1604,12 @@ msgid ""
 "press a key."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:181
+#: web/templates/frontpages/faq.html:181
 #, fuzzy
 msgid "Why are you running studies online instead of in person?"
 msgstr "Vi holder ikke på med noen studier akkurat nå!"
 
-#: web/templates/flatpages/faq.html:186
+#: web/templates/frontpages/faq.html:186
 msgid ""
 "Traditionally, developmental studies happen in a quiet room in a university "
 "lab. Researchers call or email local parents to see if they'd like to take "
@@ -1617,7 +1617,7 @@ msgid ""
 "complement these in-lab studies with online ones? We're hoping to..."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:187
+#: web/templates/frontpages/faq.html:187
 msgid ""
 "\n"
 "                                <ul>\n"
@@ -1647,11 +1647,11 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:206
+#: web/templates/frontpages/faq.html:206
 msgid "When will we see the results of the study?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:211
+#: web/templates/frontpages/faq.html:211
 msgid ""
 "The process of publishing a scientific study, from starting data collection "
 "to seeing the paper in a journal, can take several years. You can check the "
@@ -1660,13 +1660,13 @@ msgid ""
 "participated in."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:218
+#: web/templates/frontpages/faq.html:218
 msgid ""
 "My child wasn't paying attention, or we were interrupted. Can we try the "
 "study again?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:223
+#: web/templates/frontpages/faq.html:223
 msgid ""
 "Certainly--thanks for your dedication! You may see a warning that you have "
 "already participated in the study when you go to try it again, but you can "
@@ -1674,13 +1674,13 @@ msgid ""
 "have a record of your previous participation."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:230
+#: web/templates/frontpages/faq.html:230
 msgid ""
 "My child is outside the age range. Can he/she still participate in this "
 "study?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:235
+#: web/templates/frontpages/faq.html:235
 msgid ""
 "Sure! We may not be able to use his or her data in our research directly, "
 "but if you're curious you're welcome to try the study anyway. (Sometimes big "
@@ -1689,24 +1689,24 @@ msgid ""
 "able to use the data."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:242
+#: web/templates/frontpages/faq.html:242
 msgid "My child was born prematurely. Should we use his/her adjusted age?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:247
+#: web/templates/frontpages/faq.html:247
 msgid ""
 "For study eligibility, we usually use the child's chronological age (time "
 "since birth), even for premature babies. If adjusted age is important for a "
 "particular study, we will make that clear in the study eligibility criteria."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:254
+#: web/templates/frontpages/faq.html:254
 msgid ""
 "Our family speaks a language other than English at home. Can my child "
 "participate?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:259
+#: web/templates/frontpages/faq.html:259
 msgid ""
 "Sure! Right now, instructions for children and parents are written only in "
 "English, so some of them may be confusing to a child who does not hear "
@@ -1717,13 +1717,13 @@ msgid ""
 "your demographic survey."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:266
+#: web/templates/frontpages/faq.html:266
 msgid ""
 "My child has been diagnosed with a developmental disorder or has special "
 "needs. Can he/she still participate?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:271
+#: web/templates/frontpages/faq.html:271
 msgid ""
 "\n"
 "                                <p>Of course! We're interested in how all "
@@ -1739,13 +1739,13 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:281
+#: web/templates/frontpages/faq.html:281
 msgid ""
 "I have multiple children in the age range for a study. Can they participate "
 "together?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:286
+#: web/templates/frontpages/faq.html:286
 msgid ""
 "If possible, we ask that each child participate separately. When children "
 "participate together they generally influence each other. That's a "
@@ -1753,11 +1753,11 @@ msgid ""
 "research."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:293
+#: web/templates/frontpages/faq.html:293
 msgid "But I've heard that young children should avoid 'screen time.'"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:298
+#: web/templates/frontpages/faq.html:298
 msgid ""
 "\n"
 "                                <p>We agree with the American Academy of "
@@ -1773,11 +1773,11 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:308
+#: web/templates/frontpages/faq.html:308
 msgid "Will we be paid for our participation?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:313
+#: web/templates/frontpages/faq.html:313
 msgid ""
 "Some research groups provide gift cards or other compensation for completing "
 "their studies, and others rely on volunteers. (This often depends on the "
@@ -1785,11 +1785,11 @@ msgid ""
 "listed on the study description page."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:320
+#: web/templates/frontpages/faq.html:320
 msgid "Can I get my child's results?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:325
+#: web/templates/frontpages/faq.html:325
 #, python-format
 msgid ""
 "\n"
@@ -1811,25 +1811,25 @@ msgid ""
 "                                "
 msgstr ""
 
-#: web/templates/flatpages/faq.html:335
+#: web/templates/frontpages/faq.html:335
 msgid "Technical"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:339
+#: web/templates/frontpages/faq.html:339
 msgid "What browsers are supported?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:344
+#: web/templates/frontpages/faq.html:344
 msgid ""
 "Lookit supports recent versions of Chrome and Firefox. We are not currently "
 "able to support Internet Explorer or Safari."
 msgstr ""
 
-#: web/templates/flatpages/faq.html:351
+#: web/templates/frontpages/faq.html:351
 msgid "Can we do a study on my phone or tablet?"
 msgstr ""
 
-#: web/templates/flatpages/faq.html:357
+#: web/templates/frontpages/faq.html:357
 msgid ""
 "Not yet! Because we're measuring kids' looking patterns, we need a "
 "reasonably stable view of their eyes and a big enough screen that we can "
@@ -1838,61 +1838,61 @@ msgid ""
 "infants and toddlers exploring, though!"
 msgstr ""
 
-#: web/templates/flatpages/home.html:11
+#: web/templates/frontpages/home.html:11
 msgid "the online child lab"
 msgstr ""
 
-#: web/templates/flatpages/home.html:12
+#: web/templates/frontpages/home.html:12
 msgid "A project of the MIT Early Childhood Cognition Lab"
 msgstr ""
 
-#: web/templates/flatpages/home.html:12
+#: web/templates/frontpages/home.html:12
 #, fuzzy
 #| msgid "Participate"
 msgid "Participate in a Study"
 msgstr "Delta"
 
-#: web/templates/flatpages/home.html:22
+#: web/templates/frontpages/home.html:22
 msgid "Bringing science home"
 msgstr ""
 
-#: web/templates/flatpages/home.html:23
+#: web/templates/frontpages/home.html:23
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
 msgstr ""
 
-#: web/templates/flatpages/home.html:29
+#: web/templates/frontpages/home.html:29
 msgid "Help us understand how your child thinks"
 msgstr ""
 
-#: web/templates/flatpages/home.html:30
+#: web/templates/frontpages/home.html:30
 msgid ""
 "Your family can contribute to research about how children learn by doing fun "
 "activities together, right in your web browser."
 msgstr ""
 
-#: web/templates/flatpages/home.html:36
+#: web/templates/frontpages/home.html:36
 msgid "Participate whenever and wherever"
 msgstr ""
 
-#: web/templates/flatpages/home.html:37
+#: web/templates/frontpages/home.html:37
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:11
+#: web/templates/frontpages/privacy.html:11
 #, fuzzy
 #| msgid "Privacy Statement"
 msgid "Privacy statement"
 msgstr "Personvernserklæring"
 
-#: web/templates/flatpages/privacy.html:17
+#: web/templates/frontpages/privacy.html:17
 msgid "Introduction"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:18
+#: web/templates/frontpages/privacy.html:18
 msgid ""
 "Lookit is committed to supporting the privacy of individuals who enroll on "
 "our Platform to conduct\n"
@@ -1902,13 +1902,13 @@ msgid ""
 "research participant community."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:22
+#: web/templates/frontpages/privacy.html:22
 #, fuzzy
 #| msgid "All Participants"
 msgid "For participants"
 msgstr "Alle deltagere"
 
-#: web/templates/flatpages/privacy.html:24
+#: web/templates/frontpages/privacy.html:24
 msgid ""
 "Lookit is a platform that many different researchers use to conduct studies "
 "about how children learn and\n"
@@ -1919,16 +1919,16 @@ msgid ""
 "                if you choose to participate in their study."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:29
-#: web/templates/flatpages/privacy.html:142
+#: web/templates/frontpages/privacy.html:29
+#: web/templates/frontpages/privacy.html:142
 msgid "What personal information we collect"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:31
+#: web/templates/frontpages/privacy.html:31
 msgid "We collect the following kinds of personal information:"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:32
+#: web/templates/frontpages/privacy.html:32
 msgid ""
 "<ul>\n"
 "                <li>Account data: basic contact information that may include "
@@ -1950,12 +1950,12 @@ msgid ""
 "            </ul>"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:44
-#: web/templates/flatpages/privacy.html:147
+#: web/templates/frontpages/privacy.html:44
+#: web/templates/frontpages/privacy.html:147
 msgid "How we collect personal information about you"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:46
+#: web/templates/frontpages/privacy.html:46
 msgid ""
 "The information we collect and maintain about you is the information you "
 "provide to us when registering\n"
@@ -1965,18 +1965,18 @@ msgid ""
 "individual Lookit studies."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:50
-#: web/templates/flatpages/privacy.html:167
+#: web/templates/frontpages/privacy.html:50
+#: web/templates/frontpages/privacy.html:167
 msgid "When we share your personal information"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:52
+#: web/templates/frontpages/privacy.html:52
 msgid ""
 "When you participate in a Lookit study, we share the following information "
 "with the research group conducting the study:"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:54
+#: web/templates/frontpages/privacy.html:54
 msgid ""
 "\n"
 "            <ul>\n"
@@ -1987,13 +1987,13 @@ msgid ""
 "            </ul>"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:61
+#: web/templates/frontpages/privacy.html:61
 msgid ""
 "Your email address is not shared directly with the research group, although "
 "they can contact you via Lookit in accordance with your contact preferences."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:63
+#: web/templates/frontpages/privacy.html:63
 msgid ""
 "Researchers may publish the results of a study, including individual "
 "responses. However, although they\n"
@@ -2002,7 +2002,7 @@ msgid ""
 "                could be used to calculate birthdates)."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:67
+#: web/templates/frontpages/privacy.html:67
 msgid ""
 "We and/or the researchers responsible for a study may share video of your "
 "family’s participation for\n"
@@ -2018,7 +2018,7 @@ msgid ""
 "Lookit."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:74
+#: web/templates/frontpages/privacy.html:74
 msgid ""
 "We don’t share, sell, publish, or otherwise disclose your contact "
 "information (email and/or mailing\n"
@@ -2027,18 +2027,18 @@ msgid ""
 "                your contact information in order to use Lookit."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:78
-#: web/templates/flatpages/privacy.html:152
+#: web/templates/frontpages/privacy.html:78
+#: web/templates/frontpages/privacy.html:152
 msgid "How we use your personal information"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:80
+#: web/templates/frontpages/privacy.html:80
 msgid ""
 "We may use your personal information (account, child, demographic, and study "
 "data) for a variety of purposes, including to:"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:81
+#: web/templates/frontpages/privacy.html:81
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research studies you have enrolled "
@@ -2069,7 +2069,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:100
+#: web/templates/frontpages/privacy.html:100
 msgid ""
 "Researchers use the data collected in their studies to address particular "
 "scientific questions. It may\n"
@@ -2082,13 +2082,13 @@ msgid ""
 "                they must tell you that in the study consent form."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:106
+#: web/templates/frontpages/privacy.html:106
 msgid ""
 "There are some basic rules about how personal information may be used that "
 "all Lookit researchers agree to, including:"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:107
+#: web/templates/frontpages/privacy.html:107
 msgid ""
 "\n"
 "            <ul>\n"
@@ -2101,8 +2101,8 @@ msgid ""
 "            "
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:114
-#: web/templates/flatpages/privacy.html:163
+#: web/templates/frontpages/privacy.html:114
+#: web/templates/frontpages/privacy.html:163
 msgid ""
 "If you have concerns about any of these purposes, or how we communicate with "
 "you, please contact us at\n"
@@ -2111,12 +2111,12 @@ msgid ""
 "                information (subject to our legal obligations)."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:118
-#: web/templates/flatpages/privacy.html:171
+#: web/templates/frontpages/privacy.html:118
+#: web/templates/frontpages/privacy.html:171
 msgid "How your information is stored and secured"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:120
+#: web/templates/frontpages/privacy.html:120
 #, python-format
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
@@ -2140,12 +2140,12 @@ msgid ""
 "                password."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:131
-#: web/templates/flatpages/privacy.html:182
+#: web/templates/frontpages/privacy.html:131
+#: web/templates/frontpages/privacy.html:182
 msgid "How long we keep your personal information"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:133
+#: web/templates/frontpages/privacy.html:133
 msgid ""
 "We consider our relationship with our research community to be lifelong. "
 "This means that we will maintain\n"
@@ -2161,7 +2161,7 @@ msgid ""
 "published findings."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:144
+#: web/templates/frontpages/privacy.html:144
 msgid ""
 "We may collect basic biographic/contact information about you and your "
 "representative organization,\n"
@@ -2169,7 +2169,7 @@ msgid ""
 "and email addresses."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:149
+#: web/templates/frontpages/privacy.html:149
 msgid ""
 "The information we collect and maintain about you is that which you have "
 "provided to us when registering\n"
@@ -2177,14 +2177,14 @@ msgid ""
 "a study."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:154
+#: web/templates/frontpages/privacy.html:154
 msgid ""
 "We use your personal information for a number of legitimate purposes, "
 "including the performance of contractual obligations. Specifically, we use "
 "your personal information to:"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:155
+#: web/templates/frontpages/privacy.html:155
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research services for which you "
@@ -2198,11 +2198,11 @@ msgid ""
 "            "
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:169
+#: web/templates/frontpages/privacy.html:169
 msgid "We do not share your personal information with any third parties."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:173
+#: web/templates/frontpages/privacy.html:173
 #, python-format
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
@@ -2222,7 +2222,7 @@ msgid ""
 "                username and password."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:184
+#: web/templates/frontpages/privacy.html:184
 msgid ""
 "We consider our relationship with our research community to be lifelong. "
 "This means that we will maintain\n"
@@ -2233,15 +2233,15 @@ msgid ""
 "                administrative tasks and legal obligations."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:189
+#: web/templates/frontpages/privacy.html:189
 msgid "For everyone"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:191
+#: web/templates/frontpages/privacy.html:191
 msgid "Rights for individuals in the European Economic Area"
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:192
+#: web/templates/frontpages/privacy.html:192
 msgid ""
 "You have the right in certain circumstances to (1) access your personal "
 "information; (2) to correct or\n"
@@ -2254,7 +2254,7 @@ msgid ""
 "                regional data protection authority."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:198
+#: web/templates/frontpages/privacy.html:198
 msgid ""
 "If you are inclined to exercise these rights, we request an opportunity to "
 "discuss with you any concerns\n"
@@ -2273,7 +2273,7 @@ msgid ""
 "                respect to such claim."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:207
+#: web/templates/frontpages/privacy.html:207
 msgid ""
 "By providing information directly to Lookit, you consent to the transfer of "
 "your personal information\n"
@@ -2284,19 +2284,19 @@ msgid ""
 "                laws and regulations of the EEA."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:212
+#: web/templates/frontpages/privacy.html:212
 msgid ""
 "You are under no statutory or contractual obligation to provide any personal "
 "data to us."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:214
+#: web/templates/frontpages/privacy.html:214
 #, fuzzy
 #| msgid "Additional Info"
 msgid "Additional Information"
 msgstr "Tilleggsinformasjon"
 
-#: web/templates/flatpages/privacy.html:216
+#: web/templates/frontpages/privacy.html:216
 msgid ""
 "We may change this Privacy Statement from time to time. If we make any "
 "significant changes in the way we\n"
@@ -2304,51 +2304,51 @@ msgid ""
 "our website or by contacting you directly."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:220
+#: web/templates/frontpages/privacy.html:220
 msgid ""
 "The controller for your personal information is MIT. We can be contacted at "
 "dataprotection@mit.edu."
 msgstr ""
 
-#: web/templates/flatpages/privacy.html:222
+#: web/templates/frontpages/privacy.html:222
 msgid "This policy was last updated in June 2018."
 msgstr ""
 
-#: web/templates/flatpages/scientists.html:27
+#: web/templates/frontpages/scientists.html:27
 msgid "Meet the Lookit team"
 msgstr ""
 
-#: web/templates/flatpages/scientists.html:33
+#: web/templates/frontpages/scientists.html:33
 msgid "Core Team"
 msgstr ""
 
-#: web/templates/flatpages/scientists.html:38
+#: web/templates/frontpages/scientists.html:38
 msgid ""
 "Rico is Lookit's lead software engineer, working on planning and adding "
 "features for both participants and researchers."
 msgstr ""
 
-#: web/templates/flatpages/scientists.html:43
+#: web/templates/frontpages/scientists.html:43
 msgid ""
 "Laura is the PI of the Early Childhood Cognition Lab. She conducts research "
 "about how children arrive at a common-sense understanding of the physical "
 "and social world through exploration and instruction."
 msgstr ""
 
-#: web/templates/flatpages/scientists.html:49
+#: web/templates/frontpages/scientists.html:49
 msgid ""
 "Kim started Lookit as a graduate student, and now runs the project as a "
 "research scientist in the Early Childhood Cognition Lab. Her three children "
 "frequently provide feedback on studies."
 msgstr ""
 
-#: web/templates/flatpages/scientists.html:54
+#: web/templates/frontpages/scientists.html:54
 msgid ""
 "Mark organizes the Lookit Working Groups, which are groups of researchers "
 "working to improve Lookit in a variety of ways."
 msgstr ""
 
-#: web/templates/flatpages/scientists.html:58
+#: web/templates/frontpages/scientists.html:58
 msgid ""
 "\n"
 "                <h3>Alumni &amp; Collaborators</h3>\n"

@@ -50,7 +50,6 @@ PIPE_WEBHOOK_KEY = os.environ.get("PIPE_WEBHOOK_KEY", "abcdefghijkl1")
 INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.flatpages",
     "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.messages",
@@ -93,7 +92,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
 ]
 
 if DEBUG:

@@ -1159,11 +1159,11 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "本研究室への参加を希望されたユーザー。"
 
-#: web/templates/flatpages/contact.html:15
+#: web/templates/frontpages/contact.html:15
 msgid "Technical difficulties"
 msgstr "技術的な問題点"
 
-#: web/templates/flatpages/contact.html:16
+#: web/templates/frontpages/contact.html:16
 msgid ""
 "To report any technical difficulties during participation, please contact "
 "our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
@@ -1172,11 +1172,11 @@ msgstr ""
 "チームまでご連絡ください。 <a href='mailto:lookit-tech@mit.edu'>lookit-"
 "tech@mit.edu"
 
-#: web/templates/flatpages/contact.html:17
+#: web/templates/frontpages/contact.html:17
 msgid "Questions about the studies"
 msgstr "研究・調査に関する質問"
 
-#: web/templates/flatpages/contact.html:18
+#: web/templates/frontpages/contact.html:18
 msgid ""
 "If you have any questions or concerns about the studies, please first check "
 "our FAQ. With any additional questions, please contact us at <a href='mailto:"
@@ -1186,12 +1186,12 @@ msgstr ""
 "をご覧ください。その他ご不明な点がございましたら、 <a href='mailto:"
 "lookit@mit.edu'>lookit@mit.edu</a> までご連絡ください。"
 
-#: web/templates/flatpages/contact.html:19
-#: web/templates/flatpages/privacy.html:140
+#: web/templates/frontpages/contact.html:19
+#: web/templates/frontpages/privacy.html:140
 msgid "For researchers"
 msgstr "研究者の方々"
 
-#: web/templates/flatpages/contact.html:20
+#: web/templates/frontpages/contact.html:20
 msgid ""
 "Lookit is available to all developmental researchers, and the code is "
 "entirely open- To learn more about running your own studies or contributing, "
@@ -1203,7 +1203,7 @@ msgstr ""
 "href='https://lookit.readthedocs.io/en/develop' target='_blank'> こちらの資"
 "料 </a> をご覧ください。"
 
-#: web/templates/flatpages/contact.html:21
+#: web/templates/frontpages/contact.html:21
 msgid ""
 "Several initial test studies of a prototype Lookit platform were completed "
 "in 2015; you can read about the results, and strengths and limitations of "
@@ -1215,13 +1215,13 @@ msgstr ""
 "href='http://www.mitpressjournals.org/toc/opmi/1/1'> こちらの論文 </a> をご覧"
 "ください。"
 
-#: web/templates/flatpages/default.html:10
+#: web/templates/frontpages/default.html:10
 #: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
 
-#: web/templates/flatpages/default.html:53
+#: web/templates/frontpages/default.html:53
 msgid ""
 "This material is based upon work supported by the National Science "
 "Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
@@ -1238,31 +1238,31 @@ msgstr ""
 "されているあらゆる意見・知見・結論・勧告は著者によるものであり、アメリカ国立"
 "科学財団の見解を必ずしも反映したものではありません。"
 
-#: web/templates/flatpages/default.html:58 web/templates/flatpages/home.html:48
+#: web/templates/frontpages/default.html:58 web/templates/frontpages/home.html:48
 msgid "Privacy"
 msgstr "プライバシー"
 
-#: web/templates/flatpages/default.html:59 web/templates/flatpages/home.html:49
+#: web/templates/frontpages/default.html:59 web/templates/frontpages/home.html:49
 msgid "Contact us"
 msgstr "連絡先"
 
-#: web/templates/flatpages/default.html:60
+#: web/templates/frontpages/default.html:60
 msgid "Connect"
 msgstr "接続する"
 
-#: web/templates/flatpages/faq.html:11
+#: web/templates/frontpages/faq.html:11
 msgid "Frequently Asked Questions"
 msgstr "よくある質問"
 
-#: web/templates/flatpages/faq.html:16
+#: web/templates/frontpages/faq.html:16
 msgid "Participation"
 msgstr "参加"
 
-#: web/templates/flatpages/faq.html:20
+#: web/templates/frontpages/faq.html:20
 msgid "What is a 'study' about cognitive development?"
 msgstr "認知発達に関する「研究・調査」とは？"
 
-#: web/templates/flatpages/faq.html:25
+#: web/templates/frontpages/faq.html:25
 msgid ""
 "\n"
 "                                <p>Cognitive development is the science of "
@@ -1298,11 +1298,11 @@ msgstr ""
 "しています。たとえば、「3 か月の子どもは親の顔を認識しているか」といった質問"
 "です。"
 
-#: web/templates/flatpages/faq.html:40
+#: web/templates/frontpages/faq.html:40
 msgid "How can we participate online?"
 msgstr "オンラインでの参加はどうやってできますか？"
 
-#: web/templates/flatpages/faq.html:45
+#: web/templates/frontpages/faq.html:45
 msgid ""
 "\n"
 "                            <p>If you have a child and would like to "
@@ -1341,11 +1341,11 @@ msgstr ""
 "どもたちの反応と合わせることで、子どもたちがどのように考えているかについてよ"
 "り詳しく知ることができるのです！</p>"
 
-#: web/templates/flatpages/faq.html:56
+#: web/templates/frontpages/faq.html:56
 msgid "Who can create studies on Lookit?"
 msgstr "Lookitで研究・調査ができるのは誰？"
 
-#: web/templates/flatpages/faq.html:61
+#: web/templates/frontpages/faq.html:61
 msgid ""
 "Any researcher with questions about how kids learn and grow can propose a "
 "Lookit study! Each institution using Lookit has to sign a contract with MIT "
@@ -1361,11 +1361,11 @@ msgstr ""
 "を受けることを明示しなければなりません。また、研究・調査はLookitの承認を受け"
 "る必要があります。2020年6月現在、20の大学が契約に至っています！"
 
-#: web/templates/flatpages/faq.html:69
+#: web/templates/frontpages/faq.html:69
 msgid "How do we provide consent to participate?"
 msgstr "参加への同意はどのようにすればいいですか？"
 
-#: web/templates/flatpages/faq.html:74
+#: web/templates/frontpages/faq.html:74
 msgid ""
 "\n"
 "                                <p>Rather than having the parent or legal "
@@ -1400,16 +1400,16 @@ msgstr ""
 "ます。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:80
+#: web/templates/frontpages/faq.html:80
 msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 msgstr ""
 "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 
-#: web/templates/flatpages/faq.html:89
+#: web/templates/frontpages/faq.html:89
 msgid "How is our information kept secure and confidential?"
 msgstr "情報の安全性・機密性はどうやって保たれますか？"
 
-#: web/templates/flatpages/faq.html:94
+#: web/templates/frontpages/faq.html:94
 msgid ""
 "\n"
 "                                <p>\n"
@@ -1456,11 +1456,11 @@ msgstr ""
 "覧ください。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:107
+#: web/templates/frontpages/faq.html:107
 msgid "Who will see our video?"
 msgstr "録画データを見るのはどんな人ですか？"
 
-#: web/templates/flatpages/faq.html:112
+#: web/templates/frontpages/faq.html:112
 msgid ""
 "\n"
 "                                <p>Lookit staff at MIT will have access to "
@@ -1599,11 +1599,11 @@ msgstr ""
 "href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>）までご連絡ください。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:130
+#: web/templates/frontpages/faq.html:130
 msgid "What information do researchers use from our video?"
 msgstr "研究者は録画データのどのような情報を使うのですか？"
 
-#: web/templates/flatpages/faq.html:136
+#: web/templates/frontpages/faq.html:136
 msgid ""
 "For children under about two years old, we usually design our studies to let "
 "their eyes do the talking! We're interested in where on the screen your "
@@ -1619,7 +1619,7 @@ msgstr ""
 "左側を見ているときにどのようにカメラに映るかを把握するのに役立ちます。これに"
 "より、残りの録画記録をデータ化することができます。"
 
-#: web/templates/flatpages/faq.html:143
+#: web/templates/frontpages/faq.html:143
 msgid ""
 "Here's an example of a few children watching our calibration video--it's "
 "easy to see that they look to one side and then the other."
@@ -1627,7 +1627,7 @@ msgstr ""
 "こちらは、キャリブレーションビデオを見ているときのお子さんの様子の例です。お"
 "子さんが画面の左右一方を見た後に、もう一方を見ている様子がよくわかります。"
 
-#: web/templates/flatpages/faq.html:149
+#: web/templates/frontpages/faq.html:149
 msgid ""
 "Your child's decisions about where to look can give us lots of information "
 "about what he or she understands. Here are some of the techniques labs use "
@@ -1637,11 +1637,11 @@ msgstr ""
 "多くの情報を与えてくれます。ここでは、お子さんがどのように学ぶかについて、研"
 "究室で用いられているいくつかの手法を紹介します。"
 
-#: web/templates/flatpages/faq.html:150
+#: web/templates/frontpages/faq.html:150
 msgid "Habituation"
 msgstr "馴化・脱馴化法（Habituation）"
 
-#: web/templates/flatpages/faq.html:151
+#: web/templates/frontpages/faq.html:151
 msgid ""
 "\n"
 "                                <p>In a habituation study, we first show "
@@ -1693,11 +1693,11 @@ msgstr ""
 "その曲が再生されたら他の曲を選ぶようになる、という具合です。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:156
+#: web/templates/frontpages/faq.html:156
 msgid "Violation of expectation"
 msgstr "期待違反法"
 
-#: web/templates/flatpages/faq.html:157
+#: web/templates/frontpages/faq.html:157
 msgid ""
 "Infants and children already have rich expectations about how events work. "
 "Children (and adults for that matter) tend to look longer at things they "
@@ -1709,11 +1709,11 @@ msgstr ""
 "傾向があるので、場合によっては、子どもたちがどのくらい驚いているかを測る指標"
 "として、画面への注視時間を用いることがあります。"
 
-#: web/templates/flatpages/faq.html:158
+#: web/templates/frontpages/faq.html:158
 msgid "Preferential looking"
 msgstr "選好注視法"
 
-#: web/templates/flatpages/faq.html:159
+#: web/templates/frontpages/faq.html:159
 msgid ""
 "Even when they seem to be passive observers, children are making lots of "
 "decisions about where to look and what to pay attention to. In this "
@@ -1730,11 +1730,11 @@ msgstr ""
 "と聞かれたときに、研究・調査に参加している子どもが画面の左側を見ている様子を"
 "表しています。"
 
-#: web/templates/flatpages/faq.html:165
+#: web/templates/frontpages/faq.html:165
 msgid "Predictive looking"
 msgstr "予期的注視法"
 
-#: web/templates/flatpages/faq.html:166
+#: web/templates/frontpages/faq.html:166
 msgid ""
 "Children can often make sophisticated predictions about what they expect to "
 "see or hear next. One way we can see those predictions in young children is "
@@ -1758,7 +1758,7 @@ msgstr ""
 "学んでいるかどうか、そして、そのような関係性をどのように般化しているかを調べ"
 "ることができます。"
 
-#: web/templates/flatpages/faq.html:168
+#: web/templates/frontpages/faq.html:168
 msgid ""
 "Older children may simply be able to answer spoken questions about what they "
 "think is happening. For instance, in a recent study, two women called an "
@@ -1770,7 +1770,7 @@ msgstr ""
 "２通りの異なる人工語で呼んだ後、どちらがその対象物の正しい名前かを子どもに尋"
 "ねるという研究・調査を行いました。"
 
-#: web/templates/flatpages/faq.html:174
+#: web/templates/frontpages/faq.html:174
 msgid ""
 "Another way we can learn about how older children (and adults) think is to "
 "measure their reaction times. For instance, we might ask you to help your "
@@ -1783,11 +1783,11 @@ msgstr ""
 "れたら別のキーを押すことを子どもに伝えてもらい、キーを押す速度に影響する要因"
 "を探すことがあります。"
 
-#: web/templates/flatpages/faq.html:181
+#: web/templates/frontpages/faq.html:181
 msgid "Why are you running studies online instead of in person?"
 msgstr "どうして対面ではなくオンラインで研究・調査を行っているのですか？"
 
-#: web/templates/flatpages/faq.html:186
+#: web/templates/frontpages/faq.html:186
 msgid ""
 "Traditionally, developmental studies happen in a quiet room in a university "
 "lab. Researchers call or email local parents to see if they'd like to take "
@@ -1800,7 +1800,7 @@ msgstr ""
 "す。では、このような研究室内での研究・調査をオンラインによって補うのはなぜで"
 "しょうか？　私たちが望んでいるのは、以下のようなことです。"
 
-#: web/templates/flatpages/faq.html:187
+#: web/templates/frontpages/faq.html:187
 msgid ""
 "\n"
 "                                <ul>\n"
@@ -1853,11 +1853,11 @@ msgstr ""
 "                                </ul>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:206
+#: web/templates/frontpages/faq.html:206
 msgid "When will we see the results of the study?"
 msgstr "研究・調査の結果がわかるのはいつになりますか？"
 
-#: web/templates/flatpages/faq.html:211
+#: web/templates/frontpages/faq.html:211
 msgid ""
 "The process of publishing a scientific study, from starting data collection "
 "to seeing the paper in a journal, can take several years. You can check the "
@@ -1870,7 +1870,7 @@ msgstr ""
 "とができますし、参加した研究・調査の結果が公表されたらお知らせが届くように通"
 "知設定を行うことができます。"
 
-#: web/templates/flatpages/faq.html:218
+#: web/templates/frontpages/faq.html:218
 msgid ""
 "My child wasn't paying attention, or we were interrupted. Can we try the "
 "study again?"
@@ -1878,7 +1878,7 @@ msgstr ""
 "子どもの注意が逸れてしまったり、課題を中断したりしてしまいました。もう一回研"
 "究・調査に参加することはできますか？"
 
-#: web/templates/flatpages/faq.html:223
+#: web/templates/frontpages/faq.html:223
 msgid ""
 "Certainly--thanks for your dedication! You may see a warning that you have "
 "already participated in the study when you go to try it again, but you can "
@@ -1890,14 +1890,14 @@ msgstr ""
 "が、無視していただいて構いません。また、あなたの以前の参加情報は記録されてい"
 "ますので、過去に同じ研究・調査に参加したことを伝える必要もありません。"
 
-#: web/templates/flatpages/faq.html:230
+#: web/templates/frontpages/faq.html:230
 msgid ""
 "My child is outside the age range. Can he/she still participate in this "
 "study?"
 msgstr ""
 "子どもは対象年齢の範囲外です。それでも研究・調査に参加することはできますか？"
 
-#: web/templates/flatpages/faq.html:235
+#: web/templates/frontpages/faq.html:235
 msgid ""
 "Sure! We may not be able to use his or her data in our research directly, "
 "but if you're curious you're welcome to try the study anyway. (Sometimes big "
@@ -1911,13 +1911,13 @@ msgstr ""
 "ただし、お子さんが研究・調査の対象最低年齢を下回っている場合、データを研究・"
 "調査に利用できるように、対象年齢になるまでお待ちいただくことをお勧めします。"
 
-#: web/templates/flatpages/faq.html:242
+#: web/templates/frontpages/faq.html:242
 msgid "My child was born prematurely. Should we use his/her adjusted age?"
 msgstr ""
 "子どもは早産で生まれました。実際の月齢ではなく、修正月齢を使った方がいいです"
 "か？"
 
-#: web/templates/flatpages/faq.html:247
+#: web/templates/frontpages/faq.html:247
 msgid ""
 "For study eligibility, we usually use the child's chronological age (time "
 "since birth), even for premature babies. If adjusted age is important for a "
@@ -1928,7 +1928,7 @@ msgstr ""
 "重要となる場合には、研究・調査への参加資格の基準を説明する際にそのことを明記"
 "します。"
 
-#: web/templates/flatpages/faq.html:254
+#: web/templates/frontpages/faq.html:254
 msgid ""
 "Our family speaks a language other than English at home. Can my child "
 "participate?"
@@ -1936,7 +1936,7 @@ msgstr ""
 "私たちの家庭では、英語以外の言語を話します。その場合でも子どもは研究・調査に"
 "参加できますか？"
 
-#: web/templates/flatpages/faq.html:259
+#: web/templates/frontpages/faq.html:259
 msgid ""
 "Sure! Right now, instructions for children and parents are written only in "
 "English, so some of them may be confusing to a child who does not hear "
@@ -1954,7 +1954,7 @@ msgstr ""
 "は、そのことについて具体的にお尋ねします。また、人口統計に関する質問欄にて、"
 "お子さんが話したり聞いたりしている言語について記入することもできます。"
 
-#: web/templates/flatpages/faq.html:266
+#: web/templates/frontpages/faq.html:266
 msgid ""
 "My child has been diagnosed with a developmental disorder or has special "
 "needs. Can he/she still participate?"
@@ -1962,7 +1962,7 @@ msgstr ""
 "子どもが発達障害の診断を受けていたり、特別な支援が必要だったりする場合でも、"
 "研究・調査に参加できますか？"
 
-#: web/templates/flatpages/faq.html:271
+#: web/templates/frontpages/faq.html:271
 msgid ""
 "\n"
 "                                <p>Of course! We're interested in how all "
@@ -1991,7 +1991,7 @@ msgstr ""
 "が課題の内容を理解できるようにご協力いただければと思います。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:281
+#: web/templates/frontpages/faq.html:281
 msgid ""
 "I have multiple children in the age range for a study. Can they participate "
 "together?"
@@ -1999,7 +1999,7 @@ msgstr ""
 "研究・調査の対象年齢に該当する子どもが２人以上います。みんな一緒に研究・調査"
 "に参加してもいいですか？"
 
-#: web/templates/flatpages/faq.html:286
+#: web/templates/frontpages/faq.html:286
 msgid ""
 "If possible, we ask that each child participate separately. When children "
 "participate together they generally influence each other. That's a "
@@ -2011,11 +2011,11 @@ msgstr ""
 "でお互いに影響を与え合ってしまします。そのこと自体が興味深いテーマではあるの"
 "ですが、通常は、研究・調査の目的はこの点にはありません。"
 
-#: web/templates/flatpages/faq.html:293
+#: web/templates/frontpages/faq.html:293
 msgid "But I've heard that young children should avoid 'screen time.'"
 msgstr "幼い子どもは、デジタル画面を見る時間を避けるべきだと聞きましたが？"
 
-#: web/templates/flatpages/faq.html:298
+#: web/templates/frontpages/faq.html:298
 msgid ""
 "\n"
 "                                <p>We agree with the American Academy of "
@@ -2043,11 +2043,11 @@ msgstr ""
 "ています！</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:308
+#: web/templates/frontpages/faq.html:308
 msgid "Will we be paid for our participation?"
 msgstr "研究・調査に参加したら、何か報酬がもらえるのでしょうか？"
 
-#: web/templates/flatpages/faq.html:313
+#: web/templates/frontpages/faq.html:313
 msgid ""
 "Some research groups provide gift cards or other compensation for completing "
 "their studies, and others rely on volunteers. (This often depends on the "
@@ -2059,11 +2059,11 @@ msgstr ""
 "している大学の規則によって異なることが多いです）。報酬の有無についての情報"
 "は、研究・調査についての説明ページに記載されています。"
 
-#: web/templates/flatpages/faq.html:320
+#: web/templates/frontpages/faq.html:320
 msgid "Can I get my child's results?"
 msgstr "自分の子どもの結果を知ることはできますか？"
 
-#: web/templates/flatpages/faq.html:325
+#: web/templates/frontpages/faq.html:325
 #, python-format
 msgid ""
 "\n"
@@ -2101,15 +2101,15 @@ msgstr ""
 "resources\">参考資料</a>ページをご覧ください。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:335
+#: web/templates/frontpages/faq.html:335
 msgid "Technical"
 msgstr "技術的なことについて"
 
-#: web/templates/flatpages/faq.html:339
+#: web/templates/frontpages/faq.html:339
 msgid "What browsers are supported?"
 msgstr "対応しているウェブブラウザは何ですか？"
 
-#: web/templates/flatpages/faq.html:344
+#: web/templates/frontpages/faq.html:344
 msgid ""
 "Lookit supports recent versions of Chrome and Firefox. We are not currently "
 "able to support Internet Explorer or Safari."
@@ -2117,11 +2117,11 @@ msgstr ""
 "Lookitは最近のバージョンのChromeとFirefoxに対応しています。現時点では、"
 "Internet ExplorerやSafariには対応していません。"
 
-#: web/templates/flatpages/faq.html:351
+#: web/templates/frontpages/faq.html:351
 msgid "Can we do a study on my phone or tablet?"
 msgstr "スマートフォンやタブレットで研究・調査に参加することはできますか？"
 
-#: web/templates/flatpages/faq.html:357
+#: web/templates/frontpages/faq.html:357
 msgid ""
 "Not yet! Because we're measuring kids' looking patterns, we need a "
 "reasonably stable view of their eyes and a big enough screen that we can "
@@ -2135,23 +2135,23 @@ msgstr ""
 "察できるようなタッチスクリーン研究の可能性についても、前向きに検討していま"
 "す！"
 
-#: web/templates/flatpages/home.html:11
+#: web/templates/frontpages/home.html:11
 msgid "the online child lab"
 msgstr "オンライン子ども研究室"
 
-#: web/templates/flatpages/home.html:12
+#: web/templates/frontpages/home.html:12
 msgid "A project of the MIT Early Childhood Cognition Lab"
 msgstr "MIT子ども認知発達研究室のプロジェクト"
 
-#: web/templates/flatpages/home.html:12
+#: web/templates/frontpages/home.html:12
 msgid "Participate in a Study"
 msgstr "研究・調査に参加する"
 
-#: web/templates/flatpages/home.html:22
+#: web/templates/frontpages/home.html:22
 msgid "Bringing science home"
 msgstr "研究をおうちに"
 
-#: web/templates/flatpages/home.html:23
+#: web/templates/frontpages/home.html:23
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
@@ -2159,11 +2159,11 @@ msgstr ""
 "ここ、MIT子ども認知発達研究室では、発達心理学への新しいアプローチを試みていま"
 "す：研究・調査をあなたのおうちに届けることです。"
 
-#: web/templates/flatpages/home.html:29
+#: web/templates/frontpages/home.html:29
 msgid "Help us understand how your child thinks"
 msgstr "子どもが何を考えているのかの理解を手助けする"
 
-#: web/templates/flatpages/home.html:30
+#: web/templates/frontpages/home.html:30
 msgid ""
 "Your family can contribute to research about how children learn by doing fun "
 "activities together, right in your web browser."
@@ -2171,11 +2171,11 @@ msgstr ""
 "楽しいアクティビティを通して、子どもの学びについての研究・調査へブラウザから"
 "参加して頂けます。"
 
-#: web/templates/flatpages/home.html:36
+#: web/templates/frontpages/home.html:36
 msgid "Participate whenever and wherever"
 msgstr "いつでもどこからでも参加"
 
-#: web/templates/flatpages/home.html:37
+#: web/templates/frontpages/home.html:37
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
@@ -2183,15 +2183,15 @@ msgstr ""
 "ログイン、または右上からアカウントを作成してください。ウェブカメラさえあれ"
 "ば、どのパソコンからでもお子さんと一緒に参加して頂けます。"
 
-#: web/templates/flatpages/privacy.html:11
+#: web/templates/frontpages/privacy.html:11
 msgid "Privacy statement"
 msgstr "プライバシーに関する声明"
 
-#: web/templates/flatpages/privacy.html:17
+#: web/templates/frontpages/privacy.html:17
 msgid "Introduction"
 msgstr "はじめに "
 
-#: web/templates/flatpages/privacy.html:18
+#: web/templates/frontpages/privacy.html:18
 msgid ""
 "Lookit is committed to supporting the privacy of individuals who enroll on "
 "our Platform to conduct\n"
@@ -2206,11 +2206,11 @@ msgstr ""
 "関して、私たちが収集した個人情報をどのように取り扱い、使用するかを説明しま"
 "す。"
 
-#: web/templates/flatpages/privacy.html:22
+#: web/templates/frontpages/privacy.html:22
 msgid "For participants"
 msgstr "研究・調査に参加する皆さまへ"
 
-#: web/templates/flatpages/privacy.html:24
+#: web/templates/frontpages/privacy.html:24
 msgid ""
 "Lookit is a platform that many different researchers use to conduct studies "
 "about how children learn and\n"
@@ -2227,16 +2227,16 @@ msgstr ""
 "Lookitを用いて研究・調査を行う研究者は、その研究・調査への参加を選択された"
 "方々についての個人情報にのみ、アクセスできます。"
 
-#: web/templates/flatpages/privacy.html:29
-#: web/templates/flatpages/privacy.html:142
+#: web/templates/frontpages/privacy.html:29
+#: web/templates/frontpages/privacy.html:142
 msgid "What personal information we collect"
 msgstr "収集する個人情報"
 
-#: web/templates/flatpages/privacy.html:31
+#: web/templates/frontpages/privacy.html:31
 msgid "We collect the following kinds of personal information:"
 msgstr "Lookitでは、以下のような個人情報を収集します。"
 
-#: web/templates/flatpages/privacy.html:32
+#: web/templates/frontpages/privacy.html:32
 msgid ""
 "<ul>\n"
 "                <li>Account data: basic contact information that may include "
@@ -2269,12 +2269,12 @@ msgstr ""
 "など、Lookit上で実施された特定の研究・調査の間に収集された回答</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:44
-#: web/templates/flatpages/privacy.html:147
+#: web/templates/frontpages/privacy.html:44
+#: web/templates/frontpages/privacy.html:147
 msgid "How we collect personal information about you"
 msgstr "個人情報の収集方法"
 
-#: web/templates/flatpages/privacy.html:46
+#: web/templates/frontpages/privacy.html:46
 msgid ""
 "The information we collect and maintain about you is the information you "
 "provide to us when registering\n"
@@ -2288,12 +2288,12 @@ msgstr ""
 "使った個々の研究・調査への参加などの際に、あなたが提供する情報のことを指しま"
 "す。"
 
-#: web/templates/flatpages/privacy.html:50
-#: web/templates/flatpages/privacy.html:167
+#: web/templates/frontpages/privacy.html:50
+#: web/templates/frontpages/privacy.html:167
 msgid "When we share your personal information"
 msgstr "個人情報を共有する場合"
 
-#: web/templates/flatpages/privacy.html:52
+#: web/templates/frontpages/privacy.html:52
 msgid ""
 "When you participate in a Lookit study, we share the following information "
 "with the research group conducting the study:"
@@ -2301,7 +2301,7 @@ msgstr ""
 "あなたがLookitを用いた研究・調査に参加した場合、以下の情報がその研究・調査を"
 "実施している研究グループと共有されます。"
 
-#: web/templates/flatpages/privacy.html:54
+#: web/templates/frontpages/privacy.html:54
 msgid ""
 "\n"
 "            <ul>\n"
@@ -2319,7 +2319,7 @@ msgstr ""
 "<li>特定の研究・調査に関するデータ</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:61
+#: web/templates/frontpages/privacy.html:61
 msgid ""
 "Your email address is not shared directly with the research group, although "
 "they can contact you via Lookit in accordance with your contact preferences."
@@ -2328,7 +2328,7 @@ msgstr ""
 "グループはあなたの連絡先設定に応じて、Lookitを介してあなたに連絡を取ることが"
 "できます。"
 
-#: web/templates/flatpages/privacy.html:63
+#: web/templates/frontpages/privacy.html:63
 msgid ""
 "Researchers may publish the results of a study, including individual "
 "responses. However, although they\n"
@@ -2340,7 +2340,7 @@ msgstr ""
 "加者の年齢が公表されることはありますが、参加者の生年月日（または生年月日の計"
 "算に利用できる情報）が公表されることはありません。"
 
-#: web/templates/flatpages/privacy.html:67
+#: web/templates/frontpages/privacy.html:67
 msgid ""
 "We and/or the researchers responsible for a study may share video of your "
 "family’s participation for\n"
@@ -2364,7 +2364,7 @@ msgstr ""
 "ありませんし、研究者がLookitを使用するためには、この事項に同意しなければなり"
 "ません。"
 
-#: web/templates/flatpages/privacy.html:74
+#: web/templates/frontpages/privacy.html:74
 msgid ""
 "We don’t share, sell, publish, or otherwise disclose your contact "
 "information (email and/or mailing\n"
@@ -2377,12 +2377,12 @@ msgstr ""
 "がLookitを使用するためには、連絡先情報を開示しないことに同意しなければなりま"
 "せん。"
 
-#: web/templates/flatpages/privacy.html:78
-#: web/templates/flatpages/privacy.html:152
+#: web/templates/frontpages/privacy.html:78
+#: web/templates/frontpages/privacy.html:152
 msgid "How we use your personal information"
 msgstr "個人情報の利用方法"
 
-#: web/templates/flatpages/privacy.html:80
+#: web/templates/frontpages/privacy.html:80
 msgid ""
 "We may use your personal information (account, child, demographic, and study "
 "data) for a variety of purposes, including to:"
@@ -2391,7 +2391,7 @@ msgstr ""
 "に関するデータ、研究・調査に関するデータ）は、以下のような目的で使用されるこ"
 "とがあります。"
 
-#: web/templates/flatpages/privacy.html:81
+#: web/templates/frontpages/privacy.html:81
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research studies you have enrolled "
@@ -2440,7 +2440,7 @@ msgstr ""
 "されている場合に限ります）</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:100
+#: web/templates/frontpages/privacy.html:100
 msgid ""
 "Researchers use the data collected in their studies to address particular "
 "scientific questions. It may\n"
@@ -2459,7 +2459,7 @@ msgstr ""
 "としたオンライン調査に参加している場合など）、研究者は研究参加同意書にその旨"
 "を記載しなければなりません。"
 
-#: web/templates/flatpages/privacy.html:106
+#: web/templates/frontpages/privacy.html:106
 msgid ""
 "There are some basic rules about how personal information may be used that "
 "all Lookit researchers agree to, including:"
@@ -2467,7 +2467,7 @@ msgstr ""
 "個人情報の利用方法については、Lookitを使うすべての研究者が同意する以下のよう"
 "な基本の規則があります。"
 
-#: web/templates/flatpages/privacy.html:107
+#: web/templates/frontpages/privacy.html:107
 msgid ""
 "\n"
 "            <ul>\n"
@@ -2488,8 +2488,8 @@ msgstr ""
 "</ul>\n"
 "            "
 
-#: web/templates/flatpages/privacy.html:114
-#: web/templates/flatpages/privacy.html:163
+#: web/templates/frontpages/privacy.html:114
+#: web/templates/frontpages/privacy.html:163
 msgid ""
 "If you have concerns about any of these purposes, or how we communicate with "
 "you, please contact us at\n"
@@ -2502,12 +2502,12 @@ msgstr ""
 "の取り扱い停止に関する要請を常に尊重します（法的義務に従うことを条件としま"
 "す）。"
 
-#: web/templates/flatpages/privacy.html:118
-#: web/templates/flatpages/privacy.html:171
+#: web/templates/frontpages/privacy.html:118
+#: web/templates/frontpages/privacy.html:171
 msgid "How your information is stored and secured"
 msgstr "個人情報の保存・保護方法"
 
-#: web/templates/flatpages/privacy.html:120
+#: web/templates/frontpages/privacy.html:120
 #, python-format
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
@@ -2542,12 +2542,12 @@ msgstr ""
 "ユーザー名とパスワードを含むアカウントの詳細に関するセキュリティ保護は、あな"
 "たご自身の責任となります。"
 
-#: web/templates/flatpages/privacy.html:131
-#: web/templates/flatpages/privacy.html:182
+#: web/templates/frontpages/privacy.html:131
+#: web/templates/frontpages/privacy.html:182
 msgid "How long we keep your personal information"
 msgstr "個人情報の保持期間"
 
-#: web/templates/flatpages/privacy.html:133
+#: web/templates/frontpages/privacy.html:133
 msgid ""
 "We consider our relationship with our research community to be lifelong. "
 "This means that we will maintain\n"
@@ -2571,7 +2571,7 @@ msgstr ""
 "データセットの一部となっており、あなたのデータを取り除くことは、すでに公表さ"
 "れた研究結果に影響を与える可能性があるためです。"
 
-#: web/templates/flatpages/privacy.html:144
+#: web/templates/frontpages/privacy.html:144
 msgid ""
 "We may collect basic biographic/contact information about you and your "
 "representative organization,\n"
@@ -2581,7 +2581,7 @@ msgstr ""
 "氏名、役職の住所、電話番号、メールアドレスなど、あなたとあなたの主要所属機関"
 "に関する基本的な経歴・連絡先情報が収集されることがあります。"
 
-#: web/templates/flatpages/privacy.html:149
+#: web/templates/frontpages/privacy.html:149
 msgid ""
 "The information we collect and maintain about you is that which you have "
 "provided to us when registering\n"
@@ -2592,7 +2592,7 @@ msgstr ""
 "究・調査の新規作成や編集などを行う際に、あなたが提供する情報のことを指しま"
 "す。"
 
-#: web/templates/flatpages/privacy.html:154
+#: web/templates/frontpages/privacy.html:154
 msgid ""
 "We use your personal information for a number of legitimate purposes, "
 "including the performance of contractual obligations. Specifically, we use "
@@ -2601,7 +2601,7 @@ msgstr ""
 "あなたの個人情報は、契約義務の履行を含む多くの正当な目的のために利用されま"
 "す。具体的には、個人情報は以下のような目的で利用されます。"
 
-#: web/templates/flatpages/privacy.html:155
+#: web/templates/frontpages/privacy.html:155
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research services for which you "
@@ -2621,11 +2621,11 @@ msgstr ""
 "れた）集計情報を作成し分析するため</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:169
+#: web/templates/frontpages/privacy.html:169
 msgid "We do not share your personal information with any third parties."
 msgstr "あなたの個人情報が第三者と共有されることはありません。"
 
-#: web/templates/flatpages/privacy.html:173
+#: web/templates/frontpages/privacy.html:173
 #, python-format
 msgid ""
 "We have implemented industry-standard security safeguards designed to "
@@ -2653,7 +2653,7 @@ msgstr ""
 "ことをご承知おきください。なお、ユーザー名とパスワードを含むアカウントの詳細"
 "に関するセキュリティ保護は、あなたご自身の責任となります。"
 
-#: web/templates/flatpages/privacy.html:184
+#: web/templates/frontpages/privacy.html:184
 msgid ""
 "We consider our relationship with our research community to be lifelong. "
 "This means that we will maintain\n"
@@ -2669,15 +2669,15 @@ msgstr ""
 "も、管理業務および法的義務を果たすために、あなたに関する情報のコアセットは保"
 "持されます。"
 
-#: web/templates/flatpages/privacy.html:189
+#: web/templates/frontpages/privacy.html:189
 msgid "For everyone"
 msgstr "すべての皆さまへ"
 
-#: web/templates/flatpages/privacy.html:191
+#: web/templates/frontpages/privacy.html:191
 msgid "Rights for individuals in the European Economic Area"
 msgstr "欧州経済領域（European Economic Area）における個人の権利"
 
-#: web/templates/flatpages/privacy.html:192
+#: web/templates/frontpages/privacy.html:192
 msgid ""
 "You have the right in certain circumstances to (1) access your personal "
 "information; (2) to correct or\n"
@@ -2696,7 +2696,7 @@ msgstr ""
 "情報が記載されています。また、あなたには、国または地域のデータ保護当局に苦情"
 "を申し立てる権利があります。"
 
-#: web/templates/flatpages/privacy.html:198
+#: web/templates/frontpages/privacy.html:198
 msgid ""
 "If you are inclined to exercise these rights, we request an opportunity to "
 "discuss with you any concerns\n"
@@ -2725,7 +2725,7 @@ msgstr ""
 "うな請求に関して私たちの権利を確立し、弁護し、行使するために、個人情報を引き"
 "続き保持することがあります。"
 
-#: web/templates/flatpages/privacy.html:207
+#: web/templates/frontpages/privacy.html:207
 msgid ""
 "By providing information directly to Lookit, you consent to the transfer of "
 "your personal information\n"
@@ -2740,7 +2740,7 @@ msgstr ""
 "欧州経済領域におけるデータおよびプライバシーに関する法律・規制と同じ保護水準"
 "を提供しているとは限らないことをご理解ください。"
 
-#: web/templates/flatpages/privacy.html:212
+#: web/templates/frontpages/privacy.html:212
 msgid ""
 "You are under no statutory or contractual obligation to provide any personal "
 "data to us."
@@ -2748,11 +2748,11 @@ msgstr ""
 "あなたには、私たちに個人情報を提供する法的または契約上の一切の義務はありませ"
 "ん。"
 
-#: web/templates/flatpages/privacy.html:214
+#: web/templates/frontpages/privacy.html:214
 msgid "Additional Information"
 msgstr "その他の情報"
 
-#: web/templates/flatpages/privacy.html:216
+#: web/templates/frontpages/privacy.html:216
 msgid ""
 "We may change this Privacy Statement from time to time. If we make any "
 "significant changes in the way we\n"
@@ -2763,7 +2763,7 @@ msgstr ""
 "取り扱う方法に重大な変更がなされる場合、ウェブサイト上で、またはあなたに直接"
 "連絡を取ることによって、そのことを明確にお伝えします。"
 
-#: web/templates/flatpages/privacy.html:220
+#: web/templates/frontpages/privacy.html:220
 msgid ""
 "The controller for your personal information is MIT. We can be contacted at "
 "dataprotection@mit.edu."
@@ -2771,19 +2771,19 @@ msgstr ""
 "個人情報の管理者はマサチューセッツ工科大学（MIT）です。連絡先は "
 "dataprotection@mit.edu となります。"
 
-#: web/templates/flatpages/privacy.html:222
+#: web/templates/frontpages/privacy.html:222
 msgid "This policy was last updated in June 2018."
 msgstr "以上の声明は2018年6月に最終更新されました。"
 
-#: web/templates/flatpages/scientists.html:27
+#: web/templates/frontpages/scientists.html:27
 msgid "Meet the Lookit team"
 msgstr "Lookit（ルックイット）チームメンバー"
 
-#: web/templates/flatpages/scientists.html:33
+#: web/templates/frontpages/scientists.html:33
 msgid "Core Team"
 msgstr "コアチーム"
 
-#: web/templates/flatpages/scientists.html:38
+#: web/templates/frontpages/scientists.html:38
 msgid ""
 "Rico is Lookit's lead software engineer, working on planning and adding "
 "features for both participants and researchers."
@@ -2791,7 +2791,7 @@ msgstr ""
 "リコはLookitの主任ソフトウェアエンジニアで、参加者と研究者双方のために、新し"
 "い機能の計画と導入に取り組んでいます。"
 
-#: web/templates/flatpages/scientists.html:43
+#: web/templates/frontpages/scientists.html:43
 msgid ""
 "Laura is the PI of the Early Childhood Cognition Lab. She conducts research "
 "about how children arrive at a common-sense understanding of the physical "
@@ -2802,7 +2802,7 @@ msgstr ""
 "がら、どのようにして物理的・社会的な世界を理解していくのかについて研究してい"
 "ます。"
 
-#: web/templates/flatpages/scientists.html:49
+#: web/templates/frontpages/scientists.html:49
 msgid ""
 "Kim started Lookit as a graduate student, and now runs the project as a "
 "research scientist in the Early Childhood Cognition Lab. Her three children "
@@ -2812,7 +2812,7 @@ msgstr ""
 "Lookitプロジェクトを運営しています。 彼女の３人の子どもは、研究・調査に関する"
 "フィードバックを頻繁に提供してくれます。"
 
-#: web/templates/flatpages/scientists.html:54
+#: web/templates/frontpages/scientists.html:54
 msgid ""
 "Mark organizes the Lookit Working Groups, which are groups of researchers "
 "working to improve Lookit in a variety of ways."
@@ -2820,7 +2820,7 @@ msgstr ""
 "マークは、Lookitワーキンググループを運営しています。Lookitワーキンググループ"
 "には、多くの研究者がさまざまな方法でLookitの改善に取り組んでいます。"
 
-#: web/templates/flatpages/scientists.html:58
+#: web/templates/frontpages/scientists.html:58
 msgid ""
 "\n"
 "                <h3>Alumni &amp; Collaborators</h3>\n"

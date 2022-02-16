@@ -1161,33 +1161,33 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "Ususarios/as que han solicitado unirse a este laboratorio."
 
-#: web/templates/flatpages/contact.html:15
+#: web/templates/frontpages/contact.html:15
 msgid "Technical difficulties"
 msgstr "Dificultades técnicas"
 
-#: web/templates/flatpages/contact.html:16
+#: web/templates/frontpages/contact.html:16
 msgid ""
 "To report any technical difficulties during participation, please contact "
 "our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
 msgstr ""
 
-#: web/templates/flatpages/contact.html:17
+#: web/templates/frontpages/contact.html:17
 msgid "Questions about the studies"
 msgstr "Preguntas sobre los estudios"
 
-#: web/templates/flatpages/contact.html:18
+#: web/templates/frontpages/contact.html:18
 msgid ""
 "If you have any questions or concerns about the studies, please first check "
 "our FAQ. With any additional questions, please contact us at <a href='mailto:"
 "lookit@mit.edu'>lookit@mit.edu</a>."
 msgstr ""
 
-#: web/templates/flatpages/contact.html:19
-#: web/templates/flatpages/privacy.html:140
+#: web/templates/frontpages/contact.html:19
+#: web/templates/frontpages/privacy.html:140
 msgid "For researchers"
 msgstr "Para personal de investigación"
 
-#: web/templates/flatpages/contact.html:20
+#: web/templates/frontpages/contact.html:20
 msgid ""
 "Lookit is available to all developmental researchers, and the code is "
 "entirely open- To learn more about running your own studies or contributing, "
@@ -1195,7 +1195,7 @@ msgid ""
 "target='_blank'>documentation</a>."
 msgstr ""
 
-#: web/templates/flatpages/contact.html:21
+#: web/templates/frontpages/contact.html:21
 msgid ""
 "Several initial test studies of a prototype Lookit platform were completed "
 "in 2015; you can read about the results, and strengths and limitations of "
@@ -1203,13 +1203,13 @@ msgid ""
 "opmi/1/1'>these papers</a>."
 msgstr ""
 
-#: web/templates/flatpages/default.html:10
+#: web/templates/frontpages/default.html:10
 #: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
 
-#: web/templates/flatpages/default.html:53
+#: web/templates/frontpages/default.html:53
 msgid ""
 "This material is based upon work supported by the National Science "
 "Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
@@ -1228,31 +1228,31 @@ msgstr ""
 "no reflejan necesariamente los puntos de vista de la National Science "
 "Foundation."
 
-#: web/templates/flatpages/default.html:58 web/templates/flatpages/home.html:48
+#: web/templates/frontpages/default.html:58 web/templates/frontpages/home.html:48
 msgid "Privacy"
 msgstr "Privacidad"
 
-#: web/templates/flatpages/default.html:59 web/templates/flatpages/home.html:49
+#: web/templates/frontpages/default.html:59 web/templates/frontpages/home.html:49
 msgid "Contact us"
 msgstr "Contáctenos"
 
-#: web/templates/flatpages/default.html:60
+#: web/templates/frontpages/default.html:60
 msgid "Connect"
 msgstr "Conectar"
 
-#: web/templates/flatpages/faq.html:11
+#: web/templates/frontpages/faq.html:11
 msgid "Frequently Asked Questions"
 msgstr "Preguntas más frecuentes"
 
-#: web/templates/flatpages/faq.html:16
+#: web/templates/frontpages/faq.html:16
 msgid "Participation"
 msgstr "Participación"
 
-#: web/templates/flatpages/faq.html:20
+#: web/templates/frontpages/faq.html:20
 msgid "What is a 'study' about cognitive development?"
 msgstr "¿Qué es un \"estudio\" sobre desarrollo cognitivo?"
 
-#: web/templates/flatpages/faq.html:25
+#: web/templates/frontpages/faq.html:25
 msgid ""
 "\n"
 "                                <p>Cognitive development is the science of "
@@ -1290,11 +1290,11 @@ msgstr ""
 "\"</p>\n"
 "        \t\t\t\t\t\t\t"
 
-#: web/templates/flatpages/faq.html:40
+#: web/templates/frontpages/faq.html:40
 msgid "How can we participate online?"
 msgstr "¿Cómo podemos participar on-line?"
 
-#: web/templates/flatpages/faq.html:45
+#: web/templates/frontpages/faq.html:45
 msgid ""
 "\n"
 "                            <p>If you have a child and would like to "
@@ -1334,11 +1334,11 @@ msgstr ""
 "bebés!</p>\n"
 "        \t\t\t\t\t\t\t"
 
-#: web/templates/flatpages/faq.html:56
+#: web/templates/frontpages/faq.html:56
 msgid "Who can create studies on Lookit?"
 msgstr "¿Quién puede crear estudios en Lookit?"
 
-#: web/templates/flatpages/faq.html:61
+#: web/templates/frontpages/faq.html:61
 msgid ""
 "Any researcher with questions about how kids learn and grow can propose a "
 "Lookit study! Each institution using Lookit has to sign a contract with MIT "
@@ -1355,11 +1355,11 @@ msgstr ""
 "serán aprobados por Lookit. ¡Lookit tiene acuerdos con 20 universidades "
 "desde junio de 2020!"
 
-#: web/templates/flatpages/faq.html:69
+#: web/templates/frontpages/faq.html:69
 msgid "How do we provide consent to participate?"
 msgstr "¿Cómo podemos dar nuestro consentimiento para participar?"
 
-#: web/templates/flatpages/faq.html:74
+#: web/templates/frontpages/faq.html:74
 msgid ""
 "\n"
 "                                <p>Rather than having the parent or legal "
@@ -1395,16 +1395,16 @@ msgstr ""
 "dependiendo de vuestros ajustes de email.</p>\n"
 "        \t\t\t\t\t\t\t\t"
 
-#: web/templates/flatpages/faq.html:80
+#: web/templates/frontpages/faq.html:80
 msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 msgstr ""
 "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 
-#: web/templates/flatpages/faq.html:89
+#: web/templates/frontpages/faq.html:89
 msgid "How is our information kept secure and confidential?"
 msgstr "¿Cómo se mantiene nuestra información segura y confidencial?"
 
-#: web/templates/flatpages/faq.html:94
+#: web/templates/frontpages/faq.html:94
 msgid ""
 "\n"
 "                                <p>\n"
@@ -1457,11 +1457,11 @@ msgstr ""
 "        \t\t\t\t\t\t\t\t<p>Ver también '¿Quién verá nuestro vídeo?'</p>\n"
 "        \t\t\t\t\t\t\t"
 
-#: web/templates/flatpages/faq.html:107
+#: web/templates/frontpages/faq.html:107
 msgid "Who will see our video?"
 msgstr "¿Quién verá nuestro vídeo?"
 
-#: web/templates/flatpages/faq.html:112
+#: web/templates/frontpages/faq.html:112
 msgid ""
 "\n"
 "                                <p>Lookit staff at MIT will have access to "
@@ -1606,12 +1606,12 @@ msgstr ""
 "lookit@mit.edu\">lookit@mit.edu </a>.</p>\n"
 "        \t\t\t\t\t\t\t"
 
-#: web/templates/flatpages/faq.html:130
+#: web/templates/frontpages/faq.html:130
 msgid "What information do researchers use from our video?"
 msgstr ""
 "¿Qué información de nuestro vídeo utiliza el personal de investigación?"
 
-#: web/templates/flatpages/faq.html:136
+#: web/templates/frontpages/faq.html:136
 msgid ""
 "For children under about two years old, we usually design our studies to let "
 "their eyes do the talking! We're interested in where on the screen your "
@@ -1628,7 +1628,7 @@ msgstr ""
 "saber cuándo vuestro/a hijo/a está mirando hacia la derecha o hacia la "
 "izquierda, para así poder codificar el resto del vídeo."
 
-#: web/templates/flatpages/faq.html:143
+#: web/templates/frontpages/faq.html:143
 msgid ""
 "Here's an example of a few children watching our calibration video--it's "
 "easy to see that they look to one side and then the other."
@@ -1637,7 +1637,7 @@ msgstr ""
 "calibracióin--se puede ver claramente que primero miran hacia un lado y "
 "luego hacia otro."
 
-#: web/templates/flatpages/faq.html:149
+#: web/templates/frontpages/faq.html:149
 msgid ""
 "Your child's decisions about where to look can give us lots of information "
 "about what he or she understands. Here are some of the techniques labs use "
@@ -1647,11 +1647,11 @@ msgstr ""
 "información sobre lo que comprende. Aquí hay algunas técnicas utulizadas en "
 "otros laboratorios para aprender sobre cómo aprenden los/as niños/as."
 
-#: web/templates/flatpages/faq.html:150
+#: web/templates/frontpages/faq.html:150
 msgid "Habituation"
 msgstr "Habituación"
 
-#: web/templates/flatpages/faq.html:151
+#: web/templates/frontpages/faq.html:151
 msgid ""
 "\n"
 "                                <p>In a habituation study, we first show "
@@ -1708,11 +1708,11 @@ msgstr ""
 "casi cualquier otra cosa.</p>\n"
 "        \t\t\t\t\t\t\t\t"
 
-#: web/templates/flatpages/faq.html:156
+#: web/templates/frontpages/faq.html:156
 msgid "Violation of expectation"
 msgstr "Violación de la expectativa"
 
-#: web/templates/flatpages/faq.html:157
+#: web/templates/frontpages/faq.html:157
 msgid ""
 "Infants and children already have rich expectations about how events work. "
 "Children (and adults for that matter) tend to look longer at things they "
@@ -1725,11 +1725,11 @@ msgstr ""
 "sorprendentes, de forma que en algunos casos podemos registrar su tiempo de "
 "mirar como un indicador de cómo de sorpredidos/as están."
 
-#: web/templates/flatpages/faq.html:158
+#: web/templates/frontpages/faq.html:158
 msgid "Preferential looking"
 msgstr "Mirada preferencial"
 
-#: web/templates/flatpages/faq.html:159
+#: web/templates/frontpages/faq.html:159
 msgid ""
 "Even when they seem to be passive observers, children are making lots of "
 "decisions about where to look and what to pay attention to. In this "
@@ -1749,11 +1749,11 @@ msgstr ""
 "pedimos que \"encuentre aplaudir\"; en laparte superior mostramos lo que la "
 "participante está viendo."
 
-#: web/templates/flatpages/faq.html:165
+#: web/templates/frontpages/faq.html:165
 msgid "Predictive looking"
 msgstr "Mirada predictiva"
 
-#: web/templates/flatpages/faq.html:166
+#: web/templates/frontpages/faq.html:166
 msgid ""
 "Children can often make sophisticated predictions about what they expect to "
 "see or hear next. One way we can see those predictions in young children is "
@@ -1778,7 +1778,7 @@ msgstr ""
 "y cómo las generalizan registrando hacia dónde miran en la pantalla cuando "
 "escuchan cada una de las dos sílabas."
 
-#: web/templates/flatpages/faq.html:168
+#: web/templates/frontpages/faq.html:168
 msgid ""
 "Older children may simply be able to answer spoken questions about what they "
 "think is happening. For instance, in a recent study, two women called an "
@@ -1791,7 +1791,7 @@ msgstr ""
 "diferentes (con nombres inventados) y se preguntó a los participantes cuál "
 "creían que era el nombre correcto para el objeto."
 
-#: web/templates/flatpages/faq.html:174
+#: web/templates/frontpages/faq.html:174
 msgid ""
 "Another way we can learn about how older children (and adults) think is to "
 "measure their reaction times. For instance, we might ask you to help your "
@@ -1806,12 +1806,12 @@ msgstr ""
 "después analizar qué factores influyen sonre cómo de rápido presionan las "
 "teclas."
 
-#: web/templates/flatpages/faq.html:181
+#: web/templates/frontpages/faq.html:181
 msgid "Why are you running studies online instead of in person?"
 msgstr ""
 "¿Por qué realizáis estos estudios on-line, en lugar de hacerlo en persona?"
 
-#: web/templates/flatpages/faq.html:186
+#: web/templates/frontpages/faq.html:186
 msgid ""
 "Traditionally, developmental studies happen in a quiet room in a university "
 "lab. Researchers call or email local parents to see if they'd like to take "
@@ -1825,7 +1825,7 @@ msgstr ""
 "complementar estos estudios en el laboratorio con estudios on-line? "
 "Esperamos..."
 
-#: web/templates/flatpages/faq.html:187
+#: web/templates/frontpages/faq.html:187
 msgid ""
 "\n"
 "                                <ul>\n"
@@ -1883,11 +1883,11 @@ msgstr ""
 "        \t\t\t\t\t\t\t\t</ul>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:206
+#: web/templates/frontpages/faq.html:206
 msgid "When will we see the results of the study?"
 msgstr "¿Cuándo podré ver los resultados de mi estudio?"
 
-#: web/templates/flatpages/faq.html:211
+#: web/templates/frontpages/faq.html:211
 msgid ""
 "The process of publishing a scientific study, from starting data collection "
 "to seeing the paper in a journal, can take several years. You can check the "
@@ -1902,7 +1902,7 @@ msgstr ""
 "notificaciones para que se os avise cuando tengamos los resultados de "
 "estudios en los que habéis participado."
 
-#: web/templates/flatpages/faq.html:218
+#: web/templates/frontpages/faq.html:218
 msgid ""
 "My child wasn't paying attention, or we were interrupted. Can we try the "
 "study again?"
@@ -1910,7 +1910,7 @@ msgstr ""
 "Mi hijo/a no estaba prestando atención o fuimos interrumpidos durante el "
 "estudio. ¿Podemos hacer el estudio otra vez?"
 
-#: web/templates/flatpages/faq.html:223
+#: web/templates/frontpages/faq.html:223
 msgid ""
 "Certainly--thanks for your dedication! You may see a warning that you have "
 "already participated in the study when you go to try it again, but you can "
@@ -1923,7 +1923,7 @@ msgstr ""
 "intentado hacer el estudio antes; vuestro intento anterior ya estará "
 "registrado."
 
-#: web/templates/flatpages/faq.html:230
+#: web/templates/frontpages/faq.html:230
 msgid ""
 "My child is outside the age range. Can he/she still participate in this "
 "study?"
@@ -1931,7 +1931,7 @@ msgstr ""
 "Mi hijo/a es mayor/menor de la edad indicada para el estudio. ¿Puede "
 "participar es este estudio?"
 
-#: web/templates/flatpages/faq.html:235
+#: web/templates/frontpages/faq.html:235
 msgid ""
 "Sure! We may not be able to use his or her data in our research directly, "
 "but if you're curious you're welcome to try the study anyway. (Sometimes big "
@@ -1945,13 +1945,13 @@ msgstr ""
 "está justo por debajo de la edad mínima, nos gustaría que esperáseis un poco "
 "para que podamos utilizar vuestros datos."
 
-#: web/templates/flatpages/faq.html:242
+#: web/templates/frontpages/faq.html:242
 msgid "My child was born prematurely. Should we use his/her adjusted age?"
 msgstr ""
 "Mi hijo/a nació de forma prematura. ¿Deberíamos tener en cuenta su edad "
 "ajustada?"
 
-#: web/templates/flatpages/faq.html:247
+#: web/templates/frontpages/faq.html:247
 msgid ""
 "For study eligibility, we usually use the child's chronological age (time "
 "since birth), even for premature babies. If adjusted age is important for a "
@@ -1962,7 +1962,7 @@ msgstr ""
 "prematuros. Si la edad ajustada es importante para un estudio particular, os "
 "lo haremos saber en los criterios de eligibilidad del estudio."
 
-#: web/templates/flatpages/faq.html:254
+#: web/templates/frontpages/faq.html:254
 msgid ""
 "Our family speaks a language other than English at home. Can my child "
 "participate?"
@@ -1970,7 +1970,7 @@ msgstr ""
 "Nuestra familia habla una lengua distinta del español en casa. ¿Podemos "
 "participar aun así?"
 
-#: web/templates/flatpages/faq.html:259
+#: web/templates/frontpages/faq.html:259
 msgid ""
 "Sure! Right now, instructions for children and parents are written only in "
 "English, so some of them may be confusing to a child who does not hear "
@@ -1989,7 +1989,7 @@ msgstr ""
 "ellas. También puedes indicar qué lenguas habla o está aprendiendo tu hijo/a "
 "en vuestro cuestionario demográfico."
 
-#: web/templates/flatpages/faq.html:266
+#: web/templates/frontpages/faq.html:266
 msgid ""
 "My child has been diagnosed with a developmental disorder or has special "
 "needs. Can he/she still participate?"
@@ -1997,7 +1997,7 @@ msgstr ""
 "Mi hijo/a ha sido diagnosticado/a con un trastorno del desarrollo o tiene "
 "necesidad especiales. ¿Puede participar aun así?"
 
-#: web/templates/flatpages/faq.html:271
+#: web/templates/frontpages/faq.html:271
 msgid ""
 "\n"
 "                                <p>Of course! We're interested in how all "
@@ -2025,7 +2025,7 @@ msgstr ""
 "signando.</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:281
+#: web/templates/frontpages/faq.html:281
 msgid ""
 "I have multiple children in the age range for a study. Can they participate "
 "together?"
@@ -2033,7 +2033,7 @@ msgstr ""
 "Tengo varios/as hijos/as que tienen la edad del estudio. ¿Pueden participar "
 "juntos?"
 
-#: web/templates/flatpages/faq.html:286
+#: web/templates/frontpages/faq.html:286
 msgid ""
 "If possible, we ask that each child participate separately. When children "
 "participate together they generally influence each other. That's a "
@@ -2045,13 +2045,13 @@ msgstr ""
 "un tema de investigación de por sí muy interesante, pero no es el objetivo "
 "de nuestros estudios."
 
-#: web/templates/flatpages/faq.html:293
+#: web/templates/frontpages/faq.html:293
 msgid "But I've heard that young children should avoid 'screen time.'"
 msgstr ""
 "¡Pero he escuchado que los/las niños/as pequeños/as debería evitar las "
 "\"pantallas\"!"
 
-#: web/templates/flatpages/faq.html:298
+#: web/templates/frontpages/faq.html:298
 msgid ""
 "\n"
 "                                <p>We agree with the American Academy of "
@@ -2080,11 +2080,11 @@ msgstr ""
 "a menudo en nuestros estudios!</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:308
+#: web/templates/frontpages/faq.html:308
 msgid "Will we be paid for our participation?"
 msgstr "¿Se nos pagará por participar?"
 
-#: web/templates/flatpages/faq.html:313
+#: web/templates/frontpages/faq.html:313
 msgid ""
 "Some research groups provide gift cards or other compensation for completing "
 "their studies, and others rely on volunteers. (This often depends on the "
@@ -2097,11 +2097,11 @@ msgstr ""
 "unversidad en la que se lleva a cabo el estudio). Podréis encontrar esta "
 "información en la desscripción del estudio."
 
-#: web/templates/flatpages/faq.html:320
+#: web/templates/frontpages/faq.html:320
 msgid "Can I get my child's results?"
 msgstr "¿Puedo obtener los resultados de mi hijo/a?"
 
-#: web/templates/flatpages/faq.html:325
+#: web/templates/frontpages/faq.html:325
 #, python-format
 msgid ""
 "\n"
@@ -2144,15 +2144,15 @@ msgstr ""
 "hacer desde casa con vuestro/a hijo/a.</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:335
+#: web/templates/frontpages/faq.html:335
 msgid "Technical"
 msgstr "Aspectos técnicos"
 
-#: web/templates/flatpages/faq.html:339
+#: web/templates/frontpages/faq.html:339
 msgid "What browsers are supported?"
 msgstr "¿Qué navegadores soportan los estudios?"
 
-#: web/templates/flatpages/faq.html:344
+#: web/templates/frontpages/faq.html:344
 msgid ""
 "Lookit supports recent versions of Chrome and Firefox. We are not currently "
 "able to support Internet Explorer or Safari."
@@ -2160,11 +2160,11 @@ msgstr ""
 "Lookit soporta versiones recientes de Chrome y Firefox. Actualmente no "
 "soporta Internet Explorer o Safari."
 
-#: web/templates/flatpages/faq.html:351
+#: web/templates/frontpages/faq.html:351
 msgid "Can we do a study on my phone or tablet?"
 msgstr "¿Podemos participar desde un móvil o una tablet?"
 
-#: web/templates/flatpages/faq.html:357
+#: web/templates/frontpages/faq.html:357
 msgid ""
 "Not yet! Because we're measuring kids' looking patterns, we need a "
 "reasonably stable view of their eyes and a big enough screen that we can "
@@ -2180,23 +2180,23 @@ msgstr ""
 "estudios ¡ya que nos permitiría observar cómo bebés y niños/as exploran la "
 "pantalla!"
 
-#: web/templates/flatpages/home.html:11
+#: web/templates/frontpages/home.html:11
 msgid "the online child lab"
 msgstr "el laboratorio de infancia online"
 
-#: web/templates/flatpages/home.html:12
+#: web/templates/frontpages/home.html:12
 msgid "A project of the MIT Early Childhood Cognition Lab"
 msgstr "Un proyecto del Early Childhood Cognition Lab"
 
-#: web/templates/flatpages/home.html:12
+#: web/templates/frontpages/home.html:12
 msgid "Participate in a Study"
 msgstr "Participa en un estudio"
 
-#: web/templates/flatpages/home.html:22
+#: web/templates/frontpages/home.html:22
 msgid "Bringing science home"
 msgstr "Llevando la ciencia a casa"
 
-#: web/templates/flatpages/home.html:23
+#: web/templates/frontpages/home.html:23
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
@@ -2205,11 +2205,11 @@ msgstr ""
 "forma de investigar la psicología del desarrollo: llevando nuestros estudios "
 "a vosotros/as."
 
-#: web/templates/flatpages/home.html:29
+#: web/templates/frontpages/home.html:29
 msgid "Help us understand how your child thinks"
 msgstr "Ayúdanos a comprender cómo piensan los/as niños/as"
 
-#: web/templates/flatpages/home.html:30
+#: web/templates/frontpages/home.html:30
 msgid ""
 "Your family can contribute to research about how children learn by doing fun "
 "activities together, right in your web browser."
@@ -2217,11 +2217,11 @@ msgstr ""
 "Tu familia puede contribuir a la investigación sobre como los/as niños/as "
 "aprenden haciendo actividades divertidas juntos/as en nuestro navegador."
 
-#: web/templates/flatpages/home.html:36
+#: web/templates/frontpages/home.html:36
 msgid "Participate whenever and wherever"
 msgstr "Participa donde y cuando quieras"
 
-#: web/templates/flatpages/home.html:37
+#: web/templates/frontpages/home.html:37
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
@@ -2229,15 +2229,15 @@ msgstr ""
 "¡Inicia sesión o regístrate arriba a la derecha para empezar! Puedes "
 "participar con tu hijo/a desde cualquier ordenador con una webcam."
 
-#: web/templates/flatpages/privacy.html:11
+#: web/templates/frontpages/privacy.html:11
 msgid "Privacy statement"
 msgstr "Declaración de privacidad"
 
-#: web/templates/flatpages/privacy.html:17
+#: web/templates/frontpages/privacy.html:17
 msgid "Introduction"
 msgstr "Introducción"
 
-#: web/templates/flatpages/privacy.html:18
+#: web/templates/frontpages/privacy.html:18
 msgid ""
 "Lookit is committed to supporting the privacy of individuals who enroll on "
 "our Platform to conduct\n"
@@ -2252,11 +2252,11 @@ msgstr ""
 "manejamos y usamos la información personal que recopilamos sobre nuestros/as "
 "investigadores/as y la comunidad de participantes de la investigación."
 
-#: web/templates/flatpages/privacy.html:22
+#: web/templates/frontpages/privacy.html:22
 msgid "For participants"
 msgstr "Para participantes"
 
-#: web/templates/flatpages/privacy.html:24
+#: web/templates/frontpages/privacy.html:24
 msgid ""
 "Lookit is a platform that many different researchers use to conduct studies "
 "about how children learn and\n"
@@ -2273,16 +2273,16 @@ msgstr ""
 "Lookit para realizar estudios solo acceden a tu información personal si "
 "decides participar en su estudio."
 
-#: web/templates/flatpages/privacy.html:29
-#: web/templates/flatpages/privacy.html:142
+#: web/templates/frontpages/privacy.html:29
+#: web/templates/frontpages/privacy.html:142
 msgid "What personal information we collect"
 msgstr "Qué información personal recopilamos"
 
-#: web/templates/flatpages/privacy.html:31
+#: web/templates/frontpages/privacy.html:31
 msgid "We collect the following kinds of personal information:"
 msgstr "Recopilamos los siguientes tipos de información personal:"
 
-#: web/templates/flatpages/privacy.html:32
+#: web/templates/frontpages/privacy.html:32
 msgid ""
 "<ul>\n"
 "                <li>Account data: basic contact information that may include "
@@ -2320,12 +2320,12 @@ msgstr ""
 "etc.</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:44
-#: web/templates/flatpages/privacy.html:147
+#: web/templates/frontpages/privacy.html:44
+#: web/templates/frontpages/privacy.html:147
 msgid "How we collect personal information about you"
 msgstr "Cómo recopilamos información personal sobre vosotros/as"
 
-#: web/templates/flatpages/privacy.html:46
+#: web/templates/frontpages/privacy.html:46
 msgid ""
 "The information we collect and maintain about you is the information you "
 "provide to us when registering\n"
@@ -2339,12 +2339,12 @@ msgstr ""
 "a(s), actualizas tu cuenta o los perfiles de tu(s) hijo/a(s), completas o "
 "actualizas encuestas o participas en estudios individuales de Lookit."
 
-#: web/templates/flatpages/privacy.html:50
-#: web/templates/flatpages/privacy.html:167
+#: web/templates/frontpages/privacy.html:50
+#: web/templates/frontpages/privacy.html:167
 msgid "When we share your personal information"
 msgstr "Cuándo compartimos tu información personal"
 
-#: web/templates/flatpages/privacy.html:52
+#: web/templates/frontpages/privacy.html:52
 msgid ""
 "When you participate in a Lookit study, we share the following information "
 "with the research group conducting the study:"
@@ -2352,7 +2352,7 @@ msgstr ""
 "Cuando participas en un estudio de Lookit, compartimos la siguiente "
 "información con el grupo de investigación que realiza el estudio:"
 
-#: web/templates/flatpages/privacy.html:54
+#: web/templates/frontpages/privacy.html:54
 msgid ""
 "\n"
 "            <ul>\n"
@@ -2370,7 +2370,7 @@ msgstr ""
 "<li>Los datos del estudio para esta sesión del estudio en particular</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:61
+#: web/templates/frontpages/privacy.html:61
 msgid ""
 "Your email address is not shared directly with the research group, although "
 "they can contact you via Lookit in accordance with your contact preferences."
@@ -2379,7 +2379,7 @@ msgstr ""
 "de investigación, aunque pueden contactar contigo a través de Lookit, de "
 "acuerdo con tus preferencias de contacto."
 
-#: web/templates/flatpages/privacy.html:63
+#: web/templates/frontpages/privacy.html:63
 msgid ""
 "Researchers may publish the results of a study, including individual "
 "responses. However, although they\n"
@@ -2393,7 +2393,7 @@ msgstr ""
 "nacimiento de los/as participantes (o información que podría usarse para "
 "calcular las fechas de nacimiento)."
 
-#: web/templates/flatpages/privacy.html:67
+#: web/templates/frontpages/privacy.html:67
 msgid ""
 "We and/or the researchers responsible for a study may share video of your "
 "family’s participation for\n"
@@ -2418,7 +2418,7 @@ msgstr ""
 "padres/madres/tutores), y los equipos de investigación también deben aceptar "
 "no hacerlo para poder utilizar Lookit."
 
-#: web/templates/flatpages/privacy.html:74
+#: web/templates/frontpages/privacy.html:74
 msgid ""
 "We don’t share, sell, publish, or otherwise disclose your contact "
 "information (email and/or mailing\n"
@@ -2432,12 +2432,12 @@ msgstr ""
 "también debe comprometerse a no revelar tu información de contacto para "
 "utilizar Lookit."
 
-#: web/templates/flatpages/privacy.html:78
-#: web/templates/flatpages/privacy.html:152
+#: web/templates/frontpages/privacy.html:78
+#: web/templates/frontpages/privacy.html:152
 msgid "How we use your personal information"
 msgstr "Cómo usamos tu información personal"
 
-#: web/templates/flatpages/privacy.html:80
+#: web/templates/frontpages/privacy.html:80
 msgid ""
 "We may use your personal information (account, child, demographic, and study "
 "data) for a variety of purposes, including to:"
@@ -2445,7 +2445,7 @@ msgstr ""
 "Podemos utilizar tu información personal (cuenta, niños, datos demográficos "
 "y de estudio) para una variedad de propósitos, que incluyen:"
 
-#: web/templates/flatpages/privacy.html:81
+#: web/templates/frontpages/privacy.html:81
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research studies you have enrolled "
@@ -2500,7 +2500,7 @@ msgstr ""
 "</ul>\n"
 "            "
 
-#: web/templates/flatpages/privacy.html:100
+#: web/templates/frontpages/privacy.html:100
 msgid ""
 "Researchers use the data collected in their studies to address particular "
 "scientific questions. It may\n"
@@ -2521,7 +2521,7 @@ msgstr ""
 "para un estudio en persona, deben informarte en el formulario de "
 "consentimiento del estudio."
 
-#: web/templates/flatpages/privacy.html:106
+#: web/templates/frontpages/privacy.html:106
 msgid ""
 "There are some basic rules about how personal information may be used that "
 "all Lookit researchers agree to, including:"
@@ -2529,7 +2529,7 @@ msgstr ""
 "Existen algunas reglas básicas sobre cómo se puede usar la información "
 "personal que todos los/as investigadores/as de Lookit aceptan, que incluyen:"
 
-#: web/templates/flatpages/privacy.html:107
+#: web/templates/frontpages/privacy.html:107
 msgid ""
 "\n"
 "            <ul>\n"
@@ -2550,8 +2550,8 @@ msgstr ""
 "necesarios para participar.</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:114
-#: web/templates/flatpages/privacy.html:163
+#: web/templates/frontpages/privacy.html:114
+#: web/templates/frontpages/privacy.html:163
 msgid ""
 "If you have concerns about any of these purposes, or how we communicate with "
 "you, please contact us at\n"
@@ -2564,12 +2564,12 @@ msgstr ""
 "Siempre respetaremos tu solicitud de dejar de procesar tu información "
 "personal (sujeto a nuestras obligaciones legales)."
 
-#: web/templates/flatpages/privacy.html:118
-#: web/templates/flatpages/privacy.html:171
+#: web/templates/frontpages/privacy.html:118
+#: web/templates/frontpages/privacy.html:171
 msgid "How your information is stored and secured"
 msgstr "Cómo se almacena y protege tu información"
 
-#: web/templates/flatpages/privacy.html:120
+#: web/templates/frontpages/privacy.html:120
 #, fuzzy, python-format
 #| msgid ""
 #| "We have implemented industry-standard security safeguards designed to "
@@ -2629,12 +2629,12 @@ msgstr ""
 "proteger la seguridad de los detalles de tu cuenta, incluidos su nombre de "
 "usuario y contraseña."
 
-#: web/templates/flatpages/privacy.html:131
-#: web/templates/flatpages/privacy.html:182
+#: web/templates/frontpages/privacy.html:131
+#: web/templates/frontpages/privacy.html:182
 msgid "How long we keep your personal information"
 msgstr "Cuánto tiempo conservamos tu información personal"
 
-#: web/templates/flatpages/privacy.html:133
+#: web/templates/frontpages/privacy.html:133
 msgid ""
 "We consider our relationship with our research community to be lifelong. "
 "This means that we will maintain\n"
@@ -2659,7 +2659,7 @@ msgstr ""
 "\"recuperada\", ya que es parte de un conjunto de datos científicos y la "
 "eliminación de sus datos podría afectar los hallazgos ya publicados."
 
-#: web/templates/flatpages/privacy.html:144
+#: web/templates/frontpages/privacy.html:144
 msgid ""
 "We may collect basic biographic/contact information about you and your "
 "representative organization,\n"
@@ -2670,7 +2670,7 @@ msgstr ""
 "su organización representativa, incluido el nombre, cargo, direcciones "
 "comerciales, números de teléfono y direcciones de correo electrónico."
 
-#: web/templates/flatpages/privacy.html:149
+#: web/templates/frontpages/privacy.html:149
 msgid ""
 "The information we collect and maintain about you is that which you have "
 "provided to us when registering\n"
@@ -2681,7 +2681,7 @@ msgstr ""
 "proporcionado al registrarte para usar Lookit, actualizar tu perfil o crear "
 "o editar un estudio."
 
-#: web/templates/flatpages/privacy.html:154
+#: web/templates/frontpages/privacy.html:154
 msgid ""
 "We use your personal information for a number of legitimate purposes, "
 "including the performance of contractual obligations. Specifically, we use "
@@ -2691,7 +2691,7 @@ msgstr ""
 "cumplimiento de obligaciones contractuales. Específicamente, usamos tu "
 "información personal para:"
 
-#: web/templates/flatpages/privacy.html:155
+#: web/templates/frontpages/privacy.html:155
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research services for which you "
@@ -2715,11 +2715,11 @@ msgstr ""
 "        </ul>\n"
 "           "
 
-#: web/templates/flatpages/privacy.html:169
+#: web/templates/frontpages/privacy.html:169
 msgid "We do not share your personal information with any third parties."
 msgstr "No compartimos tu información personal con terceros."
 
-#: web/templates/flatpages/privacy.html:173
+#: web/templates/frontpages/privacy.html:173
 #, fuzzy, python-format
 #| msgid ""
 #| "We have implemented industry-standard security safeguards designed to "
@@ -2771,7 +2771,7 @@ msgstr ""
 "proteger la seguridad de los detalles de tu cuenta, incluidos su nombre de "
 "usuario y contraseña."
 
-#: web/templates/flatpages/privacy.html:184
+#: web/templates/frontpages/privacy.html:184
 msgid ""
 "We consider our relationship with our research community to be lifelong. "
 "This means that we will maintain\n"
@@ -2787,15 +2787,15 @@ msgstr ""
 "deseas recibir noticias de Lookit, conservaremos un información básica sobre "
 "ti para cumplir con las tareas administrativas y las obligaciones legales."
 
-#: web/templates/flatpages/privacy.html:189
+#: web/templates/frontpages/privacy.html:189
 msgid "For everyone"
 msgstr "Para todos/as"
 
-#: web/templates/flatpages/privacy.html:191
+#: web/templates/frontpages/privacy.html:191
 msgid "Rights for individuals in the European Economic Area"
 msgstr "Derechos de las personas en el Espacio Económico Europeo"
 
-#: web/templates/flatpages/privacy.html:192
+#: web/templates/frontpages/privacy.html:192
 msgid ""
 "You have the right in certain circumstances to (1) access your personal "
 "information; (2) to correct or\n"
@@ -2815,7 +2815,7 @@ msgstr ""
 "tus derechos. También tienes derecho a presentar quejas ante tu autoridad de "
 "protección de datos nacional o regional."
 
-#: web/templates/flatpages/privacy.html:198
+#: web/templates/frontpages/privacy.html:198
 msgid ""
 "If you are inclined to exercise these rights, we request an opportunity to "
 "discuss with you any concerns\n"
@@ -2846,7 +2846,7 @@ msgstr ""
 "o amenazado, podemos retener tu información con el fin de establecer, "
 "defender o ejercer nuestros derechos con respecto a dicho reclamo."
 
-#: web/templates/flatpages/privacy.html:207
+#: web/templates/frontpages/privacy.html:207
 msgid ""
 "By providing information directly to Lookit, you consent to the transfer of "
 "your personal information\n"
@@ -2862,7 +2862,7 @@ msgstr ""
 "Unidos pueden no proporcionar el mismo nivel de protección que las leyes y "
 "regulaciones de privacidad y datos del EEE."
 
-#: web/templates/flatpages/privacy.html:212
+#: web/templates/frontpages/privacy.html:212
 msgid ""
 "You are under no statutory or contractual obligation to provide any personal "
 "data to us."
@@ -2870,11 +2870,11 @@ msgstr ""
 "No tienes ninguna obligación legal o contractual de proporcionarnos datos "
 "personales."
 
-#: web/templates/flatpages/privacy.html:214
+#: web/templates/frontpages/privacy.html:214
 msgid "Additional Information"
 msgstr "Información Adicional"
 
-#: web/templates/flatpages/privacy.html:216
+#: web/templates/frontpages/privacy.html:216
 msgid ""
 "We may change this Privacy Statement from time to time. If we make any "
 "significant changes in the way we\n"
@@ -2886,7 +2886,7 @@ msgstr ""
 "personal, lo dejaremos claro en nuestro sitio web o comunicándonos contigo "
 "directamente."
 
-#: web/templates/flatpages/privacy.html:220
+#: web/templates/frontpages/privacy.html:220
 msgid ""
 "The controller for your personal information is MIT. We can be contacted at "
 "dataprotection@mit.edu."
@@ -2894,19 +2894,19 @@ msgstr ""
 "MIT controla tu información personal. Puede ser contactado en "
 "dataprotection@mit.edu."
 
-#: web/templates/flatpages/privacy.html:222
+#: web/templates/frontpages/privacy.html:222
 msgid "This policy was last updated in June 2018."
 msgstr "Esta política se actualizó por última vez en junio de 2018."
 
-#: web/templates/flatpages/scientists.html:27
+#: web/templates/frontpages/scientists.html:27
 msgid "Meet the Lookit team"
 msgstr "Conoce al equipo de Lookit"
 
-#: web/templates/flatpages/scientists.html:33
+#: web/templates/frontpages/scientists.html:33
 msgid "Core Team"
 msgstr "Equipo principal"
 
-#: web/templates/flatpages/scientists.html:38
+#: web/templates/frontpages/scientists.html:38
 msgid ""
 "Rico is Lookit's lead software engineer, working on planning and adding "
 "features for both participants and researchers."
@@ -2915,7 +2915,7 @@ msgstr ""
 "planificación y adición de nuevas aplicaciones para participantes y personal "
 "de investigación."
 
-#: web/templates/flatpages/scientists.html:43
+#: web/templates/frontpages/scientists.html:43
 msgid ""
 "Laura is the PI of the Early Childhood Cognition Lab. She conducts research "
 "about how children arrive at a common-sense understanding of the physical "
@@ -2925,7 +2925,7 @@ msgstr ""
 "Investiga sobre cómo los/as niños/as llegan a comprender el mundo físico y "
 "social que les rodea a través de la exploración y la instrucción."
 
-#: web/templates/flatpages/scientists.html:49
+#: web/templates/frontpages/scientists.html:49
 msgid ""
 "Kim started Lookit as a graduate student, and now runs the project as a "
 "research scientist in the Early Childhood Cognition Lab. Her three children "
@@ -2935,7 +2935,7 @@ msgstr ""
 "investigadora en el Early Childhood Cognition Lab. Sus tres hijos/as dan su "
 "opinión sobre los estudio con frecuencia."
 
-#: web/templates/flatpages/scientists.html:54
+#: web/templates/frontpages/scientists.html:54
 msgid ""
 "Mark organizes the Lookit Working Groups, which are groups of researchers "
 "working to improve Lookit in a variety of ways."
@@ -2943,7 +2943,7 @@ msgstr ""
 "Mark organiza los Grupos de Trabajo de Lookit, en los que se trabaja para "
 "mejorar Lookit de diversas formas."
 
-#: web/templates/flatpages/scientists.html:58
+#: web/templates/frontpages/scientists.html:58
 msgid ""
 "\n"
 "                <h3>Alumni &amp; Collaborators</h3>\n"

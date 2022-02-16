@@ -90,23 +90,29 @@ def get_external_url(study: Study, response: Response) -> Text:
     return url.geturl()
 
 class HomeView(generic.TemplateView):
-    template_name = "flatpages/home.html"
+    template_name = "frontpages/home.html"
 
 
 class FAQView(generic.TemplateView):
-    template_name = "flatpages/faq.html"
+    template_name = "frontpages/faq.html"
 
 
 class PrivacyView(generic.TemplateView):
-    template_name = "flatpages/privacy.html"
+    template_name = "frontpages/privacy.html"
 
 
 class ScientistsView(generic.TemplateView):
-    template_name = "flatpages/scientists.html"
+    template_name = "frontpages/scientists.html"
 
 
 class ContactView(generic.TemplateView):
-    template_name = "flatpages/contact.html"
+    template_name = "frontpages/contact.html"
+
+class ResourcesView(generic.TemplateView):
+    template_name = "frontpages/resources.html"
+
+class TermsOfUseView(generic.TemplateView):
+    template_name = "frontpages/termsofuse.html"
 
 class ParticipantSignupView(generic.CreateView):
     """

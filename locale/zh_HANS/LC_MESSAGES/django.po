@@ -1145,33 +1145,33 @@ msgstr "属于本实验室的用户。该用户可以创建或添加到附属于
 msgid "The Users who have requested to join this Lab."
 msgstr "申请加入本实验室的用户。"
 
-#: web/templates/flatpages/contact.html:15
+#: web/templates/frontpages/contact.html:15
 msgid "Technical difficulties"
 msgstr "技术故障"
 
-#: web/templates/flatpages/contact.html:16
+#: web/templates/frontpages/contact.html:16
 msgid ""
 "To report any technical difficulties during participation, please contact "
 "our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
 msgstr ""
 
-#: web/templates/flatpages/contact.html:17
+#: web/templates/frontpages/contact.html:17
 msgid "Questions about the studies"
 msgstr "实验相关问题"
 
-#: web/templates/flatpages/contact.html:18
+#: web/templates/frontpages/contact.html:18
 msgid ""
 "If you have any questions or concerns about the studies, please first check "
 "our FAQ. With any additional questions, please contact us at <a href='mailto:"
 "lookit@mit.edu'>lookit@mit.edu</a>."
 msgstr ""
 
-#: web/templates/flatpages/contact.html:19
-#: web/templates/flatpages/privacy.html:140
+#: web/templates/frontpages/contact.html:19
+#: web/templates/frontpages/privacy.html:140
 msgid "For researchers"
 msgstr "研究人员"
 
-#: web/templates/flatpages/contact.html:20
+#: web/templates/frontpages/contact.html:20
 msgid ""
 "Lookit is available to all developmental researchers, and the code is "
 "entirely open- To learn more about running your own studies or contributing, "
@@ -1179,7 +1179,7 @@ msgid ""
 "target='_blank'>documentation</a>."
 msgstr ""
 
-#: web/templates/flatpages/contact.html:21
+#: web/templates/frontpages/contact.html:21
 msgid ""
 "Several initial test studies of a prototype Lookit platform were completed "
 "in 2015; you can read about the results, and strengths and limitations of "
@@ -1187,13 +1187,13 @@ msgid ""
 "opmi/1/1'>these papers</a>."
 msgstr ""
 
-#: web/templates/flatpages/default.html:10
+#: web/templates/frontpages/default.html:10
 #: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
 #: web/templates/web/base.html:10
 msgid "Lookit"
 msgstr "Lookit"
 
-#: web/templates/flatpages/default.html:53
+#: web/templates/frontpages/default.html:53
 msgid ""
 "This material is based upon work supported by the National Science "
 "Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
@@ -1208,31 +1208,31 @@ msgstr ""
 "心（CBMM）所支持。本材料中所表达的任何观点、发现、结论或建议均来自作者，并不"
 "一定代表美国国家科学基金会（NSF）的观点。"
 
-#: web/templates/flatpages/default.html:60 web/templates/flatpages/home.html:48
+#: web/templates/frontpages/default.html:60 web/templates/frontpages/home.html:48
 msgid "Privacy"
 msgstr "隐私"
 
-#: web/templates/flatpages/default.html:61 web/templates/flatpages/home.html:49
+#: web/templates/frontpages/default.html:61 web/templates/frontpages/home.html:49
 msgid "Contact us"
 msgstr "联系我们"
 
-#: web/templates/flatpages/default.html:63
+#: web/templates/frontpages/default.html:63
 msgid "Connect"
 msgstr "关注我们"
 
-#: web/templates/flatpages/faq.html:11
+#: web/templates/frontpages/faq.html:11
 msgid "Frequently Asked Questions"
 msgstr "常见问题"
 
-#: web/templates/flatpages/faq.html:16
+#: web/templates/frontpages/faq.html:16
 msgid "Participation"
 msgstr "参与"
 
-#: web/templates/flatpages/faq.html:20
+#: web/templates/frontpages/faq.html:20
 msgid "What is a 'study' about cognitive development?"
 msgstr "认知发展的研究是什么？"
 
-#: web/templates/flatpages/faq.html:25
+#: web/templates/frontpages/faq.html:25
 msgid ""
 "\n"
 "                                <p>Cognitive development is the science of "
@@ -1264,11 +1264,11 @@ msgstr ""
 "和如何学习的具体问题：比如，“三个月大的婴儿能认出他们父母的面孔吗？”</p>\n"
 "                            "
 
-#: web/templates/flatpages/faq.html:40
+#: web/templates/frontpages/faq.html:40
 msgid "How can we participate online?"
 msgstr "我们如何在线参与研究？"
 
-#: web/templates/flatpages/faq.html:45
+#: web/templates/frontpages/faq.html:45
 msgid ""
 "\n"
 "                            <p>If you have a child and would like to "
@@ -1300,11 +1300,11 @@ msgstr ""
 "方向或盯着图片的时长。我们会结合所有孩子的反馈来研究儿童是如何思考的。</p>\n"
 "                            "
 
-#: web/templates/flatpages/faq.html:56
+#: web/templates/frontpages/faq.html:56
 msgid "Who can create studies on Lookit?"
 msgstr "谁可以在Lookit上创建实验？"
 
-#: web/templates/flatpages/faq.html:61
+#: web/templates/frontpages/faq.html:61
 msgid ""
 "Any researcher with questions about how kids learn and grow can propose a "
 "Lookit study! Each institution using Lookit has to sign a contract with MIT "
@@ -1317,11 +1317,11 @@ msgstr ""
 "要与MIT签署协议，同意<a href=\"/termsofuse\">使用条款</a>，并保证所有实验都会"
 "被机构的审查委员会批准。截至2020年6月，我们已与20所大学签订了协议。"
 
-#: web/templates/flatpages/faq.html:69
+#: web/templates/frontpages/faq.html:69
 msgid "How do we provide consent to participate?"
 msgstr "参与者如何表示同意参加实验？"
 
-#: web/templates/flatpages/faq.html:74
+#: web/templates/frontpages/faq.html:74
 msgid ""
 "\n"
 "                                <p>Rather than having the parent or legal "
@@ -1349,16 +1349,16 @@ msgstr ""
 "失），实验人员可能会根据您的邮件偏好联系您。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:80
+#: web/templates/frontpages/faq.html:80
 msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 msgstr ""
 "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
 
-#: web/templates/flatpages/faq.html:89
+#: web/templates/frontpages/faq.html:89
 msgid "How is our information kept secure and confidential?"
 msgstr "Lookit是如何保护参与者隐私信息的安全的？"
 
-#: web/templates/flatpages/faq.html:94
+#: web/templates/frontpages/faq.html:94
 msgid ""
 "\n"
 "                                <p>\n"
@@ -1400,11 +1400,11 @@ msgstr ""
 "视频”。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:107
+#: web/templates/frontpages/faq.html:107
 msgid "Who will see our video?"
 msgstr "谁可以浏览参与者的视频？"
 
-#: web/templates/flatpages/faq.html:112
+#: web/templates/frontpages/faq.html:112
 msgid ""
 "\n"
 "                                <p>Lookit staff at MIT will have access to "
@@ -1517,11 +1517,11 @@ msgstr ""
 "\">lookit@mit.edu</a>。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:130
+#: web/templates/frontpages/faq.html:130
 msgid "What information do researchers use from our video?"
 msgstr "研究人员会使用我的视频中的什么信息？"
 
-#: web/templates/flatpages/faq.html:136
+#: web/templates/frontpages/faq.html:136
 msgid ""
 "For children under about two years old, we usually design our studies to let "
 "their eyes do the talking! We're interested in where on the screen your "
@@ -1535,7 +1535,7 @@ msgstr ""
 "子）可以帮助我们了解您的孩子向右或向左看时的样子，以便我们可以对视频的其余部"
 "分进行编码。"
 
-#: web/templates/flatpages/faq.html:143
+#: web/templates/frontpages/faq.html:143
 msgid ""
 "Here's an example of a few children watching our calibration video--it's "
 "easy to see that they look to one side and then the other."
@@ -1543,7 +1543,7 @@ msgstr ""
 "下面是几个孩子观看我们校准视频的例子--可以很明显地看到，他们先看一边，再看另"
 "一边。"
 
-#: web/templates/flatpages/faq.html:149
+#: web/templates/frontpages/faq.html:149
 msgid ""
 "Your child's decisions about where to look can give us lots of information "
 "about what he or she understands. Here are some of the techniques labs use "
@@ -1552,11 +1552,11 @@ msgstr ""
 "你的孩子注视的位置可以给我们提供很多他或她所理解的信息。以下是实验室用来了解"
 "更多关于孩子学习方法的一些手段。"
 
-#: web/templates/flatpages/faq.html:150
+#: web/templates/frontpages/faq.html:150
 msgid "Habituation"
 msgstr "习惯化"
 
-#: web/templates/flatpages/faq.html:151
+#: web/templates/frontpages/faq.html:151
 msgid ""
 "\n"
 "                                <p>In a habituation study, we first show "
@@ -1600,11 +1600,11 @@ msgstr ""
 "您会选择去听其他的歌。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:156
+#: web/templates/frontpages/faq.html:156
 msgid "Violation of expectation"
 msgstr "期望悖反"
 
-#: web/templates/flatpages/faq.html:157
+#: web/templates/frontpages/faq.html:157
 msgid ""
 "Infants and children already have rich expectations about how events work. "
 "Children (and adults for that matter) tend to look longer at things they "
@@ -1615,11 +1615,11 @@ msgstr ""
 "惊讶的事物更久，所以在某些情况下，我们可以把他们的注视时长作为衡量他们有多惊"
 "讶的标准。"
 
-#: web/templates/flatpages/faq.html:158
+#: web/templates/frontpages/faq.html:158
 msgid "Preferential looking"
 msgstr "选择性注视"
 
-#: web/templates/flatpages/faq.html:159
+#: web/templates/frontpages/faq.html:159
 msgid ""
 "Even when they seem to be passive observers, children are making lots of "
 "decisions about where to look and what to pay attention to. In this "
@@ -1635,11 +1635,11 @@ msgstr ""
 "面的视频显示，当被要求 \"寻找拍手声 \"时，一个参与者看向了她的左方（她正在看"
 "的视频显示在上方）。"
 
-#: web/templates/flatpages/faq.html:165
+#: web/templates/frontpages/faq.html:165
 msgid "Predictive looking"
 msgstr "预测性注视"
 
-#: web/templates/flatpages/faq.html:166
+#: web/templates/frontpages/faq.html:166
 msgid ""
 "Children can often make sophisticated predictions about what they expect to "
 "see or hear next. One way we can see those predictions in young children is "
@@ -1658,7 +1658,7 @@ msgstr ""
 "后，我们可以通过观察孩子们听到一个音节时看向哪里，来了解他们是否学会了这些关"
 "系，以及他们是如何将它们延伸的。"
 
-#: web/templates/flatpages/faq.html:168
+#: web/templates/frontpages/faq.html:168
 msgid ""
 "Older children may simply be able to answer spoken questions about what they "
 "think is happening. For instance, in a recent study, two women called an "
@@ -1669,7 +1669,7 @@ msgstr ""
 "中，两个人给一个物体分别起了不同的虚构名字，孩子们会被问到哪个才是该物体的正"
 "确名称。"
 
-#: web/templates/flatpages/faq.html:174
+#: web/templates/frontpages/faq.html:174
 msgid ""
 "Another way we can learn about how older children (and adults) think is to "
 "measure their reaction times. For instance, we might ask you to help your "
@@ -1681,11 +1681,11 @@ msgstr ""
 "如，我们会让您帮助孩子学会在出现圆圈时按一个键，出现正方形时按另一个键，然后"
 "看看影响他们按键速度的因素。"
 
-#: web/templates/flatpages/faq.html:181
+#: web/templates/frontpages/faq.html:181
 msgid "Why are you running studies online instead of in person?"
 msgstr "为什么要进行线上，而不是线下实验？"
 
-#: web/templates/flatpages/faq.html:186
+#: web/templates/frontpages/faq.html:186
 msgid ""
 "Traditionally, developmental studies happen in a quiet room in a university "
 "lab. Researchers call or email local parents to see if they'd like to take "
@@ -1696,7 +1696,7 @@ msgstr ""
 "家长打电话或发邮件，询问他们是否愿意参加，并安排访问实验室的时间。那为什么还"
 "要用线上研究来补充呢？我们希望"
 
-#: web/templates/flatpages/faq.html:187
+#: web/templates/frontpages/faq.html:187
 msgid ""
 "\n"
 "                                <ul>\n"
@@ -1747,11 +1747,11 @@ msgstr ""
 "\t\t</ul>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:206
+#: web/templates/frontpages/faq.html:206
 msgid "When will we see the results of the study?"
 msgstr "我们什么时候能看到研究结果？"
 
-#: web/templates/flatpages/faq.html:211
+#: web/templates/frontpages/faq.html:211
 msgid ""
 "The process of publishing a scientific study, from starting data collection "
 "to seeing the paper in a journal, can take several years. You can check the "
@@ -1763,13 +1763,13 @@ msgstr ""
 "间。您可以查看Lookit主页，了解论文的更新情况，或者设置您的邮件偏好，当您参与"
 "的研究结果有更新时，您会收到通知。"
 
-#: web/templates/flatpages/faq.html:218
+#: web/templates/frontpages/faq.html:218
 msgid ""
 "My child wasn't paying attention, or we were interrupted. Can we try the "
 "study again?"
 msgstr "我的孩子在研究中走神，或者我们被打断了。我们可以重新开始实验吗？"
 
-#: web/templates/flatpages/faq.html:223
+#: web/templates/frontpages/faq.html:223
 msgid ""
 "Certainly--thanks for your dedication! You may see a warning that you have "
 "already participated in the study when you go to try it again, but you can "
@@ -1780,13 +1780,13 @@ msgstr ""
 "了这项研究，但您可以忽略它。您不需要告诉我们您曾经做过这项研究，我们会有您之"
 "前的参与记录。"
 
-#: web/templates/flatpages/faq.html:230
+#: web/templates/frontpages/faq.html:230
 msgid ""
 "My child is outside the age range. Can he/she still participate in this "
 "study?"
 msgstr "我的孩子不在年龄范围内，他/她还能参加这项研究吗？"
 
-#: web/templates/flatpages/faq.html:235
+#: web/templates/frontpages/faq.html:235
 msgid ""
 "Sure! We may not be able to use his or her data in our research directly, "
 "but if you're curious you're welcome to try the study anyway. (Sometimes big "
@@ -1798,11 +1798,11 @@ msgstr ""
 "兴趣，欢迎您来尝试。（有时候，哥哥姐姐也很想试试！）然而，如果您的孩子低于研"
 "究的最低年龄，我们鼓励您等到孩子达到规定年龄再参与，以便我们能够使用数据。"
 
-#: web/templates/flatpages/faq.html:242
+#: web/templates/frontpages/faq.html:242
 msgid "My child was born prematurely. Should we use his/her adjusted age?"
 msgstr "我的孩子是早产儿。我们应该用他/她的矫正年龄吗？"
 
-#: web/templates/flatpages/faq.html:247
+#: web/templates/frontpages/faq.html:247
 msgid ""
 "For study eligibility, we usually use the child's chronological age (time "
 "since birth), even for premature babies. If adjusted age is important for a "
@@ -1811,13 +1811,13 @@ msgstr ""
 "就参与资格而言，我们通常使用儿童的实际年龄（出生后的时间），即使是早产儿也是"
 "如此。如果矫正年龄对某项研究很重要，我们会在参与资格中明确说明。"
 
-#: web/templates/flatpages/faq.html:254
+#: web/templates/frontpages/faq.html:254
 msgid ""
 "Our family speaks a language other than English at home. Can my child "
 "participate?"
 msgstr "我们家不用英语，我的孩子还可以参加吗？"
 
-#: web/templates/flatpages/faq.html:259
+#: web/templates/frontpages/faq.html:259
 msgid ""
 "Sure! Right now, instructions for children and parents are written only in "
 "English, so some of them may be confusing to a child who does not hear "
@@ -1832,13 +1832,13 @@ msgstr ""
 "子翻译。如果某项研究需要知道您的孩子是否会说英语以外的其他语言，我们会特别询"
 "问。您也可以在基本信息中注明您的孩子会说或正在学习的语言。"
 
-#: web/templates/flatpages/faq.html:266
+#: web/templates/frontpages/faq.html:266
 msgid ""
 "My child has been diagnosed with a developmental disorder or has special "
 "needs. Can he/she still participate?"
 msgstr "我的孩子被诊断出患有发展障碍或有特殊需要，他/她还能参加吗？"
 
-#: web/templates/flatpages/faq.html:271
+#: web/templates/frontpages/faq.html:271
 msgid ""
 "\n"
 "                                <p>Of course! We're interested in how all "
@@ -1862,13 +1862,13 @@ msgstr ""
 "帮助我们给孩子用语言或手语描述内容。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:281
+#: web/templates/frontpages/faq.html:281
 msgid ""
 "I have multiple children in the age range for a study. Can they participate "
 "together?"
 msgstr "我有多个同年龄段的孩子可以参加一项研究。他们能一起同时参与吗？"
 
-#: web/templates/flatpages/faq.html:286
+#: web/templates/frontpages/faq.html:286
 msgid ""
 "If possible, we ask that each child participate separately. When children "
 "participate together they generally influence each other. That's a "
@@ -1878,11 +1878,11 @@ msgstr ""
 "如果可能的话，我们要求每个孩子分别参加。当孩子们一起参与时，他们经常会互相影"
 "响。这是一个有趣的课题，但通常不是我们研究的重点。"
 
-#: web/templates/flatpages/faq.html:293
+#: web/templates/frontpages/faq.html:293
 msgid "But I've heard that young children should avoid 'screen time.'"
 msgstr "但我听说，幼儿应该减少看屏幕的时间。"
 
-#: web/templates/flatpages/faq.html:298
+#: web/templates/frontpages/faq.html:298
 msgid ""
 "\n"
 "                                <p>We agree with the American Academy of "
@@ -1906,11 +1906,11 @@ msgstr ""
 "来促进家庭沟通和提高科学参与度。</p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:308
+#: web/templates/frontpages/faq.html:308
 msgid "Will we be paid for our participation?"
 msgstr "我们参与研究会拿到报酬吗？"
 
-#: web/templates/flatpages/faq.html:313
+#: web/templates/frontpages/faq.html:313
 msgid ""
 "Some research groups provide gift cards or other compensation for completing "
 "their studies, and others rely on volunteers. (This often depends on the "
@@ -1920,11 +1920,11 @@ msgstr ""
 "有些研究小组为完成研究的参与者提供礼品卡或其他报酬，有些则是无偿的。(这通常取"
 "决于进行研究的大学的规定。)这些信息将在研究简介上列出。"
 
-#: web/templates/flatpages/faq.html:320
+#: web/templates/frontpages/faq.html:320
 msgid "Can I get my child's results?"
 msgstr " 我可以拿到我的孩子的研究结果吗？"
 
-#: web/templates/flatpages/faq.html:325
+#: web/templates/frontpages/faq.html:325
 #, fuzzy, python-format
 #| msgid ""
 #| "\n"
@@ -1979,15 +1979,15 @@ msgstr ""
 "p>\n"
 "                                "
 
-#: web/templates/flatpages/faq.html:335
+#: web/templates/frontpages/faq.html:335
 msgid "Technical"
 msgstr "技术问题"
 
-#: web/templates/flatpages/faq.html:339
+#: web/templates/frontpages/faq.html:339
 msgid "What browsers are supported?"
 msgstr "Lookit可以在什么浏览器上运行？"
 
-#: web/templates/flatpages/faq.html:344
+#: web/templates/frontpages/faq.html:344
 msgid ""
 "Lookit supports recent versions of Chrome and Firefox. We are not currently "
 "able to support Internet Explorer or Safari."
@@ -1995,11 +1995,11 @@ msgstr ""
 "Lookit支持最新版本的谷歌（Chrome）和火狐（Firefox）浏览器，但目前无法支持微软"
 "（IE）或苹果（Safari）浏览器。"
 
-#: web/templates/flatpages/faq.html:351
+#: web/templates/frontpages/faq.html:351
 msgid "Can we do a study on my phone or tablet?"
 msgstr "我们可以在手机或平板电脑上参与实验吗？"
 
-#: web/templates/flatpages/faq.html:357
+#: web/templates/frontpages/faq.html:357
 msgid ""
 "Not yet! Because we're measuring kids' looking patterns, we need a "
 "reasonably stable view of their eyes and a big enough screen that we can "
@@ -2011,23 +2011,23 @@ msgstr ""
 "个足够大的屏幕，以便我们能够判断他们是在看左边还是右边。不过，我们很期待触摸"
 "屏研究的进步，因为它可以让我们观察婴幼儿的探索过程。"
 
-#: web/templates/flatpages/home.html:11
+#: web/templates/frontpages/home.html:11
 msgid "the online child lab"
 msgstr "线上儿童实验平台"
 
-#: web/templates/flatpages/home.html:12
+#: web/templates/frontpages/home.html:12
 msgid "A project of the MIT Early Childhood Cognition Lab"
 msgstr "麻省理工学院早期儿童认知实验室项目"
 
-#: web/templates/flatpages/home.html:12
+#: web/templates/frontpages/home.html:12
 msgid "Participate in a Study"
 msgstr ""
 
-#: web/templates/flatpages/home.html:22
+#: web/templates/frontpages/home.html:22
 msgid "Bringing science home"
 msgstr "将科学融入生活"
 
-#: web/templates/flatpages/home.html:23
+#: web/templates/frontpages/home.html:23
 msgid ""
 "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
 "developmental psychology: bringing the experiments to you."
@@ -2035,36 +2035,36 @@ msgstr ""
 "麻省理工学院早期儿童认知实验室正在尝试一种研究发展心理学的新途径：将实验直接"
 "带到您的面前。"
 
-#: web/templates/flatpages/home.html:29
+#: web/templates/frontpages/home.html:29
 msgid "Help us understand how your child thinks"
 msgstr "帮助我们了解您的孩子如何思考"
 
-#: web/templates/flatpages/home.html:30
+#: web/templates/frontpages/home.html:30
 msgid ""
 "Your family can contribute to research about how children learn by doing fun "
 "activities together, right in your web browser."
 msgstr "您的家庭可以直接在网上一起做些有趣的活动来为儿童学习研究作出贡献。"
 
-#: web/templates/flatpages/home.html:36
+#: web/templates/frontpages/home.html:36
 msgid "Participate whenever and wherever"
 msgstr "随时随地参与"
 
-#: web/templates/flatpages/home.html:37
+#: web/templates/frontpages/home.html:37
 msgid ""
 "Log in or create an account at the top right to get started! You can "
 "participate with your child from any computer with a webcam."
 msgstr ""
 "请在右上方注册或登录。您可以使用任何有摄像头的电脑来与您的孩子一起参与研究。"
 
-#: web/templates/flatpages/privacy.html:11
+#: web/templates/frontpages/privacy.html:11
 msgid "Privacy statement"
 msgstr "隐私条款"
 
-#: web/templates/flatpages/privacy.html:17
+#: web/templates/frontpages/privacy.html:17
 msgid "Introduction"
 msgstr "简介"
 
-#: web/templates/flatpages/privacy.html:18
+#: web/templates/frontpages/privacy.html:18
 msgid ""
 "Lookit is committed to supporting the privacy of individuals who enroll on "
 "our Platform to conduct\n"
@@ -2076,11 +2076,11 @@ msgstr ""
 "Lookit致力于支持使用我们平台的研究人员和参与者的个人隐私。本隐私条款解释了我"
 "们如何处理和使用收集到的个人信息。"
 
-#: web/templates/flatpages/privacy.html:22
+#: web/templates/frontpages/privacy.html:22
 msgid "For participants"
 msgstr "参与者"
 
-#: web/templates/flatpages/privacy.html:24
+#: web/templates/frontpages/privacy.html:24
 msgid ""
 "Lookit is a platform that many different researchers use to conduct studies "
 "about how children learn and\n"
@@ -2094,16 +2094,16 @@ msgstr ""
 "认知实验室运营，该实验室可以访问Lookit上收集的所有数据。使用Lookit的研究人员"
 "只有在您选择参与他们的研究时才能访问您的个人信息。"
 
-#: web/templates/flatpages/privacy.html:29
-#: web/templates/flatpages/privacy.html:142
+#: web/templates/frontpages/privacy.html:29
+#: web/templates/frontpages/privacy.html:142
 msgid "What personal information we collect"
 msgstr "我们会收集什么个人信息"
 
-#: web/templates/flatpages/privacy.html:31
+#: web/templates/frontpages/privacy.html:31
 msgid "We collect the following kinds of personal information:"
 msgstr "我们会收集以下几类个人信息："
 
-#: web/templates/flatpages/privacy.html:32
+#: web/templates/frontpages/privacy.html:32
 msgid ""
 "<ul>\n"
 "                <li>Account data: basic contact information that may include "
@@ -2133,12 +2133,12 @@ msgstr ""
 "频、问卷中输入的文字、显示的特定图像、研究进展的时间等。</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:44
-#: web/templates/flatpages/privacy.html:147
+#: web/templates/frontpages/privacy.html:44
+#: web/templates/frontpages/privacy.html:147
 msgid "How we collect personal information about you"
 msgstr "我们如何收集您的个人信息"
 
-#: web/templates/flatpages/privacy.html:46
+#: web/templates/frontpages/privacy.html:46
 msgid ""
 "The information we collect and maintain about you is the information you "
 "provide to us when registering\n"
@@ -2150,18 +2150,18 @@ msgstr ""
 "我们收集和维护您在注册或更新您的Lookit账户或孩子的资料、完成或更新问卷，或参"
 "与某个研究时向我们提供的信息。"
 
-#: web/templates/flatpages/privacy.html:50
-#: web/templates/flatpages/privacy.html:167
+#: web/templates/frontpages/privacy.html:50
+#: web/templates/frontpages/privacy.html:167
 msgid "When we share your personal information"
 msgstr "我们何时会分享您的个人信息"
 
-#: web/templates/flatpages/privacy.html:52
+#: web/templates/frontpages/privacy.html:52
 msgid ""
 "When you participate in a Lookit study, we share the following information "
 "with the research group conducting the study:"
 msgstr "当您参与Lookit研究时，我们会与进行研究的团队分享以下信息："
 
-#: web/templates/flatpages/privacy.html:54
+#: web/templates/frontpages/privacy.html:54
 msgid ""
 "\n"
 "            <ul>\n"
@@ -2179,7 +2179,7 @@ msgstr ""
 "<li>此项研究的实验数据</li>\n"
 "            </ul>"
 
-#: web/templates/flatpages/privacy.html:61
+#: web/templates/frontpages/privacy.html:61
 msgid ""
 "Your email address is not shared directly with the research group, although "
 "they can contact you via Lookit in accordance with your contact preferences."
@@ -2187,7 +2187,7 @@ msgstr ""
 "我们不会直接与研究团队共享您的电子邮件地址，但他们可以根据您的电子邮件偏好通"
 "过Lookit与您联系。"
 
-#: web/templates/flatpages/privacy.html:63
+#: web/templates/frontpages/privacy.html:63
 msgid ""
 "Researchers may publish the results of a study, including individual "
 "responses. However, although they\n"
@@ -2198,7 +2198,7 @@ msgstr ""
 "研究人员可以发表一项研究的结果，包括个人的反馈。然而，虽然他们可以公布参与者"
 "的年龄，但不得公布其出生日期（或可用于计算出生日期的信息）。"
 
-#: web/templates/flatpages/privacy.html:67
+#: web/templates/frontpages/privacy.html:67
 msgid ""
 "We and/or the researchers responsible for a study may share video of your "
 "family’s participation for\n"
@@ -2218,7 +2218,7 @@ msgstr ""
 "享您的视频和其他数据。我们不会在参与者视频中泄露个人基本信息（如家庭收入或父"
 "母/监护人数量），研究人员也必须同意此条款才能使用Lookit。"
 
-#: web/templates/flatpages/privacy.html:74
+#: web/templates/frontpages/privacy.html:74
 msgid ""
 "We don’t share, sell, publish, or otherwise disclose your contact "
 "information (email and/or mailing\n"
@@ -2229,12 +2229,12 @@ msgstr ""
 "除了参与研究的团队外，我们不会将您的联系信息（电子邮件或邮寄地址）分享、出"
 "售、出版或以其他方式透露给任何人。研究人员也必须同意此条款才能使用Lookit。"
 
-#: web/templates/flatpages/privacy.html:78
-#: web/templates/flatpages/privacy.html:152
+#: web/templates/frontpages/privacy.html:78
+#: web/templates/frontpages/privacy.html:152
 msgid "How we use your personal information"
 msgstr "我们如何使用您的个人信息"
 
-#: web/templates/flatpages/privacy.html:80
+#: web/templates/frontpages/privacy.html:80
 msgid ""
 "We may use your personal information (account, child, demographic, and study "
 "data) for a variety of purposes, including to:"
@@ -2242,7 +2242,7 @@ msgstr ""
 " 我们可能会将您的个人信息（账户、儿童、家庭背景和实验数据）用于多种目的，包"
 "括： "
 
-#: web/templates/flatpages/privacy.html:81
+#: web/templates/frontpages/privacy.html:81
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research studies you have enrolled "
@@ -2286,7 +2286,7 @@ msgstr ""
 "孩子玩得很开心的视频）</li>\n"
 "</ul>"
 
-#: web/templates/flatpages/privacy.html:100
+#: web/templates/frontpages/privacy.html:100
 msgid ""
 "Researchers use the data collected in their studies to address particular "
 "scientific questions. It may\n"
@@ -2303,13 +2303,13 @@ msgstr ""
 "如，您在Lookit上参与了一个线下研究的后续实验），他们必须在研究同意书中告诉"
 "您。"
 
-#: web/templates/flatpages/privacy.html:106
+#: web/templates/frontpages/privacy.html:106
 msgid ""
 "There are some basic rules about how personal information may be used that "
 "all Lookit researchers agree to, including:"
 msgstr "所有Lookit研究人员都需同意以下关于如何使用个人信息的基本准则："
 
-#: web/templates/flatpages/privacy.html:107
+#: web/templates/frontpages/privacy.html:107
 msgid ""
 "\n"
 "            <ul>\n"
@@ -2328,8 +2328,8 @@ msgstr ""
 "</ul>\n"
 "            "
 
-#: web/templates/flatpages/privacy.html:114
-#: web/templates/flatpages/privacy.html:163
+#: web/templates/frontpages/privacy.html:114
+#: web/templates/frontpages/privacy.html:163
 msgid ""
 "If you have concerns about any of these purposes, or how we communicate with "
 "you, please contact us at\n"
@@ -2341,12 +2341,12 @@ msgstr ""
 "dataprotection@mit.edu 联系我们。根据法律义务，我们将始终尊重您提出的停止使用"
 "个人信息的请求。"
 
-#: web/templates/flatpages/privacy.html:118
-#: web/templates/flatpages/privacy.html:171
+#: web/templates/frontpages/privacy.html:118
+#: web/templates/frontpages/privacy.html:171
 msgid "How your information is stored and secured"
 msgstr "您的信息是如何被存储和保护的"
 
-#: web/templates/flatpages/privacy.html:120
+#: web/templates/frontpages/privacy.html:120
 #, fuzzy, python-format
 #| msgid ""
 #| "We have implemented industry-standard security safeguards designed to "
@@ -2396,12 +2396,12 @@ msgstr ""
 "或管理保障措施被访问、曝光、更改或破坏。您有责任保护您的账户信息的安全，包括"
 "您的用户名和密码。"
 
-#: web/templates/flatpages/privacy.html:131
-#: web/templates/flatpages/privacy.html:182
+#: web/templates/frontpages/privacy.html:131
+#: web/templates/frontpages/privacy.html:182
 msgid "How long we keep your personal information"
 msgstr "我们将保留您的个人信息多长时间"
 
-#: web/templates/flatpages/privacy.html:133
+#: web/templates/frontpages/privacy.html:133
 msgid ""
 "We consider our relationship with our research community to be lifelong. "
 "This means that we will maintain\n"
@@ -2420,7 +2420,7 @@ msgstr ""
 "前，我们都会为您保留记录。如果您不再希望收到Lookit的消息，我们将保留一套您的"
 "核心信息，以履行行政和法律义务。"
 
-#: web/templates/flatpages/privacy.html:144
+#: web/templates/frontpages/privacy.html:144
 msgid ""
 "We may collect basic biographic/contact information about you and your "
 "representative organization,\n"
@@ -2430,7 +2430,7 @@ msgstr ""
 "我们可能会收集您和您代表机构的基本信息，包括姓名、职务、机构地址、电话号码和"
 "电子邮件地址。"
 
-#: web/templates/flatpages/privacy.html:149
+#: web/templates/frontpages/privacy.html:149
 msgid ""
 "The information we collect and maintain about you is that which you have "
 "provided to us when registering\n"
@@ -2440,7 +2440,7 @@ msgstr ""
 "我们收集和维护的是您在注册使用Lookit、更新个人资料，或创建、编辑研究时提供给"
 "我们的信息。"
 
-#: web/templates/flatpages/privacy.html:154
+#: web/templates/frontpages/privacy.html:154
 msgid ""
 "We use your personal information for a number of legitimate purposes, "
 "including the performance of contractual obligations. Specifically, we use "
@@ -2449,7 +2449,7 @@ msgstr ""
 "我们将出于正当目的使用您的个人信息，包括履行合同义务。具体而言，我们使用您的"
 "个人信息是为了："
 
-#: web/templates/flatpages/privacy.html:155
+#: web/templates/frontpages/privacy.html:155
 msgid ""
 "<ul>\n"
 "                <li>Provide you with the research services for which you "
@@ -2469,11 +2469,11 @@ msgstr ""
 "命。<li>\n"
 "<ul>"
 
-#: web/templates/flatpages/privacy.html:169
+#: web/templates/frontpages/privacy.html:169
 msgid "We do not share your personal information with any third parties."
 msgstr "我们不会与第三方分享您的任何信息。"
 
-#: web/templates/flatpages/privacy.html:173
+#: web/templates/frontpages/privacy.html:173
 #, fuzzy, python-format
 #| msgid ""
 #| "We have implemented industry-standard security safeguards designed to "
@@ -2515,7 +2515,7 @@ msgstr ""
 "或管理保障措施被访问、曝光、更改或破坏。您有责任保护您的账户信息的安全，包括"
 "您的用户名和密码。"
 
-#: web/templates/flatpages/privacy.html:184
+#: web/templates/frontpages/privacy.html:184
 msgid ""
 "We consider our relationship with our research community to be lifelong. "
 "This means that we will maintain\n"
@@ -2529,15 +2529,15 @@ msgstr ""
 "前，我们都会为您保留记录。如果您不再希望收到Lookit的消息，我们将保留一套您的"
 "核心信息，以履行行政和法律义务。"
 
-#: web/templates/flatpages/privacy.html:189
+#: web/templates/frontpages/privacy.html:189
 msgid "For everyone"
 msgstr "所有用户"
 
-#: web/templates/flatpages/privacy.html:191
+#: web/templates/frontpages/privacy.html:191
 msgid "Rights for individuals in the European Economic Area"
 msgstr "欧洲经济区个人的权利"
 
-#: web/templates/flatpages/privacy.html:192
+#: web/templates/frontpages/privacy.html:192
 msgid ""
 "You have the right in certain circumstances to (1) access your personal "
 "information; (2) to correct or\n"
@@ -2554,7 +2554,7 @@ msgstr ""
 "保护条例》将进一步提供有关您权利的信息。您还有权向您所在国家或地区的数据保护"
 "机构提出投诉。"
 
-#: web/templates/flatpages/privacy.html:198
+#: web/templates/frontpages/privacy.html:198
 msgid ""
 "If you are inclined to exercise these rights, we request an opportunity to "
 "discuss with you any concerns\n"
@@ -2579,7 +2579,7 @@ msgstr ""
 "国税局的规定。在发生实际或威胁性的法律索赔时，我们可能会保留您的信息，以确"
 "立、维护或行使我们与该索赔有关的权利。"
 
-#: web/templates/flatpages/privacy.html:207
+#: web/templates/frontpages/privacy.html:207
 msgid ""
 "By providing information directly to Lookit, you consent to the transfer of "
 "your personal information\n"
@@ -2593,17 +2593,17 @@ msgstr ""
 "要注意的是，美国现行的法律和法规可能无法提供与欧洲经济区的数据和隐私法律法规"
 "相同水平的保护。"
 
-#: web/templates/flatpages/privacy.html:212
+#: web/templates/frontpages/privacy.html:212
 msgid ""
 "You are under no statutory or contractual obligation to provide any personal "
 "data to us."
 msgstr "您没有法定或合同义务向我们提供任何个人数据。"
 
-#: web/templates/flatpages/privacy.html:214
+#: web/templates/frontpages/privacy.html:214
 msgid "Additional Information"
 msgstr "其他信息"
 
-#: web/templates/flatpages/privacy.html:216
+#: web/templates/frontpages/privacy.html:216
 msgid ""
 "We may change this Privacy Statement from time to time. If we make any "
 "significant changes in the way we\n"
@@ -2613,31 +2613,31 @@ msgstr ""
 "我们可能会不时地更改本隐私声明。如果我们处理您的个人信息的方式有任何重大变"
 "化，我们将在网站上明确说明或与您直接联系。"
 
-#: web/templates/flatpages/privacy.html:220
+#: web/templates/frontpages/privacy.html:220
 msgid ""
 "The controller for your personal information is MIT. We can be contacted at "
 "dataprotection@mit.edu."
 msgstr "您个人信息的管理方是MIT。请通过 dataprotection@mit.edu 与我们联系。"
 
-#: web/templates/flatpages/privacy.html:222
+#: web/templates/frontpages/privacy.html:222
 msgid "This policy was last updated in June 2018."
 msgstr "此声明最近更新于2018年6月。"
 
-#: web/templates/flatpages/scientists.html:27
+#: web/templates/frontpages/scientists.html:27
 msgid "Meet the Lookit team"
 msgstr "Lookit团队"
 
-#: web/templates/flatpages/scientists.html:33
+#: web/templates/frontpages/scientists.html:33
 msgid "Core Team"
 msgstr "核心成员"
 
-#: web/templates/flatpages/scientists.html:38
+#: web/templates/frontpages/scientists.html:38
 msgid ""
 "Rico is Lookit's lead software engineer, working on planning and adding "
 "features for both participants and researchers."
 msgstr "Rico是Lookit的首席软件工程师，负责为参与者和研究人员规划和添加功能。"
 
-#: web/templates/flatpages/scientists.html:43
+#: web/templates/frontpages/scientists.html:43
 msgid ""
 "Laura is the PI of the Early Childhood Cognition Lab. She conducts research "
 "about how children arrive at a common-sense understanding of the physical "
@@ -2646,7 +2646,7 @@ msgstr ""
 "Laura是儿童早期认知实验室的首席研究员。她研究儿童是如何通过探索和引导来理解物"
 "理和社会世界的常识。"
 
-#: web/templates/flatpages/scientists.html:49
+#: web/templates/frontpages/scientists.html:49
 msgid ""
 "Kim started Lookit as a graduate student, and now runs the project as a "
 "research scientist in the Early Childhood Cognition Lab. Her three children "
@@ -2655,7 +2655,7 @@ msgstr ""
 "Kim在研究生时期就开始了Lookit的研究，现在作为研究科学家在儿童早期认知实验室管"
 "理这个项目。她的三个孩子经常为实验提供反馈。"
 
-#: web/templates/flatpages/scientists.html:54
+#: web/templates/frontpages/scientists.html:54
 msgid ""
 "Mark organizes the Lookit Working Groups, which are groups of researchers "
 "working to improve Lookit in a variety of ways."
@@ -2663,7 +2663,7 @@ msgstr ""
 "Mark负责管理Lookit工作组。工作组是由研究人员组成的，致力于以各种方式完善"
 "Lookit。"
 
-#: web/templates/flatpages/scientists.html:58
+#: web/templates/frontpages/scientists.html:58
 msgid ""
 "\n"
 "                <h3>Alumni &amp; Collaborators</h3>\n"
