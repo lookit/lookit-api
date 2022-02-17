@@ -108,8 +108,10 @@ class ScientistsView(generic.TemplateView):
 class ContactView(generic.TemplateView):
     template_name = "frontpages/contact.html"
 
+
 class ResourcesView(generic.TemplateView):
     template_name = "frontpages/resources.html"
+
 
 class TermsOfUseView(generic.TemplateView):
     template_name = "frontpages/termsofuse.html"
