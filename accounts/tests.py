@@ -1,7 +1,6 @@
 import datetime
 from unittest.mock import MagicMock, patch
 
-from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -82,11 +81,6 @@ class AuthenticationTestCase(TestCase):
 
         # Site fixture enabling login
         self.fake_site = G(Site, id=1)
-
-        # FlatPage fixture enabling login redirect to work.
-        self.home_page = G(FlatPage, url="/")
-        self.home_page.sites.add(self.fake_site)
-        self.home_page.save()
 
         # All the GET views that should be protected by 2fa
         self.mfa_protected_get_views = [
@@ -378,11 +372,6 @@ class UserModelTestCase(TestCase):
 
         # Site fixture enabling login
         self.fake_site = G(Site, id=1)
-
-        # FlatPage fixture enabling login redirect to work.
-        self.home_page = G(FlatPage, url="/")
-        self.home_page.sites.add(self.fake_site)
-        self.home_page.save()
 
         self.test_password = "testpassword20chars"
 
