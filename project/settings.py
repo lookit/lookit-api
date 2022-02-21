@@ -50,7 +50,6 @@ PIPE_WEBHOOK_KEY = os.environ.get("PIPE_WEBHOOK_KEY", "abcdefghijkl1")
 INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.flatpages",
     "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.messages",
@@ -93,7 +92,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
 ]
 
 if DEBUG:
@@ -141,6 +139,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ]
         },
     }
@@ -218,6 +217,29 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Custom language list
+LANGUAGES = [
+    ("de", "German"),
+    ("en", "English"),
+    ("es", "Spanish"),
+    ("es-ar", "Argentinian Spanish"),
+    ("fr", "French"),
+    ("fr-ca", "Canadian French"),
+    ("he", "Hebrew"),
+    ("it", "Italian"),
+    ("ja", "Japanese"),
+    ("ko", "Korean"),
+    ("nb", "Norwegian Bokmål"),
+    ("pl", "Polish"),
+    ("pt", "Portuguese"),
+    ("pt-br", "Brazilian Portuguese"),
+    ("ro", "Romanian"),
+    ("ru", "Russian"),
+    ("tr", "Turkish"),
+    ("zh-hans", "Simplified Chinese"),
+    ("nl", "Dutch"),
+]
 
 SITE_ID = 1
 SITE_DOMAIN = os.environ.get("SITE_DOMAIN", "localhost:8000")
@@ -334,7 +356,6 @@ CELERY_TASK_ROUTES = {
 }
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-SITE_ROOT = os.path.dirname(os.path.realpath(__name__))
-LOCALE_PATHS = (os.path.join(SITE_ROOT, "locale"),)
+LOCALE_PATHS = (os.path.join(BASE_DIR, "../locale"),)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

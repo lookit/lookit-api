@@ -1,0 +1,50 @@
+{% extends 'frontpages/default.html' %}
+{% load bootstrap3 %}
+{% load i18n %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+        <div class="main">
+        	<div class="home-jumbotron">
+        		<div class="content">
+        			<h1>Lookit<br>
+        			<small>{% trans "the online child lab" %}</small></h1>
+        			<p>{% trans "A project of the MIT Early Childhood Cognition Lab" %}</p><a class="btn btn-primary btn-lg ember-view" href="studies" id="ember821">{% trans "Participate in a Study" %}</a>
+        		</div>
+        	</div>
+        	<div class="information-row lookit-row">
+        		<div class="container">
+        			<div class="row">
+        				<div class="col-md-4">
+        					<div class="home-content-icon">
+        						<i class="fa fa-flask"></i>
+        					</div>
+        					<h3 class="text-center">{% trans "Bringing science home" %}</h3>
+        					<p>{% trans "Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in developmental psychology: bringing the experiments to you." %}</p>
+        				</div>
+        				<div class="col-md-4">
+        					<div class="home-content-icon">
+        						<i class="fa fa-cogs"></i>
+        					</div>
+        					<h3 class="text-center">{% trans "Help us understand how your child thinks" %}</h3>
+        					<p>{% trans "Your family can contribute to research about how children learn by doing fun activities together, right in your web browser." %}
+        				</div>
+        				<div class="col-md-4">
+        					<div class="home-content-icon">
+        						<i class="fa fa-coffee"></i>
+        					</div>
+        					<h3 class="text-center">{% trans "Participate whenever and wherever" %}</h3>
+        					<p>{% trans "Log in or create an account at the top right to get started! You can participate with your child from any computer with a webcam." %}</p>
+        				</div>
+        			</div>
+        		</div>
+        	</div>
+        	
+        </div>
+    {% endblock %}
+
+	
+{% block footerlinks %}
+<li><a href="privacy">{% trans "Privacy" %}</a></li>
+<li><a href="contact_us">{% trans "Contact us" %}</a></li>
+{% endblock %}

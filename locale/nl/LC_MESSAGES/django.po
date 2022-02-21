@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-10-13 14:40+0000\n"
-"Language: pl\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,152 +12,164 @@ msgstr ""
 #: accounts/forms.py:58
 msgid "Enter a valid 6-digit one-time password from Google Authenticator"
 msgstr ""
+"Voer een geldig eenmalig wachtwoord van zes cijfers in van Google "
+"Authenticator"
 
 #: accounts/forms.py:109
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Please enter a correct %(username)s and password. Note that email and "
+#| "password fields may be case-sensitive. If you have turned on two-factor "
+#| "authentication, you will need a one-time password (OTP code) from Google "
+#| "Authenticator as well. "
 msgid ""
 "Please enter a correct %(username)s and password. Note that email and "
 "password fields may be case-sensitive. If you have turned on two-factor "
 "authentication, you will need a one-time password (OTP code) from Google "
 "Authenticator as well. "
 msgstr ""
+"Voer een correct % (gebruikersnaam)s en wachtwoord in. Houd er rekening mee "
+"dat e-mail- en wachtwoordvelden hoofdlettergevoelig kunnen zijn. Als je "
+"tweefactorauthenticatie hebt ingeschakeld, heb je ook een eenmalig "
+"wachtwoord (OTP-code) van Google Authenticator nodig. "
 
 #: accounts/forms.py:114
 msgid "This account is inactive."
-msgstr ""
+msgstr "Dit account is inactief."
 
 #: accounts/forms.py:197
 msgid "Your password can’t be too similar to your other personal information."
 msgstr ""
+"Uw wachtwoord mag niet te veel lijken op uw andere persoonlijke gegevens."
 
 #: accounts/forms.py:198
 msgid "Your password must contain at least 16 characters."
-msgstr ""
+msgstr "Uw wachtwoord moet minimaal 16 tekens bevatten."
 
 #: accounts/forms.py:199
 msgid "Your password can’t be a commonly used password."
-msgstr ""
+msgstr "Uw wachtwoord mag geen algemeen gebruikt wachtwoord zijn."
 
 #: accounts/forms.py:200
 msgid "Your password can’t be entirely numeric."
-msgstr ""
+msgstr "Uw wachtwoord mag niet volledig numeriek zijn."
 
 #: accounts/forms.py:216 accounts/forms.py:232 accounts/models.py:141
 msgid "Email address"
-msgstr "Adres e-mail"
+msgstr "E-mailadres"
 
 #: accounts/forms.py:217 accounts/models.py:146
 #: accounts/templates/accounts/participant_list.html:37
 #: accounts/templates/accounts/participant_list.html:58
 msgid "Nickname"
-msgstr "Pseudonim"
+msgstr "Bijnaam"
 
 #: accounts/forms.py:257
 msgid ""
 "It's time for another session of a study we are currently participating in"
-msgstr "Czas na kolejną sesję badania, w którym obecnie uczestniczymy"
+msgstr ""
+"Het is tijd voor een nieuwe sessie van een onderzoek waaraan we momenteel "
+"deelnemen"
 
 #: accounts/forms.py:259
 msgid "A new study is available for one of my children"
-msgstr "Nowe badanie jest dostępne dla jednego z moich dzieci."
+msgstr "Er is een nieuwe studie beschikbaar voor een van mijn kinderen"
 
 #: accounts/forms.py:261
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
 msgstr ""
-"Istnieje aktualizacja dotycząca badania, w którym braliśmy udział (na "
-"przykład, wyniki są opublikowane)"
+"Er is een update over een onderzoek waaraan we hebben deelgenomen (de "
+"resultaten zijn bijvoorbeeld gepubliceerd)"
 
 #: accounts/forms.py:264
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
 msgstr ""
-"Badacz(ka) ma pytania dotyczące moich poszczególnych odpowiedzi (na "
-"przykład, jeśli zgłoszę problem techniczny podczas badania)."
+"Een onderzoeker heeft vragen over mijn individuele antwoorden (bijvoorbeeld "
+"als ik tijdens het onderzoek een technisch probleem meld)"
 
 #: accounts/forms.py:273 accounts/forms.py:322
 msgid "What category(ies) does your family identify as?"
-msgstr ""
-"Z którą (lub z którymi) z tych kategorii utożsamia się państwa rodzina?"
+msgstr "In welke categorie(ën) identificeert uw gezin zich?"
 
 #: accounts/forms.py:277 accounts/models.py:527
 #: accounts/templates/accounts/participant_detail.html:86
 msgid "Country"
-msgstr "Państwo"
+msgstr "Land"
 
 #: accounts/forms.py:304
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
-msgstr "Wpisz jako listę oddzieloną przecinkami: YYYY-MM-DD, YYYYY-MM-DD, ..."
+msgstr ""
+"Voer in als een lijst door komma's gescheiden: JJJJ-MM-DD, JJJJ-MM-DD, ..."
 
 #: accounts/forms.py:306
 msgid "Numerical answers only - a rough guess is fine!"
-msgstr "Tylko odpowiedzi wyrażone w liczbach - można mniej więcej oszacować. "
+msgstr "Alleen numerieke antwoorden - een ruwe schatting is prima!"
 
 #: accounts/forms.py:310
 msgid "What country do you live in?"
-msgstr "W jakim kraju Państwo mieszkają?"
+msgstr "In welk land woont u?"
 
 #: accounts/forms.py:311
 msgid "What state do you live in?"
-msgstr "W jakim województwie Państwo mieszkają?"
+msgstr "In welke provincie woont u?"
 
 #: accounts/forms.py:312
 msgid "How would you describe the area where you live?"
-msgstr "Jak opisaliby Państwo okolicę, w której Państwo mieszkają?"
+msgstr "Hoe zou u het gebied waarin u woont omschrijven?"
 
 #: accounts/forms.py:314
 msgid "What language(s) does your family speak at home?"
-msgstr "Jakim językiem (językami) posługuje się państwa rodzina w domu?"
+msgstr "Welke taal / talen spreekt uw gezin thuis?"
 
 #: accounts/forms.py:316
 msgid "How many children do you have?"
-msgstr "Ile mają Państwo dzieci?"
+msgstr "Hoeveel kinderen heeft u?"
 
 #: accounts/forms.py:317
 msgid "For each child, please enter his or her birthdate:"
-msgstr "Dla każdego dziecka, proszę podać ich datę urodzenia:"
+msgstr "Geef voor elk kind zijn of haar geboortedatum op:"
 
 #: accounts/forms.py:319
 msgid "How many parents/guardians do your children live with?"
-msgstr "Z iloma rodzicami/opiekunami mieszkają państwa dzieci?"
+msgstr "Bij hoeveel ouders / verzorgers wonen uw kinderen?"
 
 #: accounts/forms.py:324
 msgid "What is your age?"
-msgstr "Jaki jest państwa wiek?"
+msgstr "Wat is uw leeftijd?"
 
 #: accounts/forms.py:325
 msgid "What is your gender?"
-msgstr "Jaka jest państwa płeć?"
+msgstr "Wat is uw geslacht?"
 
 #: accounts/forms.py:327
 msgid "What is the highest level of education you've completed?"
-msgstr "Jaki jest najwyższy poziom edukacji, który Państwo ukończyli?"
+msgstr "Wat is de hoogste opleiding die u heeft afgerond?"
 
 #: accounts/forms.py:330
 msgid "What is the highest level of education your spouse has completed?"
 msgstr ""
-"Jaki jest najwyższy poziom wykształcenia, które ukończył/a państwa "
-"współmałżonek/współmałżonka?"
+"Wat is de hoogste opleiding die uw echtgenoot/echtgenote/partner heeft "
+"afgerond?"
 
 #: accounts/forms.py:333
 msgid "What is your approximate family yearly income (in US dollars)?"
-msgstr ""
-"Jaki jest  przybliżony roczny dochód państwa rodziny (w dolarach "
-"amerykańskich)?"
+msgstr "Wat is uw geschatte jaarlijkse gezinsinkomen (in euro's)?"
 
 #: accounts/forms.py:336
 msgid "About how many children's books are there in your home?"
-msgstr "Około ile książek dla dzieci jest obecnych w państwa domu?"
+msgstr "Hoeveel kinderboeken zijn er ongeveer in uw huis?"
 
 #: accounts/forms.py:338
 msgid "Anything else you'd like us to know?"
-msgstr "Czy jest coś więcej, o czym Państwo chcieliby nas poinformować?"
+msgstr "Is er nog iets anders waarvan u wilt dat wij het weten?"
 
 #: accounts/forms.py:339
 msgid "How did you hear about Lookit?"
-msgstr "Skąd się Państwo dowiedzieli o Lookit?"
+msgstr "Hoe heeft u over Lookit gehoord?"
 
 #: accounts/forms.py:341
 msgid ""
@@ -165,15 +177,15 @@ msgid ""
 "enter the number of parents/guardians your children are usually living with "
 "or explain."
 msgstr ""
-"Jeśli odpowiedź różni się w zależności od ustaleń dotyczących wspólnej "
-"opieki nad dzieckiem lub podróży, proszę podać liczbę rodziców/opiekunów, z "
-"którymi zazwyczaj mieszkają państwa dzieci lub wyjaśnić."
+"Als het antwoord varieert vanwege regelingen voor gedeeld gezag of reizen, "
+"voer dan het aantal ouders / verzorgers in waar uw kinderen gewoonlijk mee "
+"samenwonen of leg de situatie uit."
 
 #: accounts/forms.py:356 accounts/forms.py:382 accounts/forms.py:434
 #: accounts/templates/accounts/participant_detail.html:38
 #: web/templates/web/children-list.html:112
 msgid "Birthday"
-msgstr "Urodziny"
+msgstr "Geboortedatum"
 
 #: accounts/forms.py:358
 msgid ""
@@ -181,42 +193,43 @@ msgid ""
 "in a study. We never publish children's birthdates or information that would "
 "allow a reader to calculate the birthdate."
 msgstr ""
-"To pozwala nam dokładnie ustalić wiek państwa dziecka, gdy uczestniczy ono w "
-"badaniach. Nigdy nie publikujemy dat urodzin dzieci ani informacji, które "
-"pozwoliłyby czytelnikowi na obliczenie daty urodzenia."
+"Zo kunnen we precies achterhalen hoe oud uw kind is wanneer het meedoet aan "
+"een studie. We publiceren nooit geboortegegevens van kinderen of informatie "
+"waarmee een lezer de geboortedatum kan berekenen."
 
 #: accounts/forms.py:365
 msgid "Birthdays cannot be in the future."
-msgstr "Urodziny nie mogą być w przyszłości."
+msgstr "De geboortedatum kan niet in de toekomst liggen."
 
 #: accounts/forms.py:381 accounts/forms.py:433
 msgid "First Name"
-msgstr "Imię"
+msgstr "Voornaam"
 
 #: accounts/forms.py:383 accounts/forms.py:435
 #: accounts/templates/accounts/participant_detail.html:54
 msgid "Gender"
-msgstr "Płeć"
+msgstr "Geslacht"
 
 #: accounts/forms.py:384 accounts/forms.py:436
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
-msgstr "Wiek ciążowy przy porodzie"
+msgstr "Zwangerschapsduur bij de geboorte"
 
 #: accounts/forms.py:386 accounts/forms.py:438
 msgid "Any additional information you'd like us to know"
-msgstr "Wszelkie dodatkowe informacje, które chcieliby Państwo nam przekazać"
+msgstr "Eventuele aanvullende informatie waarvan u wilt dat wij het weten"
 
 #: accounts/forms.py:388 accounts/forms.py:440
 msgid "Characteristics and conditions"
-msgstr "Charakterystyka i warunki"
+msgstr "Kenmerken en voorwaarden"
 
 #: accounts/forms.py:390 accounts/forms.py:442
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
 msgstr ""
-"Języki, z którymi dziecko ma kontakt w domu, w szkole lub u innego opiekuna."
+"Talen waaraan dit kind thuis, op school of bij een andere verzorger wordt "
+"blootgesteld."
 
 #: accounts/forms.py:396 accounts/forms.py:448
 msgid ""
@@ -225,254 +238,253 @@ msgid ""
 "to you (for instance, \"There's a new study available for Molly!\") but will "
 "never publish names or use them in our research."
 msgstr ""
-"To pozwala państwu wybrać odpowiednie dziecko do udziału w danym badaniu. "
-"Pseudonim lub inicjały są w porządku! Możemy zamieścić imię  państwa dziecka "
-"w e-mailu do państwa (na przykład \"Nowe badanie jest dostępne dla Moniki!"
-"\"), ale nigdy nie opublikujemy imienia, ani nie użyjemy go w naszych "
-"badaniach."
+"Hiermee kunt u het juiste kind selecteren om aan een bepaald onderzoek deel "
+"te nemen. Een bijnaam of initialen zijn prima! We kunnen de naam van uw kind "
+"opnemen in een e-mail naar u (bijvoorbeeld: \"Er is een nieuwe studie "
+"beschikbaar voor Julia!\"), maar we zullen nooit namen publiceren of ze "
+"gebruiken in ons onderzoek."
 
 #: accounts/forms.py:399 accounts/forms.py:451
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
 msgstr ""
-"Na przykład zdiagnozowane zaburzenia rozwojowe lub problemy ze wzrokiem lub "
-"słuchem"
+"Bijvoorbeeld gediagnosticeerde ontwikkelingsstoornissen of zicht- of "
+"gehoorproblemen"
 
 #: accounts/forms.py:402
 msgid "Please round down to the nearest full week of pregnancy completed"
-msgstr ""
-"Proszę zaokrąglić w dół do najbliższego, ukończonego, pełnego tygodnia ciąży"
+msgstr "Rond af naar de dichtstbijzijnde volledige zwangerschapsweek"
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
 #: accounts/models.py:302 studies/fields.py:135
 msgid "Not sure or prefer not to answer"
-msgstr "Nie jestem pewien/pewna lub wolę nie odpowiadać"
+msgstr "Weet niet zeker of beantwoord liever niet"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
 #: accounts/models.py:303 studies/fields.py:136
 msgid "Under 24 weeks"
-msgstr "Poniżej 24 tygodni"
+msgstr "Minder dan 24 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:14
 #: accounts/models.py:304 studies/fields.py:137
 msgid "24 weeks"
-msgstr "24 tygodnie"
+msgstr "24 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:15
 #: accounts/models.py:305 studies/fields.py:138
 msgid "25 weeks"
-msgstr "25 tygodni"
+msgstr "25 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:16
 #: accounts/models.py:306 studies/fields.py:139
 msgid "26 weeks"
-msgstr "26 tygodni"
+msgstr "26 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:17
 #: accounts/models.py:307 studies/fields.py:140
 msgid "27 weeks"
-msgstr "27 tygodni"
+msgstr "27 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:18
 #: accounts/models.py:308 studies/fields.py:141
 msgid "28 weeks"
-msgstr "28 tygodni"
+msgstr "28 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:19
 #: accounts/models.py:309 studies/fields.py:142
 msgid "29 weeks"
-msgstr "29 tygodni"
+msgstr "29 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:20
 #: accounts/models.py:310 studies/fields.py:143
 msgid "30 weeks"
-msgstr "30 tygodni"
+msgstr "30 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:21
 #: accounts/models.py:311 studies/fields.py:144
 msgid "31 weeks"
-msgstr "31 tygodni"
+msgstr "31 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:22
 #: accounts/models.py:312 studies/fields.py:145
 msgid "32 weeks"
-msgstr "32 tygodnie"
+msgstr "32 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:23
 #: accounts/models.py:313 studies/fields.py:146
 msgid "33 weeks"
-msgstr "33 tygodnie"
+msgstr "33 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:24
 #: accounts/models.py:314 studies/fields.py:147
 msgid "34 weeks"
-msgstr "34 tygodnie"
+msgstr "34 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:25
 #: accounts/models.py:315 studies/fields.py:148
 msgid "35 weeks"
-msgstr "35 tygodni"
+msgstr "35 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:26
 #: accounts/models.py:316 studies/fields.py:149
 msgid "36 weeks"
-msgstr "36 tygodni"
+msgstr "36 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:27
 #: accounts/models.py:317 studies/fields.py:150
 msgid "37 weeks"
-msgstr "37 tygodni"
+msgstr "37 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:28
 #: accounts/models.py:318 studies/fields.py:151
 msgid "38 weeks"
-msgstr "38 tygodni"
+msgstr "38 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:29
 #: accounts/models.py:319 studies/fields.py:152
 msgid "39 weeks"
-msgstr "39 tygodni"
+msgstr "39 weken"
 
 #: accounts/migrations/0041_add_existing_conditions.py:30
 #: accounts/models.py:320 studies/fields.py:153
 msgid "40 or more weeks"
-msgstr "40 lub więcej tygodni"
+msgstr "40 weken of meer"
 
 #: accounts/models.py:80
 msgid "Can View Organization"
-msgstr "Możliwość podglądu organizacji"
+msgstr "Kan organisatie bekijken"
 
 #: accounts/models.py:81
 msgid "Can Edit Organization"
-msgstr "Możliwość edycji organizacji"
+msgstr "Kan organisatie bewerken"
 
 #: accounts/models.py:82
 msgid "Can Create Organization"
-msgstr "Możliwość stworzenia organizacji"
+msgstr "Kan een organisatie creëren"
 
 #: accounts/models.py:83
 msgid "Can Remove Organization"
-msgstr "Możliwość usunięcia organizacji"
+msgstr "Kan organisatie verwijderen"
 
 #: accounts/models.py:84
 msgid "Can View Experimenter"
-msgstr "Możliwość podglądu badacza/badaczki"
+msgstr "Kan onderzoeker bekijken"
 
 #: accounts/models.py:85
 msgid "Can View Analytics"
-msgstr "Możliwość podglądu analizy"
+msgstr "Kan analytics bekijken"
 
 #: accounts/models.py:280
 msgid "Can Create User"
-msgstr "Możliwość utworzenia użytkownika"
+msgstr "Kan een gebruiker aanmaken"
 
 #: accounts/models.py:281
 msgid "Can View User"
-msgstr "Możliwość podglądu użytkownika"
+msgstr "Kan gebruiker bekijken"
 
 #: accounts/models.py:282
 msgid "Can Edit User"
-msgstr "Możliwość edycji użytkownika"
+msgstr "Kan gebruiker bewerken"
 
 #: accounts/models.py:283
 msgid "Can Remove User"
-msgstr "Możliwość usunięcia użytkownika"
+msgstr "Kan gebruiker verwijderen"
 
 #: accounts/models.py:284
 msgid "Can View User Permissions"
-msgstr "Możliwość podglądu uprawnień użytkowników"
+msgstr "Kan gebruikersrechten bekijken"
 
 #: accounts/models.py:285
 msgid "Can Edit User Permissions"
-msgstr "Możliwość edycji uprawnień użytkowników"
+msgstr "Kan gebruikersrechten bewerken"
 
 #: accounts/models.py:286
 msgid "Can Read All User Data"
-msgstr "Możliwość podglądu wszystkich danych użytkownika"
+msgstr "Kan alle gebruikersgegevens lezen"
 
 #: accounts/models.py:287
 msgid "Can Read User Usernames"
-msgstr "Możliwość podglądu nazw użytkowników"
+msgstr "Kan gebruikersnamen lezen"
 
 #: accounts/models.py:294 accounts/models.py:397
 msgid "male"
-msgstr "męska"
+msgstr "man"
 
 #: accounts/models.py:295 accounts/models.py:398
 msgid "female"
-msgstr "żeńska"
+msgstr "vrouw"
 
 #: accounts/models.py:296 accounts/models.py:399
 msgid "other"
-msgstr "inny/inna"
+msgstr "andere"
 
 #: accounts/models.py:297 accounts/models.py:400 accounts/models.py:476
 msgid "prefer not to answer"
-msgstr "wolę nie odpowiadać"
+msgstr "beantwoord liever niet"
 
 #: accounts/models.py:387
 msgid "White"
-msgstr "Biała"
+msgstr "Wit"
 
 #: accounts/models.py:388
 msgid "Hispanic, Latino, or Spanish origin"
-msgstr "Hiszpańskie, latynoskie lub hiszpańskie pochodzenie"
+msgstr "Van Latijns-Amerikaanse, Latino of Spaanse afkomst"
 
 #: accounts/models.py:389
 msgid "Black or African American"
-msgstr "Czarna lub afroamerykańska"
+msgstr "Zwart of Afro-Amerikaans"
 
 #: accounts/models.py:390
 msgid "Asian"
-msgstr "Azjatycka"
+msgstr "Aziatisch"
 
 #: accounts/models.py:391
 msgid "American Indian or Alaska Native"
-msgstr "Rdzenny/a Amerykanin/ka lub Alaskanin/ka"
+msgstr "Amerikaanse Indiaan of Alaska Native"
 
 #: accounts/models.py:392
 msgid "Middle Eastern or North African"
-msgstr "Bliski Wschód lub Afryka Północna"
+msgstr "Midden-Oosters of Noord-Afrikaans"
 
 #: accounts/models.py:393
 msgid "Native Hawaiian or Other Pacific Islander"
-msgstr "Rdzenny/a Hawajczyk/Hawajka lub inny wyspiarz/wyspiarka z Pacyfiku"
+msgstr "Inheemse Hawaiiaan of andere Pacific Islander"
 
 #: accounts/models.py:394
 msgid "Another race, ethnicity, or origin"
-msgstr "Inna rasa lub pochodzenie etniczne"
+msgstr "Een andere etniciteit of afkomst"
 
 #: accounts/models.py:403 accounts/models.py:412
 msgid "some or attending high school"
-msgstr "niektóre lub uczęszczanie do szkoły średniej"
+msgstr "enige tijd of nog steeds naar de middelbare school"
 
 #: accounts/models.py:404 accounts/models.py:413
 msgid "high school diploma or GED"
-msgstr "świadectwo ukończenia szkoły średniej lub zawodowej"
+msgstr "middelbare schooldiploma of equivalent"
 
 #: accounts/models.py:405 accounts/models.py:414
 msgid "some or attending college"
-msgstr "niektóre lub uczęszczanie na uniwersytet"
+msgstr "enige tijd of nog steeds naar de universiteit"
 
 #: accounts/models.py:406 accounts/models.py:415
 msgid "2-year college degree"
-msgstr "3-letnie wykształcenie wyższe (np. licencjat)"
+msgstr "HBO of WO bachelor"
 
 #: accounts/models.py:407 accounts/models.py:416
 msgid "4-year college degree"
-msgstr "5-letnie wykształcenie wyższe (np. magisterium)"
+msgstr "HBO of WO master"
 
 #: accounts/models.py:408 accounts/models.py:417
 msgid "some or attending graduate or professional school"
-msgstr "niektóre lub uczęszczanie do szkoły wyższej lub zawodowej"
+msgstr "enige tijd of nog steeds naar een graduate of professionele school"
 
 #: accounts/models.py:409 accounts/models.py:418
 msgid "graduate or professional degree"
-msgstr "absolwent lub stopień zawodowy"
+msgstr "PhD of equivalente professionele graad"
 
 #: accounts/models.py:419
 msgid "not applicable - no spouse or partner"
-msgstr "nie dotyczy - brak współmałżonka/i lub partnera/partnerki"
+msgstr "niet van toepassing - geen echtgenoot/echtgenote of partner"
 
 #: accounts/models.py:422 accounts/models.py:453
 msgid "0"
@@ -520,11 +532,11 @@ msgstr "10"
 
 #: accounts/models.py:433
 msgid "More than 10"
-msgstr "Więcej niż 10"
+msgstr "Meer dan 10"
 
 #: accounts/models.py:436
 msgid "under 18"
-msgstr "poniżej 18 roku życia"
+msgstr "onder de 18"
 
 #: accounts/models.py:437
 msgid "18-21"
@@ -564,15 +576,15 @@ msgstr "60-69"
 
 #: accounts/models.py:446
 msgid "70 or over"
-msgstr "70 lub więcej"
+msgstr "70 of meer"
 
 #: accounts/models.py:450
 msgid "3 or more"
-msgstr "3 lub więcej"
+msgstr "3 of meer"
 
 #: accounts/models.py:450
 msgid "varies"
-msgstr "różnie"
+msgstr "varieert"
 
 #: accounts/models.py:454
 msgid "5000"
@@ -660,57 +672,57 @@ msgstr "190000"
 
 #: accounts/models.py:475
 msgid "over 200000"
-msgstr "ponad 200000"
+msgstr "meer dan 200000"
 
 #: accounts/models.py:479
 msgid "urban"
-msgstr "miejski"
+msgstr "stedelijk"
 
 #: accounts/models.py:479
 msgid "suburban"
-msgstr "podmiejski"
+msgstr "buitenwijk"
 
 #: accounts/models.py:479
 msgid "rural"
-msgstr "wiejski"
+msgstr "landelijk"
 
 #: accounts/models.py:529
 msgid "Select a State"
-msgstr "Wybierz województwo"
+msgstr "Selecteer een provincie"
 
 #: accounts/templates/accounts/_account-navigation.html:2
 #: accounts/templates/accounts/account-update.html:24
 msgid "Account Information"
-msgstr "Informacje o koncie"
+msgstr "Accountinformatie"
 
 #: accounts/templates/accounts/_account-navigation.html:2
 msgid "Change your login credentials and/or nickname."
-msgstr ""
+msgstr "Wijzig uw inloggegevens en / of bijnaam."
 
 #: accounts/templates/accounts/_account-navigation.html:3
 msgid "Demographic Survey"
-msgstr "Ankieta demograficzna"
+msgstr "Demografisch onderzoek"
 
 #: accounts/templates/accounts/_account-navigation.html:3
 msgid "Tell us more about yourself."
-msgstr "Opowiedz nam więcej o sobie."
+msgstr "Vertel ons meer over uzelf."
 
 #: accounts/templates/accounts/_account-navigation.html:4
 msgid "Children Information"
-msgstr "Informacje o dzieciach"
+msgstr "Informatie over kinderen"
 
 #: accounts/templates/accounts/_account-navigation.html:4
 msgid "Add or edit participant information."
-msgstr "Dodaj lub edytuj informacje uczestnika/uczestniczki."
+msgstr "Deelnemersgegevens toevoegen of bewerken."
 
 #: accounts/templates/accounts/_account-navigation.html:5
 #: web/templates/web/participant-email-preferences.html:4
 msgid "Email Preferences"
-msgstr "Preferencje dotyczące e-maili"
+msgstr "E-mailvoorkeuren"
 
 #: accounts/templates/accounts/_account-navigation.html:5
 msgid "Edit when you can be contacted."
-msgstr "Edytuj, kiedy można się z państwem skontaktować."
+msgstr "Bewerk wanneer u gecontacteerd kunt worden."
 
 #: accounts/templates/accounts/account-update.html:14
 #: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
@@ -718,7 +730,7 @@ msgstr "Edytuj, kiedy można się z państwem skontaktować."
 #: web/templates/web/demographic-data-update.html:78
 #: web/templates/web/participant-email-preferences.html:16
 msgid "My Account"
-msgstr "Moje konto"
+msgstr "Mijn account"
 
 #: accounts/templates/accounts/account-update.html:37
 #: accounts/templates/accounts/account-update.html:58
@@ -726,110 +738,113 @@ msgstr "Moje konto"
 #: web/templates/web/demographic-data-update.html:102
 #: web/templates/web/participant-email-preferences.html:38
 msgid "Save"
-msgstr "Zapisz"
+msgstr "Opslaan"
 
 #: accounts/templates/accounts/account-update.html:45
 msgid "Change Your Password"
-msgstr "Zmień swoje hasło"
+msgstr "Wijzig uw wachtwoord"
 
 #: accounts/templates/accounts/account-update.html:68
 msgid "Manage Two-Factor Authentication"
-msgstr ""
+msgstr "Beheer tweefactorauthenticatie"
 
 #: accounts/templates/accounts/account-update.html:83
 msgid ""
 "If you'd like, you can turn two-factor authentication off here. Just enter "
 "your one-time password here, hit submit, and it'll get deleted for you!"
 msgstr ""
+"Als je wilt, kun je tweefactorauthenticatie hier uitschakelen. Voer hier "
+"gewoon uw eenmalige wachtwoord in, druk op verzenden en het wordt voor u "
+"verwijderd!"
 
 #: accounts/templates/accounts/account-update.html:108
 msgid "Set up Two-Factor Authentication"
-msgstr ""
+msgstr "Stel tweefactorauthenticatie in"
 
 #: accounts/templates/accounts/participant_detail.html:15
 msgid "All Participants"
-msgstr "Wszyscy uczestnicy"
+msgstr "Alle deelnemers"
 
 #: accounts/templates/accounts/participant_detail.html:23
 msgid "Participant ID"
-msgstr "Identyfikator uczestnika"
+msgstr "Deelnemer-ID"
 
 #: accounts/templates/accounts/participant_detail.html:24
 msgid "Last Active:"
-msgstr "Ostatnio aktywny/a:"
+msgstr "Laatst actief:"
 
 #: accounts/templates/accounts/participant_detail.html:25
 msgid "Participant global ID:"
-msgstr "Globalny identyfikator uczestnika:"
+msgstr "Globale ID deelnemer:"
 
 #: accounts/templates/accounts/participant_detail.html:31
 #: web/templates/web/children-list.html:105
 msgid "Children"
-msgstr "Dzieci"
+msgstr "Kinderen"
 
 #: accounts/templates/accounts/participant_detail.html:46
 msgid "Age"
-msgstr "Wiek"
+msgstr "Leeftijd"
 
 #: accounts/templates/accounts/participant_detail.html:70
 msgid "Additional Info"
-msgstr "Dodatkowe informacje"
+msgstr "Extra informatie"
 
 #: accounts/templates/accounts/participant_detail.html:79
 msgid "No children profiles registered!"
-msgstr "Nie zarejestrowano żadnych profili dzieci!"
+msgstr "Geen kinderprofielen geregistreerd!"
 
 #: accounts/templates/accounts/participant_detail.html:83
 msgid "Latest Demographic Data"
-msgstr "Najnowsze dane demograficzne"
+msgstr "Laatste demografische gegevens"
 
 #: accounts/templates/accounts/participant_detail.html:94
 msgid "State"
-msgstr "Województwo"
+msgstr "Provincie"
 
 #: accounts/templates/accounts/participant_detail.html:102
 msgid "Area description"
-msgstr "Opis okolicy"
+msgstr "Gebiedsbeschrijving"
 
 #: accounts/templates/accounts/participant_detail.html:110
 msgid "Languages Spoken at Home"
-msgstr "Języki używane w domu"
+msgstr "Talen die thuis worden gesproken"
 
 #: accounts/templates/accounts/participant_detail.html:118
 msgid "Number of Children"
-msgstr "Liczba dzieci"
+msgstr "Aantal kinderen"
 
 #: accounts/templates/accounts/participant_detail.html:126
 msgid "Children current ages"
-msgstr "Obecny wiek dzieci"
+msgstr "Huidige leeftijden kinderen"
 
 #: accounts/templates/accounts/participant_detail.html:134
 msgid "Number of Guardians"
-msgstr "Liczba opiekunów"
+msgstr "Aantal ouders of voogden"
 
 #: accounts/templates/accounts/participant_detail.html:142
 msgid "Explanation for Guardians:"
-msgstr "Wyjaśnienie dla opiekunów:"
+msgstr "Uitleg voor voogden:"
 
 #: accounts/templates/accounts/participant_detail.html:150
 msgid "Race"
-msgstr "Rasa/pochodzenie etniczne"
+msgstr "Ras"
 
 #: exp/templates/exp/dashboard.html:16
 msgid "Dashboard"
-msgstr "Pulpit"
+msgstr "Dashboard"
 
 #: project/settings.py:228 studies/fields.py:68
 msgid "German"
-msgstr ""
+msgstr "Duits"
 
 #: project/settings.py:229 studies/fields.py:57
 msgid "English"
-msgstr ""
+msgstr "Engels"
 
 #: project/settings.py:230 studies/fields.py:101
 msgid "Spanish"
-msgstr ""
+msgstr "Spaans"
 
 #: project/settings.py:231
 msgid "Argentinian Spanish"
@@ -837,7 +852,7 @@ msgstr ""
 
 #: project/settings.py:232 studies/fields.py:66
 msgid "French"
-msgstr ""
+msgstr "Frans"
 
 #: project/settings.py:233
 msgid "Canadian French"
@@ -849,15 +864,15 @@ msgstr ""
 
 #: project/settings.py:235 studies/fields.py:76
 msgid "Italian"
-msgstr ""
+msgstr "Italiaans"
 
 #: project/settings.py:236 studies/fields.py:77
 msgid "Japanese"
-msgstr ""
+msgstr "Japans"
 
 #: project/settings.py:237 studies/fields.py:82
 msgid "Korean"
-msgstr ""
+msgstr "Koreaans"
 
 #: project/settings.py:238
 msgid "Norwegian Bokmål"
@@ -865,29 +880,29 @@ msgstr ""
 
 #: project/settings.py:239 studies/fields.py:94
 msgid "Polish"
-msgstr ""
+msgstr "Pools"
 
 #: project/settings.py:240 studies/fields.py:95
 msgid "Portuguese"
-msgstr ""
+msgstr "Portugees"
 
 #: project/settings.py:241
+#, fuzzy
+#| msgid "Portuguese"
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "Portugees"
 
 #: project/settings.py:242 studies/fields.py:96
 msgid "Romanian"
-msgstr ""
+msgstr "Roemeens"
 
 #: project/settings.py:243 studies/fields.py:97
-#, fuzzy
-#| msgid "Asian"
 msgid "Russian"
-msgstr "Azjatycka"
+msgstr "Russisch"
 
 #: project/settings.py:244 studies/fields.py:107
 msgid "Turkish"
-msgstr ""
+msgstr "Turks"
 
 #: project/settings.py:245
 msgid "Simplified Chinese"
@@ -895,272 +910,268 @@ msgstr ""
 
 #: project/settings.py:246 studies/fields.py:64
 msgid "Dutch"
-msgstr ""
+msgstr "Nederlands"
 
 #: studies/fields.py:7
 msgid "Autism Spectrum Disorder"
-msgstr ""
+msgstr "Autismespectrumstoornis"
 
 #: studies/fields.py:8
 msgid "Deaf"
-msgstr ""
+msgstr "Doof"
 
 #: studies/fields.py:9
 msgid "Hard of Hearing"
-msgstr ""
+msgstr "Hardhorend"
 
 #: studies/fields.py:10
 msgid "Dyslexia"
-msgstr ""
+msgstr "Dyslexie"
 
 #: studies/fields.py:11
 msgid "Multiple Birth (twin, triplet, or higher order)"
-msgstr ""
+msgstr "Meervoudige geboorte (tweeling, drieling of hogere orde)"
 
 #: studies/fields.py:45
 msgid "Twin"
-msgstr "Bliżniak"
+msgstr "Tweeling"
 
 #: studies/fields.py:46
 msgid "Triplet"
-msgstr "Trojaczek"
+msgstr "Drieling"
 
 #: studies/fields.py:47
 msgid "Quadruplet"
-msgstr "Czworaczek"
+msgstr "Vierling"
 
 #: studies/fields.py:48
 msgid "Quintuplet"
-msgstr "Pięcioraczek"
+msgstr "Vijfling"
 
 #: studies/fields.py:49
 msgid "Sextuplet"
-msgstr "Sześcioraczek"
+msgstr "Zesling"
 
 #: studies/fields.py:50
 msgid "Septuplet"
-msgstr "Siedmioraczek"
+msgstr "Zevenling"
 
 #: studies/fields.py:51
 msgid "Octuplet"
-msgstr "Ośmioraczek"
+msgstr "Achtling"
 
 #: studies/fields.py:58
 msgid "Amharic"
-msgstr ""
+msgstr "Amhaars"
 
 #: studies/fields.py:59
 msgid "Bengali"
-msgstr ""
+msgstr "Bengaals"
 
 #: studies/fields.py:60
 msgid "Bhojpuri"
-msgstr ""
+msgstr "Bhojpuri"
 
 #: studies/fields.py:61
 msgid "Burmese"
-msgstr ""
+msgstr "Birmees"
 
 #: studies/fields.py:62
 msgid "Cebuano"
-msgstr ""
+msgstr "Cebuano"
 
 #: studies/fields.py:63
 msgid "Chhattisgarhi"
-msgstr ""
+msgstr "Chhattisgarhi"
 
 #: studies/fields.py:65
 msgid "Egyptian Spoken Arabic"
-msgstr ""
+msgstr "Egyptisch gesproken Arabisch"
 
 #: studies/fields.py:67
 msgid "Gan"
-msgstr ""
+msgstr "Gan"
 
 #: studies/fields.py:69
-#, fuzzy
-#| msgid "Duration"
 msgid "Gujarati"
-msgstr "Czas trwania"
+msgstr "Gujarati"
 
 #: studies/fields.py:70
 msgid "Hakka"
-msgstr ""
+msgstr "Hakka"
 
 #: studies/fields.py:71
 msgid "Hausa"
-msgstr ""
+msgstr "Hausa"
 
 #: studies/fields.py:72
 msgid "Hindi"
-msgstr ""
+msgstr "Hindi"
 
 #: studies/fields.py:73
 msgid "Igbo"
-msgstr ""
+msgstr "Igbo"
 
 #: studies/fields.py:74
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesisch"
 
 #: studies/fields.py:75
 msgid "Iranian Persian"
-msgstr ""
+msgstr "Iraanse Perzisch"
 
 #: studies/fields.py:78
 msgid "Javanese"
-msgstr ""
+msgstr "Javaans"
 
 #: studies/fields.py:79
 msgid "Jinyu"
-msgstr ""
+msgstr "Jinyu"
 
 #: studies/fields.py:80
 msgid "Kannada"
-msgstr ""
+msgstr "Kannada"
 
 #: studies/fields.py:81
 msgid "Khmer"
-msgstr ""
+msgstr "Khmer"
 
 #: studies/fields.py:83
 msgid "Magahi"
-msgstr ""
+msgstr "Magahi"
 
 #: studies/fields.py:84
 msgid "Maithili"
-msgstr ""
+msgstr "Maithili"
 
 #: studies/fields.py:85
 msgid "Malay"
-msgstr ""
+msgstr "Maleis"
 
 #: studies/fields.py:86
 msgid "Malayalam"
-msgstr ""
+msgstr "Malayalam"
 
 #: studies/fields.py:87
 msgid "Mandarin"
-msgstr ""
+msgstr "Mandarijn"
 
 #: studies/fields.py:88
 msgid "Marathi"
-msgstr ""
+msgstr "Marathi"
 
 #: studies/fields.py:89
 msgid "Min Nan"
-msgstr ""
+msgstr "Min Nan"
 
 #: studies/fields.py:90
 msgid "Moroccan Spoken Arabic"
-msgstr ""
+msgstr "Marokkaans gesproken Arabisch"
 
 #: studies/fields.py:91
 msgid "Northern Pashto"
-msgstr ""
+msgstr "Noord-Pasjtoe"
 
 #: studies/fields.py:92
 msgid "Northern Uzbek"
-msgstr ""
+msgstr "Noord-Oezbeeks"
 
 #: studies/fields.py:93
 msgid "Odia"
-msgstr ""
+msgstr "Odia"
 
 #: studies/fields.py:98
 msgid "Saraiki"
-msgstr ""
+msgstr "Saraiki"
 
 #: studies/fields.py:99
 msgid "Sindhi"
-msgstr ""
+msgstr "Sindhi"
 
 #: studies/fields.py:100
 msgid "Somali"
-msgstr ""
+msgstr "Somalisch"
 
 #: studies/fields.py:102
 msgid "Sunda"
-msgstr ""
+msgstr "Sunda"
 
 #: studies/fields.py:103
 msgid "Tagalog"
-msgstr ""
+msgstr "Tagalog"
 
 #: studies/fields.py:104
 msgid "Tamil"
-msgstr ""
+msgstr "Tamil"
 
 #: studies/fields.py:105
 msgid "Telugu"
-msgstr ""
+msgstr "Telugu"
 
 #: studies/fields.py:106
 msgid "Thai"
-msgstr ""
+msgstr "Thais"
 
 #: studies/fields.py:108
 msgid "Ukrainian"
-msgstr ""
+msgstr "Oekraïens"
 
 #: studies/fields.py:109
 msgid "Urdu"
-msgstr ""
+msgstr "Urdu"
 
 #: studies/fields.py:110
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnamees"
 
 #: studies/fields.py:111
 msgid "Western Punjabi"
-msgstr ""
+msgstr "West-Punjabi"
 
 #: studies/fields.py:112
 msgid "Wu"
-msgstr ""
+msgstr "Wu"
 
 #: studies/fields.py:113
 msgid "Xiang Chinese"
-msgstr ""
+msgstr "Xiang Chinees"
 
 #: studies/fields.py:114
 msgid "Yoruba"
-msgstr ""
+msgstr "Yoruba"
 
 #: studies/fields.py:115
-#, fuzzy
-#| msgid "Yes"
 msgid "Yue"
-msgstr "Tak"
+msgstr "Ja"
 
 #: studies/fields.py:123
 msgid "Not answered"
-msgstr "Nie udzielono odpowiedzi"
+msgstr "Niet geantwoord"
 
 #: studies/fields.py:124
 msgid "Other"
-msgstr "Inne"
+msgstr "Andere"
 
 #: studies/fields.py:125
 msgid "Male"
-msgstr "Męska"
+msgstr "Man"
 
 #: studies/fields.py:126
 msgid "Female"
-msgstr "Żeńska"
+msgstr "Vrouw"
 
 #: studies/models.py:113
 msgid ""
 "The Users who belong to this Lab. A user in this lab will be able to create "
 "studies associated with this Lab and can be added to this Lab's studies."
 msgstr ""
-"Użytkownicy, którzy należą do tego laboratorium. Użytkownik w tym "
-"laboratorium będzie mógł tworzyć badania związane z tym laboratorium i może "
-"być dodawany do badań tego laboratorium."
+"De gebruikers die tot dit Lab behoren. Een gebruiker in dit Lab kan "
+"onderzoeken creëren die aan dit Lab zijn gekoppeld en kan aan de onderzoeken "
+"van dit Lab worden toegevoegd."
 
 #: studies/models.py:122
 msgid "The Users who have requested to join this Lab."
-msgstr "Użytkownicy, którzy zgłosili chęć przystąpienia do tego laboratorium."
+msgstr "De gebruikers die hebben verzocht om lid te worden van dit Lab."
 
 #: web/templates/frontpages/contact.html:15
 msgid "Technical difficulties"
@@ -1185,10 +1196,8 @@ msgstr ""
 
 #: web/templates/frontpages/contact.html:19
 #: web/templates/frontpages/privacy.html:140
-#, fuzzy
-#| msgid "researcher login"
 msgid "For researchers"
-msgstr "login badacza"
+msgstr ""
 
 #: web/templates/frontpages/contact.html:20
 msgid ""
@@ -1222,20 +1231,25 @@ msgid ""
 "those of the authors(s) and do not necessarily reflect the views of the "
 "National Science Foundation."
 msgstr ""
+"Dit materiaal is gebaseerd op werk dat wordt ondersteund door de National "
+"Science Foundation (NSF) in het kader van subsidies 1429216 en 1823919; het "
+"Center for Brains, Minds and Machines (CBMM), gefinancierd door NSF STC "
+"award CCF-1231216, en door een NSF Graduate Research Fellowship onder Grant "
+"nr. 1122374. Alle meningen, bevindingen en conclusies of aanbevelingen in "
+"dit materiaal zijn die van de auteur(s) en geven niet noodzakelijk de mening "
+"van de National Science Foundation weer."
 
 #: web/templates/frontpages/default.html:60 web/templates/frontpages/home.html:48
 msgid "Privacy"
-msgstr ""
+msgstr "Privacy"
 
 #: web/templates/frontpages/default.html:61 web/templates/frontpages/home.html:49
-#, fuzzy
-#| msgid "Contact:"
 msgid "Contact us"
-msgstr "Kontakt:"
+msgstr "Neem contact met ons op"
 
 #: web/templates/frontpages/default.html:63
 msgid "Connect"
-msgstr ""
+msgstr "Verbind"
 
 #: web/templates/frontpages/faq.html:11
 msgid "Frequently Asked Questions"
@@ -1245,7 +1259,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Participate"
 msgid "Participation"
-msgstr "Weź udział w projekcie"
+msgstr "Deelnemen"
 
 #: web/templates/frontpages/faq.html:20
 msgid "What is a 'study' about cognitive development?"
@@ -1275,7 +1289,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Log in to participate"
 msgid "How can we participate online?"
-msgstr "Zaloguj się, aby wziąć udział"
+msgstr "Log in om mee te doen"
 
 #: web/templates/frontpages/faq.html:45
 msgid ""
@@ -1316,7 +1330,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Log in to participate"
 msgid "How do we provide consent to participate?"
-msgstr "Zaloguj się, aby wziąć udział"
+msgstr "Log in om mee te doen"
 
 #: web/templates/frontpages/faq.html:74
 msgid ""
@@ -1375,7 +1389,7 @@ msgstr ""
 #, fuzzy
 #| msgid "What is your gender?"
 msgid "Who will see our video?"
-msgstr "Jaka jest państwa płeć?"
+msgstr "Wat is uw geslacht?"
 
 #: web/templates/frontpages/faq.html:112
 msgid ""
@@ -1479,7 +1493,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Duration"
 msgid "Habituation"
-msgstr "Czas trwania"
+msgstr "Duur"
 
 #: web/templates/frontpages/faq.html:151
 msgid ""
@@ -1574,7 +1588,7 @@ msgstr ""
 #, fuzzy
 #| msgid "We are not running any studies at this time!"
 msgid "Why are you running studies online instead of in person?"
-msgstr "W tej chwili nie prowadzimy żadnych badań!"
+msgstr "We voeren op dit moment geen studies uit!"
 
 #: web/templates/frontpages/faq.html:186
 msgid ""
@@ -1817,7 +1831,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Participate"
 msgid "Participate in a Study"
-msgstr "Weź udział w projekcie"
+msgstr "Deelnemen"
 
 #: web/templates/frontpages/home.html:22
 msgid "Bringing science home"
@@ -1853,7 +1867,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Privacy Statement"
 msgid "Privacy statement"
-msgstr "Oświadczenie o ochronie prywatności"
+msgstr "Privacyverklaring"
 
 #: web/templates/frontpages/privacy.html:17
 msgid "Introduction"
@@ -1873,7 +1887,7 @@ msgstr ""
 #, fuzzy
 #| msgid "All Participants"
 msgid "For participants"
-msgstr "Wszyscy uczestnicy"
+msgstr "Alle deelnemers"
 
 #: web/templates/frontpages/privacy.html:24
 msgid ""
@@ -2261,7 +2275,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Additional Info"
 msgid "Additional Information"
-msgstr "Dodatkowe informacje"
+msgstr "Extra informatie"
 
 #: web/templates/frontpages/privacy.html:216
 msgid ""
@@ -2445,214 +2459,203 @@ msgstr ""
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
-msgstr "Udało ci się wylogować."
+msgstr "U bent succesvol uitgelogd."
 
 #: web/templates/registration/login.html:8
 #: web/templates/web/studies-history.html:9
 #: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
-#, fuzzy
-#| msgid "Your username and password didn't match. Please try again."
 msgid "Your login credentials didn't work. Please try again."
-msgstr ""
-"Twoja nazwa użytkownika i hasło nie zgadzają się. Proszę spróbować jeszcze "
-"raz."
+msgstr "Uw inloggegevens werkten niet. Probeer het opnieuw."
 
 #: web/templates/registration/login.html:18
 #: web/templates/registration/login.html:25
 #: web/templates/web/_navigation.html:50
 msgid "Login"
-msgstr "Login"
+msgstr "Log in"
 
 #: web/templates/registration/login.html:34
 msgid "Forgot password?"
-msgstr "Zapomniałeś/zapomniałaś hasła?"
+msgstr "Wachtwoord vergeten?"
 
 #: web/templates/registration/login.html:36
 msgid "New to Lookit?"
-msgstr "Pierwszy raz w Lookit?"
+msgstr "Nieuw bij Lookit?"
 
 #: web/templates/registration/login.html:36
 msgid "Register your family!"
-msgstr ""
+msgstr "Registreer uw gezin!"
 
 #: web/templates/registration/password_change_done.html:11
 msgid "Password changed"
-msgstr "Hasło zmienione"
+msgstr "Wachtwoord is veranderd"
 
 #: web/templates/registration/password_change_done.html:15
 msgid "Your password was changed."
-msgstr "Twoje hasło zostało zmienione."
+msgstr "Uw wachtwoord is veranderd."
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Documentation"
-msgstr "Dokumentacja"
+msgstr "Documentatie"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Change password"
-msgstr "Zmiana hasła"
+msgstr "Wijzig wachtwoord"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Log out"
-msgstr "Wyloguj się"
+msgstr "Uitloggen"
 
 #: web/templates/registration/password_change_form.html:7
 #: web/templates/web/home.html:3 web/templates/web/home.html:7
 msgid "Home"
-msgstr "Strona główna"
+msgstr "Thuis"
 
 #: web/templates/registration/password_change_form.html:8
 msgid "Password change"
-msgstr "Zmiana hasła"
+msgstr "Wachtwoord verandering"
 
 #: web/templates/registration/password_change_form.html:21
 msgid "Please correct the error below."
-msgstr "Prosimy o poprawienie poniższego błędu."
+msgstr "Corrigeer de onderstaande fout."
 
 #: web/templates/registration/password_change_form.html:21
 msgid "Please correct the errors below."
-msgstr "Proszę poprawić poniższe błędy."
+msgstr "Gelieve de onderstaande fouten corrigeren."
 
 #: web/templates/registration/password_change_form.html:26
 msgid ""
 "Please enter your old password, for security's sake, and then enter your new "
 "password twice so we can verify you typed it in correctly."
 msgstr ""
-"Proszę wprowadzić stare hasło ze względów bezpieczeństwa, a następnie "
-"dwukrotnie wprowadzić nowe hasło, abyśmy mogli zweryfikować, czy zostało "
-"wpisane poprawnie."
+"Voer voor de veiligheid uw oude wachtwoord in en voer vervolgens uw nieuwe "
+"wachtwoord twee keer in, zodat we kunnen verifiëren dat u het correct hebt "
+"ingevoerd."
 
 #: web/templates/registration/password_change_form.html:54
 #: web/templates/registration/password_reset_confirm.html:31
 msgid "Change my password"
-msgstr "Zmień moje hasło"
+msgstr "Verander mijn wachtwoord"
 
 #: web/templates/registration/password_reset_complete.html:11
 msgid "Password reset complete"
-msgstr "Reset hasła zakończony"
+msgstr "Wachtwoord opnieuw instellen voltooid"
 
 #: web/templates/registration/password_reset_complete.html:15
 msgid "Your password has been set.  You may go ahead and log in now."
-msgstr "Twoje hasło zostało ustawione.  Możesz się teraz zalogować."
+msgstr "Uw wachtwoord is ingesteld. U kunt nu doorgaan en inloggen."
 
 #: web/templates/registration/password_reset_complete.html:17
 msgid "Log in"
-msgstr "Zaloguj się"
+msgstr "Log in"
 
 #: web/templates/registration/password_reset_confirm.html:11
 msgid "Password reset confirmation"
-msgstr "Potwierdzenie zresetowania hasła"
+msgstr "Bevestiging wachtwoord opnieuw instellen"
 
 #: web/templates/registration/password_reset_confirm.html:17
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr ""
-"Prosimy o dwukrotne wprowadzenie nowego hasła, abyśmy mogli zweryfikować, "
-"czy zostało ono wpisane poprawnie."
+"Voer uw nieuwe wachtwoord twee keer in, zodat we kunnen verifiëren dat u het "
+"correct heeft ingevoerd."
 
 #: web/templates/registration/password_reset_confirm.html:23
 msgid "New password:"
-msgstr "Nowe hasło:"
+msgstr "Nieuw wachtwoord:"
 
 #: web/templates/registration/password_reset_confirm.html:28
 msgid "Confirm password:"
-msgstr "Potwierdź hasło:"
+msgstr "Bevestig wachtwoord:"
 
 #: web/templates/registration/password_reset_confirm.html:37
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
 msgstr ""
-"Link do zresetowania hasła był nieprawidłowy, prawdopodobnie dlatego, że "
-"został już raz użyty.  Proszę poprosić o nowy link do zresetowania hasła."
+"De link voor het opnieuw instellen van het wachtwoord was ongeldig, mogelijk "
+"omdat deze al is gebruikt. Vraag opnieuw een nieuw wachtwoord aan."
 
 #: web/templates/registration/password_reset_done.html:11
-#, fuzzy
-#| msgid "Password reset complete"
 msgid "Password reset link sent"
-msgstr "Reset hasła zakończony"
+msgstr "Link voor het opnieuw instellen van het wachtwoord verzonden"
 
 #: web/templates/registration/password_reset_done.html:15
-#, fuzzy
-#| msgid ""
-#| "We've emailed you instructions for setting your password, if an account "
-#| "exists with the email you entered. You should receive them shortly."
 msgid ""
 "If an account exists with the email you entered, we've emailed instructions "
 "for resetting your password and you should receive them shortly."
 msgstr ""
-"Wysłaliśmy do Ciebie instrukcje dotyczące ustawienia hasła, jeśli konto "
-"istnieje na podany adres e-mail. Powinni Państwo niedługo je otrzymać."
+"Als er een account bestaat met het e-mailadres dat u heeft ingevoerd, hebben "
+"we instructies per e-mail gestuurd om uw wachtwoord opnieuw in te stellen. U "
+"ontvangt deze binnenkort."
 
 #: web/templates/registration/password_reset_done.html:17
-#, fuzzy
-#| msgid ""
-#| "If you don't receive an email, please make sure you've entered the "
-#| "address you registered with, and check your spam folder."
 msgid ""
 "If you don't receive an email, please check your spam folder and make sure "
 "you've entered the address you registered with. (You won't get an email "
 "unless there's already an account for that email address!)"
 msgstr ""
-"Jeśli nie otrzymali Państwo e-maila, należy upewnić się, że podany jest "
-"adres na który dokonali Państwo rejestracji, i sprawdzić folder ze spamem."
+"Als u geen e-mail ontvangt, controleer dan uw spam-map en zorg ervoor dat u "
+"het adres hebt ingevoerd waarmee u zich heeft geregistreerd (U ontvangt geen "
+"e-mail tenzij er al een account voor dat e-mailadres is!)."
 
 #: web/templates/registration/password_reset_email.html:2
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "You're receiving this email because you requested a password reset for "
+#| "your user account at %(site_name)s."
 msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at %(site_name)s."
 msgstr ""
-"Otrzymują Państwo ten e-mail, ponieważ poprosili Państwo o zresetowanie "
-"hasła dla swojego konta użytkownika w %(site_name)s."
+"U ontvangt deze e-mail omdat u een verzoek hebt ingediend om het wachtwoord "
+"opnieuw in te stellen voor uw gebruikersaccount op% (site_name) s."
 
 #: web/templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
-msgstr "Proszę przejść do następnej strony i wybrać nowe hasło:"
+msgstr "Ga naar de volgende pagina en kies een nieuw wachtwoord:"
 
 #: web/templates/registration/password_reset_email.html:8
 msgid "Your username, in case you've forgotten:"
-msgstr "Państwa nazwa użytkownika, na wypadek w którym Państwo zapomnieli:"
+msgstr "Uw gebruikersnaam, voor het geval u het bent vergeten:"
 
 #: web/templates/registration/password_reset_email.html:10
 msgid "Thanks for using our site!"
-msgstr "Dziękujemy za skorzystanie z naszej strony!"
+msgstr "Bedankt voor het gebruiken van onze site!"
 
 #: web/templates/registration/password_reset_email.html:12
 #, fuzzy, python-format
 #| msgid "The %(site_name)s team"
 msgid "The %(site_name)s team"
-msgstr "Grupa %(site_name)"
+msgstr "Het % (site_name) s team"
 
 #: web/templates/registration/password_reset_form.html:11
-#, fuzzy
-#| msgid "Password reset complete"
 msgid "Password reset"
-msgstr "Reset hasła zakończony"
+msgstr "Wachtwoord reset"
 
 #: web/templates/registration/password_reset_form.html:15
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
 msgstr ""
-"Zapomnieli Państwo swojego hasła? Proszę wpisać poniżej swój adres e-mail, a "
-"my wyślemy instrukcje dotyczące ustawienia nowego hasła."
+"Je wachtwoord vergeten? Voer hieronder uw e-mailadres in en we e-mailen u "
+"instructies voor het instellen van een nieuw wachtwoord."
 
 #: web/templates/registration/password_reset_form.html:21
 msgid "Email address:"
-msgstr "Adres e-mail:"
+msgstr "E-mailadres:"
 
 #: web/templates/registration/password_reset_form.html:24
 msgid "Reset my password"
-msgstr "Zresetuj moje hasło"
+msgstr "Reset mijn wachtwoord"
 
 #: web/templates/web/_navigation.html:22
 msgid "Experimenter"
-msgstr "Badacz(ka)"
+msgstr "Onderzoeker"
 
 #: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
 msgid "Studies"
-msgstr "Badania"
+msgstr "Studies"
 
 #: web/templates/web/_navigation.html:34
 msgid "FAQ"
@@ -2660,105 +2663,103 @@ msgstr "FAQ"
 
 #: web/templates/web/_navigation.html:35
 msgid "The Scientists"
-msgstr "Badacze"
+msgstr "De wetenschappers"
 
 #: web/templates/web/_navigation.html:36
 msgid "Resources"
-msgstr "Zasoby"
+msgstr "Middelen"
 
 #: web/templates/web/_navigation.html:45
 msgid "Hi"
-msgstr "Dzień dobry"
+msgstr "Hallo"
 
 #: web/templates/web/_navigation.html:47
 msgid "Logout"
-msgstr "Wyloguj się"
+msgstr "Uitloggen"
 
 #: web/templates/web/_navigation.html:49
 msgid "Sign up"
-msgstr "Zarejestruj się"
+msgstr "Aanmelden"
 
 #: web/templates/web/child-update.html:4
 #: web/templates/web/studies-history.html:116
 msgid "Child"
-msgstr "Dziecko"
+msgstr "Kind"
 
 #: web/templates/web/child-update.html:26
-#, fuzzy
-#| msgid "Back to list"
 msgid "Back to Children List"
-msgstr "Powrót do listy"
+msgstr "Terug naar kinderlijst"
 
 #: web/templates/web/child-update.html:31
 msgid "Update"
-msgstr "Aktualizuj"
+msgstr "Bijwerken"
 
 #: web/templates/web/child-update.html:41
 msgid "Delete"
-msgstr "Usuń"
+msgstr "Verwijderen"
 
 #: web/templates/web/child-update.html:44
 #: web/templates/web/children-list.html:92
 #: web/templates/web/demographic-data-update.html:100
 #: web/templates/web/participant-email-preferences.html:36
 msgid "Cancel"
-msgstr "Anuluj"
+msgstr "Annuleren"
 
 #: web/templates/web/children-list.html:40
 msgid "Empty birthday"
-msgstr "Puste pole: urodziny"
+msgstr "Lege verjaardag"
 
 #: web/templates/web/children-list.html:47
 msgid " day"
-msgstr " dzień"
+msgstr " dag"
 
 #: web/templates/web/children-list.html:47
 msgid " days"
-msgstr " dni"
+msgstr " dagen"
 
 #: web/templates/web/children-list.html:49
 msgid " month"
-msgstr " miesiąc"
+msgstr " maand"
 
 #: web/templates/web/children-list.html:49
 msgid " months"
-msgstr " miesiące"
+msgstr " maanden"
 
 #: web/templates/web/children-list.html:51
 msgid " year"
-msgstr " rok"
+msgstr " jaar"
 
 #: web/templates/web/children-list.html:51
 msgid " years"
-msgstr " lata"
+msgstr " jaren"
 
 #: web/templates/web/children-list.html:61
 #: web/templates/web/children-list.html:77
 #: web/templates/web/children-list.html:82
 #: web/templates/web/children-list.html:94
 msgid "Add Child"
-msgstr "Dodaj dziecko"
+msgstr "Kind toevoegen"
 
 #: web/templates/web/children-list.html:61
 #: web/templates/web/children-list.html:77
 msgid "Hide Form"
-msgstr "Ukryj formularz"
+msgstr "Verberg formulier"
 
 #: web/templates/web/children-list.html:111
 msgid "Name"
-msgstr "Nazwa"
+msgstr "Naam"
 
 #: web/templates/web/children-list.html:121
 msgid "Update child"
-msgstr "Aktualizacja danych dziecka"
+msgstr "Update kind"
 
 #: web/templates/web/children-list.html:128
 msgid "No child profiles registered!"
-msgstr "Nie zarejestrowano żadnych profili dziecięcych!"
+msgstr "Geen kinderprofielen geregistreerd!"
 
 #: web/templates/web/demographic-data-update.html:4
 msgid "Update demographics"
-msgstr "Aktualizuj dane demograficzne"
+msgstr "Update demografische gegevens"
 
 #: web/templates/web/demographic-data-update.html:89
 msgid ""
@@ -2768,11 +2769,11 @@ msgid ""
 "factors like speaking multiple languages or having older siblings affect "
 "children's learning."
 msgstr ""
-"Jednym z powodów, dla których rozwijamy eksperymenty internetowe, jest "
-"reprezentacja w naszych badaniach bardziej zróżnicowanej grupy rodzin. "
-"Państwa odpowiedzi na te pytania pomogą nam zrozumieć, do jakich odbiorców "
-"docieramy, a także jak czynniki takie jak mówienie wieloma językami czy "
-"posiadanie starszego rodzeństwa wpływają na naukę dzieci."
+"Een van de redenen waarom we op internet gebaseerde studies ontwikkelen, is "
+"om een diversere groep gezinnen in ons onderzoek te vertegenwoordigen. Uw "
+"antwoorden op deze vragen helpen ons te begrijpen welk publiek we bereiken "
+"en hoe factoren zoals het spreken van meerdere talen of het hebben van "
+"oudere broers en zussen het leren van kinderen beïnvloeden."
 
 #: web/templates/web/demographic-data-update.html:90
 msgid ""
@@ -2780,23 +2781,21 @@ msgid ""
 "publicity purposes, your demographic information is never published in "
 "conjunction with your video."
 msgstr ""
-"Nawet jeśli pozwolą Państwo na publikowanie materiałów wideo z badań w "
-"celach naukowych lub w promocji naszych badań, Państwa dane demograficzne "
-"nigdy nie są publikowane w połączeniu z materiałem wideo."
+"Ook als u toestaat dat uw video's worden gepubliceerd voor wetenschappelijke "
+"of publiciteits doeleinden, wordt uw demografische informatie nooit samen "
+"met uw video gepubliceerd."
 
 #: web/templates/web/participant-email-preferences.html:27
 msgid "I would like to be contacted when:"
-msgstr "Chciałbym/chciałabym, żeby skontaktowano się ze mną kiedy:"
+msgstr "Ik wil dat er met mij contact wordt opgenomen als:"
 
 #: web/templates/web/participant-signup.html:18
-#, fuzzy
-#| msgid "Participant account"
 msgid "Create Participant Account"
-msgstr "Konto uczestnika/uczestniczki"
+msgstr "Maak een deelnemersaccount aan"
 
 #: web/templates/web/participant-signup.html:22
 msgid "Create a family account to start participating in Lookit studies!"
-msgstr ""
+msgstr "Maak een gezinsaccount aan om deel te nemen aan Lookit-onderzoeken!"
 
 #: web/templates/web/participant-signup.html:23
 #, python-format
@@ -2810,22 +2809,20 @@ msgstr ""
 #: web/templates/web/participant-signup.html:31
 msgid ""
 "By clicking 'Create Account', I agree that I have read and accepted the "
-msgstr ""
-"Klikając w \"Utwórz konto\", zgadzam się, że przeczytałem/am i "
-"zaakceptowałem/am"
+msgstr "Door op 'Account aanmaken' te klikken, ga ik ermee akkoord dat ik het "
 
 #: web/templates/web/participant-signup.html:31
 msgid "Privacy Statement"
-msgstr "Oświadczenie o ochronie prywatności"
+msgstr "Privacyverklaring"
 
 #: web/templates/web/participant-signup.html:34
 msgid "Create Account"
-msgstr "Utwórz konto"
+msgstr "Maak een account aan"
 
 #: web/templates/web/studies-history.html:4
 #: web/templates/web/studies-history.html:27
 msgid "Past Studies"
-msgstr "Zeszłe badania"
+msgstr "Eerdere studies"
 
 #: web/templates/web/studies-history.html:16
 #: web/templates/web/studies-list.html:16
@@ -2833,95 +2830,91 @@ msgid ""
 "Your account doesn't have access to this page. To proceed, please login with "
 "an account that has access."
 msgstr ""
-"Twoje konto nie ma dostępu do tej strony. Aby przejść dalej, proszę zaloguj "
-"się na konto, które ma dostęp."
+"Uw account heeft geen toegang tot deze pagina. Log in met een account dat "
+"toegang heeft om door te gaan."
 
 #: web/templates/web/studies-history.html:18
 #: web/templates/web/studies-list.html:18
 msgid "Please login to see this page."
-msgstr "Proszę się zalogować, aby zobaczyć tę stronę."
+msgstr "Log in om deze pagina te zien."
 
 #: web/templates/web/studies-history.html:34
 #: web/templates/web/studies-list.html:38
 msgid "Current studies"
-msgstr "Aktualne badania"
+msgstr "Huidige studies"
 
 #: web/templates/web/studies-history.html:37
 #: web/templates/web/studies-list.html:41
 msgid "Your past studies"
-msgstr "Twoje zeszłe badania"
+msgstr "Je eerdere studies"
 
 #: web/templates/web/studies-history.html:50
 msgid "Here you can view your studies and see comments left by researchers:"
-msgstr ""
-"Tutaj mogą Państwo obejrzeć swoje badania i zobaczyć komentarze pozostawione "
-"przez badaczy i badaczki:"
+msgstr "Hier kunt u uw studies bekijken en opmerkingen van onderzoekers zien:"
 
 #: web/templates/web/studies-history.html:67
 msgid "Study Thumbnail"
-msgstr "Miniaturka badania"
+msgstr "Bestudeer Thumbnail"
 
 #: web/templates/web/studies-history.html:79
 msgid "Eligibility:"
-msgstr "Kwalifikacja:"
+msgstr "Geschiktheid:"
 
 #: web/templates/web/studies-history.html:80
 msgid "Contact:"
-msgstr "Kontakt:"
+msgstr "Contact:"
 
 #: web/templates/web/studies-history.html:81
 msgid "Still collecting data?"
-msgstr "Nadal zbierasz dane?"
+msgstr "Verzamelt u nog steeds gegevens?"
 
 #: web/templates/web/studies-history.html:81
 msgid "Yes"
-msgstr "Tak"
+msgstr "Ja"
 
 #: web/templates/web/studies-history.html:81
 msgid "No"
-msgstr "Nie"
+msgstr "Nee"
 
 #: web/templates/web/studies-history.html:82
 msgid "Compensation: "
-msgstr "Rekompensata: "
+msgstr "Vergoeding: "
 
 #: web/templates/web/studies-history.html:87
 msgid "Study Responses"
-msgstr "Odpowiedzi na badanie"
+msgstr "Onderzoeksreacties"
 
 #: web/templates/web/studies-history.html:107
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: web/templates/web/studies-history.html:118
 msgid "Date"
-msgstr "Data"
+msgstr "Datum"
 
 #: web/templates/web/studies-history.html:120
 msgid "Consent status"
-msgstr "Status zgody"
+msgstr "Toestemmingsstatus"
 
 #: web/templates/web/studies-history.html:123
 msgid "Approved"
-msgstr "Zatwierdzone"
+msgstr "Goedgekeurd"
 
 #: web/templates/web/studies-history.html:123
 msgid "Your consent video was reviewed by a researcher and is valid."
-msgstr ""
-"Państwa film ze zgodą został pozytywnie zweryfikowany przez badacza/badaczkę."
+msgstr "Uw toestemmingsvideo is beoordeeld door een onderzoeker en is geldig."
 
 #: web/templates/web/studies-history.html:125
 msgid "Pending"
-msgstr "W toku"
+msgstr "In afwachting"
 
 #: web/templates/web/studies-history.html:125
 msgid "Your consent video has not yet been reviewed by a researcher."
-msgstr ""
-"Twoje nagranie wideo za zgodą nie zostało jeszcze przejrzane przez badacza."
+msgstr "Uw toestemmingsvideo is nog niet beoordeeld door een onderzoeker."
 
 #: web/templates/web/studies-history.html:127
 msgid "Invalid"
-msgstr "Nieważne"
+msgstr "Ongeldig"
 
 #: web/templates/web/studies-history.html:127
 msgid ""
@@ -2929,46 +2922,47 @@ msgid ""
 "you reading the consent statement out loud. Your other data from this "
 "session will not be viewed or used by the study researchers."
 msgstr ""
-"Wystąpił problem techniczny z Państwa nagraniem wideo przedstawiającym "
-"zgodę, lub nie ukazywało ono Państwa czytających na głos oświadczenia o "
-"zgodzie. Pozostałe Państwa dane z tej sesji nie będą oglądane ani "
-"wykorzystywane przez badaczy lub badaczki."
+"Er was een technisch probleem met uw toestemmingsvideo, of u hebt de "
+"toestemmingsverklaring niet hardop gelezen. Uw andere gegevens van deze "
+"sessie worden niet bekeken of gebruikt door de studieonderzoekers."
 
 #: web/templates/web/studies-history.html:129
 msgid "No information about consent video review status."
-msgstr "Brak informacji o statusie weryfikacji wideo za zgodą."
+msgstr ""
+"Geen informatie over de status van toestemming voor het beoordelen van "
+"video's."
 
 #: web/templates/web/studies-history.html:133
 msgid "Feedback"
-msgstr ""
+msgstr "Feedback"
 
 #: web/templates/web/studies-history.html:139
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: web/templates/web/studies-history.html:154
 msgid "You have not yet participated in any studies."
-msgstr "Nie brali Państwo jeszcze udziału w żadnych badaniach."
+msgstr "U hebt nog geen studies gedaan."
 
 #: web/templates/web/studies-list.html:32
 msgid "Current Studies"
-msgstr "Bieżące badania"
+msgstr "Huidige studies"
 
 #: web/templates/web/studies-list.html:53
 msgid ""
 "Please note you'll need a laptop or desktop computer (not a mobile device) "
 "running Chrome or Firefox to participate."
 msgstr ""
-"Pamiętaj, że do udziału w badaniu potrzebny jest laptop lub komputer "
-"stacjonarny (nie urządzenie przenośne) z systemem Chrome lub Firefox."
+"Houd er rekening mee dat u een laptop of desktopcomputer (geen mobiele "
+"telefoon) met Chrome of Firefox nodig heeft om deel te nemen."
 
 #: web/templates/web/studies-list.html:80
 msgid "See details"
-msgstr "Zobacz szczegóły"
+msgstr "Zie de details"
 
 #: web/templates/web/studies-list.html:87
 msgid "We are not running any studies at this time!"
-msgstr "W tej chwili nie prowadzimy żadnych badań!"
+msgstr "We voeren op dit moment geen studies uit!"
 
 #: web/templates/web/studies-list.html:93
 msgid ""
@@ -2976,95 +2970,87 @@ msgid ""
 "\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer "
 "noopener\">Children Helping Science</a> for even more studies!"
 msgstr ""
-"Szukasz więcej sposobów, aby pomóc w badaniach z domu? Odwiedź <a href="
-"\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer "
-"noopener\">Children Helping Science</a> po jeszcze więcej badań!"
+"Op zoek naar meer manieren om bij te dragen aan onderzoek vanuit huis? "
+"Bekijk <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
+"\"noreferrer noopener\"> Children Helping Science </a> voor nog meer studies!"
 
 #: web/templates/web/study-detail.html:53
-#, fuzzy
-#| msgid " days"
 msgid "days"
-msgstr " dni"
+msgstr "dagen"
 
 #: web/templates/web/study-detail.html:53
 msgid " until "
-msgstr ""
+msgstr " tot "
 
 #: web/templates/web/study-detail.html:53
 msgid " when "
-msgstr ""
+msgstr " wanneer "
 
 #: web/templates/web/study-detail.html:93
 msgid "Study overview"
-msgstr "Przegląd badań"
+msgstr "Studieoverzicht"
 
 #: web/templates/web/study-detail.html:96
 msgid "Back to list"
-msgstr "Powrót do listy"
+msgstr "Terug naar lijst"
 
 #: web/templates/web/study-detail.html:112
 msgid "Eligibility criteria"
-msgstr "Kryteria kwalifikujące"
+msgstr "Geschiktheidscriteria"
 
 #: web/templates/web/study-detail.html:116
 msgid "Duration"
-msgstr "Czas trwania"
+msgstr "Duur"
 
 #: web/templates/web/study-detail.html:121
 msgid "Compensation"
-msgstr "Rekompensata"
+msgstr "Vergoeding"
 
 #: web/templates/web/study-detail.html:126
 msgid "What happens"
-msgstr "Co się dzieje?"
+msgstr "Wat gebeurt er"
 
 #: web/templates/web/study-detail.html:130
 msgid "What we're studying"
-msgstr "Co badamy?"
+msgstr "Wat we bestuderen"
 
 #: web/templates/web/study-detail.html:134
 msgid "This study is conducted by"
-msgstr "To badanie jest przeprowadzane przez:"
+msgstr "Dit onderzoek wordt uitgevoerd door"
 
 #: web/templates/web/study-detail.html:138
 msgid "Would you like to participate in this study?"
-msgstr "Czy chcieliby Państwo wziąć udział w tym badaniu?"
+msgstr "Wilt u deelnemen aan dit onderzoek?"
 
 #: web/templates/web/study-detail.html:140
 msgid "Log in to participate"
-msgstr "Zaloguj się, aby wziąć udział"
+msgstr "Log in om mee te doen"
 
 #: web/templates/web/study-detail.html:142
-#, fuzzy
-#| msgid "No child profiles registered!"
 msgid "Add child profile to "
-msgstr "Nie zarejestrowano żadnych profili dziecięcych!"
+msgstr "Voeg kindprofiel toe aan "
 
 #: web/templates/web/study-detail.html:142
 #: web/templates/web/study-detail.html:144
 msgid "preview"
-msgstr ""
+msgstr "voorbeeld"
 
 #: web/templates/web/study-detail.html:142
 #: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Participate"
 msgid "participate"
-msgstr "Weź udział w projekcie"
+msgstr "deelnemen"
 
 #: web/templates/web/study-detail.html:144
-#, fuzzy
-#| msgid "Demographic Survey"
 msgid "Complete demographic survey to "
-msgstr "Ankieta demograficzna"
+msgstr "Vul de demografische enquête in om "
 
 #: web/templates/web/study-detail.html:148
 msgid "Select a child:"
-msgstr "Wybierz dziecko:"
+msgstr "Selecteer een kind:"
 
 #: web/templates/web/study-detail.html:150
 msgid "None Selected"
-msgstr "Brak wybranych"
+msgstr "Geen geselecteerd"
 
 #: web/templates/web/study-detail.html:161
 msgid ""
@@ -3072,10 +3058,9 @@ msgid ""
 "If you can wait <span id='wait-until'>until</span> he or she is old enough, "
 "we'll be able to use the collected data in our research!"
 msgstr ""
-"Państwa dziecko jest młodsze niż zalecany przedział wiekowy dla tego "
-"badania. Jeśli mogą Państwo poczekać <span id='wait-until'>aż</span> Państwa "
-"dziecko jest w odpowiednim wieku, będziemy mogli wykorzystać zebrane dane w "
-"naszych badaniach!"
+"Uw kind is jonger dan de aanbevolen leeftijdscategorie voor dit onderzoek. "
+"Als u kunt wachten <span id = 'wait-till'> tot </span> hij of zij oud genoeg "
+"is, kunnen we dan de verzamelde data gebruiken in ons onderzoek!"
 
 #: web/templates/web/study-detail.html:162
 msgid ""
@@ -3083,9 +3068,9 @@ msgid ""
 "welcome to try the study anyway, but we won't be able to use the collected "
 "data in our research."
 msgstr ""
-"Państwa dziecko jest starsze niż zalecany przedział wiekowy dla tego "
-"badania. Zapraszamy do wypróbowania badania, ale nie będziemy w stanie "
-"wykorzystać zebranych danych w naszych badaniach."
+"Uw kind is ouder dan de aanbevolen leeftijdscategorie voor dit onderzoek. U "
+"bent sowieso welkom om het onderzoek te proberen, maar we kunnen de "
+"verzamelde data niet gebruiken in ons onderzoek."
 
 #: web/templates/web/study-detail.html:163
 msgid ""
@@ -3093,61 +3078,55 @@ msgid ""
 "You're welcome to try the study anyway, but we won't be able to use the "
 "collected data in our research. Please contact the study researchers"
 msgstr ""
-"Twoje dziecko nie spełnia kryteriów kwalifikacyjnych do tego badania. "
-"Zapraszamy do wypróbowania badania, ale nie będziemy w stanie wykorzystać "
-"zebranych danych. Prosimy o kontakt z badaczami badania"
+"Uw kind voldoet niet aan de criteria om in aanmerking te komen voor dit "
+"onderzoek. U bent sowieso welkom om het onderzoek te proberen, maar we "
+"kunnen de verzamelde data niet gebruiken in ons onderzoek. Neem dan contact "
+"op met de studieonderzoekers"
 
 #: web/templates/web/study-detail.html:165
 msgid "Build experiment runner to preview"
-msgstr "Utwórz przeprowadzacz eksperymentu do podglądu"
+msgstr "Bouw een experimentrunner om een voorbeeld te bekijken"
 
 #: web/templates/web/study-detail.html:167
 msgid "Participate"
-msgstr "Weź udział w projekcie"
+msgstr "Deelnemen"
 
 #: web/templates/web/study-detail.html:167
 msgid "now"
-msgstr ""
+msgstr "nu"
 
 #: web/templates/web/study-detail.html:168
 msgid ""
 "For an easy way to see what happens as you update your study protocol, "
 "bookmark the URL the button above sends you to."
 msgstr ""
-"Aby łatwo zobaczyć, co się dzieje podczas aktualizacji protokołu badania, "
-"dodaj do zakładki adres URL na który wysyła Cię powyższy przycisk."
+"Voor een gemakkelijke manier om te zien wat er gebeurt als u uw "
+"studieprotocol bijwerkt, kunt u een bladwijzer maken voor de URL waar de "
+"bovenstaande knop u naartoe stuurt."
 
 #: web/views.py:63
-#, fuzzy
-#| msgid "Participant account"
 msgid "Participant created."
-msgstr "Konto uczestnika/uczestniczki"
+msgstr "Deelnemer gemaakt."
 
 #: web/views.py:88
-#, fuzzy
-#| msgid "Demographic Survey"
 msgid "Demographic data saved."
-msgstr "Ankieta demograficzna"
+msgstr "Demografische gegevens opgeslagen."
 
 #: web/views.py:156
-#, fuzzy
-#| msgid "Children"
 msgid "Child added."
-msgstr "Dzieci"
+msgstr "Kind toegevoegd."
 
 #: web/views.py:192
 msgid "Child deleted."
-msgstr ""
+msgstr "Kind verwijderd."
 
 #: web/views.py:194
 msgid "Child updated."
-msgstr ""
+msgstr "Kind geüpdatet."
 
 #: web/views.py:217
-#, fuzzy
-#| msgid "Email Preferences"
 msgid "Email preferences saved."
-msgstr "Preferencje dotyczące e-maili"
+msgstr "E-mailvoorkeuren opgeslagen."
 
 #: web/views.py:311
 #, python-brace-format
@@ -3156,11 +3135,18 @@ msgid ""
 "either completed or paused. If you think this is an error, please contact "
 "{study.contact_info}"
 msgstr ""
+"Het onderzoek {study.name} verzamelt momenteel geen gegevens - het onderzoek "
+"is voltooid of onderbroken. Als u denkt dat dit een fout is, neem dan "
+"contact op met {study.contact_info}"
 
-#, fuzzy
-#~| msgid "instead?"
+#~ msgid "To register as a researcher, please use"
+#~ msgstr "Gebruik om u als onderzoeker te registreren"
+
+#~ msgid "this form"
+#~ msgstr "dit formulier"
+
 #~ msgid "instead"
-#~ msgstr "Zamiast tego?"
+#~ msgstr "in plaats daarvan"
 
 #, fuzzy
 #~| msgid ""
@@ -3173,94 +3159,13 @@ msgstr ""
 #~ "check out the newly launched site <a href='https://childrenhelpingscience."
 #~ "com/' target='_blank'>Children Helping Science"
 #~ msgstr ""
-#~ "Szukasz więcej sposobów, aby pomóc w badaniach z domu? Odwiedź <a href="
-#~ "\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#~ "\"noreferrer noopener\">Children Helping Science</a> po jeszcze więcej "
-#~ "badań!"
+#~ "Op zoek naar meer manieren om bij te dragen aan onderzoek vanuit huis? "
+#~ "Bekijk <a href=\"https://childrenhelpingscience.com/\" target=\"_blank\" "
+#~ "rel=\"noreferrer noopener\"> Children Helping Science </a> voor nog meer "
+#~ "studies!"
 
-#, fuzzy
-#~| msgid "Birthday"
 #~ msgid "Birthday test"
-#~ msgstr "Urodziny"
+#~ msgstr "Verjaardagstest"
 
-#, fuzzy
-#~| msgid "Birthday"
 #~ msgid "Birthday test2"
-#~ msgstr "Urodziny"
-
-#~ msgid "Login Unsuccessful"
-#~ msgstr "Logowanie nieudane"
-
-#~ msgid ""
-#~ "A Lookit study participant exists with the email address for your OSF "
-#~ "user account. Create an OSF user with a different email address and try "
-#~ "logging into Experimenter with that. "
-#~ msgstr ""
-#~ "Uczestnik badań w systemie Lookit z adresem e-mail państwa konta "
-#~ "użytkownika OSF. Proszę utworzyć konto OSF z innym adresem e-mail lub "
-#~ "spróbować zalogować się do Experimentera za pomocą tego adresu."
-
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href="
-#~ msgstr ""
-#~ "Jeśli to nie powinno było mieć miejsca, a problem się utrzymuje, proszę "
-#~ "zgłosić to do <a href="
-
-#~ msgid "Return to Experimenter"
-#~ msgstr "Powrót do Experimentera"
-
-#~ msgid "Sign In"
-#~ msgstr "Zaloguj się"
-
-#~ msgid ""
-#~ "\n"
-#~ "          Please sign in to the Open Science Framework or register for an "
-#~ "account and sign in below.\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "        By using or requesting access to Lookit, you agree that you have "
-#~ "read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of "
-#~ "Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</"
-#~ "a>.\n"
-#~ "        "
-#~ msgstr ""
-#~ "\n"
-#~ "          Zaloguj się do Open Science Framework lub zarejestruj się i "
-#~ "zaloguj się poniżej.\n"
-#~ "      </p>\n"
-#~ "      <p>\n"
-#~ "        Używając Lookit lub prosząc o dostęp do Lookit, stwierdzasz że "
-#~ "przeczytałeś/przeczytałaś i akceptujesz\n"
-#~ " <a href=\"/termsofuse/\" target=\"_blank\">warunki użytkowania</a> oraz "
-#~ "<a href=\"/privacy/\" target=\"_blank\">oświadczenie o ochronie "
-#~ "prywatności</a>.\n"
-#~ "        "
-
-#~ msgid ""
-#~ "If this should not have occurred and the issue persists, please report it "
-#~ "to <a href=\"mailto:support@osf.io\">support@osf.io</a>"
-#~ msgstr ""
-#~ "Jeśli to nie powinno było mieć miejsca, a problem się utrzymuje, proszę "
-#~ "zgłosić to do <a href=\"mailto:support@osf.io\">support@osf.io</a>"
-
-#~ msgid "Participant Login"
-#~ msgstr "Login uczestnika"
-
-#~ msgid "Looking for "
-#~ msgstr "Poszukujące"
-
-#~ msgid "Create an account!"
-#~ msgstr "Załóż konto!"
-
-#~ msgid "Account information"
-#~ msgstr "Informacje o koncie"
-
-#~ msgid "Change your name, email, or password."
-#~ msgstr "Zmień swoje imię i nazwisko, e-mail lub hasło."
-
-#~ msgid "Signup"
-#~ msgstr "Zapisy"
-
-#~ msgid "Update account information"
-#~ msgstr "Aktualizacja informacji o koncie"
+#~ msgstr "Verjaardagstest 2"

@@ -1,720 +1,769 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: MBAH_studiespage\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-22 09:49+0100\n"
-"PO-Revision-Date: 2020-07-20 14:26+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2021-10-15 16:48+0200\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: POEditor.com\n"
 
-#: accounts/forms.py:64
+#: accounts/forms.py:58
+msgid "Enter a valid 6-digit one-time password from Google Authenticator"
+msgstr ""
+"Google認証システムからの適切な6桁のワンタイムパスワードを入力してください"
+
+#: accounts/forms.py:109
+#, fuzzy, python-format
+#| msgid ""
+#| "Please enter a correct %(username)s and password. Note that email and "
+#| "password fields may be case-sensitive. If you have turned on two-factor "
+#| "authentication, you will need a one-time password (OTP code) from Google "
+#| "Authenticator as well. "
+msgid ""
+"Please enter a correct %(username)s and password. Note that email and "
+"password fields may be case-sensitive. If you have turned on two-factor "
+"authentication, you will need a one-time password (OTP code) from Google "
+"Authenticator as well. "
+msgstr ""
+"正しい %（ユーザーネーム）とパスワードを入力してください。メールアドレス欄と"
+"パスワード欄は設定によって異なります。二段階認証を有効にしている場合は、"
+"Google認証システムからのワンタイムパスワード（OTPコード）も必要になります。"
+
+#: accounts/forms.py:114
+msgid "This account is inactive."
+msgstr "このアカウントは有効ではありません。"
+
+#: accounts/forms.py:197
+msgid "Your password can’t be too similar to your other personal information."
+msgstr "パスワードは個人情報に類似しないようにしてください。"
+
+#: accounts/forms.py:198
+msgid "Your password must contain at least 16 characters."
+msgstr "パスワードは少なくとも16文字からなる必要があります。"
+
+#: accounts/forms.py:199
+msgid "Your password can’t be a commonly used password."
+msgstr "よく使用するパスワードを使い回さないようにしてください。"
+
+#: accounts/forms.py:200
+msgid "Your password can’t be entirely numeric."
+msgstr "すべて数字からなるパスワードは使用できません。"
+
+#: accounts/forms.py:216 accounts/forms.py:232 accounts/models.py:141
 msgid "Email address"
 msgstr "メールアドレス"
 
-#: accounts/forms.py:88
+#: accounts/forms.py:217 accounts/models.py:146
+#: accounts/templates/accounts/participant_list.html:37
+#: accounts/templates/accounts/participant_list.html:58
+msgid "Nickname"
+msgstr "ユーザー名"
+
+#: accounts/forms.py:257
 msgid ""
 "It's time for another session of a study we are currently participating in"
-msgstr "現在参加している勉強会の続きの時間になりました"
+msgstr "参加した研究・調査の続きがあるとき"
 
-#: accounts/forms.py:89
+#: accounts/forms.py:259
 msgid "A new study is available for one of my children"
-msgstr "子供の一人に新しい勉強ができました。"
+msgstr "私の子どもが参加できる新しい研究・調査があるとき"
 
-#: accounts/forms.py:90
+#: accounts/forms.py:261
 msgid ""
 "There's an update about a study we participated in (for example, results are "
 "published)"
-msgstr "参加した研究の更新があります（例えば、結果が公開されています）。"
+msgstr ""
+"参加した研究・調査に関するお知らせがあるとき (例：結果をまとめた学術論文が出"
+"版された場合など)"
 
-#: accounts/forms.py:91
+#: accounts/forms.py:264
 msgid ""
 "A researcher has questions about my individual responses (for example, if I "
 "report a technical problem during the study)"
 msgstr ""
-"研究者が私の個別対応に疑問を持つ（例えば、研究中に技術的な問題を報告した場合"
-"など"
+"参加した研究・調査における私の回答に対して、研究者から質問があるとき (例：web"
+"カメラがうまく接続できなかったなど技術的な問題を報告していた場合など)"
 
-#: accounts/forms.py:99 accounts/forms.py:139
+#: accounts/forms.py:273 accounts/forms.py:322
 msgid "What category(ies) does your family identify as?"
 msgstr "あなたの家族はどのようなカテゴリーに属していますか？"
 
-#: accounts/forms.py:127
+#: accounts/forms.py:277 accounts/models.py:527
+#: accounts/templates/accounts/participant_detail.html:86
+msgid "Country"
+msgstr "国"
+
+#: accounts/forms.py:304
 msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
 msgstr ""
-"カンマ区切りのリストとして入力してください。YYYY-MM-DD, YYYY-MM-DD, ..."
+"カンマ区切りのリストとして入力してください。例：YYYY-MM-DD, YYYY-MM-DD, ..."
 
-#: accounts/forms.py:128
+#: accounts/forms.py:306
 msgid "Numerical answers only - a rough guess is fine!"
-msgstr "数値回答のみ～大まかな推測でOK!"
+msgstr "数値で回答してください。大まかな推測で構いません！"
 
-#: accounts/forms.py:132
+#: accounts/forms.py:310
 msgid "What country do you live in?"
-msgstr "どこの国に住んでいるの？"
+msgstr "どちらの国にお住まいですか？"
 
-#: accounts/forms.py:133
+#: accounts/forms.py:311
 msgid "What state do you live in?"
-msgstr "あなたはどの州に住んでいますか？"
+msgstr "どの都道府県にお住まいですか？"
 
-#: accounts/forms.py:134
+#: accounts/forms.py:312
 msgid "How would you describe the area where you live?"
-msgstr "住んでいる地域をどのように表現しますか？"
+msgstr "住んでいる地域をどんなところですか？"
 
-#: accounts/forms.py:135
+#: accounts/forms.py:314
 msgid "What language(s) does your family speak at home?"
-msgstr "ご家庭では何語を話しますか？"
+msgstr "ご家庭は何語を話しますか？"
 
-#: accounts/forms.py:136
+#: accounts/forms.py:316
 msgid "How many children do you have?"
-msgstr "子供は何人いるの？"
+msgstr "お子さんは何人いますか？"
 
-#: accounts/forms.py:137
+#: accounts/forms.py:317
 msgid "For each child, please enter his or her birthdate:"
-msgstr "お子様一人一人の生年月日をご記入ください。"
+msgstr "お子さん一人一人の生年月日を記入してください。"
 
-#: accounts/forms.py:138
+#: accounts/forms.py:319
 msgid "How many parents/guardians do your children live with?"
-msgstr "あなたのお子さんは何人の親御さん・保護者の方と一緒に暮らしていますか？"
+msgstr ""
+"お子さんは、ご両親（またはその他の保護者）、合計何人と一緒に暮らしています"
+"か？"
 
-#: accounts/forms.py:140
+#: accounts/forms.py:324
 msgid "What is your age?"
-msgstr "年齢。"
+msgstr "あなたの年齢はおいくつですか？"
 
-#: accounts/forms.py:141
+#: accounts/forms.py:325
 msgid "What is your gender?"
-msgstr "性別は何ですか？"
+msgstr "あなたの性別は何ですか？"
 
-#: accounts/forms.py:142
+#: accounts/forms.py:327
 msgid "What is the highest level of education you've completed?"
-msgstr "最高レベルの学歴は？"
+msgstr "あなたの最終学歴は何ですか？"
 
-#: accounts/forms.py:143
+#: accounts/forms.py:330
 msgid "What is the highest level of education your spouse has completed?"
-msgstr "配偶者の最高学歴は？"
+msgstr "配偶者の方の最終学歴は何ですか？"
 
-#: accounts/forms.py:144
+#: accounts/forms.py:333
 msgid "What is your approximate family yearly income (in US dollars)?"
-msgstr "おおよそのご家族の年収（ドル建て）は？"
+msgstr "ご家族の年収（日本円で）はいくらぐらいでしょうか？"
 
-#: accounts/forms.py:145
+#: accounts/forms.py:336
 msgid "About how many children's books are there in your home?"
-msgstr "あなたの家には児童書が何冊あるかについて。"
+msgstr "あなたの家には児童書が何冊程度ありますか？"
 
-#: accounts/forms.py:146
+#: accounts/forms.py:338
 msgid "Anything else you'd like us to know?"
-msgstr "他に何か知っておいてほしいことは？"
+msgstr "何か他に私たちが知っておくべきことはありますか？"
 
-#: accounts/forms.py:147
+#: accounts/forms.py:339
 msgid "How did you hear about Lookit?"
-msgstr "Lookitをどうやって知りましたか？"
+msgstr "Lookitをどのように知りましたか？"
 
-#: accounts/forms.py:148
+#: accounts/forms.py:341
 msgid ""
 "If the answer varies due to shared custody arrangements or travel, please "
 "enter the number of parents/guardians your children are usually living with "
 "or explain."
 msgstr ""
-"共有親権の取り決めや旅行などで回答が異なる場合は、子どもが普段一緒に暮らして"
-"いる親・保護者の人数を記入するか、説明してください。"
+"共同親権に関する取り決めや旅行などによって回答が変わる場合は、子どもが普段一"
+"緒に暮らしている親・保護者の人数を記入するか、説明してください。"
 
-#: accounts/forms.py:162
-msgid ""
-"This lets us figure out exactly how old your child is when they participate "
-"in a study. We never publish children's birthdates or information that would "
-"allow a reader to calculate the birthdate."
-msgstr ""
-"これにより、調査に参加したときに、あなたの子供が何歳であるかを正確に把握する"
-"ことができます。子供の誕生日や、読者が誕生日を計算できるような情報は絶対に公"
-"開しません。"
-
-#: accounts/forms.py:168
-msgid "Birthdays cannot be in the future."
-msgstr "誕生日は未来ではありえない。"
-
-#: accounts/forms.py:184 accounts/forms.py:224
-msgid "First Name"
-msgstr "名"
-
-#: accounts/forms.py:185 accounts/forms.py:225
+#: accounts/forms.py:356 accounts/forms.py:382 accounts/forms.py:434
 #: accounts/templates/accounts/participant_detail.html:38
 #: web/templates/web/children-list.html:112
 msgid "Birthday"
 msgstr "誕生日"
 
-#: accounts/forms.py:186 accounts/forms.py:226
+#: accounts/forms.py:358
+msgid ""
+"This lets us figure out exactly how old your child is when they participate "
+"in a study. We never publish children's birthdates or information that would "
+"allow a reader to calculate the birthdate."
+msgstr ""
+"こちらは、調査参加時にお子さんが何歳であったかを正確に把握するためです。お子"
+"さんの誕生日や、誕生日を計算できるような情報は決して公開しません。"
+
+#: accounts/forms.py:365
+msgid "Birthdays cannot be in the future."
+msgstr "誕生日が未来の日付になっています。"
+
+#: accounts/forms.py:381 accounts/forms.py:433
+msgid "First Name"
+msgstr "お名前"
+
+#: accounts/forms.py:383 accounts/forms.py:435
+#: accounts/templates/accounts/participant_detail.html:54
+msgid "Gender"
+msgstr "性別"
+
+#: accounts/forms.py:384 accounts/forms.py:436
 #: accounts/templates/accounts/participant_detail.html:62
 msgid "Gestational Age at Birth"
-msgstr "出生時の妊娠年齢"
+msgstr "出産時の妊娠期間"
 
-#: accounts/forms.py:187 accounts/forms.py:227
+#: accounts/forms.py:386 accounts/forms.py:438
 msgid "Any additional information you'd like us to know"
-msgstr "他に何か知っておいてほしいことは？"
+msgstr "何か他に私たちが知っておくべきことはありますか？"
 
-#: accounts/forms.py:188 accounts/forms.py:228
+#: accounts/forms.py:388 accounts/forms.py:440
 msgid "Characteristics and conditions"
 msgstr "特徴と条件"
 
-#: accounts/forms.py:189 accounts/forms.py:229
+#: accounts/forms.py:390 accounts/forms.py:442
 msgid ""
 "Languages this child is exposed to at home, school, or with another "
 "caregiver."
-msgstr "この子が家庭、学校、または他の保育者と一緒にいるときに接する言語。"
+msgstr ""
+"家庭や学校、または他の保護者と一緒にいる際に、このお子さんが触れる言語。"
 
-#: accounts/forms.py:193 accounts/forms.py:233
+#: accounts/forms.py:396 accounts/forms.py:448
 msgid ""
 "This lets you select the correct child to participate in a particular study. "
 "A nickname or initials are fine! We may include your child's name in email "
 "to you (for instance, \"There's a new study available for Molly!\") but will "
 "never publish names or use them in our research."
 msgstr ""
-"これにより、特定の研究に参加する正しい子供を選択することができます。ニック"
-"ネームやイニシャルでも構いません。あなたへのメールにお子さんの名前を記載する"
-"ことがありますが（例えば、「モリーのための新しい研究があります！」など）、名"
-"前を公表したり、研究に使用したりすることはありません。"
+"こちらは、研究に参加できるお子さんを選択するためです。あだ名やイニシャルでも"
+"構いません。あなたへのメールにお子さんの名前を記載することはありますが（例え"
+"ば、「まりちゃんのための新しい研究があります！」など）、名前を公表したり、研"
+"究に使用したりすることはありません。"
 
-#: accounts/forms.py:194 accounts/forms.py:234
+#: accounts/forms.py:399 accounts/forms.py:451
 msgid ""
 "For instance, diagnosed developmental disorders or vision or hearing problems"
-msgstr "例えば、発達障害や視力・聴力に問題があると診断された場合"
+msgstr "例えば、診断を受けた発達障害、視力・聴力の問題"
 
-#: accounts/forms.py:195
+#: accounts/forms.py:402
 msgid "Please round down to the nearest full week of pregnancy completed"
-msgstr "妊娠完了週数に近いものに切り捨ててください。"
+msgstr "数字を切り捨てて、妊娠週数に最も近いものにしてください"
 
 #: accounts/migrations/0041_add_existing_conditions.py:12
-#: accounts/models.py:250 studies/fields.py:136
+#: accounts/models.py:302 studies/fields.py:135
 msgid "Not sure or prefer not to answer"
-msgstr "わからない、または答えたくない"
+msgstr "わからりません／答えたくないありません"
 
 #: accounts/migrations/0041_add_existing_conditions.py:13
-#: accounts/models.py:251 studies/fields.py:137
+#: accounts/models.py:303 studies/fields.py:136
 msgid "Under 24 weeks"
 msgstr "24週未満"
 
 #: accounts/migrations/0041_add_existing_conditions.py:14
-#: accounts/models.py:252 studies/fields.py:138
+#: accounts/models.py:304 studies/fields.py:137
 msgid "24 weeks"
 msgstr "24週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:15
-#: accounts/models.py:253 studies/fields.py:139
+#: accounts/models.py:305 studies/fields.py:138
 msgid "25 weeks"
-msgstr "25週間"
+msgstr "25週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:16
-#: accounts/models.py:254 studies/fields.py:140
+#: accounts/models.py:306 studies/fields.py:139
 msgid "26 weeks"
 msgstr "26週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:17
-#: accounts/models.py:255 studies/fields.py:141
+#: accounts/models.py:307 studies/fields.py:140
 msgid "27 weeks"
 msgstr "27週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:18
-#: accounts/models.py:256 studies/fields.py:142
+#: accounts/models.py:308 studies/fields.py:141
 msgid "28 weeks"
-msgstr "28週間"
+msgstr "28週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:19
-#: accounts/models.py:257 studies/fields.py:143
+#: accounts/models.py:309 studies/fields.py:142
 msgid "29 weeks"
 msgstr "29週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:20
-#: accounts/models.py:258 studies/fields.py:144
+#: accounts/models.py:310 studies/fields.py:143
 msgid "30 weeks"
-msgstr "30週間"
+msgstr "30週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:21
-#: accounts/models.py:259 studies/fields.py:145
+#: accounts/models.py:311 studies/fields.py:144
 msgid "31 weeks"
 msgstr "31週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:22
-#: accounts/models.py:260 studies/fields.py:146
+#: accounts/models.py:312 studies/fields.py:145
 msgid "32 weeks"
 msgstr "32週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:23
-#: accounts/models.py:261 studies/fields.py:147
+#: accounts/models.py:313 studies/fields.py:146
 msgid "33 weeks"
 msgstr "33週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:24
-#: accounts/models.py:262 studies/fields.py:148
+#: accounts/models.py:314 studies/fields.py:147
 msgid "34 weeks"
 msgstr "34週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:25
-#: accounts/models.py:263 studies/fields.py:149
+#: accounts/models.py:315 studies/fields.py:148
 msgid "35 weeks"
 msgstr "35週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:26
-#: accounts/models.py:264 studies/fields.py:150
+#: accounts/models.py:316 studies/fields.py:149
 msgid "36 weeks"
 msgstr "36週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:27
-#: accounts/models.py:265 studies/fields.py:151
+#: accounts/models.py:317 studies/fields.py:150
 msgid "37 weeks"
 msgstr "37週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:28
-#: accounts/models.py:266 studies/fields.py:152
+#: accounts/models.py:318 studies/fields.py:151
 msgid "38 weeks"
 msgstr "38週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:29
-#: accounts/models.py:267 studies/fields.py:153
+#: accounts/models.py:319 studies/fields.py:152
 msgid "39 weeks"
 msgstr "39週"
 
 #: accounts/migrations/0041_add_existing_conditions.py:30
-#: accounts/models.py:268 studies/fields.py:154
+#: accounts/models.py:320 studies/fields.py:153
 msgid "40 or more weeks"
 msgstr "40週以上"
 
-#: accounts/models.py:66
+#: accounts/models.py:80
 msgid "Can View Organization"
-msgstr "組織を見ることができる"
+msgstr "所属機関を見ることができる"
 
-#: accounts/models.py:67
+#: accounts/models.py:81
 msgid "Can Edit Organization"
-msgstr "組織を編集することができます"
+msgstr "所属機関を編集することができる"
 
-#: accounts/models.py:68
+#: accounts/models.py:82
 msgid "Can Create Organization"
-msgstr "組織を作成することができます"
+msgstr "所属機関を作成することができる"
 
-#: accounts/models.py:69
+#: accounts/models.py:83
 msgid "Can Remove Organization"
-msgstr "組織を削除することができます"
+msgstr "所属機関を削除することができる"
 
-#: accounts/models.py:70
+#: accounts/models.py:84
 msgid "Can View Experimenter"
-msgstr "実験者を見ることができます"
+msgstr "研究者を見ることができる"
 
-#: accounts/models.py:71
+#: accounts/models.py:85
 msgid "Can View Analytics"
-msgstr "アナリティクスを表示することができます。"
+msgstr "統計を表示することができる"
 
-#: accounts/models.py:228
+#: accounts/models.py:280
 msgid "Can Create User"
-msgstr "ユーザーを作成することができます"
+msgstr "ユーザーを作成できる"
 
-#: accounts/models.py:229
+#: accounts/models.py:281
 msgid "Can View User"
-msgstr "ユーザーを表示することができます。"
+msgstr "ユーザーを表示できる"
 
-#: accounts/models.py:230
+#: accounts/models.py:282
 msgid "Can Edit User"
-msgstr "ユーザーを編集することができます"
+msgstr "ユーザーを編集できる"
 
-#: accounts/models.py:231
+#: accounts/models.py:283
 msgid "Can Remove User"
-msgstr "ユーザーを削除することができます"
+msgstr "ユーザーを削除できる"
 
-#: accounts/models.py:232
+#: accounts/models.py:284
 msgid "Can View User Permissions"
-msgstr "ユーザー権限を表示することができます"
+msgstr "ユーザー権限を表示できる"
 
-#: accounts/models.py:233
+#: accounts/models.py:285
 msgid "Can Edit User Permissions"
-msgstr "ユーザー権限の編集が可能"
+msgstr "ユーザー権限を編集できる"
 
-#: accounts/models.py:234
+#: accounts/models.py:286
 msgid "Can Read All User Data"
-msgstr "すべてのユーザーデータを読み取ることができます"
+msgstr "すべてのユーザーデータを読み取れる"
 
-#: accounts/models.py:235
+#: accounts/models.py:287
 msgid "Can Read User Usernames"
-msgstr "ユーザー名を読み取ることができます"
+msgstr "ユーザー名を読み取れる"
 
-#: accounts/models.py:242 accounts/models.py:345
+#: accounts/models.py:294 accounts/models.py:397
 msgid "male"
 msgstr "男性"
 
-#: accounts/models.py:243 accounts/models.py:346
+#: accounts/models.py:295 accounts/models.py:398
 msgid "female"
 msgstr "女性"
 
-#: accounts/models.py:244 accounts/models.py:347
+#: accounts/models.py:296 accounts/models.py:399
 msgid "other"
-msgstr "人が『いいね』しました。"
+msgstr "その他"
 
-#: accounts/models.py:245 accounts/models.py:348 accounts/models.py:424
+#: accounts/models.py:297 accounts/models.py:400 accounts/models.py:476
 msgid "prefer not to answer"
-msgstr "答えたくない"
+msgstr "答えたくありません"
 
-#: accounts/models.py:335
+#: accounts/models.py:387
 msgid "White"
 msgstr "白"
 
-#: accounts/models.py:336
+#: accounts/models.py:388
 msgid "Hispanic, Latino, or Spanish origin"
 msgstr "ヒスパニック系、ラテン系、スペイン系"
 
-#: accounts/models.py:337
+#: accounts/models.py:389
 msgid "Black or African American"
 msgstr "黒人またはアフリカ系アメリカ人"
 
-#: accounts/models.py:338
+#: accounts/models.py:390
 msgid "Asian"
-msgstr "東洋人"
+msgstr "アジア人"
 
-#: accounts/models.py:339
+#: accounts/models.py:391
 msgid "American Indian or Alaska Native"
-msgstr "アメリカインディアンまたはアラスカ原住民"
+msgstr "ネイティブアメリカンまたはアラスカ原住民"
 
-#: accounts/models.py:340
+#: accounts/models.py:392
 msgid "Middle Eastern or North African"
 msgstr "中近東または北アフリカ"
 
-#: accounts/models.py:341
+#: accounts/models.py:393
 msgid "Native Hawaiian or Other Pacific Islander"
 msgstr "ネイティブハワイアンまたはその他の太平洋諸島人"
 
-#: accounts/models.py:342
+#: accounts/models.py:394
 msgid "Another race, ethnicity, or origin"
-msgstr "他の人種、民族、出身"
+msgstr "その他の人種・民族・出身"
 
-#: accounts/models.py:351 accounts/models.py:360
+#: accounts/models.py:403 accounts/models.py:412
 msgid "some or attending high school"
-msgstr "或は高校に通う"
+msgstr "現在高校生または高校中退"
 
-#: accounts/models.py:352 accounts/models.py:361
+#: accounts/models.py:404 accounts/models.py:413
 msgid "high school diploma or GED"
-msgstr "高卒以上"
+msgstr "高校卒業"
 
-#: accounts/models.py:353 accounts/models.py:362
+#: accounts/models.py:405 accounts/models.py:414
 msgid "some or attending college"
-msgstr "どっか"
+msgstr "現在大学生または大学中退"
 
-#: accounts/models.py:354 accounts/models.py:363
+#: accounts/models.py:406 accounts/models.py:415
 msgid "2-year college degree"
-msgstr "二年制大学"
+msgstr "二年制大学卒業"
 
-#: accounts/models.py:355 accounts/models.py:364
+#: accounts/models.py:407 accounts/models.py:416
 msgid "4-year college degree"
-msgstr "四年制大学"
+msgstr "四年制大学卒業"
 
-#: accounts/models.py:356 accounts/models.py:365
+#: accounts/models.py:408 accounts/models.py:417
 msgid "some or attending graduate or professional school"
-msgstr "一部"
+msgstr "現在大学院生または大学院中退"
 
-#: accounts/models.py:357 accounts/models.py:366
+#: accounts/models.py:409 accounts/models.py:418
 msgid "graduate or professional degree"
-msgstr "卒論"
+msgstr "大学院卒業"
 
-#: accounts/models.py:367
+#: accounts/models.py:419
 msgid "not applicable - no spouse or partner"
-msgstr "該当しない - 配偶者やパートナーがいない"
+msgstr "該当なし - 配偶者やパートナーなし"
 
-#: accounts/models.py:370 accounts/models.py:401
+#: accounts/models.py:422 accounts/models.py:453
 msgid "0"
 msgstr "0"
 
-#: accounts/models.py:371 accounts/models.py:398
+#: accounts/models.py:423 accounts/models.py:450
 msgid "1"
 msgstr "1"
 
-#: accounts/models.py:372 accounts/models.py:398
+#: accounts/models.py:424 accounts/models.py:450
 msgid "2"
 msgstr "2"
 
-#: accounts/models.py:373
+#: accounts/models.py:425
 msgid "3"
 msgstr "3"
 
-#: accounts/models.py:374
+#: accounts/models.py:426
 msgid "4"
 msgstr "4"
 
-#: accounts/models.py:375
+#: accounts/models.py:427
 msgid "5"
 msgstr "5"
 
-#: accounts/models.py:376
+#: accounts/models.py:428
 msgid "6"
 msgstr "6"
 
-#: accounts/models.py:377
+#: accounts/models.py:429
 msgid "7"
 msgstr "7"
 
-#: accounts/models.py:378
+#: accounts/models.py:430
 msgid "8"
 msgstr "8"
 
-#: accounts/models.py:379
+#: accounts/models.py:431
 msgid "9"
 msgstr "9"
 
-#: accounts/models.py:380
+#: accounts/models.py:432
 msgid "10"
 msgstr "10"
 
-#: accounts/models.py:381
+#: accounts/models.py:433
 msgid "More than 10"
-msgstr "10名以上"
+msgstr "10以上"
 
-#: accounts/models.py:384
+#: accounts/models.py:436
 msgid "under 18"
 msgstr "18歳未満"
 
-#: accounts/models.py:385
+#: accounts/models.py:437
 msgid "18-21"
 msgstr "18-21"
 
-#: accounts/models.py:386
+#: accounts/models.py:438
 msgid "22-24"
 msgstr "22-24"
 
-#: accounts/models.py:387
+#: accounts/models.py:439
 msgid "25-29"
 msgstr "25-29"
 
-#: accounts/models.py:388
+#: accounts/models.py:440
 msgid "30-34"
 msgstr "30-34"
 
-#: accounts/models.py:389
+#: accounts/models.py:441
 msgid "35-39"
 msgstr "35-39"
 
-#: accounts/models.py:390
+#: accounts/models.py:442
 msgid "40-44"
 msgstr "40-44"
 
-#: accounts/models.py:391
+#: accounts/models.py:443
 msgid "45-49"
 msgstr "45-49"
 
-#: accounts/models.py:392
+#: accounts/models.py:444
 msgid "50-59"
 msgstr "50-59"
 
-#: accounts/models.py:393
+#: accounts/models.py:445
 msgid "60-69"
 msgstr "60-69"
 
-#: accounts/models.py:394
+#: accounts/models.py:446
 msgid "70 or over"
 msgstr "70以上"
 
-#: accounts/models.py:398
+#: accounts/models.py:450
 msgid "3 or more"
-msgstr "3個以上"
+msgstr "3以上"
 
-#: accounts/models.py:398
+#: accounts/models.py:450
 msgid "varies"
-msgstr "変わる"
+msgstr "変化する"
 
-#: accounts/models.py:402
+#: accounts/models.py:454
 msgid "5000"
 msgstr "5000"
 
-#: accounts/models.py:403
+#: accounts/models.py:455
 msgid "10000"
 msgstr "10000"
 
-#: accounts/models.py:404
+#: accounts/models.py:456
 msgid "15000"
 msgstr "15000"
 
-#: accounts/models.py:405
+#: accounts/models.py:457
 msgid "20000"
 msgstr "20000"
 
-#: accounts/models.py:406
+#: accounts/models.py:458
 msgid "30000"
 msgstr "30000"
 
-#: accounts/models.py:407
+#: accounts/models.py:459
 msgid "40000"
 msgstr "40000"
 
-#: accounts/models.py:408
+#: accounts/models.py:460
 msgid "50000"
 msgstr "50000"
 
-#: accounts/models.py:409
+#: accounts/models.py:461
 msgid "60000"
 msgstr "60000"
 
-#: accounts/models.py:410
+#: accounts/models.py:462
 msgid "70000"
 msgstr "70000"
 
-#: accounts/models.py:411
+#: accounts/models.py:463
 msgid "80000"
 msgstr "80000"
 
-#: accounts/models.py:412
+#: accounts/models.py:464
 msgid "90000"
 msgstr "90000"
 
-#: accounts/models.py:413
+#: accounts/models.py:465
 msgid "100000"
 msgstr "100000"
 
-#: accounts/models.py:414
+#: accounts/models.py:466
 msgid "110000"
 msgstr "110000"
 
-#: accounts/models.py:415
+#: accounts/models.py:467
 msgid "120000"
 msgstr "120000"
 
-#: accounts/models.py:416
+#: accounts/models.py:468
 msgid "130000"
 msgstr "130000"
 
-#: accounts/models.py:417
+#: accounts/models.py:469
 msgid "140000"
 msgstr "140000"
 
-#: accounts/models.py:418
+#: accounts/models.py:470
 msgid "150000"
 msgstr "150000"
 
-#: accounts/models.py:419
+#: accounts/models.py:471
 msgid "160000"
 msgstr "160000"
 
-#: accounts/models.py:420
+#: accounts/models.py:472
 msgid "170000"
 msgstr "170000"
 
-#: accounts/models.py:421
+#: accounts/models.py:473
 msgid "180000"
 msgstr "180000"
 
-#: accounts/models.py:422
+#: accounts/models.py:474
 msgid "190000"
 msgstr "190000"
 
-#: accounts/models.py:423
+#: accounts/models.py:475
 msgid "over 200000"
-msgstr "二十万以上"
+msgstr "200000以上"
 
-#: accounts/models.py:427
+#: accounts/models.py:479
 msgid "urban"
-msgstr "アーバン"
+msgstr "都市部"
 
-#: accounts/models.py:427
+#: accounts/models.py:479
 msgid "suburban"
 msgstr "郊外"
 
-#: accounts/models.py:427
+#: accounts/models.py:479
 msgid "rural"
 msgstr "田舎"
 
-#: accounts/models.py:477
+#: accounts/models.py:529
 msgid "Select a State"
-msgstr "州を選択してください"
+msgstr "都道府県を選択してください"
 
-#: accounts/templates/account/local_user_exists.html:7
-#: accounts/templates/account/local_user_exists.html:13
-#: accounts/templates/account/login_errored_cancelled.html:7
-#: accounts/templates/account/login_errored_cancelled.html:13
-msgid "Login Unsuccessful"
-msgstr "ログイン失敗"
+#: accounts/templates/accounts/_account-navigation.html:2
+#: accounts/templates/accounts/account-update.html:24
+msgid "Account Information"
+msgstr "アカウント情報"
 
-#: accounts/templates/account/local_user_exists.html:16
+#: accounts/templates/accounts/_account-navigation.html:2
+msgid "Change your login credentials and/or nickname."
+msgstr "ログイン資格証明やニックネームを変更する。"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Demographic Survey"
+msgstr "人口統計調査"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Tell us more about yourself."
+msgstr "あなたご自身のことを詳しく教えてください。"
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Children Information"
+msgstr "お子さんの情報"
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Add or edit participant information."
+msgstr "参加者情報を追加・編集する。"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+#: web/templates/web/participant-email-preferences.html:4
+msgid "Email Preferences"
+msgstr "メールの設定"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+msgid "Edit when you can be contacted."
+msgstr "どのような場合にお知らせを受け取るかを編集する。"
+
+#: accounts/templates/accounts/account-update.html:14
+#: web/templates/web/_navigation.html:38 web/templates/web/child-update.html:16
+#: web/templates/web/children-list.html:67
+#: web/templates/web/demographic-data-update.html:78
+#: web/templates/web/participant-email-preferences.html:16
+msgid "My Account"
+msgstr "マイアカウント"
+
+#: accounts/templates/accounts/account-update.html:37
+#: accounts/templates/accounts/account-update.html:58
+#: web/templates/web/child-update.html:46
+#: web/templates/web/demographic-data-update.html:102
+#: web/templates/web/participant-email-preferences.html:38
+msgid "Save"
+msgstr "保存"
+
+#: accounts/templates/accounts/account-update.html:45
+msgid "Change Your Password"
+msgstr "パスワードを変更する"
+
+#: accounts/templates/accounts/account-update.html:68
+msgid "Manage Two-Factor Authentication"
+msgstr "二段階認証について設定する"
+
+#: accounts/templates/accounts/account-update.html:83
 msgid ""
-"A Lookit study participant exists with the email address for your OSF user "
-"account. Create an OSF user with a different email address and try logging "
-"into Experimenter with that. "
+"If you'd like, you can turn two-factor authentication off here. Just enter "
+"your one-time password here, hit submit, and it'll get deleted for you!"
 msgstr ""
-"OSFユーザーアカウントのメールアドレスを持つLookit研究参加者が存在します。別の"
-"メールアドレスでOSFユーザーを作成し、そのメールアドレスでExperimenterにログイ"
-"ンしてみてください。"
+"ご希望であれば、二段階認証を無効にすることができます。その場合、ワンタイムパ"
+"スワードを入力して、「提出する」をクリックしてください。"
 
-#: accounts/templates/account/local_user_exists.html:19
-msgid ""
-"If this should not have occurred and the issue persists, please report it to "
-"<a href="
-msgstr ""
-"この問題が発生していないはずなのに問題が解決しない場合は、<a href=<a href=<a "
-"href=<a href=<a href=<a href=<a href=<a>）まで報告してください。"
-
-#: accounts/templates/account/local_user_exists.html:22
-#: accounts/templates/account/login_errored_cancelled.html:19
-msgid "Return to Experimenter"
-msgstr "実験者を見ることができます"
-
-#: accounts/templates/account/login.html:7
-msgid "Sign In"
-msgstr "サインイン"
-
-#: accounts/templates/account/login.html:13
-#: web/templates/registration/login.html:25
-#: web/templates/web/_navigation.html:47
-msgid "Login"
-msgstr "ログイン"
-
-#: accounts/templates/account/login.html:20
-msgid ""
-"\n"
-"          Please sign in to the Open Science Framework or register for an "
-"account and sign in below.\n"
-"      </p>\n"
-"      <p>\n"
-"        By using or requesting access to Lookit, you agree that you have "
-"read and accepted the <a href=\"/termsofuse/\" target=\"_blank\">Terms of "
-"Use</a> and <a href=\"/privacy/\" target=\"_blank\">Privacy Statement</a>.\n"
-"        "
-msgstr ""
-"\n"
-"          オープンサイエンスフレームワークにサインインするか、アカウント登録"
-"をして下記よりサインインしてください。\n"
-"      </p>\n"
-"      <p>\n"
-"        Lookitを使用またはアクセスを要求することで、利用者は<a href=\"/"
-"termsofuse/\" target=\"_blank\">利用規約</a>と<a href=\"/privacy/\" target="
-"\"_blank\">プライバシーポリシーを</a>読み、これに同意したことになります。\n"
-"        "
-
-#: accounts/templates/account/login_errored_cancelled.html:16
-#, fuzzy
-#| msgid ""
-#| "If this should not have occurred and the issue persists, please report it "
-#| "to <a href=\"mailto:support@osf.io\">support@osf.io"
-msgid ""
-"If this should not have occurred and the issue persists, please report it to "
-"<a href=\"mailto:support@osf.io\">support@osf.io</a>"
-msgstr ""
-"この問題が発生していないはずなのに問題が解決しない場合は、<a href=\"mailto:"
-"support@osf.io\">support@osf.io</a> まで報告してください。"
+#: accounts/templates/accounts/account-update.html:108
+msgid "Set up Two-Factor Authentication"
+msgstr "二段階認証について設定する"
 
 #: accounts/templates/accounts/participant_detail.html:15
 msgid "All Participants"
-msgstr "参加する"
+msgstr "全ての参加者"
 
 #: accounts/templates/accounts/participant_detail.html:23
 msgid "Participant ID"
-msgstr "参加する"
+msgstr "参加者ＩＤ"
 
 #: accounts/templates/accounts/participant_detail.html:24
 msgid "Last Active:"
-msgstr "最後にアクティブになりました。"
+msgstr "最終ログイン："
 
 #: accounts/templates/accounts/participant_detail.html:25
 msgid "Participant global ID:"
-msgstr "参加者アカウント"
+msgstr "参加者グローバルＩＤ："
 
 #: accounts/templates/accounts/participant_detail.html:31
 #: web/templates/web/children-list.html:105
@@ -725,25 +774,17 @@ msgstr "子供"
 msgid "Age"
 msgstr "年齢"
 
-#: accounts/templates/accounts/participant_detail.html:54
-msgid "Gender"
-msgstr "性別"
-
 #: accounts/templates/accounts/participant_detail.html:70
 msgid "Additional Info"
 msgstr "補足情報"
 
 #: accounts/templates/accounts/participant_detail.html:79
 msgid "No children profiles registered!"
-msgstr "子供のプロフィールが登録されていません"
+msgstr "子供のプロフィールが登録されていません！"
 
 #: accounts/templates/accounts/participant_detail.html:83
 msgid "Latest Demographic Data"
-msgstr "最新の人口動態データ"
-
-#: accounts/templates/accounts/participant_detail.html:86
-msgid "Country"
-msgstr "国"
+msgstr "最新の人口統計データ"
 
 #: accounts/templates/accounts/participant_detail.html:94
 msgid "State"
@@ -751,7 +792,7 @@ msgstr "都道府県"
 
 #: accounts/templates/accounts/participant_detail.html:102
 msgid "Area description"
-msgstr "エリアの説明"
+msgstr "地域の説明"
 
 #: accounts/templates/accounts/participant_detail.html:110
 msgid "Languages Spoken at Home"
@@ -767,24 +808,115 @@ msgstr "子供の現在の年齢"
 
 #: accounts/templates/accounts/participant_detail.html:134
 msgid "Number of Guardians"
-msgstr "ガーディアンの数"
+msgstr "保護者の数"
 
 #: accounts/templates/accounts/participant_detail.html:142
 msgid "Explanation for Guardians:"
-msgstr "ガーディアンズの説明。"
+msgstr "保護者に関する説明："
 
 #: accounts/templates/accounts/participant_detail.html:150
 msgid "Race"
 msgstr "人種"
 
-#: accounts/templates/accounts/participant_list.html:37
-#: accounts/templates/accounts/participant_list.html:58
-msgid "Nickname"
-msgstr ""
-
-#: exp/templates/exp/dashboard.html:17
+#: exp/templates/exp/dashboard.html:16
 msgid "Dashboard"
 msgstr "ダッシュボード"
+
+#: project/settings.py:228 studies/fields.py:68
+msgid "German"
+msgstr "ドイツ語/German"
+
+#: project/settings.py:229 studies/fields.py:57
+msgid "English"
+msgstr "英語/English"
+
+#: project/settings.py:230 studies/fields.py:101
+msgid "Spanish"
+msgstr "スペイン語/Spanish"
+
+#: project/settings.py:231
+msgid "Argentinian Spanish"
+msgstr "スペイン語（アルゼンチン）"
+
+#: project/settings.py:232 studies/fields.py:66
+msgid "French"
+msgstr "フランス語/French"
+
+#: project/settings.py:233
+msgid "Canadian French"
+msgstr "フランス語（カナダ）"
+
+#: project/settings.py:234
+msgid "Hebrew"
+msgstr "ヘブライ語"
+
+#: project/settings.py:235 studies/fields.py:76
+msgid "Italian"
+msgstr "イタリア語/Italian"
+
+#: project/settings.py:236 studies/fields.py:77
+msgid "Japanese"
+msgstr "日本語/Japanese"
+
+#: project/settings.py:237 studies/fields.py:82
+msgid "Korean"
+msgstr "韓国語/Korean"
+
+#: project/settings.py:238
+msgid "Norwegian Bokmål"
+msgstr "ブークモール（ノルウェー）"
+
+#: project/settings.py:239 studies/fields.py:94
+msgid "Polish"
+msgstr "ポーランド語/Polish"
+
+#: project/settings.py:240 studies/fields.py:95
+msgid "Portuguese"
+msgstr "ポルトガル語/Portuguese"
+
+#: project/settings.py:241
+msgid "Brazilian Portuguese"
+msgstr "ポルトガル語（ブラジル）"
+
+#: project/settings.py:242 studies/fields.py:96
+msgid "Romanian"
+msgstr "ルーマニア語/Romanian"
+
+#: project/settings.py:243 studies/fields.py:97
+msgid "Russian"
+msgstr "ロシア語/Russian"
+
+#: project/settings.py:244 studies/fields.py:107
+msgid "Turkish"
+msgstr "トルコ語/Turkish"
+
+#: project/settings.py:245
+msgid "Simplified Chinese"
+msgstr "簡体字中国語"
+
+#: project/settings.py:246 studies/fields.py:64
+msgid "Dutch"
+msgstr "オランダ語/Dutch"
+
+#: studies/fields.py:7
+msgid "Autism Spectrum Disorder"
+msgstr "自閉スペクトラム症"
+
+#: studies/fields.py:8
+msgid "Deaf"
+msgstr "ろう（デフ）"
+
+#: studies/fields.py:9
+msgid "Hard of Hearing"
+msgstr "難聴"
+
+#: studies/fields.py:10
+msgid "Dyslexia"
+msgstr "読み書き障害"
+
+#: studies/fields.py:11
+msgid "Multiple Birth (twin, triplet, or higher order)"
+msgstr "複数同時出産（双子、三つ子、それ以上）"
 
 #: studies/fields.py:45
 msgid "Twin"
@@ -796,37 +928,221 @@ msgstr "三つ子"
 
 #: studies/fields.py:47
 msgid "Quadruplet"
-msgstr "四重項"
+msgstr "四つ子"
 
 #: studies/fields.py:48
 msgid "Quintuplet"
-msgstr "五重奏"
+msgstr "五つ子"
 
 #: studies/fields.py:49
 msgid "Sextuplet"
-msgstr "セクスタプレット"
+msgstr "六つ子"
 
 #: studies/fields.py:50
 msgid "Septuplet"
-msgstr "セプトゥプレット"
+msgstr "七つ子"
 
 #: studies/fields.py:51
 msgid "Octuplet"
-msgstr "オクタプレット"
+msgstr "八つ子"
 
-#: studies/fields.py:124
+#: studies/fields.py:58
+msgid "Amharic"
+msgstr "アムハラ語/Amharic"
+
+#: studies/fields.py:59
+msgid "Bengali"
+msgstr "ベンガル語/Bengali"
+
+#: studies/fields.py:60
+msgid "Bhojpuri"
+msgstr "ボージュプリー語/Bhojpuri"
+
+#: studies/fields.py:61
+msgid "Burmese"
+msgstr "ビルマ語/Burmese"
+
+#: studies/fields.py:62
+msgid "Cebuano"
+msgstr "セブアノ語/Cebuano"
+
+#: studies/fields.py:63
+msgid "Chhattisgarhi"
+msgstr "チャトラパティ語/Chhattisgarhi"
+
+#: studies/fields.py:65
+msgid "Egyptian Spoken Arabic"
+msgstr "アラビア語（エジプト方言）/Egyptian Spoken Arabic"
+
+#: studies/fields.py:67
+msgid "Gan"
+msgstr "中国語（Gan）/Gan"
+
+#: studies/fields.py:69
+msgid "Gujarati"
+msgstr "グジャラート語/Gujarati"
+
+#: studies/fields.py:70
+msgid "Hakka"
+msgstr "ハッカ語/Hakka"
+
+#: studies/fields.py:71
+msgid "Hausa"
+msgstr "ハウサ語/Hausa"
+
+#: studies/fields.py:72
+msgid "Hindi"
+msgstr "ヒンディー語/Hindi"
+
+#: studies/fields.py:73
+msgid "Igbo"
+msgstr "イグボ語/Igbo"
+
+#: studies/fields.py:74
+msgid "Indonesian"
+msgstr "インドネシア語/Indonesian"
+
+#: studies/fields.py:75
+msgid "Iranian Persian"
+msgstr "ペルシャ語（イラン）/Iranian Persian"
+
+#: studies/fields.py:78
+msgid "Javanese"
+msgstr "ジャワ語/Javanese"
+
+#: studies/fields.py:79
+msgid "Jinyu"
+msgstr "中国語（Jinyu）/Jinyu"
+
+#: studies/fields.py:80
+msgid "Kannada"
+msgstr "カンナダ語/Kannada"
+
+#: studies/fields.py:81
+msgid "Khmer"
+msgstr "クメール語/Khmer"
+
+#: studies/fields.py:83
+msgid "Magahi"
+msgstr "マガヒー語/Magahi"
+
+#: studies/fields.py:84
+msgid "Maithili"
+msgstr "マイティリー語/Maithili"
+
+#: studies/fields.py:85
+msgid "Malay"
+msgstr "マレー語/Malay"
+
+#: studies/fields.py:86
+msgid "Malayalam"
+msgstr "マラヤーラム語/Malayalam"
+
+#: studies/fields.py:87
+msgid "Mandarin"
+msgstr "中国語（Mandarin）/Mandarin"
+
+#: studies/fields.py:88
+msgid "Marathi"
+msgstr "マラーティー語/Marathi"
+
+#: studies/fields.py:89
+msgid "Min Nan"
+msgstr "ビン南語/Min Nan"
+
+#: studies/fields.py:90
+msgid "Moroccan Spoken Arabic"
+msgstr "アラビア語（モロッコ方言）/Moroccan Spoken Arabic"
+
+#: studies/fields.py:91
+msgid "Northern Pashto"
+msgstr "北パシュトー語/Northern Pashto"
+
+#: studies/fields.py:92
+msgid "Northern Uzbek"
+msgstr "北ウズベク語/Northern Uzbek"
+
+#: studies/fields.py:93
+msgid "Odia"
+msgstr "オリヤー語/Odia"
+
+#: studies/fields.py:98
+msgid "Saraiki"
+msgstr "サライキ語/Saraiki"
+
+#: studies/fields.py:99
+msgid "Sindhi"
+msgstr "シンド語/Sindhi"
+
+#: studies/fields.py:100
+msgid "Somali"
+msgstr "ソマリ語/Somali"
+
+#: studies/fields.py:102
+msgid "Sunda"
+msgstr "スンダ語/Sunda"
+
+#: studies/fields.py:103
+msgid "Tagalog"
+msgstr "タガログ語/Tagalog"
+
+#: studies/fields.py:104
+msgid "Tamil"
+msgstr "タミル語/Tamil"
+
+#: studies/fields.py:105
+msgid "Telugu"
+msgstr "テルグ語/Telugu"
+
+#: studies/fields.py:106
+msgid "Thai"
+msgstr "タイ語/Thai"
+
+#: studies/fields.py:108
+msgid "Ukrainian"
+msgstr "ウクライナ語/Ukrainian"
+
+#: studies/fields.py:109
+msgid "Urdu"
+msgstr "ウルドゥー語/Urdu"
+
+#: studies/fields.py:110
+msgid "Vietnamese"
+msgstr "ベトナム語/Vietnamese"
+
+#: studies/fields.py:111
+msgid "Western Punjabi"
+msgstr "西パンジャブ語/Western Punjabi"
+
+#: studies/fields.py:112
+msgid "Wu"
+msgstr "呉語/Wu"
+
+#: studies/fields.py:113
+msgid "Xiang Chinese"
+msgstr "湘語/Xiang Chinese"
+
+#: studies/fields.py:114
+msgid "Yoruba"
+msgstr "ヨルバ語/Yoruba"
+
+#: studies/fields.py:115
+msgid "Yue"
+msgstr "粤語/Yue"
+
+#: studies/fields.py:123
 msgid "Not answered"
 msgstr "未回答"
 
-#: studies/fields.py:125
+#: studies/fields.py:124
 msgid "Other"
 msgstr "その他"
 
-#: studies/fields.py:126
+#: studies/fields.py:125
 msgid "Male"
 msgstr "男性"
 
-#: studies/fields.py:127
+#: studies/fields.py:126
 msgid "Female"
 msgstr "女性"
 
@@ -836,11 +1152,1801 @@ msgid ""
 "studies associated with this Lab and can be added to this Lab's studies."
 msgstr ""
 "この研究室に所属するユーザーです。本研究室に所属するユーザーは、本研究室に関"
-"連する研究を作成することができ、本研究室の研究に追加することができます。"
+"連する研究を作成することができ、本研究室の研究・調査に追加することができま"
+"す。"
 
 #: studies/models.py:122
 msgid "The Users who have requested to join this Lab."
-msgstr "本研究室への参加を希望された利用者様。"
+msgstr "本研究室への参加を希望されたユーザー。"
+
+#: web/templates/frontpages/contact.html:15
+msgid "Technical difficulties"
+msgstr "技術的な問題点"
+
+#: web/templates/frontpages/contact.html:16
+msgid ""
+"To report any technical difficulties during participation, please contact "
+"our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
+msgstr ""
+"研究・調査への参加中に技術的な問題が発生した場合は、Lookit（ルックイット）"
+"チームまでご連絡ください。 <a href='mailto:lookit-tech@mit.edu'>lookit-"
+"tech@mit.edu"
+
+#: web/templates/frontpages/contact.html:17
+msgid "Questions about the studies"
+msgstr "研究・調査に関する質問"
+
+#: web/templates/frontpages/contact.html:18
+msgid ""
+"If you have any questions or concerns about the studies, please first check "
+"our FAQ. With any additional questions, please contact us at <a href='mailto:"
+"lookit@mit.edu'>lookit@mit.edu</a>."
+msgstr ""
+"研究・調査の内容に関するご質問やご不明な点がございましたら、「よくある質問」"
+"をご覧ください。その他ご不明な点がございましたら、 <a href='mailto:"
+"lookit@mit.edu'>lookit@mit.edu</a> までご連絡ください。"
+
+#: web/templates/frontpages/contact.html:19
+#: web/templates/frontpages/privacy.html:140
+msgid "For researchers"
+msgstr "研究者の方々"
+
+#: web/templates/frontpages/contact.html:20
+msgid ""
+"Lookit is available to all developmental researchers, and the code is "
+"entirely open- To learn more about running your own studies or contributing, "
+"please check out the <a href='https://lookit.readthedocs.io/en/develop' "
+"target='_blank'>documentation</a>."
+msgstr ""
+"Lookitは、すべての発達研究者が利用でき、コードは完全にオープンソースとなって"
+"おります。ご自身の研究や開発のためにさらに詳しい情報をお求めの方は、 <a "
+"href='https://lookit.readthedocs.io/en/develop' target='_blank'> こちらの資"
+"料 </a> をご覧ください。"
+
+#: web/templates/frontpages/contact.html:21
+msgid ""
+"Several initial test studies of a prototype Lookit platform were completed "
+"in 2015; you can read about the results, and strengths and limitations of "
+"the platform, in <a href='http://www.mitpressjournals.org/toc/"
+"opmi/1/1'>these papers</a>."
+msgstr ""
+"Lookiウェブシステムのプロトタイプ版に関する初期の検証研究のいくつかは、2015年"
+"に完了しました。その結果や、このウェブシステムの利点・欠点については、<a "
+"href='http://www.mitpressjournals.org/toc/opmi/1/1'> こちらの論文 </a> をご覧"
+"ください。"
+
+#: web/templates/frontpages/default.html:10
+#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
+#: web/templates/web/base.html:10
+msgid "Lookit"
+msgstr "Lookit"
+
+#: web/templates/frontpages/default.html:53
+msgid ""
+"This material is based upon work supported by the National Science "
+"Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
+"Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an "
+"NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, "
+"findings, and conclusions or recommendations expressed in this material are "
+"those of the authors(s) and do not necessarily reflect the views of the "
+"National Science Foundation."
+msgstr ""
+"この素材は、アメリカ国立科学財団（National Science Foundation：NSF）による助"
+"成（1429216, 1823919）、脳・心・機械センター（Center for Brains, Minds and "
+"Machines：CBMM）による助成、NSF STC award CCF-1231216による助成、NSF大学院研"
+"究フェローシップ（1122374）による助成を受けています。この研究・調査課題で表現"
+"されているあらゆる意見・知見・結論・勧告は著者によるものであり、アメリカ国立"
+"科学財団の見解を必ずしも反映したものではありません。"
+
+#: web/templates/frontpages/default.html:58 web/templates/frontpages/home.html:48
+msgid "Privacy"
+msgstr "プライバシー"
+
+#: web/templates/frontpages/default.html:59 web/templates/frontpages/home.html:49
+msgid "Contact us"
+msgstr "連絡先"
+
+#: web/templates/frontpages/default.html:60
+msgid "Connect"
+msgstr "接続する"
+
+#: web/templates/frontpages/faq.html:11
+msgid "Frequently Asked Questions"
+msgstr "よくある質問"
+
+#: web/templates/frontpages/faq.html:16
+msgid "Participation"
+msgstr "参加"
+
+#: web/templates/frontpages/faq.html:20
+msgid "What is a 'study' about cognitive development?"
+msgstr "認知発達に関する「研究・調査」とは？"
+
+#: web/templates/frontpages/faq.html:25
+msgid ""
+"\n"
+"                                <p>Cognitive development is the science of "
+"what kids understand and how they learn. Researchers in cognitive "
+"development are interested in questions like...</p>\n"
+"                                <ul>\n"
+"                                    <li>what knowledge and abilities infants "
+"are born with, and what they have to learn from experience</li>\n"
+"                                    <li>how abilities like mathematical "
+"reasoning are organized and how they develop over time</li>\n"
+"                                    <li>what strategies children use to "
+"learn from the wide variety of data they observe</li>\n"
+"                                </ul>\n"
+"                                <p>A study is meant to answer a very "
+"specific question about how children learn or what they know: for instance, "
+"'Do three-month-olds recognize their parents' faces?'</p>\n"
+"                                "
+msgstr ""
+"\n"
+"                                <p>認知発達とは、子供が何を理解し、どのように"
+"学習するかについての科学です。認知発達の研究者は、次のような疑問に興味を持っ"
+"ています。\n"
+"                                <ul>\n"
+"                                    <li>乳幼児が生まれながらにして持っている"
+"知識や能力、経験から学ぶべきこと</li\n"
+"                                    <li>数学的推論のような能力はどのように体"
+"系化され、時間の経過とともにどのように発達していくのか</li>。\n"
+"                                    <li>子どもたちが観察したさまざまなデータ"
+"から学ぶためにどのような戦略を使っているか</li>。\n"
+"                                </ul>\n"
+"                                <p>研究・調査は、子どもがどのように学習してい"
+"るか、または何を知っているかについての非常に具体的な質問に答えることを目的と"
+"しています。たとえば、「3 か月の子どもは親の顔を認識しているか」といった質問"
+"です。"
+
+#: web/templates/frontpages/faq.html:40
+msgid "How can we participate online?"
+msgstr "オンラインでの参加はどうやってできますか？"
+
+#: web/templates/frontpages/faq.html:45
+msgid ""
+"\n"
+"                            <p>If you have a child and would like to "
+"participate, create an account and take a look at what we have available for "
+"your child's age range. You'll need a working webcam to participate.</p>\n"
+"                                <p>When you select a study, you'll be asked "
+"to read a consent form and record yourself stating that you and your child "
+"agree to participate. Then we'll guide you through what will happen during "
+"the study. Depending on your child's age, your child may answer questions "
+"directly or we may be looking for indirect signs of what she thinks is going "
+"on--like how long she looks at a surprising outcome.</p>\n"
+"                                <p>Some portions of the study will be "
+"automatically recorded using your webcam and sent securely to the Lookit "
+"platform. Trained researchers will watch the video and record your child's "
+"responses--for instance, which way he pointed, or how long she looked at "
+"each image. We'll put these together with responses from lots of other "
+"children to learn more about how kids think!</p>\n"
+"                            "
+msgstr ""
+"\n"
+"                            <p>あなたにお子さんがいて、もし研究・調査に参加し"
+"てくださる場合は、まずアカウントを新規作成して、お子さんの年齢に合う研究・調"
+"査がないかを確認してください。研究・調査に参加するためには、ウェブカメラが必"
+"要になります。</p>\n"
+"                                <p>研究・調査を選択したら、まず研究説明書と同"
+"意書をお読みいただき、あなたとお子さんが研究・調査の参加に同意することを記録"
+"していただきます。その後、研究・調査への参加中にどのようなことを行うのかにつ"
+"いてご案内します。お子さんの年齢に応じて、お子さんご自身に質問にお答えいただ"
+"くこともあれば、お子さんが何を考えているかを教えてくれる間接的な兆候（例："
+"ビックリするような出来事をお子さんがどのくらい見つめていたか）を見ていくこと"
+"もあります。</p>\n"
+"                                <p>研究・調査の一部は、ウェブカメラを使って自"
+"動的に録画され、Lookitウェブシステムに安全に送信されます。訓練を積んだ研究者"
+"が動画を見て、お子さんの反応を記録します（例：お子さんがどの方向を指さした"
+"か、どのくらいの時間それぞれの画像を見ていたか）。これらの記録を他の多くの子"
+"どもたちの反応と合わせることで、子どもたちがどのように考えているかについてよ"
+"り詳しく知ることができるのです！</p>"
+
+#: web/templates/frontpages/faq.html:56
+msgid "Who can create studies on Lookit?"
+msgstr "Lookitで研究・調査ができるのは誰？"
+
+#: web/templates/frontpages/faq.html:61
+msgid ""
+"Any researcher with questions about how kids learn and grow can propose a "
+"Lookit study! Each institution using Lookit has to sign a contract with MIT "
+"where they agree to the <a href='/termsofuse'>Terms of Use</a> and certify "
+"that their studies will be reviewed and approved by an institutional review "
+"board. Studies are also subject to approval by Lookit. As of June 2020 we "
+"have agreements with 20 universities!"
+msgstr ""
+"子どもの学びや発達に関心をもっている研究者であれば、誰でもLookitを使った研"
+"究・調査を提案することができます！　Lookitを利用する各機関は、マサチューセッ"
+"ツ工科大学（MIT）との契約を結び、<a href=\"/termsofuse\">利用規約</a>に同意"
+"し、実施する研究・調査が、研究者の所属する機関の審査委員会による審査及び承認"
+"を受けることを明示しなければなりません。また、研究・調査はLookitの承認を受け"
+"る必要があります。2020年6月現在、20の大学が契約に至っています！"
+
+#: web/templates/frontpages/faq.html:69
+msgid "How do we provide consent to participate?"
+msgstr "参加への同意はどのようにすればいいですか？"
+
+#: web/templates/frontpages/faq.html:74
+msgid ""
+"\n"
+"                                <p>Rather than having the parent or legal "
+"guardian sign a form, we ask that you read aloud (or sign in ASL) a "
+"statement of consent which is recorded using your webcam. This statement "
+"holds the same weight as a signed form, but should be less hassle for you. "
+"It also lets us verify that you understand written English and that you "
+"understand you're being videotaped.</p>\n"
+"                                <p>Researchers watch these consent videos on "
+"a special page of the researcher interface, and record for each one whether "
+"the video shows informed consent. They cannot view other video or download "
+"data from a session unless they have confirmed that you consented to "
+"participate! If they see a consent video that does NOT clearly demonstrate "
+"informed consent--for instance, there was a technical problem and there's no "
+"audio--they may contact you to check, depending on your email settings.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"護者または法定後見人に署名をしてもらうのではなく、研究・調査への参加同意文を"
+"声に出して（または手話で）読み上げる様子を、ウェブカメラで録画させていただき"
+"ます。この同意文は署名された書類と同等の重要性をもちますが、録画による同意の"
+"方があなたの手間が少なくて済むはずです。また、この手続きによって、あなたが英"
+"語で書かれた文章を理解し、録画されていることを理解した上で研究・調査に参加し"
+"ていることを私たちも確認することができます。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>研究者は、研究者専用の特設ページにてこれらの同意録"
+"画を確認し、研究・調査への参加同意が得られているかどうか（インフォームド・コ"
+"ンセント）を記録します。研究者は、あなたが研究・調査への参加に同意したことを"
+"確認しない限り、ほかの録画記録を見たり、課題セッションからデータをダウンロー"
+"ドしたりすることはできません。インフォームド・コンセントが明確に示されていな"
+"い同意録画があった場合（例：技術的なトラブルのために音声が記録されていない場"
+"合）、研究者があなたのメール設定に応じた形で、確認のための連絡することがあり"
+"ます。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:80
+msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
+msgstr ""
+"https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
+
+#: web/templates/frontpages/faq.html:89
+msgid "How is our information kept secure and confidential?"
+msgstr "情報の安全性・機密性はどうやって保たれますか？"
+
+#: web/templates/frontpages/faq.html:94
+msgid ""
+"\n"
+"                                <p>\n"
+"                                Researchers using Lookit agree to uphold a "
+"common set of standards about how data is protected and shared. For "
+"instance, they never publish children's names or birthdates, or information "
+"that could be used to calculate a birthdate.</p>\n"
+"                                <p>The Lookit researcher interface is "
+"designed with participant data protection as the top priority. For instance, "
+"a special interface lets researchers confirm consent videos before they are "
+"able to download any other data from your session. Research groups can "
+"control who has access to what data in a very fine-grained way, for instance "
+"allowing an assistant to confirm consent and send gift cards, but not "
+"download study data.</p>\n"
+"                                <p>All of your data, including video, is "
+"transmitted over a secure HTTPS connection to Lookit storage, and is "
+"encrypted at rest. We take security very seriously; in addition to making "
+"sure any software we use is up-to-date, cloud servers are configured "
+"securely, and unit tests cover checking that accessing data requires correct "
+"permissions, we conducted a risk assessment and detailed manual penetration "
+"testing with a security contractor prior to our 2020 launch.</p>\n"
+"                                <p>See also 'Who will see our video?'</p>\n"
+"                                "
+msgstr ""
+"\n"
+"<p>Lookitを利用している研究者は、データの保護・共有方法について、共通の基準を"
+"遵守することに同意しています。例えば、研究・調査に参加したお子さんの氏名や生"
+"年月日、生年月日を計算できるような情報は、決して公表されません。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>Lookitの研究者専用ページは、参加者のデータ保護を最"
+"優先にして設計されています。例えば、特別ページは、課題セッションからデータが"
+"ダウンロード可能になる前に、研究者が同意録画を確認しなければならない仕様に"
+"なっています。研究グループは、誰がどのようなデータにアクセスできるかを非常に"
+"細かく制御することができます。例えば、研究アシスタントの権限を「参加同意を確"
+"認してギフトカードを送ることはできても、実際の研究データをダウンロードするこ"
+"とはできない」といったように設定することができます。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>録画記録を含むあなたのデータはすべて、安全なHTTPS"
+"接続を介してLookitストレージに送信され、ストレージ上では暗号化されています。"
+"私たちは、セキュリティを非常に重要なものと考えています。使用するソフトウェア"
+"が最新であること、クラウドサーバの設定が安全であること、データへのアクセスに"
+"正しい権限が必要となることをユニットテストで確認することに加えて、2020年の"
+"サービス開始に先立ち、セキュリティ業者とリスク評価を行い、詳細な手動での侵入"
+"テストを実施しました。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>「録画データを見るのはどんな人ですか？」の項目もご"
+"覧ください。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:107
+msgid "Who will see our video?"
+msgstr "録画データを見るのはどんな人ですか？"
+
+#: web/templates/frontpages/faq.html:112
+msgid ""
+"\n"
+"                                <p>Lookit staff at MIT will have access to "
+"your video and other data in order to improve and promote the platform and "
+"help with troubleshooting. The researchers running the study you "
+"participated in will also have access to your video and other data (like "
+"responses to questions during the study, and information you fill out when "
+"registering a child) for research purposes. They will watch the video "
+"segments you send to mark down information specific to the study--for "
+"instance, what your child said, or how long he/she looked to the left versus "
+"the right of the screen. This research group may be at MIT or at another "
+"institution. All studies run on Lookit must be approved by an Institutional "
+"Review Board (IRB) that ensures participants' rights and welfare are "
+"protected. All researchers using Lookit also agree to Terms of Use that "
+"govern what data they can share and what sorts of studies are okay to run on "
+"Lookit; these rules are sometimes stricter than their own institution might "
+"be.  </p>\n"
+"                                <p>Whether anyone else may view the video "
+"depends on the privacy settings you select at the end of the study. There "
+"are two decisions to make: whether to share your data with Databrary, and "
+"how to allow your video clips to be used by the researchers you have "
+"selected.</p>\n"
+"                                <p>First, we ask if you would like to share "
+"your data (including video) with authorized users fo the secure data library "
+"Databrary. Data sharing will lead to faster progress in research on human "
+"development and behavior. Researchers who are granted access to the "
+"Databrary library must agree to treat the data with the same high standard "
+"of care they would use in their own laboratories. Learn more about "
+"Databrary's <a href=\"https://databrary.org/about.html\">mission</a> or the "
+"<a href=\"https://databrary.org/about/agreement.html\">requirements for "
+"authorized users</a>.</p>\n"
+"                                <p>Next, we ask what types of uses of your "
+"video are okay with you.</p>\n"
+"                                <ul>\n"
+"                                    <li><strong>Private</strong> This "
+"privacy level ensures that your video clips will be viewed only by "
+"authorized scientists (Lookit staff, the research group running the study "
+"and, if you have opted to share your data with Databrary, authorized "
+"Databrary users.) They will view the videos to record information about what "
+"your child did during the study--for instance, looking for 9 seconds at one "
+"image and 7 seconds at another image.</li>\n"
+"                                    <li><strong>Scientific and educational</"
+"strong> This privacy level gives permission to share your video clips with "
+"other researchers or students for scientific or educational purposes. For "
+"example, researchers might show a video clip in a talk at a scientific "
+"conference or an undergraduate class about cognitive development, or include "
+"an image or video in a scientific paper. In some circumstances, video or "
+"images may be available online, for instance as supplemental material in a "
+"scientific paper. Sharing videos with other researchers helps other groups "
+"trust and build on our work.</li>\n"
+"                                    <li><strong>Publicity</strong> This "
+"privacy level is for families who would be excited to see their child "
+"featured on the Lookit website or in the news! Selecting this privacy level "
+"gives permission to use your video clips to communicate about developmental "
+"studies and the Lookit platform with the public. For instance, we might post "
+"a short video clip on the Lookit website, on our Facebook page, or in a "
+"press release. Your video will never be used for commercial purposes.</li>\n"
+"                                </ul>\n"
+"                                <p>If for some reason you do not select a "
+"privacy level, we treat the data as 'Private' and do not share with "
+"Databrary. Participants also have the option to withdraw all video besides "
+"consent at the end of the study if necessary (for instance, because someone "
+"was discussing state secrets in the background), and in this case it is "
+"automatically deleted. Privacy settings for completed sessions cannot "
+"automatically be changed retroactively. If you have any questions or "
+"concerns about privacy, please contact our team at <a href=\"mailto:"
+"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"                                "
+msgstr ""
+"\n"
+" <p>マサチューセッツ工科大学（MIT）のLookitスタッフは、ウェブシステムを改善・"
+"増進し、トラブルシューティングに対応するために、あなたの録画データやその他の"
+"データにアクセスすることができます。また、あなたが参加した研究・調査を実施し"
+"ている研究者は、研究目的のためにあなたの録画データやその他のデータ（研究・調"
+"査の間の質問への回答や、お子さんの登録時に記入した情報など）にアクセスするこ"
+"とができます。研究者は、あなたが送信した録画データを見て、研究に必要な特定の"
+"情報（例：お子さんの発話内容や、お子さんが画面の左右をどのくらい長く見ていた"
+"かなど）を記録します。研究グループは、MITに所属している場合もあれば、ほかの機"
+"関に所属している場合もあります。Lookitを使って実施されるすべての研究は、参加"
+"者の権利・福祉が守られていることを保証する機関審査委員会（Institutional "
+"Review Board; IRB）の承認を得なければなりません。さらに、Lookitを利用するすべ"
+"ての研究者は、どのようなデータを共有し、どのような種類の研究をLookit上で実施"
+"してよいかを規定する利用規約に同意しています。</p>\n"
+"<p>ほかの人がビデオを見ることができるかどうかは、研究・調査の最後にあなたが選"
+"択したプライバシー設定によって決まります。具体的には、①データをデータブラリー"
+"（Databrary）と共有するかどうか、②参加した研究・調査を実施している研究者が、"
+"あなたの録画データをどのように使用すること許可するか、という２つの項目があり"
+"ます。</p>\n"
+"<p>まず、あなたのデータ（録画を含む）を、安全なデータライブラリーである「デー"
+"タブラリー」（Databrary）上の許可されたユーザーと共有して良いかどうかをお尋ね"
+"します。データを共有することで、人間の発達や行動に関する研究がより早く進展す"
+"ることになるでしょう。なお、データブラリーへのアクセスを許可された研究者は、"
+"研究室におけるデータの使用と同等の高い水準の注意を払って、これらのデータを取"
+"り扱うことに同意しなければなりません。データブラリーの詳細については、<a "
+"href=\"https://databrary.org/about.html\">ミッション</a>または<a href="
+"\"https://databrary.org/about/agreement.html\">許可されたユーザーの要件につい"
+"て</a>をご覧ください。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>次に、動画データの利用について、どの範囲での利用を"
+"許可するかをお尋ねします。</p>\n"
+"<!--         \t\t\t\t\t\t\t\t<p>Next, we ask what types of uses of your "
+"video are okay with you.</p> -->\n"
+"        \t\t\t\t\t\t\t\t<ul>\n"
+"        \t\t\t\t\t\t\t\t\t<li><strong>プライベートな利用範囲</strong>：このプ"
+"ライバシーレベルは、権限を付与された研究者（Lookitスタッフ、研究・調査を実施"
+"している研究グループ、およびデタブラリーとのデータ共有を許可した場合には、"
+"データブラリー上の権限を付与されたユーザー）のみがあなたの録画データを閲覧で"
+"きるようにすることを保証するものです。権限を付与された研究者は、研究・調査中"
+"にお子さんが何をしたか（例：ある画像を9秒間見て、別の画像を7秒間見ていたな"
+"ど）についての情報を記録するために、録画データを閲覧することになります。</"
+"li>\n"
+"        \t\t\t\t\t\t\t\t\t<li><strong>科学・教育的な利用範囲</strong>：このプ"
+"ライバシーレベルは、科学的または教育的目的のためであれば、ほかの研究者や学生"
+"にもあなたの録画データが共有されることを許可するものです。例えば、研究者が学"
+"会発表や認知発達に関する学部生向けの講義で録画データを流したり、科学論文に画"
+"像や録画を掲載したりする場合があります。状況によっては、例えば科学論文におけ"
+"る補足資料として、画像や録画をオンラインで公開することもあります。ほかの研究"
+"者と録画データを共有することで、他の研究グループとの信頼関係を築いたり、"
+"Lookitを使った研究をより堅固なものにすることができます。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li><strong>パブリックな利用範囲</strong>：このプラ"
+"イバシーレベルは、Lookitウェブサイトやニュースで、あなたのお子さんが注目を浴"
+"びることを快諾してくださるご家族のためのものです！　このプライバシーレベルを"
+"選択すると、発達研究やLookitウェブシステムについて一般の方に広く伝えるため"
+"に、あなたの録画データが使用されることを許可したことになります。例えば、"
+"LookitウェブサイトやFacebookページ、プレスリリースに短いビデオクリップを掲載"
+"することがあります。ただし、あなたの録画映像が商業目的で使用されることは一切"
+"ありません。</li>\n"
+"        \t\t\t\t\t\t\t\t</ul>\n"
+"        \t\t\t\t\t\t\t\t<p>何らかの理由でプライバシーレベルが選択されなかった"
+"場合、データは「プライベートな利用範囲」として扱われ、データブラリーとは共有"
+"されません。また、研究・調査への参加者は必要に応じて、研究・調査の終了時に同"
+"意録画以外のすべての録画データを撤回するオプションを選択することができます"
+"（例：誰かが後ろで機密事項に関する議論をしており、その様子が映り込んでしまっ"
+"た場合など）。このオプションが選択された場合、録画データは自動的に削除されま"
+"す。完了した課題セッションのプライバシー設定を、遡って変更することは自動的に"
+"はできません。プライバシーに関するご不明な点がありましたら、Lookitチーム（<a "
+"href=\"mailto:lookit@mit.edu\">lookit@mit.edu</a>）までご連絡ください。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:130
+msgid "What information do researchers use from our video?"
+msgstr "研究者は録画データのどのような情報を使うのですか？"
+
+#: web/templates/frontpages/faq.html:136
+msgid ""
+"For children under about two years old, we usually design our studies to let "
+"their eyes do the talking! We're interested in where on the screen your "
+"child looks and/or how long your child looks at the screen rather than "
+"looking away. Our calibration videos (example shown below) help us get an "
+"idea of what it looks like when your child is looking to the right or the "
+"left, so we can code the rest of the video."
+msgstr ""
+"歳未満のお子さんの場合、研究・調査は通常、「お子さんの目に語ってもらう」よう"
+"にデザインされます！　私たちは、お子さんが画面のどこを見ているのか、あるい"
+"は、どのくらいの時間目をそらさずに画面を見ているのかということに関心がありま"
+"す。キャリブレーションビデオ（下記に例があります）は、お子さんが画面の右側や"
+"左側を見ているときにどのようにカメラに映るかを把握するのに役立ちます。これに"
+"より、残りの録画記録をデータ化することができます。"
+
+#: web/templates/frontpages/faq.html:143
+msgid ""
+"Here's an example of a few children watching our calibration video--it's "
+"easy to see that they look to one side and then the other."
+msgstr ""
+"こちらは、キャリブレーションビデオを見ているときのお子さんの様子の例です。お"
+"子さんが画面の左右一方を見た後に、もう一方を見ている様子がよくわかります。"
+
+#: web/templates/frontpages/faq.html:149
+msgid ""
+"Your child's decisions about where to look can give us lots of information "
+"about what he or she understands. Here are some of the techniques labs use "
+"to learn more about how children learn."
+msgstr ""
+"こに目を向けるかというお子さんの選択は、お子さんが何を理解しているかについて"
+"多くの情報を与えてくれます。ここでは、お子さんがどのように学ぶかについて、研"
+"究室で用いられているいくつかの手法を紹介します。"
+
+#: web/templates/frontpages/faq.html:150
+msgid "Habituation"
+msgstr "馴化・脱馴化法（Habituation）"
+
+#: web/templates/frontpages/faq.html:151
+msgid ""
+"\n"
+"                                <p>In a habituation study, we first show "
+"infants many examples of one type of object or event, and they lose interest "
+"over time. Infants typically look for a long time at the first pictures, but "
+"then they start to look away more quickly. Once their looking times are much "
+"less than they were initially, we show either a picture from a new category "
+"or a new picture from the familiar category. If infants now look longer to "
+"the novel example, we can tell that they understood--and got bored of--the "
+"category we showed initially.</p>\n"
+"                                <p>Habituation requires waiting for each "
+"individual infant to achieve some threshold of \"boredness\"--for instance, "
+"looking half as long at a picture as he or she did initially. Sometimes this "
+"is impractical, and we use familiarization instead. In a familiarization "
+"study, we show all babies the same number of examples, and then see how "
+"interested they are in the familiar versus a new category. Younger infants "
+"and those who have seen few examples tend to show a familiarity preference--"
+"they look longer at images similar to what they have seen before. Older "
+"infants and those who have seen many examples tend to show a novelty "
+"preference--they look longer at images that are different from the ones they "
+"saw before. You probably notice the same phenomenon when you hear a new song "
+"on the radio: initially you don't recognize it; after it's played several "
+"times you may like it and sing along; after it's played hundreds of times "
+"you would choose to listen to anything else.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"<p>馴化・脱馴化法では、まず赤ちゃんにひとつのカテゴリーの物や出来事の例をたく"
+"さん見てもらいます。すると、赤ちゃんは時間が経過するにつれて興味を失っていき"
+"ます。通常、赤ちゃんは最初の画像を長い時間見ていますが、その後はすぐに目を逸"
+"らすようになっていきます。画像を見ている時間が最初のころに比べてかなり短く"
+"なってきたら、今度は新しいカテゴリーに属する画像か、あるいはこれまで見てきた"
+"カテゴリーに属する別画像のどちらかを見せます。もし赤ちゃんが新しいカテゴリー"
+"の画像をより長く見たら、赤ちゃんは最初に見ていたカテゴリーを理解した（ゆえに"
+"元のカテゴリーの画像は飽きてしまって長く見なかった）ということができます。</"
+"p>\n"
+"<p>馴化・脱馴化法を実施する際には、ひとりひとりの赤ちゃんがある程度の「飽き」"
+"の基準に達するまで待つ必要があります（例：最初に見ていた時間の半分の時間しか"
+"画像を見なくなったなど）。この基準が現実的とは呼べない場合もあり、そのときに"
+"は代わりに慣化法（familiarization）を用います。慣化法では、すべての赤ちゃんに"
+"同じ数の例を見せて、慣れ親しんだカテゴリーと新しいカテゴリーのどちらにどれだ"
+"け興味をもっているかを調べます。月齢の低い赤ちゃんや例をあまり見なかった赤"
+"ちゃんは、以前に見たものに類似した画像をより長く見るという「親近性への選好」"
+"を示す傾向があります。反対に、月齢の高い赤ちゃんや多くの例を見た赤ちゃんは、"
+"以前に見たものとは異なる画像をより長く見るという「新奇性への選好」を示す傾向"
+"があります。例えば、ラジオで新しい曲を聴いたときに、同じような現象が起こって"
+"いると気づくかもしれません。つまり、最初はその曲に気づかないけれども、何回か"
+"同じ曲が流れたらその曲が好きになって一緒に口ずさむようになり、そして何百回も"
+"その曲が再生されたら他の曲を選ぶようになる、という具合です。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:156
+msgid "Violation of expectation"
+msgstr "期待違反法"
+
+#: web/templates/frontpages/faq.html:157
+msgid ""
+"Infants and children already have rich expectations about how events work. "
+"Children (and adults for that matter) tend to look longer at things they "
+"find surprising, so in some cases, we can take their looking times as a "
+"measure of how surprised they are."
+msgstr ""
+"赤ちゃんや子どもは、出来事がどのように起こるのかについて、すでに豊かな期待感"
+"をもっています。子どもたち（そして大人も）には、驚くような事象をより長く見る"
+"傾向があるので、場合によっては、子どもたちがどのくらい驚いているかを測る指標"
+"として、画面への注視時間を用いることがあります。"
+
+#: web/templates/frontpages/faq.html:158
+msgid "Preferential looking"
+msgstr "選好注視法"
+
+#: web/templates/frontpages/faq.html:159
+msgid ""
+"Even when they seem to be passive observers, children are making lots of "
+"decisions about where to look and what to pay attention to. In this "
+"technique, we present children with a choice between two side-by-side images "
+"or videos, and see if children spend more time looking at one of them. We "
+"may additionally play audio that matches one of the videos. The video below "
+"shows a participant looking to her left when asked to 'find clapping'; the "
+"display she's watching is shown at the top."
+msgstr ""
+"子どもたちは、受動的な観察者のように見えたとしても、どこを見て、何に注目する"
+"かについて多くの選択をしています。この手法では、２つの画像や動画を左右に並べ"
+"て提示し、どちらか一方を長くみるかどうかを調べます。また、どちらかの動画に合"
+"わせた音声を流すこともあります。下の動画は、「パチパチしているのを見つけて」"
+"と聞かれたときに、研究・調査に参加している子どもが画面の左側を見ている様子を"
+"表しています。"
+
+#: web/templates/frontpages/faq.html:165
+msgid "Predictive looking"
+msgstr "予期的注視法"
+
+#: web/templates/frontpages/faq.html:166
+msgid ""
+"Children can often make sophisticated predictions about what they expect to "
+"see or hear next. One way we can see those predictions in young children is "
+"to look at their eye movements. For example, if a child sees a ball roll "
+"behind a barrier, she may look to the other edge of the barrier, expecting "
+"the ball to emerge there. We may also set up artificial predictive "
+"relationships--for instance, the syllable 'da' means a toy will appear at "
+"the left of the screen, and 'ba' means a toy will appear at the right. Then "
+"we can see whether children learn these relationships, and how they "
+"generalize, by watching where they look when they hear a syllable."
+msgstr ""
+"子どもたちは、次に何を見たり聞いたりするかについて、しばしば高度な予測をする"
+"ことができます。幼い子どもによるこうした予測を調べる手法のひとつに、目の動き"
+"を見るというものがあります。例えば、遮蔽物の後ろ側をボールが転がっていく様子"
+"を子どもが見ているとしましょう。このとき、子どもは遮蔽物の反対側の端を見て、"
+"そこからボールが出てくることを期待するかもしません。ほかにも、人工的な予測関"
+"係を設定することもあります。例えば、「ダ」という音節は、おもちゃが画面の左側"
+"に表示されることを意味し、「バ」という音節は、反対に右側に表示されることを意"
+"味するとしましょう。このとき、どちらかの音節を聴いたときに子どもがどこを見て"
+"いるかを観察することによって、子どもが音とおもちゃが表示される側との関係性を"
+"学んでいるかどうか、そして、そのような関係性をどのように般化しているかを調べ"
+"ることができます。"
+
+#: web/templates/frontpages/faq.html:168
+msgid ""
+"Older children may simply be able to answer spoken questions about what they "
+"think is happening. For instance, in a recent study, two women called an "
+"object two different made-up names, and children were asked which is the "
+"correct name for the object."
+msgstr ""
+"年長の子どもたちは、何が起こっていると思うかについての自分の考えを口頭で答え"
+"ることができるでしょう。例えば、最近のある研究では、２人の女性がある対象物を"
+"２通りの異なる人工語で呼んだ後、どちらがその対象物の正しい名前かを子どもに尋"
+"ねるという研究・調査を行いました。"
+
+#: web/templates/frontpages/faq.html:174
+msgid ""
+"Another way we can learn about how older children (and adults) think is to "
+"measure their reaction times. For instance, we might ask you to help your "
+"child learn to press one key when a circle appears and another key when a "
+"square appears, and then look at factors that influence how quickly they "
+"press a key."
+msgstr ""
+"年長の子ども（と大人）がどのように考えているかを調べるためのもうひとつの手法"
+"は、反応時間を計測することです。例えば、丸が現れたらあるキーを押し、四角が現"
+"れたら別のキーを押すことを子どもに伝えてもらい、キーを押す速度に影響する要因"
+"を探すことがあります。"
+
+#: web/templates/frontpages/faq.html:181
+msgid "Why are you running studies online instead of in person?"
+msgstr "どうして対面ではなくオンラインで研究・調査を行っているのですか？"
+
+#: web/templates/frontpages/faq.html:186
+msgid ""
+"Traditionally, developmental studies happen in a quiet room in a university "
+"lab. Researchers call or email local parents to see if they'd like to take "
+"part and schedule an appointment for them to come visit the lab. Why "
+"complement these in-lab studies with online ones? We're hoping to..."
+msgstr ""
+"伝統的に、発達研究は大学の研究室内にある静かな部屋にて行われます。研究者は、"
+"その地域にお住まいの保護者に電話やメールで連絡を取り、研究・調査への参加を希"
+"望するかどうかを確認するとともに、研究室への訪問日の予約スケジュールを取りま"
+"す。では、このような研究室内での研究・調査をオンラインによって補うのはなぜで"
+"しょうか？　私たちが望んでいるのは、以下のようなことです。"
+
+#: web/templates/frontpages/faq.html:187
+msgid ""
+"\n"
+"                                <ul>\n"
+"                                    <li>Make it easier for you to take part "
+"in research, especially for families without a stay-at-home parent</li>\n"
+"                                    <li>Work with more kids when needed--"
+"right now a limiting factor in designing studies is the time it takes to "
+"recruit participants</li>\n"
+"                                    <li>Draw conclusions from a more "
+"representative population of families--not just those who live near a "
+"university and are able to visit the lab during the day.\n"
+"                                    </li>\n"
+"                                    <li>Make it easier for families to "
+"continue participating in longitudinal studies, which may involve multiple "
+"testing sessions separated by months or years</li>\n"
+"                                    <li>Observe more natural behavior "
+"because children are at home rather than in an unfamiliar place</li>\n"
+"                                    <li>Create a system for learning about "
+"special populations--for instance, children with specific developmental "
+"disorders</li>\n"
+"                                    <li>Make the procedures we use in doing "
+"research more transparent, and make it easier to replicate our findings</"
+"li>\n"
+"                                    <li>Communicate with families about the "
+"research we're doing and what we can learn from it</li>\n"
+"                                </ul>\n"
+"                                "
+msgstr ""
+"\n"
+"<ul>\n"
+"        \t\t\t\t\t\t\t\t\t<li>特に日中保護者の方がおうちにいないようなご家庭"
+"でも、研究・調査に参加しやすくなる。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>必要に応じて、より多くの子どもたちに研究・調査"
+"に参加してもらう（現状、研究・調査を設計する上での制限となる要因は、参加者を"
+"集めるのに時間がかかることです）。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>大学の近くに住んでいて、日中に研究室を訪問でき"
+"るご家庭だけでなく、より多くの典型的な家庭集団からデータを収集し結論を導き出"
+"す。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>家族が長期的な研究・調査（例：数ヶ月または数年"
+"単位で区切られた複数の研究・調査セッションがある）に継続的に参加しやすくな"
+"る。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>慣れない場所ではなくお子さんが普段過ごしている"
+"家庭にて研究・調査を実施することで、より自然な行動を観察できる。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>特定の発達障害のあるお子さんなど、ある特殊な集"
+"団について学ぶためのシステムを作る。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>研究・調査において用いられる手順をより透明性の"
+"高いものにし、研究・調査結果の再現可能性を高める。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>私たちが行っている研究・調査と、それらから学べ"
+"る事柄について、ご家庭とコミュニケーションをとる。</li>\n"
+"                                </ul>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:206
+msgid "When will we see the results of the study?"
+msgstr "研究・調査の結果がわかるのはいつになりますか？"
+
+#: web/templates/frontpages/faq.html:211
+msgid ""
+"The process of publishing a scientific study, from starting data collection "
+"to seeing the paper in a journal, can take several years. You can check the "
+"Lookit home page for updates on papers, or set your communication "
+"preferences to be notified when we have results from studies you "
+"participated in."
+msgstr ""
+"データ収集の開始から論文が学術ジャーナルに掲載されるまで、科学研究・調査には"
+"数年を要することがあります。論文の更新情報はLookitのホームページで確認するこ"
+"とができますし、参加した研究・調査の結果が公表されたらお知らせが届くように通"
+"知設定を行うことができます。"
+
+#: web/templates/frontpages/faq.html:218
+msgid ""
+"My child wasn't paying attention, or we were interrupted. Can we try the "
+"study again?"
+msgstr ""
+"子どもの注意が逸れてしまったり、課題を中断したりしてしまいました。もう一回研"
+"究・調査に参加することはできますか？"
+
+#: web/templates/frontpages/faq.html:223
+msgid ""
+"Certainly--thanks for your dedication! You may see a warning that you have "
+"already participated in the study when you go to try it again, but you can "
+"ignore it. You don't need to tell us that you tried the study before; we'll "
+"have a record of your previous participation."
+msgstr ""
+"もちろんです。ご協力に感謝いたします！　再度課題を実施すると、「あなたはこの"
+"研究・調査にすでに参加したことがあります」と警告が表示されるかもしれません"
+"が、無視していただいて構いません。また、あなたの以前の参加情報は記録されてい"
+"ますので、過去に同じ研究・調査に参加したことを伝える必要もありません。"
+
+#: web/templates/frontpages/faq.html:230
+msgid ""
+"My child is outside the age range. Can he/she still participate in this "
+"study?"
+msgstr ""
+"子どもは対象年齢の範囲外です。それでも研究・調査に参加することはできますか？"
+
+#: web/templates/frontpages/faq.html:235
+msgid ""
+"Sure! We may not be able to use his or her data in our research directly, "
+"but if you're curious you're welcome to try the study anyway. (Sometimes big "
+"siblings really want their own turn!) If your child is just below the "
+"minimum age for a study, however, we encourage you to wait so that we'll be "
+"able to use the data."
+msgstr ""
+"もちろんです！　そのお子さんのデータを研究・調査に直接用いることはできないか"
+"もしれませんが、もしご興味があるようでしたら、研究・調査にぜひ参加してみてく"
+"ださい（実際に、上のご兄姉が「自分もやりたい！」と要求する場合もあります）。"
+"ただし、お子さんが研究・調査の対象最低年齢を下回っている場合、データを研究・"
+"調査に利用できるように、対象年齢になるまでお待ちいただくことをお勧めします。"
+
+#: web/templates/frontpages/faq.html:242
+msgid "My child was born prematurely. Should we use his/her adjusted age?"
+msgstr ""
+"子どもは早産で生まれました。実際の月齢ではなく、修正月齢を使った方がいいです"
+"か？"
+
+#: web/templates/frontpages/faq.html:247
+msgid ""
+"For study eligibility, we usually use the child's chronological age (time "
+"since birth), even for premature babies. If adjusted age is important for a "
+"particular study, we will make that clear in the study eligibility criteria."
+msgstr ""
+"研究・調査の対象になるかどうかについては、通常、早産児であっても子どもの実際"
+"の月齢（出産からの時間）を使用しています。特定の研究・調査において修正月齢が"
+"重要となる場合には、研究・調査への参加資格の基準を説明する際にそのことを明記"
+"します。"
+
+#: web/templates/frontpages/faq.html:254
+msgid ""
+"Our family speaks a language other than English at home. Can my child "
+"participate?"
+msgstr ""
+"私たちの家庭では、英語以外の言語を話します。その場合でも子どもは研究・調査に"
+"参加できますか？"
+
+#: web/templates/frontpages/faq.html:259
+msgid ""
+"Sure! Right now, instructions for children and parents are written only in "
+"English, so some of them may be confusing to a child who does not hear "
+"English regularly. However, you're welcome to try any of the studies and "
+"translate for your child if you can. If it matters for the study whether "
+"your child speaks any languages besides English, we'll ask specifically. You "
+"can also indicate the languages your child speaks or is learning to speak on "
+"your demographic survey."
+msgstr ""
+"もちろんです！　 現時点では、お子さんと保護者の方への説明書は英語でしか書かれ"
+"ていません。したがって、日常的に英語にふれていないお子さんの場合、戸惑うこと"
+"もあるかもしれません。しかし、もしよかったら、いずれかの研究・調査に参加し"
+"て、お子さんのために翻訳にトライしていただけると嬉しく思います。もしお子さん"
+"が英語以外の言語を話すかどうかが研究・調査の実施にあたって重要となる場合に"
+"は、そのことについて具体的にお尋ねします。また、人口統計に関する質問欄にて、"
+"お子さんが話したり聞いたりしている言語について記入することもできます。"
+
+#: web/templates/frontpages/faq.html:266
+msgid ""
+"My child has been diagnosed with a developmental disorder or has special "
+"needs. Can he/she still participate?"
+msgstr ""
+"子どもが発達障害の診断を受けていたり、特別な支援が必要だったりする場合でも、"
+"研究・調査に参加できますか？"
+
+#: web/templates/frontpages/faq.html:271
+msgid ""
+"\n"
+"                                <p>Of course! We're interested in how all "
+"children learn and grow. If you'd like, you can make a note of any "
+"developmental disorders in the comments section at the end of the study. We "
+"are excited that in the future, online studies may help more families "
+"participate in research to better understand their own children's diagnoses."
+"</p>\n"
+"                                <p>One note: most of our studies include "
+"both images and sound, and may be hard to understand if your child is blind "
+"or deaf. If you can, please feel free to help out by describing images or "
+"signing.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"<p>もちろんです！　私たちは、すべての子どもたちがどのように学び、育っていくの"
+"かに関心をもっています。もしよろしければ、研究・調査の末尾にあるコメント欄"
+"に、お子さんが受けている診断名について記載していただけるとありがたく思いま"
+"す。将来的には、オンラインでの研究・調査によって、より多くのご家庭が研究・調"
+"査に参加し、ご自身のお子さんの診断についてよりよく理解できるようになるかもし"
+"れないと考えており、これを心待ちにしています。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>なお、ひとつご留意いただきたいことがあります。"
+"Lookitを使った研究・調査のほとんどは画像と音声の両方を含んでいるため、目が見"
+"えなかったり、耳が聞こえなかったりするお子さんにとっては理解しづらいかもしれ"
+"ません。もし可能であれば、画像について説明したり手話を使ったりして、お子さん"
+"が課題の内容を理解できるようにご協力いただければと思います。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:281
+msgid ""
+"I have multiple children in the age range for a study. Can they participate "
+"together?"
+msgstr ""
+"研究・調査の対象年齢に該当する子どもが２人以上います。みんな一緒に研究・調査"
+"に参加してもいいですか？"
+
+#: web/templates/frontpages/faq.html:286
+msgid ""
+"If possible, we ask that each child participate separately. When children "
+"participate together they generally influence each other. That's a "
+"fascinating subject in its own right but usually not the focus of our "
+"research."
+msgstr ""
+"可能であれば、それぞれのお子さんに別々に参加していただくようお願いいたしま"
+"す。一般的に、複数の子どもたちが一緒に研究・調査に参加すると、子どもたちの間"
+"でお互いに影響を与え合ってしまします。そのこと自体が興味深いテーマではあるの"
+"ですが、通常は、研究・調査の目的はこの点にはありません。"
+
+#: web/templates/frontpages/faq.html:293
+msgid "But I've heard that young children should avoid 'screen time.'"
+msgstr "幼い子どもは、デジタル画面を見る時間を避けるべきだと聞きましたが？"
+
+#: web/templates/frontpages/faq.html:298
+msgid ""
+"\n"
+"                                <p>We agree with the American Academy of "
+"Pediatrics <a href=\"https://pediatrics.aappublications.org/content/138/5/"
+"e20162591\" target=\"_blank\">advice</a> that children learn best from "
+"people, not screens! However, our studies are not intended to educate "
+"children, but to learn from them.</p>\n"
+"                                <p>As part of a child's limited screen time, "
+"we hope that our studies will foster family conversation and engagement with "
+"science that offsets the few minutes spent watching a video instead of "
+"playing. And we do \"walk the walk\"--our own young children provide lots of "
+"feedback on our studies!</p>\n"
+"                                "
+msgstr ""
+"\n"
+"<p>私たちは、子どもはスクリーンではなく、人から学ぶのが最も良いというアメリカ"
+"小児科学会（American Academy of Pediatrics）の<a href=\"https://pediatrics."
+"aappublications.org/content/138/5/e20162591\" target=\"_blank\">アドバイス</"
+"a>に同意しています。しかし、Lookitを使う研究・調査の目的は、子どもたちを教育"
+"することではなく、子どもたちから学ぶことです。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>画面を見て過ごす限られた時間の一部として、Lookitを"
+"使った研究・調査が、遊ぶ代わりに動画を見ることに費やした時間に見合うくらい、"
+"ご家庭での会話や科学への関わりを促進するよう目指しています。Lookitチームのメ"
+"ンバー自身の子どもたちも研究・調査に参加して、たくさんのアドバイスをしてくれ"
+"ています！</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:308
+msgid "Will we be paid for our participation?"
+msgstr "研究・調査に参加したら、何か報酬がもらえるのでしょうか？"
+
+#: web/templates/frontpages/faq.html:313
+msgid ""
+"Some research groups provide gift cards or other compensation for completing "
+"their studies, and others rely on volunteers. (This often depends on the "
+"rules of the university that's doing the research.) This information will be "
+"listed on the study description page."
+msgstr ""
+"研究によっては、研究・調査への参加終了時にギフトカードなどの報酬が提供される"
+"こともありますが、ボランティアでの参加となる場合もあります（研究・調査を実施"
+"している大学の規則によって異なることが多いです）。報酬の有無についての情報"
+"は、研究・調査についての説明ページに記載されています。"
+
+#: web/templates/frontpages/faq.html:320
+msgid "Can I get my child's results?"
+msgstr "自分の子どもの結果を知ることはできますか？"
+
+#: web/templates/frontpages/faq.html:325
+#, python-format
+msgid ""
+"\n"
+"                                <p>For some studies, yes! Usually, "
+"developmental researchers only interpret children's abilities and "
+"developmental trends at a group level, and the individual data collected "
+"just isn't very interpretable. But for \"Your baby, the physicist\" and "
+"other longitudinal studies (where you come back for more than one session), "
+"we can sometimes collect enough data to give you a report of your child's "
+"responses after you complete all the sessions.</p>\n"
+"                                <p>Please note that none of the measures we "
+"collect are diagnostic! For instance, while we hope you'll be interested to "
+"learn that your child looked 70%% of the time at videos where things fell up "
+"versus falling down, we won't be able to tell you whether this means your "
+"child is going to be especially good at physics.</p>\n"
+"                                <p>If you're interested in getting "
+"individual results right away, please see our <a href='resources'>Resources</"
+"a> section for fun at-home activities you can try with your child.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"<p>いくつかの研究・調査では可能です。通常、発達研究者は子どもの能力や発達の傾"
+"向を集団レベルでしか解釈しませんし、収集した個々のデータはあまり解釈できるよ"
+"うなものではありません。しかし、「物理学する赤ちゃん」（Your baby, the "
+"physicist）やその他の縦断的な研究（複数回のセッションに参加していただく場合）"
+"では、すべてのセッションを終了後に、お子さんの反応をお伝えするのに十分なデー"
+"タを収集できる場合があります。</p>\n"
+"        \t\t\t\t\t\t\t    <p>ただし、Lookitで収集される測定値はいずれも診断的"
+"なものではありませんのでご留意ください！例えば、物が落ちる動画と物が宙に浮く"
+"動画を見た際に、お子さんが70％の時間を物が宙に浮く動画を費やしていた、という"
+"結果を面白いと感じてくだされば幸いですが、この結果から、物理学が特に得意にな"
+"る、といったことを伝えることはできません。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>すぐにお子さんの反応を確かめたいとお考えの方は、お"
+"子さんと一緒におうちでできる楽しいアクティビティーが記載されている<a href=\"/"
+"resources\">参考資料</a>ページをご覧ください。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:335
+msgid "Technical"
+msgstr "技術的なことについて"
+
+#: web/templates/frontpages/faq.html:339
+msgid "What browsers are supported?"
+msgstr "対応しているウェブブラウザは何ですか？"
+
+#: web/templates/frontpages/faq.html:344
+msgid ""
+"Lookit supports recent versions of Chrome and Firefox. We are not currently "
+"able to support Internet Explorer or Safari."
+msgstr ""
+"Lookitは最近のバージョンのChromeとFirefoxに対応しています。現時点では、"
+"Internet ExplorerやSafariには対応していません。"
+
+#: web/templates/frontpages/faq.html:351
+msgid "Can we do a study on my phone or tablet?"
+msgstr "スマートフォンやタブレットで研究・調査に参加することはできますか？"
+
+#: web/templates/frontpages/faq.html:357
+msgid ""
+"Not yet! Because we're measuring kids' looking patterns, we need a "
+"reasonably stable view of their eyes and a big enough screen that we can "
+"tell whether they're looking at the left or the right side of it. We're "
+"excited about the potential for touchscreen studies that allow us to observe "
+"infants and toddlers exploring, though!"
+msgstr ""
+"時点ではまだです！Lookitでは、子どもの視線パターンを測定しています。そのため"
+"には、子どもの目を適度に安定して見ることができ、子どもが左右のどちらを見てい"
+"るかがわかる大きな画面が必要です。ですが、赤ちゃんや子どもが探索する様子が観"
+"察できるようなタッチスクリーン研究の可能性についても、前向きに検討していま"
+"す！"
+
+#: web/templates/frontpages/home.html:11
+msgid "the online child lab"
+msgstr "オンライン子ども研究室"
+
+#: web/templates/frontpages/home.html:12
+msgid "A project of the MIT Early Childhood Cognition Lab"
+msgstr "MIT子ども認知発達研究室のプロジェクト"
+
+#: web/templates/frontpages/home.html:12
+msgid "Participate in a Study"
+msgstr "研究・調査に参加する"
+
+#: web/templates/frontpages/home.html:22
+msgid "Bringing science home"
+msgstr "研究をおうちに"
+
+#: web/templates/frontpages/home.html:23
+msgid ""
+"Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
+"developmental psychology: bringing the experiments to you."
+msgstr ""
+"ここ、MIT子ども認知発達研究室では、発達心理学への新しいアプローチを試みていま"
+"す：研究・調査をあなたのおうちに届けることです。"
+
+#: web/templates/frontpages/home.html:29
+msgid "Help us understand how your child thinks"
+msgstr "子どもが何を考えているのかの理解を手助けする"
+
+#: web/templates/frontpages/home.html:30
+msgid ""
+"Your family can contribute to research about how children learn by doing fun "
+"activities together, right in your web browser."
+msgstr ""
+"楽しいアクティビティを通して、子どもの学びについての研究・調査へブラウザから"
+"参加して頂けます。"
+
+#: web/templates/frontpages/home.html:36
+msgid "Participate whenever and wherever"
+msgstr "いつでもどこからでも参加"
+
+#: web/templates/frontpages/home.html:37
+msgid ""
+"Log in or create an account at the top right to get started! You can "
+"participate with your child from any computer with a webcam."
+msgstr ""
+"ログイン、または右上からアカウントを作成してください。ウェブカメラさえあれ"
+"ば、どのパソコンからでもお子さんと一緒に参加して頂けます。"
+
+#: web/templates/frontpages/privacy.html:11
+msgid "Privacy statement"
+msgstr "プライバシーに関する声明"
+
+#: web/templates/frontpages/privacy.html:17
+msgid "Introduction"
+msgstr "はじめに "
+
+#: web/templates/frontpages/privacy.html:18
+msgid ""
+"Lookit is committed to supporting the privacy of individuals who enroll on "
+"our Platform to conduct\n"
+"                research or serve as research subjects. This Privacy "
+"Statement explains how we handle and use the\n"
+"                personal information we collect about our researchers and "
+"research participant community."
+msgstr ""
+"Lookit（ルックイット）は、研究・調査の実施または参加を目的として、私たちの"
+"ウェブシステムに登録してくださった方々のプライバシー保護に努めることをお約束"
+"します。このプライバシーに関する声明では、研究者と研究参加者のコミュニティに"
+"関して、私たちが収集した個人情報をどのように取り扱い、使用するかを説明しま"
+"す。"
+
+#: web/templates/frontpages/privacy.html:22
+msgid "For participants"
+msgstr "研究・調査に参加する皆さまへ"
+
+#: web/templates/frontpages/privacy.html:24
+msgid ""
+"Lookit is a platform that many different researchers use to conduct studies "
+"about how children learn and\n"
+"                develop. It is run by the MIT Early Childhood Cognition Lab, "
+"which has access to all of the data\n"
+"                collected on Lookit. Researchers using Lookit to conduct "
+"studies only access your personal information\n"
+"                if you choose to participate in their study."
+msgstr ""
+"Lookitは、さまざまな研究者が子どもの学習や発達に関する研究・調査を行うための"
+"ウェブシステムです。Lookitは、マサチューセッツ工科大学 子ども認知発達研究室"
+"（MIT Early Childhood Cognition Lab）によって運営されており、当該研究室は"
+"Lookitを用いて収集されたすべてのデータにアクセスすることができます。一方、"
+"Lookitを用いて研究・調査を行う研究者は、その研究・調査への参加を選択された"
+"方々についての個人情報にのみ、アクセスできます。"
+
+#: web/templates/frontpages/privacy.html:29
+#: web/templates/frontpages/privacy.html:142
+msgid "What personal information we collect"
+msgstr "収集する個人情報"
+
+#: web/templates/frontpages/privacy.html:31
+msgid "We collect the following kinds of personal information:"
+msgstr "Lookitでは、以下のような個人情報を収集します。"
+
+#: web/templates/frontpages/privacy.html:32
+msgid ""
+"<ul>\n"
+"                <li>Account data: basic contact information that may include "
+"your email address, nickname, mailing\n"
+"                    address, and contact preferences.</li>\n"
+"                <li>Child data: basic biographical information about your "
+"child(ren), including nickname, date of birth,\n"
+"                    and gestational age at birth.</li>\n"
+"                <li>Demographic data: background and biographical "
+"information such as your native language, race, age,\n"
+"                    educational background, and family history of particular "
+"medical conditions.</li>\n"
+"                <li>Study data: responses collected during particular "
+"studies conducted on Lookit, including webcam\n"
+"                    video of your family participating in the study, text "
+"entered in forms, the particular images that\n"
+"                    were shown, the timing of progression through the study, "
+"etc.</li>\n"
+"            </ul>"
+msgstr ""
+"<ul>\n"
+"<li>アカウントに関するデータ：メールアドレス、ニックネーム、住所、連絡先の設"
+"定など、基本的な連絡先情報</li>\n"
+"<li>お子さんに関するデータ：ニックネーム、生年月日、出生時の在胎期間など、お"
+"子さんの生育に関する基本情報</li>\n"
+"<li>人口統計に関するデータ：母語、人種、年齢、学歴、特定の健康状態に関する診"
+"療記録など、経歴や生体情報</li>\n"
+"<li>研究・調査に関するデータ：ご家族が研究・調査に参加している最中のウェブカ"
+"メラ映像、フォームに入力されたテキスト、提示された特定の画像、調査の進行状況"
+"など、Lookit上で実施された特定の研究・調査の間に収集された回答</li>\n"
+"</ul>"
+
+#: web/templates/frontpages/privacy.html:44
+#: web/templates/frontpages/privacy.html:147
+msgid "How we collect personal information about you"
+msgstr "個人情報の収集方法"
+
+#: web/templates/frontpages/privacy.html:46
+msgid ""
+"The information we collect and maintain about you is the information you "
+"provide to us when registering\n"
+"                for a Lookit account, registering your children, updating "
+"your account or your children’s profiles,\n"
+"                completing or updating surveys, or participating in "
+"individual Lookit studies."
+msgstr ""
+"Lookitが収集・保持する個人情報とは、Lookitアカウントの登録、お子さんの登録、"
+"アカウントやお子さんのプロフィールの更新、アンケートへの記入や更新、Lookitを"
+"使った個々の研究・調査への参加などの際に、あなたが提供する情報のことを指しま"
+"す。"
+
+#: web/templates/frontpages/privacy.html:50
+#: web/templates/frontpages/privacy.html:167
+msgid "When we share your personal information"
+msgstr "個人情報を共有する場合"
+
+#: web/templates/frontpages/privacy.html:52
+msgid ""
+"When you participate in a Lookit study, we share the following information "
+"with the research group conducting the study:"
+msgstr ""
+"あなたがLookitを用いた研究・調査に参加した場合、以下の情報がその研究・調査を"
+"実施している研究グループと共有されます。"
+
+#: web/templates/frontpages/privacy.html:54
+msgid ""
+"\n"
+"            <ul>\n"
+"                <li>Your account data </li>\n"
+"                <li>The child data for the child who is participating</li>\n"
+"                <li>Your demographic data</i>\n"
+"                <li>The study data for this particular study session</li>\n"
+"            </ul>"
+msgstr ""
+"\n"
+"<ul> \n"
+"<li>アカウントデータ </li>\n"
+"<li>研究・調査に参加するお子さんのデータ</li>\n"
+"<li>あなたの人口統計に関するデータ</li>\n"
+"<li>特定の研究・調査に関するデータ</li>\n"
+"</ul>"
+
+#: web/templates/frontpages/privacy.html:61
+msgid ""
+"Your email address is not shared directly with the research group, although "
+"they can contact you via Lookit in accordance with your contact preferences."
+msgstr ""
+"あなたのメールアドレスが研究グループに直接共有されることはありませんが、研究"
+"グループはあなたの連絡先設定に応じて、Lookitを介してあなたに連絡を取ることが"
+"できます。"
+
+#: web/templates/frontpages/privacy.html:63
+msgid ""
+"Researchers may publish the results of a study, including individual "
+"responses. However, although they\n"
+"                may publish the ages of participants, they may not publish "
+"participant birthdates (or information that\n"
+"                could be used to calculate birthdates)."
+msgstr ""
+"研究者は、個人の回答を含む研究・調査の結果を公表する場合があります。なお、参"
+"加者の年齢が公表されることはありますが、参加者の生年月日（または生年月日の計"
+"算に利用できる情報）が公表されることはありません。"
+
+#: web/templates/frontpages/privacy.html:67
+msgid ""
+"We and/or the researchers responsible for a study may share video of your "
+"family’s participation for\n"
+"                scientific, educational, and/or publicity purposes, but only "
+"if you choose at the conclusion of a study\n"
+"                to allow such usage. Researchers may also share your video "
+"and other data with Databrary if you choose\n"
+"                at the conclusion of a study to allow that. We don’t publish "
+"video of participants such that it can be\n"
+"                linked to individual demographic data (e.g., household "
+"income or number of parents/guardians), and\n"
+"                researchers must also agree not to do so in order to use "
+"Lookit."
+msgstr ""
+"Lookitチーム、または研究・調査を担当する研究者は、あなたが研究・調査の終了時"
+"に承諾した場合に限り、科学・教育・広報活動のために、あなたのご家族が研究・調"
+"査に参加している最中の動画を公開することがあります。また、研究者は、あなたが"
+"研究・調査の終了時に承諾した場合に限り、動画やその他のデータをデータブラリー"
+"（Databrary）と共有することがあります。なお、個人の人口統計に関するデータ"
+"（例：世帯収入や養育者の人数など）に紐づけられるような動画が公開されることは"
+"ありませんし、研究者がLookitを使用するためには、この事項に同意しなければなり"
+"ません。"
+
+#: web/templates/frontpages/privacy.html:74
+msgid ""
+"We don’t share, sell, publish, or otherwise disclose your contact "
+"information (email and/or mailing\n"
+"                address) to anyone but the researchers involved in a study. "
+"Researchers must also agree not to disclose\n"
+"                your contact information in order to use Lookit."
+msgstr ""
+"あなたの連絡先情報（メールアドレスや住所など）が、研究・調査に関与する研究者"
+"以外に共有・販売・公開またはその他の方法で開示されることはありません。研究者"
+"がLookitを使用するためには、連絡先情報を開示しないことに同意しなければなりま"
+"せん。"
+
+#: web/templates/frontpages/privacy.html:78
+#: web/templates/frontpages/privacy.html:152
+msgid "How we use your personal information"
+msgstr "個人情報の利用方法"
+
+#: web/templates/frontpages/privacy.html:80
+msgid ""
+"We may use your personal information (account, child, demographic, and study "
+"data) for a variety of purposes, including to:"
+msgstr ""
+"あなたの個人情報（アカウントに関するデータ、お子さんに関するデータ、人口統計"
+"に関するデータ、研究・調査に関するデータ）は、以下のような目的で使用されるこ"
+"とがあります。"
+
+#: web/templates/frontpages/privacy.html:81
+msgid ""
+"<ul>\n"
+"                <li>Provide you with the research studies you have enrolled "
+"in, and information about which studies your\n"
+"                    children are eligible for</li>\n"
+"                <li>Send you information about studies you may be interested "
+"in, reminders to participate in multi-part\n"
+"                    studies, and/or results of studies you have participated "
+"in, subject to your contact preferences\n"
+"                </li>\n"
+"                <li>Improve the Lookit platform: e.g., detect and fix "
+"technical problems or identify new features that\n"
+"                    would be helpful</li>\n"
+"                <li>Develop data analysis tools for Lookit researchers </"
+"li>\n"
+"                <li>Provide technical support to study researchers</li>\n"
+"                <li>Assess the quality of data collected on the platform (e."
+"g., how well an observer can tell which\n"
+"                    direction children are looking)</li>\n"
+"                <li>Evaluate recruitment and family engagement efforts (e."
+"g., see how many participants come from rural\n"
+"                    vs. urban areas)</li>\n"
+"                <li>Recruit participants or researchers to use Lookit (e.g., "
+"sharing a short video clip of your child\n"
+"                    having fun – ONLY if you have chosen to allow use of the "
+"video for publicity)</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+"<ul>\n"
+"<li>あなたが登録した研究・調査や、お子さんがどの研究・調査の対象になるかの情"
+"報をあなたに供するため</li>\n"
+"<li>あなたの興味・関心に重なる可能性のある研究・調査に関する情報、複数のパー"
+"トに分かれた研究・調査への参加リマインド、あなたが参加した研究・調査の結果な"
+"どを、連絡先設定に応じてあなたにお送りするため</li>\n"
+"<li>Lookitプラットフォームの改善のため（例：技術的問題の特定・修正、役に立つ"
+"新機能の同定など）</li>\n"
+"<li>Lookitを使う研究者のためのデータ解析ツールの開発のため</li>\n"
+"<li>研究者への技術的支援を提供するため</li>\n"
+"<li>Lookitプラットフォーム上で収集されたデータの質を評価するため（例：子ども"
+"が見ている方向を分析担当者がどのくらい正確に記述できるか、など）</li>\n"
+"<li>参加者の募集や研究・調査への参加負担を評価するため（例：農村部・都市部の"
+"それぞれからの参加者数を調べる、など）</li>\n"
+"<li>Lookitを使用する参加者や研究者を募集するため（例：お子さんが楽しく研究・"
+"調査に参加している様子の短い動画を公開する、など　※そのような動画の使用が承諾"
+"されている場合に限ります）</li>\n"
+"</ul>"
+
+#: web/templates/frontpages/privacy.html:100
+msgid ""
+"Researchers use the data collected in their studies to address particular "
+"scientific questions. It may\n"
+"                also turn out that data collected for one study can help to "
+"answer a related question later on. If\n"
+"                researchers are using any additional information about you "
+"in their study, beyond what is collected on\n"
+"                Lookit – for instance, if you are participating in a follow-"
+"up online session for an in-person study –\n"
+"                they must tell you that in the study consent form."
+msgstr ""
+"研究者は、研究・調査で収集したデータを使って、特定の科学的な問いに取り組みま"
+"す。また、ある研究・調査で収集されたデータが、のちに関連する別の問題に答える"
+"ことに役立つと判明する場合もあります。なお、Lookit上で収集された情報以外の追"
+"加情報が研究・調査に用いられる場合（例：対面での研究・調査のための追試を目的"
+"としたオンライン調査に参加している場合など）、研究者は研究参加同意書にその旨"
+"を記載しなければなりません。"
+
+#: web/templates/frontpages/privacy.html:106
+msgid ""
+"There are some basic rules about how personal information may be used that "
+"all Lookit researchers agree to, including:"
+msgstr ""
+"個人情報の利用方法については、Lookitを使うすべての研究者が同意する以下のよう"
+"な基本の規則があります。"
+
+#: web/templates/frontpages/privacy.html:107
+msgid ""
+"\n"
+"            <ul>\n"
+"                <li>They may not use usernames, child nicknames, or contact "
+"information as a subject of research.</li>\n"
+"                <li>They may contact families by postal mail only in order "
+"to send compensation for study participation\n"
+"                    or materials needed for participation.</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+"\n"
+"<ul>\n"
+"<li>ユーザ名、お子さんのニックネーム、連絡先情報などを研究・調査の対象として"
+"使用することはできません</li>\n"
+"<li>研究者は、研究・調査への参加報酬や、研究・調査への参加に必要な資料を送付"
+"するためにのみ、郵送にて参加者に連絡を取ることができます</li>\n"
+"</ul>\n"
+"            "
+
+#: web/templates/frontpages/privacy.html:114
+#: web/templates/frontpages/privacy.html:163
+msgid ""
+"If you have concerns about any of these purposes, or how we communicate with "
+"you, please contact us at\n"
+"                dataprotection@mit.edu. We will always respect a request by "
+"you to stop processing your personal\n"
+"                information (subject to our legal obligations)."
+msgstr ""
+"これらの目的のいずれか、また、連絡をとる方法についてご不明な点がございました"
+"ら、dataprotection@mit.eduまでご連絡ください。私たちは、あなたからの個人情報"
+"の取り扱い停止に関する要請を常に尊重します（法的義務に従うことを条件としま"
+"す）。"
+
+#: web/templates/frontpages/privacy.html:118
+#: web/templates/frontpages/privacy.html:171
+msgid "How your information is stored and secured"
+msgstr "個人情報の保存・保護方法"
+
+#: web/templates/frontpages/privacy.html:120
+#, python-format
+msgid ""
+"We have implemented industry-standard security safeguards designed to "
+"protect the personal information\n"
+"                that you may provide. We also periodically monitor our "
+"system for possible vulnerabilities and attacks,\n"
+"                consistent with industry standards. Only authenticated users "
+"with specific permissions may access the\n"
+"                data. All data is transmitted via a secure https connection, "
+"and all video data is encrypted at rest on\n"
+"                the storage systems used by Lookit to provide data to "
+"researchers. Researchers are responsible for their\n"
+"                own secure storage of data once they obtain it from Lookit. "
+"You should be aware, however, that since the\n"
+"                internet is not a 100%% secure environment, there’s no "
+"guarantee that information may not be accessed,\n"
+"                disclosed, altered, or destroyed by breach of any of our "
+"physical, technical, or managerial safeguards.\n"
+"                It's your responsibility to protect the security of your "
+"account details, including your username and\n"
+"                password."
+msgstr ""
+"私たちは、あなたが提供する個人情報を保護するために、業界標準のセキュリティ保"
+"護措置を実施しています。また、業界標準に準拠して、脆弱性や攻撃の可能性がない"
+"か定期的にシステムを監視しています。特定の権限を持つ認証済ユーザーのみがデー"
+"タにアクセスできます。すべてのデータは安全なhttps接続を介して送信され、すべて"
+"の動画データは、研究者へのデータ提供のために、Lookitが使用するストレージシス"
+"テム上で暗号化されています。Lookitからデータを取得した後のデータの安全な保管"
+"については、研究者自身が責任を負います。ただし、インターネットは100％安全な環"
+"境ではないため、物理的・技術的・管理的な安全対策の侵害によって情報がアクセ"
+"ス・開示・変更・破壊されない保証はないということをご承知おきください。なお、"
+"ユーザー名とパスワードを含むアカウントの詳細に関するセキュリティ保護は、あな"
+"たご自身の責任となります。"
+
+#: web/templates/frontpages/privacy.html:131
+#: web/templates/frontpages/privacy.html:182
+msgid "How long we keep your personal information"
+msgstr "個人情報の保持期間"
+
+#: web/templates/frontpages/privacy.html:133
+msgid ""
+"We consider our relationship with our research community to be lifelong. "
+"This means that we will maintain\n"
+"                a record for you until such time as you tell us that you no "
+"longer wish us to keep in touch. If you wish\n"
+"                to remove your account, we will retain a core set of "
+"information about you to fulfill administrative\n"
+"                tasks and legal obligations. If you have participated in "
+"Lookit studies, the personal information\n"
+"                already shared with those researchers may not generally be "
+"‘taken back,’ as it is part of a scientific\n"
+"                dataset and removing your data could affect already "
+"published findings."
+msgstr ""
+"私たちは、研究コミュニティとの関係を生涯にわたるものと考えています。これは、"
+"あなたから連絡を取り合うことを希望しない旨の申し出があるまで、あなたの記録が"
+"保持され続けることを意味します。アカウントの削除を希望される場合でも、管理業"
+"務および法的義務を果たすために、あなたに関する情報のコアセットは保持されま"
+"す。Lookitを使った研究・調査に参加したことがある場合、すでに研究者と共有され"
+"た個人情報は一般的に「撤回」することはできません。これは、個人情報は科学的な"
+"データセットの一部となっており、あなたのデータを取り除くことは、すでに公表さ"
+"れた研究結果に影響を与える可能性があるためです。"
+
+#: web/templates/frontpages/privacy.html:144
+msgid ""
+"We may collect basic biographic/contact information about you and your "
+"representative organization,\n"
+"                including name, title, business addresses, phone numbers, "
+"and email addresses."
+msgstr ""
+"氏名、役職の住所、電話番号、メールアドレスなど、あなたとあなたの主要所属機関"
+"に関する基本的な経歴・連絡先情報が収集されることがあります。"
+
+#: web/templates/frontpages/privacy.html:149
+msgid ""
+"The information we collect and maintain about you is that which you have "
+"provided to us when registering\n"
+"                to use Lookit, updating your profile, or creating or editing "
+"a study."
+msgstr ""
+"Lookitが収集・保持する個人情報とは、Lookitの利用登録、プロフィールの更新、研"
+"究・調査の新規作成や編集などを行う際に、あなたが提供する情報のことを指しま"
+"す。"
+
+#: web/templates/frontpages/privacy.html:154
+msgid ""
+"We use your personal information for a number of legitimate purposes, "
+"including the performance of contractual obligations. Specifically, we use "
+"your personal information to:"
+msgstr ""
+"あなたの個人情報は、契約義務の履行を含む多くの正当な目的のために利用されま"
+"す。具体的には、個人情報は以下のような目的で利用されます。"
+
+#: web/templates/frontpages/privacy.html:155
+msgid ""
+"<ul>\n"
+"                <li>Provide you with the research services for which you "
+"have enrolled. </li>\n"
+"                <li>Perform administrative tasks and for internal record "
+"keeping purposes.</li>\n"
+"                <li>Create and analyze aggregated (fully anonymized) "
+"information about our users for statistical\n"
+"                    research purposes in support of our mission.</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+"<ul>\n"
+"<li>あなたが登録した研究・調査サービスをあなたに提供するため</li>\n"
+"<li>管理業務を行い、内部向けに記録を残すため</li>\n"
+"<li>私たちの任務のための統計調査を行う上で、ユーザーに関する（完全に匿名化さ"
+"れた）集計情報を作成し分析するため</li>\n"
+"</ul>"
+
+#: web/templates/frontpages/privacy.html:169
+msgid "We do not share your personal information with any third parties."
+msgstr "あなたの個人情報が第三者と共有されることはありません。"
+
+#: web/templates/frontpages/privacy.html:173
+#, python-format
+msgid ""
+"We have implemented industry-standard security safeguards designed to "
+"protect the personal information\n"
+"                that you may provide. We also periodically monitor our "
+"system for possible vulnerabilities and attacks,\n"
+"                consistent with industry standards. Only authenticated users "
+"with specific permissions may access the\n"
+"                data. All data is transmitted via a secure https connection. "
+"You should be aware, however, that since\n"
+"                the internet is not a 100%% secure environment, there’s no "
+"guarantee that information may not be\n"
+"                accessed, disclosed, altered, or destroyed by breach of any "
+"of our physical, technical, or managerial\n"
+"                safeguards. It's your responsibility to protect the security "
+"of your account details, including your\n"
+"                username and password."
+msgstr ""
+"私たちは、あなたが提供する個人情報を保護するために、業界標準のセキュリティ保"
+"護措置を実施しています。また、業界標準に準拠して、脆弱性や攻撃の可能性がない"
+"か定期的にシステムを監視しています。特定の権限を持つ認証済ユーザーのみがデー"
+"タにアクセスできます。すべてのデータは安全なhttps接続を介して送信されます。た"
+"だし、インターネットは100％安全な環境ではないため、物理的・技術的・管理的な安"
+"全対策の侵害によって情報がアクセス・開示・変更・破壊されない保証はないという"
+"ことをご承知おきください。なお、ユーザー名とパスワードを含むアカウントの詳細"
+"に関するセキュリティ保護は、あなたご自身の責任となります。"
+
+#: web/templates/frontpages/privacy.html:184
+msgid ""
+"We consider our relationship with our research community to be lifelong. "
+"This means that we will maintain\n"
+"                a record for you until such time as you tell us that you no "
+"longer wish us to keep in touch. If you no\n"
+"                longer wish to hear from Lookit, we will retain a core set "
+"of information about you to fulfill\n"
+"                administrative tasks and legal obligations."
+msgstr ""
+"私たちは、研究コミュニティとの関係を生涯にわたるものと考えています。これは、"
+"あなたから連絡を取り合うことを希望しない旨の申し出があるまで、あなたの記録が"
+"保持され続けることを意味します。Lookitからの連絡を希望されなくなった場合で"
+"も、管理業務および法的義務を果たすために、あなたに関する情報のコアセットは保"
+"持されます。"
+
+#: web/templates/frontpages/privacy.html:189
+msgid "For everyone"
+msgstr "すべての皆さまへ"
+
+#: web/templates/frontpages/privacy.html:191
+msgid "Rights for individuals in the European Economic Area"
+msgstr "欧州経済領域（European Economic Area）における個人の権利"
+
+#: web/templates/frontpages/privacy.html:192
+msgid ""
+"You have the right in certain circumstances to (1) access your personal "
+"information; (2) to correct or\n"
+"                erase information; (3) restrict processing; and (4) object "
+"to communications, direct marketing, or\n"
+"                profiling. To the extent applicable, the EU’s General Data "
+"Protection Regulation provides further\n"
+"                information about your rights. You also have the right to "
+"lodge complaints with your national or\n"
+"                regional data protection authority."
+msgstr ""
+"あなたは、特定の状況において、(1) ご自身の個人情報へのアクセス、(2) 情報の修"
+"正または削除、(3) 情報の取り扱いの制限、(4) 通信、ダイレクトマーケティング、"
+"またはプロファイリングへの異議申し立てを行う権利をもっています。適用される範"
+"囲内において、EU一般データ保護規則には、あなたがもつ権利についてのより詳細な"
+"情報が記載されています。また、あなたには、国または地域のデータ保護当局に苦情"
+"を申し立てる権利があります。"
+
+#: web/templates/frontpages/privacy.html:198
+msgid ""
+"If you are inclined to exercise these rights, we request an opportunity to "
+"discuss with you any concerns\n"
+"                you may have. To protect the personal information we hold, "
+"we may also request further information to\n"
+"                verify your identify when exercising these rights. Upon a "
+"request to erase information, we will maintain\n"
+"                a core set of personal data to ensure we do not contact you "
+"inadvertently in the future, as well as any\n"
+"                information necessary for archival purposes. We may also "
+"need to retain some financial information for\n"
+"                legal purposes, including US IRS compliance. In the event of "
+"an actual or threatened legal claim, we may\n"
+"                retain your information for purposes of establishing, "
+"defending against or exercising our rights with\n"
+"                respect to such claim."
+msgstr ""
+"これらの権利を行使することをご希望の場合、私たちは、あなたが抱いている懸念事"
+"項について話し合う機会を要求します。Lookitが保有する個人情報を保護するため"
+"に、あなたがこれらの権利を行使する際には、あなたの身元情報を確認するための追"
+"加情報を要求することがあります。情報の削除をお求めの場合、私たちは、のちに"
+"誤ってあなたに連絡を取らないようにするために個人情報のコアセットを保持すると"
+"ともに、アーカイブの目的で必要な情報を保持します。また、米国国税庁のコンプラ"
+"イアンスなど、法的な目的のために財務情報を保持しなければならない場合もありま"
+"す。実際に法的請求があった場合、またはその恐れがあった場合、私たちは、そのよ"
+"うな請求に関して私たちの権利を確立し、弁護し、行使するために、個人情報を引き"
+"続き保持することがあります。"
+
+#: web/templates/frontpages/privacy.html:207
+msgid ""
+"By providing information directly to Lookit, you consent to the transfer of "
+"your personal information\n"
+"                outside of the European Economic Area to the United States. "
+"You understand that the current laws and\n"
+"                regulations of the United States may not provide the same "
+"level of protection as the data and privacy\n"
+"                laws and regulations of the EEA."
+msgstr ""
+"Lookitに直接情報を提供することで、あなたは欧州経済領域外の個人情報が米国に転"
+"送されることに同意したことになります。なお、米国における現在の法律・規制が、"
+"欧州経済領域におけるデータおよびプライバシーに関する法律・規制と同じ保護水準"
+"を提供しているとは限らないことをご理解ください。"
+
+#: web/templates/frontpages/privacy.html:212
+msgid ""
+"You are under no statutory or contractual obligation to provide any personal "
+"data to us."
+msgstr ""
+"あなたには、私たちに個人情報を提供する法的または契約上の一切の義務はありませ"
+"ん。"
+
+#: web/templates/frontpages/privacy.html:214
+msgid "Additional Information"
+msgstr "その他の情報"
+
+#: web/templates/frontpages/privacy.html:216
+msgid ""
+"We may change this Privacy Statement from time to time. If we make any "
+"significant changes in the way we\n"
+"                treat your personal information we will make this clear on "
+"our website or by contacting you directly."
+msgstr ""
+"この「プライバシーに関する声明」は、随時変更されることがあります。 個人情報を"
+"取り扱う方法に重大な変更がなされる場合、ウェブサイト上で、またはあなたに直接"
+"連絡を取ることによって、そのことを明確にお伝えします。"
+
+#: web/templates/frontpages/privacy.html:220
+msgid ""
+"The controller for your personal information is MIT. We can be contacted at "
+"dataprotection@mit.edu."
+msgstr ""
+"個人情報の管理者はマサチューセッツ工科大学（MIT）です。連絡先は "
+"dataprotection@mit.edu となります。"
+
+#: web/templates/frontpages/privacy.html:222
+msgid "This policy was last updated in June 2018."
+msgstr "以上の声明は2018年6月に最終更新されました。"
+
+#: web/templates/frontpages/scientists.html:27
+msgid "Meet the Lookit team"
+msgstr "Lookit（ルックイット）チームメンバー"
+
+#: web/templates/frontpages/scientists.html:33
+msgid "Core Team"
+msgstr "コアチーム"
+
+#: web/templates/frontpages/scientists.html:38
+msgid ""
+"Rico is Lookit's lead software engineer, working on planning and adding "
+"features for both participants and researchers."
+msgstr ""
+"リコはLookitの主任ソフトウェアエンジニアで、参加者と研究者双方のために、新し"
+"い機能の計画と導入に取り組んでいます。"
+
+#: web/templates/frontpages/scientists.html:43
+msgid ""
+"Laura is the PI of the Early Childhood Cognition Lab. She conducts research "
+"about how children arrive at a common-sense understanding of the physical "
+"and social world through exploration and instruction."
+msgstr ""
+"ローラは、マサチューセッツ工科大学 子ども認知発達研究室（MIT Early Childhood "
+"Cognition Lab）の主任研究員です。子どもたちが、探索したり教えてもらったりしな"
+"がら、どのようにして物理的・社会的な世界を理解していくのかについて研究してい"
+"ます。"
+
+#: web/templates/frontpages/scientists.html:49
+msgid ""
+"Kim started Lookit as a graduate student, and now runs the project as a "
+"research scientist in the Early Childhood Cognition Lab. Her three children "
+"frequently provide feedback on studies."
+msgstr ""
+"キムは大学院生としてLookitを始め、現在は子ども認知発達研究室の研究者として"
+"Lookitプロジェクトを運営しています。 彼女の３人の子どもは、研究・調査に関する"
+"フィードバックを頻繁に提供してくれます。"
+
+#: web/templates/frontpages/scientists.html:54
+msgid ""
+"Mark organizes the Lookit Working Groups, which are groups of researchers "
+"working to improve Lookit in a variety of ways."
+msgstr ""
+"マークは、Lookitワーキンググループを運営しています。Lookitワーキンググループ"
+"には、多くの研究者がさまざまな方法でLookitの改善に取り組んでいます。"
+
+#: web/templates/frontpages/scientists.html:58
+msgid ""
+"\n"
+"                <h3>Alumni &amp; Collaborators</h3>\n"
+"                <hr>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/joseph.jpg\"></div>\n"
+"                    <h3>Joseph Alvarez (Summer 2015)</h3>\n"
+"                    <p>Undergraduate, Skidmore College</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/daniela.jpg\"></div>\n"
+"                    <h3>Daniela Carrasco (Sp 2015)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/jean.jpg\"></div>\n"
+"                    <h3>Jean Chow (Fa 2014)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/junyi.jpg\"></div>\n"
+"                    <h3>Junyi Chu</h3>\n"
+"                    <p>Junyi runs the \"Your baby, the physicist\" study. "
+"She's working on answering all the amazing\n"
+"                        questions we can only answer with longitudinal data "
+"like this.</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/annie.jpg\"></div>\n"
+"                    <h3>Annie Dai (IAP, Sp 2015)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/molly.jpg\"></div>\n"
+"                    <h3>Moira (Molly) Dillon</h3>\n"
+"                    <p>Molly is an Assistant Professor of Psychology and the "
+"PI of the Lab for the Developing Mind at\n"
+"                        NYU. She ran the study \"Baby Euclid\" on Lookit.</"
+"p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/hope.jpg\"></div>\n"
+"                    <h3>Hope Fuller-Becker (Sp 2015, Sp 2016)</h3>\n"
+"                    <p>Undergraduate, Wellesley College</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img src=\"https://s3."
+"amazonaws.com/lookitcontents/website/kamaria.jpg\">\n"
+"                    </div>\n"
+"                    <h3>Kamaria Kaalund (Fall 2019)</h3>\n"
+"                    <p>Undergraduate, Wellesley College</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/melissa.png\"></div>\n"
+"                    <h3>Melissa Kline</h3>\n"
+"                    <p>Postdoc, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/rachel.png\"></div>\n"
+"                    <h3>Rachel Magid</h3>\n"
+"                    <p>As ECCL lab coordinator (and then graduate student) "
+"she helped get Lookit off the ground!</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/audrey.jpg\"></div>\n"
+"                    <h3>Audrey Ricks (Summer 2016)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/rianna.jpg\"></div>\n"
+"                    <h3>Rianna Shah (IAP, Sp, Fall 2015; IAP, Sp 2016; Sp "
+"2018)</h3>\n"
+"                    <p>Undergraduate, MIT </p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img src=\"https://s3."
+"amazonaws.com/lookitcontents/website/alice.jpg\"></div>\n"
+"                    <h3>Alice Wang (Summer 2017)</h3>\n"
+"                    <p>Undergraduate, Wellesley</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img src=\"https://s3."
+"amazonaws.com/lookitcontents/website/erica.jpg\"></div>\n"
+"                    <h3>Erica Yoon</h3>\n"
+"                    <p>Erica is a graduate student in Mike Frank's lab at "
+"Stanford University. She ran the study \"Mind\n"
+"                        and Manners\" on Lookit.</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/jeanyu.jpg\"></div>\n"
+"                    <h3>Jean Yu (IAP, Sp 2015)</h3>\n"
+"                    <p>Undergraduate, Wellesley College</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/jessica.jpg\"></div>\n"
+"                    <h3>Jessica Zhu (Fall 2016)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                "
+msgstr ""
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
@@ -849,36 +2955,26 @@ msgstr "ログアウトに成功しました。"
 #: web/templates/registration/login.html:8
 #: web/templates/web/studies-history.html:9
 #: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
-msgid "Your username and password didn't match. Please try again."
-msgstr "ユーザー名とパスワードが一致しませんでした。もう一度お試しください。"
+msgid "Your login credentials didn't work. Please try again."
+msgstr "ログイン認証に失敗しました。再度行ってください。"
 
 #: web/templates/registration/login.html:18
-msgid "Participant Login"
-msgstr "参加者アカウント"
+#: web/templates/registration/login.html:25
+#: web/templates/web/_navigation.html:45
+msgid "Login"
+msgstr "ログイン"
 
-#: web/templates/registration/login.html:32
+#: web/templates/registration/login.html:34
 msgid "Forgot password?"
 msgstr "パスワードをお忘れですか?"
 
-#: web/templates/registration/login.html:33
-msgid "Looking for "
-msgstr "を探しています。"
-
-#: web/templates/registration/login.html:33
-msgid "researcher login"
-msgstr "研究者ログイン"
-
-#: web/templates/registration/login.html:33
-msgid "instead?"
-msgstr "を選択してください"
-
-#: web/templates/registration/login.html:34
+#: web/templates/registration/login.html:36
 msgid "New to Lookit?"
-msgstr "ルキット"
+msgstr "Lookitは初めてですか？"
 
-#: web/templates/registration/login.html:34
-msgid "Create an account!"
-msgstr "アカウント作成"
+#: web/templates/registration/login.html:36
+msgid "Register your family!"
+msgstr "家族を登録する"
 
 #: web/templates/registration/password_change_done.html:11
 msgid "Password changed"
@@ -886,15 +2982,15 @@ msgstr "パスワードが変更されました"
 
 #: web/templates/registration/password_change_done.html:15
 msgid "Your password was changed."
-msgstr "パスワードが変更されていました。"
+msgstr "パスワードが変更されました。"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Documentation"
-msgstr "ドキュメント"
+msgstr "概要"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Change password"
-msgstr "パスワードの変更"
+msgstr "パスワードを変更する"
 
 #: web/templates/registration/password_change_form.html:4
 msgid "Log out"
@@ -911,32 +3007,32 @@ msgstr "パスワードの変更"
 
 #: web/templates/registration/password_change_form.html:21
 msgid "Please correct the error below."
-msgstr "下記のエラーの修正をお願いします。"
+msgstr "以下のエラーを訂正してください。"
 
 #: web/templates/registration/password_change_form.html:21
 msgid "Please correct the errors below."
-msgstr "以下、誤りの訂正をお願いします。"
+msgstr "以下のエラーを訂正してください。"
 
 #: web/templates/registration/password_change_form.html:26
 msgid ""
 "Please enter your old password, for security's sake, and then enter your new "
 "password twice so we can verify you typed it in correctly."
 msgstr ""
-"セキュリティのために古いパスワードを入力し、新しいパスワードを2回入力してくだ"
-"さい。"
+"セキュリティのために以前のパスワードを入力し、新しいパスワードを２回入力して"
+"ください。"
 
 #: web/templates/registration/password_change_form.html:54
 #: web/templates/registration/password_reset_confirm.html:31
 msgid "Change my password"
-msgstr "パスワードの変更"
+msgstr "パスワードを変更する"
 
 #: web/templates/registration/password_reset_complete.html:11
 msgid "Password reset complete"
-msgstr "パスワードリセットの確認"
+msgstr "パスワードのリセットが完了しました。"
 
 #: web/templates/registration/password_reset_complete.html:15
 msgid "Your password has been set.  You may go ahead and log in now."
-msgstr "パスワードが設定されています。  今すぐログインしてください。"
+msgstr "パスワードが設定されています。今すぐログインしてください。"
 
 #: web/templates/registration/password_reset_complete.html:17
 msgid "Log in"
@@ -950,7 +3046,7 @@ msgstr "パスワードリセットの確認"
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
-msgstr "新しいパスワードを2回入力してください。"
+msgstr "新しいパスワードを２回入力してください。"
 
 #: web/templates/registration/password_reset_confirm.html:23
 msgid "New password:"
@@ -965,24 +3061,30 @@ msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
 msgstr ""
-"パスワードリセットのリンクが無効になっています。  新しいパスワードリセットを"
+"パスワードリセットのリンクが無効になっています。パスワードのリセットを新たに"
 "リクエストしてください。"
+
+#: web/templates/registration/password_reset_done.html:11
+msgid "Password reset link sent"
+msgstr "送信されたパスワードをリセットするためのリンク"
 
 #: web/templates/registration/password_reset_done.html:15
 msgid ""
-"We've emailed you instructions for setting your password, if an account "
-"exists with the email you entered. You should receive them shortly."
+"If an account exists with the email you entered, we've emailed instructions "
+"for resetting your password and you should receive them shortly."
 msgstr ""
-"入力されたメールにアカウントが存在する場合は、パスワードの設定方法をメールで"
-"お知らせしています。まもなくメールが届きます。"
+"入力されたメールアドレスでのアカウントが既に存在している場合は、パスワードの"
+"リセットについて説明したメールをすぐにお送りします。"
 
 #: web/templates/registration/password_reset_done.html:17
 msgid ""
-"If you don't receive an email, please make sure you've entered the address "
-"you registered with, and check your spam folder."
+"If you don't receive an email, please check your spam folder and make sure "
+"you've entered the address you registered with. (You won't get an email "
+"unless there's already an account for that email address!)"
 msgstr ""
-"メールが届かない場合は、登録したアドレスが入力されていることを確認し、迷惑"
-"メールフォルダをご確認ください。"
+"メールが届かない場合は、スパムフォルダーに入っていないか、また、登録したメー"
+"ルアドレスが適切に入力されているかを確認してください（入力されているメールア"
+"ドレスでの既存アカウントがない場合は、メールは送信されません）。"
 
 #: web/templates/registration/password_reset_email.html:2
 #, python-format
@@ -990,8 +3092,8 @@ msgid ""
 "You're receiving this email because you requested a password reset for your "
 "user account at %(site_name)s."
 msgstr ""
-"この電子メールを受信しているのは、%(site_name)s のユーザ・アカウントのパス"
-"ワードのリセットを要求したためです。"
+"このメールを受信しているのは、%(site_name)s のアカウントのパスワードのリセッ"
+"トが要求されたためです。"
 
 #: web/templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
@@ -999,22 +3101,27 @@ msgstr "以下のページに移動し、新しいパスワードを選択して
 
 #: web/templates/registration/password_reset_email.html:8
 msgid "Your username, in case you've forgotten:"
-msgstr "ユーザー名をお忘れですか？こちらになります。"
+msgstr "ユーザー名をお忘れですか？お忘れの場合："
 
 #: web/templates/registration/password_reset_email.html:10
 msgid "Thanks for using our site!"
-msgstr "当社のサイトをご利用いただき、ありがとうございました"
+msgstr "私たちのウェブサイトをご利用いただき、ありがとうございます！"
 
 #: web/templates/registration/password_reset_email.html:12
-#, python-format
+#, fuzzy, python-format
+#| msgid "The %(site_name)s team"
 msgid "The %(site_name)s team"
-msgstr "%(site_name) s チーム"
+msgstr "%(site_name) のチーム"
+
+#: web/templates/registration/password_reset_form.html:11
+msgid "Password reset"
+msgstr "パスワードをリセットする"
 
 #: web/templates/registration/password_reset_form.html:15
 msgid ""
 "Forgotten your password? Enter your email address below, and we'll email "
 "instructions for setting a new one."
-msgstr "パスワードをお忘れですか？下記にメールアドレスを入力してください。"
+msgstr "パスワードをお忘れですか？以下にメールアドレスを入力してください。"
 
 #: web/templates/registration/password_reset_form.html:21
 msgid "Email address:"
@@ -1024,91 +3131,46 @@ msgstr "メールアドレス:"
 msgid "Reset my password"
 msgstr "パスワードをリセットする"
 
-#: web/templates/web/_account-navigation.html:2
-msgid "Account information"
-msgstr "口座情報"
-
-#: web/templates/web/_account-navigation.html:2
-msgid "Change your name, email, or password."
-msgstr "パスワードの変更"
-
-#: web/templates/web/_account-navigation.html:3
-msgid "Demographic Survey"
-msgstr "人口動態調査"
-
-#: web/templates/web/_account-navigation.html:3
-msgid "Tell us more about yourself."
-msgstr "あなたのことを詳しく教えてください。"
-
-#: web/templates/web/_account-navigation.html:4
-msgid "Children Information"
-msgstr "子供の情報"
-
-#: web/templates/web/_account-navigation.html:4
-msgid "Add or edit participant information."
-msgstr "参加者情報の追加・編集"
-
-#: web/templates/web/_account-navigation.html:5
-#: web/templates/web/participant-email-preferences.html:4
-msgid "Email Preferences"
-msgstr "電子メールの設定"
-
-#: web/templates/web/_account-navigation.html:5
-msgid "Edit when you can be contacted."
-msgstr "連絡可能な時間帯を編集します。"
-
-#: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
-msgid "Lookit"
-msgstr "ルキット"
-
 #: web/templates/web/_navigation.html:17
 msgid "Experimenter"
-msgstr "実験者を見ることができます"
+msgstr "研究者"
 
-#: web/templates/web/_navigation.html:30 web/templates/web/studies-list.html:4
+#: web/templates/web/_navigation.html:28 web/templates/web/studies-list.html:4
 msgid "Studies"
-msgstr "研究"
+msgstr "研究・調査"
 
-#: web/templates/web/_navigation.html:31
+#: web/templates/web/_navigation.html:29
 msgid "FAQ"
 msgstr "FAQ"
 
-#: web/templates/web/_navigation.html:32
+#: web/templates/web/_navigation.html:30
 msgid "The Scientists"
-msgstr "科学者たち"
+msgstr "研究者"
 
-#: web/templates/web/_navigation.html:33
+#: web/templates/web/_navigation.html:31
 msgid "Resources"
-msgstr "リソース"
+msgstr "参考資料"
 
 #: web/templates/web/_navigation.html:40
-msgid "Participant account"
-msgstr "参加者アカウント"
-
-#: web/templates/web/_navigation.html:42
 msgid "Hi"
 msgstr "こんにちは"
 
-#: web/templates/web/_navigation.html:44
+#: web/templates/web/_navigation.html:42
 msgid "Logout"
 msgstr "ログアウト"
 
-#: web/templates/web/_navigation.html:46
+#: web/templates/web/_navigation.html:44
 msgid "Sign up"
-msgstr "サインアップ"
+msgstr "登録する"
 
 #: web/templates/web/child-update.html:4
 #: web/templates/web/studies-history.html:116
 msgid "Child"
-msgstr "子供"
+msgstr "お子さん"
 
-#: web/templates/web/child-update.html:16
-#: web/templates/web/children-list.html:67
-#: web/templates/web/demographic-data-update.html:78
-#: web/templates/web/participant-email-preferences.html:16
-#: web/templates/web/participant-update.html:15
-msgid "My Account"
-msgstr "マイアカウント"
+#: web/templates/web/child-update.html:26
+msgid "Back to Children List"
+msgstr "お子さんの一覧に戻る"
 
 #: web/templates/web/child-update.html:31
 msgid "Update"
@@ -1118,17 +3180,16 @@ msgstr "更新"
 msgid "Delete"
 msgstr "削除"
 
-#: web/templates/web/child-update.html:46
-#: web/templates/web/demographic-data-update.html:102
-#: web/templates/web/participant-email-preferences.html:38
-#: web/templates/web/participant-update.html:35
-#: web/templates/web/participant-update.html:54
-msgid "Save"
-msgstr "保存"
+#: web/templates/web/child-update.html:44
+#: web/templates/web/children-list.html:92
+#: web/templates/web/demographic-data-update.html:100
+#: web/templates/web/participant-email-preferences.html:36
+msgid "Cancel"
+msgstr "キャンセル"
 
 #: web/templates/web/children-list.html:40
 msgid "Empty birthday"
-msgstr "空の誕生日"
+msgstr "誕生日（空欄）"
 
 #: web/templates/web/children-list.html:47
 msgid " day"
@@ -1144,7 +3205,7 @@ msgstr " 月"
 
 #: web/templates/web/children-list.html:49
 msgid " months"
-msgstr " か月"
+msgstr " ヶ月"
 
 #: web/templates/web/children-list.html:51
 msgid " year"
@@ -1159,20 +3220,12 @@ msgstr "年"
 #: web/templates/web/children-list.html:82
 #: web/templates/web/children-list.html:94
 msgid "Add Child"
-msgstr "子を追加"
+msgstr "子どもを追加する"
 
 #: web/templates/web/children-list.html:61
 #: web/templates/web/children-list.html:77
 msgid "Hide Form"
 msgstr "非表示のフォーム"
-
-#: web/templates/web/children-list.html:92
-#: web/templates/web/demographic-data-update.html:100
-#: web/templates/web/participant-email-preferences.html:36
-#: web/templates/web/participant-update.html:33
-#: web/templates/web/participant-update.html:52
-msgid "Cancel"
-msgstr "キャンセル"
 
 #: web/templates/web/children-list.html:111
 msgid "Name"
@@ -1180,15 +3233,15 @@ msgstr "名前"
 
 #: web/templates/web/children-list.html:121
 msgid "Update child"
-msgstr "更新"
+msgstr "子どもの情報を更新する"
 
 #: web/templates/web/children-list.html:128
 msgid "No child profiles registered!"
-msgstr "子供のプロフィールが登録されていません"
+msgstr "子どものプロフィールが登録されていません"
 
 #: web/templates/web/demographic-data-update.html:4
 msgid "Update demographics"
-msgstr "最新の人口動態データ"
+msgstr "人口統計学的データを更新する"
 
 #: web/templates/web/demographic-data-update.html:89
 msgid ""
@@ -1198,10 +3251,11 @@ msgid ""
 "factors like speaking multiple languages or having older siblings affect "
 "children's learning."
 msgstr ""
-"インターネットを利用した実験を開発している理由の一つは、より多様な家族のグ"
-"ループを代表して研究を行うためです。これらの質問への回答は、私たちがどのよう"
-"な対象者に到達するのか、また、多言語を話すことや年上の兄弟がいることなどの要"
-"因が子どもの学習にどのような影響を与えるのかを理解するのに役立ちます。"
+"インターネットを利用した研究・調査を開発している理由のひとつは、より多様な家"
+"庭の集団を代表するようなかたちで研究・調査を実施するためです。これらの質問へ"
+"の回答は、私たちがどのような対象者にリーチできているか、また、多言語を話すこ"
+"とや年上の兄姉がいることなどの要因がどのように子どもの学びに影響するのかを理"
+"解するのに役立ちます。"
 
 #: web/templates/web/demographic-data-update.html:90
 msgid ""
@@ -1209,48 +3263,53 @@ msgid ""
 "publicity purposes, your demographic information is never published in "
 "conjunction with your video."
 msgstr ""
-"科学や宣伝目的で学習動画の公開を許可したとしても、デモグラフィック情報が動画"
-"と連動して公開されることはありません。"
+"科学的または宣伝目的で研究・調査の録画ビデオを公開することを許可したとして"
+"も、個人情報を特定できるような人口統計学的情報がそのビデオに紐づくかたちで公"
+"開されることは決してありません。"
 
 #: web/templates/web/participant-email-preferences.html:27
 msgid "I would like to be contacted when:"
-msgstr "いつになったら連絡したいと思います。"
+msgstr "以下の場合にお知らせを受け取ることを希望します。"
 
-#: web/templates/web/participant-signup.html:4
-msgid "Signup"
-msgstr "新規登録"
+#: web/templates/web/participant-signup.html:18
+msgid "Create Participant Account"
+msgstr "参加者アカウントを作成する"
 
-#: web/templates/web/participant-signup.html:24
+#: web/templates/web/participant-signup.html:22
+msgid "Create a family account to start participating in Lookit studies!"
+msgstr "家族アカウントを作成してLookitの研究・調査に参加しましょう！"
+
+#: web/templates/web/participant-signup.html:23
+#, python-format
+msgid ""
+"\n"
+"              (To register as a researcher, please use <a href=\"%(link)s"
+"\">this form</a> instead.)\n"
+"            "
+msgstr ""
+"\n"
+"研究者として登録する場合は、<a href=\"%(link)s\">こちらのフォーム</a>を使って"
+"ください。\n"
+"            "
+
+#: web/templates/web/participant-signup.html:31
 msgid ""
 "By clicking 'Create Account', I agree that I have read and accepted the "
 msgstr ""
-"アカウントを作成する」をクリックすることで、私は以下の内容を読み、同意したも"
-"のとします。"
+"に同意していただけましたら、「アカウントを作成する」をクリックしてください。"
 
-#: web/templates/web/participant-signup.html:24
+#: web/templates/web/participant-signup.html:31
 msgid "Privacy Statement"
 msgstr "個人情報保護方針"
 
-#: web/templates/web/participant-signup.html:27
+#: web/templates/web/participant-signup.html:34
 msgid "Create Account"
-msgstr "アカウント作成"
-
-#: web/templates/web/participant-update.html:4
-msgid "Update account information"
-msgstr "アカウント情報の更新"
-
-#: web/templates/web/participant-update.html:25
-msgid "Account Information"
-msgstr "アカウント情報"
-
-#: web/templates/web/participant-update.html:44
-msgid "Change Your Password"
-msgstr "パスワードの変更"
+msgstr "アカウントを作成する"
 
 #: web/templates/web/studies-history.html:4
 #: web/templates/web/studies-history.html:27
 msgid "Past Studies"
-msgstr "これまでの研究"
+msgstr "これまでの研究・調査"
 
 #: web/templates/web/studies-history.html:16
 #: web/templates/web/studies-list.html:16
@@ -1258,8 +3317,8 @@ msgid ""
 "Your account doesn't have access to this page. To proceed, please login with "
 "an account that has access."
 msgstr ""
-"あなたのアカウントにはこのページへのアクセス権がありません。先に進むには、ア"
-"クセスできるアカウントでログインしてください。"
+"あなたのアカウントには、このページへのアクセス権がありません。先に進むには、"
+"アクセス権のあるアカウントでログインしてください。"
 
 #: web/templates/web/studies-history.html:18
 #: web/templates/web/studies-list.html:18
@@ -1269,34 +3328,34 @@ msgstr "このページを見るにはログインしてください。"
 #: web/templates/web/studies-history.html:34
 #: web/templates/web/studies-list.html:38
 msgid "Current studies"
-msgstr "現在の研究"
+msgstr "現在行われている研究・調査"
 
 #: web/templates/web/studies-history.html:37
 #: web/templates/web/studies-list.html:41
 msgid "Your past studies"
-msgstr "あなたの過去の研究"
+msgstr "過去に参加した研究・調査"
 
 #: web/templates/web/studies-history.html:50
 msgid "Here you can view your studies and see comments left by researchers:"
 msgstr ""
-"ここでは、あなたの研究を閲覧したり、研究者が残したコメントを見ることができま"
-"す。"
+"ここでは、参加する研究・調査を閲覧したり、研究者からのコメントを見たりするこ"
+"とができます。"
 
 #: web/templates/web/studies-history.html:67
 msgid "Study Thumbnail"
-msgstr "学習用サムネイル"
+msgstr "研究・調査のサムネイル"
 
 #: web/templates/web/studies-history.html:79
 msgid "Eligibility:"
-msgstr "資格を持っていること。"
+msgstr "参加資格："
 
 #: web/templates/web/studies-history.html:80
 msgid "Contact:"
-msgstr "連絡先:"
+msgstr "連絡先："
 
 #: web/templates/web/studies-history.html:81
 msgid "Still collecting data?"
-msgstr "まだデータを集めているのか？"
+msgstr "現在もデータ収集中ですか？"
 
 #: web/templates/web/studies-history.html:81
 msgid "Yes"
@@ -1308,11 +3367,15 @@ msgstr "いいえ"
 
 #: web/templates/web/studies-history.html:82
 msgid "Compensation: "
-msgstr "ドキュメント"
+msgstr "報酬："
 
 #: web/templates/web/studies-history.html:87
 msgid "Study Responses"
-msgstr "学習対応"
+msgstr "研究・調査の対応"
+
+#: web/templates/web/studies-history.html:107
+msgid "Video"
+msgstr "ビデオ"
 
 #: web/templates/web/studies-history.html:118
 msgid "Date"
@@ -1328,7 +3391,8 @@ msgstr "承認済み"
 
 #: web/templates/web/studies-history.html:123
 msgid "Your consent video was reviewed by a researcher and is valid."
-msgstr "あなたの同意ビデオは研究者によってレビューされ、有効です。"
+msgstr ""
+"あなたの同意に関する録画ビデオは研究者によって確認され、有効になっています。"
 
 #: web/templates/web/studies-history.html:125
 msgid "Pending"
@@ -1336,7 +3400,8 @@ msgstr "保留中"
 
 #: web/templates/web/studies-history.html:125
 msgid "Your consent video has not yet been reviewed by a researcher."
-msgstr "あなたの同意ビデオは、研究者によってまだレビューされていません。"
+msgstr ""
+"あなたの同意に関する録画ビデオは、まだ研究者によって確認されていません。"
 
 #: web/templates/web/studies-history.html:127
 msgid "Invalid"
@@ -1348,29 +3413,38 @@ msgid ""
 "you reading the consent statement out loud. Your other data from this "
 "session will not be viewed or used by the study researchers."
 msgstr ""
-"同意のビデオに技術的な問題があったか、同意文を読み上げている様子が表示されま"
-"せんでした。このセッションからのあなたの他のデータは、研究者によって閲覧また"
-"は使用されることはありません。"
+"あなたの同意に関する録画ビデオには技術的な問題があったか、同意文を読み上げて"
+"いる様子が記録されていませんでした。そのため、このセッション以降にあるあなた"
+"の他のデータは、研究者によって閲覧または使用されません。"
 
 #: web/templates/web/studies-history.html:129
 msgid "No information about consent video review status."
-msgstr "同意動画の審査状況についての情報はありません。"
+msgstr "同意に関する録画ビデオの確認状況についての情報はありません。"
+
+#: web/templates/web/studies-history.html:133
+msgid "Feedback"
+msgstr "フィードバック"
+
+#: web/templates/web/studies-history.html:139
+msgid "None"
+msgstr "なし"
 
 #: web/templates/web/studies-history.html:154
 msgid "You have not yet participated in any studies."
-msgstr "あなたはまだ何の研究にも参加していません。"
+msgstr "あなたはまだどの研究・調査にも参加していません。"
 
 #: web/templates/web/studies-list.html:32
 msgid "Current Studies"
-msgstr "現在の研究"
+msgstr "現在の研究・調査"
 
 #: web/templates/web/studies-list.html:53
 msgid ""
 "Please note you'll need a laptop or desktop computer (not a mobile device) "
 "running Chrome or Firefox to participate."
 msgstr ""
-"参加には、ChromeまたはFirefoxが動作するノートパソコンまたはデスクトップパソコ"
-"ン（モバイル機器ではありません）が必要となりますのでご注意ください。"
+"研究・調査に参加するためには、Google ChromeまたはFirefoxが動作するノートパソ"
+"コンまたはデスクトップ型パソコンが必要となりますのでご注意ください（モバイル"
+"端末では参加できません）。"
 
 #: web/templates/web/studies-list.html:80
 msgid "See details"
@@ -1378,7 +3452,7 @@ msgstr "詳細を見る"
 
 #: web/templates/web/studies-list.html:87
 msgid "We are not running any studies at this time!"
-msgstr "今のところ勉強はしていません!"
+msgstr "現在実施されている研究・調査はありません。"
 
 #: web/templates/web/studies-list.html:93
 msgid ""
@@ -1386,13 +3460,26 @@ msgid ""
 "\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer "
 "noopener\">Children Helping Science</a> for even more studies!"
 msgstr ""
-"自宅で研究に貢献する方法をお探しですか?<a href=\"https://"
-"childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener"
-"\">Children Helping Science</a>では、さらに多くの研究をご覧いただけます。"
+"自宅から参加できる他の研究・調査をお探しですか？　 <a href=\"https://"
+"childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener\">"
+"科学を助ける子どもたち（Children Helping Science; 英語のみ）</a>では、さらに"
+"多くの研究・調査をご覧いただけます。"
+
+#: web/templates/web/study-detail.html:53
+msgid "days"
+msgstr "日"
+
+#: web/templates/web/study-detail.html:53
+msgid " until "
+msgstr "までに"
+
+#: web/templates/web/study-detail.html:53
+msgid " when "
+msgstr "いつ"
 
 #: web/templates/web/study-detail.html:93
 msgid "Study overview"
-msgstr "研究概要"
+msgstr "研究・調査の概要"
 
 #: web/templates/web/study-detail.html:96
 msgid "Back to list"
@@ -1400,7 +3487,7 @@ msgstr "一覧に戻る"
 
 #: web/templates/web/study-detail.html:112
 msgid "Eligibility criteria"
-msgstr "資格基準"
+msgstr "参加資格に関する基準"
 
 #: web/templates/web/study-detail.html:116
 msgid "Duration"
@@ -1412,31 +3499,49 @@ msgstr "報酬"
 
 #: web/templates/web/study-detail.html:126
 msgid "What happens"
-msgstr "何が起こるか"
+msgstr "発生する事項"
 
 #: web/templates/web/study-detail.html:130
 msgid "What we're studying"
-msgstr "勉強していること"
+msgstr "私たちが研究・調査していること"
 
 #: web/templates/web/study-detail.html:134
 msgid "This study is conducted by"
-msgstr "この研究は"
+msgstr "この研究・調査を実施している研究者／研究グループ"
 
 #: web/templates/web/study-detail.html:138
 msgid "Would you like to participate in this study?"
-msgstr "この研究に参加してみませんか？"
+msgstr "この研究・調査に参加してみませんか？"
 
 #: web/templates/web/study-detail.html:140
 msgid "Log in to participate"
 msgstr "ログインして参加する"
 
+#: web/templates/web/study-detail.html:142
+msgid "Add child profile to "
+msgstr "お子さんのプロフィールを追加する"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "preview"
+msgstr "プレビュー"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "participate"
+msgstr "参加する"
+
+#: web/templates/web/study-detail.html:144
+msgid "Complete demographic survey to "
+msgstr "人口統計学的データを記入する"
+
 #: web/templates/web/study-detail.html:148
 msgid "Select a child:"
-msgstr "州を選択してください"
+msgstr "お子さんを選択してください"
 
 #: web/templates/web/study-detail.html:150
 msgid "None Selected"
-msgstr "None Selected"
+msgstr "選択されていません"
 
 #: web/templates/web/study-detail.html:161
 msgid ""
@@ -1444,9 +3549,9 @@ msgid ""
 "If you can wait <span id='wait-until'>until</span> he or she is old enough, "
 "we'll be able to use the collected data in our research!"
 msgstr ""
-"あなたのお子さんは、この研究のために推奨されている年齢範囲よりもまだ若いで"
-"す。お子さんが十分な年齢になる<span id='wait-until'>まで</span>待っていただけ"
-"れば、収集したデータを研究に使用することができます"
+"あなたのお子さんは、この研究・調査の推奨年齢範囲にまだ達していません。お子さ"
+"んが対象年齢になる<span id='wait-until'>まで</span>お待ちいただければ、収集し"
+"たデータを研究・調査に使用することができます。"
 
 #: web/templates/web/study-detail.html:162
 msgid ""
@@ -1454,8 +3559,9 @@ msgid ""
 "welcome to try the study anyway, but we won't be able to use the collected "
 "data in our research."
 msgstr ""
-"あなたのお子さんは、この研究の推奨年齢範囲よりも年齢が高いです。この研究を"
-"やってみるのは大歓迎ですが、収集したデータを研究に使うことはできません。"
+"あなたのお子さんは、この研究・調査の推奨年齢範囲を超えています。この研究・調"
+"査に参加してみていただくのは大歓迎ですが、収集したデータを研究・調査に使うこ"
+"とはできません。"
 
 #: web/templates/web/study-detail.html:163
 msgid ""
@@ -1463,22 +3569,61 @@ msgid ""
 "You're welcome to try the study anyway, but we won't be able to use the "
 "collected data in our research. Please contact the study researchers"
 msgstr ""
-"あなたのお子さんは、この研究のために記載されている資格基準を満たしていませ"
-"ん。この研究をお試しいただくことは歓迎しますが、収集したデータを研究に使用す"
-"ることはできません。研究者に連絡してください。"
+"あなたのお子さんは、この研究・調査の参加資格を満たしていません。この研究・調"
+"査に参加してみていただくのは歓迎ですが、収集したデータを研究・調査に使うこと"
+"はできません。研究者にご連絡ください。"
 
 #: web/templates/web/study-detail.html:165
 msgid "Build experiment runner to preview"
-msgstr "プレビューするための実験ランナーを構築する"
+msgstr "プレビュー用に実験ランナーを構築する"
 
 #: web/templates/web/study-detail.html:167
 msgid "Participate"
 msgstr "参加する"
+
+#: web/templates/web/study-detail.html:167
+msgid "now"
+msgstr "現在"
 
 #: web/templates/web/study-detail.html:168
 msgid ""
 "For an easy way to see what happens as you update your study protocol, "
 "bookmark the URL the button above sends you to."
 msgstr ""
-"勉強のプロトコルを更新するとどうなるかを簡単に確認するには、上のボタンをク"
-"リックして送信されるURLをブックマークしてください。"
+"研究・調査プロトコルを更新するとどうなるかを簡単に確認する際には、上のボタン"
+"をクリックして送信されるURLをブックマークしてください。"
+
+#: web/views.py:63
+msgid "Participant created."
+msgstr "参加者が作成されました。"
+
+#: web/views.py:88
+msgid "Demographic data saved."
+msgstr "人口統計学的データが保存されました。"
+
+#: web/views.py:156
+msgid "Child added."
+msgstr "お子さんの情報が追加されました。"
+
+#: web/views.py:192
+msgid "Child deleted."
+msgstr "お子さんの情報が削除されました。"
+
+#: web/views.py:194
+msgid "Child updated."
+msgstr "お子さんの情報が更新されました。"
+
+#: web/views.py:217
+msgid "Email preferences saved."
+msgstr "メール設定が保存されました。"
+
+#: web/views.py:311
+#, python-brace-format
+msgid ""
+"The study {study.name} is not currently collecting data - the study is "
+"either completed or paused. If you think this is an error, please contact "
+"{study.contact_info}"
+msgstr ""
+"研究・調査「 {study.name} 」は現在データ収集を行っていません（データ収集が完"
+"了したか、停止されているためです）。この状態がエラーだと思われる場合は、以下"
+"までご連絡ください。 {study.contact_info}"
