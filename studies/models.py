@@ -262,6 +262,7 @@ class Study(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
+    preview_summary = models.CharField(max_length=500, default="")
     short_description = models.TextField()
     purpose = models.TextField()
     criteria = models.TextField()
