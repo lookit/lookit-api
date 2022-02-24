@@ -89,6 +89,7 @@ class StudyViewsTestCase(TestCase):
                 name="small.gif", content=small_gif, content_type="image/gif"
             ),
             study_type=StudyType.get_ember_frame_player(),
+            preview_summary="preview summary",
             creator=self.study_admin,
             shared_preview=False,
             public=True,
