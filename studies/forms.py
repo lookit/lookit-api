@@ -110,7 +110,8 @@ class LabForm(ModelForm):
             "contact_email": (
                 "This will be the reply-to address when you contact participants, so make sure it is a monitored "
                 "address or list that lab members can access."
-            )
+            ),
+            "slug": "A unique slug that will be appended to https://lookit.mit.edu/studies/ to show discoverable, active studies for this lab only",
         }
 
 
@@ -129,6 +130,9 @@ class LabApprovalForm(ModelForm):
             "irb_contact_info",
             "approved_to_test",
         ]
+        help_texts = {
+            "slug": "A unique slug that will be appended to https://lookit.mit.edu/studies/ to show discoverable, active studies for this lab only",
+        }
 
 
 class StudyForm(ModelForm):

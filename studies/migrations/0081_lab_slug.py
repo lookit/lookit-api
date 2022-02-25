@@ -9,7 +9,6 @@ def forwards_func(apps, schema_editor):
     LabModel = apps.get_model("studies", "Lab")
     db_alias = schema_editor.connection.alias
     labs = LabModel.objects.using(db_alias).only("name").all()
-    print()
     for lab in labs:
         slug = lab.name.lower()
         slug = re.sub(r"[^a-z\s\.]", "", slug)
@@ -25,7 +24,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("studies", "0079_update_jsonfield"),
+        ("studies", "0080_study_preview_summary"),
     ]
 
     operations = [
@@ -33,7 +32,10 @@ class Migration(migrations.Migration):
             model_name="lab",
             name="slug",
             field=models.SlugField(
-                default=None, max_length=255, null=True, unique=True
+                default=None,
+                max_length=255,
+                null=True,
+                unique=True,
             ),
         ),
         migrations.RunPython(forwards_func, reverse_func),
