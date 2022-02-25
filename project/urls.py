@@ -48,8 +48,8 @@ urlpatterns = i18n_patterns(
     path("", include(accounts_urls)),
     # Default auth views need to be put here so that the url reverses
     # will map properly.
-    path("", include(auth_urls)),
     path("", include(web_urls)),
+    path("", include(auth_urls)),
     prefix_default_language=False,
 )
 

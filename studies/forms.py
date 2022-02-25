@@ -102,6 +102,7 @@ class LabForm(ModelForm):
             "contact_email",
             "contact_phone",
             "lab_website",
+            "slug",
             "description",
             "irb_contact_info",
         ]
@@ -123,6 +124,7 @@ class LabApprovalForm(ModelForm):
             "contact_email",
             "contact_phone",
             "lab_website",
+            "slug",
             "description",
             "irb_contact_info",
             "approved_to_test",

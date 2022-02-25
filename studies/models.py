@@ -68,13 +68,17 @@ def default_configuration():
 
 
 class Lab(models.Model):
-    prepopulated_fields = {"slug": ("name",)}
-
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     name = models.CharField(
         max_length=255, unique=True, blank=False, verbose_name="Lab Name"
     )
-    slug = models.SlugField(max_length=255, unique=True, null=True, default=None)
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        null=True,
+        default=None,
+        help_text="A unique slug that will be appended to https://lookit.mit.edu/studies/ to show discoverable, active studies for this lab only",
+    )
     institution = models.CharField(max_length=255, blank=True)
     principal_investigator_name = models.CharField(max_length=255, blank=False)
     contact_email = models.EmailField(unique=True, verbose_name="Contact Email")

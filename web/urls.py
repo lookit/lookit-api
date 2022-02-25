@@ -47,6 +47,8 @@ urlpatterns = [
     path("resources/", views.ResourcesView.as_view(), name="resources"),
     path("termsofuse/", views.TermsOfUseView.as_view(), name="termsofuse"),
     path(
-        r"<slug:lab_slug>/", views.LabStudiesListView.as_view(), name="lab-studies-list"
+        r"studies/<slug:lab_slug>/",
+        views.LabStudiesListView.as_view(),
+        name="lab-studies-list",
     ),
 ]
