@@ -19,8 +19,9 @@
       </div>
       <div class="panel-body">
         <p class="alert alert-info">
-            {% trans "Create a family account to start participating in Lookit studies!" %}
-            ({% trans "To register as a researcher, please use" %} <a href="{% url 'accounts:researcher-registration' %}">{% trans "this form" %}</a> {% trans "instead" %}.)
+          {% trans "Ready to participate in a Lookit study? Create a family account here! (To register as a researcher, please use the" %}
+          <a href="{% url 'accounts:researcher-registration' %}" class="alert-link">{% trans "researcher registration form" %}</a>
+          {% trans "instead.)" %}
         </p>
         <form method="POST" action="">{% csrf_token %}
           {% bootstrap_form form %}
