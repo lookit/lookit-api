@@ -90,6 +90,12 @@
     </div>
     <div class="row mt-md">
       <div class="col-xs-12">
+          <strong> Custom URL </strong>
+          <p> <a href="{% url 'web:lab-studies-list' lab.slug %}" target="_blank" rel="noopener noreferrer">{{ custom_url }}</a>
+      </div>
+    </div>
+    <div class="row mt-md">
+      <div class="col-xs-12">
           <strong> Lab description </strong>
            <p> {{ lab.description }}
       </div>

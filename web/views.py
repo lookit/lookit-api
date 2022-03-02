@@ -452,6 +452,16 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
             return lambda s: sha256(user.uuid.bytes + s.uuid.bytes).hexdigest()
 
 
+class LabStudiesListView(StudiesListView):
+    def get_success_url(self):
+        lab_slug = self.kwargs.get("lab_slug")
+        return reverse("web:lab-studies-list", args=[lab_slug])
+
+    def filter_studies(self, studies: QuerySet) -> QuerySet:
+        lab_slug = self.kwargs.get("lab_slug")
+        return super().filter_studies(studies.filter(lab__slug=lab_slug))
+
+
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
     """
     List all active, public studies.

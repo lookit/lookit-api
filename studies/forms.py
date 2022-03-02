@@ -102,14 +102,12 @@ class LabForm(ModelForm):
             "contact_email",
             "contact_phone",
             "lab_website",
+            "slug",
             "description",
             "irb_contact_info",
         ]
-        help_texts = {
-            "contact_email": (
-                "This will be the reply-to address when you contact participants, so make sure it is a monitored "
-                "address or list that lab members can access."
-            )
+        widgets = {
+            "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
         }
 
 
@@ -123,10 +121,14 @@ class LabApprovalForm(ModelForm):
             "contact_email",
             "contact_phone",
             "lab_website",
+            "slug",
             "description",
             "irb_contact_info",
             "approved_to_test",
         ]
+        widgets = {
+            "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
+        }
 
 
 class StudyForm(ModelForm):

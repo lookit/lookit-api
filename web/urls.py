@@ -46,4 +46,9 @@ urlpatterns = [
     path("contact_us/", views.ContactView.as_view(), name="contact"),
     path("resources/", views.ResourcesView.as_view(), name="resources"),
     path("termsofuse/", views.TermsOfUseView.as_view(), name="termsofuse"),
+    path(
+        r"studies/<slug:lab_slug>/",
+        views.LabStudiesListView.as_view(),
+        name="lab-studies-list",
+    ),
 ]

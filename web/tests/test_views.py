@@ -15,6 +15,7 @@ from studies.models import Lab, Response, Study, StudyType
 from web.views import (
     ChildrenListView,
     DemographicDataUpdateView,
+    LabStudiesListView,
     StudiesListView,
     StudyDetailView,
 )
@@ -779,6 +780,34 @@ class StudiesListViewTestCase(TestCase):
         mock_studies.sort(key=view.sort_fn())
 
         self.assertListEqual(mock_studies, [mock_study_b, mock_study_a, mock_study_c])
+
+
+class LabStudiesListViewTestCase(TestCase):
+    @patch.object(StudiesListView, "filter_studies")
+    @patch.object(LabStudiesListView, "request", create=True)
+    def test_filter_studies(self, mock_request, mock_super_filter_studies):
+        mock_studies = MagicMock(name="studies")
+        view = LabStudiesListView()
+        type(view).kwargs = PropertyMock(return_value={"lab_slug": sentinel.lab_slug})
+        view.filter_studies(mock_studies)
+
+        # confirm studies were filted by lab slug
+        mock_studies.filter.assert_called_once_with(lab__slug=sentinel.lab_slug)
+        mock_super_filter_studies.assert_called_once_with(mock_studies.filter())
+
+    @patch("web.views.reverse")
+    def test_get_success_url(self, mock_reverse):
+        view = LabStudiesListView()
+        # attach lab_slug to view kwargs
+        type(view).kwargs = PropertyMock(return_value={"lab_slug": sentinel.lab_slug})
+
+        url = view.get_success_url()
+        # confirm correct success url is created
+        mock_reverse.assert_called_once_with(
+            "web:lab-studies-list", args=[sentinel.lab_slug]
+        )
+        # verify that url is returned
+        self.assertEqual(url, mock_reverse())
 
 
 # TODO: StudyDetailView

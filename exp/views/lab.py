@@ -70,6 +70,9 @@ class LabDetailView(
             or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.codename, lab)
             or user.has_perm(LabPermission.READ_LAB_RESEARCHERS.prefixed_codename)
         )
+        context["custom_url"] = self.request.build_absolute_uri(
+            reverse("web:lab-studies-list", args=[lab.slug])
+        )
         return context
 
 
