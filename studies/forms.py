@@ -102,14 +102,12 @@ class LabForm(ModelForm):
             "contact_email",
             "contact_phone",
             "lab_website",
+            "slug",
             "description",
             "irb_contact_info",
         ]
-        help_texts = {
-            "contact_email": (
-                "This will be the reply-to address when you contact participants, so make sure it is a monitored "
-                "address or list that lab members can access."
-            )
+        widgets = {
+            "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
         }
 
 
@@ -123,10 +121,14 @@ class LabApprovalForm(ModelForm):
             "contact_email",
             "contact_phone",
             "lab_website",
+            "slug",
             "description",
             "irb_contact_info",
             "approved_to_test",
         ]
+        widgets = {
+            "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
+        }
 
 
 class StudyForm(ModelForm):
@@ -231,6 +233,7 @@ class StudyForm(ModelForm):
             "name",
             "lab",
             "image",
+            "preview_summary",
             "short_description",
             "purpose",
             "compensation_description",
@@ -254,6 +257,7 @@ class StudyForm(ModelForm):
         labels = {
             "name": "Study Name",
             "image": "Study Image",
+            "preview_summary": "Preview Summary",
             "short_description": "Short Description",
             "purpose": "Purpose",
             "exit_url": "Exit URL",
@@ -266,6 +270,7 @@ class StudyForm(ModelForm):
             "use_generator": "Use protocol generator (advanced)",
         }
         widgets = {
+            "preview_summary": Textarea(attrs={"rows": 2}),
             "short_description": Textarea(attrs={"rows": 2}),
             "purpose": Textarea(attrs={"rows": 2}),
             "compensation_description": Textarea(attrs={"rows": 2}),
@@ -296,6 +301,7 @@ class StudyForm(ModelForm):
             "lab": "Which lab this study will be affiliated with",
             "image": "This is the image participants will see when browsing studies. Please keep your file size less than 1 MB.",
             "exit_url": "Specify the page where you want to send your participants after they've completed the study. (The 'Past studies' page on Lookit is a good default option.)",
+            "preview_summary": "This is the text participants will see when browsing studies. Please keep your description under 100 words.",
             "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of how they will sign up and access the study session.",
             "purpose": "Explain the purpose of your study here. This should address what question this study answers AND why that is an interesting or important question, in layperson-friendly terms.",
             "contact_info": "This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)",

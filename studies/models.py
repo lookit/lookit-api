@@ -72,11 +72,29 @@ class Lab(models.Model):
     name = models.CharField(
         max_length=255, unique=True, blank=False, verbose_name="Lab Name"
     )
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        null=True,
+        default=None,
+        verbose_name="Custom URL",
+        help_text="A unique URL (slug) that will show discoverable, active studies for this lab "
+        "only, e.g. https://lookit.mit.edu/studies/my-lab-name",
+    )
     institution = models.CharField(max_length=255, blank=True)
     principal_investigator_name = models.CharField(max_length=255, blank=False)
-    contact_email = models.EmailField(unique=True, verbose_name="Contact Email")
+    contact_email = models.EmailField(
+        unique=True,
+        verbose_name="Contact Email",
+        help_text="This will be the reply-to address when you contact participants, so make sure "
+        "it is a monitored address or list that lab members can access.",
+    )
     contact_phone = models.CharField(max_length=255, verbose_name="Contact Phone")
-    lab_website = models.URLField(verbose_name="Lab Website", blank=True)
+    lab_website = models.URLField(
+        blank=True,
+        verbose_name="Lab Website",
+        help_text="A link to an external website, such as your university lab page",
+    )
     description = models.TextField(
         blank=False,
         help_text="A short (2-3 sentences), parent-facing description of what "
@@ -262,6 +280,7 @@ class Study(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
+    preview_summary = models.CharField(max_length=500, default="")
     short_description = models.TextField()
     purpose = models.TextField()
     criteria = models.TextField()

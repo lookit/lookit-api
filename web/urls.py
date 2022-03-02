@@ -1,4 +1,3 @@
-from django.contrib.flatpages import views as flatpages_views
 from django.urls import path, re_path
 
 from web import views
@@ -40,34 +39,16 @@ urlpatterns = [
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),
-    path("faq/", flatpages_views.flatpage, dict(url="/faq/"), name="faq"),
+    path("", views.HomeView.as_view(), name="home"),
+    path("faq/", views.FAQView.as_view(), name="faq"),
+    path("privacy/", views.PrivacyView.as_view(), name="privacy"),
+    path("scientists/", views.ScientistsView.as_view(), name="scientists"),
+    path("contact_us/", views.ContactView.as_view(), name="contact"),
+    path("resources/", views.ResourcesView.as_view(), name="resources"),
+    path("termsofuse/", views.TermsOfUseView.as_view(), name="termsofuse"),
     path(
-        "scientists/",
-        flatpages_views.flatpage,
-        dict(url="/scientists/"),
-        name="scientists",
+        r"studies/<slug:lab_slug>/",
+        views.LabStudiesListView.as_view(),
+        name="lab-studies-list",
     ),
-    path(
-        "resources/",
-        flatpages_views.flatpage,
-        dict(url="/resources/"),
-        name="resources",
-    ),
-    path(
-        "contact_us/",
-        flatpages_views.flatpage,
-        dict(url="/contact_us/"),
-        name="contact_us",
-    ),
-    re_path(
-        r"^(?P<path>assets/.*)$",
-        views.ExperimentAssetsProxyView.as_view(),
-        name="experiment-assets-proxy",
-    ),
-    re_path(
-        r"^(?P<path>fonts/.*)$",
-        views.ExperimentAssetsProxyView.as_view(),
-        name="experiment-fonts-proxy",
-    ),
-    path("", flatpages_views.flatpage, dict(url=""), name="home"),
 ]

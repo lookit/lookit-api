@@ -1,0 +1,3455 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MBAH_studiespage\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-10-13 14:40+0000\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+
+#: accounts/forms.py:58
+msgid "Enter a valid 6-digit one-time password from Google Authenticator"
+msgstr "请输入来自谷歌身份验证器一次性的有效六位数密码"
+
+#: accounts/forms.py:109
+#, fuzzy, python-format
+#| msgid ""
+#| "Please enter a correct %(username)s and password. Note that email and "
+#| "password fields may be case-sensitive. If you have turned on two-factor "
+#| "authentication, you will need a one-time password (OTP code) from Google "
+#| "Authenticator as well. "
+msgid ""
+"Please enter a correct %(username)s and password. Note that email and "
+"password fields may be case-sensitive. If you have turned on two-factor "
+"authentication, you will need a one-time password (OTP code) from Google "
+"Authenticator as well. "
+msgstr ""
+"请输入正确的用户名和密码。请注意，电子邮件和密码字段会区分大小写。如果您启用"
+"了双重认证，则还需要谷歌身份验证器的一次性密码（OTP代码）。 "
+
+#: accounts/forms.py:114
+msgid "This account is inactive."
+msgstr "此账号尚未激活。"
+
+#: accounts/forms.py:197
+msgid "Your password can’t be too similar to your other personal information."
+msgstr "您的密码不能与您的个人信息过于相似。"
+
+#: accounts/forms.py:198
+msgid "Your password must contain at least 16 characters."
+msgstr "您的密码必须至少包含16个字符。"
+
+#: accounts/forms.py:199
+msgid "Your password can’t be a commonly used password."
+msgstr "您的密码不能为常见密码。"
+
+#: accounts/forms.py:200
+msgid "Your password can’t be entirely numeric."
+msgstr "您的密码不能全是数字。"
+
+#: accounts/forms.py:216 accounts/forms.py:232 accounts/models.py:141
+msgid "Email address"
+msgstr "邮箱地址"
+
+#: accounts/forms.py:217 accounts/models.py:146
+#: accounts/templates/accounts/participant_list.html:37
+#: accounts/templates/accounts/participant_list.html:58
+msgid "Nickname"
+msgstr "昵称"
+
+#: accounts/forms.py:257
+msgid ""
+"It's time for another session of a study we are currently participating in"
+msgstr "是时候进行本实验中的另一个部分了"
+
+#: accounts/forms.py:259
+msgid "A new study is available for one of my children"
+msgstr "有一项新研究可供我的一位孩子参加"
+
+#: accounts/forms.py:261
+msgid ""
+"There's an update about a study we participated in (for example, results are "
+"published)"
+msgstr "我们曾经参加过的一项研究有了新的进展（例如：实验结果已发表）"
+
+#: accounts/forms.py:264
+msgid ""
+"A researcher has questions about my individual responses (for example, if I "
+"report a technical problem during the study)"
+msgstr "一位研究员对于我的个人反馈有疑问（例如：在研究中我反映了技术问题）"
+
+#: accounts/forms.py:273 accounts/forms.py:322
+msgid "What category(ies) does your family identify as?"
+msgstr "您认为您的家庭属于哪种类别？"
+
+#: accounts/forms.py:277 accounts/models.py:527
+#: accounts/templates/accounts/participant_detail.html:86
+msgid "Country"
+msgstr "国家"
+
+#: accounts/forms.py:304
+msgid "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
+msgstr "请用逗号分隔日期，如：2015-05-10, 2018-01-22, ..."
+
+#: accounts/forms.py:306
+msgid "Numerical answers only - a rough guess is fine!"
+msgstr "仅填写数字（可估计）"
+
+#: accounts/forms.py:310
+msgid "What country do you live in?"
+msgstr "您居住在哪个国家？"
+
+#: accounts/forms.py:311
+msgid "What state do you live in?"
+msgstr "您居住在哪个省份/自治区/直辖市/特别行政区？"
+
+#: accounts/forms.py:312
+msgid "How would you describe the area where you live?"
+msgstr "您会如何描述您所居住的区域？"
+
+#: accounts/forms.py:314
+msgid "What language(s) does your family speak at home?"
+msgstr "您的家庭在家中使用什么语言？"
+
+#: accounts/forms.py:316
+msgid "How many children do you have?"
+msgstr "您有几位子女？"
+
+#: accounts/forms.py:317
+msgid "For each child, please enter his or her birthdate:"
+msgstr "请输入每一位子女的出生日期："
+
+#: accounts/forms.py:319
+msgid "How many parents/guardians do your children live with?"
+msgstr "您的孩子与几位父母/监护人居住在一起？"
+
+#: accounts/forms.py:324
+msgid "What is your age?"
+msgstr "您的年龄是？"
+
+#: accounts/forms.py:325
+msgid "What is your gender?"
+msgstr "您的性别是？"
+
+#: accounts/forms.py:327
+msgid "What is the highest level of education you've completed?"
+msgstr "您获得的最高学历是什么？"
+
+#: accounts/forms.py:330
+msgid "What is the highest level of education your spouse has completed?"
+msgstr "您的配偶获得的最高学历是什么？"
+
+#: accounts/forms.py:333
+msgid "What is your approximate family yearly income (in US dollars)?"
+msgstr "您的家庭年收入大概是多少（人民币）？"
+
+#: accounts/forms.py:336
+msgid "About how many children's books are there in your home?"
+msgstr "您家中大约有多少本儿童读物？"
+
+#: accounts/forms.py:338
+msgid "Anything else you'd like us to know?"
+msgstr "请问您还有什么想让我们知道的吗？"
+
+#: accounts/forms.py:339
+msgid "How did you hear about Lookit?"
+msgstr "您是怎么了解到Lookit的？"
+
+#: accounts/forms.py:341
+msgid ""
+"If the answer varies due to shared custody arrangements or travel, please "
+"enter the number of parents/guardians your children are usually living with "
+"or explain."
+msgstr ""
+"如果监护人数量会因共同监护或旅行而有变动，请输入和您孩子平时一同居住的父母/监"
+"护人人数或做额外解释。"
+
+#: accounts/forms.py:356 accounts/forms.py:382 accounts/forms.py:434
+#: accounts/templates/accounts/participant_detail.html:38
+#: web/templates/web/children-list.html:112
+msgid "Birthday"
+msgstr "出生日期"
+
+#: accounts/forms.py:358
+msgid ""
+"This lets us figure out exactly how old your child is when they participate "
+"in a study. We never publish children's birthdates or information that would "
+"allow a reader to calculate the birthdate."
+msgstr ""
+"这能帮助我们计算出您孩子参加研究时的确切年龄。我们从不公布儿童的出生日期或能"
+"让读者计算出生日期的信息。"
+
+#: accounts/forms.py:365
+msgid "Birthdays cannot be in the future."
+msgstr "生日不能为将来的时间。"
+
+#: accounts/forms.py:381 accounts/forms.py:433
+msgid "First Name"
+msgstr "名"
+
+#: accounts/forms.py:383 accounts/forms.py:435
+#: accounts/templates/accounts/participant_detail.html:54
+msgid "Gender"
+msgstr "性别"
+
+#: accounts/forms.py:384 accounts/forms.py:436
+#: accounts/templates/accounts/participant_detail.html:62
+msgid "Gestational Age at Birth"
+msgstr "出生时的胎龄"
+
+#: accounts/forms.py:386 accounts/forms.py:438
+msgid "Any additional information you'd like us to know"
+msgstr "您想让我们知道的其他信息。"
+
+#: accounts/forms.py:388 accounts/forms.py:440
+msgid "Characteristics and conditions"
+msgstr "特殊情况"
+
+#: accounts/forms.py:390 accounts/forms.py:442
+msgid ""
+"Languages this child is exposed to at home, school, or with another "
+"caregiver."
+msgstr "该儿童在家庭、学校或与其他照顾者在一起时所接触的语言。"
+
+#: accounts/forms.py:396 accounts/forms.py:448
+msgid ""
+"This lets you select the correct child to participate in a particular study. "
+"A nickname or initials are fine! We may include your child's name in email "
+"to you (for instance, \"There's a new study available for Molly!\") but will "
+"never publish names or use them in our research."
+msgstr ""
+"这可以让您选择正确的孩子来参加某项研究。昵称或拼音首字母也适用！我们可能会在"
+"电子邮件中使用您孩子的名字（例如，\"小明可以参加一项新的研究！\"），但绝不会"
+"在我们的研究中公布或使用姓名。"
+
+#: accounts/forms.py:399 accounts/forms.py:451
+msgid ""
+"For instance, diagnosed developmental disorders or vision or hearing problems"
+msgstr "例如，被诊断为发育障碍，或有视力、听力问题。"
+
+#: accounts/forms.py:402
+msgid "Please round down to the nearest full week of pregnancy completed"
+msgstr "请将怀孕周数四舍五入到整数。"
+
+#: accounts/migrations/0041_add_existing_conditions.py:12
+#: accounts/models.py:302 studies/fields.py:135
+msgid "Not sure or prefer not to answer"
+msgstr "不确定或不愿回答"
+
+#: accounts/migrations/0041_add_existing_conditions.py:13
+#: accounts/models.py:303 studies/fields.py:136
+msgid "Under 24 weeks"
+msgstr "24周以下"
+
+#: accounts/migrations/0041_add_existing_conditions.py:14
+#: accounts/models.py:304 studies/fields.py:137
+msgid "24 weeks"
+msgstr "24周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:15
+#: accounts/models.py:305 studies/fields.py:138
+msgid "25 weeks"
+msgstr "25周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:16
+#: accounts/models.py:306 studies/fields.py:139
+msgid "26 weeks"
+msgstr "26周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:17
+#: accounts/models.py:307 studies/fields.py:140
+msgid "27 weeks"
+msgstr "27周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:18
+#: accounts/models.py:308 studies/fields.py:141
+msgid "28 weeks"
+msgstr "28周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:19
+#: accounts/models.py:309 studies/fields.py:142
+msgid "29 weeks"
+msgstr "29周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:20
+#: accounts/models.py:310 studies/fields.py:143
+msgid "30 weeks"
+msgstr "30周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:21
+#: accounts/models.py:311 studies/fields.py:144
+msgid "31 weeks"
+msgstr "31周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:22
+#: accounts/models.py:312 studies/fields.py:145
+msgid "32 weeks"
+msgstr "32周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:23
+#: accounts/models.py:313 studies/fields.py:146
+msgid "33 weeks"
+msgstr "33周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:24
+#: accounts/models.py:314 studies/fields.py:147
+msgid "34 weeks"
+msgstr "34周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:25
+#: accounts/models.py:315 studies/fields.py:148
+msgid "35 weeks"
+msgstr "35周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:26
+#: accounts/models.py:316 studies/fields.py:149
+msgid "36 weeks"
+msgstr "36周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:27
+#: accounts/models.py:317 studies/fields.py:150
+msgid "37 weeks"
+msgstr "37周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:28
+#: accounts/models.py:318 studies/fields.py:151
+msgid "38 weeks"
+msgstr "38周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:29
+#: accounts/models.py:319 studies/fields.py:152
+msgid "39 weeks"
+msgstr "39周"
+
+#: accounts/migrations/0041_add_existing_conditions.py:30
+#: accounts/models.py:320 studies/fields.py:153
+msgid "40 or more weeks"
+msgstr "40周及以上"
+
+#: accounts/models.py:80
+msgid "Can View Organization"
+msgstr "可查看机构"
+
+#: accounts/models.py:81
+msgid "Can Edit Organization"
+msgstr "可编辑机构"
+
+#: accounts/models.py:82
+msgid "Can Create Organization"
+msgstr "可创建机构"
+
+#: accounts/models.py:83
+msgid "Can Remove Organization"
+msgstr "可移除机构"
+
+#: accounts/models.py:84
+msgid "Can View Experimenter"
+msgstr "可查看实验员"
+
+#: accounts/models.py:85
+msgid "Can View Analytics"
+msgstr "可查看分析"
+
+#: accounts/models.py:280
+msgid "Can Create User"
+msgstr "可创建用户"
+
+#: accounts/models.py:281
+msgid "Can View User"
+msgstr "可查看用户"
+
+#: accounts/models.py:282
+msgid "Can Edit User"
+msgstr "可编辑用户"
+
+#: accounts/models.py:283
+msgid "Can Remove User"
+msgstr "可移除用户"
+
+#: accounts/models.py:284
+msgid "Can View User Permissions"
+msgstr "可查看用户许可"
+
+#: accounts/models.py:285
+msgid "Can Edit User Permissions"
+msgstr "可编辑用户许可"
+
+#: accounts/models.py:286
+msgid "Can Read All User Data"
+msgstr "可阅读所有用户数据"
+
+#: accounts/models.py:287
+msgid "Can Read User Usernames"
+msgstr "可阅读用户名"
+
+#: accounts/models.py:294 accounts/models.py:397
+msgid "male"
+msgstr "男性"
+
+#: accounts/models.py:295 accounts/models.py:398
+msgid "female"
+msgstr "女性"
+
+#: accounts/models.py:296 accounts/models.py:399
+msgid "other"
+msgstr "其他"
+
+#: accounts/models.py:297 accounts/models.py:400 accounts/models.py:476
+msgid "prefer not to answer"
+msgstr "不愿回答"
+
+#: accounts/models.py:387
+msgid "White"
+msgstr "白人"
+
+#: accounts/models.py:388
+msgid "Hispanic, Latino, or Spanish origin"
+msgstr "西班牙裔、拉美裔或西班牙血统"
+
+#: accounts/models.py:389
+msgid "Black or African American"
+msgstr "黑人或非裔美国人"
+
+#: accounts/models.py:390
+msgid "Asian"
+msgstr "亚裔"
+
+#: accounts/models.py:391
+msgid "American Indian or Alaska Native"
+msgstr "美国印第安人或阿拉斯加原住民"
+
+#: accounts/models.py:392
+msgid "Middle Eastern or North African"
+msgstr "中东人或北非人"
+
+#: accounts/models.py:393
+msgid "Native Hawaiian or Other Pacific Islander"
+msgstr "夏威夷原住民或其他太平洋岛民"
+
+#: accounts/models.py:394
+msgid "Another race, ethnicity, or origin"
+msgstr "其他种族、民族或出身"
+
+#: accounts/models.py:403 accounts/models.py:412
+msgid "some or attending high school"
+msgstr "初中学历及以下"
+
+#: accounts/models.py:404 accounts/models.py:413
+msgid "high school diploma or GED"
+msgstr "高中、中专学历"
+
+#: accounts/models.py:405 accounts/models.py:414
+msgid "some or attending college"
+msgstr "本科或大专（未获得文凭）"
+
+#: accounts/models.py:406 accounts/models.py:415
+msgid "2-year college degree"
+msgstr "大专学历"
+
+#: accounts/models.py:407 accounts/models.py:416
+msgid "4-year college degree"
+msgstr "本科学历"
+
+#: accounts/models.py:408 accounts/models.py:417
+msgid "some or attending graduate or professional school"
+msgstr "研究生（未获得文凭）"
+
+#: accounts/models.py:409 accounts/models.py:418
+msgid "graduate or professional degree"
+msgstr "研究生学历"
+
+#: accounts/models.py:419
+msgid "not applicable - no spouse or partner"
+msgstr "无配偶或伴侣"
+
+#: accounts/models.py:422 accounts/models.py:453
+msgid "0"
+msgstr "0"
+
+#: accounts/models.py:423 accounts/models.py:450
+msgid "1"
+msgstr "1"
+
+#: accounts/models.py:424 accounts/models.py:450
+msgid "2"
+msgstr "2"
+
+#: accounts/models.py:425
+msgid "3"
+msgstr "3"
+
+#: accounts/models.py:426
+msgid "4"
+msgstr "4"
+
+#: accounts/models.py:427
+msgid "5"
+msgstr "5"
+
+#: accounts/models.py:428
+msgid "6"
+msgstr "6"
+
+#: accounts/models.py:429
+msgid "7"
+msgstr "7"
+
+#: accounts/models.py:430
+msgid "8"
+msgstr "8"
+
+#: accounts/models.py:431
+msgid "9"
+msgstr "9"
+
+#: accounts/models.py:432
+msgid "10"
+msgstr "10"
+
+#: accounts/models.py:433
+msgid "More than 10"
+msgstr "10位以上"
+
+#: accounts/models.py:436
+msgid "under 18"
+msgstr "18岁以下"
+
+#: accounts/models.py:437
+msgid "18-21"
+msgstr "18-21岁"
+
+#: accounts/models.py:438
+msgid "22-24"
+msgstr "22-24岁"
+
+#: accounts/models.py:439
+msgid "25-29"
+msgstr "25-29岁"
+
+#: accounts/models.py:440
+msgid "30-34"
+msgstr "30-34岁"
+
+#: accounts/models.py:441
+msgid "35-39"
+msgstr "35-39岁"
+
+#: accounts/models.py:442
+msgid "40-44"
+msgstr "40-44岁"
+
+#: accounts/models.py:443
+msgid "45-49"
+msgstr "45-49岁"
+
+#: accounts/models.py:444
+msgid "50-59"
+msgstr "50-59岁"
+
+#: accounts/models.py:445
+msgid "60-69"
+msgstr "60-69岁"
+
+#: accounts/models.py:446
+msgid "70 or over"
+msgstr "70岁及以上"
+
+#: accounts/models.py:450
+msgid "3 or more"
+msgstr "3位及以上"
+
+#: accounts/models.py:450
+msgid "varies"
+msgstr "不定"
+
+#: accounts/models.py:454
+msgid "5000"
+msgstr "1万元及以下"
+
+#: accounts/models.py:455
+msgid "10000"
+msgstr "2万元"
+
+#: accounts/models.py:456
+msgid "15000"
+msgstr "3万元"
+
+#: accounts/models.py:457
+msgid "20000"
+msgstr "4万元"
+
+#: accounts/models.py:458
+msgid "30000"
+msgstr "5万元"
+
+#: accounts/models.py:459
+msgid "40000"
+msgstr "6万元"
+
+#: accounts/models.py:460
+msgid "50000"
+msgstr "7万元"
+
+#: accounts/models.py:461
+msgid "60000"
+msgstr "8万元"
+
+#: accounts/models.py:462
+msgid "70000"
+msgstr "9万元"
+
+#: accounts/models.py:463
+msgid "80000"
+msgstr "10万元"
+
+#: accounts/models.py:464
+msgid "90000"
+msgstr "11万元"
+
+#: accounts/models.py:465
+msgid "100000"
+msgstr "12万元"
+
+#: accounts/models.py:466
+msgid "110000"
+msgstr "13万元"
+
+#: accounts/models.py:467
+msgid "120000"
+msgstr "14万元"
+
+#: accounts/models.py:468
+msgid "130000"
+msgstr "15万元"
+
+#: accounts/models.py:469
+msgid "140000"
+msgstr "20万元"
+
+#: accounts/models.py:470
+msgid "150000"
+msgstr "25万元"
+
+#: accounts/models.py:471
+msgid "160000"
+msgstr "30万元"
+
+#: accounts/models.py:472
+msgid "170000"
+msgstr "35万元"
+
+#: accounts/models.py:473
+msgid "180000"
+msgstr "40万元"
+
+#: accounts/models.py:474
+msgid "190000"
+msgstr "45万元"
+
+#: accounts/models.py:475
+msgid "over 200000"
+msgstr "50万元及以上"
+
+#: accounts/models.py:479
+msgid "urban"
+msgstr "城市"
+
+#: accounts/models.py:479
+msgid "suburban"
+msgstr "郊区"
+
+#: accounts/models.py:479
+msgid "rural"
+msgstr "乡村"
+
+#: accounts/models.py:529
+msgid "Select a State"
+msgstr "选择一个省份/自治区/直辖市/特别行政区"
+
+#: accounts/templates/accounts/_account-navigation.html:2
+#: accounts/templates/accounts/account-update.html:24
+msgid "Account Information"
+msgstr "账号信息"
+
+#: accounts/templates/accounts/_account-navigation.html:2
+msgid "Change your login credentials and/or nickname."
+msgstr "更改您的登录信息和/或昵称。"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Demographic Survey"
+msgstr "基本信息"
+
+#: accounts/templates/accounts/_account-navigation.html:3
+msgid "Tell us more about yourself."
+msgstr "让我们更加了解您。"
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Children Information"
+msgstr "儿童信息"
+
+#: accounts/templates/accounts/_account-navigation.html:4
+msgid "Add or edit participant information."
+msgstr "添加或编辑参与者信息。"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+#: web/templates/web/participant-email-preferences.html:4
+msgid "Email Preferences"
+msgstr "电子邮件偏好"
+
+#: accounts/templates/accounts/_account-navigation.html:5
+msgid "Edit when you can be contacted."
+msgstr "让我们了解什么情况下可以联系您。"
+
+#: accounts/templates/accounts/account-update.html:14
+#: web/templates/web/_navigation.html:43 web/templates/web/child-update.html:16
+#: web/templates/web/children-list.html:67
+#: web/templates/web/demographic-data-update.html:78
+#: web/templates/web/participant-email-preferences.html:16
+msgid "My Account"
+msgstr "我的账号"
+
+#: accounts/templates/accounts/account-update.html:37
+#: accounts/templates/accounts/account-update.html:58
+#: web/templates/web/child-update.html:46
+#: web/templates/web/demographic-data-update.html:102
+#: web/templates/web/participant-email-preferences.html:38
+msgid "Save"
+msgstr "保存"
+
+#: accounts/templates/accounts/account-update.html:45
+msgid "Change Your Password"
+msgstr "修改您的密码"
+
+#: accounts/templates/accounts/account-update.html:68
+msgid "Manage Two-Factor Authentication"
+msgstr "管理双重认证"
+
+#: accounts/templates/accounts/account-update.html:83
+msgid ""
+"If you'd like, you can turn two-factor authentication off here. Just enter "
+"your one-time password here, hit submit, and it'll get deleted for you!"
+msgstr ""
+"如需要，您可以在此处关闭双重认证。在这里输入您的一次性密码，点击提交，双重认"
+"证就会关闭。"
+
+#: accounts/templates/accounts/account-update.html:108
+msgid "Set up Two-Factor Authentication"
+msgstr "设置双重认证"
+
+#: accounts/templates/accounts/participant_detail.html:15
+msgid "All Participants"
+msgstr "所有参与者"
+
+#: accounts/templates/accounts/participant_detail.html:23
+msgid "Participant ID"
+msgstr "参与者ID"
+
+#: accounts/templates/accounts/participant_detail.html:24
+msgid "Last Active:"
+msgstr "最后访问："
+
+#: accounts/templates/accounts/participant_detail.html:25
+msgid "Participant global ID:"
+msgstr "参与者全球ID："
+
+#: accounts/templates/accounts/participant_detail.html:31
+#: web/templates/web/children-list.html:105
+msgid "Children"
+msgstr "儿童"
+
+#: accounts/templates/accounts/participant_detail.html:46
+msgid "Age"
+msgstr "年龄"
+
+#: accounts/templates/accounts/participant_detail.html:70
+msgid "Additional Info"
+msgstr "其他信息"
+
+#: accounts/templates/accounts/participant_detail.html:79
+msgid "No children profiles registered!"
+msgstr "尚未注册儿童档案!"
+
+#: accounts/templates/accounts/participant_detail.html:83
+msgid "Latest Demographic Data"
+msgstr "最新基本信息"
+
+#: accounts/templates/accounts/participant_detail.html:94
+msgid "State"
+msgstr "省份"
+
+#: accounts/templates/accounts/participant_detail.html:102
+msgid "Area description"
+msgstr "地区描述"
+
+#: accounts/templates/accounts/participant_detail.html:110
+msgid "Languages Spoken at Home"
+msgstr "在家使用的语言"
+
+#: accounts/templates/accounts/participant_detail.html:118
+msgid "Number of Children"
+msgstr "儿童人数"
+
+#: accounts/templates/accounts/participant_detail.html:126
+msgid "Children current ages"
+msgstr "儿童的目前年龄"
+
+#: accounts/templates/accounts/participant_detail.html:134
+msgid "Number of Guardians"
+msgstr "监护人人数"
+
+#: accounts/templates/accounts/participant_detail.html:142
+msgid "Explanation for Guardians:"
+msgstr "对监护人的解释"
+
+#: accounts/templates/accounts/participant_detail.html:150
+msgid "Race"
+msgstr "种族"
+
+#: exp/templates/exp/dashboard.html:16
+msgid "Dashboard"
+msgstr "概要面板"
+
+#: project/settings.py:228 studies/fields.py:68
+msgid "German"
+msgstr "德语"
+
+#: project/settings.py:229 studies/fields.py:57
+msgid "English"
+msgstr "英语"
+
+#: project/settings.py:230 studies/fields.py:101
+msgid "Spanish"
+msgstr "西班牙语"
+
+#: project/settings.py:231
+msgid "Argentinian Spanish"
+msgstr "阿根廷西班牙语"
+
+#: project/settings.py:232 studies/fields.py:66
+msgid "French"
+msgstr "法语"
+
+#: project/settings.py:233
+msgid "Canadian French"
+msgstr "加拿大法语"
+
+#: project/settings.py:234
+msgid "Hebrew"
+msgstr "希伯来语"
+
+#: project/settings.py:235 studies/fields.py:76
+msgid "Italian"
+msgstr "意大利语"
+
+#: project/settings.py:236 studies/fields.py:77
+msgid "Japanese"
+msgstr "日语"
+
+#: project/settings.py:237 studies/fields.py:82
+msgid "Korean"
+msgstr "韩语"
+
+#: project/settings.py:238
+msgid "Norwegian Bokmål"
+msgstr "挪威博克莫尔语"
+
+#: project/settings.py:239 studies/fields.py:94
+msgid "Polish"
+msgstr "波兰语"
+
+#: project/settings.py:240 studies/fields.py:95
+msgid "Portuguese"
+msgstr "葡萄牙语"
+
+#: project/settings.py:241
+msgid "Brazilian Portuguese"
+msgstr "巴西葡萄牙语"
+
+#: project/settings.py:242 studies/fields.py:96
+msgid "Romanian"
+msgstr "罗马尼亚语"
+
+#: project/settings.py:243 studies/fields.py:97
+msgid "Russian"
+msgstr "俄语"
+
+#: project/settings.py:244 studies/fields.py:107
+msgid "Turkish"
+msgstr "土耳其语"
+
+#: project/settings.py:245
+msgid "Simplified Chinese"
+msgstr "中文简体"
+
+#: project/settings.py:246 studies/fields.py:64
+msgid "Dutch"
+msgstr "荷兰语"
+
+#: studies/fields.py:7
+msgid "Autism Spectrum Disorder"
+msgstr "自闭症谱系障碍"
+
+#: studies/fields.py:8
+msgid "Deaf"
+msgstr "聋"
+
+#: studies/fields.py:9
+msgid "Hard of Hearing"
+msgstr "听力障碍"
+
+#: studies/fields.py:10
+msgid "Dyslexia"
+msgstr "阅读障碍"
+
+#: studies/fields.py:11
+msgid "Multiple Birth (twin, triplet, or higher order)"
+msgstr "多胎出生（双胞胎，三胞胎或更多）"
+
+#: studies/fields.py:45
+msgid "Twin"
+msgstr "双胞胎"
+
+#: studies/fields.py:46
+msgid "Triplet"
+msgstr "三胞胎"
+
+#: studies/fields.py:47
+msgid "Quadruplet"
+msgstr "四胞胎"
+
+#: studies/fields.py:48
+msgid "Quintuplet"
+msgstr "五胞胎"
+
+#: studies/fields.py:49
+msgid "Sextuplet"
+msgstr "六胞胎"
+
+#: studies/fields.py:50
+msgid "Septuplet"
+msgstr "七胞胎"
+
+#: studies/fields.py:51
+msgid "Octuplet"
+msgstr "八胞胎"
+
+#: studies/fields.py:58
+msgid "Amharic"
+msgstr "阿姆哈拉语"
+
+#: studies/fields.py:59
+msgid "Bengali"
+msgstr "孟加拉语"
+
+#: studies/fields.py:60
+msgid "Bhojpuri"
+msgstr "博普里语"
+
+#: studies/fields.py:61
+msgid "Burmese"
+msgstr "缅甸语"
+
+#: studies/fields.py:62
+msgid "Cebuano"
+msgstr "宿雾语"
+
+#: studies/fields.py:63
+msgid "Chhattisgarhi"
+msgstr "恰蒂斯加里语"
+
+#: studies/fields.py:65
+msgid "Egyptian Spoken Arabic"
+msgstr "埃及阿拉伯口语"
+
+#: studies/fields.py:67
+msgid "Gan"
+msgstr "中文（赣方言）"
+
+#: studies/fields.py:69
+msgid "Gujarati"
+msgstr "古吉拉特语"
+
+#: studies/fields.py:70
+msgid "Hakka"
+msgstr "中文（客家语）"
+
+#: studies/fields.py:71
+msgid "Hausa"
+msgstr "豪萨语"
+
+#: studies/fields.py:72
+msgid "Hindi"
+msgstr "印地语"
+
+#: studies/fields.py:73
+msgid "Igbo"
+msgstr "伊博语"
+
+#: studies/fields.py:74
+msgid "Indonesian"
+msgstr "印度尼西亚语"
+
+#: studies/fields.py:75
+msgid "Iranian Persian"
+msgstr "伊朗波斯语"
+
+#: studies/fields.py:78
+msgid "Javanese"
+msgstr "爪哇语"
+
+#: studies/fields.py:79
+msgid "Jinyu"
+msgstr "中文（晋方言）"
+
+#: studies/fields.py:80
+msgid "Kannada"
+msgstr "卡纳达语"
+
+#: studies/fields.py:81
+msgid "Khmer"
+msgstr "高棉语"
+
+#: studies/fields.py:83
+msgid "Magahi"
+msgstr "马加伊语"
+
+#: studies/fields.py:84
+msgid "Maithili"
+msgstr "迈蒂利语"
+
+#: studies/fields.py:85
+msgid "Malay"
+msgstr "马来语"
+
+#: studies/fields.py:86
+msgid "Malayalam"
+msgstr "马拉雅拉姆语"
+
+#: studies/fields.py:87
+msgid "Mandarin"
+msgstr "中文（普通话）"
+
+#: studies/fields.py:88
+msgid "Marathi"
+msgstr "马拉地语"
+
+#: studies/fields.py:89
+msgid "Min Nan"
+msgstr "中文（闽南方言）"
+
+#: studies/fields.py:90
+msgid "Moroccan Spoken Arabic"
+msgstr "摩洛哥阿拉伯口语"
+
+#: studies/fields.py:91
+msgid "Northern Pashto"
+msgstr "北普什图语"
+
+#: studies/fields.py:92
+msgid "Northern Uzbek"
+msgstr "北乌兹别克语"
+
+#: studies/fields.py:93
+msgid "Odia"
+msgstr "奥里亚语"
+
+#: studies/fields.py:98
+msgid "Saraiki"
+msgstr "西莱基语"
+
+#: studies/fields.py:99
+msgid "Sindhi"
+msgstr "信德语"
+
+#: studies/fields.py:100
+msgid "Somali"
+msgstr "索马里语"
+
+#: studies/fields.py:102
+msgid "Sunda"
+msgstr "巽他语"
+
+#: studies/fields.py:103
+msgid "Tagalog"
+msgstr "塔加拉语"
+
+#: studies/fields.py:104
+msgid "Tamil"
+msgstr "泰米尔语"
+
+#: studies/fields.py:105
+msgid "Telugu"
+msgstr "泰卢固语"
+
+#: studies/fields.py:106
+msgid "Thai"
+msgstr "泰语"
+
+#: studies/fields.py:108
+msgid "Ukrainian"
+msgstr "乌克兰语"
+
+#: studies/fields.py:109
+msgid "Urdu"
+msgstr "乌尔都语"
+
+#: studies/fields.py:110
+msgid "Vietnamese"
+msgstr "越南语"
+
+#: studies/fields.py:111
+msgid "Western Punjabi"
+msgstr "西旁遮普语"
+
+#: studies/fields.py:112
+msgid "Wu"
+msgstr "中文（吴方言）"
+
+#: studies/fields.py:113
+msgid "Xiang Chinese"
+msgstr "中文（湘方言）"
+
+#: studies/fields.py:114
+msgid "Yoruba"
+msgstr "约鲁巴语"
+
+#: studies/fields.py:115
+msgid "Yue"
+msgstr "粤语"
+
+#: studies/fields.py:123
+msgid "Not answered"
+msgstr "未回答"
+
+#: studies/fields.py:124
+msgid "Other"
+msgstr "其他"
+
+#: studies/fields.py:125
+msgid "Male"
+msgstr "男"
+
+#: studies/fields.py:126
+msgid "Female"
+msgstr "女"
+
+#: studies/models.py:113
+msgid ""
+"The Users who belong to this Lab. A user in this lab will be able to create "
+"studies associated with this Lab and can be added to this Lab's studies."
+msgstr "属于本实验室的用户。该用户可以创建或添加到附属于本实验室的研究中。"
+
+#: studies/models.py:122
+msgid "The Users who have requested to join this Lab."
+msgstr "申请加入本实验室的用户。"
+
+#: web/templates/frontpages/contact.html:15
+msgid "Technical difficulties"
+msgstr "技术故障"
+
+#: web/templates/frontpages/contact.html:16
+msgid ""
+"To report any technical difficulties during participation, please contact "
+"our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
+msgstr ""
+
+#: web/templates/frontpages/contact.html:17
+msgid "Questions about the studies"
+msgstr "实验相关问题"
+
+#: web/templates/frontpages/contact.html:18
+msgid ""
+"If you have any questions or concerns about the studies, please first check "
+"our FAQ. With any additional questions, please contact us at <a href='mailto:"
+"lookit@mit.edu'>lookit@mit.edu</a>."
+msgstr ""
+
+#: web/templates/frontpages/contact.html:19
+#: web/templates/frontpages/privacy.html:140
+msgid "For researchers"
+msgstr "研究人员"
+
+#: web/templates/frontpages/contact.html:20
+msgid ""
+"Lookit is available to all developmental researchers, and the code is "
+"entirely open- To learn more about running your own studies or contributing, "
+"please check out the <a href='https://lookit.readthedocs.io/en/develop' "
+"target='_blank'>documentation</a>."
+msgstr ""
+
+#: web/templates/frontpages/contact.html:21
+msgid ""
+"Several initial test studies of a prototype Lookit platform were completed "
+"in 2015; you can read about the results, and strengths and limitations of "
+"the platform, in <a href='http://www.mitpressjournals.org/toc/"
+"opmi/1/1'>these papers</a>."
+msgstr ""
+
+#: web/templates/frontpages/default.html:10
+#: web/templates/web/_navigation.html:21 web/templates/web/_navigation.html:26
+#: web/templates/web/base.html:10
+msgid "Lookit"
+msgstr "Lookit"
+
+#: web/templates/frontpages/default.html:53
+msgid ""
+"This material is based upon work supported by the National Science "
+"Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
+"Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an "
+"NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, "
+"findings, and conclusions or recommendations expressed in this material are "
+"those of the authors(s) and do not necessarily reflect the views of the "
+"National Science Foundation."
+msgstr ""
+"本材料由美国国家科学基金会（NSF）下编号为1429216和1823919的基金，及由NSF STC"
+"的CCF-1231216奖金和由NSF研究生研究奖学金（No. 1122374）资助的脑、心智和机器中"
+"心（CBMM）所支持。本材料中所表达的任何观点、发现、结论或建议均来自作者，并不"
+"一定代表美国国家科学基金会（NSF）的观点。"
+
+#: web/templates/frontpages/default.html:60 web/templates/frontpages/home.html:48
+msgid "Privacy"
+msgstr "隐私"
+
+#: web/templates/frontpages/default.html:61 web/templates/frontpages/home.html:49
+msgid "Contact us"
+msgstr "联系我们"
+
+#: web/templates/frontpages/default.html:63
+msgid "Connect"
+msgstr "关注我们"
+
+#: web/templates/frontpages/faq.html:11
+msgid "Frequently Asked Questions"
+msgstr "常见问题"
+
+#: web/templates/frontpages/faq.html:16
+msgid "Participation"
+msgstr "参与"
+
+#: web/templates/frontpages/faq.html:20
+msgid "What is a 'study' about cognitive development?"
+msgstr "认知发展的研究是什么？"
+
+#: web/templates/frontpages/faq.html:25
+msgid ""
+"\n"
+"                                <p>Cognitive development is the science of "
+"what kids understand and how they learn. Researchers in cognitive "
+"development are interested in questions like...</p>\n"
+"                                <ul>\n"
+"                                    <li>what knowledge and abilities infants "
+"are born with, and what they have to learn from experience</li>\n"
+"                                    <li>how abilities like mathematical "
+"reasoning are organized and how they develop over time</li>\n"
+"                                    <li>what strategies children use to "
+"learn from the wide variety of data they observe</li>\n"
+"                                </ul>\n"
+"                                <p>A study is meant to answer a very "
+"specific question about how children learn or what they know: for instance, "
+"'Do three-month-olds recognize their parents' faces?'</p>\n"
+"                                "
+msgstr ""
+"\n"
+"<p>认知发展是一门关于儿童理解和学习的科学。认知发展的研究者会对诸如以下的问题"
+"感兴趣：</p>\n"
+"        \t\t\t\t\t\t\t\t<ul>\n"
+"        \t\t\t\t\t\t\t\t\t<li>哪些知识和能力是新生儿与生俱来的，哪些是需要后"
+"天学习的</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>各种能力（如数学推理）是如何形成和发展的</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>面对大量信息，儿童会采取什么方法学习</li>\n"
+"        \t\t\t\t\t\t\t\t</ul>\n"
+"        \t\t\t\t\t\t\t\t<p>\"一项认知发展的研究致力于回答一个关于儿童知道什么"
+"和如何学习的具体问题：比如，“三个月大的婴儿能认出他们父母的面孔吗？”</p>\n"
+"                            "
+
+#: web/templates/frontpages/faq.html:40
+msgid "How can we participate online?"
+msgstr "我们如何在线参与研究？"
+
+#: web/templates/frontpages/faq.html:45
+msgid ""
+"\n"
+"                            <p>If you have a child and would like to "
+"participate, create an account and take a look at what we have available for "
+"your child's age range. You'll need a working webcam to participate.</p>\n"
+"                                <p>When you select a study, you'll be asked "
+"to read a consent form and record yourself stating that you and your child "
+"agree to participate. Then we'll guide you through what will happen during "
+"the study. Depending on your child's age, your child may answer questions "
+"directly or we may be looking for indirect signs of what she thinks is going "
+"on--like how long she looks at a surprising outcome.</p>\n"
+"                                <p>Some portions of the study will be "
+"automatically recorded using your webcam and sent securely to the Lookit "
+"platform. Trained researchers will watch the video and record your child's "
+"responses--for instance, which way he pointed, or how long she looked at "
+"each image. We'll put these together with responses from lots of other "
+"children to learn more about how kids think!</p>\n"
+"                            "
+msgstr ""
+"\n"
+"<p>如果您有孩子并愿意参与研究，请注册账号并查看现有的适合您孩子年龄的研究。您"
+"需要使用一个有摄像头的电脑</p>\n"
+"        \t\t\t\t\t\t\t\t<p>当您选择了一个研究后，您需要阅读同意书，并录下您同"
+"意自己和孩子参与研究的视频。接下来，我们会告诉您研究的步骤。基于您孩子的年"
+"龄，他/她可能需要直接回答问题，或者我们会通过迹象来间接研究他/她对正在发生的"
+"事情的理解，比如他/她盯着一件意想不到的事的时长。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>部分实验会被您的摄像头自动记录下来并保密发送至"
+"Lookit平台。有经验的研究者会浏览您的视频，并记录您孩子的反馈，比如他/她所指的"
+"方向或盯着图片的时长。我们会结合所有孩子的反馈来研究儿童是如何思考的。</p>\n"
+"                            "
+
+#: web/templates/frontpages/faq.html:56
+msgid "Who can create studies on Lookit?"
+msgstr "谁可以在Lookit上创建实验？"
+
+#: web/templates/frontpages/faq.html:61
+msgid ""
+"Any researcher with questions about how kids learn and grow can propose a "
+"Lookit study! Each institution using Lookit has to sign a contract with MIT "
+"where they agree to the <a href='/termsofuse'>Terms of Use</a> and certify "
+"that their studies will be reviewed and approved by an institutional review "
+"board. Studies are also subject to approval by Lookit. As of June 2020 we "
+"have agreements with 20 universities!"
+msgstr ""
+"任何研究儿童发展的实验人员都可以在Lookit上发起实验。所有使用Lookit的机构都需"
+"要与MIT签署协议，同意<a href=\"/termsofuse\">使用条款</a>，并保证所有实验都会"
+"被机构的审查委员会批准。截至2020年6月，我们已与20所大学签订了协议。"
+
+#: web/templates/frontpages/faq.html:69
+msgid "How do we provide consent to participate?"
+msgstr "参与者如何表示同意参加实验？"
+
+#: web/templates/frontpages/faq.html:74
+msgid ""
+"\n"
+"                                <p>Rather than having the parent or legal "
+"guardian sign a form, we ask that you read aloud (or sign in ASL) a "
+"statement of consent which is recorded using your webcam. This statement "
+"holds the same weight as a signed form, but should be less hassle for you. "
+"It also lets us verify that you understand written English and that you "
+"understand you're being videotaped.</p>\n"
+"                                <p>Researchers watch these consent videos on "
+"a special page of the researcher interface, and record for each one whether "
+"the video shows informed consent. They cannot view other video or download "
+"data from a session unless they have confirmed that you consented to "
+"participate! If they see a consent video that does NOT clearly demonstrate "
+"informed consent--for instance, there was a technical problem and there's no "
+"audio--they may contact you to check, depending on your email settings.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"<p>我们会要求家长或法定监护人用摄像头录下朗读或用手语打出同意声明的视频，而不"
+"是签署一份书面声明。这份视频声明与书面声明有同样的效力，但是为您减少了一些麻"
+"烦。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>实验人员会在专用平台上检查视频声明，并记录下每个参"
+"与者是否同意参加实验。实验人员在确认您同意参加实验之前无法查看或下载您在实验"
+"中的其他视频或信息。如果视频声明没有清楚地表示同意（如由于技术问题导致音频丢"
+"失），实验人员可能会根据您的邮件偏好联系您。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:80
+msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
+msgstr ""
+"https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
+
+#: web/templates/frontpages/faq.html:89
+msgid "How is our information kept secure and confidential?"
+msgstr "Lookit是如何保护参与者隐私信息的安全的？"
+
+#: web/templates/frontpages/faq.html:94
+msgid ""
+"\n"
+"                                <p>\n"
+"                                Researchers using Lookit agree to uphold a "
+"common set of standards about how data is protected and shared. For "
+"instance, they never publish children's names or birthdates, or information "
+"that could be used to calculate a birthdate.</p>\n"
+"                                <p>The Lookit researcher interface is "
+"designed with participant data protection as the top priority. For instance, "
+"a special interface lets researchers confirm consent videos before they are "
+"able to download any other data from your session. Research groups can "
+"control who has access to what data in a very fine-grained way, for instance "
+"allowing an assistant to confirm consent and send gift cards, but not "
+"download study data.</p>\n"
+"                                <p>All of your data, including video, is "
+"transmitted over a secure HTTPS connection to Lookit storage, and is "
+"encrypted at rest. We take security very seriously; in addition to making "
+"sure any software we use is up-to-date, cloud servers are configured "
+"securely, and unit tests cover checking that accessing data requires correct "
+"permissions, we conducted a risk assessment and detailed manual penetration "
+"testing with a security contractor prior to our 2020 launch.</p>\n"
+"                                <p>See also 'Who will see our video?'</p>\n"
+"                                "
+msgstr ""
+"\n"
+"\t<p>\n"
+"        \t\t\t\t\t\t\t\t使用Lookit的实验人员会遵守一系列保护和分享信息的标"
+"准。比如，实验人员不会分享儿童的姓名或出生日期，也不会分享任何足以计算出出生"
+"日期的信息。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>Lookit的实验人员的专用平台以保护参与者的数据安全为"
+"首要目标。例如，实验人员在确认您同意参加实验之前无法查看或下载您在实验中的其"
+"他视频或信息。研究团队可以精确地控制实验人员对数据的使用，比如可以允许一个研"
+"究助理检查视频声明和发放报酬，但不可以下载实验数据。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>包括视频在内的所有数据都会通过安全的HTTPS接口存储"
+"到Lookit，并静态加密。我们对数据安全十分重视。我们会确保软件更新、云服务器配"
+"置安全、用单元测试检查访问数据是否有正确权限，并在2020年推出之前与安全承包商"
+"进行风险评估和详细的人工渗透测试。</p>\n"
+"                                    <p>'更多详情请查看问题“谁可以浏览参与者的"
+"视频”。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:107
+msgid "Who will see our video?"
+msgstr "谁可以浏览参与者的视频？"
+
+#: web/templates/frontpages/faq.html:112
+msgid ""
+"\n"
+"                                <p>Lookit staff at MIT will have access to "
+"your video and other data in order to improve and promote the platform and "
+"help with troubleshooting. The researchers running the study you "
+"participated in will also have access to your video and other data (like "
+"responses to questions during the study, and information you fill out when "
+"registering a child) for research purposes. They will watch the video "
+"segments you send to mark down information specific to the study--for "
+"instance, what your child said, or how long he/she looked to the left versus "
+"the right of the screen. This research group may be at MIT or at another "
+"institution. All studies run on Lookit must be approved by an Institutional "
+"Review Board (IRB) that ensures participants' rights and welfare are "
+"protected. All researchers using Lookit also agree to Terms of Use that "
+"govern what data they can share and what sorts of studies are okay to run on "
+"Lookit; these rules are sometimes stricter than their own institution might "
+"be.  </p>\n"
+"                                <p>Whether anyone else may view the video "
+"depends on the privacy settings you select at the end of the study. There "
+"are two decisions to make: whether to share your data with Databrary, and "
+"how to allow your video clips to be used by the researchers you have "
+"selected.</p>\n"
+"                                <p>First, we ask if you would like to share "
+"your data (including video) with authorized users fo the secure data library "
+"Databrary. Data sharing will lead to faster progress in research on human "
+"development and behavior. Researchers who are granted access to the "
+"Databrary library must agree to treat the data with the same high standard "
+"of care they would use in their own laboratories. Learn more about "
+"Databrary's <a href=\"https://databrary.org/about.html\">mission</a> "
+"or the <a href=\"https://databrary.org/access/responsibilities/investigators."
+"html\">requirements for authorized users</a>.</p>\n"
+"                                <p>Next, we ask what types of uses of your "
+"video are okay with you.</p>\n"
+"                                <ul>\n"
+"                                    <li><strong>Private</strong> This "
+"privacy level ensures that your video clips will be viewed only by "
+"authorized scientists (Lookit staff, the research group running the study "
+"and, if you have opted to share your data with Databrary, authorized "
+"Databrary users.) They will view the videos to record information about what "
+"your child did during the study--for instance, looking for 9 seconds at one "
+"image and 7 seconds at another image.</li>\n"
+"                                    <li><strong>Scientific and educational</"
+"strong> This privacy level gives permission to share your video clips with "
+"other researchers or students for scientific or educational purposes. For "
+"example, researchers might show a video clip in a talk at a scientific "
+"conference or an undergraduate class about cognitive development, or include "
+"an image or video in a scientific paper. In some circumstances, video or "
+"images may be available online, for instance as supplemental material in a "
+"scientific paper. Sharing videos with other researchers helps other groups "
+"trust and build on our work.</li>\n"
+"                                    <li><strong>Publicity</strong> This "
+"privacy level is for families who would be excited to see their child "
+"featured on the Lookit website or in the news! Selecting this privacy level "
+"gives permission to use your video clips to communicate about developmental "
+"studies and the Lookit platform with the public. For instance, we might post "
+"a short video clip on the Lookit website, on our Facebook page, or in a "
+"press release. Your video will never be used for commercial purposes.</li>\n"
+"                                </ul>\n"
+"                                <p>If for some reason you do not select a "
+"privacy level, we treat the data as 'Private' and do not share with "
+"Databrary. Participants also have the option to withdraw all video besides "
+"consent at the end of the study if necessary (for instance, because someone "
+"was discussing state secrets in the background), and in this case it is "
+"automatically deleted. Privacy settings for completed sessions cannot "
+"automatically be changed retroactively. If you have any questions or "
+"concerns about privacy, please contact our team at <a href=\"mailto:"
+"lookit@mit.edu\">lookit@mit.edu</a>.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"<p>为了完善平台和排除故障，在MIT的Lookit工作人员将会有权限访问您的视频和其他"
+"信息。出于研究目的，负责您参与的实验的研究人员也将会有此类权限（如实验中的反"
+"馈、您孩子的注册信息）。研究人员还会浏览您上传的视频片段，并提取实验相关的信"
+"息（如您的孩子说了什么，他/她看向屏幕左侧或右侧的时长）。研究团队可能来自MIT"
+"或其他机构。为了保护参与者的权益，所有Lookit平台上的实验都会被机构的审查委员"
+"会批准。所有使用Lookit的研究人员必须要同意使用条款，该条款规定了他们可以共享"
+"哪些数据，以及哪些类型的研究可以在Lookit上发布。这些规定可能会比他们各自隶属"
+"的研究机构的更严格。 </p>\n"
+"        \t\t\t\t\t\t\t\t<p>您在实验最后选择的隐私设置将决定其他人是否有权限查"
+"看视频。 您需要做两个决定：是否与Databrary分享您的数据，以及如何允许您选择的"
+"研究人员来使用您的视频片段。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>首先，我们会询问您是否愿意将您的数据（包括视频）与"
+"安全数据库Databrary的授权用户共享。数据共享将有助于行为发展研究的进展。获准使"
+"用Databrary资料库的研究人员须同意以各自隶属的实验室所使用的高标准來处理数据。"
+"您可以通过链接来了解更多关于Databrary的<a href=\"https://databrary.org/about/"
+"mission.html\">宗旨</a>和<a href=\"https://databrary.org/access/"
+"responsibilities/investigators.html\">对授权用户的要求</a>。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>接下来，我们会询问您接受以下哪种隐私级别。</p>\n"
+"        \t\t\t\t\t\t\t\t<ul>\n"
+"        \t\t\t\t\t\t\t\t\t<li><strong>非公开</strong> 此隐私级别确保只有授权"
+"的科学家（Lookit的工作人员、您参与实验的研究团队，以及如果您选择与Databrary分"
+"享您的数据，授权的Databrary用户）才能查看您的视频片段。他们将浏览视频，并记录"
+"您的孩子在研究期间的行为--例如，注视图片的时长。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li><strong>l科研与教育</strong> 此隐私级别允许与其"
+"他研究人员或学生出于科学或教育目的分享您的视频片段。例如，研究人员可能会在学"
+"术会议或大学的认知发展课上播放该视频片段，或在学术论文中使用。在某些情况下，"
+"视频或图像可能会出现在网络上，例如作为学术论文的补充材料。与其他研究人员分享"
+"视频有助于其他科研团队对我们工作的信任和参考。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li><strong>公开</strong> 此隐私级别是为那些乐意看"
+"到自己孩子在Lookit网站上或新闻中出现的家庭准备的! 选择此隐私级别将允许您的视"
+"频剪辑被用于发展研究的交流和Lookit平台的宣传。例如，我们可能会在Lookit网站"
+"上、Facebook页面上，或在新闻稿中发布简短的视频片段。您的视频绝不会被用于商业"
+"目的。</li>\n"
+"        \t\t\t\t\t\t\t\t</ul>\n"
+"        \t\t\t\t\t\t\t\t<p>如果出于某种原因您没有选择隐私级别，我们会将数据视"
+"为 \"非公开\"，不会与Databrary共享。如果有必要，参与者也可以选择在研究结束时"
+"撤回除同意声明之外的所有视频（例如，因为有人在讨论个人隐私），在这种情况下，"
+"您的视频会被自动删除。在您完成实验后，您设置的隐私级别无法再自行修改。如果您"
+"有任何关于隐私的问题或疑虑，请联系我们的团队<a href=\"mailto:lookit@mit.edu"
+"\">lookit@mit.edu</a>。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:130
+msgid "What information do researchers use from our video?"
+msgstr "研究人员会使用我的视频中的什么信息？"
+
+#: web/templates/frontpages/faq.html:136
+msgid ""
+"For children under about two years old, we usually design our studies to let "
+"their eyes do the talking! We're interested in where on the screen your "
+"child looks and/or how long your child looks at the screen rather than "
+"looking away. Our calibration videos (example shown below) help us get an "
+"idea of what it looks like when your child is looking to the right or the "
+"left, so we can code the rest of the video."
+msgstr ""
+"对于两岁以下的孩子，我们设计的研究通常是让他/她用眼睛来说话！我们感兴趣的是您"
+"的孩子注视屏幕上的什么位置和/或注视屏幕的时间。我们的校准视频（如下图所示的例"
+"子）可以帮助我们了解您的孩子向右或向左看时的样子，以便我们可以对视频的其余部"
+"分进行编码。"
+
+#: web/templates/frontpages/faq.html:143
+msgid ""
+"Here's an example of a few children watching our calibration video--it's "
+"easy to see that they look to one side and then the other."
+msgstr ""
+"下面是几个孩子观看我们校准视频的例子--可以很明显地看到，他们先看一边，再看另"
+"一边。"
+
+#: web/templates/frontpages/faq.html:149
+msgid ""
+"Your child's decisions about where to look can give us lots of information "
+"about what he or she understands. Here are some of the techniques labs use "
+"to learn more about how children learn."
+msgstr ""
+"你的孩子注视的位置可以给我们提供很多他或她所理解的信息。以下是实验室用来了解"
+"更多关于孩子学习方法的一些手段。"
+
+#: web/templates/frontpages/faq.html:150
+msgid "Habituation"
+msgstr "习惯化"
+
+#: web/templates/frontpages/faq.html:151
+msgid ""
+"\n"
+"                                <p>In a habituation study, we first show "
+"infants many examples of one type of object or event, and they lose interest "
+"over time. Infants typically look for a long time at the first pictures, but "
+"then they start to look away more quickly. Once their looking times are much "
+"less than they were initially, we show either a picture from a new category "
+"or a new picture from the familiar category. If infants now look longer to "
+"the novel example, we can tell that they understood--and got bored of--the "
+"category we showed initially.</p>\n"
+"                                <p>Habituation requires waiting for each "
+"individual infant to achieve some threshold of \"boredness\"--for instance, "
+"looking half as long at a picture as he or she did initially. Sometimes this "
+"is impractical, and we use familiarization instead. In a familiarization "
+"study, we show all babies the same number of examples, and then see how "
+"interested they are in the familiar versus a new category. Younger infants "
+"and those who have seen few examples tend to show a familiarity preference--"
+"they look longer at images similar to what they have seen before. Older "
+"infants and those who have seen many examples tend to show a novelty "
+"preference--they look longer at images that are different from the ones they "
+"saw before. You probably notice the same phenomenon when you hear a new song "
+"on the radio: initially you don't recognize it; after it's played several "
+"times you may like it and sing along; after it's played hundreds of times "
+"you would choose to listen to anything else.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"\t<p>在运用习惯化的研究中，我们会先给婴儿看许多同一类事物的图片，随着时间的推"
+"移，他们会对此失去兴趣。婴儿的目光通常会在第一张图片上停留很长时间，但随后他"
+"们会更快地看向别处。一旦他们注视的时间比起初少了很多，我们就会展示新类别的图"
+"片或原类别的新图片。如果婴儿注视前者的时间比后者更长，我们就可以知道他们理解"
+"并厌倦了我们最初展示的类别。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>习惯化需要等待每个婴儿达到某种\"厌倦\"的程度：例"
+"如，注视一个画面的时间只有最初的一半。当婴儿无法达到一定厌倦程度时，我们就会"
+"用熟悉化的手段来代替。在运用熟悉化的研究中，我们会给所有婴儿看同等数量的图"
+"片，然后比较他们对原类别的和新类别图片的兴趣。年幼的婴儿和见过很少原类别图片"
+"的婴儿都倾向于表现出对原类别的偏好--他们注视类似图片的时间会更长。年纪较大的"
+"婴儿和见过很多原类别图片的婴儿则倾向于表现出对新类别的偏好--他们会在与之前所"
+"见不同的图像上停留更长时间。当您听到一首新歌时，您可能也会注意到同样的现象："
+"一开始您对它并不熟悉；播放了几次后，您可能会喜欢并跟着它唱；播放了几百次后，"
+"您会选择去听其他的歌。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:156
+msgid "Violation of expectation"
+msgstr "期望悖反"
+
+#: web/templates/frontpages/faq.html:157
+msgid ""
+"Infants and children already have rich expectations about how events work. "
+"Children (and adults for that matter) tend to look longer at things they "
+"find surprising, so in some cases, we can take their looking times as a "
+"measure of how surprised they are."
+msgstr ""
+"婴幼儿和儿童已经对事件的运作有了一定的预期。儿童（以及成人）往往会注视令他们"
+"惊讶的事物更久，所以在某些情况下，我们可以把他们的注视时长作为衡量他们有多惊"
+"讶的标准。"
+
+#: web/templates/frontpages/faq.html:158
+msgid "Preferential looking"
+msgstr "选择性注视"
+
+#: web/templates/frontpages/faq.html:159
+msgid ""
+"Even when they seem to be passive observers, children are making lots of "
+"decisions about where to look and what to pay attention to. In this "
+"technique, we present children with a choice between two side-by-side images "
+"or videos, and see if children spend more time looking at one of them. We "
+"may additionally play audio that matches one of the videos. The video below "
+"shows a participant looking to her left when asked to 'find clapping'; the "
+"display she's watching is shown at the top."
+msgstr ""
+"虽然孩子们看起来像是被动的观察者，但其实他们也在做着很多决定，例如说看哪里，"
+"注意什么。在这种方法中，我们会给孩子们展示两张并排的图片或视频，看看他们是否"
+"会花更多的时间看其中的一个。我们也可能另外播放与其中一个视频相匹配的音频。下"
+"面的视频显示，当被要求 \"寻找拍手声 \"时，一个参与者看向了她的左方（她正在看"
+"的视频显示在上方）。"
+
+#: web/templates/frontpages/faq.html:165
+msgid "Predictive looking"
+msgstr "预测性注视"
+
+#: web/templates/frontpages/faq.html:166
+msgid ""
+"Children can often make sophisticated predictions about what they expect to "
+"see or hear next. One way we can see those predictions in young children is "
+"to look at their eye movements. For example, if a child sees a ball roll "
+"behind a barrier, she may look to the other edge of the barrier, expecting "
+"the ball to emerge there. We may also set up artificial predictive "
+"relationships--for instance, the syllable 'da' means a toy will appear at "
+"the left of the screen, and 'ba' means a toy will appear at the right. Then "
+"we can see whether children learn these relationships, and how they "
+"generalize, by watching where they look when they hear a syllable."
+msgstr ""
+"孩子们常常能对他们接下来会看到或听到什么做出复杂的预测。一种观察儿童预测的方"
+"法是去分析他们的眼球运动。例如，如果一个孩子看到一个球滚到障碍物后面，他/她可"
+"能会看向障碍物的另一边，期待着球会出现在那里。我们还可以人为地设计预测关系--"
+"比如，音节 \"da \"表示玩具会出现在屏幕的左边，\"ba \"表示玩具会出现在右边。然"
+"后，我们可以通过观察孩子们听到一个音节时看向哪里，来了解他们是否学会了这些关"
+"系，以及他们是如何将它们延伸的。"
+
+#: web/templates/frontpages/faq.html:168
+msgid ""
+"Older children may simply be able to answer spoken questions about what they "
+"think is happening. For instance, in a recent study, two women called an "
+"object two different made-up names, and children were asked which is the "
+"correct name for the object."
+msgstr ""
+"大一点的孩子可以直接口头回答他们认为发生了什么事情。例如，在最近的一项研究"
+"中，两个人给一个物体分别起了不同的虚构名字，孩子们会被问到哪个才是该物体的正"
+"确名称。"
+
+#: web/templates/frontpages/faq.html:174
+msgid ""
+"Another way we can learn about how older children (and adults) think is to "
+"measure their reaction times. For instance, we might ask you to help your "
+"child learn to press one key when a circle appears and another key when a "
+"square appears, and then look at factors that influence how quickly they "
+"press a key."
+msgstr ""
+"我们了解年龄较大的孩子（和成人）思维方式的另一种方法是测量他们的反应时间。例"
+"如，我们会让您帮助孩子学会在出现圆圈时按一个键，出现正方形时按另一个键，然后"
+"看看影响他们按键速度的因素。"
+
+#: web/templates/frontpages/faq.html:181
+msgid "Why are you running studies online instead of in person?"
+msgstr "为什么要进行线上，而不是线下实验？"
+
+#: web/templates/frontpages/faq.html:186
+msgid ""
+"Traditionally, developmental studies happen in a quiet room in a university "
+"lab. Researchers call or email local parents to see if they'd like to take "
+"part and schedule an appointment for them to come visit the lab. Why "
+"complement these in-lab studies with online ones? We're hoping to..."
+msgstr ""
+"一般来说，发展研究是在大学实验室的一个安静的房间里进行的。研究人员会给当地的"
+"家长打电话或发邮件，询问他们是否愿意参加，并安排访问实验室的时间。那为什么还"
+"要用线上研究来补充呢？我们希望"
+
+#: web/templates/frontpages/faq.html:187
+msgid ""
+"\n"
+"                                <ul>\n"
+"                                    <li>Make it easier for you to take part "
+"in research, especially for families without a stay-at-home parent</li>\n"
+"                                    <li>Work with more kids when needed--"
+"right now a limiting factor in designing studies is the time it takes to "
+"recruit participants</li>\n"
+"                                    <li>Draw conclusions from a more "
+"representative population of families--not just those who live near a "
+"university and are able to visit the lab during the day.\n"
+"                                    </li>\n"
+"                                    <li>Make it easier for families to "
+"continue participating in longitudinal studies, which may involve multiple "
+"testing sessions separated by months or years</li>\n"
+"                                    <li>Observe more natural behavior "
+"because children are at home rather than in an unfamiliar place</li>\n"
+"                                    <li>Create a system for learning about "
+"special populations--for instance, children with specific developmental "
+"disorders</li>\n"
+"                                    <li>Make the procedures we use in doing "
+"research more transparent, and make it easier to replicate our findings</"
+"li>\n"
+"                                    <li>Communicate with families about the "
+"research we're doing and what we can learn from it</li>\n"
+"                                </ul>\n"
+"                                "
+msgstr ""
+"\n"
+"<ul>\n"
+"        \t\t\t\t\t\t\t\t\t<li>方便您参与研究，特别是对于没有全职父母的家庭来"
+"说。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>在需要时招募到更多的孩子--目前设计研究的一个限"
+"制因素就是寻找参与者所花费的时间。</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>从范围更广的家庭样本中得出结论--而不仅仅是那些"
+"住在大学附近并能在白天访问实验室的家庭。\n"
+"        \t\t\t\t\t\t\t\t\t</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>使家庭更容易继续参加纵向研究，其中可能涉及到以"
+"月或年为间隔的多次测试</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>可以观察到更自然的行为，因为孩子是在家里而不是"
+"在一个陌生的地方</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>建立一个研究特殊人群的系统--例如，有发展障碍的"
+"儿童</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>使我们在研究时使用的程序更加透明，并让我们的研"
+"究结果更容易被复制</li>\n"
+"        \t\t\t\t\t\t\t\t\t<li>与家庭分享我们的研究，以及我们可以从中学到什么"
+"</li>\n"
+"\t\t</ul>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:206
+msgid "When will we see the results of the study?"
+msgstr "我们什么时候能看到研究结果？"
+
+#: web/templates/frontpages/faq.html:211
+msgid ""
+"The process of publishing a scientific study, from starting data collection "
+"to seeing the paper in a journal, can take several years. You can check the "
+"Lookit home page for updates on papers, or set your communication "
+"preferences to be notified when we have results from studies you "
+"participated in."
+msgstr ""
+"发表一项科学研究，从开始收集数据到在期刊上看到论文，这个过程可能需要几年时"
+"间。您可以查看Lookit主页，了解论文的更新情况，或者设置您的邮件偏好，当您参与"
+"的研究结果有更新时，您会收到通知。"
+
+#: web/templates/frontpages/faq.html:218
+msgid ""
+"My child wasn't paying attention, or we were interrupted. Can we try the "
+"study again?"
+msgstr "我的孩子在研究中走神，或者我们被打断了。我们可以重新开始实验吗？"
+
+#: web/templates/frontpages/faq.html:223
+msgid ""
+"Certainly--thanks for your dedication! You may see a warning that you have "
+"already participated in the study when you go to try it again, but you can "
+"ignore it. You don't need to tell us that you tried the study before; we'll "
+"have a record of your previous participation."
+msgstr ""
+"当然可以--感谢您的付出! 当您重新开始时，您可能会看到一个警告，显示您已经参与"
+"了这项研究，但您可以忽略它。您不需要告诉我们您曾经做过这项研究，我们会有您之"
+"前的参与记录。"
+
+#: web/templates/frontpages/faq.html:230
+msgid ""
+"My child is outside the age range. Can he/she still participate in this "
+"study?"
+msgstr "我的孩子不在年龄范围内，他/她还能参加这项研究吗？"
+
+#: web/templates/frontpages/faq.html:235
+msgid ""
+"Sure! We may not be able to use his or her data in our research directly, "
+"but if you're curious you're welcome to try the study anyway. (Sometimes big "
+"siblings really want their own turn!) If your child is just below the "
+"minimum age for a study, however, we encourage you to wait so that we'll be "
+"able to use the data."
+msgstr ""
+"当然可以！我们可能无法直接将他或她的数据用于我们的研究，但如果您对这项研究感"
+"兴趣，欢迎您来尝试。（有时候，哥哥姐姐也很想试试！）然而，如果您的孩子低于研"
+"究的最低年龄，我们鼓励您等到孩子达到规定年龄再参与，以便我们能够使用数据。"
+
+#: web/templates/frontpages/faq.html:242
+msgid "My child was born prematurely. Should we use his/her adjusted age?"
+msgstr "我的孩子是早产儿。我们应该用他/她的矫正年龄吗？"
+
+#: web/templates/frontpages/faq.html:247
+msgid ""
+"For study eligibility, we usually use the child's chronological age (time "
+"since birth), even for premature babies. If adjusted age is important for a "
+"particular study, we will make that clear in the study eligibility criteria."
+msgstr ""
+"就参与资格而言，我们通常使用儿童的实际年龄（出生后的时间），即使是早产儿也是"
+"如此。如果矫正年龄对某项研究很重要，我们会在参与资格中明确说明。"
+
+#: web/templates/frontpages/faq.html:254
+msgid ""
+"Our family speaks a language other than English at home. Can my child "
+"participate?"
+msgstr "我们家不用英语，我的孩子还可以参加吗？"
+
+#: web/templates/frontpages/faq.html:259
+msgid ""
+"Sure! Right now, instructions for children and parents are written only in "
+"English, so some of them may be confusing to a child who does not hear "
+"English regularly. However, you're welcome to try any of the studies and "
+"translate for your child if you can. If it matters for the study whether "
+"your child speaks any languages besides English, we'll ask specifically. You "
+"can also indicate the languages your child speaks or is learning to speak on "
+"your demographic survey."
+msgstr ""
+"当然可以！目前，给孩子和家长的指示和说明只有英文版本，所以可能会让不经常听英"
+"语的孩子感到困惑。但是，欢迎您尝试任何一项研究，如果可以的话，您可以为您的孩"
+"子翻译。如果某项研究需要知道您的孩子是否会说英语以外的其他语言，我们会特别询"
+"问。您也可以在基本信息中注明您的孩子会说或正在学习的语言。"
+
+#: web/templates/frontpages/faq.html:266
+msgid ""
+"My child has been diagnosed with a developmental disorder or has special "
+"needs. Can he/she still participate?"
+msgstr "我的孩子被诊断出患有发展障碍或有特殊需要，他/她还能参加吗？"
+
+#: web/templates/frontpages/faq.html:271
+msgid ""
+"\n"
+"                                <p>Of course! We're interested in how all "
+"children learn and grow. If you'd like, you can make a note of any "
+"developmental disorders in the comments section at the end of the study. We "
+"are excited that in the future, online studies may help more families "
+"participate in research to better understand their own children's diagnoses."
+"</p>\n"
+"                                <p>One note: most of our studies include "
+"both images and sound, and may be hard to understand if your child is blind "
+"or deaf. If you can, please feel free to help out by describing images or "
+"signing.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"                                <p>当然可以！我们关心所有的孩子是如何学习和成"
+"长的。如果您愿意，可以在研究结束后的评论部分注明您孩子的任何发展障碍。我们很"
+"高兴在线平台可以帮助更多家庭参与研究，以更好地了解自己孩子的发展障碍。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>需要注意的是：我们的大多数研究包括了图像和声音，所"
+"以如果您的孩子有视觉或听觉障碍，可能会很难理解实验内容。如果可以的话，请随时"
+"帮助我们给孩子用语言或手语描述内容。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:281
+msgid ""
+"I have multiple children in the age range for a study. Can they participate "
+"together?"
+msgstr "我有多个同年龄段的孩子可以参加一项研究。他们能一起同时参与吗？"
+
+#: web/templates/frontpages/faq.html:286
+msgid ""
+"If possible, we ask that each child participate separately. When children "
+"participate together they generally influence each other. That's a "
+"fascinating subject in its own right but usually not the focus of our "
+"research."
+msgstr ""
+"如果可能的话，我们要求每个孩子分别参加。当孩子们一起参与时，他们经常会互相影"
+"响。这是一个有趣的课题，但通常不是我们研究的重点。"
+
+#: web/templates/frontpages/faq.html:293
+msgid "But I've heard that young children should avoid 'screen time.'"
+msgstr "但我听说，幼儿应该减少看屏幕的时间。"
+
+#: web/templates/frontpages/faq.html:298
+msgid ""
+"\n"
+"                                <p>We agree with the American Academy of "
+"Pediatrics <a href=\"https://pediatrics.aappublications.org/content/138/5/"
+"e20162591\" target=\"_blank\">advice</a> that children learn best from "
+"people, not screens! However, our studies are not intended to educate "
+"children, but to learn from them.</p>\n"
+"                                <p>As part of a child's limited screen time, "
+"we hope that our studies will foster family conversation and engagement with "
+"science that offsets the few minutes spent watching a video instead of "
+"playing. And we do \"walk the walk\"--our own young children provide lots of "
+"feedback on our studies!</p>\n"
+"                                "
+msgstr ""
+"\n"
+"                                <p>我们同意美国儿科学会<a href=\"https://"
+"pediatrics.aappublications.org/content/138/5/e20162591\" target=\"_blank\">的"
+"建议</a>，即儿童从人，而不是屏幕上学习的效果最好！但是，我们的研究不是为了教"
+"育儿童，而是从他们的身上学习。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>我们希望把在线研究作为孩子有限的屏幕时间的一部分，"
+"来促进家庭沟通和提高科学参与度。</p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:308
+msgid "Will we be paid for our participation?"
+msgstr "我们参与研究会拿到报酬吗？"
+
+#: web/templates/frontpages/faq.html:313
+msgid ""
+"Some research groups provide gift cards or other compensation for completing "
+"their studies, and others rely on volunteers. (This often depends on the "
+"rules of the university that's doing the research.) This information will be "
+"listed on the study description page."
+msgstr ""
+"有些研究小组为完成研究的参与者提供礼品卡或其他报酬，有些则是无偿的。(这通常取"
+"决于进行研究的大学的规定。)这些信息将在研究简介上列出。"
+
+#: web/templates/frontpages/faq.html:320
+msgid "Can I get my child's results?"
+msgstr " 我可以拿到我的孩子的研究结果吗？"
+
+#: web/templates/frontpages/faq.html:325
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "                                <p>For some studies, yes! Usually, "
+#| "developmental researchers only interpret children's abilities and "
+#| "developmental trends at a group level, and the individual data collected "
+#| "just isn't very interpretable. But for \"Your baby, the physicist\" and "
+#| "other longitudinal studies (where you come back for more than one "
+#| "session), we can sometimes collect enough data to give you a report of "
+#| "your child's responses after you complete all the sessions.</p>\n"
+#| "                                <p>Please note that none of the measures "
+#| "we collect are diagnostic! For instance, while we hope you'll be "
+#| "interested to learn that your child looked 70%% of the time at videos "
+#| "where things fell up versus falling down, we won't be able to tell you "
+#| "whether this means your child is going to be especially good at physics.</"
+#| "p>\n"
+#| "                                <p>If you're interested in getting "
+#| "individual results right away, please see our <a "
+#| "href='resources'>Resources</a> section for fun at-home activities you can "
+#| "try with your child.</p>\n"
+#| "                                "
+msgid ""
+"\n"
+"                                <p>For some studies, yes! Usually, "
+"developmental researchers only interpret children's abilities and "
+"developmental trends at a group level, and the individual data collected "
+"just isn't very interpretable. But for \"Your baby, the physicist\" and "
+"other longitudinal studies (where you come back for more than one session), "
+"we can sometimes collect enough data to give you a report of your child's "
+"responses after you complete all the sessions.</p>\n"
+"                                <p>Please note that none of the measures we "
+"collect are diagnostic! For instance, while we hope you'll be interested to "
+"learn that your child looked 70%% of the time at videos where things fell up "
+"versus falling down, we won't be able to tell you whether this means your "
+"child is going to be especially good at physics.</p>\n"
+"                                <p>If you're interested in getting "
+"individual results right away, please see our <a href='resources'>Resources</"
+"a> section for fun at-home activities you can try with your child.</p>\n"
+"                                "
+msgstr ""
+"\n"
+"                                <p>对于一些研究，您可以拿到自己孩子的研究结"
+"果。通常情况下，科学家只能在群体水平上解释孩子的能力和发展趋势，而收集到的个"
+"体数据并不能很好地被分析。但对于“Your baby, the physicist”和其他纵向研究（您"
+"的孩子会在不同年龄段多次参与），若我们能收集到足够的个体数据，在整个实验结束"
+"后，您将可以收到一份孩子的实验报告。</p>\n"
+"        \t\t\t\t\t\t\t    <p>请注意，我们收集的所有数据都没有诊断意义! 例如，"
+"虽然我们希望您有兴趣了解您的孩子在70%的时间里都在看物体运动的视频，但我们无法"
+"告诉您这是否意味着您的孩子会特别擅长物理。</p>\n"
+"        \t\t\t\t\t\t\t\t<p>如果您有兴趣立即获得个人结果，请查看我们的<a href="
+"\"/resources\">资料库</a>部分，了解您可以与孩子一起尝试的有趣的家庭活动。</"
+"p>\n"
+"                                "
+
+#: web/templates/frontpages/faq.html:335
+msgid "Technical"
+msgstr "技术问题"
+
+#: web/templates/frontpages/faq.html:339
+msgid "What browsers are supported?"
+msgstr "Lookit可以在什么浏览器上运行？"
+
+#: web/templates/frontpages/faq.html:344
+msgid ""
+"Lookit supports recent versions of Chrome and Firefox. We are not currently "
+"able to support Internet Explorer or Safari."
+msgstr ""
+"Lookit支持最新版本的谷歌（Chrome）和火狐（Firefox）浏览器，但目前无法支持微软"
+"（IE）或苹果（Safari）浏览器。"
+
+#: web/templates/frontpages/faq.html:351
+msgid "Can we do a study on my phone or tablet?"
+msgstr "我们可以在手机或平板电脑上参与实验吗？"
+
+#: web/templates/frontpages/faq.html:357
+msgid ""
+"Not yet! Because we're measuring kids' looking patterns, we need a "
+"reasonably stable view of their eyes and a big enough screen that we can "
+"tell whether they're looking at the left or the right side of it. We're "
+"excited about the potential for touchscreen studies that allow us to observe "
+"infants and toddlers exploring, though!"
+msgstr ""
+"暂时还不能。由于我们要测量孩子们的观察模式，我们需要一个相对稳定的视角以及一"
+"个足够大的屏幕，以便我们能够判断他们是在看左边还是右边。不过，我们很期待触摸"
+"屏研究的进步，因为它可以让我们观察婴幼儿的探索过程。"
+
+#: web/templates/frontpages/home.html:11
+msgid "the online child lab"
+msgstr "线上儿童实验平台"
+
+#: web/templates/frontpages/home.html:12
+msgid "A project of the MIT Early Childhood Cognition Lab"
+msgstr "麻省理工学院早期儿童认知实验室项目"
+
+#: web/templates/frontpages/home.html:12
+msgid "Participate in a Study"
+msgstr ""
+
+#: web/templates/frontpages/home.html:22
+msgid "Bringing science home"
+msgstr "将科学融入生活"
+
+#: web/templates/frontpages/home.html:23
+msgid ""
+"Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
+"developmental psychology: bringing the experiments to you."
+msgstr ""
+"麻省理工学院早期儿童认知实验室正在尝试一种研究发展心理学的新途径：将实验直接"
+"带到您的面前。"
+
+#: web/templates/frontpages/home.html:29
+msgid "Help us understand how your child thinks"
+msgstr "帮助我们了解您的孩子如何思考"
+
+#: web/templates/frontpages/home.html:30
+msgid ""
+"Your family can contribute to research about how children learn by doing fun "
+"activities together, right in your web browser."
+msgstr "您的家庭可以直接在网上一起做些有趣的活动来为儿童学习研究作出贡献。"
+
+#: web/templates/frontpages/home.html:36
+msgid "Participate whenever and wherever"
+msgstr "随时随地参与"
+
+#: web/templates/frontpages/home.html:37
+msgid ""
+"Log in or create an account at the top right to get started! You can "
+"participate with your child from any computer with a webcam."
+msgstr ""
+"请在右上方注册或登录。您可以使用任何有摄像头的电脑来与您的孩子一起参与研究。"
+
+#: web/templates/frontpages/privacy.html:11
+msgid "Privacy statement"
+msgstr "隐私条款"
+
+#: web/templates/frontpages/privacy.html:17
+msgid "Introduction"
+msgstr "简介"
+
+#: web/templates/frontpages/privacy.html:18
+msgid ""
+"Lookit is committed to supporting the privacy of individuals who enroll on "
+"our Platform to conduct\n"
+"                research or serve as research subjects. This Privacy "
+"Statement explains how we handle and use the\n"
+"                personal information we collect about our researchers and "
+"research participant community."
+msgstr ""
+"Lookit致力于支持使用我们平台的研究人员和参与者的个人隐私。本隐私条款解释了我"
+"们如何处理和使用收集到的个人信息。"
+
+#: web/templates/frontpages/privacy.html:22
+msgid "For participants"
+msgstr "参与者"
+
+#: web/templates/frontpages/privacy.html:24
+msgid ""
+"Lookit is a platform that many different researchers use to conduct studies "
+"about how children learn and\n"
+"                develop. It is run by the MIT Early Childhood Cognition Lab, "
+"which has access to all of the data\n"
+"                collected on Lookit. Researchers using Lookit to conduct "
+"studies only access your personal information\n"
+"                if you choose to participate in their study."
+msgstr ""
+"Lookit是一个众多科学家用来研究儿童学习和发展的平台。它由麻省理工学院儿童早期"
+"认知实验室运营，该实验室可以访问Lookit上收集的所有数据。使用Lookit的研究人员"
+"只有在您选择参与他们的研究时才能访问您的个人信息。"
+
+#: web/templates/frontpages/privacy.html:29
+#: web/templates/frontpages/privacy.html:142
+msgid "What personal information we collect"
+msgstr "我们会收集什么个人信息"
+
+#: web/templates/frontpages/privacy.html:31
+msgid "We collect the following kinds of personal information:"
+msgstr "我们会收集以下几类个人信息："
+
+#: web/templates/frontpages/privacy.html:32
+msgid ""
+"<ul>\n"
+"                <li>Account data: basic contact information that may include "
+"your email address, nickname, mailing\n"
+"                    address, and contact preferences.</li>\n"
+"                <li>Child data: basic biographical information about your "
+"child(ren), including nickname, date of birth,\n"
+"                    and gestational age at birth.</li>\n"
+"                <li>Demographic data: background and biographical "
+"information such as your native language, race, age,\n"
+"                    educational background, and family history of particular "
+"medical conditions.</li>\n"
+"                <li>Study data: responses collected during particular "
+"studies conducted on Lookit, including webcam\n"
+"                    video of your family participating in the study, text "
+"entered in forms, the particular images that\n"
+"                    were shown, the timing of progression through the study, "
+"etc.</li>\n"
+"            </ul>"
+msgstr ""
+"<ul>\n"
+"<li>用户信息：基本联系方式，可能包括您的电子邮件地址、昵称、邮寄地址和联系偏"
+"好。</li>\n"
+"<li>儿童信息：您子女的基本信息，包括昵称、出生日期和出生时的胎龄。</li>\n"
+"<li>家庭背景信息：如您的母语、种族、年龄、教育背景和特殊病症的家族史。</li>\n"
+"<li>研究数据：在Lookit上进行的某项研究中收集到的反馈，包括您家人参与研究的视"
+"频、问卷中输入的文字、显示的特定图像、研究进展的时间等。</li>\n"
+"</ul>"
+
+#: web/templates/frontpages/privacy.html:44
+#: web/templates/frontpages/privacy.html:147
+msgid "How we collect personal information about you"
+msgstr "我们如何收集您的个人信息"
+
+#: web/templates/frontpages/privacy.html:46
+msgid ""
+"The information we collect and maintain about you is the information you "
+"provide to us when registering\n"
+"                for a Lookit account, registering your children, updating "
+"your account or your children’s profiles,\n"
+"                completing or updating surveys, or participating in "
+"individual Lookit studies."
+msgstr ""
+"我们收集和维护您在注册或更新您的Lookit账户或孩子的资料、完成或更新问卷，或参"
+"与某个研究时向我们提供的信息。"
+
+#: web/templates/frontpages/privacy.html:50
+#: web/templates/frontpages/privacy.html:167
+msgid "When we share your personal information"
+msgstr "我们何时会分享您的个人信息"
+
+#: web/templates/frontpages/privacy.html:52
+msgid ""
+"When you participate in a Lookit study, we share the following information "
+"with the research group conducting the study:"
+msgstr "当您参与Lookit研究时，我们会与进行研究的团队分享以下信息："
+
+#: web/templates/frontpages/privacy.html:54
+msgid ""
+"\n"
+"            <ul>\n"
+"                <li>Your account data </li>\n"
+"                <li>The child data for the child who is participating</li>\n"
+"                <li>Your demographic data</i>\n"
+"                <li>The study data for this particular study session</li>\n"
+"            </ul>"
+msgstr ""
+"\n"
+"<ul> \n"
+"<li>您的账户信息</li>\n"
+"<li>参与研究的儿童的信息</li>\n"
+"<li>您的家庭背景信息</i>\n"
+"<li>此项研究的实验数据</li>\n"
+"            </ul>"
+
+#: web/templates/frontpages/privacy.html:61
+msgid ""
+"Your email address is not shared directly with the research group, although "
+"they can contact you via Lookit in accordance with your contact preferences."
+msgstr ""
+"我们不会直接与研究团队共享您的电子邮件地址，但他们可以根据您的电子邮件偏好通"
+"过Lookit与您联系。"
+
+#: web/templates/frontpages/privacy.html:63
+msgid ""
+"Researchers may publish the results of a study, including individual "
+"responses. However, although they\n"
+"                may publish the ages of participants, they may not publish "
+"participant birthdates (or information that\n"
+"                could be used to calculate birthdates)."
+msgstr ""
+"研究人员可以发表一项研究的结果，包括个人的反馈。然而，虽然他们可以公布参与者"
+"的年龄，但不得公布其出生日期（或可用于计算出生日期的信息）。"
+
+#: web/templates/frontpages/privacy.html:67
+msgid ""
+"We and/or the researchers responsible for a study may share video of your "
+"family’s participation for\n"
+"                scientific, educational, and/or publicity purposes, but only "
+"if you choose at the conclusion of a study\n"
+"                to allow such usage. Researchers may also share your video "
+"and other data with Databrary if you choose\n"
+"                at the conclusion of a study to allow that. We don’t publish "
+"video of participants such that it can be\n"
+"                linked to individual demographic data (e.g., household "
+"income or number of parents/guardians), and\n"
+"                researchers must also agree not to do so in order to use "
+"Lookit."
+msgstr ""
+"我们和/或研究团队可能会出于科学、教育、宣传的目的，分享您的家庭参与的视频，但"
+"前提是您在研究结束时许可这种用途。如果您选择同意，研究人员也可以与Databrary分"
+"享您的视频和其他数据。我们不会在参与者视频中泄露个人基本信息（如家庭收入或父"
+"母/监护人数量），研究人员也必须同意此条款才能使用Lookit。"
+
+#: web/templates/frontpages/privacy.html:74
+msgid ""
+"We don’t share, sell, publish, or otherwise disclose your contact "
+"information (email and/or mailing\n"
+"                address) to anyone but the researchers involved in a study. "
+"Researchers must also agree not to disclose\n"
+"                your contact information in order to use Lookit."
+msgstr ""
+"除了参与研究的团队外，我们不会将您的联系信息（电子邮件或邮寄地址）分享、出"
+"售、出版或以其他方式透露给任何人。研究人员也必须同意此条款才能使用Lookit。"
+
+#: web/templates/frontpages/privacy.html:78
+#: web/templates/frontpages/privacy.html:152
+msgid "How we use your personal information"
+msgstr "我们如何使用您的个人信息"
+
+#: web/templates/frontpages/privacy.html:80
+msgid ""
+"We may use your personal information (account, child, demographic, and study "
+"data) for a variety of purposes, including to:"
+msgstr ""
+" 我们可能会将您的个人信息（账户、儿童、家庭背景和实验数据）用于多种目的，包"
+"括： "
+
+#: web/templates/frontpages/privacy.html:81
+msgid ""
+"<ul>\n"
+"                <li>Provide you with the research studies you have enrolled "
+"in, and information about which studies your\n"
+"                    children are eligible for</li>\n"
+"                <li>Send you information about studies you may be interested "
+"in, reminders to participate in multi-part\n"
+"                    studies, and/or results of studies you have participated "
+"in, subject to your contact preferences\n"
+"                </li>\n"
+"                <li>Improve the Lookit platform: e.g., detect and fix "
+"technical problems or identify new features that\n"
+"                    would be helpful</li>\n"
+"                <li>Develop data analysis tools for Lookit researchers </"
+"li>\n"
+"                <li>Provide technical support to study researchers</li>\n"
+"                <li>Assess the quality of data collected on the platform (e."
+"g., how well an observer can tell which\n"
+"                    direction children are looking)</li>\n"
+"                <li>Evaluate recruitment and family engagement efforts (e."
+"g., see how many participants come from rural\n"
+"                    vs. urban areas)</li>\n"
+"                <li>Recruit participants or researchers to use Lookit (e.g., "
+"sharing a short video clip of your child\n"
+"                    having fun – ONLY if you have chosen to allow use of the "
+"video for publicity)</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+"<ul>\n"
+"<li>向您提供您的孩子已参加、以及有资格参加的研究信息。</li>\n"
+"<li>根据您的邮件偏好设置，向您发送可能感兴趣的研究信息、参加后续研究的提醒、"
+"或您参加过的研究结果。</li>\n"
+"<li>改进Lookit平台：例如，发现和解决技术问题，或开发新功能。</li>\n"
+"<li>为Lookit研究人员开发数据分析工具 </li>\n"
+"<li>评估在平台上收集到的数据的质量（例如，研究人员能否很好地判断儿童看的方"
+"向）。</li>\n"
+"<li>评估招募和参加研究的家庭情况（例如，了解有多少参与者来自农村和城市地"
+"区）。</li>\n"
+"<li>招募参与者或研究人员使用Lookit（例如，在您同意相关条款的情况下，分享您的"
+"孩子玩得很开心的视频）</li>\n"
+"</ul>"
+
+#: web/templates/frontpages/privacy.html:100
+msgid ""
+"Researchers use the data collected in their studies to address particular "
+"scientific questions. It may\n"
+"                also turn out that data collected for one study can help to "
+"answer a related question later on. If\n"
+"                researchers are using any additional information about you "
+"in their study, beyond what is collected on\n"
+"                Lookit – for instance, if you are participating in a follow-"
+"up online session for an in-person study –\n"
+"                they must tell you that in the study consent form."
+msgstr ""
+"研究人员利用实验中收集到的数据来解决特定的科学问题。这些数据也可能有助于回答"
+"之后的相关问题。如果研究人员在实验中需使用从Lookit平台以外收集到的信息（例"
+"如，您在Lookit上参与了一个线下研究的后续实验），他们必须在研究同意书中告诉"
+"您。"
+
+#: web/templates/frontpages/privacy.html:106
+msgid ""
+"There are some basic rules about how personal information may be used that "
+"all Lookit researchers agree to, including:"
+msgstr "所有Lookit研究人员都需同意以下关于如何使用个人信息的基本准则："
+
+#: web/templates/frontpages/privacy.html:107
+msgid ""
+"\n"
+"            <ul>\n"
+"                <li>They may not use usernames, child nicknames, or contact "
+"information as a subject of research.</li>\n"
+"                <li>They may contact families by postal mail only in order "
+"to send compensation for study participation\n"
+"                    or materials needed for participation.</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+"\n"
+"<ul>\n"
+"<li>他们不得将用户名、孩子的昵称或联系信息用于研究。</li>\n"
+"<li>邮寄至参与家庭的住址仅限于寄送参与研究所需的材料或报酬。</li>\n"
+"</ul>\n"
+"            "
+
+#: web/templates/frontpages/privacy.html:114
+#: web/templates/frontpages/privacy.html:163
+msgid ""
+"If you have concerns about any of these purposes, or how we communicate with "
+"you, please contact us at\n"
+"                dataprotection@mit.edu. We will always respect a request by "
+"you to stop processing your personal\n"
+"                information (subject to our legal obligations)."
+msgstr ""
+"如果您对这些个人信息使用目的或我们与您的沟通方式有任何疑虑，请通过 "
+"dataprotection@mit.edu 联系我们。根据法律义务，我们将始终尊重您提出的停止使用"
+"个人信息的请求。"
+
+#: web/templates/frontpages/privacy.html:118
+#: web/templates/frontpages/privacy.html:171
+msgid "How your information is stored and secured"
+msgstr "您的信息是如何被存储和保护的"
+
+#: web/templates/frontpages/privacy.html:120
+#, fuzzy, python-format
+#| msgid ""
+#| "We have implemented industry-standard security safeguards designed to "
+#| "protect the personal information\n"
+#| "                that you may provide. We also periodically monitor our "
+#| "system for possible vulnerabilities and attacks,\n"
+#| "                consistent with industry standards. Only authenticated "
+#| "users with specific permissions may access the\n"
+#| "                data. All data is transmitted via a secure https "
+#| "connection, and all video data is encrypted at rest on\n"
+#| "                the storage systems used by Lookit to provide data to "
+#| "researchers. Researchers are responsible for their\n"
+#| "                own secure storage of data once they obtain it from "
+#| "Lookit. You should be aware, however, that since the\n"
+#| "                internet is not a 100%% secure environment, there’s no "
+#| "guarantee that information may not be accessed,\n"
+#| "                disclosed, altered, or destroyed by breach of any of our "
+#| "physical, technical, or managerial safeguards.\n"
+#| "                It's your responsibility to protect the security of your "
+#| "account details, including your username and\n"
+#| "                password."
+msgid ""
+"We have implemented industry-standard security safeguards designed to "
+"protect the personal information\n"
+"                that you may provide. We also periodically monitor our "
+"system for possible vulnerabilities and attacks,\n"
+"                consistent with industry standards. Only authenticated users "
+"with specific permissions may access the\n"
+"                data. All data is transmitted via a secure https connection, "
+"and all video data is encrypted at rest on\n"
+"                the storage systems used by Lookit to provide data to "
+"researchers. Researchers are responsible for their\n"
+"                own secure storage of data once they obtain it from Lookit. "
+"You should be aware, however, that since the\n"
+"                internet is not a 100%% secure environment, there’s no "
+"guarantee that information may not be accessed,\n"
+"                disclosed, altered, or destroyed by breach of any of our "
+"physical, technical, or managerial safeguards.\n"
+"                It's your responsibility to protect the security of your "
+"account details, including your username and\n"
+"                password."
+msgstr ""
+"为了保护您的个人信息，我们已经实施了行业标准的安全保障措施。我们还根据行业规"
+"定，定期监管我们的系统，以防止可能的漏洞和攻击。只有经过认证并拥有特定权限的"
+"用户才能访问数据。所有数据都是通过安全的https连接传输的，然而您应该意识到，由"
+"于互联网并不是一个100%安全的环境，因此无法保证信息不会因我们的任何物理、技术"
+"或管理保障措施被访问、曝光、更改或破坏。您有责任保护您的账户信息的安全，包括"
+"您的用户名和密码。"
+
+#: web/templates/frontpages/privacy.html:131
+#: web/templates/frontpages/privacy.html:182
+msgid "How long we keep your personal information"
+msgstr "我们将保留您的个人信息多长时间"
+
+#: web/templates/frontpages/privacy.html:133
+msgid ""
+"We consider our relationship with our research community to be lifelong. "
+"This means that we will maintain\n"
+"                a record for you until such time as you tell us that you no "
+"longer wish us to keep in touch. If you wish\n"
+"                to remove your account, we will retain a core set of "
+"information about you to fulfill administrative\n"
+"                tasks and legal obligations. If you have participated in "
+"Lookit studies, the personal information\n"
+"                already shared with those researchers may not generally be "
+"‘taken back,’ as it is part of a scientific\n"
+"                dataset and removing your data could affect already "
+"published findings."
+msgstr ""
+"我们认为Lookit与科研界的关系是永久的。这意味着直到您告诉我们希望不再联系之"
+"前，我们都会为您保留记录。如果您不再希望收到Lookit的消息，我们将保留一套您的"
+"核心信息，以履行行政和法律义务。"
+
+#: web/templates/frontpages/privacy.html:144
+msgid ""
+"We may collect basic biographic/contact information about you and your "
+"representative organization,\n"
+"                including name, title, business addresses, phone numbers, "
+"and email addresses."
+msgstr ""
+"我们可能会收集您和您代表机构的基本信息，包括姓名、职务、机构地址、电话号码和"
+"电子邮件地址。"
+
+#: web/templates/frontpages/privacy.html:149
+msgid ""
+"The information we collect and maintain about you is that which you have "
+"provided to us when registering\n"
+"                to use Lookit, updating your profile, or creating or editing "
+"a study."
+msgstr ""
+"我们收集和维护的是您在注册使用Lookit、更新个人资料，或创建、编辑研究时提供给"
+"我们的信息。"
+
+#: web/templates/frontpages/privacy.html:154
+msgid ""
+"We use your personal information for a number of legitimate purposes, "
+"including the performance of contractual obligations. Specifically, we use "
+"your personal information to:"
+msgstr ""
+"我们将出于正当目的使用您的个人信息，包括履行合同义务。具体而言，我们使用您的"
+"个人信息是为了："
+
+#: web/templates/frontpages/privacy.html:155
+msgid ""
+"<ul>\n"
+"                <li>Provide you with the research services for which you "
+"have enrolled. </li>\n"
+"                <li>Perform administrative tasks and for internal record "
+"keeping purposes.</li>\n"
+"                <li>Create and analyze aggregated (fully anonymized) "
+"information about our users for statistical\n"
+"                    research purposes in support of our mission.</li>\n"
+"            </ul>\n"
+"            "
+msgstr ""
+"<ul>\n"
+"<li> 为您提供相应的研究服务。<li>\n"
+"<li> 执行管理层面的任务，并进行内部记录。<li>\n"
+"<li> 出于统计研究目的，创建和分析用户（完全匿名）的汇总信息，以支持我们的使"
+"命。<li>\n"
+"<ul>"
+
+#: web/templates/frontpages/privacy.html:169
+msgid "We do not share your personal information with any third parties."
+msgstr "我们不会与第三方分享您的任何信息。"
+
+#: web/templates/frontpages/privacy.html:173
+#, fuzzy, python-format
+#| msgid ""
+#| "We have implemented industry-standard security safeguards designed to "
+#| "protect the personal information\n"
+#| "                that you may provide. We also periodically monitor our "
+#| "system for possible vulnerabilities and attacks,\n"
+#| "                consistent with industry standards. Only authenticated "
+#| "users with specific permissions may access the\n"
+#| "                data. All data is transmitted via a secure https "
+#| "connection. You should be aware, however, that since\n"
+#| "                the internet is not a 100%% secure environment, there’s "
+#| "no guarantee that information may not be\n"
+#| "                accessed, disclosed, altered, or destroyed by breach of "
+#| "any of our physical, technical, or managerial\n"
+#| "                safeguards. It's your responsibility to protect the "
+#| "security of your account details, including your\n"
+#| "                username and password."
+msgid ""
+"We have implemented industry-standard security safeguards designed to "
+"protect the personal information\n"
+"                that you may provide. We also periodically monitor our "
+"system for possible vulnerabilities and attacks,\n"
+"                consistent with industry standards. Only authenticated users "
+"with specific permissions may access the\n"
+"                data. All data is transmitted via a secure https connection. "
+"You should be aware, however, that since\n"
+"                the internet is not a 100%% secure environment, there’s no "
+"guarantee that information may not be\n"
+"                accessed, disclosed, altered, or destroyed by breach of any "
+"of our physical, technical, or managerial\n"
+"                safeguards. It's your responsibility to protect the security "
+"of your account details, including your\n"
+"                username and password."
+msgstr ""
+"为了保护您的个人信息，我们已经实施了行业标准的安全保障措施。我们还根据行业规"
+"定，定期监管我们的系统，以防止可能的漏洞和攻击。只有经过认证并拥有特定权限的"
+"用户才能访问数据。所有数据都是通过安全的https连接传输的，然而您应该意识到，由"
+"于互联网并不是一个100%安全的环境，因此无法保证信息不会因我们的任何物理、技术"
+"或管理保障措施被访问、曝光、更改或破坏。您有责任保护您的账户信息的安全，包括"
+"您的用户名和密码。"
+
+#: web/templates/frontpages/privacy.html:184
+msgid ""
+"We consider our relationship with our research community to be lifelong. "
+"This means that we will maintain\n"
+"                a record for you until such time as you tell us that you no "
+"longer wish us to keep in touch. If you no\n"
+"                longer wish to hear from Lookit, we will retain a core set "
+"of information about you to fulfill\n"
+"                administrative tasks and legal obligations."
+msgstr ""
+"我们认为Lookit与科研界的关系是永久的。这意味着直到您告诉我们希望不再联系之"
+"前，我们都会为您保留记录。如果您不再希望收到Lookit的消息，我们将保留一套您的"
+"核心信息，以履行行政和法律义务。"
+
+#: web/templates/frontpages/privacy.html:189
+msgid "For everyone"
+msgstr "所有用户"
+
+#: web/templates/frontpages/privacy.html:191
+msgid "Rights for individuals in the European Economic Area"
+msgstr "欧洲经济区个人的权利"
+
+#: web/templates/frontpages/privacy.html:192
+msgid ""
+"You have the right in certain circumstances to (1) access your personal "
+"information; (2) to correct or\n"
+"                erase information; (3) restrict processing; and (4) object "
+"to communications, direct marketing, or\n"
+"                profiling. To the extent applicable, the EU’s General Data "
+"Protection Regulation provides further\n"
+"                information about your rights. You also have the right to "
+"lodge complaints with your national or\n"
+"                regional data protection authority."
+msgstr ""
+"在某些情况下，您有权：(1)访问您的个人信息；(2)更正或删除信息；(3)限制信息处"
+"理；以及(4)拒绝通信、直接营销或个人信息分析。在适用的范围内，欧盟的《通用数据"
+"保护条例》将进一步提供有关您权利的信息。您还有权向您所在国家或地区的数据保护"
+"机构提出投诉。"
+
+#: web/templates/frontpages/privacy.html:198
+msgid ""
+"If you are inclined to exercise these rights, we request an opportunity to "
+"discuss with you any concerns\n"
+"                you may have. To protect the personal information we hold, "
+"we may also request further information to\n"
+"                verify your identify when exercising these rights. Upon a "
+"request to erase information, we will maintain\n"
+"                a core set of personal data to ensure we do not contact you "
+"inadvertently in the future, as well as any\n"
+"                information necessary for archival purposes. We may also "
+"need to retain some financial information for\n"
+"                legal purposes, including US IRS compliance. In the event of "
+"an actual or threatened legal claim, we may\n"
+"                retain your information for purposes of establishing, "
+"defending against or exercising our rights with\n"
+"                respect to such claim."
+msgstr ""
+"如果您需要行使这些权利，我们希望与您讨论可能存在的任何疑虑。为了保护我们所持"
+"有的个人信息，在您行使这些权利时，我们也可能会要求您提供进一步的信息，以核实"
+"您的身份。在您提出删除信息的要求后，我们将把您的核心个人资料归档，以确保我们"
+"不会在未来与您联系。我们也可能需要保留一些财务信息用于法律目的，包括遵守美国"
+"国税局的规定。在发生实际或威胁性的法律索赔时，我们可能会保留您的信息，以确"
+"立、维护或行使我们与该索赔有关的权利。"
+
+#: web/templates/frontpages/privacy.html:207
+msgid ""
+"By providing information directly to Lookit, you consent to the transfer of "
+"your personal information\n"
+"                outside of the European Economic Area to the United States. "
+"You understand that the current laws and\n"
+"                regulations of the United States may not provide the same "
+"level of protection as the data and privacy\n"
+"                laws and regulations of the EEA."
+msgstr ""
+"直接向Lookit提供信息，即表示您同意将您的个人信息从欧洲经济区传输到美国。您需"
+"要注意的是，美国现行的法律和法规可能无法提供与欧洲经济区的数据和隐私法律法规"
+"相同水平的保护。"
+
+#: web/templates/frontpages/privacy.html:212
+msgid ""
+"You are under no statutory or contractual obligation to provide any personal "
+"data to us."
+msgstr "您没有法定或合同义务向我们提供任何个人数据。"
+
+#: web/templates/frontpages/privacy.html:214
+msgid "Additional Information"
+msgstr "其他信息"
+
+#: web/templates/frontpages/privacy.html:216
+msgid ""
+"We may change this Privacy Statement from time to time. If we make any "
+"significant changes in the way we\n"
+"                treat your personal information we will make this clear on "
+"our website or by contacting you directly."
+msgstr ""
+"我们可能会不时地更改本隐私声明。如果我们处理您的个人信息的方式有任何重大变"
+"化，我们将在网站上明确说明或与您直接联系。"
+
+#: web/templates/frontpages/privacy.html:220
+msgid ""
+"The controller for your personal information is MIT. We can be contacted at "
+"dataprotection@mit.edu."
+msgstr "您个人信息的管理方是MIT。请通过 dataprotection@mit.edu 与我们联系。"
+
+#: web/templates/frontpages/privacy.html:222
+msgid "This policy was last updated in June 2018."
+msgstr "此声明最近更新于2018年6月。"
+
+#: web/templates/frontpages/scientists.html:27
+msgid "Meet the Lookit team"
+msgstr "Lookit团队"
+
+#: web/templates/frontpages/scientists.html:33
+msgid "Core Team"
+msgstr "核心成员"
+
+#: web/templates/frontpages/scientists.html:38
+msgid ""
+"Rico is Lookit's lead software engineer, working on planning and adding "
+"features for both participants and researchers."
+msgstr "Rico是Lookit的首席软件工程师，负责为参与者和研究人员规划和添加功能。"
+
+#: web/templates/frontpages/scientists.html:43
+msgid ""
+"Laura is the PI of the Early Childhood Cognition Lab. She conducts research "
+"about how children arrive at a common-sense understanding of the physical "
+"and social world through exploration and instruction."
+msgstr ""
+"Laura是儿童早期认知实验室的首席研究员。她研究儿童是如何通过探索和引导来理解物"
+"理和社会世界的常识。"
+
+#: web/templates/frontpages/scientists.html:49
+msgid ""
+"Kim started Lookit as a graduate student, and now runs the project as a "
+"research scientist in the Early Childhood Cognition Lab. Her three children "
+"frequently provide feedback on studies."
+msgstr ""
+"Kim在研究生时期就开始了Lookit的研究，现在作为研究科学家在儿童早期认知实验室管"
+"理这个项目。她的三个孩子经常为实验提供反馈。"
+
+#: web/templates/frontpages/scientists.html:54
+msgid ""
+"Mark organizes the Lookit Working Groups, which are groups of researchers "
+"working to improve Lookit in a variety of ways."
+msgstr ""
+"Mark负责管理Lookit工作组。工作组是由研究人员组成的，致力于以各种方式完善"
+"Lookit。"
+
+#: web/templates/frontpages/scientists.html:58
+msgid ""
+"\n"
+"                <h3>Alumni &amp; Collaborators</h3>\n"
+"                <hr>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/joseph.jpg\"></div>\n"
+"                    <h3>Joseph Alvarez (Summer 2015)</h3>\n"
+"                    <p>Undergraduate, Skidmore College</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/daniela.jpg\"></div>\n"
+"                    <h3>Daniela Carrasco (Sp 2015)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/jean.jpg\"></div>\n"
+"                    <h3>Jean Chow (Fa 2014)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/junyi.jpg\"></div>\n"
+"                    <h3>Junyi Chu</h3>\n"
+"                    <p>Junyi runs the \"Your baby, the physicist\" study. "
+"She's working on answering all the amazing\n"
+"                        questions we can only answer with longitudinal data "
+"like this.</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/annie.jpg\"></div>\n"
+"                    <h3>Annie Dai (IAP, Sp 2015)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/molly.jpg\"></div>\n"
+"                    <h3>Moira (Molly) Dillon</h3>\n"
+"                    <p>Molly is an Assistant Professor of Psychology and the "
+"PI of the Lab for the Developing Mind at\n"
+"                        NYU. She ran the study \"Baby Euclid\" on Lookit.</"
+"p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/hope.jpg\"></div>\n"
+"                    <h3>Hope Fuller-Becker (Sp 2015, Sp 2016)</h3>\n"
+"                    <p>Undergraduate, Wellesley College</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img src=\"https://s3."
+"amazonaws.com/lookitcontents/website/kamaria.jpg\">\n"
+"                    </div>\n"
+"                    <h3>Kamaria Kaalund (Fall 2019)</h3>\n"
+"                    <p>Undergraduate, Wellesley College</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/melissa.png\"></div>\n"
+"                    <h3>Melissa Kline</h3>\n"
+"                    <p>Postdoc, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/rachel.png\"></div>\n"
+"                    <h3>Rachel Magid</h3>\n"
+"                    <p>As ECCL lab coordinator (and then graduate student) "
+"she helped get Lookit off the ground!</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/audrey.jpg\"></div>\n"
+"                    <h3>Audrey Ricks (Summer 2016)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/rianna.jpg\"></div>\n"
+"                    <h3>Rianna Shah (IAP, Sp, Fall 2015; IAP, Sp 2016; Sp "
+"2018)</h3>\n"
+"                    <p>Undergraduate, MIT </p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img src=\"https://s3."
+"amazonaws.com/lookitcontents/website/alice.jpg\"></div>\n"
+"                    <h3>Alice Wang (Summer 2017)</h3>\n"
+"                    <p>Undergraduate, Wellesley</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img src=\"https://s3."
+"amazonaws.com/lookitcontents/website/erica.jpg\"></div>\n"
+"                    <h3>Erica Yoon</h3>\n"
+"                    <p>Erica is a graduate student in Mike Frank's lab at "
+"Stanford University. She ran the study \"Mind\n"
+"                        and Manners\" on Lookit.</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/jeanyu.jpg\"></div>\n"
+"                    <h3>Jean Yu (IAP, Sp 2015)</h3>\n"
+"                    <p>Undergraduate, Wellesley College</p>\n"
+"                </div>\n"
+"                <div class=\"lookit-scientist col-xs-6 col-sm-4 col-lg-3\">\n"
+"                    <div class=\"profile-img\"><img\n"
+"                            src=\"https://storage.googleapis.com/lookit-"
+"staging/static/images/jessica.jpg\"></div>\n"
+"                    <h3>Jessica Zhu (Fall 2016)</h3>\n"
+"                    <p>Undergraduate, MIT</p>\n"
+"                </div>\n"
+"                "
+msgstr ""
+
+#: web/templates/registration/logged_out.html:6
+msgid "You've successfully logged out."
+msgstr "您已经成功退出。"
+
+#: web/templates/registration/login.html:8
+#: web/templates/web/studies-history.html:9
+#: web/templates/web/studies-list.html:9 web/templates/web/study-detail.html:22
+msgid "Your login credentials didn't work. Please try again."
+msgstr "您的登录信息无效。请再次尝试。"
+
+#: web/templates/registration/login.html:18
+#: web/templates/registration/login.html:25
+#: web/templates/web/_navigation.html:50
+msgid "Login"
+msgstr "登录"
+
+#: web/templates/registration/login.html:34
+msgid "Forgot password?"
+msgstr "忘记密码？"
+
+#: web/templates/registration/login.html:36
+msgid "New to Lookit?"
+msgstr "Lookit新用户？"
+
+#: web/templates/registration/login.html:36
+msgid "Register your family!"
+msgstr "为您的家人注册"
+
+#: web/templates/registration/password_change_done.html:11
+msgid "Password changed"
+msgstr "密码已被更改"
+
+#: web/templates/registration/password_change_done.html:15
+msgid "Your password was changed."
+msgstr "您的密码已被更改。"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Documentation"
+msgstr "文件批注"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Change password"
+msgstr "修改密码"
+
+#: web/templates/registration/password_change_form.html:4
+msgid "Log out"
+msgstr "退出登录"
+
+#: web/templates/registration/password_change_form.html:7
+#: web/templates/web/home.html:3 web/templates/web/home.html:7
+msgid "Home"
+msgstr "主页"
+
+#: web/templates/registration/password_change_form.html:8
+msgid "Password change"
+msgstr "修改密码"
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the error below."
+msgstr "请修正以下错误。"
+
+#: web/templates/registration/password_change_form.html:21
+msgid "Please correct the errors below."
+msgstr "请修正以下错误。"
+
+#: web/templates/registration/password_change_form.html:26
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+"出于安全考虑，请输入您的旧密码。为了让我们确认您输入了正确的新密码，请输入两"
+"次。"
+
+#: web/templates/registration/password_change_form.html:54
+#: web/templates/registration/password_reset_confirm.html:31
+msgid "Change my password"
+msgstr "修改密码"
+
+#: web/templates/registration/password_reset_complete.html:11
+msgid "Password reset complete"
+msgstr "密码重置完成"
+
+#: web/templates/registration/password_reset_complete.html:15
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr "您的密码已设置成功。您可以重新登录了。"
+
+#: web/templates/registration/password_reset_complete.html:17
+msgid "Log in"
+msgstr "登录"
+
+#: web/templates/registration/password_reset_confirm.html:11
+msgid "Password reset confirmation"
+msgstr "密码重置确认"
+
+#: web/templates/registration/password_reset_confirm.html:17
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr "为了让我们确认您输入了正确的新密码，请输入两次。"
+
+#: web/templates/registration/password_reset_confirm.html:23
+msgid "New password:"
+msgstr "新密码："
+
+#: web/templates/registration/password_reset_confirm.html:28
+msgid "Confirm password:"
+msgstr "确认密码："
+
+#: web/templates/registration/password_reset_confirm.html:37
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr "密码重置链接已失效，可能是因为该链接已被使用。请再次请求重置密码。"
+
+#: web/templates/registration/password_reset_done.html:11
+msgid "Password reset link sent"
+msgstr "密码重置链接已发送"
+
+#: web/templates/registration/password_reset_done.html:15
+msgid ""
+"If an account exists with the email you entered, we've emailed instructions "
+"for resetting your password and you should receive them shortly."
+msgstr ""
+"如果您输入的邮箱已在Lookit注册过，我们已经通过邮件发送了有关重置密码的说明，"
+"您很快就会收到。"
+
+#: web/templates/registration/password_reset_done.html:17
+msgid ""
+"If you don't receive an email, please check your spam folder and make sure "
+"you've entered the address you registered with. (You won't get an email "
+"unless there's already an account for that email address!)"
+msgstr ""
+"如果您没有收到电子邮件，请检查您的垃圾邮件文件夹并确保您正确输入了注册Lookit"
+"账号时使用的邮箱。 （除非该邮箱已在Lookit注册，否则您不会收到电子邮件！）"
+
+#: web/templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr "您收到这封邮件是因为您要求重新设置您在%(site_name)s的用户密码。"
+
+#: web/templates/registration/password_reset_email.html:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "请到以下页面选择一个新的密码："
+
+#: web/templates/registration/password_reset_email.html:8
+msgid "Your username, in case you've forgotten:"
+msgstr "您的用户名："
+
+#: web/templates/registration/password_reset_email.html:10
+msgid "Thanks for using our site!"
+msgstr "感谢您使用我们的网站!"
+
+#: web/templates/registration/password_reset_email.html:12
+#, fuzzy, python-format
+#| msgid "The %(site_name)s team"
+msgid "The %(site_name)s team"
+msgstr "%(site_name)的团队"
+
+#: web/templates/registration/password_reset_form.html:11
+msgid "Password reset"
+msgstr "重置密码"
+
+#: web/templates/registration/password_reset_form.html:15
+msgid ""
+"Forgotten your password? Enter your email address below, and we'll email "
+"instructions for setting a new one."
+msgstr ""
+"忘记密码了？请在下方输入您的电子邮件地址，我们将通过电子邮件发送设置新密码的"
+"步骤。"
+
+#: web/templates/registration/password_reset_form.html:21
+msgid "Email address:"
+msgstr "电子邮件地址："
+
+#: web/templates/registration/password_reset_form.html:24
+msgid "Reset my password"
+msgstr "重置我的密码"
+
+#: web/templates/web/_navigation.html:22
+msgid "Experimenter"
+msgstr "实验者"
+
+#: web/templates/web/_navigation.html:33 web/templates/web/studies-list.html:4
+msgid "Studies"
+msgstr "研究"
+
+#: web/templates/web/_navigation.html:34
+msgid "FAQ"
+msgstr "常见问题解答"
+
+#: web/templates/web/_navigation.html:35
+msgid "The Scientists"
+msgstr "科学家团队"
+
+#: web/templates/web/_navigation.html:36
+msgid "Resources"
+msgstr "相关资源"
+
+#: web/templates/web/_navigation.html:45
+msgid "Hi"
+msgstr "你好"
+
+#: web/templates/web/_navigation.html:47
+msgid "Logout"
+msgstr "退出登录"
+
+#: web/templates/web/_navigation.html:49
+msgid "Sign up"
+msgstr "创建账号"
+
+#: web/templates/web/child-update.html:4
+#: web/templates/web/studies-history.html:116
+msgid "Child"
+msgstr "儿童"
+
+#: web/templates/web/child-update.html:26
+msgid "Back to Children List"
+msgstr "返回儿童列表"
+
+#: web/templates/web/child-update.html:31
+msgid "Update"
+msgstr "更新"
+
+#: web/templates/web/child-update.html:41
+msgid "Delete"
+msgstr "删除"
+
+#: web/templates/web/child-update.html:44
+#: web/templates/web/children-list.html:92
+#: web/templates/web/demographic-data-update.html:100
+#: web/templates/web/participant-email-preferences.html:36
+msgid "Cancel"
+msgstr "取消"
+
+#: web/templates/web/children-list.html:40
+msgid "Empty birthday"
+msgstr "清空生日"
+
+#: web/templates/web/children-list.html:47
+msgid " day"
+msgstr "天"
+
+#: web/templates/web/children-list.html:47
+msgid " days"
+msgstr "天"
+
+#: web/templates/web/children-list.html:49
+msgid " month"
+msgstr "月"
+
+#: web/templates/web/children-list.html:49
+msgid " months"
+msgstr "月"
+
+#: web/templates/web/children-list.html:51
+msgid " year"
+msgstr "岁"
+
+#: web/templates/web/children-list.html:51
+msgid " years"
+msgstr "岁"
+
+#: web/templates/web/children-list.html:61
+#: web/templates/web/children-list.html:77
+#: web/templates/web/children-list.html:82
+#: web/templates/web/children-list.html:94
+msgid "Add Child"
+msgstr "添加儿童"
+
+#: web/templates/web/children-list.html:61
+#: web/templates/web/children-list.html:77
+msgid "Hide Form"
+msgstr "隐藏表格"
+
+#: web/templates/web/children-list.html:111
+msgid "Name"
+msgstr "姓名"
+
+#: web/templates/web/children-list.html:121
+msgid "Update child"
+msgstr "更新儿童信息"
+
+#: web/templates/web/children-list.html:128
+msgid "No child profiles registered!"
+msgstr "尚未注册儿童档案!"
+
+#: web/templates/web/demographic-data-update.html:4
+msgid "Update demographics"
+msgstr "更新基本信息"
+
+#: web/templates/web/demographic-data-update.html:89
+msgid ""
+"One reason we are developing Internet-based experiments is to represent a "
+"more diverse group of families in our research. Your answers to these "
+"questions will help us understand what audience we reach, as well as how "
+"factors like speaking multiple languages or having older siblings affect "
+"children's learning."
+msgstr ""
+"我们开发互联网实验的一个原因是为了让更多不同的家庭群体参与到研究中。您的回答"
+"将帮助我们了解研究接触到的受众，以及讲多种语言或有哥哥姐姐等因素会如何影响孩"
+"子的学习。"
+
+#: web/templates/web/demographic-data-update.html:90
+msgid ""
+"Even if you allow your study videos to be published for scientific or "
+"publicity purposes, your demographic information is never published in "
+"conjunction with your video."
+msgstr ""
+"即使您允许我们以科学或宣传为目的发布您的研究视频，您的基本信息也不会和视频一"
+"起发布。"
+
+#: web/templates/web/participant-email-preferences.html:27
+msgid "I would like to be contacted when:"
+msgstr "我愿意在以下情况收到通知："
+
+#: web/templates/web/participant-signup.html:18
+msgid "Create Participant Account"
+msgstr "创建参与者账号"
+
+#: web/templates/web/participant-signup.html:22
+msgid "Create a family account to start participating in Lookit studies!"
+msgstr "创建一个家庭帐户即可开始参与Lookit研究！"
+
+#: web/templates/web/participant-signup.html:23
+#, python-format
+msgid ""
+"\n"
+"              (To register as a researcher, please use <a href=\"%(link)s"
+"\">this form</a> instead.)\n"
+"            "
+msgstr ""
+
+#: web/templates/web/participant-signup.html:31
+msgid ""
+"By clicking 'Create Account', I agree that I have read and accepted the "
+msgstr "点击 \"创建账号\"，即表示我已经阅读并接受以下条款 "
+
+#: web/templates/web/participant-signup.html:31
+msgid "Privacy Statement"
+msgstr "隐私声明"
+
+#: web/templates/web/participant-signup.html:34
+msgid "Create Account"
+msgstr "创建账号"
+
+#: web/templates/web/studies-history.html:4
+#: web/templates/web/studies-history.html:27
+msgid "Past Studies"
+msgstr "参与过的研究"
+
+#: web/templates/web/studies-history.html:16
+#: web/templates/web/studies-list.html:16
+msgid ""
+"Your account doesn't have access to this page. To proceed, please login with "
+"an account that has access."
+msgstr "您的账号没有权限访问此页面。如需继续，请使用有访问权限的账号登录。"
+
+#: web/templates/web/studies-history.html:18
+#: web/templates/web/studies-list.html:18
+msgid "Please login to see this page."
+msgstr "请登录后查看本页面。"
+
+#: web/templates/web/studies-history.html:34
+#: web/templates/web/studies-list.html:38
+msgid "Current studies"
+msgstr "当前的研究"
+
+#: web/templates/web/studies-history.html:37
+#: web/templates/web/studies-list.html:41
+msgid "Your past studies"
+msgstr "您参与过的研究"
+
+#: web/templates/web/studies-history.html:50
+msgid "Here you can view your studies and see comments left by researchers:"
+msgstr "您可以在此页面浏览参与过的研究，并查看研究人员留下的评论。"
+
+#: web/templates/web/studies-history.html:67
+msgid "Study Thumbnail"
+msgstr "研究封面"
+
+#: web/templates/web/studies-history.html:79
+msgid "Eligibility:"
+msgstr "参与资格："
+
+#: web/templates/web/studies-history.html:80
+msgid "Contact:"
+msgstr "联系方式："
+
+#: web/templates/web/studies-history.html:81
+msgid "Still collecting data?"
+msgstr "是否还在招募？"
+
+#: web/templates/web/studies-history.html:81
+msgid "Yes"
+msgstr "是"
+
+#: web/templates/web/studies-history.html:81
+msgid "No"
+msgstr "否"
+
+#: web/templates/web/studies-history.html:82
+msgid "Compensation: "
+msgstr "报酬： "
+
+#: web/templates/web/studies-history.html:87
+msgid "Study Responses"
+msgstr "实验记录"
+
+#: web/templates/web/studies-history.html:107
+msgid "Video"
+msgstr "视频"
+
+#: web/templates/web/studies-history.html:118
+msgid "Date"
+msgstr "日期"
+
+#: web/templates/web/studies-history.html:120
+msgid "Consent status"
+msgstr "同意书批准状态"
+
+#: web/templates/web/studies-history.html:123
+msgid "Approved"
+msgstr "已批准"
+
+#: web/templates/web/studies-history.html:123
+msgid "Your consent video was reviewed by a researcher and is valid."
+msgstr "您的同意书视频经研究人员审核是有效的。"
+
+#: web/templates/web/studies-history.html:125
+msgid "Pending"
+msgstr "处理中"
+
+#: web/templates/web/studies-history.html:125
+msgid "Your consent video has not yet been reviewed by a researcher."
+msgstr "您的同意书视频还未被研究人员审核。"
+
+#: web/templates/web/studies-history.html:127
+msgid "Invalid"
+msgstr "无效"
+
+#: web/templates/web/studies-history.html:127
+msgid ""
+"There was a technical problem with your consent video, or it did not show "
+"you reading the consent statement out loud. Your other data from this "
+"session will not be viewed or used by the study researchers."
+msgstr ""
+"您的同意书视频出现了技术问题，或没有记录到您朗读出声明。因此研究人员不会查看"
+"或使用您在本实验中提交的其他数据。"
+
+#: web/templates/web/studies-history.html:129
+msgid "No information about consent video review status."
+msgstr "没有关于同意书视频批准状态的信息"
+
+#: web/templates/web/studies-history.html:133
+msgid "Feedback"
+msgstr "反馈"
+
+#: web/templates/web/studies-history.html:139
+msgid "None"
+msgstr "无"
+
+#: web/templates/web/studies-history.html:154
+msgid "You have not yet participated in any studies."
+msgstr "您尚未参与任何研究。"
+
+#: web/templates/web/studies-list.html:32
+msgid "Current Studies"
+msgstr "当前的研究"
+
+#: web/templates/web/studies-list.html:53
+msgid ""
+"Please note you'll need a laptop or desktop computer (not a mobile device) "
+"running Chrome or Firefox to participate."
+msgstr ""
+"请注意，您需要一台能运行谷歌或火狐浏览器的笔记本电脑或台式电脑（非移动设备）"
+"才能参加。"
+
+#: web/templates/web/studies-list.html:80
+msgid "See details"
+msgstr "查看详细信息"
+
+#: web/templates/web/studies-list.html:87
+msgid "We are not running any studies at this time!"
+msgstr "我们目前没有进行任何研究!"
+
+#: web/templates/web/studies-list.html:93
+msgid ""
+"Looking for more ways to contribute to research from home? Check out <a href="
+"\"https://childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer "
+"noopener\">Children Helping Science</a> for even more studies!"
+msgstr ""
+"您想要寻找更多在家参与研究的机会吗？请查看 <a href=\"https://"
+"childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener"
+"\">Children Helping Science</a>，了解更多研究内容。"
+
+#: web/templates/web/study-detail.html:53
+msgid "days"
+msgstr "天"
+
+#: web/templates/web/study-detail.html:53
+msgid " until "
+msgstr " 直到 "
+
+#: web/templates/web/study-detail.html:53
+msgid " when "
+msgstr " 什么时候 "
+
+#: web/templates/web/study-detail.html:93
+msgid "Study overview"
+msgstr "研究概述"
+
+#: web/templates/web/study-detail.html:96
+msgid "Back to list"
+msgstr "返回列表"
+
+#: web/templates/web/study-detail.html:112
+msgid "Eligibility criteria"
+msgstr "参与资格"
+
+#: web/templates/web/study-detail.html:116
+msgid "Duration"
+msgstr "时长"
+
+#: web/templates/web/study-detail.html:121
+msgid "Compensation"
+msgstr "报酬"
+
+#: web/templates/web/study-detail.html:126
+msgid "What happens"
+msgstr "实验步骤"
+
+#: web/templates/web/study-detail.html:130
+msgid "What we're studying"
+msgstr "实验目的"
+
+#: web/templates/web/study-detail.html:134
+msgid "This study is conducted by"
+msgstr "研究负责人："
+
+#: web/templates/web/study-detail.html:138
+msgid "Would you like to participate in this study?"
+msgstr "您是否愿意参加这项研究？"
+
+#: web/templates/web/study-detail.html:140
+msgid "Log in to participate"
+msgstr "请登录后参与"
+
+#: web/templates/web/study-detail.html:142
+msgid "Add child profile to "
+msgstr "将儿童档案添加到 "
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "preview"
+msgstr "预览"
+
+#: web/templates/web/study-detail.html:142
+#: web/templates/web/study-detail.html:144
+msgid "participate"
+msgstr "参与"
+
+#: web/templates/web/study-detail.html:144
+msgid "Complete demographic survey to "
+msgstr "完成基本信息以  "
+
+#: web/templates/web/study-detail.html:148
+msgid "Select a child:"
+msgstr "选择一个孩子："
+
+#: web/templates/web/study-detail.html:150
+msgid "None Selected"
+msgstr "未选择"
+
+#: web/templates/web/study-detail.html:161
+msgid ""
+"Your child is still younger than the recommended age range for this study. "
+"If you can wait <span id='wait-until'>until</span> he or she is old enough, "
+"we'll be able to use the collected data in our research!"
+msgstr ""
+"您的孩子比这项研究建议的年龄范围要小。如果您能等待<span id='wait-until'>直到"
+"</span>他或她满足年龄要求再来参加，我们将能在研究中使用您孩子的数据。"
+
+#: web/templates/web/study-detail.html:162
+msgid ""
+"Your child is older than the recommended age range for this study. You're "
+"welcome to try the study anyway, but we won't be able to use the collected "
+"data in our research."
+msgstr ""
+"您的孩子已经超过了这项研究建议的年龄范围。我们仍欢迎您尝试它，但我们不能将收"
+"集到的数据用于此研究。"
+
+#: web/templates/web/study-detail.html:163
+msgid ""
+"Your child does not meet the eligibility criteria listed for this study. "
+"You're welcome to try the study anyway, but we won't be able to use the "
+"collected data in our research. Please contact the study researchers"
+msgstr ""
+"您的孩子不符合本研究的参与资格。我们仍欢迎您尝试他，但我们不能将收集到的数据"
+"用于此研究。请联系研究负责人"
+
+#: web/templates/web/study-detail.html:165
+msgid "Build experiment runner to preview"
+msgstr "创建实验运行器来预览"
+
+#: web/templates/web/study-detail.html:167
+msgid "Participate"
+msgstr "参加"
+
+#: web/templates/web/study-detail.html:167
+msgid "now"
+msgstr "现在"
+
+#: web/templates/web/study-detail.html:168
+msgid ""
+"For an easy way to see what happens as you update your study protocol, "
+"bookmark the URL the button above sends you to."
+msgstr "请将上方按钮显示的网址加入书签，以便预览您更新后的研究。"
+
+#: web/views.py:63
+msgid "Participant created."
+msgstr "参与者已创建。"
+
+#: web/views.py:88
+msgid "Demographic data saved."
+msgstr "基本信息已保存。"
+
+#: web/views.py:156
+msgid "Child added."
+msgstr "儿童档案已添加。"
+
+#: web/views.py:192
+msgid "Child deleted."
+msgstr "儿童档案已删除。"
+
+#: web/views.py:194
+msgid "Child updated."
+msgstr "儿童档案已更新。"
+
+#: web/views.py:217
+msgid "Email preferences saved."
+msgstr "电子邮件偏好已保存。"
+
+#: web/views.py:311
+#, python-brace-format
+msgid ""
+"The study {study.name} is not currently collecting data - the study is "
+"either completed or paused. If you think this is an error, please contact "
+"{study.contact_info}"
+msgstr ""
+"{study.name}研究当前未在收集数据（研究已完成或已暂停）。若您认为这是一个错误"
+"信息，请联系{study.contact_info}"
+
+#~ msgid "Alumni &amp; Collaborators"
+#~ msgstr "过往成员 &amp; 合作者"
+
+#~ msgid "To register as a researcher, please use"
+#~ msgstr "要注册为研究人员，请使用"
+
+#~ msgid "this form"
+#~ msgstr "这份表格"

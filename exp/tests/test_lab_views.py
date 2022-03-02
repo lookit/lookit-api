@@ -87,6 +87,7 @@ class LabViewsTestCase(TestCase):
             "lab_website": "https://mit.edu",
             "description": "ABCDEFG",
             "irb_contact_info": "how to reach the IRB",
+            "slug": "new-lab",
         }
         page = self.client.post(self.create_lab_url, post_data)
         self.assertEqual(page.status_code, 302, "Unable to create lab as researcher")
@@ -295,6 +296,7 @@ class LabViewsTestCase(TestCase):
             "lab_website": "https://mit.edu",
             "description": "ABCDEFG",
             "irb_contact_info": "how to reach the IRB",
+            "slug": "new-lab",
         }
         page = self.client.post(self.lab_update_url, post_data)
         self.assertEqual(
@@ -342,6 +344,7 @@ class LabViewsTestCase(TestCase):
             "description": "ABCDEFG",
             "irb_contact_info": "how to reach the IRB",
             "approved_to_test": True,
+            "slug": "new-lab",
         }
         page = self.client.post(self.lab_update_url, post_data)
         updated_lab = Lab.objects.get(pk=self.lab.pk)

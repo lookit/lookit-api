@@ -26,15 +26,8 @@
                 <form action="" method="post">
                     {% csrf_token %}
                     {% bootstrap_form_errors form %}
-                    {% bootstrap_field form.name %}
-                    {% bootstrap_field form.institution %}
-                    {% bootstrap_field form.principal_investigator_name %}
-                    {% bootstrap_field form.contact_email %}
-                    {% bootstrap_field form.contact_phone %}
-                    {% bootstrap_field form.lab_website %}
-                    {% bootstrap_field form.description %}
-                    {% bootstrap_field form.irb_contact_info %}
-                    <div class="modal-footer"> {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <div class="modal-footer">
                         <button type="submit">
                             Submit
                         </button>

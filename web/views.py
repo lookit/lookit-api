@@ -89,6 +89,34 @@ def get_external_url(study: Study, response: Response) -> Text:
     return url.geturl()
 
 
+class HomeView(generic.TemplateView):
+    template_name = "frontpages/home.html"
+
+
+class FAQView(generic.TemplateView):
+    template_name = "frontpages/faq.html"
+
+
+class PrivacyView(generic.TemplateView):
+    template_name = "frontpages/privacy.html"
+
+
+class ScientistsView(generic.TemplateView):
+    template_name = "frontpages/scientists.html"
+
+
+class ContactView(generic.TemplateView):
+    template_name = "frontpages/contact.html"
+
+
+class ResourcesView(generic.TemplateView):
+    template_name = "frontpages/resources.html"
+
+
+class TermsOfUseView(generic.TemplateView):
+    template_name = "frontpages/termsofuse.html"
+
+
 class ParticipantSignupView(generic.CreateView):
     """
     Allows a participant to sign up. Redirects them to a page to add their demographic data.
@@ -422,6 +450,16 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
             return lambda s: s.uuid.bytes
         else:
             return lambda s: sha256(user.uuid.bytes + s.uuid.bytes).hexdigest()
+
+
+class LabStudiesListView(StudiesListView):
+    def get_success_url(self):
+        lab_slug = self.kwargs.get("lab_slug")
+        return reverse("web:lab-studies-list", args=[lab_slug])
+
+    def filter_studies(self, studies: QuerySet) -> QuerySet:
+        lab_slug = self.kwargs.get("lab_slug")
+        return super().filter_studies(studies.filter(lab__slug=lab_slug))
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
