@@ -54,7 +54,6 @@ uWSGI = "2.0.19.1"
 [tool.poetry.dev-dependencies]
 black = "21.6b0"
 coverage = "^5.5"
-django-debug-toolbar = "2.2.1"
 django-shells = "0.1.0"
 django-sslserver = "0.22"
 invoke = "^1.6.0"
