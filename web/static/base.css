@@ -18,10 +18,16 @@ body {
 
 .navbar {
     box-shadow: 0 0 15px -4px #444;
-}
-.navbar {
     min-height: 40px;
     background: #FFFFFF;
+}
+
+.nav.navbar-nav li a{
+    color:#666666;
+}
+
+ul.nav.navbar-nav li a:hover{
+    color:#000;
 }
 
 .nav .divider-vertical {
@@ -36,8 +42,22 @@ body {
 }
 .lookit-row {
     padding: 1em 0;
-
 }
+
+button.btn.btn-success, a.btn.btn-success {
+    background-color:#398339;
+    border-color:#398339;
+} 
+
+button.btn.btn-success:hover, a.btn.btn-success:hover {
+    background-color:#5cb85c;
+    border-color:#5cb85c;
+} 
+
+ul.pagination li.last.disabled a, ul.pagination li.prev.disabled a {
+    color:black;
+}
+
 
 .policy p.last-update {
 	text-align: center;
@@ -65,6 +85,10 @@ footer .social-link {
 .footer-row .footer-resource ul li {
 	background-position: 100% .4em;
 	padding-right: .6em;
+}
+
+div.alert.alert-success.alert-dismissable button.close {
+   opacity: 1;
 }
 
 /* JUMBOTRON */
@@ -116,7 +140,7 @@ footer .social-link {
 
 /* Footer Row */
 .footer-row {
-    background: rgba(176, 193, 207, 0.35);
+    background: white;
 }
 
 
