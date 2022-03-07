@@ -260,59 +260,11 @@ button.account-row {
     width: 24%;
 }
 
-
 /* STUDIES PAGE */
 
-.panel.study-list {
-    background-color: #f8f8f8;
-}
-
-.panel.study-list h1 {
-    font-size: x-large;
-    font-weight: bold;
-    margin-top: 0px;
-}
-
-.panel.study-list h2 {
-    font-size: large;
-    font-weight: bold;
-    margin-top: 0px;
-}
-
-.panel.study-list h3 {
-    font-size: large;
-    font-weight: normal;
-    margin-top: 0px;
-}
-
-.panel.study-list .left .study-criteria {
-    padding: 5px 5px 0 5px;
-}
-
-.panel.study-list .left {
-    max-width: 400px;  
-    display: block;
-    margin-left: auto; 
-    margin-right: auto;
-}
-
-.panel.study-list .details-button {
-    margin-bottom: 10px;
-}
-
-.form-inline.study-list .form-group.login-message {
-    margin-left: 15px ;
-}
-
-.filter-chip {
-    font-size: 11px;
-    border-radius: 15px;
-}
-
-.filter-chip-container {
-    padding-top: 12px;
-    border-top-width: 1px;
-    border-top-color: black;
+.study-list a, .study-list a:hover {
+    color:#333;
+    text-decoration: none;
 }
 
 /* FEEDBACK */
