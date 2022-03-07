@@ -61,56 +61,25 @@
     </div>
 </div>
 
+<div class="container-fluid">
+<div class="row">  
 {% for study in object_list %}
-<div class="panel panel-default study-list">
-    <div class="panel-body">
-        <div class="row">
-            <div class="col-sm-10 col-xs-12">
-                <h1>{{study.name}}</h1>
-                <p><em>{{study.lab.name}} ({{study.lab.institution}})</em></p>
-            </div>
-            <div class="col-xs-2">
-                <a class="btn {% if study.eligible_children %}btn-success{% endif %} btn-default text-center details-button" href="{% url 'web:study-detail' uuid=study.uuid %}" role="button">
-                    {% trans "See details" %}
-                </a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-3 left">
-                <img src="{{study.image.url}}" class="img-responsive img-rounded" alt="{{ study.name }}">
-                <div class="study-criteria">
-                    <small>
-                        <p>{{study.criteria}}</p>
-                        {% if study.eligible_children %}
-                        <p><strong>{{ study.eligible_children }} {% trans 'may be eligible.' %}</strong></p>
-                        {% endif %}
-                        {% if study.study_type.is_external %}
-                        <em>External study</em>
-                        {% endif %}
-                        <p></p>
-                    </small>
-                </div>
-            </div>
-            <div class="col-md-9 right">
-                <div class="description">
-                    <h3>{% trans 'What happens' %}</h3>
-                    {{study.short_description|linebreaks}}
-                    <h3>{% trans 'Purpose' %}</h3>
-                    {{study.purpose|linebreaks}}
-                </div>
-            </div>
-        </div>
-    </div>
+
+<div class="col-sm-2 col-md-3 col-lg-3">
+    <a href="{% url 'web:study-detail' uuid=study.uuid %}">
+    <img src="{{ study.image.url }}" class="img-responsive" alt="{{ study.name }}">
+    <p>{{ study.name }}</p>
+    <p>{{ study.preview_summary }}</p>
+    <p> Learn More &rarr;</p>
+    </a>
 </div>
 {% empty %}
 <div class="col-xs-12">
     <p><em> {% trans "No studies found." %} </em></p>
 </div>
 {% endfor %}
-
-{% if object_list %}
-{% bootstrap_pagination object_list %}
-{% endif %}
+</div>
+</div>
 
 <div class="panel-default">
     <div class="panel-body">
