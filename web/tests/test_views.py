@@ -481,7 +481,6 @@ class StudiesListViewTestCase(TestCase):
 
     @patch.object(StudiesListView, "sort_fn")
     @patch.object(MultipleObjectMixin, "get_queryset")
-    @patch.object(StudiesListView, "set_eligible_children_per_study")
     @patch("web.views.get_child_eligibility_for_study")
     @patch.object(StudiesListView, "studies_without_completed_consent_frame")
     @patch("accounts.models.Child.objects")
@@ -492,7 +491,6 @@ class StudiesListViewTestCase(TestCase):
         mock_child_objects,
         mock_studies_without_completed_consent_frame,
         mock_get_child_eligibility_for_study,
-        mock_set_eligible_children_per_study,
         mock_super_get_queryset,
         mock_sort_fn,
     ):
@@ -511,7 +509,7 @@ class StudiesListViewTestCase(TestCase):
         mock_studies_without_completed_consent_frame.return_value = mock_studies
 
         view = StudiesListView()
-        page = view.get_queryset()
+        studies = view.get_queryset()
 
         mock_super_get_queryset().filter.assert_called_with(state="active", public=True)
         mock_super_get_queryset().filter().filter.assert_called_once_with(
@@ -526,23 +524,19 @@ class StudiesListViewTestCase(TestCase):
         mock_get_child_eligibility_for_study.assert_called_once_with(
             mock_child_objects.get(), mock_study
         )
-        mock_set_eligible_children_per_study.assert_called_once_with(mock_studies)
         mock_sort_fn.assert_called_once_with()
 
-        self.assertEqual(page.number, 1)
-        self.assertListEqual(page.object_list, mock_studies)
+        self.assertListEqual(studies, mock_studies)
 
     @patch("web.views.age_range_eligibility_for_study", return_value=True)
     @patch.object(StudiesListView, "sort_fn")
     @patch.object(MultipleObjectMixin, "get_queryset")
-    @patch.object(StudiesListView, "set_eligible_children_per_study")
     @patch.object(StudiesListView, "studies_without_completed_consent_frame")
     @patch.object(StudiesListView, "request", create=True)
     def test_get_queryset_anon_user(
         self,
         mock_request,
         mock_studies_without_completed_consent_frame,
-        mock_set_eligible_children_per_study,
         mock_super_get_queryset,
         mock_sort_fn,
         mock_age_range_eligibility_for_study,
@@ -559,18 +553,16 @@ class StudiesListViewTestCase(TestCase):
         mock_studies_without_completed_consent_frame.return_value = mock_studies
 
         view = StudiesListView()
-        page = view.get_queryset()
+        studies = view.get_queryset()
 
         mock_super_get_queryset().filter.assert_called_with(state="active", public=True)
         mock_super_get_queryset().filter().filter.assert_called_once_with(
             name__icontains=sentinel.search_value
         )
         mock_age_range_eligibility_for_study.assert_called_once_with([1, 2], mock_study)
-        mock_set_eligible_children_per_study.assert_called_once_with(mock_studies)
         mock_sort_fn.assert_called_once_with()
 
-        self.assertEqual(page.number, 1)
-        self.assertListEqual(page.object_list, mock_studies)
+        self.assertListEqual(studies, mock_studies)
 
     @patch.object(StudiesListView, "request", create=True)
     def test_get_form_kwargs(self, mock_request):
@@ -677,38 +669,6 @@ class StudiesListViewTestCase(TestCase):
         # Finally, check the name of the two studies that return
         self.assertEqual(studies_no_ccf.filter(name="0").count(), 1)
         self.assertEqual(studies_no_ccf.filter(name="2").count(), 1)
-
-    @patch.object(StudiesListView, "request", create=True)
-    def test_child_eligibility_anon_user(self, mock_request):
-        mock_studies = MagicMock()
-        mock_request.user.is_authenticated.return_value = False
-
-        view = StudiesListView()
-        view.set_eligible_children_per_study(mock_studies)
-
-        mock_request.user.children.assert_not_called()
-
-    @patch("web.views.get_child_eligibility_for_study")
-    @patch.object(StudiesListView, "request", create=True)
-    def test_child_eligibility_auth_user(
-        self, mock_request, mock_get_child_eligibility_for_study
-    ):
-        mock_study = MagicMock()
-        mock_studies = [mock_study]
-        mock_child = MagicMock()
-        type(mock_child).given_name = PropertyMock(return_value="child name")
-        mock_children = [mock_child]
-        mock_request.user.is_authenticated.return_value = True
-        mock_request.user.children.filter.return_value = mock_children
-
-        view = StudiesListView()
-        view.set_eligible_children_per_study(mock_studies)
-
-        self.assertEqual(mock_study.eligible_children, "child name")
-        mock_request.user.children.filter.assert_called_once_with(deleted=False)
-        mock_get_child_eligibility_for_study.assert_called_once_with(
-            mock_child, mock_study
-        )
 
     @patch.object(StudiesListView, "request", create=True)
     def test_sort_fn_anon_user(self, mock_request):
