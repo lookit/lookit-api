@@ -93,8 +93,7 @@ div.alert.alert-success.alert-dismissable button.close {
 
 /* JUMBOTRON */
 .home-jumbotron {
-    border-bottom: 1px solid #eee;
-    background:#351306 url('images/lookit_collage.jpg') center top no-repeat;
+    background:white url('images/chs_collage.png') center top no-repeat;
 }
 
 .home-jumbotron .content  {
