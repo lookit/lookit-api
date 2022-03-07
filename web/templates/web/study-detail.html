@@ -93,22 +93,24 @@
             <div class='row'>
                 <div class='col-md-9'>
                     <div class="caption">
-                        {% include "studies/_image_display.html" with object=object %}
+                        
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <img class="img-responsive" alt="{{ study.name }}" src="{{ study.image.url }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <h1>{{study.name}}</h1>
+                                    <p>{{study.lab.name}} ({{ study.lab.institution }})</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <table class="study-detail-infotable">
                             <tr>
-                                <td><h3>{% trans "Eligibility Criteria" %}</h3></td>
+                                <td><h3>{% trans "Who Can Participate" %}</h3></td>
                                 <td>{{ object.criteria|linebreaks }}</td>
                             </tr>
-                            <tr>
-                                <td><h3>{% trans "Duration" %}</h3></td>
-                                <td>{{ object.duration }}</td>
-                            </tr>
-                            {% if object.compensation_description %}
-                            <tr>
-                                <td><h3>{% trans "Compensation" %}</h3></td>
-                                <td>{{ object.compensation_description|linebreaks }}</td>
-                            </tr>
-                            {% endif %}
                             <tr>
                                 <td><h3>{% trans "What Happens" %}</h3></td>
                                 <td>{{ object.short_description|linebreaks }}</td>
@@ -117,6 +119,16 @@
                                 <td><h3>{% trans "What We're Studying" %}</h3></td>
                                 <td>{{ object.purpose|linebreaks }}</td>
                             </tr>
+                            <tr>
+                                <td><h3>{% trans "Duration" %}</h3></td>
+                                <td>{{ object.duration|linebreaks }}</td>
+                            </tr>
+                            {% if object.compensation_description %}
+                            <tr>
+                                <td><h3>{% trans "Compensation" %}</h3></td>
+                                <td>{{ object.compensation_description|linebreaks }}</td>
+                            </tr>
+                            {% endif %}
                         </table>
                         <p class="study-detail-contactinfo"><em>{% trans "This study is conducted by" %} {{object.contact_info}} </em></p>
                     </div>
