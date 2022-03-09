@@ -118,6 +118,9 @@ class StudyViewsTestCase(TestCase):
             name="Test Study",
             lab=self.approved_lab,
             built=True,
+            image=SimpleUploadedFile(
+                name="small.gif", content=small_gif, content_type="image/gif"
+            ),
         )
 
         self.study.admin_group.user_set.add(self.study_admin)
