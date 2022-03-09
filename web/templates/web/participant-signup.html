@@ -18,10 +18,14 @@
         <h1 class="panel-title">{% trans "Create Participant Account" %}</h1>
       </div>
       <div class="panel-body">
-        <p class="alert alert-info">
-            {% trans "Create a family account to start participating in Lookit studies!" %}
-            ({% trans "To register as a researcher, please use" %} <a href="{% url 'accounts:researcher-registration' %}">{% trans "this form" %}</a> {% trans "instead" %}.)
-        </p>
+        <div class="alert alert-info">
+          <p>{% trans "Ready to participate in a Lookit study? Create a family account here!" %}</p>
+          <p>
+            {% trans "To make a researcher account, please use" %} 
+            <a href="{% url 'accounts:researcher-registration' %}" class="alert-link">{% trans "this registration form" %}</a>
+            {% trans "instead." %}
+          </p>
+        </div>
         <form method="POST" action="">{% csrf_token %}
           {% bootstrap_form form %}
           {% buttons %}

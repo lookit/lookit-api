@@ -96,25 +96,25 @@
                         {% include "studies/_image_display.html" with object=object %}
                         <table class="study-detail-infotable">
                             <tr>
-                                <td>{% trans "Eligibility criteria" %}</td>
+                                <td><h3>{% trans "Eligibility Criteria" %}</h3></td>
                                 <td>{{ object.criteria|linebreaks }}</td>
                             </tr>
                             <tr>
-                                <td>{% trans "Duration" %}</td>
+                                <td><h3>{% trans "Duration" %}</h3></td>
                                 <td>{{ object.duration }}</td>
                             </tr>
                             {% if object.compensation_description %}
                             <tr>
-                                <td>{% trans "Compensation" %}</td>
+                                <td><h3>{% trans "Compensation" %}</h3></td>
                                 <td>{{ object.compensation_description|linebreaks }}</td>
                             </tr>
                             {% endif %}
                             <tr>
-                                <td>{% trans "What happens" %}</td>
+                                <td><h3>{% trans "What Happens" %}</h3></td>
                                 <td>{{ object.short_description|linebreaks }}</td>
                             </tr>
                             <tr>
-                                <td>{% trans "What we're studying" %}</td>
+                                <td><h3>{% trans "What We're Studying" %}</h3></td>
                                 <td>{{ object.purpose|linebreaks }}</td>
                             </tr>
                         </table>
@@ -122,7 +122,7 @@
                     </div>
                 </div>
                 <div class='col-md-3'>
-                    <h4>{% trans "Would you like to participate in this study?" %}</h4>
+                    <h3>{% trans "Would you like to participate in this study?" %}</h3>
                     {% if not request.user.is_authenticated %}
                     <a class="btn btn-lg btn-default" href="{% url 'login' %}">{% trans "Log in to participate" %}</a>
                     {% elif not children %}

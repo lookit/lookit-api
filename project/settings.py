@@ -95,11 +95,8 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar", "shells", "sslserver"]
-    MIDDLEWARE += [
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-        "pyinstrument.middleware.ProfilerMiddleware",
-    ]
+    INSTALLED_APPS += ["shells", "sslserver"]
+    MIDDLEWARE += ["pyinstrument.middleware.ProfilerMiddleware"]
 else:
     import sentry_sdk
     from sentry_sdk.integrations.django import DjangoIntegration
