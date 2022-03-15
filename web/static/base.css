@@ -1,4 +1,13 @@
 /* ENTIRE WEBSITE */
+
+/*
+yellow:  
+blue: #44BCE8
+red: #ff5f5c
+black: #1A1718
+*/
+
+
 html {
   height: 100%;
 }
@@ -93,32 +102,27 @@ div.alert.alert-success.alert-dismissable button.close {
 
 /* JUMBOTRON */
 .home-jumbotron {
-    border-bottom: 1px solid #eee;
-    background:#351306 url('images/lookit_collage.jpg') center top no-repeat;
+    background:white url('images/chs_collage.png') center top no-repeat;
+    height:595px;
 }
 
 .home-jumbotron .content  {
     margin: 0 auto;
-    color: #FFF;
+    color: #231f20;
     text-align: center;
-    padding-top: 270px;
+    padding-top: 320px;
     padding-bottom: 20px;
 }
 
-.home-jumbotron>.content>h1 {
-    text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
-    font-size: 50px;
+.home-jumbotron .content a {
+    margin-top: 60px;
 }
-.home-jumbotron .content h1 small {
-    color: #FFFFFF;
-}
-
 
 /* Information Row */
 .home-content-icon {
     text-align: center;
     font-size: 60px;
-    color: #337AB7;
+    color: #ff5f5c;
 }
 .information-row h3 {
     min-height: 60px;
@@ -260,59 +264,11 @@ button.account-row {
     width: 24%;
 }
 
-
 /* STUDIES PAGE */
 
-.panel.study-list {
-    background-color: #f8f8f8;
-}
-
-.panel.study-list h1 {
-    font-size: x-large;
-    font-weight: bold;
-    margin-top: 0px;
-}
-
-.panel.study-list h2 {
-    font-size: large;
-    font-weight: bold;
-    margin-top: 0px;
-}
-
-.panel.study-list h3 {
-    font-size: large;
-    font-weight: normal;
-    margin-top: 0px;
-}
-
-.panel.study-list .left .study-criteria {
-    padding: 5px 5px 0 5px;
-}
-
-.panel.study-list .left {
-    max-width: 400px;  
-    display: block;
-    margin-left: auto; 
-    margin-right: auto;
-}
-
-.panel.study-list .details-button {
-    margin-bottom: 10px;
-}
-
-.form-inline.study-list .form-group.login-message {
-    margin-left: 15px ;
-}
-
-.filter-chip {
-    font-size: 11px;
-    border-radius: 15px;
-}
-
-.filter-chip-container {
-    padding-top: 12px;
-    border-top-width: 1px;
-    border-top-color: black;
+.study-list a, .study-list a:hover {
+    color:#333;
+    text-decoration: none;
 }
 
 /* FEEDBACK */
@@ -560,4 +516,25 @@ li.response-feedback {
 
 .response-feedback-none {
     margin-left: -40px;
+}
+
+
+.btn-primary {
+    color:#1A1718;
+    background-color: #44BCE8;
+    border-color: #44BCE8;
+}
+
+
+.btn-primary:hover {
+    background-color: #44BCE8;
+    border-color: #44BCE8;
+}
+
+a {
+    color: #44BCE8;
+}
+
+a:hover {
+    color: #44BCE8;
 }

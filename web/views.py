@@ -26,13 +26,12 @@ from accounts.forms import (
     PastStudiesFormTabChoices,
     StudyListSearchForm,
 )
-from accounts.models import Child, DemographicData, User, create_string_listing_children
+from accounts.models import Child, DemographicData, User
 from accounts.queries import (
     age_range_eligibility_for_study,
     get_child_eligibility_for_study,
 )
 from accounts.utils import hash_id
-from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 from studies.models import Response, Study, StudyType, Video
 
@@ -294,7 +293,7 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         return super().form_valid(form)
 
 
-class StudiesListView(generic.ListView, PaginatorMixin, FormView):
+class StudiesListView(generic.ListView, FormView):
     """
     List all active, public studies.
     """
@@ -317,7 +316,6 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     def get_queryset(self):
         session = self.request.session
         user = self.request.user
-        page = self.request.GET.get("page", 1)
 
         studies = super().get_queryset().filter(state="active", public=True)
 
@@ -337,9 +335,8 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
 
         studies = sorted(studies, key=self.sort_fn())
 
-        self.set_eligible_children_per_study(studies)
-
-        return self.paginated_queryset(studies, page)
+        # convert studies in to a 3d list of four elements
+        return [studies[x : x + 4] for x in range(0, len(studies), 4)]
 
     def filter_studies(self, studies: QuerySet) -> QuerySet:
         session = self.request.session
@@ -431,18 +428,6 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
                 | Q(child=child, study_type=StudyType.get_external())
             )
         )
-
-    def set_eligible_children_per_study(self, studies):
-        user = self.request.user
-
-        if user.is_authenticated:
-            children = user.children.filter(deleted=False)
-
-            # add eligible children to study object
-            for study in studies:
-                study.eligible_children = create_string_listing_children(
-                    [c for c in children if get_child_eligibility_for_study(c, study)]
-                )
 
     def sort_fn(self):
         user = self.request.user
