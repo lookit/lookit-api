@@ -1,6 +1,7 @@
 {% extends 'frontpages/default.html' %}
 {% load bootstrap3 %}
 {% load i18n %}
+{% load static %}
 {% block title %}Scientists{% endblock %}
 
 {% block content %}
@@ -43,7 +44,7 @@
     <div class="lookit-row scientists-row">
         <div class="container">
             <div class="row core-team">
-                <h2>Core Team</h2>
+                <h2>Core Lookit Team</h2>
                 <hr>
                 <div class="lookit-scientist col-xs-6 col-sm-3">
                     <div class="profile-img"><img alt="CJ Green" src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1631222453488-GVKT2Y702UXNTX9R1582/IMG_0117.jpeg"></div>
@@ -58,12 +59,65 @@
                 <div class="lookit-scientist col-xs-6 col-sm-3">
                     <div class="profile-img"><img alt="Melissa Kline Struhl" src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1632270902704-FISLLHVUMDGVA40HX7HX/Screen+Shot+2021-09-21+at+8.34.02+PM.png"></div>
                     <h3>Melissa Kline Struhl</h3>
-                    <p>Melissa Kline Struhl is the director of Lookit and a research scientist in the MIT Early Childhood Cognition Lab. She loves it when the data surprises her, and loves talking to researchers and families about how to make Lookit better.</p>
+                    <p>Melissa is the director of Lookit and a research scientist in the MIT Early Childhood Cognition Lab. She loves it when the data surprises her, and loves talking to researchers and families about how to make Lookit better.</p>
                 </div>
                 <div class="lookit-scientist col-xs-6 col-sm-3">
                     <div class="profile-img"><img alt="Mark Sheskin" src="https://lookitcontents.s3.amazonaws.com/website/mark.jpg"></div>
                     <h3>Mark Sheskin</h3>
                     <p>Mark organizes the Lookit Working Groups, which are groups of researchers working to improve Lookit in a variety of ways.</p>
+                </div>
+            </div>
+            <div class="row">
+                <h2>Parent Researcher Collaborative</h2>
+                <hr>
+                <p>
+                    If you are a parent who has participated with your child in a study on this 
+                    website, or a university-based researcher who has posted a study on Lookit or 
+                    <a href="https://childrenhelpingscience.com">childrenhelpingscience.com</a>,
+                    then we consider you a member of the Parent Researcher Collaborative! The 
+                    team who created the original Children Helping Science platform includes 
+                    Laura Schulz, Mark Sheskin, as well as:
+                </p>
+                <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
+                    <div class="profile-img">
+                        <img alt="Elizabeth Bonawitz" src="{% static 'images/elizabeth-bonawitz.jpg' %}">
+                    </div>
+                    <h3>Elizabeth <br>Bonawitz</h3>
+                    <p>
+                        Elizabeth is the David Vitale Associate Professor in Learning Sciences and 
+                        PI of the Computational Cognitive Development Lab at Harvard University, 
+                        Graduate School of Education. Her work focuses on the basic science 
+                        theories of learning with the broader goal of informing educational 
+                        practice, and her research bridges two research traditions: cognitive 
+                        development and computational modeling.
+                    </p>
+                </div>
+                <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
+                    <div class="profile-img">
+                        <img alt="Hyowon Gweon" src="{% static 'images/hyowon-gweon.jpg' %}">
+                    </div>
+                    <h3>Hyowon<br>Gweon</h3>
+                    <p>
+                        Hyo is an associate professor at Stanford University in the Department of 
+                        Psychology.
+                    </p>
+                </div>
+                <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
+                    <div class="profile-img">
+                        <img alt="Julian Jara-Ettinger" src="{% static 'images/julian-jara-ettinger.png' %}">
+                    </div>
+                    <h3>Julian<br>Jara-Ettinger</h3>
+                    <p>Julian is an assistant professor of psychology at Yale.</p>
+                </div>
+                <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
+                    <div class="profile-img">
+                        <img alt="Candice Mills" src="{% static 'images/candice-mills.jpg' %}">
+                    </div>
+                    <h3>Candice<br>Mills</h3>
+                    <p>
+                        Candice is an associate professor at the University of Texas at Dallas, in 
+                        the School of Behavioral and Brain Sciences.
+                    </p>
                 </div>
             </div>
             <div class="row">
@@ -247,6 +301,7 @@
                     <p>MIT</p>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
