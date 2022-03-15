@@ -403,29 +403,14 @@ class ParticipantStudyViewsTestCase(TestCase):
         self.assertIn("PublicActiveStudy2", content)
         self.assertNotIn("PrivateActiveStudy", content)
         self.assertNotIn("PublicInactiveStudy", content)
-        self.assertTrue(
-            any(
-                s.uuid == self.public_active_study_1.uuid
-                for s in response.context["object_list"]
-            )
-        )
-        self.assertTrue(
-            any(
-                s.uuid == self.public_active_study_2.uuid
-                for s in response.context["object_list"]
-            )
-        )
+
+        # flatten study list
+        studies = [s for ss in response.context["object_list"] for s in ss]
+        self.assertTrue(any(s.uuid == self.public_active_study_1.uuid for s in studies))
+        self.assertTrue(any(s.uuid == self.public_active_study_2.uuid for s in studies))
+        self.assertFalse(any(s.uuid == self.private_active_study.uuid for s in studies))
         self.assertFalse(
-            any(
-                s.uuid == self.private_active_study.uuid
-                for s in response.context["object_list"]
-            )
-        )
-        self.assertFalse(
-            any(
-                s.uuid == self.public_inactive_study.uuid
-                for s in response.context["object_list"]
-            )
+            any(s.uuid == self.public_inactive_study.uuid for s in studies)
         )
 
 
@@ -526,7 +511,7 @@ class StudiesListViewTestCase(TestCase):
         )
         mock_sort_fn.assert_called_once_with()
 
-        self.assertListEqual(studies, mock_studies)
+        self.assertListEqual(studies, [mock_studies])
 
     @patch("web.views.age_range_eligibility_for_study", return_value=True)
     @patch.object(StudiesListView, "sort_fn")
@@ -562,7 +547,7 @@ class StudiesListViewTestCase(TestCase):
         mock_age_range_eligibility_for_study.assert_called_once_with([1, 2], mock_study)
         mock_sort_fn.assert_called_once_with()
 
-        self.assertListEqual(studies, mock_studies)
+        self.assertListEqual(studies, [mock_studies])
 
     @patch.object(StudiesListView, "request", create=True)
     def test_get_form_kwargs(self, mock_request):
