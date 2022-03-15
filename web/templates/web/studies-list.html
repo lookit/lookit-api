@@ -62,23 +62,24 @@
 </div>
 
 <div class="container-fluid study-list">
-<div class="row">  
-{% for study in object_list %}
-
-<div class="col-sm-2 col-md-3 col-lg-3">
-    <a href="{% url 'web:study-detail' uuid=study.uuid %}">
-    <img src="{{ study.image.url }}" class="img-responsive" alt="{{ study.name }}">
-    <p>{{ study.name }}</p>
-    <p>{{ study.preview_summary }}</p>
-    <p> Learn More &rarr;</p>
-    </a>
+{% for study_row in object_list %}
+<div class="row">
+    {% for study in study_row %}
+    <div class="col-sm-3 col-md-3 col-lg-3">
+        <a href="{% url 'web:study-detail' uuid=study.uuid %}">
+            <img src="{{ study.image.url }}" class="img-responsive" alt="{{ study.name }}">
+            <p>{{ study.name }}</p>
+            <p>{{ study.preview_summary }}</p>
+            <p> Learn More &rarr;</p>
+        </a>
+    </div>
+    {% endfor %}
 </div>
 {% empty %}
 <div class="col-xs-12">
     <p><em> {% trans "No studies found." %} </em></p>
 </div>
 {% endfor %}
-</div>
 </div>
 
 <div class="panel-default">
