@@ -1,4 +1,4 @@
-FROM python:3.8.3-buster
+FROM python:3.9-buster
 
 ARG GIT_TAG
 ARG GIT_COMMIT
@@ -21,4 +21,5 @@ RUN apt-get update \
     && python /tmp/install-poetry.py \ 
     && poetry config virtualenvs.create false \
     && poetry install --no-dev \
-    && python manage.py compilemessages
+    && python manage.py compilemessages \
+    && rm /tmp/install-poetry.py
