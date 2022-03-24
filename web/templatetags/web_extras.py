@@ -53,6 +53,36 @@ def nav_item(request, url_name, text):
 
 
 @register.simple_tag
+def nav_login(request, text="Login", button=False):
+    """Login button suited for either navigation bar or as it's own button.
+
+    Args:
+        request (Request): Request object passed by the template.
+        text (str, optional): Text to be displayed in button. Defaults to "Login".
+        button (bool, optional): Should this login button be a button else it'll be styled as a link. Defaults to False.
+
+    Returns:
+        SafeText: Returned HTML is marked as safe.
+    """
+    url = reverse("login")
+
+    if button:
+        css_class = "btn btn-lg btn-default"
+    else:
+        css_class = "btn-link"
+
+    form = f"""<form action="{url}" method="get">
+    <button class="{css_class}" type="submit" value="login">{_(text)}</button>
+    <input type="hidden" name="next" value="{request.path}" />
+    </form>"""
+
+    if not button:
+        form = f"<li>{form}</li>"
+
+    return mark_safe(form)
+
+
+@register.simple_tag
 def studies_tab_text(tabs):
     for tab in tabs:
         if tab.data["selected"]:
