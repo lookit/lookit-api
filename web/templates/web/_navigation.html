@@ -36,10 +36,10 @@
             <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
           {% else %}
             {% nav_item request 'web:participant-signup' 'Sign up' %}
-            {% nav_item request 'login' 'Login' %}
+            {% nav_login request %}
           {% endif %}
         </ul>
-      </div>
+      </div>  
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-->
 </nav>
