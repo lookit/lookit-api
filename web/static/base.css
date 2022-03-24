@@ -31,12 +31,19 @@ body {
     background: #FFFFFF;
 }
 
-.nav.navbar-nav li a{
+.nav.navbar-nav li a, .nav.navbar-nav li button{
     color:#666666;
 }
 
-ul.nav.navbar-nav li a:hover{
+.nav.navbar-nav li button{
+    padding: 15px;
+    line-height: 15px;
+    margin: 0;
+}
+
+ul.nav.navbar-nav li a:hover, ul.nav.navbar-nav li button:hover{
     color:#000;
+    text-decoration: none;
 }
 
 .nav .divider-vertical {
