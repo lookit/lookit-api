@@ -275,7 +275,19 @@ def reset_db(c, sql_file=None):
     migrate_db(c)
 
 
-@task(dotenv, migrate_db, ssl_certificate, pre_commit_hooks)
+@task
+def create_site(c):
+    """Create site entry in database.
+
+    Args:
+        c (Context): Context-aware API wrapper & state-passing object.
+    """
+    c.run(
+        "echo \"from django.contrib.sites.models import Site;Site.objects.create(domain='localhost', name='Lookit')\" | poetry run ./manage.py shell"
+    )
+
+
+@task(dotenv, migrate_db, ssl_certificate, pre_commit_hooks, create_site)
 def setup(_):
     """Setup invoke task.
 

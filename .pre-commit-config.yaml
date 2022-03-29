@@ -12,10 +12,11 @@ repos:
     rev: 4.3.21
     hooks:
       - id: isort
-  - repo: https://github.com/psf/black
-    rev: 21.6b0
-    hooks:
-      - id: black
+  # Add this Black back when bug is fixed. https://github.com/psf/black/issues/2964 
+  # - repo: https://github.com/psf/black
+  #   rev: 21.6b0
+  #   hooks:
+  #     - id: black
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
