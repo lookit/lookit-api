@@ -171,7 +171,7 @@ def popcnt_bitfield(integer, field_type):
     else:
         raise RuntimeError(f"Unsupported fieldtype: {field_type}")
     for bit_index in range(64):
-        if (2 ** bit_index) & integer:
+        if (2**bit_index) & integer:
             selected.append(bitfield_items[bit_index])
 
     return selected

@@ -95,7 +95,7 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["shells", "sslserver"]
+    INSTALLED_APPS += ["sslserver"]
     MIDDLEWARE += ["pyinstrument.middleware.ProfilerMiddleware"]
 else:
     import sentry_sdk
