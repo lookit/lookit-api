@@ -12,6 +12,7 @@ urlpatterns = [
         name="demographic-data-update",
     ),
     path("account/children/", views.ChildrenListView.as_view(), name="children-list"),
+    path("account/add-child/", views.ChildAddView.as_view(), name="child-add"),
     path(
         "account/children/<uuid:uuid>/",
         views.ChildUpdateView.as_view(),

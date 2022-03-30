@@ -194,14 +194,12 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         return context
 
 
-class ChildrenListView(LoginRequiredMixin, generic.CreateView):
+class ChildrenListView(LoginRequiredMixin, generic.TemplateView):
     """
     Allows user to view a list of current children and add children
     """
 
     template_name = "web/children-list.html"
-    model = Child
-    form_class = forms.ChildForm
 
     def get_context_data(self, **kwargs):
         """
@@ -209,18 +207,16 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
         to the context_dict.  Also add info to hide the Add Child form on page load.
         """
         context = super().get_context_data(**kwargs)
-        children = Child.objects.filter(deleted=False, user=self.request.user)
-        context["objects"] = children
-        context["form_hidden"] = kwargs.get("form_hidden", True)
+        context["children"] = Child.objects.filter(
+            deleted=False, user=self.request.user
+        )
         return context
 
-    def form_invalid(self, form):
-        """
-        If form invalid, add child form needs to be open when page reloads.
-        """
-        return self.render_to_response(
-            self.get_context_data(form=form, form_hidden=False)
-        )
+
+class ChildAddView(LoginRequiredMixin, generic.CreateView):
+    template_name = "web/child-add.html"
+    model = Child
+    form_class = forms.ChildForm
 
     def form_valid(self, form):
         """
