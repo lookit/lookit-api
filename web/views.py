@@ -139,6 +139,13 @@ class ParticipantSignupView(generic.CreateView):
         return resp
 
     def get_success_url(self):
+        """Get the url if the form is successful.  Additionally, the previous url is stored on the
+        "next" value on GET.  This url is stored in the user's session.
+
+        Returns:
+            str: URL of next view of form submission.
+        """
+        self.request.session["next"] = self.request.GET.get("next", "")
         return reverse("web:demographic-data-update")
 
 
