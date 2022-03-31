@@ -194,6 +194,13 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         """Temporary workaround."""
         return f"{slugify(self.nickname or 'anonymous')}-{str(self.uuid).split('-')[0]}"
 
+    @property
+    def has_any_child(self):
+        return (
+            self.children.filter(deleted=False).exists() and self.demographics.exists()
+        )
+
+    @property
     def _make_rainbow(self):
         rbw = []
         for i in range(0, 255, 10):
