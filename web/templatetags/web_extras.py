@@ -23,6 +23,54 @@ def format(text: Text) -> Text:
         return ""
 
 
+def active_nav(request, url) -> Text:
+    """Determine is this button is the active button in the navigation bar.
+
+    Args:
+        request (Request): Request object from template
+        url (Text): String url for the current view
+
+    Returns:
+        Text: "active" if this is the active view, else empty string.
+    """
+    if request.path == url:
+        return "active"
+    else:
+        return ""
+
+
+def nav_next(request, url, text, button):
+    """Create form that will submit the current page as the "next" query arg.
+
+    Args:
+        request (Request): Request object submitted from template
+        url (Text): Target URL
+        text (Text): String to be displayed is button
+        button (bool): Is this to be styled as a button or as a link
+
+    Returns:
+        SafeText: Returns html form used to capture current view and submit it as the "next" query arg
+    """
+    active = active_nav(request, url)
+
+    if button:
+        css_class = "btn btn-lg btn-default"
+    elif active:
+        css_class = f"{active} btn-link"
+    else:
+        css_class = "btn-link"
+
+    form = f"""<form action="{url}" method="get">
+    <button class="{css_class}" type="submit" value="login">{_(text)}</button>
+    <input type="hidden" name="next" value="{request.path}" />
+    </form>"""
+
+    if not button:
+        form = f"<li>{form}</li>"
+
+    return mark_safe(form)
+
+
 @register.simple_tag
 def child_is_valid_for_study_criteria_expression(child, study):
     return get_child_eligibility(child, study.criteria_expression)
@@ -43,43 +91,53 @@ def google_tag_manager() -> Text:
 
 @register.simple_tag
 def nav_item(request, url_name, text):
+    """General navigation bar item
+
+    Args:
+        request (Request): Reqeust submitted from template
+        url_name (Text): Name of url to be looked up by reverse
+        text (Text): Text to be displayed in item
+
+    Returns:
+        SafeText: HTML of navigation item
+    """
     li_class = ""
     url = reverse(url_name)
-
-    if request.path == url:
-        li_class = "active"
+    li_class = active_nav(request, url)
 
     return mark_safe(f'<li class="{li_class}"><a href="{url}">{_(text)}</a></li>')
 
 
 @register.simple_tag
 def nav_login(request, text="Login", button=False):
-    """Login button suited for either navigation bar or as it's own button.
+    """Navigation login button
 
     Args:
-        request (Request): Request object passed by the template.
-        text (str, optional): Text to be displayed in button. Defaults to "Login".
-        button (bool, optional): Should this login button be a button else it'll be styled as a link. Defaults to False.
+        request (Request): Request object submitted by template
+        text (str, optional): Text to be shown in button. Defaults to "Login".
+        button (bool, optional): Is this to be styled as a button or as a link. Defaults to False.
 
     Returns:
-        SafeText: Returned HTML is marked as safe.
+        SafeText: HTML form
     """
     url = reverse("login")
+    return nav_next(request, url, text, button)
 
-    if button:
-        css_class = "btn btn-lg btn-default"
-    else:
-        css_class = "btn-link"
 
-    form = f"""<form action="{url}" method="get">
-    <button class="{css_class}" type="submit" value="login">{_(text)}</button>
-    <input type="hidden" name="next" value="{request.path}" />
-    </form>"""
+@register.simple_tag
+def nav_signup(request, text="Sign up", button=False):
+    """Navigation sign up button
 
-    if not button:
-        form = f"<li>{form}</li>"
+    Args:
+        request (Request): Request object submitted by template
+        text (str, optional): Text to be shown in button. Defaults to "Login".
+        button (bool, optional): Is this to be styled as a button or as a link. Defaults to False.
 
-    return mark_safe(form)
+    Returns:
+        SafeText: HTML form
+    """
+    url = reverse("web:participant-signup")
+    return nav_next(request, url, text, button)
 
 
 @register.simple_tag
