@@ -1,3 +1,4 @@
+import re
 from hashlib import sha256
 from typing import Text
 from urllib.parse import parse_qs, urlencode, urlparse
@@ -138,6 +139,17 @@ class ParticipantSignupView(generic.CreateView):
         messages.success(self.request, _("Participant created."))
         return resp
 
+    def store_study_in_session(self) -> None:
+        study_url = self.request.GET.get("next", "")
+        if study_url:
+            p = re.compile("^/studies/([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12})")
+            m = p.match(study_url)
+            if m:
+                study_uuid = m.group(1)
+                study = Study.objects.only("name").get(uuid=study_uuid)
+                self.request.session["study_name"] = study.name
+                self.request.session["study_uuid"] = study_uuid
+
     def get_success_url(self):
         """Get the url if the form is successful.  Additionally, the previous url is stored on the
         "next" value on GET.  This url is stored in the user's session.
@@ -145,7 +157,7 @@ class ParticipantSignupView(generic.CreateView):
         Returns:
             str: URL of next view of form submission.
         """
-        self.request.session["next"] = self.request.GET.get("next", "")
+        self.store_study_in_session()
         return reverse("web:demographic-data-update")
 
 
