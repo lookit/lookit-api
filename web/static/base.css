@@ -48,6 +48,11 @@ ul.nav.navbar-nav li button:hover {
     text-decoration: none;
 }
 
+ul.nav.navbar-nav li button.active {
+    color: #555;
+    background-color: #e7e7e7;
+}
+
 .nav .divider-vertical {
     height: 40px;
     margin: 0 9px;
