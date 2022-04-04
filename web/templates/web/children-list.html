@@ -11,9 +11,21 @@
                 {% include 'accounts/_account-navigation.html' with current_page="children-list" %}
             </div>
             <div class="col-md-8">
+
+                {% if not user.has_any_child %}
+                <p>Click the "Add Child" button to add a child to your account.</p>
+                {% elif not request.session.study_name and user.has_any_child %}
+                <p>You can edit information about the children listed in your account, or add another by clicking the "Add Child" button. Click the "Find a Study" button to view the studies available for your children.</p>
+                {% elif request.session.study_name and has_study_child %}
+                <p>When you are ready, click the "Continue to Study" button to go on to your study, "{{ request.session.study_name }}".</p>
+                {% elif request.session.study_name and user.has_any_child and not has_study_child %}
+                <p>You can edit information about the children listed in your account, or add another by clicking the "Add Child" button.</p>
+                <p>If the "Continue to Study" button still isn't lighting up, the study may have become full or be recruiting a slightly different set of kids right now. You might also be missing a piece of information about your family, such as the languages you speak at home.</p>
+                <p>You can click the "Demographic Survey" button to add more information about your family, "Find Another Study" to explore more studies for your family, or <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %}">click here</a> to review the requirements for "{{ request.session.study_name }}".</p>
+                {% endif %}
+
                 <div class="row">
                     <div class="col-xs-12">
-                        <h2><label> {% trans "Children" %} </label></h2>
                         {% if children %}
                             <div class="table-responsive">
                                 <table class="table">

@@ -225,9 +225,13 @@ class ChildrenListView(LoginRequiredMixin, generic.TemplateView):
         Add children that have not been deleted that belong to the current user
         to the context_dict.  Also add info to hide the Add Child form on page load.
         """
+        user = self.request.user
+        study_uuid = self.request.session.get("study_uuid", None)
+
         context = super().get_context_data(**kwargs)
-        context["children"] = Child.objects.filter(
-            deleted=False, user=self.request.user
+        context["children"] = Child.objects.filter(deleted=False, user=user)
+        context["has_study_child"] = study_uuid and user.has_study_child(
+            Study.objects.get(uuid=study_uuid)
         )
         return context
 

@@ -28,7 +28,7 @@ from multiselectfield import MultiSelectField
 from qrcode import make as make_qrcode
 from qrcode.image.svg import SvgPathImage
 
-from accounts.queries import BitfieldQuerySet
+from accounts.queries import BitfieldQuerySet, get_child_eligibility_for_study
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
 from studies.permissions import (
@@ -197,6 +197,10 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def has_any_child(self):
         return self.children.filter(deleted=False).exists()
+
+    def has_study_child(self, study) -> bool:
+        children = self.children.filter(deleted=False)
+        return any(get_child_eligibility_for_study(child, study) for child in children)
 
     @property
     def has_demographics(self):
