@@ -196,9 +196,11 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
     @property
     def has_any_child(self):
-        return (
-            self.children.filter(deleted=False).exists() and self.demographics.exists()
-        )
+        return self.children.filter(deleted=False).exists()
+
+    @property
+    def has_demographics(self):
+        return self.demographics.exists()
 
     @property
     def _make_rainbow(self):
