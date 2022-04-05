@@ -563,11 +563,18 @@ class StudyDetailView(generic.DetailView):
 
         return context
 
+    def clear_study(self):
+        session = self.request.session
+        "study_name" in session and session.pop("study_name")
+        "study_uuid" in session and session.pop("study_uuid")
+        session.modified = True
+
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
 
         if study.state == "active":
             if request.method == "POST":
+                self.clear_study()
                 child_uuid = request.POST["child_id"]
                 if study.study_type.is_external:
                     response = create_external_response(study, child_uuid)
