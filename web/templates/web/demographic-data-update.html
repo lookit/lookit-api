@@ -83,11 +83,11 @@
             </div>
             <div class="col-md-8">
            
-                {% if request.session.study_name and user.has_demographics and not user.has_any_child %}
+                {% if request.session.study_name and user.has_demographics and not has_study_child %}
                 <p>{% trans "If the \"Continue to Study\" button still isn't lighting up, make sure you have completed the form below and added the participating child to your account. The study may also have become full or be recruiting a slightly different set of kids right now." %}</p>
                 <p>
                     {% trans "You can click the \"Children Information\" button to add another child, \"Find Another Study\" to explore more studies for your family, or" %}
-                    <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %} ">{% trans "click here" %}</a>
+                    <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %}">{% trans "click here" %}</a>
                     {% trans "to review the requirements for" %} 
                     "{{ request.session.study_name }}".
                 </p>
@@ -97,7 +97,7 @@
                     <p>{% trans "Welcome to Children Helping Science! Before you take your first study, we are asking you to share some information about your family." %}</p>
                     {% elif request.session.study_name and not user.has_demographics %}
                     <p>{% trans "Welcome to Children Helping Science! Before you continue to the main study" %} ("{{ request.session.study_name }}"), {% trans "we are asking you to share some information about your family." %}</p>
-                    {% elif request.session.study_name and user.has_demographics and user.has_any_child %}
+                    {% elif request.session.study_name and user.has_demographics and has_study_child %}
                     <p>{% trans "Use this form to share more information about your family. When you are ready to move on, you can click the \"Continue to Study\" button on the left!" %}</p>
                     {% endif %}
 

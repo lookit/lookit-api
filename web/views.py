@@ -210,6 +210,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         context = super().get_context_data(**kwargs)
         context["countries"] = countries
         context["states"] = USPS_CHOICES
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
         return context
 
 
@@ -226,13 +227,10 @@ class ChildrenListView(LoginRequiredMixin, generic.TemplateView):
         to the context_dict.  Also add info to hide the Add Child form on page load.
         """
         user = self.request.user
-        study_uuid = self.request.session.get("study_uuid", None)
 
         context = super().get_context_data(**kwargs)
         context["children"] = Child.objects.filter(deleted=False, user=user)
-        context["has_study_child"] = study_uuid and user.has_study_child(
-            Study.objects.get(uuid=study_uuid)
-        )
+        context["has_study_child"] = user.has_study_child(self.request)
         return context
 
 

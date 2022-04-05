@@ -13,6 +13,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
+from django.http import HttpRequest
 from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
@@ -28,6 +29,7 @@ from multiselectfield import MultiSelectField
 from qrcode import make as make_qrcode
 from qrcode.image.svg import SvgPathImage
 
+import studies
 from accounts.queries import BitfieldQuerySet, get_child_eligibility_for_study
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
@@ -198,9 +200,16 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     def has_any_child(self):
         return self.children.filter(deleted=False).exists()
 
-    def has_study_child(self, study) -> bool:
-        children = self.children.filter(deleted=False)
-        return any(get_child_eligibility_for_study(child, study) for child in children)
+    def has_study_child(self, request: HttpRequest) -> bool:
+        study_uuid = request.session.get("study_uuid", None)
+        if study_uuid:
+            study = studies.models.Study.objects.get(uuid=study_uuid)
+            children = self.children.filter(deleted=False)
+            return any(
+                get_child_eligibility_for_study(child, study) for child in children
+            )
+        else:
+            return False
 
     @property
     def has_demographics(self):
