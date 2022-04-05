@@ -233,6 +233,7 @@ class AccountManagementView(LoginRequiredMixin, generic.TemplateView):
                 "otp_check_form": otp_check_form,
                 "user": user,
                 "otp": otp,
+                "has_study_child": user.has_study_child(self.request),
             }
         )
 
@@ -250,7 +251,7 @@ class AccountManagementView(LoginRequiredMixin, generic.TemplateView):
 
     def _get_forms(
         self,
-    ) -> (forms.AccountUpdateForm, forms.PasswordChangeForm, forms.TOTPCheckForm):
+    ) -> Tuple[forms.AccountUpdateForm, forms.PasswordChangeForm, forms.TOTPCheckForm]:
         """Bind forms appropriately for method."""
         request = self.request
         # TODO: switch to normal attribute access after this is fixed

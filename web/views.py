@@ -1,6 +1,6 @@
 import re
 from hashlib import sha256
-from typing import Text
+from typing import Any, Dict, Text
 from urllib.parse import parse_qs, urlencode, urlparse
 from uuid import UUID
 
@@ -308,6 +308,11 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         """
         messages.success(self.request, _("Email preferences saved."))
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
+        return context
 
 
 class StudiesListView(generic.ListView, FormView):
