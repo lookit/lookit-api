@@ -165,7 +165,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def identicon(self):
         if not self._identicon:
-            rbw = self._make_rainbow()
+            rbw = self._make_rainbow
             generator = pydenticon.Generator(
                 5, 5, digest=hashlib.sha512, foreground=rbw, background="rgba(0,0,0,0)"
             )
