@@ -1,5 +1,6 @@
+import re
 from hashlib import sha256
-from typing import Text
+from typing import Any, Dict, Text
 from urllib.parse import parse_qs, urlencode, urlparse
 from uuid import UUID
 
@@ -138,7 +139,25 @@ class ParticipantSignupView(generic.CreateView):
         messages.success(self.request, _("Participant created."))
         return resp
 
+    def store_study_in_session(self) -> None:
+        study_url = self.request.GET.get("next", "")
+        if study_url:
+            p = re.compile("^/studies/([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12})")
+            m = p.match(study_url)
+            if m:
+                study_uuid = m.group(1)
+                study = Study.objects.only("name").get(uuid=study_uuid)
+                self.request.session["study_name"] = study.name
+                self.request.session["study_uuid"] = study_uuid
+
     def get_success_url(self):
+        """Get the url if the form is successful.  Additionally, the previous url is stored on the
+        "next" value on GET.  This url is stored in the user's session.
+
+        Returns:
+            str: URL of next view of form submission.
+        """
+        self.store_study_in_session()
         return reverse("web:demographic-data-update")
 
 
@@ -178,7 +197,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
 
     def get_success_url(self):
         if self.request.user.children.filter(deleted=False).exists():
-            return reverse("web:studies-list")
+            return reverse("web:demographic-data-update")
         else:
             return reverse("web:children-list")
 
@@ -191,6 +210,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         context = super().get_context_data(**kwargs)
         context["countries"] = countries
         context["states"] = USPS_CHOICES
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
         return context
 
 
@@ -206,10 +226,11 @@ class ChildrenListView(LoginRequiredMixin, generic.TemplateView):
         Add children that have not been deleted that belong to the current user
         to the context_dict.  Also add info to hide the Add Child form on page load.
         """
+        user = self.request.user
+
         context = super().get_context_data(**kwargs)
-        context["children"] = Child.objects.filter(
-            deleted=False, user=self.request.user
-        )
+        context["children"] = Child.objects.filter(deleted=False, user=user)
+        context["has_study_child"] = user.has_study_child(self.request)
         return context
 
 
@@ -287,6 +308,11 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         """
         messages.success(self.request, _("Email preferences saved."))
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
+        return context
 
 
 class StudiesListView(generic.ListView, FormView):
@@ -542,11 +568,18 @@ class StudyDetailView(generic.DetailView):
 
         return context
 
+    def clear_study(self):
+        session = self.request.session
+        "study_name" in session and session.pop("study_name")
+        "study_uuid" in session and session.pop("study_uuid")
+        session.modified = True
+
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
 
         if study.state == "active":
             if request.method == "POST":
+                self.clear_study()
                 child_uuid = request.POST["child_id"]
                 if study.study_type.is_external:
                     response = create_external_response(study, child_uuid)

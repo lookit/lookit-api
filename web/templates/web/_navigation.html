@@ -35,7 +35,7 @@
             {% nav_item request 'web:studies-history' 'My Past Studies' %}
             <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
           {% else %}
-            {% nav_item request 'web:participant-signup' 'Sign up' %}
+            {% nav_signup request %}
             {% nav_login request %}
           {% endif %}
         </ul>
