@@ -197,7 +197,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
 
     def get_success_url(self):
         if self.request.user.children.filter(deleted=False).exists():
-            return reverse("web:studies-list")
+            return reverse("web:demographic-data-update")
         else:
             return reverse("web:children-list")
 
