@@ -153,13 +153,14 @@ class NewUserAccountTestCase(TestCase):
 
         # Sign up a user
         nickname = "user_asdf"
+        pw = "asdfasdfasdfasdf"
         response = self.client.post(
             url,
             {
                 "username": "user@email.com",
                 "nickname": nickname,
-                "password1": "asdfasdfasdfasdf",
-                "password2": "asdfasdfasdfasdf",
+                "password1": pw,
+                "password2": pw,
             },
             follow=True,
         )
