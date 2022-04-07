@@ -1,47 +1,56 @@
 {% load bootstrap3 %}
 {% load i18n %}
 {% load web_extras %}
-
 <nav class="navbar-default navbar-static-top">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <ul class="nav navbar-nav navbar-left">
-        <li class="nav-item active"><a class="navbar-item" href="{% url 'web:home' %}">{% trans "Home" %}</a></li>
-        {% if user.is_researcher %}
-        <li class="nav-item"><a class="navbar-item" href="{% url 'exp:study-list' %}">{% trans "Experimenter" %}</a></li>
-        {% endif %}
-        <li class="divider-vertical"></li>
-      </ul>
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1"
+                    aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <ul class="nav navbar-nav navbar-left">
+                <li class="nav-item active">
+                    <a class="navbar-item" href="{% url 'web:home' %}">{% trans "Home" %}</a>
+                </li>
+                {% if user.is_researcher %}
+                    <li class="nav-item">
+                        <a class="navbar-item" href="{% url 'exp:study-list' %}">{% trans "Experimenter" %}</a>
+                    </li>
+                {% endif %}
+                <li class="divider-vertical"></li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-left">
+                {% nav_item request 'web:studies-list' 'Studies' %}
+                {% nav_item request 'web:faq' 'FAQ' %}
+                {% nav_item request 'web:scientists' 'The Scientists' %}
+                {% nav_item request 'web:resources' 'Resources' %}
+            </ul>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+                <ul class="nav navbar-nav navbar-right">
+                    {% if user.is_authenticated %}
+                        {% nav_item request 'accounts:manage-account' 'My Account' %}
+                        {% nav_item request 'web:studies-history' 'My Past Studies' %}
+                        <li>
+                            <a href="{% url 'logout' %}">{% trans "Logout" %}</a>
+                        </li>
+                    {% else %}
+                        {% nav_signup request %}
+                        {% nav_login request %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
     </div>
-
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav navbar-left">
-        {% nav_item request 'web:studies-list' 'Studies' %}
-        {% nav_item request 'web:faq' 'FAQ' %}
-        {% nav_item request 'web:scientists' 'The Scientists' %}
-        {% nav_item request 'web:resources' 'Resources' %}
-      </ul>
-
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-        <ul class="nav navbar-nav navbar-right">
-          {% if user.is_authenticated %}
-            {% nav_item request 'accounts:manage-account' 'My Account' %}
-            {% nav_item request 'web:studies-history' 'My Past Studies' %}
-            <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
-          {% else %}
-            {% nav_signup request %}
-            {% nav_login request %}
-          {% endif %}
-        </ul>
-      </div>  
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-->
+    <!-- /.container-->
 </nav>
 <script type="application/javascript">
   $(function () {

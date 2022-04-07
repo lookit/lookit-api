@@ -1,26 +1,41 @@
-<p>Dear {% if user.nickname %}{{ user.nickname }}{% else %}{{ user.given_name }} {{user.family_name}}{% endif %},</p>
-
+<p>
+    Dear
+    {% if user.nickname %}
+        {{ user.nickname }}
+    {% else %}
+        {{ user.given_name }} {{ user.family_name }}
+    {% endif %}
+    ,
+</p>
 <p>
     We're writing to invite you and your child{{ children|length|pluralize:"ren" }} {{ children_string }} to
     participate in the study <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a>
     on Lookit! This study is run by the {{ study.lab.name }} at {{ study.lab.institution }}.
 </p>
-
-<p>More details about the study...</p>
+<p>
+    More details about the study...
+</p>
 <ul>
-    <li><strong>Who:</strong> {{ study.criteria }}</li>
-    <li><strong>What happens:</strong> {{ study.short_description }}</li>
-    <li><strong>Why:</strong> {{ study.purpose }}</li>
-    <li><strong>Compensation:</strong> {{ study.compensation_description|default:"This is a volunteer-based study." }}</li>
+    <li>
+        <strong>Who:</strong> {{ study.criteria }}
+</li>
+<li>
+    <strong>What happens:</strong> {{ study.short_description }}
+</li>
+<li>
+    <strong>Why:</strong> {{ study.purpose }}
+</li>
+<li>
+    <strong>Compensation:</strong> {{ study.compensation_description|default:"This is a volunteer-based study." }}
+</li>
 </ul>
-
 <p>
     You and your child can participate any time you want by going to
     <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a> on Lookit.
-    If you have any questions, please reply to this email to reach the {{ study.lab.name }} at
-    {{ study.lab.contact_email }}.
+If you have any questions, please reply to this email to reach the {{ study.lab.name }} at
+{{ study.lab.contact_email }}.
 </p>
-
-<p>Thanks for contributing to the science of how kids learn - we hope to see you soon!</p>
-
+<p>
+    Thanks for contributing to the science of how kids learn - we hope to see you soon!
+</p>
 -- the Lookit team

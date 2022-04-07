@@ -1,59 +1,82 @@
 {% load web_extras %}
-
 <nav class="navbar navbar-default navbar-static-top">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-
-      <ul class="nav navbar-nav navbar-left">
-        <li class="nav-item"><a class="navbar-item" href="{% url 'web:home' %}">Home</a></li>
-        <li class="nav-item active"><a class="navbar-item active" href="{% url 'exp:study-list' %}">Experimenter</a></li>
-        <li class="divider-vertical"></li>
-      </ul>
-
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1"
+                    aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <ul class="nav navbar-nav navbar-left">
+                <li class="nav-item">
+                    <a class="navbar-item" href="{% url 'web:home' %}">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="navbar-item active" href="{% url 'exp:study-list' %}">Experimenter</a>
+                </li>
+                <li class="divider-vertical"></li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    {% nav_item request 'exp:support' 'Support Lookit' %}
+                    {% nav_item request 'exp:study-list' 'Manage Studies' %}
+                    {% nav_item request 'exp:participant-list' 'View Participants' %}
+                    {% if perms.accounts.can_view_analytics %}
+                        {% nav_item request 'exp:study-participant-analytics' 'Recruitment Stats' %}
+                    {% endif %}
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            Help <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="https://lookit.readthedocs.io/" target="_blank" rel="noopener">Docs</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li role="separator" class="divider-vertical"></li>
+                    <li class="dropdown">
+                        <a href="#"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            {{ request.user.identicon_small_html }} {{ request.user.get_short_name }} <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="{% url 'accounts:manage-account' %}">Manage Account</a>
+                            </li>
+                            {% nav_item request 'exp:lab-list' 'Manage Labs' %}
+                            <li>
+                                <a href="{% url 'logout' %}">Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    {# /if request.user.is_authenticated #}
+                    {% if 'login' not in request.path %}
+                        <li>
+                            <a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
     </div>
-
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav navbar-right">
-        {% if request.user.is_authenticated %}
-        {% nav_item request 'exp:support' 'Support Lookit' %}
-        {% nav_item request 'exp:study-list' 'Manage Studies' %}
-        {% nav_item request 'exp:participant-list' 'View Participants' %}
-
-        {% if perms.accounts.can_view_analytics %}
-        {% nav_item request 'exp:study-participant-analytics' 'Recruitment Stats' %}
-        {% endif %}
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            Help <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="https://lookit.readthedocs.io/" target="_blank" rel="noopener">Docs</a></li>
-          </ul>
-        </li>
-
-        <li role="separator" class="divider-vertical"></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            {{ request.user.identicon_small_html }} {{ request.user.get_short_name }} <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'accounts:manage-account' %}">Manage Account</a></li>
-            {% nav_item request 'exp:lab-list' 'Manage Labs' %}
-            <li><a href="{% url 'logout' %}">Logout</a></li>
-          </ul>
-        </li>
-        {% else %} {# /if request.user.is_authenticated #}
-        {% if 'login' not in request.path %}
-        <li><a href="{% url 'login' %}?next={{ request.get_full_path.urlencode }}">Login</a></li>
-        {% endif %}
-        {% endif %}
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-->
+    <!-- /.container-->
 </nav>
