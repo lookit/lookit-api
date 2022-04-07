@@ -1,5 +1,6 @@
 import datetime
 import itertools
+from typing import Any, Tuple
 from urllib.parse import urlencode
 
 from bs4 import BeautifulSoup as BS
@@ -14,14 +15,19 @@ from studies.models import Study
 
 class NewUserAccountTestCase(TestCase):
     def setUp(self):
-        self.study = self.get_study()
+        """Set up each test case."""
 
+        # Study and User to be used in each case.
+        self.study = self.get_study()
         self.user = G(User, is_active=True)
 
+        # The details view for the above study
         self.study_details_url = reverse(
             "web:study-detail", kwargs={"uuid": self.study.uuid}
         )
 
+        # List of my account urls that we should check the state of our new buttons.  This is
+        # missing the update child view.
         self.my_account_urls = [
             reverse("web:demographic-data-update"),
             reverse("accounts:manage-account"),
@@ -30,6 +36,11 @@ class NewUserAccountTestCase(TestCase):
         ]
 
     def get_study(self):
+        """Create study
+
+        Returns:
+            Study: The study object after it's been set active.
+        """
         study = G(
             Study,
             image="asdf",
@@ -42,49 +53,79 @@ class NewUserAccountTestCase(TestCase):
         study.save()
         return study
 
-    def get_soup(self, response: HttpResponse):
+    def get_soup(self, response: HttpResponse) -> BS:
+        """Return the beautiful soup object for a response.
+
+        Args:
+            response (HttpResponse): Response returned from client
+
+        Returns:
+            BS: BeautifulSoup object
+        """
         return BS(response.content, "html.parser")
 
-    def get_study_buttons(self, response):
+    def get_study_buttons(self, response: HttpResponse) -> Tuple[Any, Any]:
+        """Use Beautiful Soup to find and return the two buttons whose state we're checking.
+
+        Args:
+            response (HttpResponse): Response returned from client
+
+        Returns:
+            Tuple[Button, Button]: Returns a tuple of our two buttons
+        """
         soup = self.get_soup(response)
         study_button = soup.find("a", class_="btn-has-study")
         study_list_button = soup.find("a", class_="btn-study-list")
         return (study_button, study_list_button)
 
     def get_my_account_urls(self, child: Child) -> itertools.chain:
+        """Get account urls with update child url.
+
+        Args:
+            child (Child): Child model object
+
+        Returns:
+            itertools.chain: Generator
+        """
         return itertools.chain(
             self.my_account_urls,
             (reverse("web:child-update", kwargs={"uuid": child.uuid}),),
         )
 
-    def set_session(self):
+    def set_session(self) -> None:
+        """Setup session to have study values."""
         session = self.client.session
         session["study_name"] = self.study.name
         session["study_uuid"] = str(self.study.uuid)
         session.save()
 
-    def login_user(self):
+    def login_user(self) -> None:
+        """Login our user."""
         user = self.user
         self.client.force_login(user)
         self.set_session()
 
-    def test_valid_study_detail(self):
+    def test_valid_study_detail(self) -> None:
         """Check if study returns a valid details page."""
         response = self.client.get(self.study_details_url)
         self.assertEqual(response.status_code, 200)
 
-    def test_login_and_create_buttons_exist(self):
-        """Check if login and create account buttons are on page.
+    def test_login_and_create_buttons_exist(self) -> None:
+        """Check if login and create new account button exist on page when user is logged out."""
 
-        Along with with the correct button text, check that the hidden input has the correct next
-        value and the action url is correct.
-        """
+        # get our response
         response = self.client.get(self.study_details_url)
+
+        # use response to get forms.  Login and Sign up buttons are wrapped in forms.
         soup = self.get_soup(response)
         forms = soup.find_all("form")
+
+        # The two urls we need to check for.
         login_url = reverse("login")
         signup_url = reverse("web:participant-signup")
 
+        # There are a few forms on the page, we'll iterate through the list to check if at least
+        # one has what we're looking for.
         self.assertTrue(
             any(
                 f.button.text == "Log in to participate"
@@ -102,11 +143,15 @@ class NewUserAccountTestCase(TestCase):
             )
         )
 
-    def test_create_account_has_study(self):
-        """Check if when user is created, that the study is stored in session."""
+    def test_create_account_has_study(self) -> None:
+        """Check if when user is created,that the study is stored in session."""
+
+        # Set up url with the query string
         query = {"next": self.study_details_url}
         qs = urlencode(query, doseq=False)
         url = f"{reverse('web:participant-signup')}?{qs}"
+
+        # Sign up a user
         nickname = "user_asdf"
         response = self.client.post(
             url,
@@ -134,31 +179,17 @@ class NewUserAccountTestCase(TestCase):
         self.assertEqual(self.client.session["study_uuid"], str(self.study.uuid))
         self.assertEqual(self.client.session["study_name"], self.study.name)
 
-    def test_no_demo_no_child(self):
+    def test_no_demo_no_child(self) -> None:
+        """Check buttons when user has no Demo or any child."""
+
+        # Login user
         self.login_user()
 
         # confirm user has no demo and no children
         self.assertFalse(self.user.has_demographics)
         self.assertFalse(self.user.has_any_child)
 
-        for url in self.my_account_urls:
-            response = self.client.get(url)
-            soup = self.get_soup(response)
-            study_button = soup.find("a", class_="has-study")
-            study_list_button = soup.find("a", class_="study-list")
-
-            self.assertEqual(response.status_code, 200)
-            self.assertIn("disabled", study_button.attrs["class"])
-            self.assertIn("disabled", study_list_button.attrs["class"])
-
-    def test_has_demo_no_child(self):
-        G(DemographicData, user=self.user)
-        self.login_user()
-
-        # confirm user has demo and no children
-        self.assertTrue(self.user.has_demographics)
-        self.assertFalse(self.user.has_any_child)
-
+        # iterate over list of urls and check the state of the buttons
         for url in self.my_account_urls:
             response = self.client.get(url)
             study_button, study_list_button = self.get_study_buttons(response)
@@ -167,7 +198,30 @@ class NewUserAccountTestCase(TestCase):
             self.assertIn("disabled", study_button.attrs["class"])
             self.assertIn("disabled", study_list_button.attrs["class"])
 
-    def test_has_demo_ineligible_child(self):
+    def test_has_demo_no_child(self) -> None:
+        """Check buttons when user has Demo but no children."""
+
+        # Create demo and log in
+        G(DemographicData, user=self.user)
+        self.login_user()
+
+        # confirm user has demo and no children
+        self.assertTrue(self.user.has_demographics)
+        self.assertFalse(self.user.has_any_child)
+
+        # iterate over list of urls and check the state of the buttons
+        for url in self.my_account_urls:
+            response = self.client.get(url)
+            study_button, study_list_button = self.get_study_buttons(response)
+
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("disabled", study_button.attrs["class"])
+            self.assertIn("disabled", study_list_button.attrs["class"])
+
+    def test_has_demo_ineligible_child(self) -> None:
+        """Check buttons when user has Demo but an ineligible child."""
+
+        # Create Demo, Child and log user in
         G(DemographicData, user=self.user)
         child = G(Child, user=self.user, birthday=datetime.datetime.now())
         self.login_user()
@@ -185,7 +239,10 @@ class NewUserAccountTestCase(TestCase):
             self.assertIn("disabled", study_button.attrs["class"])
             self.assertNotIn("disabled", study_list_button.attrs["class"])
 
-    def test_has_demo_eligible_child(self):
+    def test_has_demo_eligible_child(self) -> None:
+        """Check buttons when user has Denmo and an eligible child."""
+
+        # Create Demo, Child and log user in
         G(DemographicData, user=self.user)
         seven_months_old = datetime.datetime.now() - datetime.timedelta(30 * 7)
         child = G(Child, user=self.user, birthday=seven_months_old)
