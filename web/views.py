@@ -251,6 +251,11 @@ class ChildAddView(LoginRequiredMixin, generic.CreateView):
     def get_success_url(self):
         return reverse("web:children-list")
 
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
+        return context
+
 
 class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
     """
@@ -285,6 +290,11 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
             return HttpResponseRedirect(self.get_success_url())
         messages.success(self.request, _("Child updated."))
         return super().post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
+        return context
 
 
 class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
