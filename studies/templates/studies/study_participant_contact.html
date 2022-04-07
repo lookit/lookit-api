@@ -312,243 +312,243 @@ Body
         const EMAIL_EDITOR_SETTINGS = {
             codeviewFilter: true, // Prevent XSS
             codeviewFilterRegex: /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle|vg)|t(?:itle|extarea)|xml)[^>]*?>/gi,
-                        codeviewIframeFilter: true, // Prevent XSS
-                        placeholder: 'Write email contents here.',
-                        tabsize: 2,
-                        height: 150,
-                    };
+                                                                                                                        codeviewIframeFilter: true, // Prevent XSS
+                                                                                                                        placeholder: 'Write email contents here.',
+                                                                                                                        tabsize: 2,
+                                                                                                                        height: 150,
+                                                                                                                    };
 
-                    let baseBootstrapSelectSettings = {
-                        width: '100%',
-                        actionsBox: true,
-                        sanitize: true,
-                        liveSearch: true,
-                    };
+                                                                                                                    let baseBootstrapSelectSettings = {
+                                                                                                                        width: '100%',
+                                                                                                                        actionsBox: true,
+                                                                                                                        sanitize: true,
+                                                                                                                        liveSearch: true,
+                                                                                                                    };
 
-                    let baseFilterSettings = $.extend(
-                        {},
-                        baseBootstrapSelectSettings,
-                        {
-                            selectedTextFormat: 'count > 1',
-                            style: 'btn-default btn-sm',
-                        }
-                    );
+                                                                                                                    let baseFilterSettings = $.extend(
+                                                                                                                        {},
+                                                                                                                        baseBootstrapSelectSettings,
+                                                                                                                        {
+                                                                                                                            selectedTextFormat: 'count > 1',
+                                                                                                                            style: 'btn-default btn-sm',
+                                                                                                                        }
+                                                                                                                    );
 
-                    const RECIPIENT_SELECTOR_SETTINGS = $.extend(
-                        {},
-                        baseBootstrapSelectSettings,
-                        {
-                            selectedTextFormat: 'count > 3',
-                            title: 'Search and add recipients',
-                            liveSearchPlaceholder: 'Search by name, ID, or global ID',
-                        }
-                    );
+                                                                                                                    const RECIPIENT_SELECTOR_SETTINGS = $.extend(
+                                                                                                                        {},
+                                                                                                                        baseBootstrapSelectSettings,
+                                                                                                                        {
+                                                                                                                            selectedTextFormat: 'count > 3',
+                                                                                                                            title: 'Search and add recipients',
+                                                                                                                            liveSearchPlaceholder: 'Search by name, ID, or global ID',
+                                                                                                                        }
+                                                                                                                    );
 
-                    const RECIPIENT_FILTER_SETTINGS = $.extend(
-                        {
-                            noneSelectedText: 'Filter Recipients',
-                        },
-                        baseFilterSettings
-                    );
+                                                                                                                    const RECIPIENT_FILTER_SETTINGS = $.extend(
+                                                                                                                        {
+                                                                                                                            noneSelectedText: 'Filter Recipients',
+                                                                                                                        },
+                                                                                                                        baseFilterSettings
+                                                                                                                    );
 
-                    const SENDER_FILTER_SETTINGS = $.extend(
-                        {
-                            noneSelectedText: 'Filter Sender',
-                        },
-                        baseFilterSettings
-                    );
+                                                                                                                    const SENDER_FILTER_SETTINGS = $.extend(
+                                                                                                                        {
+                                                                                                                            noneSelectedText: 'Filter Sender',
+                                                                                                                        },
+                                                                                                                        baseFilterSettings
+                                                                                                                    );
 
-                    const DATE_FILTER_SETTINGS = {
-                        ranges: {
-                            'Today': [moment().startOf('day'), moment()],
-                            'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
-                            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                            'This Month': [moment().startOf('month'), moment().endOf('month')],
-                            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                        },
-                        timePicker: true,
-                        startDate: moment().subtract(29, 'days'),
-                        endDate: moment(),
-                        locale: {
-                            format: 'M/DD hh:mm A',
-                        }
-                    };
+                                                                                                                    const DATE_FILTER_SETTINGS = {
+                                                                                                                        ranges: {
+                                                                                                                            'Today': [moment().startOf('day'), moment()],
+                                                                                                                            'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+                                                                                                                            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                                                                                                                            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                                                                                                                            'This Month': [moment().startOf('month'), moment().endOf('month')],
+                                                                                                                            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                                                                                                                        },
+                                                                                                                        timePicker: true,
+                                                                                                                        startDate: moment().subtract(29, 'days'),
+                                                                                                                        endDate: moment(),
+                                                                                                                        locale: {
+                                                                                                                            format: 'M/DD hh:mm A',
+                                                                                                                        }
+                                                                                                                    };
 
-                    const VIEW_INIT_PARAMS = new URLSearchParams(window.location.search);
+                                                                                                                    const VIEW_INIT_PARAMS = new URLSearchParams(window.location.search);
 
-                    const
-                        /* ---Email Form --- */
-                        $messageParticipantsForm = $('#email-participants-form'),
-                        $subjectLine = $('#message-subject'),
-                        $recipientSelector = $('#recipient-selector'),
-                        $emailFriendlyGroup = $recipientSelector.find('optgroup.opted-in'),
-                        $doNotEmailGroup = $recipientSelector.find('optgroup.opted-out'),
-                        $emailPreferenceFilters = $('#email-preference-filters'),
-                        $emailFilterNameBox = $emailPreferenceFilters.find('#email-filter-name'),
-                        $emailEditor = $('#email-editor'),
-                        $messageTypeHelp = $('#message-type-help-block'),
+                                                                                                                    const
+                                                                                                                        /* ---Email Form --- */
+                                                                                                                        $messageParticipantsForm = $('#email-participants-form'),
+                                                                                                                        $subjectLine = $('#message-subject'),
+                                                                                                                        $recipientSelector = $('#recipient-selector'),
+                                                                                                                        $emailFriendlyGroup = $recipientSelector.find('optgroup.opted-in'),
+                                                                                                                        $doNotEmailGroup = $recipientSelector.find('optgroup.opted-out'),
+                                                                                                                        $emailPreferenceFilters = $('#email-preference-filters'),
+                                                                                                                        $emailFilterNameBox = $emailPreferenceFilters.find('#email-filter-name'),
+                                                                                                                        $emailEditor = $('#email-editor'),
+                                                                                                                        $messageTypeHelp = $('#message-type-help-block'),
 
-                        /* --- Email Table --- */
-                        $messagesTable = $('#messages-table'),
-                        $messageViewer = $('#previous-message-viewer'),
+                                                                                                                        /* --- Email Table --- */
+                                                                                                                        $messagesTable = $('#messages-table'),
+                                                                                                                        $messageViewer = $('#previous-message-viewer'),
 
-                        // --> Filters
-                        $recipientFilter = $('#recipient-filter'),
-                        $senderFilter = $('#sender-filter'),
-                        $dateFilter = $('#date-filter'),
-                        $subjectFilter = $('#subject-filter');
-
-
-                    // Lazy initialization so we can use in handlers.
-                    let MESSAGE_TABLE,
-                        DATE_RANGE_PICKER,
-                        RECIPIENT_SELECTOR;
+                                                                                                                        // --> Filters
+                                                                                                                        $recipientFilter = $('#recipient-filter'),
+                                                                                                                        $senderFilter = $('#sender-filter'),
+                                                                                                                        $dateFilter = $('#date-filter'),
+                                                                                                                        $subjectFilter = $('#subject-filter');
 
 
-                    // Possibly move everything here later...
-                    const GLOBAL_QUERY_PARAMS = {
-                        after: DATE_FILTER_SETTINGS.startDate,
-                        before: DATE_FILTER_SETTINGS.endDate,
-                    };
+                                                                                                                    // Lazy initialization so we can use in handlers.
+                                                                                                                    let MESSAGE_TABLE,
+                                                                                                                        DATE_RANGE_PICKER,
+                                                                                                                        RECIPIENT_SELECTOR;
 
-                    /**
-                     * Main function.
-                     */
-                    function initializeView() {
-                        // Set up filters.
-                        $recipientFilter.selectpicker(RECIPIENT_FILTER_SETTINGS)
-                            .on('changed.bs.select', handleRecipientFiltering);
 
-                        $senderFilter.selectpicker(SENDER_FILTER_SETTINGS)
-                            .on('changed.bs.select', handleSenderFiltering);
+                                                                                                                    // Possibly move everything here later...
+                                                                                                                    const GLOBAL_QUERY_PARAMS = {
+                                                                                                                        after: DATE_FILTER_SETTINGS.startDate,
+                                                                                                                        before: DATE_FILTER_SETTINGS.endDate,
+                                                                                                                    };
 
-                        DATE_RANGE_PICKER = $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
-                        $.fn.dataTable.ext.search.push(datePickerSearchFunctionality);
+                                                                                                                    /**
+                                                                                                                     * Main function.
+                                                                                                                     */
+                                                                                                                    function initializeView() {
+                                                                                                                        // Set up filters.
+                                                                                                                        $recipientFilter.selectpicker(RECIPIENT_FILTER_SETTINGS)
+                                                                                                                            .on('changed.bs.select', handleRecipientFiltering);
 
-                        $subjectFilter.on('keyup', handleSubjectFiltering);
+                                                                                                                        $senderFilter.selectpicker(SENDER_FILTER_SETTINGS)
+                                                                                                                            .on('changed.bs.select', handleSenderFiltering);
 
-                        // Set up Email form
-                        $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
+                                                                                                                        DATE_RANGE_PICKER = $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
+                                                                                                                        $.fn.dataTable.ext.search.push(datePickerSearchFunctionality);
 
-                        $recipientSelector
-                            .selectpicker(RECIPIENT_SELECTOR_SETTINGS)
-                            .on('changed.bs.select', recipientSelectionCallback);
+                                                                                                                        $subjectFilter.on('keyup', handleSubjectFiltering);
 
-                        $('section.form-group .bootstrap-select').tooltip(
-                            {
-                                placement: 'top',
-                                title: 'Disabled until a message type has been selected.'
-                            }
-                        );
+                                                                                                                        // Set up Email form
+                                                                                                                        $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
 
-                        $emailPreferenceFilters
-                            .on('click', 'button', handleEmailPreferenceSelection);
+                                                                                                                        $recipientSelector
+                                                                                                                            .selectpicker(RECIPIENT_SELECTOR_SETTINGS)
+                                                                                                                            .on('changed.bs.select', recipientSelectionCallback);
 
-                        $messageParticipantsForm.on('submit', handleMessageFormSubmit);
+                                                                                                                        $('section.form-group .bootstrap-select').tooltip(
+                                                                                                                            {
+                                                                                                                                placement: 'top',
+                                                                                                                                title: 'Disabled until a message type has been selected.'
+                                                                                                                            }
+                                                                                                                        );
 
-                        // Set up Datatable.
-                        MESSAGE_TABLE = $messagesTable.DataTable(DATATABLE_SETTINGS)
-                            .on('dblclick', 'tr', toggleMessageBody);
-                    }
+                                                                                                                        $emailPreferenceFilters
+                                                                                                                            .on('click', 'button', handleEmailPreferenceSelection);
 
-                    function handleEmailPreferenceSelection() {
+                                                                                                                        $messageParticipantsForm.on('submit', handleMessageFormSubmit);
 
-                        $('section.form-group .bootstrap-select').tooltip('destroy');
+                                                                                                                        // Set up Datatable.
+                                                                                                                        MESSAGE_TABLE = $messagesTable.DataTable(DATATABLE_SETTINGS)
+                                                                                                                            .on('dblclick', 'tr', toggleMessageBody);
+                                                                                                                    }
 
-                        let $filterBtn = $(this),
-                            currentFilter = $filterBtn.data('filter'),
-                            transactional = currentFilter.indexOf('transactional') !== -1,
-                            $allOptions = $recipientSelector.find('option').detach();  // Is this a transactional email?
+                                                                                                                    function handleEmailPreferenceSelection() {
 
-                        // Treat this like a radio button set.
-                        $filterBtn
-                            .addClass('active')
-                            .siblings()
-                            .removeClass('active');
+                                                                                                                        $('section.form-group .bootstrap-select').tooltip('destroy');
+
+                                                                                                                        let $filterBtn = $(this),
+                                                                                                                            currentFilter = $filterBtn.data('filter'),
+                                                                                                                            transactional = currentFilter.indexOf('transactional') !== -1,
+                                                                                                                            $allOptions = $recipientSelector.find('option').detach();  // Is this a transactional email?
+
+                                                                                                                        // Treat this like a radio button set.
+                                                                                                                        $filterBtn
+                                                                                                                            .addClass('active')
+                                                                                                                            .siblings()
+                                                                                                                            .removeClass('active');
                 
-                        // Title Case the name and change the box color.
-                        let titleCaseEmailPreference = currentFilter.replace(/(\w+)-(\w+)/g,
-                            (match, first, second) => {
-                                return first.charAt(0).toUpperCase() + first.slice(1) +
-                                    ' ' + second.charAt(0).toUpperCase() + second.slice(1);
-                            });
+                                                                                                                        // Title Case the name and change the box color.
+                                                                                                                        let titleCaseEmailPreference = currentFilter.replace(/(\w+)-(\w+)/g,
+                                                                                                                            (match, first, second) => {
+                                                                                                                                return first.charAt(0).toUpperCase() + first.slice(1) +
+                                                                                                                                    ' ' + second.charAt(0).toUpperCase() + second.slice(1);
+                                                                                                                            });
 
-                        $emailFilterNameBox // bg-warning won't win out in cascade, so directly modify css
-                            .css({backgroundColor: transactional ? "#fcf8e3" : "#eee"})
-                            .text(titleCaseEmailPreference);
+                                                                                                                        $emailFilterNameBox // bg-warning won't win out in cascade, so directly modify css
+                                                                                                                            .css({backgroundColor: transactional ? "#fcf8e3" : "#eee"})
+                                                                                                                            .text(titleCaseEmailPreference);
 
-                        $messageTypeHelp
-                            .find(transactional ? '#transaction-warning' : '#other-message-type')
-                            .removeClass('collapsed')
-                            .siblings('.help-block')
-                            .addClass('collapsed');
+                                                                                                                        $messageTypeHelp
+                                                                                                                            .find(transactional ? '#transaction-warning' : '#other-message-type')
+                                                                                                                            .removeClass('collapsed')
+                                                                                                                            .siblings('.help-block')
+                                                                                                                            .addClass('collapsed');
 
-                        let {optedIn, optedOut} = $allOptions.get().reduce(({optedIn, optedOut}, option) => {
+                                                                                                                        let {optedIn, optedOut} = $allOptions.get().reduce(({optedIn, optedOut}, option) => {
 
-                            // Sort according to flag (lowerCamelCase the tag for data-* attributes.
-                            if (currentFilter.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) in option.dataset || transactional) {
-                                optedIn.push(option);
-                                option.removeAttribute('disabled');
-                            } else {
-                                optedOut.push(option);
-                                option.removeAttribute('selected');
-                                option.setAttribute('disabled', true);
-                            }
+                                                                                                                            // Sort according to flag (lowerCamelCase the tag for data-* attributes.
+                                                                                                                            if (currentFilter.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) in option.dataset || transactional) {
+                                                                                                                                optedIn.push(option);
+                                                                                                                                option.removeAttribute('disabled');
+                                                                                                                            } else {
+                                                                                                                                optedOut.push(option);
+                                                                                                                                option.removeAttribute('selected');
+                                                                                                                                option.setAttribute('disabled', true);
+                                                                                                                            }
 
-                            return {optedIn, optedOut};
-                        }, {optedIn: [], optedOut: []});
+                                                                                                                            return {optedIn, optedOut};
+                                                                                                                        }, {optedIn: [], optedOut: []});
 
-                        if (!transactional) {
-                            $messageTypeHelp
-                                .find('#other-message-type strong')
-                                .text(optedIn.length);
-                            $messageTypeHelp
-                                .find('#other-message-type span')
-                                .text(optedIn.length === 1 ? 'participant has' : 'participants have');
-                        }
+                                                                                                                        if (!transactional) {
+                                                                                                                            $messageTypeHelp
+                                                                                                                                .find('#other-message-type strong')
+                                                                                                                                .text(optedIn.length);
+                                                                                                                            $messageTypeHelp
+                                                                                                                                .find('#other-message-type span')
+                                                                                                                                .text(optedIn.length === 1 ? 'participant has' : 'participants have');
+                                                                                                                        }
 
-                        // Redraw select after sorting
-                        $(optedIn).appendTo($emailFriendlyGroup);
-                        $(optedOut).appendTo($doNotEmailGroup);
-                        var currentlySelected = $recipientSelector.selectpicker('val');
-                        var optedInValues = optedIn.map(opt => opt.value);
+                                                                                                                        // Redraw select after sorting
+                                                                                                                        $(optedIn).appendTo($emailFriendlyGroup);
+                                                                                                                        $(optedOut).appendTo($doNotEmailGroup);
+                                                                                                                        var currentlySelected = $recipientSelector.selectpicker('val');
+                                                                                                                        var optedInValues = optedIn.map(opt => opt.value);
             
-                        // Update people it's possible to email; leave people selected if they've still opted in to the current type of email
-                        $recipientSelector
-                            .removeAttr('disabled')
-                            .selectpicker('refresh')
-                            .selectpicker('deselectAll') 
-                            .selectpicker('val', currentlySelected.filter(val => optedInValues.includes(val)));
-                    }
+                                                                                                                        // Update people it's possible to email; leave people selected if they've still opted in to the current type of email
+                                                                                                                        $recipientSelector
+                                                                                                                            .removeAttr('disabled')
+                                                                                                                            .selectpicker('refresh')
+                                                                                                                            .selectpicker('deselectAll') 
+                                                                                                                            .selectpicker('val', currentlySelected.filter(val => optedInValues.includes(val)));
+                                                                                                                    }
 
-                    function handleDateFiltering(after, before) {
-                        GLOBAL_QUERY_PARAMS.after = after;
-                        GLOBAL_QUERY_PARAMS.before = before;
-                        MESSAGE_TABLE.draw(); // Executes search --> datePickerSearchFunctionality transitively.
-                    }
+                                                                                                                    function handleDateFiltering(after, before) {
+                                                                                                                        GLOBAL_QUERY_PARAMS.after = after;
+                                                                                                                        GLOBAL_QUERY_PARAMS.before = before;
+                                                                                                                        MESSAGE_TABLE.draw(); // Executes search --> datePickerSearchFunctionality transitively.
+                                                                                                                    }
 
-                    /**
-                     * Custom plugin for date range filtering.
-                     *
-                     * @param settings The datatables settings object (see: https://datatables.net/reference/api/settings())
-                     * @param rowArrayData The array of row data.
-                     * @param rowIndex The index of the row.
-                     * @param rowData The object of the data row (what we will be using).
-                     * @param counter Search counter. This is the loop index that DataTables uses internally to loop over the
-                     * rows in the table. This is likely to be most useful when it is 0 which indicates that a new search is
-                     * occurring and any cached search values could be updated.
-                     */
-                    function datePickerSearchFunctionality(settings, rowArrayData, rowIndex, rowData, counter) {
-                        let {after, before} = GLOBAL_QUERY_PARAMS,
-                            target = rowData.sentDate.asMoment;
-                        return target.isSameOrAfter(after) && target.isSameOrBefore(before);
-                    }
+                                                                                                                    /**
+                                                                                                                     * Custom plugin for date range filtering.
+                                                                                                                     *
+                                                                                                                     * @param settings The datatables settings object (see: https://datatables.net/reference/api/settings())
+                                                                                                                     * @param rowArrayData The array of row data.
+                                                                                                                     * @param rowIndex The index of the row.
+                                                                                                                     * @param rowData The object of the data row (what we will be using).
+                                                                                                                     * @param counter Search counter. This is the loop index that DataTables uses internally to loop over the
+                                                                                                                     * rows in the table. This is likely to be most useful when it is 0 which indicates that a new search is
+                                                                                                                     * occurring and any cached search values could be updated.
+                                                                                                                     */
+                                                                                                                    function datePickerSearchFunctionality(settings, rowArrayData, rowIndex, rowData, counter) {
+                                                                                                                        let {after, before} = GLOBAL_QUERY_PARAMS,
+                                                                                                                            target = rowData.sentDate.asMoment;
+                                                                                                                        return target.isSameOrAfter(after) && target.isSameOrBefore(before);
+                                                                                                                    }
 
-                    /**
-                     * Filter DataTable results based on sender input.
-                     */
-                    function handleSenderFiltering({# $jqEvent, clickedIndex, isSelected, previousValue #}) {
+                                                                                                                    /**
+                                                                                                                     * Filter DataTable results based on sender input.
+                                                                                                                     */
+                                                                                                                    function handleSenderFiltering({# $jqEvent, clickedIndex, isSelected, previousValue #}) {
 
             let senders = $(this).val(),
                 searchValue = senders ? senders.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";

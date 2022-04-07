@@ -143,7 +143,9 @@
                                         </div>
                                     {% elif field.input_type == "radio" %}
                                         <div class="form-group">
-                                            <label id="id_{{ field.name }}" class="control-label" title="{{ help_text }}">
+                                            <label id="id_{{ field.name }}"
+                                                   class="control-label"
+                                                   title="{{ help_text }}">
                                                 {{ key_display_names|get_key:key|default:key }}
                                             </label>
                                             {% for option in field.options %}

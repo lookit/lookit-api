@@ -1,7 +1,9 @@
-{% extends 'frontpages/default.html' %}
+{% extends "frontpages/default.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}FAQ{% endblock %}
+{% block title %}
+    FAQ
+{% endblock title %}
 {% block content %}
     <div class="main">
         <div class="lookit-row lookit-page-title">
@@ -159,7 +161,7 @@
                                     <div class="row">
                                         <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
                                             <video controls="true"
-                                                   src='{% trans "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4" %}'>
+                                                   src="{% trans 'https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4' %}">
                                             </video>
                                         </div>
                                     </div>
@@ -275,8 +277,6 @@
                                     </h4>
                                     <p>
                                         {% trans "Children can often make sophisticated predictions about what they expect to see or hear next. One way we can see those predictions in young children is to look at their eye movements. For example, if a child sees a ball roll behind a barrier, she may look to the other edge of the barrier, expecting the ball to emerge there. We may also set up artificial predictive relationships--for instance, the syllable 'da' means a toy will appear at the left of the screen, and 'ba' means a toy will appear at the right. Then we can see whether children learn these relationships, and how they generalize, by watching where they look when they hear a syllable." %}
-                                    </p>
-                                    <p>
                                     </p>
                                     <p>
                                         {% trans "Older children may simply be able to answer spoken questions about what they think is happening. For instance, in a recent study, two women called an object two different made-up names, and children were asked which is the correct name for the object." %}
@@ -613,4 +613,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
