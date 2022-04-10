@@ -68,3 +68,7 @@ djlint = "0.7.6"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.djlint]
+profile = "django"
+ignore = "H006,H021"
