@@ -1,8 +1,10 @@
-{% extends 'frontpages/default.html' %}
+{% extends "frontpages/default.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
 {% load static %}
-{% block title %}Scientists{% endblock %}
+{% block title %}
+    Scientists
+{% endblock title %}
 {% block content %}
     <style>
     .profile-img img {
@@ -43,11 +45,11 @@
             <div class="container">
                 <div class="row core-team">
                     <h2>Core Lookit Team</h2>
-                    <hr>
+                    <hr />
                     <div class="lookit-scientist col-xs-6 col-sm-3">
                         <div class="profile-img">
                             <img alt="CJ Green"
-                                 src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1631222453488-GVKT2Y702UXNTX9R1582/IMG_0117.jpeg">
+                                 src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1631222453488-GVKT2Y702UXNTX9R1582/IMG_0117.jpeg"/>
                         </div>
                         <h3>CJ Green</h3>
                         <p>
@@ -57,7 +59,7 @@
                     <div class="lookit-scientist col-xs-6 col-sm-3">
                         <div class="profile-img">
                             <img alt="Laura Schulz"
-                                 src="https://lookitcontents.s3.amazonaws.com/website/laura.jpg">
+                                 src="https://lookitcontents.s3.amazonaws.com/website/laura.jpg"/>
                         </div>
                         <h3>Laura Schulz</h3>
                         <p>
@@ -67,7 +69,7 @@
                     <div class="lookit-scientist col-xs-6 col-sm-3">
                         <div class="profile-img">
                             <img alt="Melissa Kline Struhl"
-                                 src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1632270902704-FISLLHVUMDGVA40HX7HX/Screen+Shot+2021-09-21+at+8.34.02+PM.png">
+                                 src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1632270902704-FISLLHVUMDGVA40HX7HX/Screen+Shot+2021-09-21+at+8.34.02+PM.png"/>
                         </div>
                         <h3>Melissa Kline Struhl</h3>
                         <p>
@@ -77,7 +79,7 @@
                     <div class="lookit-scientist col-xs-6 col-sm-3">
                         <div class="profile-img">
                             <img alt="Mark Sheskin"
-                                 src="https://lookitcontents.s3.amazonaws.com/website/mark.jpg">
+                                 src="https://lookitcontents.s3.amazonaws.com/website/mark.jpg"/>
                         </div>
                         <h3>Mark Sheskin</h3>
                         <p>
@@ -87,7 +89,7 @@
                 </div>
                 <div class="row">
                     <h2>Parent Researcher Collaborative</h2>
-                    <hr>
+                    <hr />
                     <p>
                         If you are a parent who has participated with your child in a study on this
                         website, or a university-based researcher who has posted a study on Lookit or
@@ -99,11 +101,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
                     <div class="profile-img">
                         <img alt="Elizabeth Bonawitz"
-                             src="{% static 'images/elizabeth-bonawitz.jpg' %}">
+                             src="{% static 'images/elizabeth-bonawitz.jpg' %}"/>
                     </div>
                     <h3>
                         Elizabeth
-                        <br>
+                        <br />
                         Bonawitz
                     </h3>
                     <p>
@@ -117,11 +119,11 @@
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
                     <div class="profile-img">
-                        <img alt="Hyowon Gweon" src="{% static 'images/hyowon-gweon.jpg' %}">
+                        <img alt="Hyowon Gweon" src="{% static 'images/hyowon-gweon.jpg' %}" />
                     </div>
                     <h3>
                         Hyowon
-                        <br>
+                        <br />
                         Gweon
                     </h3>
                     <p>
@@ -132,11 +134,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
                     <div class="profile-img">
                         <img alt="Julian Jara-Ettinger"
-                             src="{% static 'images/julian-jara-ettinger.png' %}">
+                             src="{% static 'images/julian-jara-ettinger.png' %}"/>
                     </div>
                     <h3>
                         Julian
-                        <br>
+                        <br />
                         Jara-Ettinger
                     </h3>
                     <p>
@@ -145,11 +147,11 @@
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
                     <div class="profile-img">
-                        <img alt="Candice Mills" src="{% static 'images/candice-mills.jpg' %}">
+                        <img alt="Candice Mills" src="{% static 'images/candice-mills.jpg' %}" />
                     </div>
                     <h3>
                         Candice
-                        <br>
+                        <br />
                         Mills
                     </h3>
                     <p>
@@ -160,7 +162,7 @@
             </div>
             <div class="row">
                 <h2>Affiliated Universities and Researchers</h2>
-                <hr>
+                <hr />
                 <p>
                     As of March 2021, there are over 450 researchers in our community, and around 50 universities across seven countries affiliated with Lookit, including:
                 </p>
@@ -274,16 +276,17 @@
                     </li>
                 </ul>
                 <p>
-                    To learn about joining us, visit the <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html"
-    target="_blank"
-    rel="noopener">guide to getting started!</a>
+                    To learn about joining us, visit the
+                    <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html"
+                       target="_blank"
+                       rel="noopener">guide to getting started!</a>
                 </p>
             </div>
             <div class="row">
                 <h2>
                     Working Groups
                 </h2>
-                <hr>
+                <hr />
                 <p>
                     Although the Core Team at MIT provides a foundation for Lookit to function, a lot of great additional work is done by the community of researchers using Lookit.
                     These efforts are organized as "Working Groups" that each have a different focus. For example, one Working Group is focused on increasing our sample size and diversity,
@@ -356,15 +359,15 @@
                 <h2>
                     Staff alumni
                 </h2>
-                <hr>
+                <hr />
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Kim Scott"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/kimandremy.png">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/kimandremy.png"/>
                     </div>
                     <h3>
                         Kim
-                        <br>
+                        <br />
                         Scott
                     </h3>
                     <p>
@@ -374,11 +377,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Rico Rodriquez"
-                             src="https://s3.amazonaws.com/lookitcontents/website/Rico.jpg">
+                             src="https://s3.amazonaws.com/lookitcontents/website/Rico.jpg"/>
                     </div>
                     <h3>
                         Rico
-                        <br>
+                        <br />
                         Rodriguez
                     </h3>
                     <p>
@@ -390,15 +393,15 @@
                 <h2>
                     Undergraduate student alumni
                 </h2>
-                <hr>
+                <hr />
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Joseph Alvarez"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/joseph.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/joseph.jpg"/>
                     </div>
                     <h3>
                         Joseph
-                        <br>
+                        <br />
                         Alvarez
                     </h3>
                     <p>
@@ -411,11 +414,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Daniela Carrasco"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/daniela.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/daniela.jpg"/>
                     </div>
                     <h3>
                         Daniela
-                        <br>
+                        <br />
                         Carrasco
                     </h3>
                     <p>
@@ -428,11 +431,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Jean Chow"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/jean.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/jean.jpg"/>
                     </div>
                     <h3>
                         Jean
-                        <br>
+                        <br />
                         Chow
                     </h3>
                     <p>
@@ -445,11 +448,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Junyi Chu"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/junyi.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/junyi.jpg"/>
                     </div>
                     <h3>
                         Junyi
-                        <br>
+                        <br />
                         Chu
                     </h3>
                     <p>
@@ -462,11 +465,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Annie Dai"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/annie.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/annie.jpg"/>
                     </div>
                     <h3>
                         Annie
-                        <br>
+                        <br />
                         Dai
                     </h3>
                     <p>
@@ -479,11 +482,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Hope Fuller-Becker"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/hope.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/hope.jpg"/>
                     </div>
                     <h3>
                         Hope
-                        <br>
+                        <br />
                         Fuller-Becker
                     </h3>
                     <p>
@@ -496,11 +499,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Kamaria Kaalund"
-                             src="https://s3.amazonaws.com/lookitcontents/website/kamaria.jpg">
+                             src="https://s3.amazonaws.com/lookitcontents/website/kamaria.jpg"/>
                     </div>
                     <h3>
                         Kamaria
-                        <br>
+                        <br />
                         Kaalund
                     </h3>
                     <p>
@@ -513,11 +516,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Audrey Ricks"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/audrey.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/audrey.jpg"/>
                     </div>
                     <h3>
                         Audrey
-                        <br>
+                        <br />
                         Ricks
                     </h3>
                     <p>
@@ -530,11 +533,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Rianna Shah"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/rianna.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/rianna.jpg"/>
                     </div>
                     <h3>
                         Rianna
-                        <br>
+                        <br />
                         Shah
                     </h3>
                     <p>
@@ -547,11 +550,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Alice Wang"
-                             src="https://s3.amazonaws.com/lookitcontents/website/alice.jpg">
+                             src="https://s3.amazonaws.com/lookitcontents/website/alice.jpg"/>
                     </div>
                     <h3>
                         Alice
-                        <br>
+                        <br />
                         Wang
                     </h3>
                     <p>
@@ -564,11 +567,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Jean Yu"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/jeanyu.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/jeanyu.jpg"/>
                     </div>
                     <h3>
                         Jean
-                        <br>
+                        <br />
                         Yu
                     </h3>
                     <p>
@@ -581,11 +584,11 @@
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
                     <div class="profile-img">
                         <img alt="Jessica Zhu"
-                             src="https://storage.googleapis.com/lookit-staging/static/images/jessica.jpg">
+                             src="https://storage.googleapis.com/lookit-staging/static/images/jessica.jpg"/>
                     </div>
                     <h3>
                         Jessica
-                        <br>
+                        <br />
                         Zhu
                     </h3>
                     <p>
@@ -599,4 +602,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

@@ -1,7 +1,9 @@
-{% extends 'frontpages/default.html' %}
+{% extends "frontpages/default.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}Resources{% endblock %}
+{% block title %}
+    Resources
+{% endblock title %}
 {% block content %}
     <section>
         <article class="row">
@@ -184,7 +186,7 @@
                                             </select>
                                         </div>
                                         <div class="col-md-8">
-                                            <b class='selected-state'></b>
+                                            <b class="selected-state"></b>
                                             <p id="nothing-to-show">
                                             </p>
                                             <ul id="lab-list">
@@ -193,7 +195,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <hr>
+                            <hr />
                             <div class="resources-item">
                                 <h3>Other ways to participate from home</h3>
                                 <p>
@@ -204,12 +206,12 @@
                                 development!
                             </p>
                             <p>
-                            To contribute to other scientific research as a family, check out <a href="http://scistarter.com/index.html">SciStarter</a>, which has many citizen
+                            To contribute to other scientific research as a family, check out <a href="https://scistarter.org/">SciStarter</a>, which has many citizen
                             science projects
                             suitable for elementary school children and up!
                         </p>
                     </div>
-                    <hr>
+                    <hr />
                     <div class="resources-item">
                         <h3>Activities to try at home</h3>
                         <p>
@@ -920,4 +922,4 @@
 </div>
 </article>
 </section>
-{% endblock %}
+{% endblock content %}

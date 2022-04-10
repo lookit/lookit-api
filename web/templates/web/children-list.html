@@ -1,6 +1,8 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
-{% block title %}Children{% endblock %}
+{% block title %}
+    Children
+{% endblock title %}
 {% load i18n %}
 {% block content %}
     {% bootstrap_messages %}
@@ -70,4 +72,5 @@
     </div>
 </div>
 </div>
-{% endblock %}
+</div>
+{% endblock content %}

@@ -1,10 +1,12 @@
 {% extends "exp/base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}
+    Dashboard
+{% endblock title %}
 {% block header %}
     {% include 'exp/_navigation.html' %}
-{% endblock %}
+{% endblock header %}
 {% block content %}
     <div class="container">
         {% bootstrap_messages %}
@@ -22,4 +24,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}

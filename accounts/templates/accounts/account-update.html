@@ -1,10 +1,12 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
-{% block title %}Update account information{% endblock %}
+{% block title %}
+    Update account information
+{% endblock title %}
 {% load i18n %}
 {% block flash %}
     {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     {% bootstrap_messages %}
     <div class="container">
@@ -16,7 +18,7 @@
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <form method="POST">
+                        <form method="post">
                             {% csrf_token %}
                             {% bootstrap_form update_account_form %}
                             {% buttons %}
@@ -35,7 +37,7 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form method="POST">
+                    <form method="post">
                         {% csrf_token %}
                         {% bootstrap_form change_password_form %}
                         {% buttons %}
@@ -61,7 +63,7 @@
                                     If we have OTP, enable setup completion in the case where it's not yet
                                     activated, and allow reset with verified OTP if it is.
                         {% endcomment %}
-                        <form method="POST">
+                        <form method="post">
                             {% csrf_token %}
                             {% if otp.activated %}
                                 {# enable reset of OTP #}
@@ -71,9 +73,7 @@
                             {% else %}
                                 <div class="col-md-4">{{ otp.get_svg_qr_code | safe }}</div>
                                 <p>
-                                    {% trans "It looks like you were in the middle of setting up two factor authentication,
-                                    but didn't complete the process. You can capture the QR code here, verify with
-                                    a one-time password, and finish the process." %}
+                                    {% trans "It looks like you were in the middle of setting up two factor authentication, but didn't complete the process. You can capture the QR code here, verify with a one-time password, and finish the process." %}
                                 </p>
                             {% endif %}
                             {% bootstrap_form otp_check_form %}
@@ -98,4 +98,4 @@
 </div>
 </div>
 </div>
-{% endblock %}
+{% endblock content %}

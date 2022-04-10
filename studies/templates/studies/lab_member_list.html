@@ -1,11 +1,13 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load exp_extras %}
-{% block title %}Lab members{% endblock %}
+{% block title %}
+    Lab members
+{% endblock title %}
 {% block flash %}
     {% bootstrap_messages %}
     {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     <script>
     $(document).ready(function () {
@@ -32,15 +34,15 @@
         </div>
         <div class="row text-center mt-xl">
             <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
-                <form method="GET">
+                <form method="get">
                     <input id="search-researchers"
                            class="form-control"
                            name="match"
                            placeholder="Filter by researcher name"
                            size="50"
-                           type="text">
-                    <input type="hidden" name="sort" value={{ sort }}>
-                    <input type="hidden" name="page" value="1">
+                           type="text"/>
+                    <input type="hidden" name="sort" value={{ sort }}/>
+                    <input type="hidden" name="page" value="1"/>
                 </form>
             </div>
         </div>
@@ -59,7 +61,7 @@
                 </div>
             </div>
         </div>
-        <hr>
+        <hr />
         <div class="row results">
             {% for user_obj in lab_members %}
                 <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 well">
@@ -137,4 +139,5 @@
             {% endif %}
         </div>
     </div>
-{% endblock %}
+</div>
+{% endblock content %}

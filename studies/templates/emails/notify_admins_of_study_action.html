@@ -4,11 +4,11 @@
 <p>
     {% if action == 'submitted' %}
         {{ researcher_name }} from {{ lab_name }} has submitted a study for approval: {{ study_name }}
-        <br>
+        <br />
         Comments about this submission from the research group:
-        <br>
+        <br />
         {{ comments|linebreaks }}
-        <br>
+        <br />
     You can approve or disapprove the study <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">here</a>.
 {% elif action == 'retracted' %}
     {{ researcher_name }} has retracted the submission of a study: {{ study_name }}

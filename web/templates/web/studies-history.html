@@ -1,9 +1,9 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
 {% block title %}
     {% trans "Past Studies" %}
-{% endblock %}
+{% endblock title %}
 {% block content %}
     {% bootstrap_messages %}
     <div class="lookit-row studies-row">
@@ -41,8 +41,8 @@
                                                         <img class="study-list-thumbnail"
                                                              height="150"
                                                              width="auto"
-                                                             alt='{% trans "Study Thumbnail" %}'
-                                                             src="{{ study.image.url }}">
+                                                             alt="{% trans "Study Thumbnail" %}"
+                                                             src="{{ study.image.url }}"/>
                                                     </p>
                                                 {% else %}
                                                     <div class="study-list-placeholder">
@@ -54,16 +54,16 @@
                                                 {{ study.short_description|linebreaks }}
                                                 <div class="pt-sm">
                                                     <strong>{% trans "Eligibility:" %}</strong> {{ study.criteria }}
-                                                <br>
+                                                <br />
                                                 <strong>{% trans "Contact:" %}</strong> {{ study.contact_info }}
-                                            <br>
+                                            <br />
                                             <strong>{% trans "Still collecting data?" %}</strong>
                                             {% if study.state == 'active' %}
                                                 {% trans "Yes" %}
                                             {% else %}
                                                 {% trans "No" %}
                                             {% endif %}
-                                            <br>
+                                            <br />
                                             {% if study.compensation_description %}
                                                 <strong>{% trans "Compensation: " %}</strong>{{ study.compensation_description }}
                                         {% endif %}
@@ -83,7 +83,7 @@
                                                             {% for video in videos %}
                                                                 <source src="{{ video.download_url }}"
                                                                         type="video/mp4"
-                                                                        data-index="{{ forloop.counter }}">
+                                                                        data-index="{{ forloop.counter }}"/>
                                                             {% endfor %}
                                                         </video>
                                                         <button class="btn btn-primary btn-xs btn-block" type="button">
@@ -116,15 +116,15 @@
                                                 <dd>
                                                     {% if response.most_recent_ruling == 'accepted' %}
                                                         {% trans "Approved" %}
-                                                        <br>
+                                                        <br />
                                                         {% trans "Your consent video was reviewed by a researcher and is valid." %}
                                                     {% elif response.most_recent_ruling == 'pending' %}
                                                         {% trans "Pending" %}
-                                                        <br>
+                                                        <br />
                                                         {% trans "Your consent video has not yet been reviewed by a researcher." %}
                                                     {% elif response.most_recent_ruling == 'rejected' %}
                                                         {% trans "Invalid" %}
-                                                        <br>
+                                                        <br />
                                                         {% trans "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers." %}
                                                     {% else %}
                                                         {% trans "No information about consent video review status." %}
@@ -204,4 +204,4 @@
         })
     })
 </script>
-{% endblock %}
+{% endblock content %}

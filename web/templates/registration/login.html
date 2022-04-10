@@ -1,4 +1,4 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
 {% block flash %}
@@ -10,7 +10,7 @@
             </p>
         </div>
     {% endif %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     <div class="container">
         <div class="pt-lg col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12 col-xs-offset-0">
@@ -19,7 +19,7 @@
                     <h3 class="panel-title">{% trans "Login" %}</h3>
                 </div>
                 <div class="panel-body">
-                    <form action="" method="POST" class="form">
+                    <form action="" method="post" class="form">
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         {% buttons %}
@@ -47,4 +47,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

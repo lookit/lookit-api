@@ -1,7 +1,9 @@
-{% extends 'frontpages/default.html' %}
+{% extends "frontpages/default.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}Contact Us{% endblock %}
+{% block title %}
+    Contact Us
+{% endblock title %}
 {% block content %}
     <div class="main">
         <div class="lookit-row lookit-page-title">
@@ -24,9 +26,9 @@
         {% trans "Lookit is available to all developmental researchers, and the code is entirely open- To learn more about running your own studies or contributing, please check out the <a href='https://lookit.readthedocs.io/en/develop' target='_blank'>documentation</a>." %}
     </p>
     <p>
-    {% trans "Several initial test studies of a prototype Lookit platform were completed in 2015; you can read about the results, and strengths and limitations of the platform, in <a href='http://www.mitpressjournals.org/toc/opmi/1/1'>these papers</a>." %}
+    {% trans "Several initial test studies of a prototype Lookit platform were completed in 2015; you can read about the results, and strengths and limitations of the platform, in <a href='https://direct.mit.edu/opmi/issue/1/1'>these papers</a>." %}
 </p>
 </div>
 </div>
 </div>
-{% endblock %}
+{% endblock content %}

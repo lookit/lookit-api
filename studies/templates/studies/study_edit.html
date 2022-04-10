@@ -1,4 +1,4 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load guardian_tags %}
 {% load exp_extras %}
@@ -29,20 +29,22 @@
         });
     </script>
     {{ form.media }}
-{% endblock %}
-{% block title %}Edit | {{ study.name }}{% endblock %}
+{% endblock head %}
+{% block title %}
+    Edit | {{ study.name }}
+{% endblock title %}
 {% block flash %}
     {% if messages %}
         {% for message in messages %}
             {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
                 <div id="details" class="alert {{ message.tags }} alert-dismissable">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
                     {{ message }}
                 </div>
             {% endif %}
         {% endfor %}
     {% endif %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     <div class="container">
         <div class="row">
@@ -144,4 +146,4 @@
 </div>
 </div>
 </div>
-{% endblock %}
+{% endblock content %}

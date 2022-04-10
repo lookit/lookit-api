@@ -2,7 +2,9 @@
 {% load bootstrap3 %}
 {% load web_extras %}
 {% load i18n %}
-{% block title %}{{ object.name }}{% endblock title %}
+{% block title %}
+    {{ object.name }}
+{% endblock title %}
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
@@ -94,7 +96,7 @@
                                     <div class="col-md-8">
                                         <img class="img-responsive"
                                              alt="{{ study.name }}"
-                                             src="{{ study.image.url }}" />
+                                             src="{{ study.image.url }}"/>
                                     </div>
                                     <div class="col-md-4">
                                         <h1>{{ study.name }}</h1>
@@ -143,7 +145,7 @@
                             </p>
                         </div>
                     </div>
-                    <div class='col-md-3'>
+                    <div class="col-md-3">
                         <h3>{% trans "Would you like to participate in this study?" %}</h3>
                         {% if not request.user.is_authenticated %}
                             <p>
@@ -169,7 +171,7 @@
                             </a>
                         {% else %}
                             <div class="form-group">
-                                <form method="POST">
+                                <form method="post">
                                     {% csrf_token %}
                                     <label for="child-dropdown">{% trans "Select a child:" %}</label>
                                     <select id="child-dropdown"
@@ -189,13 +191,13 @@
                                             </option>
                                         {% endfor %}
                                     </select>
-                                    <p class="text-warning" style="display:none" id='too-young'>
+                                    <p class="text-warning" style="display:none" id="too-young">
                                         {% trans "Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research!" %}
                                     </p>
-                                    <p class="text-warning" style="display:none" id='too-old'>
+                                    <p class="text-warning" style="display:none" id="too-old">
                                         {% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research." %}
                                     </p>
-                                    <p class="text-warning" style="display:none" id='criteria-not-met'>
+                                    <p class="text-warning" style="display:none" id="criteria-not-met">
                                         {% blocktrans with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktrans %}
                                     </p>
                                     {% if preview_mode and object.needs_to_be_built %}

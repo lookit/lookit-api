@@ -1,12 +1,12 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
 {% block title %}
     {% trans "Update demographics" %}
-{% endblock %}
+{% endblock title %}
 {% block flash %}
     {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     <script>
         $(document).ready(function() {
@@ -111,7 +111,7 @@
                 {% endif %}
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <form method="POST" action="">
+                        <form method="post" action="">
                             {% csrf_token %}
                             {% bootstrap_form form %}
                             {% buttons %}
@@ -127,4 +127,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

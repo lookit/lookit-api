@@ -1,11 +1,11 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load static %}
 {% load guardian_tags %}
 {% block head %}
     {{ block.super }}
     <script src="{% static 'js/jquery-ui.min.js' %}" integrity="sha384-S3zIKOq/nelLqr0KAhub+iP5nyS201AUUfFxfEyKp9cM02cIiVixkZe+g3a10Rav"></script>
-    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}"/>
     <script src="{% static 'js/bootstrap-select.min.js' %}" integrity="sha384-8fu9aU0rBHyWhoS96J+3YorJqJZsUp8c3IkInX6NKYi/K/jmG98rDibD+JgkI+fZ"></script>
     <script src="{% static 'studies/js/d3.min.js' %}" integrity="sha384-M06Cb6r/Yrkprjr7ngOrJlzgekrkkdmGZDES/SUnkUpUol0/qjsaQWQfLzq0mcfg"></script>
     <link rel="stylesheet"
@@ -31,21 +31,23 @@
     <script type="application/json" id="response-timeseries-data">{{ response_timeseries_data | safe }}</script>
     <script type="application/json" id="registration-data">{{ registration_data | safe }}</script>
     {{ form.media }}
-{% endblock %}
-{% block title %}Participant Analytics{% endblock %}
+{% endblock head %}
+{% block title %}
+    Participant Analytics
+{% endblock title %}
 {% block flash %}
     {% if messages %}
         {% for message in messages %}
             <div id="details" class="alert {{ message.tags }} alert-dismissable">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
                 {{ message }}
             </div>
         {% endfor %}
     {% endif %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     <div class="container">
-        <nav class='row'>
+        <nav class="row">
             <section class="col-xs-12">
                 <ol class="breadcrumb">
                     <li>
@@ -94,103 +96,104 @@
             within this range will be displayed in the graphs. This also controls the <strong>pivot table</strong>:
             only data from responses (and the associated children/families) within this time frame will be
             included in the table.
-            <input id="date-filter" class="form-control input-sm" type="text"/>
-            <table id="total-counts" class="table table-condensed">
-                <tr>
-                    <th scope="row"># Unique Responses</th>
-                    <td id="total-count-responses"></td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        # Unique Children
-                    </th scope="row">
-                    <td id="total-count-children"></td>
-                </tr>
-                <tr>
-                    <th scope="row"># Registrations in date range</th>
-                    <td id="total-count-registrations">
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        Total # Registrations at range end
-                    </th>
-                    <td id="end-count-registrations">
-                    </td>
-                </tr>
-            </table>
-            <label class="control-label" for="granularity-specifier">
-                Bin Granularity
-            </label>
-            <p class="help-block small">
-                Change the sampling width of the binned graphs.
-            </p>
-            <select id="granularity-specifier" class="selectpicker form-control">
-                <option value="day" selected>
-                    Day
+        </p>
+        <input id="date-filter" class="form-control input-sm" type="text"/>
+        <table id="total-counts" class="table table-condensed">
+            <tr>
+                <th scope="row"># Unique Responses</th>
+                <td id="total-count-responses"></td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    # Unique Children
+                </th scope="row">
+                <td id="total-count-children"></td>
+            </tr>
+            <tr>
+                <th scope="row"># Registrations in date range</th>
+                <td id="total-count-registrations">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    Total # Registrations at range end
+                </th>
+                <td id="end-count-registrations">
+                </td>
+            </tr>
+        </table>
+        <label class="control-label" for="granularity-specifier">
+            Bin Granularity
+        </label>
+        <p class="help-block small">
+            Change the sampling width of the binned graphs.
+        </p>
+        <select id="granularity-specifier" class="selectpicker form-control">
+            <option value="day" selected>
+                Day
+            </option>
+            <option value="week">
+                Week
+            </option>
+            <option value="month">
+                Month
+            </option>
+        </select>
+        <label class="control-label" for="timeseries-filter">
+            Included responses
+        </label>
+        <p class="help-block small">
+            Determine the kinds of responses that are counted in the binned participation graph
+            and have their own line plotted in the cumulative participation graph. (This does not
+            affect the registration plots or pivot table.)
+        </p>
+        <select id="timeseries-filter" class="selectpicker form-control" multiple>
+            <optgroup id="all-studies-filter" label="ALL STUDIES">
+                <option value="ALL:any" data-ruling="any">
+                    All Rulings
                 </option>
-                <option value="week">
-                    Week
+                <option value="ALL:pending" data-ruling="pending">
+                    Pending
                 </option>
-                <option value="month">
-                    Month
+                <option value="ALL:accepted" data-ruling="accepted">
+                    Accepted
                 </option>
-            </select>
-            <label class="control-label" for="timeseries-filter">
-                Included responses
-            </label>
-            <p class="help-block small">
-                Determine the kinds of responses that are counted in the binned participation graph
-                and have their own line plotted in the cumulative participation graph. (This does not
-                affect the registration plots or pivot table.)
-            </p>
-            <select id="timeseries-filter" class="selectpicker form-control" multiple>
-                <optgroup id="all-studies-filter" label="ALL STUDIES">
-                    <option value="ALL:any" data-ruling="any">
+                <option value="ALL:rejected" data-ruling="rejected">
+                    Rejected
+                </option>
+            </optgroup>
+            {% for study in all_studies %}
+                <optgroup label="{{ study.name }}" data-study-id="{{ study.id }}">
+                    <option value="{{ study.id }}:any"
+                            data-subtext="{{ study.name }}"
+                            data-ruling="any">
                         All Rulings
                     </option>
-                    <option value="ALL:pending" data-ruling="pending">
+                    <option value="{{ study.id }}:pending"
+                            data-subtext="{{ study.name }}"
+                            data-ruling="pending">
                         Pending
                     </option>
-                    <option value="ALL:accepted" data-ruling="accepted">
+                    <option value="{{ study.id }}:accepted"
+                            data-subtext="{{ study.name }}"
+                            data-ruling="accepted">
                         Accepted
                     </option>
-                    <option value="ALL:rejected" data-ruling="rejected">
+                    <option value="{{ study.id }}:rejected"
+                            data-subtext="{{ study.name }}"
+                            data-ruling="rejected">
                         Rejected
                     </option>
                 </optgroup>
-                {% for study in all_studies %}
-                    <optgroup label="{{ study.name }}" data-study-id="{{ study.id }}">
-                        <option value="{{ study.id }}:any"
-                                data-subtext="{{ study.name }}"
-                                data-ruling="any">
-                            All Rulings
-                        </option>
-                        <option value="{{ study.id }}:pending"
-                                data-subtext="{{ study.name }}"
-                                data-ruling="pending">
-                            Pending
-                        </option>
-                        <option value="{{ study.id }}:accepted"
-                                data-subtext="{{ study.name }}"
-                                data-ruling="accepted">
-                            Accepted
-                        </option>
-                        <option value="{{ study.id }}:rejected"
-                                data-subtext="{{ study.name }}"
-                                data-ruling="rejected">
-                            Rejected
-                        </option>
-                    </optgroup>
-                {% endfor %}
-            </select>
-            <h5>
-                Legend
-            </h5>
-            <section id="plot-legend" class="small">
-            </section>
-        </div>
+            {% endfor %}
+        </select>
+        <h5>
+            Legend
+        </h5>
+        <section id="plot-legend" class="small">
+        </section>
     </div>
+</div>
 </article>
 <section class="col-xs-8">
     <article id="binned-participation-plot"></article>
@@ -1104,4 +1107,4 @@
          * ------------------------ */
         initializeView();
 </script>
-{% endblock %}
+{% endblock content %}

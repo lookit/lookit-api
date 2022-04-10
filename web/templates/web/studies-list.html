@@ -1,10 +1,10 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
 {% load web_extras %}
 {% block title %}
     {% trans "Studies" %}
-{% endblock %}
+{% endblock title %}
 {% block flash %}
     {% if form.errors %}
         <div class="alert alert-danger" role="alert">
@@ -26,7 +26,7 @@
             {% endif %}
         </div>
     {% endif %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     {% bootstrap_messages %}
     <div class="panel-default">
@@ -71,7 +71,7 @@
                         <a href="{% url 'web:study-detail' uuid=study.uuid %}">
                             <img src="{{ study.image.url }}"
                                  class="img-responsive"
-                                 alt="{{ study.name }}">
+                                 alt="{{ study.name }}"/>
                             <p>
                                 {{ study.name }}
                             </p>
@@ -79,7 +79,7 @@
                                 {{ study.preview_summary }}
                             </p>
                             <p>
-                                Learn More &rarr;
+                                Learn More →
                             </p>
                         </a>
                     </div>
@@ -151,4 +151,4 @@
 
 
 </script>
-{% endblock %}
+{% endblock content %}

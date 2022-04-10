@@ -1,14 +1,16 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load exp_extras %}
 {% load i18n %}
-{% block title %}{{ user.nickname |default:"Participant Detail" }}{% endblock %}
+{% block title %}
+    {{ user.nickname |default:"Participant Detail" }}
+{% endblock title %}
 {% block flash %}
     {% bootstrap_messages %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     <div class="container mb-lg">
-        <div class='row'>
+        <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
                     <li>
@@ -29,16 +31,16 @@
                     {% endif %}
                 </h1>
                 <span>
-                    <label class='pr-xs'>{% trans "Last Active:" %}</label>
+                    <label class="pr-xs">{% trans "Last Active:" %}</label>
                 {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
                 <div>
-                    <label class='pr-xs'>{% trans "Participant global ID:" %}</label>
+                    <label class="pr-xs">{% trans "Participant global ID:" %}</label>
                     {{ user.uuid }}
                 </div>
             </div>
         </div>
-        <div class='row'>
-            <div class='col-md-6 col-sm-5'>
+        <div class="row">
+            <div class="col-md-6 col-sm-5">
                 <h3>{% trans "Children" %}</h3>
                 {% for child in children %}
                     <div class="pb-md">
@@ -84,7 +86,7 @@
                     </p>
                 {% endfor %}
             </div>
-            <div class='col-md-6 col-sm-7'>
+            <div class="col-md-6 col-sm-7">
                 <h3>{% trans "Latest Demographic Data" %}</h3>
                 <div class="row">
                     <div class="col-xs-5">
@@ -220,7 +222,7 @@
                 </div>
             </div>
         </div>
-        <hr>
+        <hr />
         <h3>
             {% if user.nickname %}
                 {{ user.nickname }}
@@ -235,9 +237,9 @@
                     Study Title
                     <a class="pl-sm"
                        aria-label="Sort user studies by name"
-                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by name"
-                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies"><i aria-hidden="true"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-name' %}#studies"><i aria-hidden="true"
    class="fa fa-chevron-down"
    role="button"
    name="name"></i></a>
@@ -252,9 +254,9 @@
                     Completion Status
                     <a aria-label="Sort user studies by completion status"
                        class="pl-sm"
-                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by completion status"
-                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies"><i aria-hidden="true"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-completed' %}#studies"><i aria-hidden="true"
    class="fa fa-chevron-down"
    role="button"
    name="name"></i></a>
@@ -263,14 +265,14 @@
                     Date of Response
                     <a aria-label="Sort user studies by date created"
                        class="pl-sm"
-                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
                     <a aria-label="Reverse sort user studies by date created"
-                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies"><i aria-hidden="true"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-date_created' %}#studies"><i aria-hidden="true"
    class="fa fa-chevron-down"
    role="button"
    name="name"></i></a>
                 </div>
-                <hr>
+                <hr />
             </div>
             <div class="row mt-xs visible-xs visible-sm">
                 <div class="col-xs-12 mt-lg mb-lg">
@@ -284,11 +286,11 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li>
                                     <a aria-label="Sort ascending by study name"
-                                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies">Sort A-Z</a>
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='name' %}#studies">Sort A-Z</a>
                                 </li>
                                 <li>
                                     <a aria-label="Sort descending by study name"
-                                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies">Sort Z-A</a>
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-name' %}#studies">Sort Z-A</a>
                                 </li>
                             </ul>
                         </div>
@@ -301,11 +303,11 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li>
                                     <a aria-label="Sort ascending by completion status"
-                                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies">Sort A-Z </a>
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='completed' %}#studies">Sort A-Z </a>
                                 </li>
                                 <li>
                                     <a aria-label="Sort descending by completion status"
-                                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies">Sort Z-A </a>
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-completed' %}#studies">Sort Z-A </a>
                                 </li>
                             </ul>
                         </div>
@@ -318,11 +320,11 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li>
                                     <a aria-label="Sort ascending by date created"
-                                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies">Sort Asc</a>
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='date_created' %}#studies">Sort Asc</a>
                                 </li>
                                 <li>
                                     <a aria-label="Sort descending by date created"
-                                       href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies">Sort Desc</a>
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-date_created' %}#studies">Sort Desc</a>
                                 </li>
                             </ul>
                         </div>
@@ -370,5 +372,4 @@
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+{% endblock content %}

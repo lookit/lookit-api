@@ -128,7 +128,7 @@
     <div class="row">
         <div class="col-xs-12">
             {% for study_type in study_types %}
-                <div class='type-fields' id='type-metadata-{{ study_type.id }}'>
+                <div class="type-fields" id="type-metadata-{{ study_type.id }}">
                     {% for field in study_type.configuration.metadata.fields %}
                         {% with field.name as key %}
                             {% with field.value as value %}
@@ -138,7 +138,7 @@
                                              data-previous='{% if not create %}{{ study.metadata|get_key:key|default:"" }}{% endif %}'>
                                             <input name="{{ key }}"
                                                    type="{{ field.input_type }}"
-                                                   {% if study and study.metadata|get_key:key %}checked{% endif %}>
+                                                   {% if study and study.metadata|get_key:key %}checked{% endif %}/>
                                             <label>{{ key_display_names|get_key:key|default:key }}</label>
                                         </div>
                                     {% elif field.input_type == "radio" %}
@@ -154,7 +154,7 @@
                                                         <input name="{{ field.name }}"
                                                                value="{{ option }}"
                                                                type="radio"
-                                                               {% if study and study.metadata|get_key:key == option %}checked{% endif %}>
+                                                               {% if study and study.metadata|get_key:key == option %}checked{% endif %}/>
                                                         {{ option }}
                                                     </label>
                                                 </div>
@@ -165,11 +165,11 @@
                                                                 <input class="form-control hidden"
                                                                        type="text"
                                                                        name="other_{{ field.name }}"
-                                                                       value="{{ other_value }}">
+                                                                       value="{{ other_value }}"/>
                                                             {% endwith %}
                                                         {% endwith %}
                                                     {% else %}
-                                                        <input class="form-control hidden" type="text" name="other_{{ field.name }}">
+                                                        <input class="form-control hidden" type="text" name="other_{{ field.name }}"/>
                                                     {% endif %}
                                                 {% endif %}
                                             {% endfor %}
@@ -184,7 +184,7 @@
                                                        title="{{ help_text }}"
                                                        name="{{ key }}"
                                                        type="{{ field.input_type }}"
-                                                       value="{% if study_type.id == currentType and not create %}{{ study.metadata|get_key:key|default:'' }}{% else %}{{ value | default:'' }}{% endif %}">
+                                                       value="{% if study_type.id == currentType and not create %}{{ study.metadata|get_key:key|default:'' }}{% else %}{{ value | default:'' }}{% endif %}"/>
                                             </div>
                                             <div class="help-block">{{ help_text }}</div>
                                         </div>
