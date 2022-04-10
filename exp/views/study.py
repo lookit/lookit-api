@@ -429,6 +429,10 @@ class StudyDetailView(
         context["can_create_study"] = self.request.user.can_create_study()
         # Since get_obj_perms template tag doesn't collect study + lab perms
         context["study_perms"] = self.request.user.perms_for_study(study)
+        context["can_edit_study_details"] = (
+            "edit_study__<DETAILS>" in context["study_perms"]
+        )
+
         context["comments"] = self.comments(study)
         return context
 
