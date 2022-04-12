@@ -18,7 +18,7 @@
         let currentResponseId = $(".selectable-participant").first().data("response-id");
         showResponse(1);
         showFeedbackList(currentResponseId);
-        $('#response-id-for-download').val(currentResponseId);
+        $('form.download [name=response_id]').val(currentResponseId);
         showAttachments(1);
 
         $('.selectable-participant').click(function () {
@@ -30,7 +30,7 @@
             showResponse(index);
             showAttachments(index);
             var responseId = $(this).data("response-id");
-            $('#response-id-for-download').val(responseId);
+            $('form.download [name=response_id]').val(responseId);
             showFeedbackList(responseId);
         });
 
@@ -41,7 +41,7 @@
 
         function showFeedbackList(responseId) {
             $('.feedback-list').hide();
-            $('#response-id-for-feedback').val(responseId);
+            $('form.feedback [name=response_id]').val(responseId);
             $(`#feedback-list-for-${responseId}`).show();
         }
 
@@ -148,7 +148,8 @@
                     {% include 'studies/_paginator.html' with page=page_obj %}
                     <div class="well mt-md">
                         {% if can_edit_feedback %}
-                            <form method=""
+                            <form class="feedback"
+                                  method="post"
                                   action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
                                 {% csrf_token %}
                                 <h4>New Feedback</h4>
@@ -159,10 +160,7 @@
                                               name="comment"
                                               rows="4"
                                               cols="50"></textarea>
-                                    <input id="response-id-for-feedback"
-                                           type="hidden"
-                                           name="response_id"
-                                           value="0"/>
+                                    <input type="hidden" name="response_id"/>
                                     <button class="btn mt-sm btn-primary pull-right" type="submit">Create</button>
                                     <br />
                                 </section>
@@ -239,14 +237,12 @@
                     {% endif %}
                 </div>
                 <div class="col-md-6 col-xs-12">
-                    <form method="get"
+                    <form class="download"
+                          method="get"
                           action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
                         {% csrf_token %}
                         <div class="well">
-                            <input id="response-id-for-download"
-                                   type="hidden"
-                                   name="response_id"
-                                   value="0"/>
+                            <input type="hidden" name="response_id"/>
                             <h4 class="pb-sm">Download response</h4>
                             Include with response download:
                             <div class="two-column-list pb-md">
