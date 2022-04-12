@@ -381,21 +381,23 @@
                                         role="menu"
                                         aria-labelledby="response-actor-{{ response.uuid }}">
                                         <li>
-                                            <a class="consent-judgment" data-action="reset" style="display:none;">Undo</a>
+                                            <button class="consent-judgment btn btn-link"
+                                                    data-action="reset"
+                                                    style="display:none;">Undo</button>
                                         </li>
                                         {% if response.current_ruling != 'pending' %}
                                             <li>
-                                                <a class="consent-judgment" data-action="pending">Revert to Pending</a>
+                                                <button class="consent-judgment btn btn-link" data-action="pending">Revert to Pending</button>
                                             </li>
                                         {% endif %}
                                         {% if response.current_ruling != 'accepted' %}
                                             <li>
-                                                <a class="consent-judgment" data-action="accepted">Accept</a>
+                                                <button class="consent-judgment btn btn-link" data-action="accepted">Accept</button>
                                             </li>
                                         {% endif %}
                                         {% if response.current_ruling != 'rejected' %}
                                             <li>
-                                                <a class="consent-judgment" data-action="rejected">Reject</a>
+                                                <button class="consent-judgment btn btn-link" data-action="rejected">Reject</button>
                                             </li>
                                         {% endif %}
                                     </ul>
