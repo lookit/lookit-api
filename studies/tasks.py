@@ -326,8 +326,8 @@ def cleanup_docker_containers():
 def build_zipfile_of_videos(
     self, filename, study_uuid, match, requesting_user_uuid, consent_only=False
 ):
-    from studies.models import Study
     from accounts.models import User
+    from studies.models import Study
 
     study = Study.objects.get(uuid=study_uuid)
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
@@ -405,9 +405,9 @@ def build_zipfile_of_videos(
 
 @app.task
 def build_framedata_dict(filename, study_uuid, requesting_user_uuid):
-    from studies.models import Study
     from accounts.models import User
     from exp.views.responses import build_framedata_dict_csv
+    from studies.models import Study
 
     requesting_user = User.objects.get(uuid=requesting_user_uuid)
     study = Study.objects.get(uuid=study_uuid)
