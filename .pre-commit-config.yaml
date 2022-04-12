@@ -16,6 +16,11 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
+  - repo: https://github.com/Riverside-Healthcare/djLint
+    rev: 0.7.6
+    hooks:
+      - id: djlint-django
+        args: ['--lint', '--reformat', '--quiet']
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
@@ -23,3 +28,5 @@ repos:
       - id: check-ast
       - id: check-yaml
       - id: end-of-file-fixer
+      - id: name-tests-test
+        args: ['--django']
