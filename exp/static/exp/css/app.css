@@ -902,3 +902,10 @@ ul.dropdown-menu button.consent-judgment {
 ul.dropdown-menu button.consent-judgment:hover {
     background-color: #f5f5f5;
 }
+
+table.response-details thead,
+table.response-details caption,
+table.study-responses caption,
+table.study-attachments caption {
+    display: none;
+}

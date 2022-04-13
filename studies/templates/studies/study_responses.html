@@ -91,7 +91,8 @@
             <div class="row pt-md">
                 <div class="col-md-6 col-xs-12">
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped study-responses">
+                            <caption>Study Responses</caption>
                             <thead>
                                 <tr>
                                     <th></th>
@@ -100,14 +101,14 @@
                                     <th>
                                         Status
                                         <a class="pl-md"
-                                           href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='status' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-status' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                           href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='status' %}"><em class="fa fa-chevron-up" role="button"></em></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-status' %}"><em class="fa fa-chevron-down" role="button"></em></a>
                                     </th>
                                     <th>
                                         Date
                                         <a class="pl-sm"
-                                           href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_created' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}"><i class="fa fa-chevron-down" role="button"></i></a>
+                                           href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_created' %}"><em class="fa fa-chevron-up" role="button"></em></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}"><em class="fa fa-chevron-down" role="button"></em></a>
                                     </th>
                                 </tr>
                             </thead>
@@ -243,7 +244,9 @@
                         {% csrf_token %}
                         <div class="well">
                             <input type="hidden" name="response_id"/>
-                            <h4 class="pb-sm">Download response</h4>
+                            <h4 class="pb-sm">
+                                Download response
+                            </h4>
                             Include with response download:
                             <div class="two-column-list pb-md">
                                 {% include 'studies/_data_options.html' with data_options=data_options %}
@@ -282,17 +285,30 @@
                             <h4>
                                 Response details
                             </h4>
-                            <table class="table table-sm table-hover">
-                                {% for pair in response.summary %}
-                                    <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} success {% elif pair.value == 'scientific' %} warning {% else %} danger {% endif %} {% endif %}">
-                                        <td tabindex="0" title="{{ pair.description }}">
-                                            {{ pair.name }}
-                                        </td>
-                                        <td>
-                                            {{ pair.value }}
-                                        </td>
+                            <table class="table table-sm table-hover response-details">
+                                <caption>Response Details</caption>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Value
+                                        </th>
                                     </tr>
-                                {% endfor %}
+                                </thead>
+                                <tbody>
+                                    {% for pair in response.summary %}
+                                        <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} success {% elif pair.value == 'scientific' %} warning {% else %} danger {% endif %} {% endif %}">
+                                            <td tabindex="0" title="{{ pair.description }}">
+                                                {{ pair.name }}
+                                            </td>
+                                            <td>
+                                                {{ pair.value }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
                             </table>
                         </div>
                     {% endfor %}

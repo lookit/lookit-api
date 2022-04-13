@@ -15,7 +15,7 @@
                     {% bootstrap_form form %}
                     {% buttons %}
                     <p>
-                    By clicking 'Create Account', you agree that you have read and accepted the <a href="{% url 'web:termsofuse' %}" target="_blank">Terms of Use</a> and <a href="{% url 'web:privacy' %}" target="_blank">Privacy Statement</a>.
+                    By clicking 'Create Account', you agree that you have read and accepted the <a href="{% url 'web:termsofuse' %}" target="_blank" rel="noopener">Terms of Use</a> and <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">Privacy Statement</a>.
                 </p>
                 <div class="pull-right">
                     <button type="submit" class="btn btn-success">{% bootstrap_icon "plus" %} Create Account</button>

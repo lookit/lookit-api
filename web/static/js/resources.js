@@ -631,6 +631,7 @@ const labList = document.querySelector('#lab-list');
 
 let stateOption = document.createElement('option');
 let labListItem;
+let labLink;
 
 // Add attributes to CHS link
 chsLink.href = "https://childrenhelpingscience.com/";
@@ -641,7 +642,7 @@ chsLink.innerHTML = "Children Helping Science"
 stateSelect.append(stateOption);
 
 // Populate select
-for (key in labsData) {
+for (let key in labsData) {
     stateOption = document.createElement('option');
     stateOption.value = stateOption.innerHTML = key;
     stateSelect.append(stateOption);

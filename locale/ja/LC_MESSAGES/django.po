@@ -1196,11 +1196,11 @@ msgid ""
 "Lookit is available to all developmental researchers, and the code is "
 "entirely open- To learn more about running your own studies or contributing, "
 "please check out the <a href='https://lookit.readthedocs.io/en/develop' "
-"target='_blank'>documentation</a>."
+"target="_blank">documentation</a>."
 msgstr ""
 "Lookitは、すべての発達研究者が利用でき、コードは完全にオープンソースとなって"
 "おります。ご自身の研究や開発のためにさらに詳しい情報をお求めの方は、 <a "
-"href='https://lookit.readthedocs.io/en/develop' target='_blank'> こちらの資"
+"href='https://lookit.readthedocs.io/en/develop' target="_blank"> こちらの資"
 "料 </a> をご覧ください。"
 
 #: web/templates/frontpages/contact.html:21

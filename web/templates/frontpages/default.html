@@ -63,20 +63,18 @@
                         </div>
                         <div class="col-md-3 footer-resources">
                             <ul>
-                                {% block footerlinks %}
-                                    <li>
-                                        <a href="../privacy">{% trans "Privacy" %}</a>
-                                    </li>
-                                    <li>
-                                        <a href="../contact_us">{% trans "Contact us" %}</a>
-                                    </li>
-                                {% endblock footerlinks %}
+                                <li>
+                                    <a href="{% url 'web:privacy' %}">{% trans "Privacy" %}</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'web:contact' %}">{% trans "Contact us" %}</a>
+                                </li>
                                 <li>
                                     {% trans "Connect" %}:
                                     <a href="https://www.facebook.com/lookit.mit.edu"
                                        aria-label="facebook"
                                        target="_blank"
-                                       rel="noopener"><i class="fa fa-facebook fa-lg social-link"></i> </a>
+                                       rel="noopener"><em class="fa fa-facebook fa-lg social-link"></em> </a>
                                 </li>
                             </ul>
                         </div>

@@ -1,4 +1,5 @@
 {% extends "frontpages/default.html" %}
+{% load static %}
 {% load bootstrap3 %}
 {% load i18n %}
 {% block title %}
@@ -160,8 +161,12 @@
                                 {%endblocktrans%}
                                     <div class="row">
                                         <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                            <video controls="true"
-                                                   src="{% trans 'https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4' %}">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/consent.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/consent.vtt' %}"/>
                                             </video>
                                         </div>
                                     </div>
@@ -228,8 +233,12 @@
                                     </p>
                                     <div class="row">
                                         <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                            <video controls="true"
-                                                   src="https://storage.googleapis.com/lookit-staging/static/videos/attentiongrabber.mp4">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/attentiongrabber.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/attentiongrabber.vtt' %}"/>
                                             </video>
                                         </div>
                                     </div>
@@ -238,8 +247,12 @@
                                     </p>
                                     <div class="row">
                                         <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                            <video controls="true"
-                                                   src="https://storage.googleapis.com/lookit-staging/static/videos/spinningball.mp4">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/spinningball.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/spinningball.vtt' %}"/>
                                             </video>
                                         </div>
                                     </div>
@@ -249,9 +262,7 @@
                                     <h4>
                                         {% trans "Habituation" %}
                                     </h4>
-                                    {%blocktrans%}
-                                <p>In a habituation study, we first show infants many examples of one type of object or event, and they lose interest over time. Infants typically look for a long time at the first pictures, but then they start to look away more quickly. Once their looking times are much less than they were initially, we show either a picture from a new category or a new picture from the familiar category. If infants now look longer to the novel example, we can tell that they understood--and got bored of--the category we showed initially.</p>
-                                <p>Habituation requires waiting for each individual infant to achieve some threshold of "boredness"--for instance, looking half as long at a picture as he or she did initially. Sometimes this is impractical, and we use familiarization instead. In a familiarization study, we show all babies the same number of examples, and then see how interested they are in the familiar versus a new category. Younger infants and those who have seen few examples tend to show a familiarity preference--they look longer at images similar to what they have seen before. Older infants and those who have seen many examples tend to show a novelty preference--they look longer at images that are different from the ones they saw before. You probably notice the same phenomenon when you hear a new song on the radio: initially you don't recognize it; after it's played several times you may like it and sing along; after it's played hundreds of times you would choose to listen to anything else.</p>
+                                    {%blocktrans%} <p>In a habituation study, we first show infants many examples of one type of object or event, and they lose interest over time. Infants typically look for a long time at the first pictures, but then they start to look away more quickly. Once their looking times are much less than they were initially, we show either a picture from a new category or a new picture from the familiar category. If infants now look longer to the novel example, we can tell that they understood--and got bored of--the category we showed initially.</p> <p>Habituation requires waiting for each individual infant to achieve some threshold of "boredness"--for instance, looking half as long at a picture as he or she did initially. Sometimes this is impractical, and we use familiarization instead. In a familiarization study, we show all babies the same number of examples, and then see how interested they are in the familiar versus a new category. Younger infants and those who have seen few examples tend to show a familiarity preference--they look longer at images similar to what they have seen before. Older infants and those who have seen many examples tend to show a novelty preference--they look longer at images that are different from the ones they saw before. You probably notice the same phenomenon when you hear a new song on the radio: initially you don't recognize it; after it's played several times you may like it and sing along; after it's played hundreds of times you would choose to listen to anything else.</p>
 {%endblocktrans%}
                                     <h4>
                                         {% trans "Violation of expectation" %}
@@ -267,8 +278,12 @@
                                     </p>
                                     <div class="row">
                                         <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                            <video controls="true"
-                                                   src="https://storage.googleapis.com/lookit-staging/static/videos/clapping.mp4">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/clapping.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/clapping.vtt' %}"/>
                                             </video>
                                         </div>
                                     </div>
@@ -283,8 +298,12 @@
                                     </p>
                                     <div class="row">
                                         <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                            <video controls="true"
-                                                   src="https://storage.googleapis.com/lookit-staging/static/videos/causal_ex2.mp4">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/causal_ex2.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/causal_ex2.vtt' %}"/>
                                             </video>
                                         </div>
                                     </div>

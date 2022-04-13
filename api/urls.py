@@ -33,11 +33,12 @@ response_router = routers.NestedSimpleRouter(router, r"responses", lookup="respo
 
 feedback_router = routers.NestedSimpleRouter(router, r"feedback", lookup="feedback")
 
+pattern = r"^(?P<version>(v1|v2))/"
 urlpatterns = [
-    url(r"^(?P<version>(v1|v2))/", include(user_router.urls)),
-    url(r"^(?P<version>(v1|v2))/", include(study_router.urls)),
-    url(r"^(?P<version>(v1|v2))/", include(child_router.urls)),
-    url(r"^(?P<version>(v1|v2))/", include(response_router.urls)),
-    url(r"^(?P<version>(v1|v2))/", include(feedback_router.urls)),
-    url(r"^(?P<version>(v1|v2))/", include(router.urls)),
+    url(pattern, include(user_router.urls)),
+    url(pattern, include(study_router.urls)),
+    url(pattern, include(child_router.urls)),
+    url(pattern, include(response_router.urls)),
+    url(pattern, include(feedback_router.urls)),
+    url(pattern, include(router.urls)),
 ]
