@@ -12,12 +12,12 @@
 <br />
 {% trans "Add or edit participant information." %}</a>
 {% if request.session.study_name %}
-    <a class="btn btn-default btn-md btn-block btn-primary{% if not has_study_child or not user.has_demographics %} disabled{% endif %}"
+    <a class="btn-has-study btn btn-default btn-md btn-block btn-primary{% if not has_study_child or not user.has_demographics %} disabled{% endif %}"
        href="{% url 'web:study-detail' uuid=request.session.study_uuid %}"><strong>{% trans "Continue to Study" %}</strong>
     <br />
 {% trans "Go on to" %} "{{ request.session.study_name|truncatechars:40 }}".</a>
 {% endif %}
-<a class="btn btn-default btn-md btn-block {% if not request.session.study_name %}btn-primary{% endif %}{% if not user.has_any_child or not user.has_demographics %} disabled{% endif %}"
+<a class="btn-study-list btn btn-default btn-md btn-block {% if not request.session.study_name %}btn-primary{% endif %}{% if not user.has_any_child or not user.has_demographics %} disabled{% endif %}"
    href="{% url 'web:studies-list' %}"><strong>
     {% if request.session.study_name %}
         {% trans "Find Another Study" %}
