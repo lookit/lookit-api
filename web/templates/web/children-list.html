@@ -3,104 +3,30 @@
 {% block title %}Children{% endblock %}
 {% load i18n %}
 
-{% block flash %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
-{% endblock %}
-{% block content %}
-    <script>
-        
-        $(document).ready(function() {
-            $('.datepicker').datepicker({
-               changeMonth: true,
-               changeYear: true,
-               showButtonPanel: true,
-               maxDate: 0,
-               yearRange: "1900:+nn"
-            })
-            .on('change', function () {
-               var age = getAge(this);
-               if (document.getElementById('age_calc')) {
-                   document.getElementById('age_calc').innerHTML = `Age: ${age}`;
-               } else {
-                   var x = document.createElement("p");
-                   x.setAttribute("id", "age_calc");
-                   x.setAttribute("class", "age_format")
-                   var t = document.createTextNode(`Age: ${age}`);
-                   x.appendChild(t);
-                   document.getElementsByClassName("form-group")[1].insertBefore(x,document.getElementById("id_birthday"));
-               }
-           });
-        });
-        function getAge(dateValue) {
-            if (dateValue.value === '') {
-                return '{% trans "Empty birthday" %} '  
-            }
-            var years = moment().diff(new Date(dateValue.value), 'years');
-            if (years === 0) {
-                var months = moment().diff(new Date(dateValue.value), 'months');
-                if (months === 0) {
-                    var days = moment().diff(new Date(dateValue.value), 'days');
-                    return days === 1 ? days + '{% trans " day" %}': days + '{% trans " days" %}';
-                }
-                return months === 1 ? months + '{% trans " month" %}': months + '{% trans " months" %}';
-            } else {
-                return years === 1 ? years + '{% trans " year" %}': years + '{% trans " years" %}';
-            }
-        }
-
-        function toggleAddChildForm() {
-            form = $(document.getElementById('add-child-form')).toggle();
-        }
-        $(function() {
-           $("#toggleAddChildButton").click(function () {
-              $(this).text(function(i, text){
-                  return text === '{% trans "Add Child" %}' ? '{% trans "Hide Form" %}' : '{% trans "Add Child" %}';
-              })
-           });
-        })
-    </script>
+{% block content %}   
     {% bootstrap_messages %}
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg">
-                 {% include 'accounts/_account-navigation.html' with current_page="children-list" %}
+                {% include 'accounts/_account-navigation.html' with current_page="children-list" %}
             </div>
             <div class="col-md-8">
-                <div class="pull-right">
-                    <button id="toggleAddChildButton" onclick="toggleAddChildForm()"class="btn btn-primary">{% if form_hidden %}{% trans "Add Child" %}{% else %} {% trans "Hide Form" %} {% endif %}</button>
-                </div>
-                <div id="add-child-form" style="display:{% if form_hidden %} none {% else %} inline {% endif %}">
-                    <div class="panel-heading">
-                      <h1 class="panel-title">
-                          {% trans "Add Child" %}
-                      </h1>
-                    </div>
-                    <div class="panel panel-default">
-                      <div class="panel-body">
-                          <div class="panel-body">
-                            <form method="POST" action="">{% csrf_token %}
-                              {% bootstrap_form form %}
-                              {% buttons %}
-                              <div class="pull-right">
-                                  <a class="btn btn-default" href="{% url 'web:children-list' %}"> {% trans "Cancel" %} </a>
-                                  <button type="submit" class="btn btn-success">
-                                     {% bootstrap_icon "plus" %} {% trans "Add Child" %}
-                                  </button>
-                              </div>
-                              {% endbuttons %}
-                            </form>
-                        </div>
-                    </div>
-                  </div>
-                </div>
+
+                {% if not user.has_any_child %}
+                <p>Click the "Add Child" button to add a child to your account.</p>
+                {% elif not request.session.study_name and user.has_any_child %}
+                <p>You can edit information about the children listed in your account, or add another by clicking the "Add Child" button. Click the "Find a Study" button to view the studies available for your children.</p>
+                {% elif request.session.study_name and has_study_child %}
+                <p>When you are ready, click the "Continue to Study" button to go on to your study, "{{ request.session.study_name }}".</p>
+                {% elif request.session.study_name and user.has_any_child and not has_study_child %}
+                <p>You can edit information about the children listed in your account, or add another by clicking the "Add Child" button.</p>
+                <p>If the "Continue to Study" button still isn't lighting up, the study may have become full or be recruiting a slightly different set of kids right now. You might also be missing a piece of information about your family, such as the languages you speak at home.</p>
+                <p>You can click the "Demographic Survey" button to add more information about your family, "Find Another Study" to explore more studies for your family, or <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %}">click here</a> to review the requirements for "{{ request.session.study_name }}".</p>
+                {% endif %}
+
                 <div class="row">
                     <div class="col-xs-12">
-                        <h2><label> {% trans "Children" %} </label></h2>
-                        {% if objects %}
+                        {% if children %}
                             <div class="table-responsive">
                                 <table class="table">
                                   <thead>
@@ -111,7 +37,7 @@
                                     </tr>
                                   </thead>
                                   <tbody>
-                                      {% for child in objects %}
+                                      {% for child in children %}
                                           <tr>
                                             <td>{{ child.given_name }}</td>
                                             <td>{{ child.birthday }}</td>
@@ -125,6 +51,9 @@
                             <p><em> {% trans "No child profiles registered!" %} </em></p>
                         {% endif %}
                     </div>
+                </div>
+                <div class="row">
+                    <a class="btn btn-primary pull-right" href="{% url 'web:child-add' %}">Add Child</a
                 </div>
             </div>
         </div>

@@ -236,7 +236,9 @@ class ParticipantAccountViewsTestCase(TestCase):
         response = self.client.post(
             reverse("web:demographic-data-update"), cleaned_data, follow=True
         )
-        self.assertEqual(response.redirect_chain, [(reverse("web:studies-list"), 302)])
+        self.assertEqual(
+            response.redirect_chain, [(reverse("web:demographic-data-update"), 302)]
+        )
         self.assertEqual(response.status_code, 200)
 
         # Make sure we can retrieve updated data
