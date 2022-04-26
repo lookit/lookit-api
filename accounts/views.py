@@ -24,11 +24,11 @@ class LoginWithRedirectToTwoFactorAuthView(LoginView):
     """Step 1 of the login process."""
 
     def get_success_url(self) -> str:
-        qs = urlencode({"next": self.request.GET.get("next")})
+        next_view = self.request.GET.get("next")
         user: User = self.request.user
         otp: GoogleAuthenticatorTOTP = getattr(user, "otp")
         if otp and otp.activated:
-            return f'{reverse("accounts:2fa-login")}?{qs}'
+            success_url = reverse("accounts:2fa-login")
         elif user.is_researcher or user.is_staff:
             messages.warning(
                 self.request,
@@ -36,9 +36,15 @@ class LoginWithRedirectToTwoFactorAuthView(LoginView):
                 "2FA with us. Please complete the Two-Factor Auth setup below "
                 "and you'll be on your way!",
             )
-            return f'{reverse("accounts:2fa-setup")}?{qs}'
+            success_url = reverse("accounts:2fa-setup")
         else:
             return super().get_success_url()
+
+        if next_view:
+            qs = urlencode({"next": next_view})
+            return f"{success_url}?{qs}"
+        else:
+            return success_url
 
 
 class TwoFactorAuthLoginView(UserPassesTestMixin, LoginView):
@@ -114,7 +120,7 @@ class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     )
 
     def get_success_url(self) -> str:
-        return self.request.GET.get("next")
+        return self.request.GET.get("next", reverse("exp:study-list"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
