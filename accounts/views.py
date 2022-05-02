@@ -1,4 +1,5 @@
 from typing import Tuple, Union
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth import login, update_session_auth_hash
@@ -7,7 +8,7 @@ from django.contrib.auth.views import LoginView
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponseRedirect
 from django.http.request import QueryDict
-from django.urls.base import reverse, reverse_lazy
+from django.urls.base import reverse
 from django.views import generic
 from django.views.generic.edit import FormView
 from guardian.mixins import LoginRequiredMixin
@@ -23,10 +24,11 @@ class LoginWithRedirectToTwoFactorAuthView(LoginView):
     """Step 1 of the login process."""
 
     def get_success_url(self) -> str:
+        next_view = self.request.GET.get("next")
         user: User = self.request.user
         otp: GoogleAuthenticatorTOTP = getattr(user, "otp")
         if otp and otp.activated:
-            return reverse("accounts:2fa-login")
+            success_url = reverse("accounts:2fa-login")
         elif user.is_researcher or user.is_staff:
             messages.warning(
                 self.request,
@@ -34,9 +36,15 @@ class LoginWithRedirectToTwoFactorAuthView(LoginView):
                 "2FA with us. Please complete the Two-Factor Auth setup below "
                 "and you'll be on your way!",
             )
-            return reverse("accounts:2fa-setup")
+            success_url = reverse("accounts:2fa-setup")
         else:
             return super().get_success_url()
+
+        if next_view:
+            qs = urlencode({"next": next_view})
+            return f"{success_url}?{qs}"
+        else:
+            return success_url
 
 
 class TwoFactorAuthLoginView(UserPassesTestMixin, LoginView):
@@ -104,13 +112,15 @@ class ResearcherRegistrationView(generic.CreateView):
 class TwoFactorAuthSetupView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     template_name = "accounts/2fa-setup.html"
     form_class = forms.TOTPCheckForm
-    success_url = reverse_lazy("exp:study-list")
 
     permission_denied_message = (
         "For security reasons, once you've activated Two Factor Authentication, you "
         "can't access the QR code again. If you are locked out of your account and "
         "need to reset 2FA to get back in, please contact lookit-tech@mit.edu."
     )
+
+    def get_success_url(self) -> str:
+        return self.request.GET.get("next", reverse("exp:study-list"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
