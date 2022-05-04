@@ -14,6 +14,20 @@
     <script>
         $(document).ready(function() {
         
+            function mbah_internationalise(usa) {
+                if (usa) {
+                    showField('race_identification');
+                    showField('education_level');
+                    hideField('education_level_free');
+                }
+                else
+                {
+                    hideField('race_identification');
+                    hideField('education_level');
+                    showField('education_level_free');
+                }
+            };
+
             if ($('#id_number_of_children')[0].value === "0" || $('#id_number_of_children')[0].value === '') {
                 hideField('child_birthdays');
                 $('.help-block').first().hide();
@@ -22,11 +36,12 @@
                 hideField('number_of_guardians_explanation');
             }
             
-            if ($('#id_country')[0].value !== 'US') {
-                hideField('state');
-            }
+            mbah_internationalise($('#id_country')[0].value === 'US');
             
             $('#id_country').on('change', function() {
+                // MBAH internationalisation
+                mbah_internationalise($(this)[0].value === 'US');
+
             	// Show/hide state field based on USA or not
                 if ($(this)[0].value === 'US') {
                     showField('state');

@@ -506,6 +506,9 @@ class DemographicData(models.Model):
     education_level = models.CharField(
         max_length=5, choices=EDUCATION_CHOICES, blank=True
     )
+    education_level_free = models.CharField(
+        max_length=32, blank=True
+    )
     spouse_education_level = models.CharField(
         max_length=5, choices=SPOUSE_EDUCATION_CHOICES, blank=True
     )
@@ -544,6 +547,7 @@ class DemographicData(models.Model):
             age=self.get_age_display(),
             gender=self.get_gender_display(),
             education_level=self.get_education_level_display(),
+            education_level_free=self.get_education_level_free_display(),
             spouse_education_level=self.get_spouse_education_level_display(),
             annual_income=self.get_annual_income_display(),
             number_of_books=self.number_of_books,

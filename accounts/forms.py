@@ -273,6 +273,7 @@ class DemographicDataForm(forms.ModelForm):
             "age",
             "gender",
             "education_level",
+            "education_level_free",
             "spouse_education_level",
             "annual_income",
             "number_of_books",
@@ -306,6 +307,9 @@ class DemographicDataForm(forms.ModelForm):
             "gender": _("What is your gender?"),
             "education_level": _(
                 "What is the highest level of education you've completed?"
+            ),
+            "education_level_free": _(
+                "What is the highest level of education you've completed (e.g., elementary school, vocational training, 3-year university degree, PhD)?"
             ),
             "spouse_education_level": _(
                 "What is the highest level of education your spouse has completed?"
