@@ -12,7 +12,7 @@
         <span class="icon-bar"></span>
       </button>
       <ul class="nav navbar-nav navbar-left">
-        <li class="nav-item active"><a class="navbar-item" href="{% url 'web:home' %}">{% trans "Lookit" %}</a></li>
+        <li class="nav-item active"><a class="navbar-item" href="{% url 'web:home' %}">{% trans "Home" %}</a></li>
         {% if user.is_researcher %}
         <li class="nav-item"><a class="navbar-item" href="{% url 'exp:study-list' %}">{% trans "Experimenter" %}</a></li>
         {% endif %}
@@ -35,11 +35,11 @@
             {% nav_item request 'web:studies-history' 'My Past Studies' %}
             <li><a href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
           {% else %}
-            {% nav_item request 'web:participant-signup' 'Sign up' %}
-            {% nav_item request 'login' 'Login' %}
+            {% nav_signup request %}
+            {% nav_login request %}
           {% endif %}
         </ul>
-      </div>
+      </div>  
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-->
 </nav>

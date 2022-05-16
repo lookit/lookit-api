@@ -13,6 +13,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.mail.message import EmailMultiAlternatives
 from django.db import models
+from django.http import HttpRequest
 from django.template.loader import get_template
 from django.utils.html import mark_safe
 from django.utils.text import slugify
@@ -28,7 +29,8 @@ from multiselectfield import MultiSelectField
 from qrcode import make as make_qrcode
 from qrcode.image.svg import SvgPathImage
 
-from accounts.queries import BitfieldQuerySet
+import studies
+from accounts.queries import BitfieldQuerySet, get_child_eligibility_for_study
 from studies.fields import CONDITIONS, GESTATIONAL_AGE_CHOICES, LANGUAGES
 from studies.helpers import send_mail
 from studies.permissions import (
@@ -163,7 +165,7 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
     @property
     def identicon(self):
         if not self._identicon:
-            rbw = self._make_rainbow()
+            rbw = self._make_rainbow
             generator = pydenticon.Generator(
                 5, 5, digest=hashlib.sha512, foreground=rbw, background="rgba(0,0,0,0)"
             )
@@ -194,6 +196,26 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
         """Temporary workaround."""
         return f"{slugify(self.nickname or 'anonymous')}-{str(self.uuid).split('-')[0]}"
 
+    @property
+    def has_any_child(self):
+        return self.children.filter(deleted=False).exists()
+
+    def has_study_child(self, request: HttpRequest) -> bool:
+        study_uuid = request.session.get("study_uuid", None)
+        if study_uuid:
+            study = studies.models.Study.objects.get(uuid=study_uuid)
+            children = self.children.filter(deleted=False)
+            return any(
+                get_child_eligibility_for_study(child, study) for child in children
+            )
+        else:
+            return False
+
+    @property
+    def has_demographics(self):
+        return self.demographics.exists()
+
+    @property
     def _make_rainbow(self):
         rbw = []
         for i in range(0, 255, 10):

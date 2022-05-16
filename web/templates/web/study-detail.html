@@ -93,38 +93,51 @@
             <div class='row'>
                 <div class='col-md-9'>
                     <div class="caption">
-                        {% include "studies/_image_display.html" with object=object %}
+                        
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <img class="img-responsive" alt="{{ study.name }}" src="{{ study.image.url }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <h1>{{study.name}}</h1>
+                                    <p>{{study.lab.name}} ({{ study.lab.institution }})</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <table class="study-detail-infotable">
                             <tr>
-                                <td>{% trans "Eligibility criteria" %}</td>
+                                <td><h3>{% trans "Who Can Participate" %}</h3></td>
                                 <td>{{ object.criteria|linebreaks }}</td>
                             </tr>
                             <tr>
-                                <td>{% trans "Duration" %}</td>
-                                <td>{{ object.duration }}</td>
-                            </tr>
-                            {% if object.compensation_description %}
-                            <tr>
-                                <td>{% trans "Compensation" %}</td>
-                                <td>{{ object.compensation_description|linebreaks }}</td>
-                            </tr>
-                            {% endif %}
-                            <tr>
-                                <td>{% trans "What happens" %}</td>
+                                <td><h3>{% trans "What Happens" %}</h3></td>
                                 <td>{{ object.short_description|linebreaks }}</td>
                             </tr>
                             <tr>
-                                <td>{% trans "What we're studying" %}</td>
+                                <td><h3>{% trans "What We're Studying" %}</h3></td>
                                 <td>{{ object.purpose|linebreaks }}</td>
                             </tr>
+                            <tr>
+                                <td><h3>{% trans "Duration" %}</h3></td>
+                                <td>{{ object.duration|linebreaks }}</td>
+                            </tr>
+                            {% if object.compensation_description %}
+                            <tr>
+                                <td><h3>{% trans "Compensation" %}</h3></td>
+                                <td>{{ object.compensation_description|linebreaks }}</td>
+                            </tr>
+                            {% endif %}
                         </table>
                         <p class="study-detail-contactinfo"><em>{% trans "This study is conducted by" %} {{object.contact_info}} </em></p>
                     </div>
                 </div>
                 <div class='col-md-3'>
-                    <h4>{% trans "Would you like to participate in this study?" %}</h4>
+                    <h3>{% trans "Would you like to participate in this study?" %}</h3>
                     {% if not request.user.is_authenticated %}
-                    <a class="btn btn-lg btn-default" href="{% url 'login' %}">{% trans "Log in to participate" %}</a>
+                    <p>{% nav_login request text="Log in to participate" button=True %}</p>
+                    {% nav_signup request text="Create a new account" button=True %}
                     {% elif not children %}
                     <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %} {% if preview_mode %} {% trans "preview" %} {% else %} {% trans "participate" %} {% endif %}</a>
                     {% elif not has_demographic %}

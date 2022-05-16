@@ -50,6 +50,23 @@ a.state-link {
     border-right: 1px solid #ffffff;
 }
 
+nav.navbar-default.navbar-static-top ul.nav.navbar-nav li a{
+    color:#666666;
+}
+
+nav.navbar-default.navbar-static-top ul.nav.navbar-nav li a:hover{
+    color:#000;
+}
+
+button.btn.btn-success, a.btn.btn-success {
+    background-color:#398339;
+    border-color:#398339;
+} 
+
+button.btn.btn-success:hover, a.btn.btn-success:hover {
+    background-color:#5cb85c;
+    border-color:#5cb85c;
+} 
 
 .sort-studies-button {
     color: inherit;

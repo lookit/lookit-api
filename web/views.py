@@ -1,5 +1,6 @@
+import re
 from hashlib import sha256
-from typing import Text
+from typing import Any, Dict, Text
 from urllib.parse import parse_qs, urlencode, urlparse
 from uuid import UUID
 
@@ -26,13 +27,12 @@ from accounts.forms import (
     PastStudiesFormTabChoices,
     StudyListSearchForm,
 )
-from accounts.models import Child, DemographicData, User, create_string_listing_children
+from accounts.models import Child, DemographicData, User
 from accounts.queries import (
     age_range_eligibility_for_study,
     get_child_eligibility_for_study,
 )
 from accounts.utils import hash_id
-from exp.mixins.paginator_mixin import PaginatorMixin
 from project import settings
 from studies.models import Response, Study, StudyType, Video
 
@@ -139,7 +139,25 @@ class ParticipantSignupView(generic.CreateView):
         messages.success(self.request, _("Participant created."))
         return resp
 
+    def store_study_in_session(self) -> None:
+        study_url = self.request.GET.get("next", "")
+        if study_url:
+            p = re.compile("^/studies/([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12})")
+            m = p.match(study_url)
+            if m:
+                study_uuid = m.group(1)
+                study = Study.objects.only("name").get(uuid=study_uuid)
+                self.request.session["study_name"] = study.name
+                self.request.session["study_uuid"] = study_uuid
+
     def get_success_url(self):
+        """Get the url if the form is successful.  Additionally, the previous url is stored on the
+        "next" value on GET.  This url is stored in the user's session.
+
+        Returns:
+            str: URL of next view of form submission.
+        """
+        self.store_study_in_session()
         return reverse("web:demographic-data-update")
 
 
@@ -179,7 +197,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
 
     def get_success_url(self):
         if self.request.user.children.filter(deleted=False).exists():
-            return reverse("web:studies-list")
+            return reverse("web:demographic-data-update")
         else:
             return reverse("web:children-list")
 
@@ -192,36 +210,34 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         context = super().get_context_data(**kwargs)
         context["countries"] = countries
         context["states"] = USPS_CHOICES
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
         return context
 
 
-class ChildrenListView(LoginRequiredMixin, generic.CreateView):
+class ChildrenListView(LoginRequiredMixin, generic.TemplateView):
     """
     Allows user to view a list of current children and add children
     """
 
     template_name = "web/children-list.html"
-    model = Child
-    form_class = forms.ChildForm
 
     def get_context_data(self, **kwargs):
         """
         Add children that have not been deleted that belong to the current user
         to the context_dict.  Also add info to hide the Add Child form on page load.
         """
+        user = self.request.user
+
         context = super().get_context_data(**kwargs)
-        children = Child.objects.filter(deleted=False, user=self.request.user)
-        context["objects"] = children
-        context["form_hidden"] = kwargs.get("form_hidden", True)
+        context["children"] = Child.objects.filter(deleted=False, user=user)
+        context["has_study_child"] = user.has_study_child(self.request)
         return context
 
-    def form_invalid(self, form):
-        """
-        If form invalid, add child form needs to be open when page reloads.
-        """
-        return self.render_to_response(
-            self.get_context_data(form=form, form_hidden=False)
-        )
+
+class ChildAddView(LoginRequiredMixin, generic.CreateView):
+    template_name = "web/child-add.html"
+    model = Child
+    form_class = forms.ChildForm
 
     def form_valid(self, form):
         """
@@ -234,6 +250,11 @@ class ChildrenListView(LoginRequiredMixin, generic.CreateView):
 
     def get_success_url(self):
         return reverse("web:children-list")
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
+        return context
 
 
 class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -270,6 +291,11 @@ class ChildUpdateView(LoginRequiredMixin, generic.UpdateView):
         messages.success(self.request, _("Child updated."))
         return super().post(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
+        return context
+
 
 class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
     """
@@ -293,8 +319,13 @@ class ParticipantEmailPreferencesView(LoginRequiredMixin, generic.UpdateView):
         messages.success(self.request, _("Email preferences saved."))
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["has_study_child"] = self.request.user.has_study_child(self.request)
+        return context
 
-class StudiesListView(generic.ListView, PaginatorMixin, FormView):
+
+class StudiesListView(generic.ListView, FormView):
     """
     List all active, public studies.
     """
@@ -317,7 +348,6 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
     def get_queryset(self):
         session = self.request.session
         user = self.request.user
-        page = self.request.GET.get("page", 1)
 
         studies = super().get_queryset().filter(state="active", public=True)
 
@@ -337,9 +367,8 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
 
         studies = sorted(studies, key=self.sort_fn())
 
-        self.set_eligible_children_per_study(studies)
-
-        return self.paginated_queryset(studies, page)
+        # convert studies in to a 3d list of four elements
+        return [studies[x : x + 4] for x in range(0, len(studies), 4)]
 
     def filter_studies(self, studies: QuerySet) -> QuerySet:
         session = self.request.session
@@ -432,24 +461,22 @@ class StudiesListView(generic.ListView, PaginatorMixin, FormView):
             )
         )
 
-    def set_eligible_children_per_study(self, studies):
-        user = self.request.user
-
-        if user.is_authenticated:
-            children = user.children.filter(deleted=False)
-
-            # add eligible children to study object
-            for study in studies:
-                study.eligible_children = create_string_listing_children(
-                    [c for c in children if get_child_eligibility_for_study(c, study)]
-                )
-
     def sort_fn(self):
         user = self.request.user
         if user.is_anonymous:
             return lambda s: s.uuid.bytes
         else:
             return lambda s: sha256(user.uuid.bytes + s.uuid.bytes).hexdigest()
+
+
+class LabStudiesListView(StudiesListView):
+    def get_success_url(self):
+        lab_slug = self.kwargs.get("lab_slug")
+        return reverse("web:lab-studies-list", args=[lab_slug])
+
+    def filter_studies(self, studies: QuerySet) -> QuerySet:
+        lab_slug = self.kwargs.get("lab_slug")
+        return super().filter_studies(studies.filter(lab__slug=lab_slug))
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
@@ -551,11 +578,18 @@ class StudyDetailView(generic.DetailView):
 
         return context
 
+    def clear_study(self):
+        session = self.request.session
+        "study_name" in session and session.pop("study_name")
+        "study_uuid" in session and session.pop("study_uuid")
+        session.modified = True
+
     def dispatch(self, request, *args, **kwargs):
         study = self.get_object()
 
         if study.state == "active":
             if request.method == "POST":
+                self.clear_study()
                 child_uuid = request.POST["child_id"]
                 if study.study_type.is_external:
                     response = create_external_response(study, child_uuid)

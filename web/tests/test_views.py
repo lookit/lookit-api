@@ -15,6 +15,7 @@ from studies.models import Lab, Response, Study, StudyType
 from web.views import (
     ChildrenListView,
     DemographicDataUpdateView,
+    LabStudiesListView,
     StudiesListView,
     StudyDetailView,
 )
@@ -235,7 +236,9 @@ class ParticipantAccountViewsTestCase(TestCase):
         response = self.client.post(
             reverse("web:demographic-data-update"), cleaned_data, follow=True
         )
-        self.assertEqual(response.redirect_chain, [(reverse("web:studies-list"), 302)])
+        self.assertEqual(
+            response.redirect_chain, [(reverse("web:demographic-data-update"), 302)]
+        )
         self.assertEqual(response.status_code, 200)
 
         # Make sure we can retrieve updated data
@@ -402,29 +405,14 @@ class ParticipantStudyViewsTestCase(TestCase):
         self.assertIn("PublicActiveStudy2", content)
         self.assertNotIn("PrivateActiveStudy", content)
         self.assertNotIn("PublicInactiveStudy", content)
-        self.assertTrue(
-            any(
-                s.uuid == self.public_active_study_1.uuid
-                for s in response.context["object_list"]
-            )
-        )
-        self.assertTrue(
-            any(
-                s.uuid == self.public_active_study_2.uuid
-                for s in response.context["object_list"]
-            )
-        )
+
+        # flatten study list
+        studies = [s for ss in response.context["object_list"] for s in ss]
+        self.assertTrue(any(s.uuid == self.public_active_study_1.uuid for s in studies))
+        self.assertTrue(any(s.uuid == self.public_active_study_2.uuid for s in studies))
+        self.assertFalse(any(s.uuid == self.private_active_study.uuid for s in studies))
         self.assertFalse(
-            any(
-                s.uuid == self.private_active_study.uuid
-                for s in response.context["object_list"]
-            )
-        )
-        self.assertFalse(
-            any(
-                s.uuid == self.public_inactive_study.uuid
-                for s in response.context["object_list"]
-            )
+            any(s.uuid == self.public_inactive_study.uuid for s in studies)
         )
 
 
@@ -480,7 +468,6 @@ class StudiesListViewTestCase(TestCase):
 
     @patch.object(StudiesListView, "sort_fn")
     @patch.object(MultipleObjectMixin, "get_queryset")
-    @patch.object(StudiesListView, "set_eligible_children_per_study")
     @patch("web.views.get_child_eligibility_for_study")
     @patch.object(StudiesListView, "studies_without_completed_consent_frame")
     @patch("accounts.models.Child.objects")
@@ -491,7 +478,6 @@ class StudiesListViewTestCase(TestCase):
         mock_child_objects,
         mock_studies_without_completed_consent_frame,
         mock_get_child_eligibility_for_study,
-        mock_set_eligible_children_per_study,
         mock_super_get_queryset,
         mock_sort_fn,
     ):
@@ -510,7 +496,7 @@ class StudiesListViewTestCase(TestCase):
         mock_studies_without_completed_consent_frame.return_value = mock_studies
 
         view = StudiesListView()
-        page = view.get_queryset()
+        studies = view.get_queryset()
 
         mock_super_get_queryset().filter.assert_called_with(state="active", public=True)
         mock_super_get_queryset().filter().filter.assert_called_once_with(
@@ -525,23 +511,19 @@ class StudiesListViewTestCase(TestCase):
         mock_get_child_eligibility_for_study.assert_called_once_with(
             mock_child_objects.get(), mock_study
         )
-        mock_set_eligible_children_per_study.assert_called_once_with(mock_studies)
         mock_sort_fn.assert_called_once_with()
 
-        self.assertEqual(page.number, 1)
-        self.assertListEqual(page.object_list, mock_studies)
+        self.assertListEqual(studies, [mock_studies])
 
     @patch("web.views.age_range_eligibility_for_study", return_value=True)
     @patch.object(StudiesListView, "sort_fn")
     @patch.object(MultipleObjectMixin, "get_queryset")
-    @patch.object(StudiesListView, "set_eligible_children_per_study")
     @patch.object(StudiesListView, "studies_without_completed_consent_frame")
     @patch.object(StudiesListView, "request", create=True)
     def test_get_queryset_anon_user(
         self,
         mock_request,
         mock_studies_without_completed_consent_frame,
-        mock_set_eligible_children_per_study,
         mock_super_get_queryset,
         mock_sort_fn,
         mock_age_range_eligibility_for_study,
@@ -558,18 +540,16 @@ class StudiesListViewTestCase(TestCase):
         mock_studies_without_completed_consent_frame.return_value = mock_studies
 
         view = StudiesListView()
-        page = view.get_queryset()
+        studies = view.get_queryset()
 
         mock_super_get_queryset().filter.assert_called_with(state="active", public=True)
         mock_super_get_queryset().filter().filter.assert_called_once_with(
             name__icontains=sentinel.search_value
         )
         mock_age_range_eligibility_for_study.assert_called_once_with([1, 2], mock_study)
-        mock_set_eligible_children_per_study.assert_called_once_with(mock_studies)
         mock_sort_fn.assert_called_once_with()
 
-        self.assertEqual(page.number, 1)
-        self.assertListEqual(page.object_list, mock_studies)
+        self.assertListEqual(studies, [mock_studies])
 
     @patch.object(StudiesListView, "request", create=True)
     def test_get_form_kwargs(self, mock_request):
@@ -678,38 +658,6 @@ class StudiesListViewTestCase(TestCase):
         self.assertEqual(studies_no_ccf.filter(name="2").count(), 1)
 
     @patch.object(StudiesListView, "request", create=True)
-    def test_child_eligibility_anon_user(self, mock_request):
-        mock_studies = MagicMock()
-        mock_request.user.is_authenticated.return_value = False
-
-        view = StudiesListView()
-        view.set_eligible_children_per_study(mock_studies)
-
-        mock_request.user.children.assert_not_called()
-
-    @patch("web.views.get_child_eligibility_for_study")
-    @patch.object(StudiesListView, "request", create=True)
-    def test_child_eligibility_auth_user(
-        self, mock_request, mock_get_child_eligibility_for_study
-    ):
-        mock_study = MagicMock()
-        mock_studies = [mock_study]
-        mock_child = MagicMock()
-        type(mock_child).given_name = PropertyMock(return_value="child name")
-        mock_children = [mock_child]
-        mock_request.user.is_authenticated.return_value = True
-        mock_request.user.children.filter.return_value = mock_children
-
-        view = StudiesListView()
-        view.set_eligible_children_per_study(mock_studies)
-
-        self.assertEqual(mock_study.eligible_children, "child name")
-        mock_request.user.children.filter.assert_called_once_with(deleted=False)
-        mock_get_child_eligibility_for_study.assert_called_once_with(
-            mock_child, mock_study
-        )
-
-    @patch.object(StudiesListView, "request", create=True)
     def test_sort_fn_anon_user(self, mock_request):
         """Ordering of the studies needs to be seemingly random, but constant. To ensure a "random"
         ordering, the method will sort by a study's UUID.  This will verify that the ordering is
@@ -779,6 +727,34 @@ class StudiesListViewTestCase(TestCase):
         mock_studies.sort(key=view.sort_fn())
 
         self.assertListEqual(mock_studies, [mock_study_b, mock_study_a, mock_study_c])
+
+
+class LabStudiesListViewTestCase(TestCase):
+    @patch.object(StudiesListView, "filter_studies")
+    @patch.object(LabStudiesListView, "request", create=True)
+    def test_filter_studies(self, mock_request, mock_super_filter_studies):
+        mock_studies = MagicMock(name="studies")
+        view = LabStudiesListView()
+        type(view).kwargs = PropertyMock(return_value={"lab_slug": sentinel.lab_slug})
+        view.filter_studies(mock_studies)
+
+        # confirm studies were filted by lab slug
+        mock_studies.filter.assert_called_once_with(lab__slug=sentinel.lab_slug)
+        mock_super_filter_studies.assert_called_once_with(mock_studies.filter())
+
+    @patch("web.views.reverse")
+    def test_get_success_url(self, mock_reverse):
+        view = LabStudiesListView()
+        # attach lab_slug to view kwargs
+        type(view).kwargs = PropertyMock(return_value={"lab_slug": sentinel.lab_slug})
+
+        url = view.get_success_url()
+        # confirm correct success url is created
+        mock_reverse.assert_called_once_with(
+            "web:lab-studies-list", args=[sentinel.lab_slug]
+        )
+        # verify that url is returned
+        self.assertEqual(url, mock_reverse())
 
 
 # TODO: StudyDetailView

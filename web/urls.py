@@ -12,6 +12,7 @@ urlpatterns = [
         name="demographic-data-update",
     ),
     path("account/children/", views.ChildrenListView.as_view(), name="children-list"),
+    path("account/add-child/", views.ChildAddView.as_view(), name="child-add"),
     path(
         "account/children/<uuid:uuid>/",
         views.ChildUpdateView.as_view(),
@@ -46,4 +47,9 @@ urlpatterns = [
     path("contact_us/", views.ContactView.as_view(), name="contact"),
     path("resources/", views.ResourcesView.as_view(), name="resources"),
     path("termsofuse/", views.TermsOfUseView.as_view(), name="termsofuse"),
+    path(
+        r"studies/<slug:lab_slug>/",
+        views.LabStudiesListView.as_view(),
+        name="lab-studies-list",
+    ),
 ]
