@@ -62,7 +62,7 @@ steps:
     'GIT_TAG=$TAG_NAME',
     '--network=cloudbuild',
     '--file',
-    'dev.Dockerfile',
+    'Dockerfile.dev',
     '.'
   ]
 
