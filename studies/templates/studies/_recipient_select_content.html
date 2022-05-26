@@ -3,32 +3,19 @@ XXX: Only use single quotes in this file, as we're trying to pass it into the da
 bootstrap-select component. It's not really worth filing a bug, seeing as this is sane behavior on part of
 the plugin.
 {% endcomment %}
-
 {% comment %}
 
 {# Hiding for now, we may eventually add these back. #}
 <span class='hide-if-in-select-box'>
-    <span class='glyphicon glyphicon-calendar text-muted
-                 {% if recipient.email_next_session %}email-friendly{% endif %}'
-          data-filter='next-session'
-          aria-hidden='true'></span>
+    <span class='glyphicon glyphicon-calendar text-muted {% if recipient.email_next_session %}email-friendly{% endif %}' data-filter='next-session' aria-hidden='true'></span>
 
-    <span class='glyphicon glyphicon-duplicate text-muted
-                 {% if recipient.email_new_studies %}email-friendly{% endif %}'
-          data-filter='new-studies'
-          aria-hidden='true'></span>
-    <span class='glyphicon glyphicon-bullhorn text-muted
-                 {% if recipient.email_study_updates %}email-friendly{% endif %}'
-          data-filter='study-updates'
-          aria-hidden='true'></span>
+    <span class='glyphicon glyphicon-duplicate text-muted {% if recipient.email_new_studies %}email-friendly{% endif %}' data-filter='new-studies' aria-hidden='true'></span>
+    <span class='glyphicon glyphicon-bullhorn text-muted {% if recipient.email_study_updates %}email-friendly{% endif %}' data-filter='study-updates' aria-hidden='true'></span>
 
-    <span class='glyphicon glyphicon-comment text-muted
-                 {% if recipient.email_response_questions %}email-friendly{% endif %}'
-          data-filter='response-questions'
-          aria-hidden='true'></span>
+    <span class='glyphicon glyphicon-comment text-muted {% if recipient.email_response_questions %}email-friendly{% endif %}' data-filter='response-questions' aria-hidden='true'></span>
 </span>
 
 {% endcomment %}
-
-
-<h5>{{ recipient.slug }} <em class='small'>{{ recipient.uuid }}</em></h5>
+<h5>
+    {{ recipient.slug }} <em class="small">{{ recipient.uuid }}</em>
+</h5>

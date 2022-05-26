@@ -1,11 +1,10 @@
 {% for option in data_options %}
-<div>
-    <input id="include-data-{{option.id}}"
-            name="data_options"
-            type="checkbox"
-            value="{{option.id}}"{% if option.include_by_default %} checked {% endif %}>
-    <label for="include-data-{{option.id}}">
-        {{option.name}}
-    </label>
-</div>
+    <div>
+        <input id="include-data-{{ option.id }}"
+               name="data_options"
+               type="checkbox"
+               value="{{ option.id }}"
+               {% if option.include_by_default %} checked{% endif %}/>
+        <label for="include-data-{{ option.id }}">{{ option.name }}</label>
+    </div>
 {% endfor %}

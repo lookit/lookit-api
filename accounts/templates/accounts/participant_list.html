@@ -1,108 +1,147 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load exp_extras %}
 {% load i18n %}
-{% block title %}Participants{% endblock %}
+{% block title %}
+    Participants
+{% endblock title %}
 {% block flash %}
-  {% bootstrap_messages %}
-{% endblock %}
+    {% bootstrap_messages %}
+{% endblock flash %}
 {% block content %}
-  <div class="container mb-lg">
-    <script>
+    <div class="container mb-lg">
+        <script>
         $(document).ready(function() {
             if ("{{ match }}" !== '') {
                 document.getElementById("search-participants").value = "{{ match }}";
             }
         });
-    </script>
-    <div class="row">
-        <div class="col-xs-12">
-            <h1> Participants </h1>
+        </script>
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Participants</h1>
+            </div>
+        </div>
+        <div class="row text-center mt-xl">
+            <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+                <form method="get">
+                    <input id="search-participants"
+                           class="form-control"
+                           name="match"
+                           placeholder="Filter by nickname"
+                           size="50"
+                           type="text"/>
+                    <input type="hidden" name="sort" value={{ sort }}/>
+                    <input type="hidden" name="page" value="1"/>
+                </form>
+            </div>
+        </div>
+        <div class="row mt-xs visible-xs visible-sm">
+            <div class="col-xs-12 col-sm-offset-1 col-sm-10 mt-lg mb-lg">
+                <div class="btn-group">
+                    <div class="btn-group">
+                        <button type="button"
+                                class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown">
+                            {% trans "Nickname" %} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a aria-label="Sort ascending by nickname"
+                                   href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}">Sort A-Z</a>
+                            </li>
+                            <li>
+                                <a aria-label="Sort descending by nickname"
+                                   href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-nickname' %}">Sort Z-A</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button"
+                                class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown">
+                            Active <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a aria-label="Sort ascending by last active"
+                                   href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='last_login' %}"> Sort Asc </a>
+                            </li>
+                            <li>
+                                <a aria-label="Sort descending by last active"
+                                   href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-last_login' %}"> Sort Desc </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-xl visible-md visible-lg visible-xl">
+            <div class="col-md-2 col-md-offset-1">
+                <strong>{% trans "Nickname" %}</strong>
+                <a class="pl-sm"
+                   aria-label="Sort ascending by nickname"
+                   href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a aria-label="Sort descending by nickname"
+                   href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-nickname' %}"><i aria-hidden="true"
+   class="fa fa-chevron-down"
+   role="button"
+   name="name"></i></a>
+            </div>
+            <div class="col-md-4">
+                <strong>User global ID</strong>
+            </div>
+            <div class="col-md-3">
+                <strong>Last Active</strong>
+                <a class="pl-sm"
+                   aria-label="Sort ascending by last active"
+                   href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='last_login' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                <a aria-label="Sort descending by last active"
+                   href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-last_login' %}"><i aria-hidden="true"
+   class="fa fa-chevron-down"
+   role="button"
+   name="name"></i></a>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        <hr class="visible-md visible-lg visible-xl"/>
+        {% for user in object_list %}
+            <div class="row pt-xs">
+                <div class="col-md-2 col-md-offset-1 col-sm-11 col-sm-offset-1 col-xs-12">
+                    <a href="{% url 'exp:participant-detail' user.id %}">
+                        {% if user.nickname %}
+                            {{ user.nickname }}
+                        {% else %}
+                            Participant ID {{ user.id }}
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="col-md-4 col-sm-offset-1 col-md-offset-0 col-xs-12">
+                    <span class="visible-xs visible-sm">User ID: {{ user.uuid }}</span>
+                    <span class="hidden-xs hidden-sm">{{ user.uuid }}</span>
+                </div>
+                <div class="col-xs-12 col-sm-offset-1 col-sm-11 col-md-3 col-md-offset-0">
+                    <span class="visible-xs visible-sm">Last Active: {{ user.last_login|date:"n/d/Y"|default:"N/A" }}</span>
+                    <span class="hidden-xs hidden-sm">{{ user.last_login|date:"n/d/Y"|default:"N/A" }}</span>
+                </div>
+                <div class="col-md-2 hidden-xs hidden-sm">
+                    <a class="btn btn-primary btn-sm"
+                       href="{% url 'exp:participant-detail' user.id %}">View Profile</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="row pt-xs">
+                <div class="col-sm-10 col-sm-offset-1 col-md-8">
+                    <p>
+                        <em>No participants found!</em>
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="row pt-xl">
+            <div class="col-md-11 col-md-offset-1">
+                <div class="pull-right">{% include 'studies/_paginator.html' with page=page_obj request=request %}</div>
+            </div>
         </div>
     </div>
-    <div class="row text-center mt-xl">
-       <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
-           <form method="GET">
-               <input id="search-participants" class="form-control" name="match" placeholder="Filter by nickname" size="50" type="text">
-               <input type="hidden" name="sort" value={{ sort }}>
-               <input type="hidden" name="page" value="1">
-           </form>
-       </div>
-   </div>
-   <div class="row mt-xs visible-xs visible-sm">
-       <div class="col-xs-12 col-sm-offset-1 col-sm-10 mt-lg mb-lg">
-           <div class="btn-group">
-               <div class="btn-group">
-                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    {% trans "Nickname" %} <span class="caret"></span>
-                 </button>
-                 <ul class="dropdown-menu" role="menu">
-                   <li> <a aria-label="Sort ascending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}">Sort A-Z</a></li>
-                   <li> <a aria-label="Sort descending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-nickname' %}">Sort Z-A</a></li>
-                 </ul>
-             </div>
-             <div class="btn-group">
-               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                  Active <span class="caret"></span>
-               </button>
-               <ul class="dropdown-menu" role="menu">
-                 <li><a aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='last_login' %}"> Sort Asc </a></li>
-                 <li><a aria-label="Sort descending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-last_login' %}"> Sort Desc </a></li>
-               </ul>
-             </div>
-          </div>
-       </div>
-   </div> 
-   <div class="row mt-xl visible-md visible-lg visible-xl">
-       <div class="col-md-2 col-md-offset-1">
-           <strong> {% trans "Nickname" %} </strong>
-           <a class="pl-sm" aria-label="Sort ascending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='nickname' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-           <a aria-label="Sort descending by nickname" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-nickname' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-       </div>
-       <div class="col-md-4">
-           <strong> User global ID </strong>
-       </div>
-       <div class="col-md-3">
-           <strong>Last Active</strong>
-           <a class="pl-sm" aria-label="Sort ascending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='last_login' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-           <a aria-label="Sort descending by last active" href="{% url 'exp:participant-list' %}?{% query_transform request page='1' sort='-last_login' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-       </div>
-       <div class="col-md-2">
-       </div>
-   </div>
-   <hr class="visible-md visible-lg visible-xl">
-   {% for user in object_list %}
-       <div class="row pt-xs">
-           <div class="col-md-2 col-md-offset-1 col-sm-11 col-sm-offset-1 col-xs-12">
-                <a href="{% url 'exp:participant-detail' user.id %}"> {% if user.nickname %} {{ user.nickname }}{% else %} Participant ID {{ user.id }} {% endif %}</a>
-           </div>
-
-           <div class="col-md-4 col-sm-offset-1 col-md-offset-0 col-xs-12">
-               <span class="visible-xs visible-sm">User ID: {{ user.uuid }} </span>
-               <span class="hidden-xs hidden-sm">{{ user.uuid }} </span>
-           </div>
-
-           <div class="col-xs-12 col-sm-offset-1 col-sm-11 col-md-3 col-md-offset-0">
-               <span class="visible-xs visible-sm"> Last Active: {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
-               <span class="hidden-xs hidden-sm"> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
-           </div>
-           <div class="col-md-2 hidden-xs hidden-sm">
-               <a class='btn btn-primary btn-sm' href="{% url 'exp:participant-detail' user.id %}">View Profile</a>
-           </div>
-       </div>
-   {% empty %}
-    <div class="row pt-xs">
-        <div class="col-sm-10 col-sm-offset-1 col-md-8">
-             <p><em> No participants found! </em></p>
-        </div>
-    </div>
-   {% endfor %}
-   <div class="row pt-xl">
-       <div class="col-md-11 col-md-offset-1">
-           <div class="pull-right">
-               {% include 'studies/_paginator.html' with page=page_obj request=request %}
-           </div>
-       </div>
-   </div>
-  </div>
-{% endblock %}
+{% endblock content %}

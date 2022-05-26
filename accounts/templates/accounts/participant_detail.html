@@ -1,323 +1,375 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load exp_extras %}
 {% load i18n %}
-
-{% block title %}{{ user.nickname |default:"Participant Detail" }}{% endblock %}
+{% block title %}
+    {{ user.nickname |default:"Participant Detail" }}
+{% endblock title %}
 {% block flash %}
-{% bootstrap_messages %}
-{% endblock %}
+    {% bootstrap_messages %}
+{% endblock flash %}
 {% block content %}
-<div class="container mb-lg">
-    <div class='row'>
-        <div class="col-xs-12">
-            <ol class="breadcrumb">
-                <li><a href="{% url 'exp:participant-list' %}"> {% trans "All Participants" %} </a></li>
-                <li class="active"> {{ user.nickname |default:"Participant Detail" }} </li>
-            </ol>
+    <div class="container mb-lg">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'exp:participant-list' %}">{% trans "All Participants" %}</a>
+                    </li>
+                    <li class="active">{{ user.nickname |default:"Participant Detail" }}</li>
+                </ol>
+            </div>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-12">
-            <h1> {{ user.identicon_html }} {% if user.nickname %} {{ user.nickname }}{% else %} {% trans "Participant ID" %} {{ user.id }} {% endif %}</h1>
-            <span><label class='pr-xs'> {% trans "Last Active:" %} </label> {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
-            <div><label class='pr-xs'> {% trans "Participant global ID:" %} </label> {{ user.uuid }} </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>
+                    {{ user.identicon_html }}
+                    {% if user.nickname %}
+                        {{ user.nickname }}
+                    {% else %}
+                        {% trans "Participant ID" %} {{ user.id }}
+                    {% endif %}
+                </h1>
+                <span>
+                    <label class="pr-xs">{% trans "Last Active:" %}</label>
+                {{ user.last_login|date:"n/d/Y"|default:"N/A" }} </span>
+                <div>
+                    <label class="pr-xs">{% trans "Participant global ID:" %}</label>
+                    {{ user.uuid }}
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class='row'>
-        <div class='col-md-6 col-sm-5'>
-            <h3>{% trans "Children" %}</h3>
-            {% for child in children %}
-            <div class="pb-md">
-                <h4 class="child-name"><em>{{child.given_name}}</em></h4>
-                <div class="pl-md">
-                    <div class="row">
-                        <div class="col-xs-5">
-                            <strong> {% trans "Birthday" %}: </strong>
-                        </div>
-                        <div class="col-xs-7">
-                            {{child.birthday|date:"n/d/Y"|default:"N/A"}}
+        <div class="row">
+            <div class="col-md-6 col-sm-5">
+                <h3>{% trans "Children" %}</h3>
+                {% for child in children %}
+                    <div class="pb-md">
+                        <h4 class="child-name">
+                            <em>{{ child.given_name }}</em>
+                        </h4>
+                        <div class="pl-md">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <strong>{% trans "Birthday" %}:</strong>
+                                </div>
+                                <div class="col-xs-7">{{ child.birthday|date:"n/d/Y"|default:"N/A" }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <strong>{% trans "Age" %}:</strong>
+                                </div>
+                                <div class="col-xs-7">{{ child.birthday | timesince }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <strong>{% trans "Gender" %}:</strong>
+                                </div>
+                                <div class="col-xs-7">{{ child.get_gender_display }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <strong>{% trans "Gestational Age at Birth" %}:</strong>
+                                </div>
+                                <div class="col-xs-7">{{ child.age_at_birth|default:"No response" }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <strong>{% trans "Additional Info" %}:</strong>
+                                </div>
+                                <div class="col-xs-7">{{ child.additional_information|default:"No response" }}</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-5">
-                            <strong> {% trans "Age" %}: </strong>
-                        </div>
-                        <div class="col-xs-7">
-                            {{child.birthday | timesince}}
-                        </div>
+                {% empty %}
+                    <p>
+                        <em>{% trans "No children profiles registered!" %}</em>
+                    </p>
+                {% endfor %}
+            </div>
+            <div class="col-md-6 col-sm-7">
+                <h3>{% trans "Latest Demographic Data" %}</h3>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong>{% trans "Country" %}:</strong>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-5">
-                            <strong> {% trans "Gender" %}: </strong>
-                        </div>
-                        <div class="col-xs-7">
-                            {{child.get_gender_display}}
-                        </div>
+                    <div class="col-xs-7">{{ demographics.country|default:"No Response" }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong>{% trans "State" %}:</strong>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-5">
-                            <strong> {% trans "Gestational Age at Birth" %}: </strong>
-                        </div>
-                        <div class="col-xs-7">
-                            {{child.age_at_birth|default:"No response"}}
-                        </div>
+                    <div class="col-xs-7">{{ demographics.state|default:"No Response" }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong>{% trans "Area description" %}:</strong>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-5">
-                            <strong> {% trans "Additional Info" %}: </strong>
-                        </div>
-                        <div class="col-xs-7">
-                            {{child.additional_information|default:"No response"}}
-                        </div>
+                    <div class="col-xs-7">{{ demographics.density|default:"No Response" }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong>{% trans "Languages Spoken at Home" %}:</strong>
+                    </div>
+                    <div class="col-xs-7">{{ demographics.languages_spoken_at_home|default:"No Response" }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> {% trans "Number of Children" %}: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.number_of_children|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> {% trans "Children current ages" %}: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {% for birthday in user.latest_demographics.child_birthdays %}
+                            {{ birthday | timesince|default:"N/A" }}
+                            {% if not forloop.last %};{% endif %}
+                        {% empty %}{% trans "No Response" %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> {% trans "Number of Guardians" %}: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.number_of_guardians|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> {% trans "Explanation for Guardians:" %} </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.number_of_guardians_explanation|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong>{% trans "Race" %}:</strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.race_identification|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> Age: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.age|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> Gender: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.gender|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> Education Level: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.education_level|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> Spouse's Education Level: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.spouse_education_level|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> Annual Income: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.annual_income|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> Children's Books at Home: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.number_of_books|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> Additional Comments: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.additional_comments|default:"No Response" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5">
+                        <strong> Lookit Referrer: </strong>
+                    </div>
+                    <div class="col-xs-7">
+                        {{ demographics.lookit_referrer|default:"No Response" }}
                     </div>
                 </div>
             </div>
-            {% empty %}
-            <p><em> {% trans "No children profiles registered!" %} </em></p>
-            {% endfor %}
         </div>
-        <div class='col-md-6 col-sm-7'>
-            <h3>{% trans "Latest Demographic Data" %}</h3>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> {% trans "Country" %}: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.country|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> {% trans "State" %}: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.state|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> {% trans "Area description" %}: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.density|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> {% trans "Languages Spoken at Home" %}: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.languages_spoken_at_home|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> {% trans "Number of Children" %}: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.number_of_children|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> {% trans "Children current ages" %}: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {% for birthday in user.latest_demographics.child_birthdays %}{{birthday | timesince|default:"N/A"}}{% if not forloop.last %}; {% endif %}{% empty %}{% trans "No Response" %}{% endfor %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> {% trans "Number of Guardians" %}: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.number_of_guardians|default:"No Response"}}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> {% trans "Explanation for Guardians:" %} </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.number_of_guardians_explanation|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong>{% trans "Race" %}:</strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.race_identification|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> Age: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.age|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> Gender: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.gender|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> Education Level: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.education_level|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> Spouse's Education Level: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.spouse_education_level|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> Annual Income: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.annual_income|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> Children's Books at Home: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.number_of_books|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> Additional Comments: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.additional_comments|default:"No Response" }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-5">
-                    <strong> Lookit Referrer: </strong>
-                </div>
-                <div class="col-xs-7">
-                    {{ demographics.lookit_referrer|default:"No Response" }}
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr>
-    <h3>{% if user.nickname %} {{ user.nickname }}{% else %} Participant ID {{ user.id }}{% endif %}'s Studies</h3>
-    {% if studies %}
-    <div class="row hidden-xs hidden-sm pt-sm">
-        <div class="col-md-4 col-xs-12">
-            Study Title
-            <a class="pl-sm" aria-label="Sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-            <a aria-label="Reverse sort user studies by name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-        </div>
-        <div class="col-md-2 col-xs-12">
-            Response
-        </div>
-        <div class="col-md-2 col-xs-12">
-            Child
-        </div>
-        <div class="col-md-2 col-xs-12">
-            Completion Status
-            <a aria-label="Sort user studies by completion status" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-            <a aria-label="Reverse sort user studies by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-        </div>
-        <div class="col-md-2 col-xs-12">
-            Date of Response
-            <a aria-label="Sort user studies by date created" class="pl-sm" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
-            <a aria-label="Reverse sort user studies by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-down" role="button" name="name"></i></a>
-        </div>
-        <hr>
-    </div>
-    <div class="row mt-xs visible-xs visible-sm">
-        <div class="col-xs-12 mt-lg mb-lg">
-            <div class="btn-group">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        Title <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li> <a aria-label="Sort ascending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='name' %}#studies">Sort A-Z</a></li>
-                        <li> <a aria-label="Sort descending by study name" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-name' %}#studies">Sort Z-A</a></li>
-                    </ul>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        Status <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a aria-label="Sort ascending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='completed' %}#studies">Sort A-Z </a></li>
-                        <li><a aria-label="Sort descending by completion status" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-completed' %}#studies">Sort Z-A </a></li>
-                    </ul>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                        Date <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a aria-label="Sort ascending by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='date_created' %}#studies">Sort Asc</a></li>
-                        <li><a aria-label="Sort descending by date created" href="{% url 'exp:participant-detail' user.id  %}?{% query_transform request page='1' sort='-date_created' %}#studies">Sort Desc</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% for study_dict in studies %}
-    <div id="studies" class="row pt-md">
-        <div class="col-md-4 col-xs-12">
-            <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
-        </div>
-        <div class="col-md-2 col-xs-12">
-            <span class="visible-xs visible-sm">Response UUID: {{ study_dict.response.uuid }} </span>
-            <span class="hidden-xs hidden-sm">{{ study_dict.response.uuid|truncatechars:9 }} </span>
-        </div>
-        <div class="col-md-2 col-xs-12">
-            <span class="visible-xs visible-sm">Child: {{ study_dict.response.child.given_name }} </span>
-            <span class="hidden-xs hidden-sm">{{ study_dict.response.child.given_name }} </span>
-        </div>
-        <div class="col-md-2 col-xs-12">
-
-            {% if study_dict.completed %}
-            <span class="visible-xs visible-sm">Status: Completed </span>
-            <span class="hidden-xs hidden-sm">Completed </span>
+        <hr />
+        <h3>
+            {% if user.nickname %}
+                {{ user.nickname }}
             {% else %}
-            <span class="visible-xs visible-sm">Status: In Progress </span>
-            <span class="hidden-xs hidden-sm">In Progress </span>
+                Participant ID {{ user.id }}
             {% endif %}
-        </div>
-        <div class="col-md-2 col-xs-12">
-            <span class="visible-xs visible-sm">Date: {{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
-            <span class="hidden-xs hidden-sm">{{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
-        </div>
-    </div>
-    {% endfor %}
-    {% else %}
-    <p><em> {{ user.nickname }} has not participated in any studies yet! </em></p>
-    {% endif %}
-    <div class="row pt-xl">
-        <div class="col-md-11 col-md-offset-1">
-            <div class="pull-right">
-                {% include 'studies/_paginator.html' with page=studies request=request %}
+            's Studies
+        </h3>
+        {% if studies %}
+            <div class="row hidden-xs hidden-sm pt-sm">
+                <div class="col-md-4 col-xs-12">
+                    Study Title
+                    <a class="pl-sm"
+                       aria-label="Sort user studies by name"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='name' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by name"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-name' %}#studies"><i aria-hidden="true"
+   class="fa fa-chevron-down"
+   role="button"
+   name="name"></i></a>
+                </div>
+                <div class="col-md-2 col-xs-12">
+                    Response
+                </div>
+                <div class="col-md-2 col-xs-12">
+                    Child
+                </div>
+                <div class="col-md-2 col-xs-12">
+                    Completion Status
+                    <a aria-label="Sort user studies by completion status"
+                       class="pl-sm"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='completed' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by completion status"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-completed' %}#studies"><i aria-hidden="true"
+   class="fa fa-chevron-down"
+   role="button"
+   name="name"></i></a>
+                </div>
+                <div class="col-md-2 col-xs-12">
+                    Date of Response
+                    <a aria-label="Sort user studies by date created"
+                       class="pl-sm"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='date_created' %}#studies"><i aria-hidden="true" class="fa fa-chevron-up" role="button" name="name"></i></a>
+                    <a aria-label="Reverse sort user studies by date created"
+                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-date_created' %}#studies"><i aria-hidden="true"
+   class="fa fa-chevron-down"
+   role="button"
+   name="name"></i></a>
+                </div>
+                <hr />
+            </div>
+            <div class="row mt-xs visible-xs visible-sm">
+                <div class="col-xs-12 mt-lg mb-lg">
+                    <div class="btn-group">
+                        <div class="btn-group">
+                            <button type="button"
+                                    class="btn btn-default dropdown-toggle"
+                                    data-toggle="dropdown">
+                                Title <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a aria-label="Sort ascending by study name"
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='name' %}#studies">Sort A-Z</a>
+                                </li>
+                                <li>
+                                    <a aria-label="Sort descending by study name"
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-name' %}#studies">Sort Z-A</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button"
+                                    class="btn btn-default dropdown-toggle"
+                                    data-toggle="dropdown">
+                                Status <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a aria-label="Sort ascending by completion status"
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='completed' %}#studies">Sort A-Z </a>
+                                </li>
+                                <li>
+                                    <a aria-label="Sort descending by completion status"
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-completed' %}#studies">Sort Z-A </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button"
+                                    class="btn btn-default dropdown-toggle"
+                                    data-toggle="dropdown">
+                                Date <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a aria-label="Sort ascending by date created"
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='date_created' %}#studies">Sort Asc</a>
+                                </li>
+                                <li>
+                                    <a aria-label="Sort descending by date created"
+                                       href="{% url 'exp:participant-detail' user.id %}?{% query_transform request page='1' sort='-date_created' %}#studies">Sort Desc</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% for study_dict in studies %}
+                <div id="studies" class="row pt-md">
+                    <div class="col-md-4 col-xs-12">
+                        <a href="{% url 'exp:study-detail' study_dict.study.id %}">{{ study_dict.study.name }}</a>
+                    </div>
+                    <div class="col-md-2 col-xs-12">
+                        <span class="visible-xs visible-sm">Response UUID: {{ study_dict.response.uuid }} </span>
+                        <span class="hidden-xs hidden-sm">{{ study_dict.response.uuid|truncatechars:9 }} </span>
+                    </div>
+                    <div class="col-md-2 col-xs-12">
+                        <span class="visible-xs visible-sm">Child: {{ study_dict.response.child.given_name }} </span>
+                        <span class="hidden-xs hidden-sm">{{ study_dict.response.child.given_name }} </span>
+                    </div>
+                    <div class="col-md-2 col-xs-12">
+                        {% if study_dict.completed %}
+                            <span class="visible-xs visible-sm">Status: Completed </span>
+                            <span class="hidden-xs hidden-sm">Completed </span>
+                        {% else %}
+                            <span class="visible-xs visible-sm">Status: In Progress </span>
+                            <span class="hidden-xs hidden-sm">In Progress </span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-2 col-xs-12">
+                        <span class="visible-xs visible-sm">Date: {{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
+                        <span class="hidden-xs hidden-sm">{{ study_dict.created |date:"n/d/Y"|default:"N/A" }} </span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>
+                <em> {{ user.nickname }} has not participated in any studies yet! </em>
+            </p>
+        {% endif %}
+        <div class="row pt-xl">
+            <div class="col-md-11 col-md-offset-1">
+                <div class="pull-right">
+                    {% include 'studies/_paginator.html' with page=studies request=request %}
+                </div>
             </div>
         </div>
     </div>
-</div>
-</div>
-{% endblock %}
+{% endblock content %}

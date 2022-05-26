@@ -1,111 +1,70 @@
-{% extends 'frontpages/default.html' %}
+{% extends "frontpages/default.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}Resources{% endblock %}
-
+{% load static %}
+{% block title %}
+    Resources
+{% endblock title %}
 {% block content %}
-<section>
-    <article class="row">
-        <div>
-            <div class="main">
-                <div class="lookit-row lookit-page-title">
-                    <div class="container">
-                        <h1>Resources</h1>
+    <section>
+        <article class="row">
+            <div>
+                <div class="main">
+                    <div class="lookit-row lookit-page-title">
+                        <div class="container">
+                            <h1>Resources</h1>
+                        </div>
                     </div>
-                </div>
-                <div class="lookit-row resources-row">
-                    <div class="container">
-                        <div class="resources-item">
-                            <h3>Find a developmental lab near you</h3>
-                            <p>Interested in participating in research in person? Find a list of labs that study child
-                                development
-                                in
-                                your state.</p>
-                            <p>Did we miss your lab, or one you know about? Our apologies, and please let us know at <a
-                                    href="mailto:lookit-ed@mit.edu">lookit-ed@mit.edu</a></p>
-                            <div>
-                                <div class="row resources-local">
-                                    <div class="col-md-4">
-                                        <select id="state-select" onchange="populateLabList(this.value)">
-                                            <option></option>
-                                            <option>Alabama</option>
-                                            <option>Alaska</option>
-                                            <option>Arizona</option>
-                                            <option>Arkansas</option>
-                                            <option>California</option>
-                                            <option>Colorado</option>
-                                            <option>Connecticut</option>
-                                            <option>Delaware</option>
-                                            <option>Florida</option>
-                                            <option>Georgia</option>
-                                            <option>Hawaii</option>
-                                            <option>Idaho</option>
-                                            <option>Illinois</option>
-                                            <option>Indiana</option>
-                                            <option>Iowa</option>
-                                            <option>Kansas</option>
-                                            <option>Kentucky</option>
-                                            <option>Louisiana</option>
-                                            <option>Maine</option>
-                                            <option>Maryland</option>
-                                            <option>Massachusetts</option>
-                                            <option>Michigan</option>
-                                            <option>Minnesota</option>
-                                            <option>Mississippi</option>
-                                            <option>Missouri</option>
-                                            <option>Montana</option>
-                                            <option>Nebraska</option>
-                                            <option>Nevada</option>
-                                            <option>New Hampshire</option>
-                                            <option>New Jersey</option>
-                                            <option>New Mexico</option>
-                                            <option>New York</option>
-                                            <option>North Carolina</option>
-                                            <option>North Dakota</option>
-                                            <option>Ohio</option>
-                                            <option>Oklahoma</option>
-                                            <option>Oregon</option>
-                                            <option>Pennsylvania</option>
-                                            <option>Rhode Island</option>
-                                            <option>South Carolina</option>
-                                            <option>South Dakota</option>
-                                            <option>Tennessee</option>
-                                            <option>Texas</option>
-                                            <option>Utah</option>
-                                            <option>Vermont</option>
-                                            <option>Virginia</option>
-                                            <option>Washington</option>
-                                            <option>West Virginia</option>
-                                            <option>Wisconsin</option>
-                                            <option>Wyoming</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <b class='selected-state'></b>
-                                        <p id="nothing-to-show"></p>
-                                        <ul id="lab-list">
-                                        </ul>
+                    <div class="lookit-row resources-row">
+                        <div class="container">
+                            <div class="resources-item">
+                                <h3>Find a developmental lab near you</h3>
+                                <p>
+                                    Interested in participating in research in person? Find a list of labs that study child
+                                    development
+                                    in
+                                    your state.
+                                </p>
+                                <p>
+                                    Did we miss your lab, or one you know about? Our apologies, and please let us know at <a href="mailto:lookit-ed@mit.edu">lookit-ed@mit.edu</a>
+                                </p>
+                                <div>
+                                    <div class="row resources-local">
+                                        <div class="col-md-4">
+                                            <select id="state-select">
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <strong class="selected-state"></strong>
+                                            <p id="nothing-to-show">
+                                            </p>
+                                            <ul id="lab-list">
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <hr>
-                        <div class="resources-item">
-                            <h3>Other ways to participate from home</h3>
-                            <p> Visit <a href='https://childrenhelpingscience.com/' target='_blank'>Children Helping
-                                    Science</a> for
-                                an
-                                extensive list of other opportunities to participate in research about child
-                                development!</p>
-                            <p> To contribute to other scientific research as a family, check out <a
-                                    href="http://scistarter.com/index.html">SciStarter</a>, which has many citizen
+                            <hr />
+                            <div class="resources-item">
+                                <h3>Other ways to participate from home</h3>
+                                <p>
+                                    Visit
+                                    <a href="https://childrenhelpingscience.com/"
+                                       target="_blank"
+                                       rel="noopener">Children Helping Science</a>
+                                    for an extensive list of other opportunities to participate in research about child development!
+                                </p>
+                                <p>
+                                To contribute to other scientific research as a family, check out <a href="https://scistarter.org/">SciStarter</a>, which has many citizen
                                 science projects
-                                suitable for elementary school children and up!</p>
+                                suitable for elementary school children and up!
+                            </p>
                         </div>
-                        <hr>
+                        <hr />
                         <div class="resources-item">
                             <h3>Activities to try at home</h3>
-                            <p>Want to learn more about cognitive development? Here are some activities that may give
+                            <p>
+                                Want to learn more about cognitive development? Here are some activities that may give
                                 you some
                                 insight
                                 into your own child's developing mind. Instead of studies our lab is running, these are
@@ -113,688 +72,53 @@
                                 labs"
                                 for parents to try on their own--but please feel free to contact us with any questions!
                             </p>
-                            <h4>Learning about other minds: your child's developing theory of mind</h4><iframe
-                                allowfullscreen frameborder="0" height="315"
-                                src="https://www.youtube.com/embed/uxyVYATX9-M" width="560"></iframe>
-                            <p><strong>Age range</strong>: 2.5 to 5 years</p>
-                            <p><strong>What you'll need</strong>: For the "Maxi and the chocolate" story, any props
-                                you'd like (you
-                                can
-                                try drawing a picture or acting out the story). For the word-learning task, two
-                                containers to hold
-                                two
-                                objects your child doesn't know a name for (weird kitchen tools, bike parts, etc.).</p>
-                            <p>In this lab, you'll see how your child thinks about what other people are thinking.
-                                Children under
-                                about
-                                four years old tend to have trouble expressing what's going on when someone else knows
-                                less than
-                                they
-                                do. They will often insist that everyone knows what they themselves know!</p>
-                            <h4>Learning to count: measuring your child's N-knower level</h4><iframe allowfullscreen
-                                frameborder="0" height="315" src="https://www.youtube.com/embed/i0q6H8MRXo8"
-                                width="560"></iframe>
-                            <p><strong>Age range</strong>: 1 to 5 years</p>
-                            <p><strong>What you'll need</strong>: At least ten small objects your child can pick up,
-                                like pegs or
-                                Cheerios</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <script type="text/javascript">
-                var allLabs = {
-                    "Alabama": [
-                        {
-                            'url': 'http://www.ches.ua.edu/hdfs/cdrc/',
-                            'name': 'University of Alabama Child Development Research Center'
-                        },
-                        {
-                            'url': 'http://monaelsheikh.com/',
-                            'name': 'Auburn University Child Sleep, Health, and Development Lab'
-                        }
-                    ],
-                    "Alaska": [],
-                    "Arizona": [
-                        {
-                            'url': 'http://web.arizona.edu/~tigger/',
-                            'name': 'University of Arizona Child Cognition Lab (Tigger Lab)'
-                        },
-                        {
-                            'url': 'https://tweety.lab.arizona.edu/',
-                            'name': 'University of Arizona Language Development Lab (Tweety Lab)'
-                        },
-                        {
-                            'url': 'http://nau.edu/SBS/IHD/Research/CDLL/',
-                            'name': 'Northern Arizona University Child Development and Language Lab'
-                        }
-                    ],
-                    "Arkansas": [
-                        {
-                            'url': 'http://acnc.uamsweb.com/research-2/our-laboratories-2/early-diets-and-long-term-health-lab/',
-                            'name': "Arkansas Children's Nutrition Center Growth and Development Laboratory"
-                        }
-                    ],
-                    "California": [
-                        {
-                            'url': 'http://www.csus.edu/indiv/a/alexanderk/lab.htm',
-                            'name': 'CSU Sacramento Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'https://blogs.scu.edu/readlab/participate-in-research/',
-                            'name': "Santa Clara University Child Development Research Group"
-                        },
-                        {
-                            'url': 'http://www-psych.stanford.edu/~babylab/',
-                            'name': "Stanford's Center for Infant Studies"
-                        },
-                        {
-                            'url': 'http://bungelab.berkeley.edu/participate/',
-                            'name': 'UC Berkeley Building Blocks of Cognition Lab'
-                        },
-                        {
-                            'url': 'http://babycenter.berkeley.edu/',
-                            'name': 'UC Berkeley Infant Studies Center'
-                        },
-                        {
-                            'url': 'http://psychology.berkeley.edu/participant-recruitment/rsvp-research-subject-volunteer-pool',
-                            'name': 'UC Berkeley Psychology Department (list of studies)'
-                        },
-                        {
-                            'url': 'http://dornsife.usc.edu/labs/mid-la/participate/',
-                            'name': 'USC Minds in Development Lab'
-                        },
-                        {
-                            'url': 'http://oakeslab.ucdavis.edu/',
-                            'name': 'UC Davis Infant Cognition Lab'
-                        },
-                        {
-                            'url': ' http://languagelearninglab.dss.ucdavis.edu/',
-                            'name': 'UC Davis Language Learning Lab'
-                        },
-                        {
-                            'url': ' http://riveralab.ucdavis.edu/',
-                            'name': 'UC Davis Neurocognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://www.cogsci.uci.edu/cogdev/information.html',
-                            'name': 'UC Irvine Sarnecka Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://babytalk.psych.ucla.edu/home.htm',
-                            'name': 'UCLA Language and Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://www.ccl.ucr.edu/',
-                            'name': 'UC Riverside Childhood Cognition Lab'
-                        },
-                        {
-                            'url': 'https://labs.psych.ucsb.edu/german/tamsin/',
-                            'name': 'UCSB Cognition & Development Laboratory'
-                        },
-                        {
-                            'url': 'http://www-cogsci.ucsd.edu/~deak/cdlab/',
-                            'name': 'UCSD Cognitive Development Lab'
-                        }
-                    ],
-                    "Colorado": [
-                        {
-                            'url': 'http://sleep.colorado.edu/',
-                            'name': 'UC Boulder Sleep and Development Lab'
-                        },
-                        {
-                            'url': 'http://www.ucdenver.edu/academics/colleges/medicalschool/departments/psychiatry/Research/developmentalresearch/Pages/Overview.aspx',
-                            'name': 'University of Colorado Denver Developmental Psychiatry Research Group'
-                        },
-                        {
-                            'url': 'http://www.du.edu/psychology/child_health_and_development/',
-                            'name': 'University of Colorado Denver Child Health & Development Lab'
-                        },
-                        {
-                            'url': 'http://psych.colorado.edu/~cdc/whoweare.htm',
-                            'name': 'University of Colorado Denver Cognitive Development Center'
-                        }
-                    ],
-                    "Connecticut": [
-                        {
-                            'url': 'http://cogdev.research.wesleyan.edu/',
-                            'name': 'Wesleyan University Cognitive Development Labs'
-                        },
-                        {
-                            'url': 'http://infantandchild.yale.edu/',
-                            'name': 'Yale Infant and Child Research'
-                        },
-                        {
-                            'url': 'http://candlab.yale.edu/',
-                            'name': 'Yale Clinical Affective Neuroscience & Development Lab'
-                        },
-                        {
-                            'url': 'https://medicine.yale.edu/lab/mcpartland/',
-                            'name': 'McPartland Lab at Yale - Clinical Neuroscience of Autism Spectrum Disorder'
-                        }
-                    ],
-                    "Delaware": [
-                        {
-                            'url': 'http://www.childsplay.udel.edu/',
-                            'name': "University of Delaware Child's Play, Learning and Development Lab"
-                        },
-                        {
-                            'url': 'https://llblab.wordpress.com/',
-                            'name': 'University of Delaware Language Learning and Bilingualism Lab'
-                        },
-                        {
-                            'url': 'http://sites.udel.edu/q-lab',
-                            'name': "University of Delaware Language Acquisition and Brain Lab"
-                        }
-                    ],
-                    "Florida": [
-                        {
-                            'url': 'http://casgroup.fiu.edu/dcn/pages.php?id=3636',
-                            'name': 'FIU Developmental Cognitive Neuroscience Lab'
-                        },
-                        {
-                            'url': 'http://online.sfsu.edu/devpsych/fair/index.html',
-                            'name': 'FSU Family Interaction Research Lab'
-                        },
-                        {
-                            'url': 'http://psy2.fau.edu/~lewkowicz/cdlfau/default.htm',
-                            'name': 'FAU Child Development Lab'
-                        },
-                        {
-                            'url': 'http://infantlab.fiu.edu/Infant_Lab.htm',
-                            'name': 'FIU Infant Development Lab'
-                        }
-                    ],
-                    "Georgia": [
-                        {
-                            'url': 'http://www.gcsu.edu/psychology/currentresearch.htm#Participate',
-                            'name': 'Georgia College Psychology Department'
-                        }
-                    ],
-                    "Hawaii": [
-                        {
-                            'url': 'http://www.psychology.hawaii.edu/concentrations/developmental-psychology.html',
-                            'name': 'University of Hawaii Developmental Psychology'
-                        }
-                    ],
-                    "Idaho": [],
-                    "Illinois": [
-                        {
-                            'url': 'https://www.loyolacrcd.org',
-                            'name': 'Loyola University Chicago Center for Research in Child Development'
-                        },
-                        {
-                            'url': 'http://internal.psychology.illinois.edu/~acimpian/',
-                            'name': 'University of Illinois Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://internal.psychology.illinois.edu/infantlab/',
-                            'name': 'University of Illinois Infant Cognition Lab'
-                        },
-                        {
-                            'url': 'http://bradfordpillow.weebly.com/cognitive-development-lab.html',
-                            'name': 'Northern Illinois University Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://www.childdevelopment.northwestern.edu/',
-                            'name': "Northwestern University's Project on Child Development"
-                        },
-                        {
-                            'url': 'http://woodwardlab.uchicago.edu/Home.html',
-                            'name': 'University of Chicago Infant Learning and Development Lab'
-                        }
-                    ],
-                    "Indiana": [
-                        {
-                            'url': 'http://www.iub.edu/~cogdev/',
-                            'name': 'Indiana University Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://www.psych.iupui.edu/Users/kjohnson/cogdevlab/INDEX.HTM',
-                            'name': 'IUPUI Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://www.evansville.edu/majors/cognitivescience/language.cfm',
-                            'name': 'University of Evansville Language and Cognitive Development Laboratory'
-                        }
-                    ],
-                    "Iowa": [
-                        {
-                            'url': 'http://www.medicine.uiowa.edu/psychiatry/cognitivebraindevelopmentlaboratory/',
-                            'name': 'University of Iowa Cognitive Brain Development Laboratory'
-                        }
-                    ],
-                    "Kansas": [
-                        {
-                            'url': 'http://www2.ku.edu/~lsi/labs/neurocognitive_lab/staff.shtml',
-                            'name': 'KU Neurocognitive Development of Autism Research Laboratory'
-                        },
-                        {
-                            'url': 'http://healthprofessions.kumc.edu/school/research/carlson/index.html',
-                            'name': 'KU Maternal and Child Nutrition and Development Laboratory'
-                        },
-                        {
-                            'url': 'http://greenhoot.wordpress.com/meet-the-research-team/',
-                            'name': 'KU Memory and Development Lab'
-                        }
-                    ],
-                    "Minnesota": [
-                        {
-                            'url': 'http://www.cehd.umn.edu/icd/research/seralab/',
-                            'name': 'University of Minnesota Language and Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://www.cehd.umn.edu/icd/research/cdnlab/',
-                            'name': 'University of Minnesota Cognitive Development & Neuroimaging Lab'
-                        },
-                        {
-                            'url': 'http://www.cehd.umn.edu/icd/research/carlson/',
-                            'name': 'University of Minnesota Carlson Child Development Lab'
-                        }
-                    ],
-                    "Kentucky": [
-                        {
-                            'url': 'http://babythinker.org',
-                            'name': 'University of Louisville Infant Cognition Lab'
-                        },
-                        {
-                            'url': 'http://www.wku.edu/psychological-sciences/labs/cognitive_development/index.php',
-                            'name': 'Western Kentucky University Cognitive Development Lab'
-                        }
-                    ],
-                    "Louisiana": [
-                        {
-                            'url': 'https://lbdlab.tulane.edu/',
-                            'name': 'Tulane Learning and Brain Development Lab'
-                        },
-                        {
-                            'url': 'https://childdevelopment.tulane.edu/',
-                            'name': 'Tulane Infant and Toddler Development Project'
-                        },
-                        {
-                            'url': 'https://cfl.tulane.edu/',
-                            'name': 'Tulane Child and Family Lab'
-                        },
-                        {
-                            'url': 'https://medicine.tulane.edu/departments/clinical-sciences/psychiatry/research/dr-drurys-bangl-lab',
-                            'name': 'Tulane Behavioral and Neurodevelopmental Genetics Lab'
-                        }
-                    ],
-                    "Maine": [
-                        {
-                            'url': 'http://people.usm.maine.edu/bthompso/Site/Development%20Lab.html',
-                            'name': 'USM Human Development Lab'
-                        },
-                        {
-                            'url': 'http://www.colby.edu/psychology/labs/cogdev1/LabAlumni.html',
-                            'name': 'Colby Cognitive Development Lab'
-                        }
-                    ],
-                    "Maryland": [
-                        {
-                            'url': 'http://education.umd.edu/HDQM/labs/Fox/',
-                            'name': 'University of Maryland Child Development Lab'
-                        },
-                        {
-                            'url': 'http://ncdl.umd.edu/',
-                            'name': 'University of Maryland Neurocognitive Development Lab'
-                        }
-                    ],
-                    "Massachusetts": [
-                        {
-                            'url': 'http://eccl.mit.edu/',
-                            'name': 'Early Childhood Cognition Lab (MIT)'
-                        },
-                        {
-                            'url': 'http://gablab.mit.edu/',
-                            'name': 'Gabrieli Lab (MIT)'
-                        },
-                        {
-                            'url': 'http://saxelab.mit.edu/people.php',
-                            'name': 'Saxelab Social Cognitive Neuroscience Lab (MIT)'
-                        },
-                        {
-                            'url': 'https://software.rc.fas.harvard.edu/lds/',
-                            'name': 'Laboratory for Developmental Sciences (Harvard)'
-                        },
-                        {
-                            'url': 'http://www.bclearninglab.bc.edu/index.html',
-                            'name': 'Thinking and Learning Lab (Boston College)'
-                        },
-                        {
-                            'url': 'https://www2.bc.edu/sara-cordes/lab/',
-                            'name': 'Infant and Child Cognition Lab (Boston College)'
-                        },
-                        {
-                            'url': 'http://emotiondevelopmentlab.weebly.com/',
-                            'name': 'Emotion Development Lab (Boston College)'
-                        },
-                        {
-                            'url': 'http://l3atbc.org/index.html',
-                            'name': 'Language Learning Lab (Boston College)'
-                        },
-                        {
-                            'url': 'http://www.bu.edu/cdl/',
-                            'name': 'Boston University Child Development Labs'
-                        },
-                        {
-                            'url': 'babies.umb.edu',
-                            'name': 'UMass Boston Baby Lab'
-                        },
-                        {
-                            'url': 'http://people.umass.edu/lscott/lab.htm',
-                            'name': 'UMass Amherst Brain, Cognition, and Development Lab'
-                        },
-                        {
-                            'url': 'http://www.northeastern.edu/berentlab/research/infant/',
-                            'name': 'Northeastern Infant Phonology Lab'
-                        }
-                    ],
-                    "Michigan": [
-                        {
-                            'url': 'http://www.educ.msu.edu/content/default.asp?contentID=903',
-                            'name': 'MSU Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://ofenlab.wayne.edu/people.php',
-                            'name': 'Wayne State University Cognitive Brain Development Lab'
-                        }
-                    ],
-                    "Mississippi": [],
-                    "Missouri": [
-                        {
-                            'url': 'http://www.artsci.wustl.edu/~children/',
-                            'name': 'Washington University Cognition and Development Lab'
-                        },
-                        {
-                            'url': 'http://mumathstudy.missouri.edu/#content',
-                            'name': 'University of Missouri-Columbia Math Study'
-                        }
-                    ],
-                    "Montana": [
-                        {
-                            'url': 'http://hs.umt.edu/psychology/severson/',
-                            'name': 'The Minds Lab at University of Montana '
-                        },
-                        {
-                            'url': 'http://www.montana.edu/wwwpy/brooker/html/meet.html',
-                            'name': 'Montana State University DOME Lab'
-                        }
-                    ],
-                    "Nebraska": [
-                        {
-                            'url': 'http://www.boystownhospital.org/research/clinicalbehavioralstudies/Pages/LanguageDevelopmentLaboratory.aspx',
-                            'name': 'Boys Town National Research Hospital Language Development Laboratory'
-                        },
-                        {
-                            'url': 'http://research.unl.edu/dcn/',
-                            'name': 'University of Nebraska-Lincoln Developmental Cognitive Neuroscience Laboratory'
-                        }
-                    ],
-                    "Nevada": [
-                        {
-                            'url': 'http://www.unl.edu/dbrainlab/',
-                            'name': 'University of Nebraska-Lincoln Developmental Brain Lab'
-                        }
-                    ],
-                    "New Hampshire": [
-                        {
-                            'url': 'http://cola.unh.edu/news/frl',
-                            'name': 'University of New Hampshire Family Research Lab'
-                        }
-                    ],
-                    "New Jersey": [
-                        {
-                            'url': 'http://www.shu.edu/academics/gradmeded/ms-speech-language-pathology/dlc-lab.cfm',
-                            'name': 'Seton Hall University  Developmental Language and Cognition Laboratory'
-                        },
-                        {
-                            'url': 'http://www.ramapo.edu/sshs/childlab/',
-                            'name': 'Ramapo College Child Development Lab'
-                        },
-                        {
-                            'url': 'http://ruccs.rutgers.edu/~aleslie/',
-                            'name': 'Rutgers University Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://babylab.rutgers.edu/HOME.html',
-                            'name': 'Rutgers University Infancy Studies Lab'
-                        },
-                        {
-                            'url': 'http://ruccs.rutgers.edu/languagestudies/people.html',
-                            'name': 'Rutgers University Lab for Developmental Language Studies'
-                        }
-                    ],
-                    "New Mexico": [],
-                    "New York": [
-                        {
-                            'url': 'http://www.columbia.edu/cu/needlab/',
-                            'name': 'Columbia Neurocognition, Early Experience, and Development (NEED) Lab'
-                        },
-                        {
-                            'url': 'https://www.facebook.com/pages/Child-Development-Lab-the-City-University-of-New-York/42978619994',
-                            'name': 'CUNY Child Development Lab'
-                        },
-                        {
-                            'url': 'https://wp.nyu.edu/learnlab/',
-                            'name': 'NYU LEARN Lab'
-                        },
-                        {
-                            'url': 'https://wp.nyu.edu/babychildnyu/',
-                            'name': 'NYU BabyChildTeen (collection of research groups)'
-                        }
-                    ],
-                    "North Carolina": [
-                        {
-                            'url': 'https://psychandneuro.duke.edu/childstudies ',
-                            'name': 'Duke Child and Infant Learning and Development (CHILD) Studies Group'
-                        },
-                        {
-                            'url': 'http://people.uncw.edu/nguyens/',
-                            'name': 'UNCW Cognitive Development Lab'
-                        }
-                    ],
-                    "North Dakota": [
-                        {
-                            'url': 'https://www.ndsu.edu/centers/cvcn/labs/balas/home.php',
-                            'name': 'NDSU High-Level Vision Lab'
-                        },
-                        {
-                            'url': 'http://www.cvcn.psych.ndsu.nodak.edu/labs/woods/',
-                            'name': 'NDSU Infant Cognitive Development Lab'
-                        }
-                    ],
-                    "Ohio": [
-                        {
-                            'url': 'http://cogdev.cog.ohio-state.edu/',
-                            'name': 'OSU Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://www.ohio.edu/chsp/rcs/csd/research/dplab.cfm',
-                            'name': 'Ohio University Developmental Psycholinguistics Lab'
-                        }
-                    ],
-                    "Oklahoma": [],
-                    "Oregon": [
-                        {
-                            'url': 'http://bdl.uoregon.edu/Participants/participants.php',
-                            'name': 'University of Oregon Brain Development Lab'
-                        },
-                        {
-                            'url': 'http://www.uolearninglab.com',
-                            'name': 'University of Oregon Learning Lab'
-                        }
-                    ],
-                    "Pennsylvania": [
-                        {
-                            'url': 'http://www.temple.edu/infantlab/',
-                            'name': 'Temple Infant & Child Lab'
-                        },
-                        {
-                            'url': 'http://lncd.pitt.edu/wp/',
-                            'name': 'University of Pittsburgh Laboratory of Neurocognitive Development'
-                        },
-                        {
-                            'url': 'https://sites.sas.upenn.edu/cogdevlab/',
-                            'name': 'UPenn Cognition & Development Lab'
-                        },
-                        {
-                            'url': 'http://www.allysonmackey.com/participate/',
-                            'name': 'UPenn The Changing Brain Lab'
-                        },
-                        {
-                            'url': 'http://babylab.psych.psu.edu/',
-                            'name': 'Penn State Brain Development Lab'
-                        }
-                    ],
-                    "Rhode Island": [
-                        {
-                            'url': 'https://www.brown.edu/research/labs/causality-and-mind/',
-                            'name': 'Brown Causality and Mind Lab'
-                        },
-                        {
-                            'url': 'https://sites.brown.edu/bltlab/',
-                            'name': 'Brown Language and Thought (BLT) Lab'
-                        },
-                        {
-                            'url': 'http://research.clps.brown.edu/dcnl/',
-                            'name': 'Brown University Developmental Cognitive Neuroscience Lab'
-                        }
-                    ],
-                    "South Carolina": [
-                        {
-                            'url': 'http://academicdepartments.musc.edu/joseph_lab/',
-                            'name': 'MUSC Brain, Cognition, & Development Lab'
-                        }
-                    ],
-                    "South Dakota": [],
-                    "Tennessee": [
-                        {
-                            'url': 'http://ivclab.utk.edu/',
-                            'name': 'UT Knoxville Infant Visual Cognition Lab'
-                        },
-                        {
-                            'url': 'http://web.utk.edu/~infntlab/',
-                            'name': 'UT Knoxville Infant Perception-Action Lab'
-                        },
-                        {
-                            'url': 'http://peabody.vanderbilt.edu/departments/psych/research/research_labs/educational_cognitive_neuroscience_lab/index.php',
-                            'name': 'Vanderbilt Educational Cognitive Neuroscience Lab'
-                        }
-                    ],
-                    "Texas": [
-                        {
-                            'url': 'http://www.ccdlab.net/',
-                            'name': 'UT-Austin Culture, Cognition, & Development Lab'
-                        },
-                        {
-                            'url': 'http://homepage.psy.utexas.edu/HomePage/Group/EcholsLAB/',
-                            'name': 'UT-Austin Language Development Lab'
-                        },
-                        {
-                            'url': 'http://www.utexas.edu/cola/depts/psychology/areas-of-study/developmental/Labs--Affiliations/CRL.php',
-                            'name': "UT-Austin Children's Research Lab"
-                        },
-                        {
-                            'url': 'https://www.utdallas.edu/thinklab/',
-                            'name': 'UT Dallas Think Lab'
-                        },
-                        {
-                            'url': 'http://www.uh.edu/class/psychology/dev-psych/research/cognitive-development/index.php',
-                            'name': 'University of Houston Cognitive Development Lab'
-                        }
-                    ],
-                    "Utah": [],
-                    "Vermont": [
-                        {
-                            'url': 'http://www.uvm.edu/psychology/?Page=developmental_labs.html&SM=researchsubmenu.html',
-                            'name': 'University of Vermont Developmental Laboratories (overview)'
-                        }
-                    ],
-                    "Virginia": [
-                        {
-                            'url': 'http://people.jmu.edu/vargakx/',
-                            'name': 'James Madison University Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://www.psyc.vt.edu/labs/socialdev',
-                            'name': 'Virginia Tech Social Development Lab'
-                        },
-                        {
-                            'url': 'http://faculty.virginia.edu/childlearninglab/',
-                            'name': 'University of Virginia Child Language and Learning Lab'
-                        },
-                        {
-                            'url': 'http://denhamlab.gmu.edu/labmembers.html',
-                            'name': 'George Mason University Child Development Lab'
-                        }
-                    ],
-                    "Washington": [
-                        {
-                            'url': 'http://depts.washington.edu/eccl/',
-                            'name': 'University of Washington Early Childhood Cognition'
-                        },
-                        {
-                            'url': 'https://depts.washington.edu/uwkids/',
-                            'name': 'University of Washington Social Cognitive Development Lab'
-                        },
-                        {
-                            'url': 'http://ilabs.uw.edu/institute-faculty/bio/i-labs-andrew-n-meltzoff-phd',
-                            'name': 'University of Washington Infant and Child Studies Lab'
-                        }
-                    ],
-                    "West Virginia": [
-                        {
-                            'url': 'http://www.wvuadolescentlab.com/',
-                            'name': 'WVU Adolescent Development Lab'
-                        }
-                    ],
-                    "Wisconsin": [
-                        {
-                            'url': 'https://sites.google.com/site/haleyvlach/',
-                            'name': 'University of Wisconsin Learning, Cognition, & Development Lab'
-                        }
-                    ],
-                    "Wyoming": []
-                };
-                $(document).ready(function () {
-                    $("#state-select")
-                        .change(function () {
-                            var state = "";
-                            $("select option:selected").each(function () {
-                                state += $(this).text() + " ";
-                            });
-                            $(".selected-state").text(state);
-                        }).change();
-                });
-                function populateLabList(state) {
-                    if (!state) {
-                        return;
-                    }
-                    var list = document.getElementById('lab-list');
-                    var nothingToShow = document.getElementById("nothing-to-show");
-                    nothingToShow.innerHTML = "";
-                    while (list.firstChild) {
-                        list.removeChild(list.firstChild);
-                    }
-                    var labList = allLabs[state];
-                    if (labList && labList.length) {
-                        for (i = 0; i < labList.length; i++) {
-                            var entry = document.createElement('li');
-                            var a = document.createElement('a');
-                            a.appendChild(document.createTextNode(labList[i].name));
-                            a.title = labList[i].name;
-                            a.href = labList[i].url;
-                            entry.appendChild(a);
-                            list.appendChild(entry);
-                        }
-                    } else {
-                        nothingToShow.innerHTML = "<br>Sorry, we don't know of any child development labs in " + state + " yet! But you can also participate online at <a href='https://childrenhelpingscience.com/' target='_blank'>Children Helping Science</a>.";
-                    }
-                }
-            </script>
-
+                            <h4>Learning about other minds: your child's developing theory of mind</h4>
+                            <iframe allowfullscreen
+                                    height="315"
+                                    src="https://www.youtube.com/embed/uxyVYATX9-M"
+                                    width="560"
+                                    title="YouTube Video"></iframe>
+                            <p>
+                                <strong>Age range</strong>: 2.5 to 5 years
+                        </p>
+                        <p>
+                            <strong>What you'll need</strong>: For the "Maxi and the chocolate" story, any props
+                        you'd like (you
+                        can
+                        try drawing a picture or acting out the story). For the word-learning task, two
+                        containers to hold
+                        two
+                        objects your child doesn't know a name for (weird kitchen tools, bike parts, etc.).
+                    </p>
+                    <p>
+                        In this lab, you'll see how your child thinks about what other people are thinking.
+                        Children under
+                        about
+                        four years old tend to have trouble expressing what's going on when someone else knows
+                        less than
+                        they
+                        do. They will often insist that everyone knows what they themselves know!
+                    </p>
+                    <h4>Learning to count: measuring your child's N-knower level</h4>
+                    <iframe allowfullscreen
+                            height="315"
+                            src="https://www.youtube.com/embed/i0q6H8MRXo8"
+                            width="560"
+                            title="YouTube Video">></iframe>
+                    <p>
+                        <strong>Age range</strong>: 1 to 5 years
+                </p>
+                <p>
+                    <strong>What you'll need</strong>: At least ten small objects your child can pick up,
+                like pegs or
+                Cheerios
+            </p>
         </div>
-    </article>
+    </div>
+</div>
+</div>
+</div>
+</article>
 </section>
-{% endblock %}
+<script src="{% static 'js/resources.js' %}"></script>
+{% endblock content %}

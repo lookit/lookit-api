@@ -1,51 +1,52 @@
-{% extends 'frontpages/default.html' %}
+{% extends "frontpages/default.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}Home{% endblock %}
-
+{% block title %}
+    Home
+{% endblock title %}
 {% block content %}
-        <div class="main">
-        	<div class="home-jumbotron">
-        		<div class="content">
-        			<h3>{% trans "Powered by Lookit" %}</h3>
-        			<h3>{% trans "Fun for Families, Serious for Science" %}</h3>
-					<a class="btn btn-primary btn-lg ember-view" href="{% url 'web:studies-list' %}" id="ember821">{% trans "Participate in a Study" %}</a>
-        		</div>
-        	</div>
-        	<div class="information-row lookit-row">
-        		<div class="container">
-        			<div class="row">
-        				<div class="col-md-4">
-        					<div class="home-content-icon">
-        						<i class="fa fa-flask"></i>
-        					</div>
-        					<h3 class="text-center">{% trans "Help Science" %}</h3>
-        					<p>{% trans "This website has studies you and your child can participate in from your home, brought to you by researchers from universities around the world!" %}</p>
-        				</div>
-        				<div class="col-md-4">
-        					<div class="home-content-icon">
-								<i class="fa fa-coffee"></i>
-        						
-        					</div>
-        					<h3 class="text-center">{% trans "From Home" %}</h3>
-        					<p>{% trans "You and your child use your computer to participate. Some studies can also be done on a tablet or phone." %}
-        				</div>
-        				<div class="col-md-4">
-        					<div class="home-content-icon">
-								<i class="fa fa-cogs"></i>	
-        					</div>
-        					<h3 class="text-center">{% trans "With Fun Activities" %}</h3>
-        					<p>{% trans "Many studies are either short games, or listening to a story and answering questions about it. Some are available at any time, and others are a scheduled video chat with a researcher." %}</p>
-        				</div>
-        			</div>
-        		</div>
-        	</div>
-        	
+    <div class="main">
+        <div class="home-jumbotron">
+            <div class="content">
+                <h3>{% trans "Powered by Lookit" %}</h3>
+                <h3>{% trans "Fun for Families, Serious for Science" %}</h3>
+                <a class="btn btn-primary btn-lg ember-view"
+                   href="{% url 'web:studies-list' %}"
+                   id="ember821">{% trans "Participate in a Study" %}</a>
+            </div>
         </div>
-    {% endblock %}
-
-	
-{% block footerlinks %}
-<li><a href="privacy">{% trans "Privacy" %}</a></li>
-<li><a href="contact_us">{% trans "Contact us" %}</a></li>
-{% endblock %}
+        <div class="information-row lookit-row">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="home-content-icon">
+                            <i class="fa fa-flask"></i>
+                        </div>
+                        <h3 class="text-center">{% trans "Help Science" %}</h3>
+                        <p>
+                            {% trans "This website has studies you and your child can participate in from your home, brought to you by researchers from universities around the world!" %}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="home-content-icon">
+                            <i class="fa fa-coffee"></i>
+                        </div>
+                        <h3 class="text-center">{% trans "From Home" %}</h3>
+                        <p>
+                            {% trans "You and your child use your computer to participate. Some studies can also be done on a tablet or phone." %}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="home-content-icon">
+                            <i class="fa fa-cogs"></i>
+                        </div>
+                        <h3 class="text-center">{% trans "With Fun Activities" %}</h3>
+                        <p>
+                            {% trans "Many studies are either short games, or listening to a story and answering questions about it. Some are available at any time, and others are a scheduled video chat with a researcher." %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,15 +1,12 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
-{% block title %}Children{% endblock %}
+{% block title %}
+    Children
+{% endblock title %}
 {% load i18n %}
-
 {% block flash %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
-{% endblock %}
+    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% endblock flash %}
 {% block content %}
     <script>
         $(document).ready(function() {
@@ -65,36 +62,30 @@
     {% bootstrap_messages %}
     <div class="container">
         <div class="row account-edit">
-            <div class="col-md-4 mb-lg">
-                 {% include 'accounts/_account-navigation.html' with current_page="children-list" %}
-            </div>
+            <div class="col-md-4 mb-lg">{% include 'accounts/_account-navigation.html' with current_page="children-list" %}</div>
             <div class="col-md-8">
-                <div id="add-child-form" style="display:{% if form_hidden %} none {% else %} inline {% endif %}">
+                <div id="add-child-form">
                     <div class="panel-heading">
-                      <h1 class="panel-title">
-                          {% trans "Add Child" %}
-                      </h1>
+                        <h1 class="panel-title">{% trans "Add Child" %}</h1>
                     </div>
                     <div class="panel panel-default">
-                      <div class="panel-body">
-                          <div class="panel-body">
-                            <form method="POST" action="">
-                                {% csrf_token %}
-                                {% bootstrap_form form %}
-                                {% buttons %}
-                              <div class="pull-right">
-                                  <a class="btn btn-default" href="{% url 'web:children-list' %}"> {% trans "Cancel" %} </a>
-                                  <button type="submit" class="btn btn-success">
-                                     {% bootstrap_icon "plus" %} {% trans "Add Child" %}
-                                  </button>
-                              </div>
-                              {% endbuttons %}
+                        <div class="panel-body">
+                            <div class="panel-body">
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    {% bootstrap_form form %}
+                                    {% buttons %}
+                                    <div class="pull-right">
+                                        <a class="btn btn-default" href="{% url 'web:children-list' %}">{% trans "Cancel" %}</a>
+                                        <button type="submit" class="btn btn-success">{% bootstrap_icon "plus" %} {% trans "Add Child" %}</button>
+                                    </div>
+                                {% endbuttons %}
                             </form>
                         </div>
                     </div>
-                  </div>
                 </div>
             </div>
         </div>
     </div>
-{% endblock %}
+</div>
+{% endblock content %}

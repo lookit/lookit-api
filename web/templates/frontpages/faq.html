@@ -1,28 +1,31 @@
-{% extends 'frontpages/default.html' %}
+{% extends "frontpages/default.html" %}
+{% load static %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}FAQ{% endblock %}
-
+{% block title %}
+    FAQ
+{% endblock title %}
 {% block content %}
-
-<div class="main">
-    <div class="lookit-row lookit-page-title">
-        <div class="container">
-            <h1>{% trans "Frequently Asked Questions"%}</h1>
+    <div class="main">
+        <div class="lookit-row lookit-page-title">
+            <div class="container">
+                <h1>{% trans "Frequently Asked Questions" %}</h1>
+            </div>
         </div>
-    </div>
-    <div class="lookit-row faq-row">
-        <div class="container">
-            <h3>{% trans "Participation"%}</h3>
-            <div class="panel-group" id="accordion">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse1">{% trans "What is a 'study' about cognitive development?"%}</a></h4>
-                    </div>
-                    <div id="collapse1" class="panel-collapse collapse" >
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+        <div class="lookit-row faq-row">
+            <div class="container">
+                <h3>{% trans "Participation" %}</h3>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">{% trans "What is a 'study' about cognitive development?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Cognitive development is the science of what kids understand and how they learn. Researchers in cognitive development are interested in questions like...</p>
                                 <ul>
                                     <li>What knowledge and abilities infants are born with, and what they have to learn from experience</li>
@@ -31,18 +34,20 @@
                                 </ul>
                                 <p>A study is meant to answer a very specific question about how children learn or what they know: for instance, 'Do three-month-olds recognize their parents' faces?'</p>
                                 {%endblocktrans%}
-                        </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse20">{% trans "Why participate in developmental research?"%}</a></h4>
-                    </div>
-                    <div id="collapse20" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                            {% blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse20">{% trans "Why participate in developmental research?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse20" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {% blocktrans%}
                             <p>Lots of reasons! Here are three:</p>
                             <ul>
                                 <li>Researchers work hard to make the studies engaging for children and families. We hope the study is fun for you and your child!</li>
@@ -50,18 +55,20 @@
                                 <li>While research studies aren't usually designed to affect outcomes for individual children, the more we understand about children, the more effective we can be in building a world where they learn and thrive. Your participation helps all of us!</li>
                             </ul>
                             {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse2">{% trans "What happens when my child participates in a research study?"%}</a></h4>
-                    </div>
-                    <div id="collapse2" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                            {% blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">{% trans "What happens when my child participates in a research study?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {% blocktrans%}
                             <p>If you have a child and would like to participate, create an account [LINK] and take a look at what we have available for your child's age range.  Some studies can be done at any time, and some involve a scheduled video chat with a university-based researcher. Most studies require a laptop/desktop with a webcam. The study description will tell you if you need any other supplies (such as a marker and paper, or a high chair for your baby to sit in.)</p>
                             <p>Each study will begin in the same way: you and your child will learn what the research is about, and you can then decide whether or not you want to do it. In most cases you'll be asked to read a consent form and record yourself stating that you and your child agree to participate. In other cases, you may electronically sign a form. In addition to permission from their parent or guardian, older children will also be asked directly if they want to participate.</p>
                             <p>Individual studies vary widely- we encourage you to try lots of different ones! Depending on your child's age, your child may answer questions directly or we may be looking for indirect signs of what she thinks is going on--like how long she looks at a surprising outcome. Some things that may happen in studies include:</p>
@@ -73,47 +80,53 @@
                             </ul>
                             <p>Some portions of the study will be automatically recorded using your webcam and sent securely to the Lookit platform. Trained researchers will watch the video and record your child's responses--for instance, which way he pointed, or how long she looked at each image. We'll put these together with responses from lots of other children to learn more about how kids think!</p>
                             {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse0">{% trans "Who creates the studies?"%}</a></h4>
-                    </div>
-                    <div id="collapse0" class="panel-collapse collapse" >
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse0">{% trans "Who creates the studies?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse0" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>All of the research conducted on the website is created by scientists to learn about child development, leading to articles in scientific journals. These publications can help inform other scientists, parents, educators, and policy-makers. Usually, these scientists work at colleges, universities, or hospitals. Rarely, a scientist who works at a nonprofit or a company might also do a study that fits this goal. If a study is meant to publish results in scientific journals for everyone to see (instead of just for one nonprofit or company), then it is possible it would appear on this website.</p>
                                 <p>If a scientist wants to use this platform, their institution has to sign a contract with MIT where they agree to the <a href="https://lookit.mit.edu/termsofuse">Terms of Use</a> and certify that their studies will be reviewed and approved by an institutional review board. Studies are also subject to review and approval by Lookit/Children Helping Science. As of January 2022, we have agreements with over 50 universities, including institutions in the United States, Canada, the United Kingdom, and European Union.</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse21">{% trans "Who will my child and I meet when we do a study involving a scheduled video chat?"%}</a></h4>
-                    </div>
-                    <div id="collapse21" class="panel-collapse collapse" >
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse21">{% trans "Who will my child and I meet when we do a study involving a scheduled video chat?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse21" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>The studies hosted on our site come from universities all around the world. For studies that involve a scheduled video chat, you will meet a researcher from the lab associated with the university doing the study. These researchers work as part of a team that always includes a "principal investigator" -- the supervisor (usually a professor) who is in charge of the lab). Studies will be conducted by someone under the direct supervision of that principal investigator (e.g., a lab manager, research assistant, or a postdoctoral, graduate, or undergraduate researcher in training).</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse7">{% trans "Why are you running studies online instead of in person?"%}</a></h4>
-                    </div>
-                    <div id="collapse7" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse7">{% trans "Why are you running studies online instead of in person?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse7" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Traditionally, developmental studies happen in a quiet room in a university lab. Researchers call or email local parents to see if they'd like to take part and schedule an appointment for them to come visit the lab.</p>
                                 <p>While researchers have been exploring online studies with children for several years, the COVID pandemic in 2020 forced most developmental labs to stop in-person visits entirely. Some studies will always need to take place in a lab, but some work very well online, and we have found these studies have a number of benefits for both families and scientists.</p>
                                 <p>Why complement these in-lab studies with online ones? We're hoping to...</p>
@@ -129,56 +142,68 @@
                                     <li>Communicate with families about the research we're doing and what we can learn from it</li>
                                 </ul>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading collapsed">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse3">{% trans "How do we provide consent to participate?"%}</a></h4>
-                    </div>
-                    <div id="collapse3" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading collapsed">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">{% trans "How do we provide consent to participate?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse3" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Rather than having the parent or legal guardian sign a form, we ask that you read aloud (or sign in ASL) a statement of consent which is recorded using your webcam. This statement holds the same weight as a signed form, but should be less hassle for you. It also lets us verify that you understand written English and that you understand you're being videotaped.</p>
                                 <p>Researchers watch these consent videos on a special page of the researcher interface, and record for each one whether the video shows informed consent. They cannot view other video or download data from a session unless they have confirmed that you consented to participate! If they see a consent video that does NOT clearly demonstrate informed consent--for instance, there was a technical problem and there's no audio--they may contact you to check, depending on your email settings.</p>
                                 {%endblocktrans%}
-                                <div class="row">
-                                    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                        <video controls="true" src='{% trans "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4" %}'></video>
+                                    <div class="row">
+                                        <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/consent.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/consent.vtt' %}"/>
+                                            </video>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse4">{% trans "How is our information kept secure and confidential?"%}</a></h4>
-                    </div>
-                    <div id="collapse4" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">{% trans "How is our information kept secure and confidential?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse4" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>
                                 Researchers using Lookit agree to uphold a common set of standards about how data is protected and shared. For instance, they never publish children's names or birthdates, or information that could be used to calculate a birthdate.</p>
                                 <p>The Lookit researcher interface is designed with participant data protection as the top priority. For instance, a special interface lets researchers confirm consent videos before they are able to download any other data from your session. Research groups can control who has access to what data in a very fine-grained way, for instance allowing an assistant to confirm consent and send gift cards, but not download study data.</p>
                                 <p>All of your data, including video, is transmitted over a secure HTTPS connection to Lookit storage, and is encrypted at rest. We take security very seriously; in addition to making sure any software we use is up-to-date, cloud servers are configured securely, and unit tests cover checking that accessing data requires correct permissions, we conducted a risk assessment and detailed manual penetration testing with a security contractor prior to our 2020 launch.</p>
                                 <p>See also 'Who will see our video?'</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse5">{% trans "Who will see our video?"%}</a></h4>
-                    </div>
-                    <div id="collapse5" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse5">{% trans "Who will see our video?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse5" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Lookit staff at MIT will have access to your video and other data in order to improve and promote the platform and help with troubleshooting. The researchers running the study you participated in will also have access to your video and other data (like responses to questions during the study, and information you fill out when registering a child) for research purposes. They will watch the video segments you send to mark down information specific to the study--for instance, what your child said, or how long he/she looked to the left versus the right of the screen. This research group may be at MIT or at another institution. All studies run on Lookit must be approved by an Institutional Review Board (IRB) that ensures participants' rights and welfare are protected. All researchers using Lookit also agree to Terms of Use that govern what data they can share and what sorts of studies are okay to run on Lookit; these rules are sometimes stricter than their own institution might be.  </p>
                                 <p>Whether anyone else may view the video depends on the privacy settings you select at the end of the study. There are two decisions to make: whether to share your data with Databrary, and how to allow your video clips to be used by the researchers you have selected.</p>
                                 <p>First, we ask if you would like to share your data (including video) with authorized users fo the secure data library Databrary. Data sharing will lead to faster progress in research on human development and behavior. Researchers who are granted access to the Databrary library must agree to treat the data with the same high standard of care they would use in their own laboratories. Learn more about Databrary's <a href="https://databrary.org/about.html">mission</a> or the <a href="https://databrary.org/about/agreement.html">requirements for authorized users</a>.</p>
@@ -190,331 +215,421 @@
                                 </ul>
                                 <p>If for some reason you do not select a privacy level, we treat the data as 'Private' and do not share with Databrary. Participants also have the option to withdraw all video besides consent at the end of the study if necessary (for instance, because someone was discussing state secrets in the background), and in this case it is automatically deleted. Privacy settings for completed sessions cannot automatically be changed retroactively. If you have any questions or concerns about privacy, please contact our team at <a href="mailto:lookit@mit.edu">lookit@mit.edu</a>.</p>
                                 {%endblocktrans%}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse6">{% trans "What information do researchers use from our video?"%}</a></h4>
-                    </div>
-                    <div id="collapse6" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                
-                                <p>{% trans "For children under about two years old, we usually design our studies to let their eyes do the talking! We're interested in where on the screen your child looks and/or how long your child looks at the screen rather than looking away. Our calibration videos (example shown below) help us get an idea of what it looks like when your child is looking to the right or the left, so we can code the rest of the video."%}</p>
-                                
-                                <div class="row">
-                                    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                        <video controls="true" src="https://storage.googleapis.com/lookit-staging/static/videos/attentiongrabber.mp4"></video>
-                                    </div>
                                 </div>
-                                <p>{% trans "Here's an example of a few children watching our calibration video--it's easy to see that they look to one side and then the other."%}</p>
-                                <div class="row">
-                                    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                        <video controls="true" src="https://storage.googleapis.com/lookit-staging/static/videos/spinningball.mp4"></video>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse6">{% trans "What information do researchers use from our video?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse6" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    <p>
+                                        {% trans "For children under about two years old, we usually design our studies to let their eyes do the talking! We're interested in where on the screen your child looks and/or how long your child looks at the screen rather than looking away. Our calibration videos (example shown below) help us get an idea of what it looks like when your child is looking to the right or the left, so we can code the rest of the video." %}
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/attentiongrabber.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/attentiongrabber.vtt' %}"/>
+                                            </video>
+                                        </div>
                                     </div>
-                                </div>
-                                <p>{% trans "Your child's decisions about where to look can give us lots of information about what he or she understands. Here are some of the techniques labs use to learn more about how children learn."%}</p>
-                                <h4>{% trans "Habituation" %}</h4>
-                                {%blocktrans%}
-                                <p>In a habituation study, we first show infants many examples of one type of object or event, and they lose interest over time. Infants typically look for a long time at the first pictures, but then they start to look away more quickly. Once their looking times are much less than they were initially, we show either a picture from a new category or a new picture from the familiar category. If infants now look longer to the novel example, we can tell that they understood--and got bored of--the category we showed initially.</p>
-                                <p>Habituation requires waiting for each individual infant to achieve some threshold of "boredness"--for instance, looking half as long at a picture as he or she did initially. Sometimes this is impractical, and we use familiarization instead. In a familiarization study, we show all babies the same number of examples, and then see how interested they are in the familiar versus a new category. Younger infants and those who have seen few examples tend to show a familiarity preference--they look longer at images similar to what they have seen before. Older infants and those who have seen many examples tend to show a novelty preference--they look longer at images that are different from the ones they saw before. You probably notice the same phenomenon when you hear a new song on the radio: initially you don't recognize it; after it's played several times you may like it and sing along; after it's played hundreds of times you would choose to listen to anything else.</p>
-                                {%endblocktrans%}
-
-                                <h4>{% trans "Violation of expectation"%}</h4>
-                                <p>{% trans "Infants and children already have rich expectations about how events work. Children (and adults for that matter) tend to look longer at things they find surprising, so in some cases, we can take their looking times as a measure of how surprised they are."%}</p>
-                                <h4>{% trans "Preferential looking"%}</h4>
-                                <p>{% trans "Even when they seem to be passive observers, children are making lots of decisions about where to look and what to pay attention to. In this technique, we present children with a choice between two side-by-side images or videos, and see if children spend more time looking at one of them. We may additionally play audio that matches one of the videos. The video below shows a participant looking to her left when asked to 'find clapping'; the display she's watching is shown at the top."%}</p>
-                                <div class="row">
-                                    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                        <video controls="true" src="https://storage.googleapis.com/lookit-staging/static/videos/clapping.mp4"></video>
+                                    <p>
+                                        {% trans "Here's an example of a few children watching our calibration video--it's easy to see that they look to one side and then the other." %}
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/spinningball.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/spinningball.vtt' %}"/>
+                                            </video>
+                                        </div>
                                     </div>
-                                </div>
-                                <h4>{% trans "Predictive looking"%}</h4>
-                                <p>{% trans "Children can often make sophisticated predictions about what they expect to see or hear next. One way we can see those predictions in young children is to look at their eye movements. For example, if a child sees a ball roll behind a barrier, she may look to the other edge of the barrier, expecting the ball to emerge there. We may also set up artificial predictive relationships--for instance, the syllable 'da' means a toy will appear at the left of the screen, and 'ba' means a toy will appear at the right. Then we can see whether children learn these relationships, and how they generalize, by watching where they look when they hear a syllable."%}</p>
-                                <p></p>
-                                <p>{% trans "Older children may simply be able to answer spoken questions about what they think is happening. For instance, in a recent study, two women called an object two different made-up names, and children were asked which is the correct name for the object."%}</p>
-                                <div class="row">
-                                    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                        <video controls="true" src="https://storage.googleapis.com/lookit-staging/static/videos/causal_ex2.mp4"></video>
+                                    <p>
+                                        {% trans "Your child's decisions about where to look can give us lots of information about what he or she understands. Here are some of the techniques labs use to learn more about how children learn." %}
+                                    </p>
+                                    <h4>
+                                        {% trans "Habituation" %}
+                                    </h4>
+                                    {%blocktrans%} <p>In a habituation study, we first show infants many examples of one type of object or event, and they lose interest over time. Infants typically look for a long time at the first pictures, but then they start to look away more quickly. Once their looking times are much less than they were initially, we show either a picture from a new category or a new picture from the familiar category. If infants now look longer to the novel example, we can tell that they understood--and got bored of--the category we showed initially.</p> <p>Habituation requires waiting for each individual infant to achieve some threshold of "boredness"--for instance, looking half as long at a picture as he or she did initially. Sometimes this is impractical, and we use familiarization instead. In a familiarization study, we show all babies the same number of examples, and then see how interested they are in the familiar versus a new category. Younger infants and those who have seen few examples tend to show a familiarity preference--they look longer at images similar to what they have seen before. Older infants and those who have seen many examples tend to show a novelty preference--they look longer at images that are different from the ones they saw before. You probably notice the same phenomenon when you hear a new song on the radio: initially you don't recognize it; after it's played several times you may like it and sing along; after it's played hundreds of times you would choose to listen to anything else.</p>
+{%endblocktrans%}
+                                    <h4>
+                                        {% trans "Violation of expectation" %}
+                                    </h4>
+                                    <p>
+                                        {% trans "Infants and children already have rich expectations about how events work. Children (and adults for that matter) tend to look longer at things they find surprising, so in some cases, we can take their looking times as a measure of how surprised they are." %}
+                                    </p>
+                                    <h4>
+                                        {% trans "Preferential looking" %}
+                                    </h4>
+                                    <p>
+                                        {% trans "Even when they seem to be passive observers, children are making lots of decisions about where to look and what to pay attention to. In this technique, we present children with a choice between two side-by-side images or videos, and see if children spend more time looking at one of them. We may additionally play audio that matches one of the videos. The video below shows a participant looking to her left when asked to 'find clapping'; the display she's watching is shown at the top." %}
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/clapping.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/clapping.vtt' %}"/>
+                                            </video>
+                                        </div>
                                     </div>
+                                    <h4>
+                                        {% trans "Predictive looking" %}
+                                    </h4>
+                                    <p>
+                                        {% trans "Children can often make sophisticated predictions about what they expect to see or hear next. One way we can see those predictions in young children is to look at their eye movements. For example, if a child sees a ball roll behind a barrier, she may look to the other edge of the barrier, expecting the ball to emerge there. We may also set up artificial predictive relationships--for instance, the syllable 'da' means a toy will appear at the left of the screen, and 'ba' means a toy will appear at the right. Then we can see whether children learn these relationships, and how they generalize, by watching where they look when they hear a syllable." %}
+                                    </p>
+                                    <p>
+                                        {% trans "Older children may simply be able to answer spoken questions about what they think is happening. For instance, in a recent study, two women called an object two different made-up names, and children were asked which is the correct name for the object." %}
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+                                            <video controls preload="metadata">
+                                                <source src="{% static 'videos/causal_ex2.mp4' %}" type="video/mp4"/>
+                                                <track label="English"
+                                                       kind="captions"
+                                                       srclang="en"
+                                                       src="{% static 'videos/english/causal_ex2.vtt' %}"/>
+                                            </video>
+                                        </div>
+                                    </div>
+                                    <p>
+                                        {% trans "Another way we can learn about how older children (and adults) think is to measure their reaction times. For instance, we might ask you to help your child learn to press one key when a circle appears and another key when a square appears, and then look at factors that influence how quickly they press a key." %}
+                                    </p>
                                 </div>
-                                <p>{% trans "Another way we can learn about how older children (and adults) think is to measure their reaction times. For instance, we might ask you to help your child learn to press one key when a circle appears and another key when a square appears, and then look at factors that influence how quickly they press a key."%}</p>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse9">{% trans "My child wasn't paying attention, or we were interrupted. Can we try the study again?"%}</a></h4>
-                    </div>
-                    <div id="collapse9" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                <p>{% trans "Certainly--thanks for your dedication! You may see a warning that you have already participated in the study when you go to try it again, but you can ignore it. You don't need to tell us that you tried the study before; we'll have a record of your previous participation."%}</p>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse9">{% trans "My child wasn't paying attention, or we were interrupted. Can we try the study again?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse9" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    <p>
+                                        {% trans "Certainly--thanks for your dedication! You may see a warning that you have already participated in the study when you go to try it again, but you can ignore it. You don't need to tell us that you tried the study before; we'll have a record of your previous participation." %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse10">{% trans "My child is outside the age range. Can he/she still participate in this study?"%}</a></h4>
-                    </div>
-                    <div id="collapse10" class="panel-collapse collapse" >
-                        <div class="panel-body">
-                            <div>
-                                <p>{% trans "Sure! We may not be able to use his or her data in our research directly, but if you're curious you're welcome to try the study anyway. (Sometimes big siblings really want their own turn!) If your child is just below the minimum age for a study, however, we encourage you to wait so that we'll be able to use the data."%}</p>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse10">{% trans "My child is outside the age range. Can he/she still participate in this study?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse10" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    <p>
+                                        {% trans "Sure! We may not be able to use his or her data in our research directly, but if you're curious you're welcome to try the study anyway. (Sometimes big siblings really want their own turn!) If your child is just below the minimum age for a study, however, we encourage you to wait so that we'll be able to use the data." %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse11">{% trans "My child was born prematurely. Should we use his/her adjusted age?"%}</a></h4>
-                    </div>
-                    <div id="collapse11" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                <p>{% trans "For study eligibility, we usually use the child's chronological age (time since birth), even for premature babies. If adjusted age is important for a particular study, we will make that clear in the study eligibility criteria."%}</p>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse11">{% trans "My child was born prematurely. Should we use his/her adjusted age?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse11" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    <p>
+                                        {% trans "For study eligibility, we usually use the child's chronological age (time since birth), even for premature babies. If adjusted age is important for a particular study, we will make that clear in the study eligibility criteria." %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse12">{% trans "Our family speaks a language other than English at home. Can my child participate?"%}</a></h4>
-                    </div>
-                    <div id="collapse12" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                <p>{% trans "Sure! Right now, instructions for children and parents are written only in English, so some of them may be confusing to a child who does not hear English regularly. However, you're welcome to try any of the studies and translate for your child if you can. If it matters for the study whether your child speaks any languages besides English, we'll ask specifically. You can also indicate the languages your child speaks or is learning to speak on your demographic survey."%}</p>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse12">{% trans "Our family speaks a language other than English at home. Can my child participate?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse12" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    <p>
+                                        {% trans "Sure! Right now, instructions for children and parents are written only in English, so some of them may be confusing to a child who does not hear English regularly. However, you're welcome to try any of the studies and translate for your child if you can. If it matters for the study whether your child speaks any languages besides English, we'll ask specifically. You can also indicate the languages your child speaks or is learning to speak on your demographic survey." %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse13">{% trans "My child has been diagnosed with a developmental disorder or has special needs. Can he/she still participate?"%}</a></h4>
-                    </div>
-                    <div id="collapse13" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse13">{% trans "My child has been diagnosed with a developmental disorder or has special needs. Can he/she still participate?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse13" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Of course! We're interested in how all children learn and grow. If you'd like, you can make a note of any developmental disorders in the comments section at the end of the study. We are excited that in the future, online studies may help more families participate in research to better understand their own children's diagnoses.</p>
                                 <p>One note: most of our studies include both images and sound, and may be hard to understand if your child is blind or deaf. If you can, please feel free to help out by describing images or signing.</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading collapsed">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse14">{% trans "I have multiple children in the age range for a study. Can they participate together?"%}</a></h4>
-                    </div>
-                    <div id="collapse14" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                <p>{% trans "If possible, we ask that each child participate separately. When children participate together they generally influence each other. That's a fascinating subject in its own right but usually not the focus of our research."%}</p>
+                    <div class="panel panel-default">
+                        <div class="panel-heading collapsed">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse14">{% trans "I have multiple children in the age range for a study. Can they participate together?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse14" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    <p>
+                                        {% trans "If possible, we ask that each child participate separately. When children participate together they generally influence each other. That's a fascinating subject in its own right but usually not the focus of our research." %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse15">{% trans "But I've heard that young children should avoid 'screen time.'"%}</a></h4>
-                    </div>
-                    <div id="collapse15" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse15">{% trans "But I've heard that young children should avoid 'screen time.'" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse15" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>We agree with the American Academy of Pediatrics <a href="https://pediatrics.aappublications.org/content/138/5/e20162591" target="_blank">advice</a> that children learn best from people, not screens! However, our studies are not intended to educate children, but to learn from them.</p>
                                 <p>As part of a child's limited screen time, we hope that our studies will foster family conversation and engagement with science that offsets the few minutes spent watching a video instead of playing. And we do "walk the walk"--our own young children provide lots of feedback on our studies!</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse16">{% trans "Will we be paid for our participation?"%}</a></h4>
-                    </div>
-                    <div id="collapse16" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                <p>{% trans "Some research groups provide gift cards or other compensation for completing their studies, and others rely on volunteers. (This often depends on the rules of the university that's doing the research.) This information will be listed on the study description page."%}</p>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse16">{% trans "Will we be paid for our participation?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse16" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    <p>
+                                        {% trans "Some research groups provide gift cards or other compensation for completing their studies, and others rely on volunteers. (This often depends on the rules of the university that's doing the research.) This information will be listed on the study description page." %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading collapsed">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse17">{% trans "Can I learn the results of the research my child does?"%}</a></h4>
-                    </div>
-                    <div id="collapse17" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading collapsed">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse17">{% trans "Can I learn the results of the research my child does?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse17" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>You should expect to get an explanation about the purpose of every study you participate in when you consent to the study. At the end of the study, especially when it is a video chat, you should have a chance to ask any questions you like.</p>
                                 <p>In general though, the goal of research studies is to learn about children in general, not any particular child. Thus, the information we get is usually not appropriate for making diagnoses or assessing the performance of individuals. For instance, while it might be interesting to learn that your child looked 70% of the time at videos where things fell up versus falling down today, we won't be able to tell you whether this means your child is going to be especially good at physics.</p>
                                 <p>If you're interested in getting individual results right away, please see our <a href='resources'>Resources</a> section for fun at-home activities you can try with your child.</p>
                                 <p>Researchers usually aim to share the general results of studies in scientific journals (e.g., “The majority of three-year-olds chose option A; the majority of five-year-olds chose option B."). You can click <a href = "https://childrenhelpingscience.com/publications">here</a> to see some examples of scientific research published with data collected online with children.</p>
                                 <p>There can be a long lag between conducting a study and publication -- your five-year-olds might be eight-year-olds before the results are in press! So in addition to scientific publications, many of the labs that post studies on this website have ways for parents to sign up to receive updates. You can also set your communication preferences to be notified by Lookit when we have results from studies you participated in.</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading collapsed">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse23">{% trans "I love this. How do I share this site?"%}</a></h4>
-                    </div>
-                    <div id="collapse23" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading collapsed">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse23">{% trans "I love this. How do I share this site?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse23" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Become a parent ambassador! One of the biggest challenges in developmental research is reaching families like you. With more children, we can also answer more sophisticated questions -- including questions about individual differences, the ways many different factors can interact to affect outcomes. Families like yours can help us make our science more representative and more reliable. </p>
                                 <p>If you like what you are doing, please share this website (<a href = "https://lookit.mit.edu">https://lookit.mit.edu</a>), with our sincere thanks. Research on child development would be impossible without the support of parents like you.</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading collapsed">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse24">{% trans "What is the Parent Researcher Collaborative (PaRC)?"%}</a></h4>
-                    </div>
-                    <div id="collapse24" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading collapsed">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse24">{% trans "What is the Parent Researcher Collaborative (PaRC)?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse24" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>If you are a parent who has participated with your child in a study on this website, or a university-based researcher who has posted a study on this website, then we consider you a member of the Parent Researcher Collaborative!</p>
                                 <p>If you are asking who runs this website, the answer is that we are a collaboration between two projects for online studies with children, Lookit and Children Helping Science. Lookit was founded by <a href = "https://kimberscott.github.io/">Kim Scott</a> and <a href = "http://eccl.mit.edu/">Laura Schulz</a> at MIT, and is now lead by Executive Director <a href = "http://www.melissaklinestruhl.com/">Melissa Kline Struhl</a>.  The original Children Helping Science website was created by <a href = "https://projects.iq.harvard.edu/ccdlab">Elizabeth Bonawitz</a> at Harvard, <a href = "http://sll.stanford.edu/">Hyowon Gweon</a> at Stanford, <a href = "https://compdevlab.yale.edu/">Julian Jara-Ettinger</a> at Yale, <a href = "https://www.utdallas.edu/thinklab/">Candice Mills</a> at UT Dallas, <a href = "http://eccl.mit.edu/">Laura Schulz</a> at MIT, and <a href = "https://www.minerva.kgi.edu/people/mark-sheskin-phd/">Mark Sheskin</a> at Minerva University. Mark did the web development (based on an initial design by Junyi Chu, a student in Laura's lab) and the logo was designed by Natalia Vélez, a student in Hyowon's lab. </p>
                                 <p>We decided it would be nice for there to be one place online where parents and researchers could go to connect with each other to support research into child development!</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading collapsed">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse25">{% trans "How can I contact you?"%}</a></h4>
-                    </div>
-                    <div id="collapse25" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading collapsed">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse25">{% trans "How can I contact you?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse25" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>For information about individual studies, please see the "study details" page, which will always include contact information for the lab running that study. </p>
                                 <p>If you want to get in touch with the researchers organizing this website, you can reach us by email at <a href="mailto:lookit@mit.edu">lookit@mit.edu</a>.</p>
                                 <p>To report any technical difficulties during participation, please contact our team by email at <a href="mailto:lookit-tech@mit.edu">lookit@mit.edu</a>.</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <h3>{% trans "Technical"%}</h3>
-            <div class="panel-group">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse18">{% trans "What browsers are supported?"%}</a></h4>
-                    </div>
-                    <div id="collapse18" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                <p>{% trans "Lookit supports recent versions of Chrome and Firefox. We are not currently able to support Internet Explorer or Safari."%}</p>
+                <h3>
+                    {% trans "Technical" %}
+                </h3>
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse18">{% trans "What browsers are supported?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse18" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    <p>
+                                        {% trans "Lookit supports recent versions of Chrome and Firefox. We are not currently able to support Internet Explorer or Safari." %}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse19">{% trans "Can we do a study on my phone or tablet?"%}</a></h4>
-                    </div>
-                    <div id="collapse19" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse19">{% trans "Can we do a study on my phone or tablet?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse19" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Most studies require a laptop or desktop with a webcam. Because we're measuring kids' looking patterns, we need a reasonably stable view of their eyes and a big enough screen that we can tell whether they're looking at the left or the right side of it. We're excited about the potential for touchscreen studies that allow us to observe infants and toddlers exploring, though!</p>
                                 <p>Some studies, especially surveys meant for older children and teens, may work on your phone or tablet - the study description should mention this if so.</p>
-                                {%endblocktrans%}
-                                    
+{%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse26">{% trans "My study isn't working, what can I do?"%}</a></h4>
-                    </div>
-                    <div id="collapse26" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse26">{% trans "My study isn't working, what can I do?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse26" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>If you are trying to participate in a study and having difficulties, please start by contacting the researchers who made that specific study.  If you still need help, you can also reach the Lookit team for help at <a href="mailto:lookit-tech@mit.edu">lookit-tech@mit.edu</a>.</p>
                                 <p>If you are a researcher working on creating a study, you can find help in our <a href="https://lookit.readthedocs.io/en/develop/index.html">documentation</a>, and in our <a href = "https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform">Slack community</a>.</p>
-                                {%endblocktrans%}
-                                    
+{%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse27">{% trans "What security measures do you implement?"%}</a></h4>
-                    </div>
-                    <div id="collapse27" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse27">{% trans "What security measures do you implement?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse27" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Here at Lookit we are very concerned about protecting your and your children's data, and our software is designed to take advantage of up-to-date security measures. You can read a bit about how we do this in our <a href = "https://lookit.readthedocs.io/en/develop/community-irb-and-legal-information.html#sub-processors-and-information-about-gdpr-compliance-dpas">documentation</a>, and an updated HECVAT is available by emailing <a href="mailto:lookit@mit.edu">lookit@mit.edu</a>.</p>
-                                {%endblocktrans%}
-                                    
+{%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
                 </div>
-            </div>
-            <h3>{% trans "For Researchers"%}</h3>
-            <div class="panel-group">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse29">{% trans "How can I list my study?"%}</a></h4>
-                    </div>
-                    <div id="collapse29" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                <h3>
+                    {% trans "For Researchers" %}
+                </h3>
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse29">{% trans "How can I list my study?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse29" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>In order to list your study on this website, you first will need to have your institution sign a contract with MIT where they agree to the <a href="https://lookit.mit.edu/termsofuse">Terms of Use</a> and certify that their studies will be reviewed and approved by an institutional review board. You will also need to edit your IRB protocol to include online testing, or submit a new protocol for your proposed online study.</p>
                                 <p>As of January 2022, we have agreements with over 50 universities, including institutions in the United States, Canada, the United Kingdom, and European Union. Please email <a href="mailto:lookit-tech@mit.edu">lookit@mit.edu</a> if you are not sure whether your institution already has an agreement, or if you need any help at all getting your paperwork in order.</p>
                                 <p>While you are completing these steps, you can get started on Lookit by creating a lab account, creating your first study, and getting it peer reviewed by our researcher community. A step-by-step guide to getting started is available <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html">here</a>.</p>
                                 {%endblocktrans%}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#collapse30">{% trans "Where can I discuss best practices for online research with other researchers?"%}</a></h4>
-                    </div>
-                    <div id="collapse30" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <div>
-                                {%blocktrans%}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse30">{% trans "Where can I discuss best practices for online research with other researchers?" %}</a>
+                            </h4>
+                        </div>
+                        <div id="collapse30" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div>
+                                    {%blocktrans%}
                                 <p>Lookit has a <a href = "https://docs.google.com/forms/d/e/1FAIpQLScI2h7G6aUSJb-I3fGHw2nB8HcuaomuNLiwta2CXhGGF2ZL-Q/viewform">Slack community</a> for researchers to ask for help, conduct peer review, and discuss online research methods.</p>
                                 <p>The Society for Research in Child Development also has a <a href = "https://commons.srcd.org/communities/community-home/digestviewer/viewthread?CommunityKey=bd3d326e-b7db-49bf-abbb-73642ac0576c&GroupId=109&MessageKey=0871d623-bd97-48c5-b8e4-54ecda9de9d8&ReturnUrl=%2Fcommunities%2Fcommunity-home%2Fdigestviewer%3Fcommunitykey%3Dbd3d326e-b7db-49bf-abbb-73642ac0576c%26tab%3Ddigestviewer&tab=digestviewer">discussion forum</a> you might check out!</p>
-                                {%endblocktrans%}
-                                    
+{%endblocktrans%}
+                                </div>
                             </div>
                         </div>
-                    </div>                  
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-{% endblock %}
+{% endblock content %}

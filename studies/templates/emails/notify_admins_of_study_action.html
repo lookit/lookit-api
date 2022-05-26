@@ -4,24 +4,24 @@
 <p>
     {% if action == 'submitted' %}
         {{ researcher_name }} from {{ lab_name }} has submitted a study for approval: {{ study_name }}
-        <br>
+        <br />
         Comments about this submission from the research group:
-        <br>
+        <br />
         {{ comments|linebreaks }}
-        <br>
-        You can approve or disapprove the study <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">here</a>.
-    {% elif action == 'retracted' %}
-        {{ researcher_name }} has retracted the submission of a study: {{ study_name }}
-    {% elif action == 'active' %}
-        {{ researcher_name }} has started the study
-        <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">{{ study_name }}</a>.
-    {% elif action == 'paused' %}
-        {{ researcher_name }} has paused the study
-        <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">{{ study_name }}</a>.
-    {% elif action == 'deactivated' %}
-        {{ researcher_name }} has deactivated the study
-        <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">{{ study_name }}</a>.
-    {% elif action == 'deployed' %}
-        An experiment runner has been built for <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">{{ study_name }}</a>. This study can be previewed <a href="{{ base_url }}{% url 'exp:preview-detail' uuid=study_uuid %}">here</a>. When this study is approved and activated, participants will be able to access it <a href="{{ base_url }}{% url 'web:study-detail' uuid=study_uuid %}">here</a>.
-    {% endif %}
+        <br />
+    You can approve or disapprove the study <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">here</a>.
+{% elif action == 'retracted' %}
+    {{ researcher_name }} has retracted the submission of a study: {{ study_name }}
+{% elif action == 'active' %}
+    {{ researcher_name }} has started the study
+    <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">{{ study_name }}</a>.
+{% elif action == 'paused' %}
+{{ researcher_name }} has paused the study
+<a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">{{ study_name }}</a>.
+{% elif action == 'deactivated' %}
+{{ researcher_name }} has deactivated the study
+<a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">{{ study_name }}</a>.
+{% elif action == 'deployed' %}
+An experiment runner has been built for <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">{{ study_name }}</a>. This study can be previewed <a href="{{ base_url }}{% url 'exp:preview-detail' uuid=study_uuid %}">here</a>. When this study is approved and activated, participants will be able to access it <a href="{{ base_url }}{% url 'web:study-detail' uuid=study_uuid %}">here</a>.
+{% endif %}
 </p>

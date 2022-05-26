@@ -1,105 +1,95 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load guardian_tags %}
 {% load exp_extras %}
 {% load static %}
 {% load tz %}
-
 {% block head %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css"
-          href="{% static 'exp/css/datatables.min.css' %}"/>
     <link rel="stylesheet"
-          href="{% static 'css/bootstrap-select.min.css' %}">
-    <link href="{% static 'exp/css/summernote.min.css' %}" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.min.css' %}"/>
-    <!-- Moment -->
+          type="text/css"
+          href="{% static 'exp/css/datatables.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}"/>
+    <link href="{% static 'exp/css/summernote.min.css' %}" rel="stylesheet"/>
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'css/daterangepicker.min.css' %}"/>
     <script type="text/javascript" src="{% static 'js/moment.min.js' %}" integrity="sha384-pUJlcb0s5ZVM8ujEW3wr2qTVRBbcLEIvcEVEhk9GUd65R3z4uPx9NlB52/4+R3b3"></script>
-    <!-- Datatables -->
-    <script type="text/javascript"
-            src="{% static 'exp/js/datatables.min.js' %}" integrity="sha384-A731IT4Y5cwczV+LdDgi3PAWsaSSCxorR9wOZo+oYfR35xVe51t9A/fAK1kQLDBC"></script>
-    <!-- Bootstrap Select -->
+    <script type="text/javascript" src="{% static 'exp/js/datatables.min.js' %}" integrity="sha384-A731IT4Y5cwczV+LdDgi3PAWsaSSCxorR9wOZo+oYfR35xVe51t9A/fAK1kQLDBC"></script>
     <script src="{% static 'js/bootstrap-select.min.js' %}" integrity="sha384-8fu9aU0rBHyWhoS96J+3YorJqJZsUp8c3IkInX6NKYi/K/jmG98rDibD+JgkI+fZ"></script>
-    <!-- Summernote -->
     <script type="text/javascript" src="{% static 'exp/js/summernote.min.js' %}" integrity="sha384-6DIICtAGseoEwUySTKiK/vQcEGp0pWlj8EhiaY7LCQOIei0pugca4VXG9+TKWbOX"></script>
-    <!-- Datepicker -->
     <script type="text/javascript" src="{% static 'js/daterangepicker.min.js' %}" integrity="sha384-ty7j9l9dyFJXResSJqxWIltBRwUxu77rLFQK18vubTvNC+6NUMAeu/xri9AU0WqK"></script>
-{% endblock %}
-
-{% block title %}Contact Participants{% endblock %}
-
-{# this "flash" block is just for notifications. It's defined in base and overridden here. #}
+{% endblock head %}
+{% block title %}
+    Contact Participants
+{% endblock title %}
 {% block flash %}
     {% if messages %}
         {% for message in messages %}
             {% if message.extra_tags != 'message_sent' %}
                 <div id="details" class="alert {{ message.tags }} alert-dismissable">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
                     {{ message }}
                 </div>
             {% endif %}
         {% endfor %}
     {% endif %}
-{% endblock %}
-
+{% endblock flash %}
 {% block content %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-                    <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
-                    <li class="active"> Contact Participants</li>
+                    <li>
+                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
+                    </li>
+                    <li class="active">Contact Participants</li>
                 </ol>
             </div>
         </div>
         <div class="row">
             <section class="col-lg-7">
                 <div class="panel panel-default mt-md">
-                    <div class="panel-heading"><h3 class="panel-title">Previous Messages</h3></div>
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Previous Messages</h3>
+                    </div>
                     <div class="panel-body">
-
                         <table id="messages-table" class="table table-condensed">
                             <thead>
-                            <tr>
-                                <th scope="col">UUID</th>
-                                <th scope="col">Sender</th>
-                                <th scope="col">Subject</th>
-                                <th scope="col">Recipients</th>
-                                <th scope="col">Recipient UUIDs</th>
-                                <th scope="col">Date Sent</th>
-                                <th scope="col">Body</th>
-                            </tr>
+                                <tr>
+                                    <th scope="col">UUID</th>
+                                    <th scope="col">Sender</th>
+                                    <th scope="col">Subject</th>
+                                    <th scope="col">Recipients</th>
+                                    <th scope="col">Recipient UUIDs</th>
+                                    <th scope="col">Date Sent</th>
+                                    <th scope="col">Body</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            {% for message in previous_messages %}
-                                <tr class="small">
-                                    <td style="display: none;">{{ message.uuid }}</td>
-                                    <td data-col-key="sender"
-                                        data-col-value="{{ message.sender.uuid }}">{{ message.sender.full_name }}</td>
-                                    <td>{{ message.subject }}</td>
-                                    <td data-col-key="recipients" 
-                                        data-col-value="{% values_list_as_json message.recipients 'slug' %}">
-                                    </td>
-                                    <td data-col-key="recipient_uuid" 
-                                        data-col-value="{% values_list_as_json message.recipients 'uuid' %}">
-                                    </td>                                    
-                                    <td>
-                                        {{ message.date_created|localtime|date:"r" }}
-                                    </td>
-                                    {# Prevent thrash on initial render with display: none; #}
-                                    <td style="display: none;">{{ message.body|safe }}</td>
-                                </tr>
-                            {% endfor %}
+                                {% for message in previous_messages %}
+                                    <tr class="small">
+                                        <td style="display: none;">{{ message.uuid }}</td>
+                                        <td data-col-key="sender" data-col-value="{{ message.sender.uuid }}">{{ message.sender.full_name }}</td>
+                                        <td>{{ message.subject }}</td>
+                                        <td data-col-key="recipients"
+                                            data-col-value="{% values_list_as_json message.recipients 'slug' %}"></td>
+                                        <td data-col-key="recipient_uuid"
+                                            data-col-value="{% values_list_as_json message.recipients 'uuid' %}"></td>
+                                        <td>{{ message.date_created|localtime|date:"r" }}</td>
+                                        <td style="display: none;">{{ message.body|safe }}</td>
+                                    </tr>
+                                {% endfor %}
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th scope="col">{# UUID - unsearchable #}</th>
+                                    <th scope="col"></th>
                                     <th scope="col">
                                         <label class="control-label sr-only" for="sender-filter">Sender</label>
-                                        <select id="sender-filter"
-                                                class="selectpicker form-control"
-                                                multiple>
+                                        <select id="sender-filter" class="selectpicker form-control" multiple>
                                             {% for researcher in senders %}
                                                 <option value="{{ researcher.uuid }}">
                                                     {{ researcher.full_name }}
@@ -114,10 +104,10 @@
                                                placeholder="Filter Subject"/>
                                     </th>
                                     <th scope="col">
-                                        <label class="control-label sr-only" for="recipient-filter">Recipients</label>
-                                        <select id="recipient-filter"
-                                                class="selectpicker form-control"
-                                                multiple>
+                                        <label class="control-label sr-only" for="recipient-filter">
+                                            Recipients
+                                        </label>
+                                        <select id="recipient-filter" class="selectpicker form-control" multiple>
                                             {% for person in participants %}
                                                 <option value="{{ person.slug }}" data-subtext="{{ person.uuid }}">
                                                     {{ person.slug }}
@@ -125,13 +115,16 @@
                                             {% endfor %}
                                         </select>
                                     </th>
-                                    <th scope="col">{# Recipient UUID Column #}</th>
                                     <th scope="col">
-                                        {# Not using datetime-local input due to poor support #}
-                                        <label class="control-label sr-only" for="date-filter">Date Sent</label>
+                                    </th>
+                                    <th scope="col">
+                                        <label class="control-label sr-only" for="date-filter">
+                                            Date Sent
+                                        </label>
                                         <input id="date-filter" class="form-control input-sm" type="text"/>
                                     </th>
-                                    <th scope="col">{# Body - searchable but not present in footer #}</th>
+                                    <th scope="col">
+                                    </th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -139,15 +132,22 @@
                     <div class="panel-footer">
                     </div>
                 </div>
-
             </section>
             <main class="col-lg-5">
                 <div id="email-viewport" class="panel panel-default mt-md">
-                    <section class="panel-heading"><h3 class="panel-title">Compose</h3></section>
-                    <form id="email-participants-form" class="tab-pane active" method="post">{% csrf_token %}
+                    <section class="panel-heading">
+                        <h3 class="panel-title">
+                            Compose
+                        </h3>
+                    </section>
+                    <form id="email-participants-form" class="tab-pane active" method="post">
+                        {% csrf_token %}
                         <section class="form-group">
-                            <label for="message-type">Message Type</label>
-                            <div class="input-group input-group-sm" id="email-preference-filters"
+                            <label for="message-type">
+                                Message Type
+                            </label>
+                            <div class="input-group input-group-sm"
+                                 id="email-preference-filters"
                                  aria-label="email-preference-filters">
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-default" data-filter="next-session">
@@ -159,10 +159,14 @@
                                     <button type="button" class="btn btn-default" data-filter="study-updates">
                                         <span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span>
                                     </button>
-                                    <button type="button" class="btn btn-default" data-filter="response-questions">
+                                    <button type="button"
+                                            class="btn btn-default"
+                                            data-filter="response-questions">
                                         <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
                                     </button>
-                                    <button type="button" class="btn btn-warning" data-filter="transactional-message">
+                                    <button type="button"
+                                            class="btn btn-warning"
+                                            data-filter="transactional-message">
                                         <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
                                     </button>
                                 </div>
@@ -173,603 +177,612 @@
                                 <div id="no-message-type" class="help-block small">
                                     You must select a message type before adding recipients.
                                 </div>
-                                <div id="transaction-warning" class="collapsed help-block small text-center">
-                                    <p class="label label-warning">WARNING</p>
-                                    <p class="text-warning">
-                                        Transactional emails can be sent to any recipient, even those who opted out of email. They are <strong>ONLY</strong> for completing a "transaction" initiated by the recipient - e.g., sending a gift card or requested information.
+                                <div id="transaction-warning"
+                                     class="collapsed help-block small text-center">
+                                    <p class="label label-warning">
+                                        WARNING
                                     </p>
-                                </div>
-                                <div id="other-message-type" class="collapsed help-block small">
-                                    <strong></strong> <span></span> opted in to this kind of email.
-                                </div>
-                                <div class="fade-bar"></div>
+                                    <p class="text-warning">
+                                    Transactional emails can be sent to any recipient, even those who opted out of email. They are <strong>ONLY</strong> for completing a "transaction" initiated by the recipient - e.g., sending a gift card or requested information.
+                                </p>
                             </div>
-                        </section>
-                        <section class="form-group">
-                            <label class="control-label" for="recipient-selector">Recipients</label>
-                            <select id="recipient-selector"
-                                    name="recipients"
-                                    class="selectpicker form-control"
-                                    multiple
-                                    disabled>
-                                <optgroup class="opted-in" label="Opted into email">
-                                    {% for person in participants %}
-                                        <option value="{{ person.uuid }}"
-                                                data-subtext="{{ person.uuid }}"
-                                                data-tokens="{{ person.nickname }} {{ person.uuid }} {{ person.hashed_id }}"
-                                                {% if person.email_next_session %}data-next-session{% endif %}
-                                                {% if person.email_new_studies %}data-new-studies{% endif %}
-                                                {% if person.email_study_updates %}data-study-updates{% endif %}
-                                                {% if person.email_response_questions %}data-response-questions{% endif %}>
-                                            {{ person.slug }}
-                                        </option>
-                                    {% endfor %}
-                                </optgroup>
-                                <optgroup class="opted-out" label="Opted out of email"></optgroup>
-                            </select>
-                        </section>
-                        <section class="form-group">
-                            <label class="control-label" for="message-subject">Subject</label>
-                            <input id="message-subject" name="subject" type="text" class="form-control"/>
-                        </section>
-                        <section class="form-group">
-                            <label class="control-label" for="email-editor">Body</label>
-                            <textarea id="email-editor" name="body"></textarea>
-                        </section>
-                        <section class="form-group">
-                            <button type="submit" class="btn btn-primary btn-lg btn-block">
-                                Send Messages to Participants
-                            </button>
-                        </section>
-                    </form>
-                </div>
-            </main>
-        </div>
+                            <div id="other-message-type" class="collapsed help-block small">
+                                <strong><span>opted in to this kind of email.</span></strong>
+                            </div>
+                            <div class="fade-bar">
+                            </div>
+                        </div>
+                    </section>
+                    <section class="form-group">
+                        <label class="control-label" for="recipient-selector">
+                            Recipients
+                        </label>
+                        <select id="recipient-selector"
+                                name="recipients"
+                                class="selectpicker form-control"
+                                multiple
+                                disabled>
+                            <optgroup class="opted-in" label="Opted into email">
+                                {% for person in participants %}
+                                    <option value="{{ person.uuid }}"
+                                            data-subtext="{{ person.uuid }}"
+                                            data-tokens="{{ person.nickname }} {{ person.uuid }} {{ person.hashed_id }}"
+                                            {% if person.email_next_session %}data-next-session{% endif %}
+                                            {% if person.email_new_studies %}data-new-studies{% endif %}
+                                            {% if person.email_study_updates %}data-study-updates{% endif %}
+                                            {% if person.email_response_questions %}data-response-questions{% endif %}>
+                                        {{ person.slug }}
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup class="opted-out" label="Opted out of email">
+                            </optgroup>
+                        </select>
+                    </section>
+                    <section class="form-group">
+                        <label class="control-label" for="message-subject">
+                            Subject
+                        </label>
+                        <input id="message-subject" name="subject" type="text" class="form-control"/>
+                    </section>
+                    <section class="form-group">
+                        <label class="control-label" for="email-editor">
+                            Body
+                        </label>
+                        <textarea id="email-editor" name="body"></textarea>
+                    </section>
+                    <section class="form-group">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">
+                            Send Messages to Participants
+                        </button>
+                    </section>
+                </form>
+            </div>
+        </main>
     </div>
-    {#  TODO: move this out to a javascript file so we can defer it!  #}
-    <script type="text/javascript">
-
-        const EXPORT_OPTIONS = {
-            columns: ['sender:name', 'subject:name', 'recipients:name', 'recipient_uuid:name', 'sentDate:name', 'body:name'],
-            orthogonal: 'display'
-        };
-
-        const DATATABLE_SETTINGS = {
-            select: true,
-            autoWidth: false,
-            // Complicated as hell - please see https://datatables.net/reference/option/dom
-            dom: "<'row'<'col-sm-6'l><'col-sm-6'f>>" + // (l)ength input ctrl, (f)iltering input
-                "<'row'<'col-sm-12'iS>>" +            // (i)nformation summary, (S)elect
-                "<'row'<'col-sm-12'tr>>" +            // (t)able, p(r)ocessing display
-                "<'row'<'col-sm-6'B><'col-sm-6'p>>",   // (B)uttons, (p)agination
-            buttons: [ // For custom buttons, see - https://datatables.net/extensions/buttons/custom
-                {
-                    extend: 'copy',
-                    text: 'Copy to Clipboard',
-                    exportOptions: EXPORT_OPTIONS,
-                },
-                {
-                    extend: 'excel',
-                    text: 'Excel',
-                    exportOptions: EXPORT_OPTIONS,
-                },
-                {
-                    extend: 'csv',
-                    text: 'CSV',
-                    exportOptions: EXPORT_OPTIONS,
-                },
-            ],
-            fixedHeader: true,
-            columns: [
-                {
-                    name: 'uuid',
-                    visible: false,
-                    searchable: false,
-                    width: '0',
-                    data: 'uuid'
-                },
-                {
-                    name: 'sender',
-                    data: deserializeSenderData,
-                    width: '20%',
-                },
-                {
-                    name: 'subject',
-                    data: 'subject',
-                    width: '20%',
-
-                },
-                {
-                    name: 'recipients',
-                    data: deserializeRecipientData,
-                    width: '20%',
-                },
-                {
-                    name: 'recipient_uuid',
-                    data: deserializeRecipientUUIDs,
-                    visible: false,
-                    searchable: false,
-                    width: '0',
-                },
-                {
-                    name: 'sentDate',
-                    data: deserializeSentDateData,
-                    type: 'date',
-                    width: '20%',
-                },
-                {
-                    name: 'body',
-                    data: 'body',
-                    visible: false,
-                    width: '0'
-                },
-            ],
-            order: [[4, 'desc']]
-        };
-
-        const EMAIL_EDITOR_SETTINGS = {
-            codeviewFilter: true, // Prevent XSS
-            codeviewFilterRegex: /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle|vg)|t(?:itle|extarea)|xml)[^>]*?>/gi,
-            codeviewIframeFilter: true, // Prevent XSS
-            placeholder: 'Write email contents here.',
-            tabsize: 2,
-            height: 150,
-        };
-
-        let baseBootstrapSelectSettings = {
-            width: '100%',
-            actionsBox: true,
-            sanitize: true,
-            liveSearch: true,
-        };
-
-        let baseFilterSettings = $.extend(
-            {},
-            baseBootstrapSelectSettings,
+</div>
+<script>
+    const EXPORT_OPTIONS = {
+        columns: ['sender:name', 'subject:name', 'recipients:name', 'recipient_uuid:name', 'sentDate:name', 'body:name'],
+        orthogonal: 'display'
+    };
+    
+    const DATATABLE_SETTINGS = {
+        select: true,
+        autoWidth: false,
+        // Complicated as hell - please see https://datatables.net/reference/option/dom
+        dom: "<'row'<'col-sm-6'l><'col-sm-6'f>>" + // (l)ength input ctrl, (f)iltering input
+            "<'row'<'col-sm-12'iS>>" +            // (i)nformation summary, (S)elect
+            "<'row'<'col-sm-12'tr>>" +            // (t)able, p(r)ocessing display
+            "<'row'<'col-sm-6'B><'col-sm-6'p>>",   // (B)uttons, (p)agination
+        buttons: [ // For custom buttons, see - https://datatables.net/extensions/buttons/custom
             {
-                selectedTextFormat: 'count > 1',
-                style: 'btn-default btn-sm',
-            }
-        );
-
-        const RECIPIENT_SELECTOR_SETTINGS = $.extend(
-            {},
-            baseBootstrapSelectSettings,
-            {
-                selectedTextFormat: 'count > 3',
-                title: 'Search and add recipients',
-                liveSearchPlaceholder: 'Search by name, ID, or global ID',
-            }
-        );
-
-        const RECIPIENT_FILTER_SETTINGS = $.extend(
-            {
-                noneSelectedText: 'Filter Recipients',
+                extend: 'copy',
+                text: 'Copy to Clipboard',
+                exportOptions: EXPORT_OPTIONS,
             },
-            baseFilterSettings
-        );
-
-        const SENDER_FILTER_SETTINGS = $.extend(
             {
-                noneSelectedText: 'Filter Sender',
+                extend: 'excel',
+                text: 'Excel',
+                exportOptions: EXPORT_OPTIONS,
             },
-            baseFilterSettings
-        );
-
-        const DATE_FILTER_SETTINGS = {
-            ranges: {
-                'Today': [moment().startOf('day'), moment()],
-                'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            {
+                extend: 'csv',
+                text: 'CSV',
+                exportOptions: EXPORT_OPTIONS,
             },
-            timePicker: true,
-            startDate: moment().subtract(29, 'days'),
-            endDate: moment(),
-            locale: {
-                format: 'M/DD hh:mm A',
-            }
-        };
-
-        const VIEW_INIT_PARAMS = new URLSearchParams(window.location.search);
-
-        const
-            /* ---Email Form --- */
-            $messageParticipantsForm = $('#email-participants-form'),
-            $subjectLine = $('#message-subject'),
-            $recipientSelector = $('#recipient-selector'),
-            $emailFriendlyGroup = $recipientSelector.find('optgroup.opted-in'),
-            $doNotEmailGroup = $recipientSelector.find('optgroup.opted-out'),
-            $emailPreferenceFilters = $('#email-preference-filters'),
-            $emailFilterNameBox = $emailPreferenceFilters.find('#email-filter-name'),
-            $emailEditor = $('#email-editor'),
-            $messageTypeHelp = $('#message-type-help-block'),
-
-            /* --- Email Table --- */
-            $messagesTable = $('#messages-table'),
-            $messageViewer = $('#previous-message-viewer'),
-
-            // --> Filters
-            $recipientFilter = $('#recipient-filter'),
-            $senderFilter = $('#sender-filter'),
-            $dateFilter = $('#date-filter'),
-            $subjectFilter = $('#subject-filter');
-
-
-        // Lazy initialization so we can use in handlers.
-        let MESSAGE_TABLE,
-            DATE_RANGE_PICKER,
-            RECIPIENT_SELECTOR;
-
-
-        // Possibly move everything here later...
-        const GLOBAL_QUERY_PARAMS = {
-            after: DATE_FILTER_SETTINGS.startDate,
-            before: DATE_FILTER_SETTINGS.endDate,
-        };
-
-        /**
-         * Main function.
-         */
-        function initializeView() {
-            // Set up filters.
-            $recipientFilter.selectpicker(RECIPIENT_FILTER_SETTINGS)
-                .on('changed.bs.select', handleRecipientFiltering);
-
-            $senderFilter.selectpicker(SENDER_FILTER_SETTINGS)
-                .on('changed.bs.select', handleSenderFiltering);
-
-            DATE_RANGE_PICKER = $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
-            $.fn.dataTable.ext.search.push(datePickerSearchFunctionality);
-
-            $subjectFilter.on('keyup', handleSubjectFiltering);
-
-            // Set up Email form
-            $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
-
-            $recipientSelector
-                .selectpicker(RECIPIENT_SELECTOR_SETTINGS)
-                .on('changed.bs.select', recipientSelectionCallback);
-
-            $('section.form-group .bootstrap-select').tooltip(
-                {
-                    placement: 'top',
-                    title: 'Disabled until a message type has been selected.'
-                }
-            );
-
-            $emailPreferenceFilters
-                .on('click', 'button', handleEmailPreferenceSelection);
-
-            $messageParticipantsForm.on('submit', handleMessageFormSubmit);
-
-            // Set up Datatable.
-            MESSAGE_TABLE = $messagesTable.DataTable(DATATABLE_SETTINGS)
-                .on('dblclick', 'tr', toggleMessageBody);
+        ],
+        fixedHeader: true,
+        columns: [
+            {
+                name: 'uuid',
+                visible: false,
+                searchable: false,
+                width: '0',
+                data: 'uuid'
+            },
+            {
+                name: 'sender',
+                data: deserializeSenderData,
+                width: '20%',
+            },
+            {
+                name: 'subject',
+                data: 'subject',
+                width: '20%',
+    
+            },
+            {
+                name: 'recipients',
+                data: deserializeRecipientData,
+                width: '20%',
+            },
+            {
+                name: 'recipient_uuid',
+                data: deserializeRecipientUUIDs,
+                visible: false,
+                searchable: false,
+                width: '0',
+            },
+            {
+                name: 'sentDate',
+                data: deserializeSentDateData,
+                type: 'date',
+                width: '20%',
+            },
+            {
+                name: 'body',
+                data: 'body',
+                visible: false,
+                width: '0'
+            },
+        ],
+        order: [[4, 'desc']]
+    };
+    
+    const EMAIL_EDITOR_SETTINGS = {
+        codeviewFilter: true, // Prevent XSS
+        codeviewFilterRegex: /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle|vg)|t(?:itle|extarea)|xml)[^>]*?>/gi,
+        codeviewIframeFilter: true, // Prevent XSS
+        placeholder: 'Write email contents here.',
+        tabsize: 2,
+        height: 150,
+    };
+    
+    let baseBootstrapSelectSettings = {
+        width: '100%',
+        actionsBox: true,
+        sanitize: true,
+        liveSearch: true,
+    };
+    
+    let baseFilterSettings = $.extend(
+        {},
+        baseBootstrapSelectSettings,
+        {
+            selectedTextFormat: 'count > 1',
+            style: 'btn-default btn-sm',
         }
-
-        function handleEmailPreferenceSelection() {
-
-            $('section.form-group .bootstrap-select').tooltip('destroy');
-
-            let $filterBtn = $(this),
-                currentFilter = $filterBtn.data('filter'),
-                transactional = currentFilter.indexOf('transactional') !== -1,
-                $allOptions = $recipientSelector.find('option').detach();  // Is this a transactional email?
-
-            // Treat this like a radio button set.
-            $filterBtn
-                .addClass('active')
-                .siblings()
-                .removeClass('active');
-                
-            // Title Case the name and change the box color.
-            let titleCaseEmailPreference = currentFilter.replace(/(\w+)-(\w+)/g,
-                (match, first, second) => {
-                    return first.charAt(0).toUpperCase() + first.slice(1) +
-                        ' ' + second.charAt(0).toUpperCase() + second.slice(1);
-                });
-
-            $emailFilterNameBox // bg-warning won't win out in cascade, so directly modify css
-                .css({backgroundColor: transactional ? "#fcf8e3" : "#eee"})
-                .text(titleCaseEmailPreference);
-
+    );
+    
+    const RECIPIENT_SELECTOR_SETTINGS = $.extend(
+        {},
+        baseBootstrapSelectSettings,
+        {
+            selectedTextFormat: 'count > 3',
+            title: 'Search and add recipients',
+            liveSearchPlaceholder: 'Search by name, ID, or global ID',
+        }
+    );
+    
+    const RECIPIENT_FILTER_SETTINGS = $.extend(
+        {
+            noneSelectedText: 'Filter Recipients',
+        },
+        baseFilterSettings
+    );
+    
+    const SENDER_FILTER_SETTINGS = $.extend(
+        {
+            noneSelectedText: 'Filter Sender',
+        },
+        baseFilterSettings
+    );
+    
+    const DATE_FILTER_SETTINGS = {
+        ranges: {
+            'Today': [moment().startOf('day'), moment()],
+            'Yesterday': [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'days').endOf('day')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        timePicker: true,
+        startDate: moment().subtract(29, 'days'),
+        endDate: moment(),
+        locale: {
+            format: 'M/DD hh:mm A',
+        }
+    };
+    
+    const VIEW_INIT_PARAMS = new URLSearchParams(window.location.search);
+    
+    const
+        /* ---Email Form --- */
+        $messageParticipantsForm = $('#email-participants-form'),
+        $subjectLine = $('#message-subject'),
+        $recipientSelector = $('#recipient-selector'),
+        $emailFriendlyGroup = $recipientSelector.find('optgroup.opted-in'),
+        $doNotEmailGroup = $recipientSelector.find('optgroup.opted-out'),
+        $emailPreferenceFilters = $('#email-preference-filters'),
+        $emailFilterNameBox = $emailPreferenceFilters.find('#email-filter-name'),
+        $emailEditor = $('#email-editor'),
+        $messageTypeHelp = $('#message-type-help-block'),
+    
+        /* --- Email Table --- */
+        $messagesTable = $('#messages-table'),
+        $messageViewer = $('#previous-message-viewer'),
+    
+        // --> Filters
+        $recipientFilter = $('#recipient-filter'),
+        $senderFilter = $('#sender-filter'),
+        $dateFilter = $('#date-filter'),
+        $subjectFilter = $('#subject-filter');
+    
+    
+    // Lazy initialization so we can use in handlers.
+    let MESSAGE_TABLE,
+        DATE_RANGE_PICKER,
+        RECIPIENT_SELECTOR;
+    
+    
+    // Possibly move everything here later...
+    const GLOBAL_QUERY_PARAMS = {
+        after: DATE_FILTER_SETTINGS.startDate,
+        before: DATE_FILTER_SETTINGS.endDate,
+    };
+    
+    /**
+     * Main function.
+     */
+    function initializeView() {
+        // Set up filters.
+        $recipientFilter.selectpicker(RECIPIENT_FILTER_SETTINGS)
+            .on('changed.bs.select', handleRecipientFiltering);
+    
+        $senderFilter.selectpicker(SENDER_FILTER_SETTINGS)
+            .on('changed.bs.select', handleSenderFiltering);
+    
+        DATE_RANGE_PICKER = $dateFilter.daterangepicker(DATE_FILTER_SETTINGS, handleDateFiltering);
+        $.fn.dataTable.ext.search.push(datePickerSearchFunctionality);
+    
+        $subjectFilter.on('keyup', handleSubjectFiltering);
+    
+        // Set up Email form
+        $emailEditor.summernote(EMAIL_EDITOR_SETTINGS);
+    
+        $recipientSelector
+            .selectpicker(RECIPIENT_SELECTOR_SETTINGS)
+            .on('changed.bs.select', recipientSelectionCallback);
+    
+        $('section.form-group .bootstrap-select').tooltip(
+            {
+                placement: 'top',
+                title: 'Disabled until a message type has been selected.'
+            }
+        );
+    
+        $emailPreferenceFilters
+            .on('click', 'button', handleEmailPreferenceSelection);
+    
+        $messageParticipantsForm.on('submit', handleMessageFormSubmit);
+    
+        // Set up Datatable.
+        MESSAGE_TABLE = $messagesTable.DataTable(DATATABLE_SETTINGS)
+            .on('dblclick', 'tr', toggleMessageBody);
+    }
+    
+    function handleEmailPreferenceSelection() {
+    
+        $('section.form-group .bootstrap-select').tooltip('destroy');
+    
+        let $filterBtn = $(this),
+            currentFilter = $filterBtn.data('filter'),
+            transactional = currentFilter.indexOf('transactional') !== -1,
+            $allOptions = $recipientSelector.find('option').detach();  // Is this a transactional email?
+    
+        // Treat this like a radio button set.
+        $filterBtn
+            .addClass('active')
+            .siblings()
+            .removeClass('active');
+    
+        // Title Case the name and change the box color.
+        let titleCaseEmailPreference = currentFilter.replace(/(\w+)-(\w+)/g,
+            (match, first, second) => {
+                return first.charAt(0).toUpperCase() + first.slice(1) +
+                    ' ' + second.charAt(0).toUpperCase() + second.slice(1);
+            });
+    
+        $emailFilterNameBox // bg-warning won't win out in cascade, so directly modify css
+            .css({ backgroundColor: transactional ? "#fcf8e3" : "#eee" })
+            .text(titleCaseEmailPreference);
+    
+        $messageTypeHelp
+            .find(transactional ? '#transaction-warning' : '#other-message-type')
+            .removeClass('collapsed')
+            .siblings('.help-block')
+            .addClass('collapsed');
+    
+        let { optedIn, optedOut } = $allOptions.get().reduce(({ optedIn, optedOut }, option) => {
+    
+            // Sort according to flag (lowerCamelCase the tag for data-* attributes.
+            if (currentFilter.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) in option.dataset || transactional) {
+                optedIn.push(option);
+                option.removeAttribute('disabled');
+            } else {
+                optedOut.push(option);
+                option.removeAttribute('selected');
+                option.setAttribute('disabled', true);
+            }
+    
+            return { optedIn, optedOut };
+        }, { optedIn: [], optedOut: [] });
+    
+        if (!transactional) {
             $messageTypeHelp
-                .find(transactional ? '#transaction-warning' : '#other-message-type')
-                .removeClass('collapsed')
-                .siblings('.help-block')
-                .addClass('collapsed');
-
-            let {optedIn, optedOut} = $allOptions.get().reduce(({optedIn, optedOut}, option) => {
-
-                // Sort according to flag (lowerCamelCase the tag for data-* attributes.
-                if (currentFilter.replace(/-([a-z])/g, (g) => g[1].toUpperCase()) in option.dataset || transactional) {
-                    optedIn.push(option);
-                    option.removeAttribute('disabled');
-                } else {
-                    optedOut.push(option);
-                    option.removeAttribute('selected');
-                    option.setAttribute('disabled', true);
+                .find('#other-message-type strong')
+                .text(optedIn.length);
+            $messageTypeHelp
+                .find('#other-message-type span')
+                .text(optedIn.length === 1 ? 'participant has' : 'participants have');
+        }
+    
+        // Redraw select after sorting
+        $(optedIn).appendTo($emailFriendlyGroup);
+        $(optedOut).appendTo($doNotEmailGroup);
+        var currentlySelected = $recipientSelector.selectpicker('val');
+        var optedInValues = optedIn.map(opt => opt.value);
+    
+        // Update people it's possible to email; leave people selected if they've still opted in to the current type of email
+        $recipientSelector
+            .removeAttr('disabled')
+            .selectpicker('refresh')
+            .selectpicker('deselectAll')
+            .selectpicker('val', currentlySelected.filter(val => optedInValues.includes(val)));
+    }
+    
+    function handleDateFiltering(after, before) {
+        GLOBAL_QUERY_PARAMS.after = after;
+        GLOBAL_QUERY_PARAMS.before = before;
+        MESSAGE_TABLE.draw(); // Executes search --> datePickerSearchFunctionality transitively.
+    }
+    
+    /**
+     * Custom plugin for date range filtering.
+     *
+     * @param settings The datatables settings object (see: https://datatables.net/reference/api/settings())
+     * @param rowArrayData The array of row data.
+     * @param rowIndex The index of the row.
+     * @param rowData The object of the data row (what we will be using).
+     * @param counter Search counter. This is the loop index that DataTables uses internally to loop over the
+     * rows in the table. This is likely to be most useful when it is 0 which indicates that a new search is
+     * occurring and any cached search values could be updated.
+     */
+    function datePickerSearchFunctionality(settings, rowArrayData, rowIndex, rowData, counter) {
+        let { after, before } = GLOBAL_QUERY_PARAMS,
+            target = rowData.sentDate.asMoment;
+        return target.isSameOrAfter(after) && target.isSameOrBefore(before);
+    }
+    
+    /**
+     * Filter DataTable results based on sender input.
+     */
+    function handleSenderFiltering() {
+    
+        let senders = $(this).val(),
+            searchValue = senders ? senders.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
+    
+        MESSAGE_TABLE.column('sender:name').search(searchValue, true, false).draw();
+    }
+    
+    /**
+     * Filter DataTable results based on recipient input.
+     */
+    function handleRecipientFiltering() {
+        let recipients = $(this).val(),
+            searchValue = recipients ? recipients.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
+    
+        MESSAGE_TABLE.column('recipients:name').search(searchValue, true, false).draw();
+    }
+    
+    /**
+     * Return proper data object with filters.
+     */
+    function deserializeRecipientData(row, type, value, meta) {
+        switch (type) {
+            case 'set':
+                row.recipients = value;
+                row.recipientsDisplay = value;
+                return;
+            case 'display':
+                if (!row.$jqRow) {
+                    row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
                 }
-
-                return {optedIn, optedOut};
-            }, {optedIn: [], optedOut: []});
-
-            if (!transactional) {
-                $messageTypeHelp
-                    .find('#other-message-type strong')
-                    .text(optedIn.length);
-                $messageTypeHelp
-                    .find('#other-message-type span')
-                    .text(optedIn.length === 1 ? 'participant has' : 'participants have');
-            }
-
-            // Redraw select after sorting
-            $(optedIn).appendTo($emailFriendlyGroup);
-            $(optedOut).appendTo($doNotEmailGroup);
-            var currentlySelected = $recipientSelector.selectpicker('val');
-            var optedInValues = optedIn.map(opt => opt.value);
-            
-            // Update people it's possible to email; leave people selected if they've still opted in to the current type of email
-            $recipientSelector
-                .removeAttr('disabled')
-                .selectpicker('refresh')
-                .selectpicker('deselectAll') 
-                .selectpicker('val', currentlySelected.filter(val => optedInValues.includes(val)));
+                row.recipientSlugArray = row.recipientSlugArray ||
+                    row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
+                return row.recipientSlugArray.join(', ');
+            case 'filter':
+                if (!row.$jqRow) {
+                    row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
+                }
+                row.recipientSlugArray = row.recipientSlugArray ||
+                    row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
+                return row.recipientSlugArray.join(" "); // Regex will successfully execute against this!
+            case 'sort':
+                return row.recipients;
+            case 'type':
+                return row.recipients;
+            default:
+                return row.recipients;
         }
-
-        function handleDateFiltering(after, before) {
-            GLOBAL_QUERY_PARAMS.after = after;
-            GLOBAL_QUERY_PARAMS.before = before;
-            MESSAGE_TABLE.draw(); // Executes search --> datePickerSearchFunctionality transitively.
+    }
+    
+    /**
+     * Return proper data object with filters.
+     */
+    function deserializeRecipientUUIDs(row, type, value, meta) {
+        switch (type) {
+            case 'set':
+                row.recipients = value;
+                row.recipientsDisplay = value;
+                return;
+            case 'display':
+                if (!row.$jqRow) {
+                    row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
+                }
+                row.recipientUuidArray = row.recipientUuidArray ||
+                    row.$jqRow.find("td[data-col-key='recipient_uuid']").data()['colValue'];
+                return row.recipientUuidArray.join(', ');
+            case 'filter':
+                if (!row.$jqRow) {
+                    row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
+                }
+                row.recipientUuidArray = row.recipientUuidArray ||
+                    row.$jqRow.find("td[data-col-key='recipient_uuid']").data()['colValue'];
+                return row.recipientUuidArray.join(" "); // Regex will successfully execute against this!
+            case 'sort':
+                return row.recipients;
+            case 'type':
+                return row.recipients;
+            default:
+                return row.recipients;
         }
-
-        /**
-         * Custom plugin for date range filtering.
-         *
-         * @param settings The datatables settings object (see: https://datatables.net/reference/api/settings())
-         * @param rowArrayData The array of row data.
-         * @param rowIndex The index of the row.
-         * @param rowData The object of the data row (what we will be using).
-         * @param counter Search counter. This is the loop index that DataTables uses internally to loop over the
-         * rows in the table. This is likely to be most useful when it is 0 which indicates that a new search is
-         * occurring and any cached search values could be updated.
-         */
-        function datePickerSearchFunctionality(settings, rowArrayData, rowIndex, rowData, counter) {
-            let {after, before} = GLOBAL_QUERY_PARAMS,
-                target = rowData.sentDate.asMoment;
-            return target.isSameOrAfter(after) && target.isSameOrBefore(before);
+    }
+    
+    /**
+     * Data method for the "Sent Date" column.
+     *
+     * We want to use a 1) humanized date format for table display, 2) moment object for sorting, and 3) date object
+     * for filtering. While the justification for #1 is obvious, #2 and #3 are in place to smooth over the kinks
+     * between the daterangepicker plugin and our custom date range search functionality.
+     */
+    function deserializeSentDateData(row, type, value, meta) {
+        switch (type) {
+            case 'set':
+                let dateObj = new Date(value),
+                    momentObj = moment(dateObj);
+    
+                row.sentDate = {
+                    asDate: dateObj,
+                    asMoment: momentObj,
+                    display: momentObj.format('MMMM Do YYYY, h:mm a'),
+                };
+                return;
+            case 'display':
+                return row.sentDate.display;
+            case 'filter':
+                return row.sentDate.asDate;  // Unused b/c of datePickerSearchFunctionality()
+            case 'sort':
+                return row.sentDate.asDate;
+            case 'type':
+                return 'date';
+            default:
+                return row.sentDate.asDate;
         }
-
-        /**
-         * Filter DataTable results based on sender input.
-         */
-        function handleSenderFiltering({# $jqEvent, clickedIndex, isSelected, previousValue #}) {
-
-            let senders = $(this).val(),
-                searchValue = senders ? senders.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
-
-            MESSAGE_TABLE.column('sender:name').search(searchValue, true, false).draw();
+    }
+    
+    /**
+     * Return proper data object with filters.
+     */
+    function deserializeSenderData(row, type, value, meta) {
+        switch (type) {
+            case 'set':
+                row.sender = value;
+                row.senderDisplay = value;
+                return;
+            case 'display':
+                return row.senderDisplay;
+            case 'filter':
+                if (!row.$jqRow) {
+                    row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
+                }
+                row.senderUuid = row.senderUuid || row.$jqRow.find("td[data-col-key='sender']").data()['colValue'];
+                return row.senderUuid;
+            case 'sort':
+                return row.sender;
+            case 'type':
+                return row.sender;
+            default:
+                return row.sender;
         }
-
-        /**
-         * Filter DataTable results based on recipient input.
-         */
-        function handleRecipientFiltering({# $jqEvent, clickedIndex, isSelected, previousValue #}) {
-            let recipients = $(this).val(),
-                searchValue = recipients ? recipients.map(s => $.fn.dataTable.util.escapeRegex(s)).join('|') : "";
-
-            MESSAGE_TABLE.column('recipients:name').search(searchValue, true, false).draw();
+    }
+    
+    /**
+     * Filter DataTable results based on subject input.
+     */
+    function handleSubjectFiltering() {
+        MESSAGE_TABLE.column('subject:name').search($(this).val()).draw();
+    }
+    
+    /**
+     * Show email body.
+     *
+     * @param $jqEvent The jquery Event object.
+     */
+    function toggleMessageBody($jqEvent) {
+        let $clickedRow = $($jqEvent.currentTarget),
+            messageRow = MESSAGE_TABLE.row($clickedRow.is('.information-row') ? $clickedRow.prev() : $clickedRow);
+    
+        let messageBody = messageRow.child();
+    
+        if (!messageBody) {
+            messageRow.child(
+                `<div class="panel panel-default">
+                     <div class="panel-body small">${messageRow.data()["body"]}</div>
+                 </div>`
+            );
+            messageBody = messageRow.child();
+            messageBody.addClass('information-row');
+            messageRow.child.show();
         }
-
-        /**
-         * Return proper data object with filters.
-         */
-        function deserializeRecipientData(row, type, value, meta) {
-            switch (type) {
-                case 'set':
-                    row.recipients = value;
-                    row.recipientsDisplay = value;
-                    return;
-                case 'display':
-                    if (!row.$jqRow) {
-                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
-                    }
-                    row.recipientSlugArray = row.recipientSlugArray ||
-                        row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
-                    return row.recipientSlugArray.join(', ');
-                case 'filter':
-                    if (!row.$jqRow) {
-                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
-                    }
-                    row.recipientSlugArray = row.recipientSlugArray ||
-                        row.$jqRow.find("td[data-col-key='recipients']").data()['colValue'];
-                    return row.recipientSlugArray.join(" "); // Regex will successfully execute against this!
-                case 'sort':
-                    return row.recipients;
-                case 'type':
-                    return row.recipients;
-                default:
-                    return row.recipients;
-            }
+    
+        setTimeout(() => messageBody.toggleClass('open'), 10);
+    }
+    
+    function handleMessageFormSubmit($jqEvent) {
+        if (!messageFormIsValid_()) {
+            $jqEvent.preventDefault();
         }
-        
-        /**
-         * Return proper data object with filters.
-         */
-        function deserializeRecipientUUIDs(row, type, value, meta) {
-            switch (type) {
-                case 'set':
-                    row.recipients = value;
-                    row.recipientsDisplay = value;
-                    return;
-                case 'display':
-                    if (!row.$jqRow) {
-                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
-                    }
-                    row.recipientUuidArray = row.recipientUuidArray ||
-                        row.$jqRow.find("td[data-col-key='recipient_uuid']").data()['colValue'];
-                    return row.recipientUuidArray.join(', ');
-                case 'filter':
-                    if (!row.$jqRow) {
-                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
-                    }
-                    row.recipientUuidArray = row.recipientUuidArray ||
-                        row.$jqRow.find("td[data-col-key='recipient_uuid']").data()['colValue'];
-                    return row.recipientUuidArray.join(" "); // Regex will successfully execute against this!
-                case 'sort':
-                    return row.recipients;
-                case 'type':
-                    return row.recipients;
-                default:
-                    return row.recipients;
-            }
+    }
+    
+    /**
+     * Validate the message form. No plugins because the validation we want to do is rather simple.
+     *
+     * XXX: Has side effects in the view!
+     *
+     * @return boolean
+     */
+    function messageFormIsValid_() {
+        let subject = $subjectLine.val(),
+            body = $emailEditor.val(),
+            recipients = $recipientSelector.val(),
+            isValid = true;
+    
+        if (!subject) {
+            isValid = false;
+            $subjectLine.closest('.form-group').addClass('has-error');
         }
-
-        /**
-         * Data method for the "Sent Date" column.
-         *
-         * We want to use a 1) humanized date format for table display, 2) moment object for sorting, and 3) date object
-         * for filtering. While the justification for #1 is obvious, #2 and #3 are in place to smooth over the kinks
-         * between the daterangepicker plugin and our custom date range search functionality.
-         */
-        function deserializeSentDateData(row, type, value, meta) {
-            switch (type) {
-                case 'set':
-                    let dateObj = new Date(value),
-                        momentObj = moment(dateObj);
-
-                    row.sentDate = {
-                        asDate: dateObj,
-                        asMoment: momentObj,
-                        display: momentObj.format('MMMM Do YYYY, h:mm a'),
-                    };
-                    return;
-                case 'display':
-                    return row.sentDate.display;
-                case 'filter':
-                    return row.sentDate.asDate;  // Unused b/c of datePickerSearchFunctionality()
-                case 'sort':
-                    return row.sentDate.asDate;
-                case 'type':
-                    return 'date';
-                default:
-                    return row.sentDate.asDate;
-            }
+        if (!body) {
+            isValid = false;
+            $emailEditor.closest('.form-group').addClass('has-error');
         }
-
-        /**
-         * Return proper data object with filters.
-         */
-        function deserializeSenderData(row, type, value, meta) {
-            switch (type) {
-                case 'set':
-                    row.sender = value;
-                    row.senderDisplay = value;
-                    return;
-                case 'display':
-                    return row.senderDisplay;
-                case 'filter':
-                    if (!row.$jqRow) {
-                        row.$jqRow = $(meta.settings.nTBody.children.item(meta.row));
-                    }
-                    row.senderUuid = row.senderUuid || row.$jqRow.find("td[data-col-key='sender']").data()['colValue'];
-                    return row.senderUuid;
-                case 'sort':
-                    return row.sender;
-                case 'type':
-                    return row.sender;
-                default:
-                    return row.sender;
-            }
+        if (!recipients) {
+            isValid = false;
+            $recipientSelector.closest('.form-group').addClass('has-error');
         }
-
-        /**
-         * Filter DataTable results based on subject input.
-         */
-        function handleSubjectFiltering() {
-            MESSAGE_TABLE.column('subject:name').search($(this).val()).draw();
+    
+        return isValid;
+    }
+    
+    /**
+     * Do things when we select a participant from the Bootstrap-select component.
+     *
+     * @param $jqEvent
+     * @param clickedIndex
+     * @param isSelected
+     * @param previousValue
+     */
+    function recipientSelectionCallback($jqEvent, clickedIndex, isSelected, previousValue) {
+        window.recipientSelector = $recipientSelector;
+    
+        if (isSelected) {
+            $(this).closest('.form-group').removeClass('has-error');
         }
-
-        /**
-         * Show email body.
-         *
-         * @param $jqEvent The jquery Event object.
-         */
-        function toggleMessageBody($jqEvent) {
-            let $clickedRow = $($jqEvent.currentTarget),
-                messageRow = MESSAGE_TABLE.row($clickedRow.is('.information-row') ? $clickedRow.prev() : $clickedRow);
-
-            let messageBody = messageRow.child();
-
-            if (!messageBody) {
-                messageRow.child(
-                    `<div class="panel panel-default">
-                         <div class="panel-body small">${messageRow.data()["body"]}</div>
-                     </div>`
-                );
-                messageBody = messageRow.child();
-                messageBody.addClass('information-row');
-                messageRow.child.show();
-            }
-
-            setTimeout(() => messageBody.toggleClass('open'), 10);
-        }
-
-        function handleMessageFormSubmit($jqEvent) {
-            if (!messageFormIsValid_()) {
-                $jqEvent.preventDefault();
-            }
-        }
-
-        /**
-         * Validate the message form. No plugins because the validation we want to do is rather simple.
-         *
-         * XXX: Has side effects in the view!
-         *
-         * @return boolean
-         */
-        function messageFormIsValid_() {
-            let subject = $subjectLine.val(),
-                body = $emailEditor.val(),
-                recipients = $recipientSelector.val(),
-                isValid = true;
-
-            if (!subject) {
-                isValid = false;
-                $subjectLine.closest('.form-group').addClass('has-error');
-            }
-            if (!body) {
-                isValid = false;
-                $emailEditor.closest('.form-group').addClass('has-error');
-            }
-            if (!recipients) {
-                isValid = false;
-                $recipientSelector.closest('.form-group').addClass('has-error');
-            }
-
-            return isValid;
-        }
-
-        /**
-         * Do things when we select a participant from the Bootstrap-select component.
-         *
-         * @param $jqEvent
-         * @param clickedIndex
-         * @param isSelected
-         * @param previousValue
-         */
-        function recipientSelectionCallback($jqEvent, clickedIndex, isSelected, previousValue) {
-            window.recipientSelector = $recipientSelector;
-
-            if (isSelected) {
-                $(this).closest('.form-group').removeClass('has-error');
-            }
-        }
-
-        // Run initializations.
-        initializeView();
-    </script>
-{% endblock %}
+    }
+    
+    // Run initializations.
+    initializeView();
+</script>
+{% endblock content %}

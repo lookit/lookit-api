@@ -1,41 +1,39 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
-
-
-{% block title %}Create lab{% endblock %}
-
+{% block title %}
+    Create lab
+{% endblock title %}
 {% block content %}
-
-
-  <div class="container">
-    <div class="row">
-        <div class="col-xs-12">
-            <ol class="breadcrumb">
-              <a href="{% url 'exp:lab-list' %}"> Labs </a></li>
-              <li class="active">Create Lab</li>
-            </ol>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1" id="study-create-form">
-            <div class="panel panel-default mt-md">
-              <div class="panel-heading">
-                <h1 class="panel-title">Create Lab</h1>
-              </div>
-              <div class="panel-body">
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {% bootstrap_form_errors form %}
-                    {% bootstrap_form form %}
-                    <div class="modal-footer">
-                        <button type="submit">
-                            Submit
-                        </button>
-                    </div>
-                </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'exp:lab-list' %}">Labs</a>
+                    </li>
+                    <li class="active">Create Lab</li>
+                </ol>
             </div>
-          </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1"
+                 id="study-create-form">
+                <div class="panel panel-default mt-md">
+                    <div class="panel-heading">
+                        <h1 class="panel-title">Create Lab</h1>
+                    </div>
+                    <div class="panel-body">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {% bootstrap_form_errors form %}
+                            {% bootstrap_form form %}
+                            <div class="modal-footer">
+                                <button type="submit">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-  </div>
-{% endblock %}
+{% endblock content %}

@@ -1,19 +1,16 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load guardian_tags %}
 {% load static %}
 {% load tz %}
 {% load exp_extras %}
-
-{% block title %}{{ study.name }}{% endblock %}
+{% block title %}
+    {{ study.name }}
+{% endblock title %}
 {% block flash %}
     {% bootstrap_messages %}
-    {% if form.non_field_errors %}
-        <div class="alert alert-danger" role="alert">
-            {{ form.non_field_errors }}
-        </div>
-    {% endif %}
-{% endblock %}
+    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% endblock flash %}
 {% block content %}
     <script>
         $.fn.editable.defaults.mode = 'inline';
@@ -132,14 +129,14 @@
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-                    <li class="active"> {{ study.name }}</li>
+                    <li>
+                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+                    </li>
+                    <li class="active">{{ study.name }}</li>
                 </ol>
             </div>
-            <h1 class="col-xs-4"> {{ study.name }} </h1>
-            <div class="col-xs-8">
-               
-            </div>
+            <h1 class="col-xs-4">{{ study.name }}</h1>
+            <div class="col-xs-8"></div>
         </div>
         <div class="row">
             <div class="col-lg-11">
@@ -150,10 +147,8 @@
                             <div class="col-xs-12">
                                 <p>
                                     <span class="pr-md">
-                                        <label class='pr-xs'> 
-                                            Last edited: 
-                                        </label> 
-                                        {{ study.date_modified |date:"M d, Y" }} 
+                                        <label class="pr-xs">Last edited:</label>
+                                        {{ study.date_modified |date:"M d, Y" }}
                                     </span>
                                 </p>
                             </div>
@@ -162,9 +157,7 @@
                             <div class="col-xs-12">
                                 <p>
                                     <span class="pr-md">
-                                        <label class='pr-xs'>
-                                            Lab:
-                                        </label>
+                                        <label class="pr-xs">Lab:</label>
                                         {{ study.lab.name }}
                                     </span>
                                 </p>
@@ -175,22 +168,16 @@
                         {#  PUT THE DESCRIPTION STUFF HERE #}
                         <div class="row">
                             <div class="col-xs-12">
-                                <p> {{ study.short_description }} </p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <label> Purpose: </label>
-                                <p> {{ study.purpose }} </p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12">
                                 <p>
-                                    <span class="pr-md"><label
-                                            class='pr-xs'> Duration: </label> {{ study.duration }} </span>
-                                    <span><label
-                                            class='pr-xs'> Exit URL: </label> {{ study.exit_url | default:"None specified" }} </span>
+                                    {{ study.short_description }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label>Purpose:</label>
+                                <p>
+                                    {{ study.purpose }}
                                 </p>
                             </div>
                         </div>
@@ -198,10 +185,24 @@
                             <div class="col-xs-12">
                                 <p>
                                     <span class="pr-md">
-                                        <label class='pr-xs'> Participant eligibility: </label> {{ study.criteria }}
+                                        <label class="pr-xs">Duration:</label>
+                                    {{ study.duration }} </span>
+                                    <span>
+                                        <label class="pr-xs">Exit URL:</label>
+                                    {{ study.exit_url | default:"None specified" }} </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p>
+                                    <span class="pr-md">
+                                        <label class="pr-xs">Participant eligibility:</label>
+                                        {{ study.criteria }}
                                     </span>
                                     <span class="pr-md">
-                                        <label class='pr-xs'> Compensation: </label> {{ study.compensation_description }}
+                                        <label class="pr-xs">Compensation:</label>
+                                        {{ study.compensation_description }}
                                     </span>
                                 </p>
                             </div>
@@ -209,17 +210,21 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <p>
-                                    <span class="pr-md"><label
-                                            class='pr-xs'> Minimum age cutoff: </label> {{ study.min_age_years }} year{{ study.min_age_years|pluralize }} {{ study.min_age_months }} month{{ study.min_age_months|pluralize }} {{ study.min_age_days }} day{{ study.min_age_days|pluralize }} </span>
-                                    <span class="pr-md"><label
-                                            class='pr-xs'> Maximum age cutoff: </label> {{ study.max_age_years }} year{{ study.max_age_years|pluralize }} {{ study.max_age_months }} month{{ study.max_age_months|pluralize }} {{ study.max_age_days }} day{{ study.max_age_days|pluralize }}</span>
+                                    <span class="pr-md">
+                                        <label class="pr-xs">Minimum age cutoff:</label>
+                                    {{ study.min_age_years }} year{{ study.min_age_years|pluralize }} {{ study.min_age_months }} month{{ study.min_age_months|pluralize }} {{ study.min_age_days }} day{{ study.min_age_days|pluralize }} </span>
+                                    <span class="pr-md">
+                                        <label class="pr-xs">Maximum age cutoff:</label>
+                                    {{ study.max_age_years }} year{{ study.max_age_years|pluralize }} {{ study.max_age_months }} month{{ study.max_age_months|pluralize }} {{ study.max_age_days }} day{{ study.max_age_days|pluralize }}</span>
                                 </p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-xs-12">
                                 <p>
-                                    <span class="pr-md"><label class='pr-xs'> UUID: </label></span>
+                                    <span class="pr-md">
+                                        <label class="pr-xs">UUID:</label>
+                                    </span>
                                     {{ study.uuid }}
                                 </p>
                             </div>
@@ -227,46 +232,62 @@
                         <div class="row pb-lg">
                             <div class="col-xs-12">
                                 {% if study.shared_preview %}
-                                    <span><label>Preview link: </label></span>
+                                    <span>
+                                        <label>Preview link:</label>
+                                    </span>
                                     <span>Share with other researchers to get feedback on your study.</span>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="study-preview-link"
+                                        <input type="text"
+                                               class="form-control"
+                                               id="study-preview-link"
                                                value="{% url 'exp:preview-detail' uuid=study.uuid %}"
-                                               aria-describedby="copy-link-button">
-                                        <span onmouseout="removeTooltip(this)" data-toggle="tooltip"
-                                              class="input-group-addon btn" id="copy-link-button"
+                                               aria-describedby="copy-link-button"/>
+                                        <span onmouseout="removeTooltip(this)"
+                                              data-toggle="tooltip"
+                                              class="input-group-addon btn"
+                                              id="copy-link-button"
                                               data-clipboard-target="#study-preview-link">
-                                            <img src="{% static 'exp/img/clippy.svg' %}" alt="copy preview link" width="13"/>
+                                            <img src="{% static 'exp/img/clippy.svg' %}"
+                                                 alt="copy preview link"
+                                                 width="13"/>
                                         </span>
                                     </div>
-                                    {% else %}
-                                    <span class="pr-md"><label class='pr-xs'> Preview sharing: </label>
-                                    <span>
-                                            Other researchers cannot access your study preview.
-                                     </span>
-                                {% endif %}
+                                {% else %}
+                                    <span class="pr-md">
+                                        <label class="pr-xs">Preview sharing:</label>
+                                        <span>Other researchers cannot access your study preview.</span>
+                                    {% endif %}
                                 </span>
                             </div>
                         </div>
                         <div class="row pb-lg">
                             <div class="col-xs-12">
                                 <p>
-                                 <span class="pr-md"><label class='pr-xs'> Discoverability: </label>
-                                     <span>{{ discoverability_text | safe }}</span>
-                                 </span>
+                                    <span class="pr-md">
+                                        <label class="pr-xs">Discoverability:</label>
+                                        <span>{{ discoverability_text | safe }}</span>
+                                    </span>
                                 </p>
                             </div>
                             <div class="col-xs-12">
                                 {% if study.built %}
-                                    <span><label>Study link: </label></span>
+                                    <span>
+                                        <label>Study link:</label>
+                                    </span>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="private-study-link"
+                                        <input type="text"
+                                               class="form-control"
+                                               id="private-study-link"
                                                value="{% url 'web:study-detail' study.uuid %}"
-                                               aria-describedby="copy-link-button">
-                                        <span onmouseout="removeTooltip(this)" data-toggle="tooltip"
-                                              class="input-group-addon btn" id="copy-link-button"
+                                               aria-describedby="copy-link-button"/>
+                                        <span onmouseout="removeTooltip(this)"
+                                              data-toggle="tooltip"
+                                              class="input-group-addon btn"
+                                              id="copy-link-button"
                                               data-clipboard-target="#private-study-link">
-                                            <img src="{% static 'exp/img/clippy.svg' %}" alt="copy study link" width="13"/>
+                                            <img src="{% static 'exp/img/clippy.svg' %}"
+                                                 alt="copy study link"
+                                                 width="13"/>
                                         </span>
                                     </div>
                                 {% else %}
@@ -274,313 +295,382 @@
                                 {% endif %}
                             </div>
                         </div>
-                        
                     </div>
-                    <div class="col-xs-3"> 
+                    <div class="col-xs-3">
                         <div class="pull-right btn-group-vertical study-action-buttons">
-                        {% if "read_study__responses(is_preview=True)" in study_perms %}
-                            <a type="button" class="btn btn-default" href="{% url 'exp:preview-detail' uuid=study.uuid %}" target="_blank" rel="noopener">
-                                {% bootstrap_icon "play-circle" %} Preview Study
-                            </a>
-                        {% endif %}
-                        {% if "edit_study__<DETAILS>" in study_perms %}
-                            <a type="button" class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
-                                <i aria-hidden="true" class="fas fa-edit"></i> Edit Study
+                            {% if "read_study__responses(is_preview=True)" in study_perms %}
+                                <a type="button"
+                                   class="btn btn-default"
+                                   href="{% url 'exp:preview-detail' uuid=study.uuid %}"
+                                   target="_blank"
+                                   rel="noopener">
+                                    {% bootstrap_icon "play-circle" %} Preview Study
+                                </a>
+                            {% endif %}
+                            {% if can_edit_study_details %}
+                                <a type="button"
+                                   class="btn btn-default"
+                                   href="{% url 'exp:study-edit' pk=study.id %}">
+                                    <i aria-hidden="true" class="fas fa-edit"></i> Edit Study
                             </a>
                         {% endif %}
                         {% if "read_study__responses" in study_perms or "read_study__responses(is_preview=True)" in study_perms %}
-                            <a type="button" class="btn btn-default" href="{% url 'exp:study-responses-all' pk=study.id %}">
+                            <a type="button"
+                               class="btn btn-default"
+                               href="{% url 'exp:study-responses-all' pk=study.id %}">
                                 <i class="fas fa-comment-dots" aria-hidden="true"></i> View Study Responses
-                            </a>
-                        {%  endif %}
-                        {% if "edit_study__message_set" in study_perms %}
-                            <a type="button" class="btn btn-default" href="{% url 'exp:study-participant-contact' pk=study.id %}">
-                                <i class="fas fa-mail-bulk" aria-hidden="true"></i> Message Participants
-                            </a>
-                        {%  endif %}
-                        {% if study.show_consent%}
-                        {% if "edit_study__responses__consent_rulings" in study_perms or "edit_study__responses__consent_rulings(is_preview=True)" in study_perms %}
-                            <a type="button" class="btn btn-default"
-                               href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_created' %}">
-                                <i aria-hidden="true" class="fa fas fa-address-card"></i> Review Consent
-                            </a>
-                        {% endif %}
-                        {% endif %}
-                        {% if can_create_study %}
-                            {#  Here we have a hidden clone form so we can maintain dropdown styling. #}
-                            {#  TODO: actually use this form to let the user clone the study in a specific lab. #}
-                            <form id="cloneForm" action="{% url 'exp:clone-study' study.id %}" method="POST" style="display:none;">{% csrf_token %}
-                                <input type="hidden" name="clone_study" value="{{ study.id }}"/>
-                            </form>
-                            <a type="button" class="btn btn-default" role="button" onclick="cloneStudy()">
-                                <i aria-hidden="true" class="fa fas fa-copy"></i> Clone Study
-                            </a>
-                        {% endif %}
+                        </a>
+                    {% endif %}
+                    {% if "edit_study__message_set" in study_perms %}
+                        <a type="button"
+                           class="btn btn-default"
+                           href="{% url 'exp:study-participant-contact' pk=study.id %}">
+                            <i class="fas fa-mail-bulk" aria-hidden="true"></i> Message Participants
+                    </a>
+                {% endif %}
+                {% if study.show_consent %}
+                    {% if "edit_study__responses__consent_rulings" in study_perms or "edit_study__responses__consent_rulings(is_preview=True)" in study_perms %}
+                        <a type="button"
+                           class="btn btn-default"
+                           href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_created' %}">
+                            <i aria-hidden="true" class="fa fas fa-address-card"></i> Review Consent
+                    </a>
+                {% endif %}
+            {% endif %}
+            {% if can_create_study %}
+                {#  Here we have a hidden clone form so we can maintain dropdown styling. #}
+                {#  TODO: actually use this form to let the user clone the study in a specific lab. #}
+                <form id="cloneForm"
+                      action="{% url 'exp:clone-study' study.id %}"
+                      method="post"
+                      style="display:none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="clone_study" value="{{ study.id }}"/>
+                </form>
+                <a type="button"
+                   class="btn btn-default"
+                   role="button"
+                   onclick="cloneStudy()">
+                    <i aria-hidden="true" class="fa fas fa-copy"></i> Clone Study
+            </a>
+        {% endif %}
+    </div>
+</div>
+</div>
+{# -------- END STUDY INFO ------ #}
+<div class="row">
+    <div class="col-lg-12">
+        <ul class="list-group">
+            <li class="list-group-item panel-heading">
+                <h1 class="panel-title">Study Status</h1>
+            </li>
+            <li class="list-group-item list-group-item-{{ state_ui_tag }}">
+                <div class="row">
+                    <div class="col-xs-6 ">
+                    {{ study.name }} is currently <strong>{{ study.state }}</strong>.
+                    <p>
+                        {{ status_tooltip }}
+                    </p>
+                </div>
+                <div class="col-xs-3 col-xs-offset-3 btn-group">
+                    {% if can_change_status %}
+                        <a class="btn btn-default btn-sm dropdown-toggle"
+                           type="button"
+                           data-toggle="dropdown"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            Change State <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% for trigger in triggers_with_labels %}
+                                <li role="button"
+                                    onclick="onStateSelect(this)"
+                                    data-toggle="modal"
+                                    href="#study-state-modal"
+                                    data-trigger="{{ trigger.name }}">
+                                    <a>{{ trigger.label }}</a>
+                                </li>
+                            {% endfor %}
                         </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+        {% if comments %}
+            <li class="list-group-item panel-heading">
+                <h1 class="panel-title">
+                    Comments
+                </h1>
+            </li>
+            <li class="list-group-item">
+                <em>{{ comments|linebreaks }}</em>
+            </li>
+        {% endif %}
+        {% if study.show_build_experiment_runner %}
+            <li class="list-group-item list-group-item-{{ build_ui_tag }}">
+                <div class="row">
+                    <div class="col-xs-9">
+                        Experiment runner
+                        {% if not study.built %}
+                            {% if study.is_building %}
+                                building now
+                            {% else %}
+                                not built
+                            {% endif %}
+                        {% else %}
+                            built
+                        {% endif %}
+                        .
+                    </div>
+                    <div class="col-xs-3">
+                        <form action="{% url 'exp:study-build' study.uuid %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="return" value="exp:study-detail"/>
+                            <button type="submit"
+                                    class="btn btn-default btn-sm"
+                                    {% if study.built or study.is_building %}disabled{% endif %}>
+                                {% bootstrap_icon "wrench" %} Build experiment runner
+                            </button>
+                        </form>
                     </div>
                 </div>
-                </div>
-                {# -------- END STUDY INFO ------ #}
+            </li>
+        {% endif %}
+    </ul>
+</div>
+</div>
+<div class="row">
+    {#  ------ BEGIN MANAGE RESEARCHERS ----- #}
+    <div class="col-lg-12">
+        <div class="mt-xs panel panel-default">
+            <div class="panel-heading">
+                <h1 id="manage-researchers" class="panel-title">
+                    Manage Researchers
+                </h1>
+            </div>
+            <div class="panel-body">
                 <div class="row">
-                    <div class="col-lg-12">
-                        <ul class="list-group">
-                            <li class="list-group-item panel-heading">
-                                <h1 class="panel-title">Study Status </h1>
-                            </li>
-                            <li class="list-group-item list-group-item-{{ state_ui_tag }}">
-                                <div class="row">
-                                    <div class="col-xs-6 ">
-                                        {{ study.name }} is currently <strong>{{ study.state }}</strong>.
-                                        <p>{{ status_tooltip }}</p>
-                                    </div>
-                                    <div class="col-xs-3 col-xs-offset-3 btn-group">
-                                        {% if can_change_status %}
-                                            <a class="btn btn-default btn-sm dropdown-toggle" type="button"
-                                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Change State <span class="caret"></span>
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                {% for trigger in triggers_with_labels %}
-                                                    <li role="button" onclick="onStateSelect(this)" data-toggle="modal"
-                                                        href="#study-state-modal" data-trigger="{{ trigger.name }}">
-                                                        <a>{{ trigger.label }}</a>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        {% endif %}
-                                    </div>
-
+                    {% if can_manage_researchers %}
+                        <div class="col-sm-5">
+                            <form method="get" action="./#manage-researchers">
+                                <div class="input-group">
+                                    <input id="search-organization"
+                                           class="form-control"
+                                           name="match"
+                                           placeholder="Search lab"
+                                           type="text"/>
+                                    <span class="input-group-btn">
+                                        <input type="hidden" name="page" value="1"/>
+                                        <button class="btn btn-default" type="submit" aria-label="Search researchers">
+                                            <i aria-hidden="true" class="fa fa-search"></i>
+                                        </button>
+                                    </span>
                                 </div>
-                            </li>
-                            {% if comments %}
-                            <li class="list-group-item panel-heading">
-                                <h1 class="panel-title">Comments</h1>
-                            </li>
-                            <li class="list-group-item">
-                                <em>{{comments|linebreaks}}</em>
-                            </li>
-                            {% endif %}
-                            {% if study.show_build_experiment_runner %}
-                            <li class="list-group-item list-group-item-{{ build_ui_tag }}">
-                                <div class="row">
-                                    <div class="col-xs-9">
-                                        Experiment runner {% if not study.built %} {% if study.is_building %} building now{% else %} not built{% endif %}{% else %}built{% endif %}.
+                            </form>
+                            <div class="researcher-search-results">
+                                {% if users_result %}
+                                    <h2 class="researchers-label">
+                                        Results
+                                    </h2>
+                                    {% for user in users_result %}
+                                        <div class="row pt-xs">
+                                            <div class="col-xs-8 col-xs-offset-1">
+                                                {{ user.identicon_small_html }} {{ user.get_short_name }} ({{ user.username }})
+                                            </div>
+                                            <div class="col-xs-3">
+                                                <form method="post"
+                                                      action="{% url 'exp:manage-researcher-permissions' study.id %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="add_user" value="{{ user.id }}"/>
+                                                    <button aria-label="Add researcher to study"
+                                                            type="submit"
+                                                            value="{{ user.id }}"
+                                                            class="btn btn-success btn-sm">
+                                                        <i aria-hidden="true" class="fa fa-plus"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="pt-md">
+                                        {% include 'studies/_paginator.html' with page=users_result %}
                                     </div>
-                                    <div class="col-xs-3">
-                                        <form action="{% url 'exp:study-build' study.uuid %}" method="POST">{% csrf_token %}
-                                            <input type="hidden" name="return" value="exp:study-detail"/>
-                                            <button type="submit" class="btn btn-default btn-sm" {% if study.built or study.is_building %}disabled{% endif %}>
-                                                {% bootstrap_icon "wrench" %} Build experiment runner
+                                {% else %}
+                                    {% if search_query %}
+                                        <p class="pt-md">
+                                            <em> No results found! </em>
+                                        </p>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-sm-7">
+                        <h2 class="researchers-label">
+                            Researchers
+                        </h2>
+                        <div class="row">
+                            <div class="col-xs-12 small pb-sm">
+                                <em>
+                                    Researchers belonging to this study's access groups.
+                                    {{ study.lab.name }} Admins will automatically be
+                                    able to edit this study, regardless of study group.
+                                </em>
+                            </div>
+                        </div>
+                        <div class="row hidden-xs">
+                            <div class="col-xs-6">
+                                <label>
+                                    Name
+                                </label>
+                            </div>
+                            <div class="col-xs-4">
+                                <label>
+                                    Permissions
+                                </label>
+                            </div>
+                            <div class="col-xs-2">
+                            </div>
+                        </div>
+                        {% for researcher in current_researchers %}
+                            <div class="row pt-xs">
+                                <div class="col-sm-6 researcher-name">
+                                    {{ researcher.user.identicon_small_html }} {{ researcher.user.get_short_name }}
+                                </div>
+                                {% if can_manage_researchers %}
+                                    <div class="col-sm-4">
+                                        <div class="permissionDisplay">
+                                            <a href="#"
+                                               data-name="update_user"
+                                               class="researcher_permissions"
+                                               data-type="select"
+                                               data-url="{% url 'exp:manage-researcher-permissions' study.id %}"
+                                               data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
+                                               data-id="{{ researcher.user.get_short_name }}"
+                                               data-pk="{{ researcher.user.id }}"
+                                               data-title="Select researcher permissions">
+                                                {{ researcher.current_group }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 researcher-delete">
+                                        <form method="post"
+                                              action="{% url 'exp:manage-researcher-permissions' study.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="remove_user" value="{{ researcher.user.id }}"/>
+                                            <button aria-label="Remove researcher from study"
+                                                    type="submit"
+                                                    class="btn btn-danger btn-sm">
+                                                <span class="hidden-xs"><i aria-hidden="true" class="fa fa-minus"></i></span>
+                                                <span class="visible-xs">Remove</span>
                                             </button>
                                         </form>
                                     </div>
-                                </div>
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-                <div class="row">
-                    {#  ------ BEGIN MANAGE RESEARCHERS ----- #}
-                    <div class="col-lg-12">
-                        <div class="mt-xs panel panel-default">
-                            <div class="panel-heading">
-                                <h1 id="manage-researchers" class="panel-title">Manage Researchers</h1>
-                            </div>
-                            <div class="panel-body">
-                                <div class="row">
-                                    {% if can_manage_researchers %}
-                                    <div class="col-sm-5">
-                                        <form method="GET" action="./#manage-researchers">
-                                            <div class="input-group">
-                                                <input id="search-organization" class="form-control" name="match"
-                                                       placeholder="Search lab" type="text">
-                                                <span class="input-group-btn">
-                                                    <input type="hidden" name="page" value="1">
-                                                        <button class="btn btn-default" type="submit"
-                                                                aria-label="Search researchers">
-                                                        <i aria-hidden="true" class="fa fa-search"></i></button>
-                                                </span>
-                                            </div>
-                                        </form>
-                                        <div class="researcher-search-results">
-                                            {% if users_result %}
-                                                <h2 class="researchers-label"> Results </h2>
-                                                {% for user in users_result %}
-                                                    <div class="row pt-xs">
-                                                        <div class="col-xs-8 col-xs-offset-1">
-                                                            {{ user.identicon_small_html }} {{ user.get_short_name }} ({{user.username}})
-                                                        </div>
-                                                        <div class="col-xs-3">
-                                                            <form method="POST"
-                                                                  action="{% url 'exp:manage-researcher-permissions' study.id %}">{% csrf_token %}
-                                                                <input type="hidden" name="add_user"
-                                                                       value="{{ user.id }}"/>
-                                                                <button aria-label="Add researcher to study"
-                                                                        type="submit"
-                                                                        value="{{ user.id }}"
-                                                                        class="btn btn-success btn-sm"><i
-                                                                        aria-hidden="true" class="fa fa-plus"></i>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                {% endfor %}
-                                                <div class="pt-md">
-                                                    {% include 'studies/_paginator.html' with page=users_result %}
-                                                </div>
-
-                                            {% else %}
-                                                {% if search_query %}
-                                                    <p class="pt-md"><em> No results found! </em></p>
-                                                {% endif %}
-                                            {% endif %}
+                                {% else %}
+                                    <div class="col-sm-4">
+                                        <div class="permissionDisplay">
+                                            {{ researcher.current_group }}
                                         </div>
                                     </div>
-                                    {% endif %}
-                                    <div class="col-sm-7">
-                                        <h2 class="researchers-label"> Researchers </h2>
-                                        <div class="row">
-                                            <div class="col-xs-12 small pb-sm">
-                                                <em>
-                                                    Researchers belonging to this study's access groups.
-                                                    {{ study.lab.name }} Admins will automatically be
-                                                    able to edit this study, regardless of study group.
-                                                </em>
-                                            </div>
-                                        </div>
-                                        <div class="row hidden-xs">
-                                            <div class="col-xs-6">
-                                                <label> Name </label>
-                                            </div>
-                                            <div class="col-xs-4">
-                                                <label> Permissions </label>
-                                            </div>
-                                            <div class="col-xs-2">
-                                            </div>
-                                        </div>
-                                        {% for researcher in current_researchers %}
-                                            <div class="row pt-xs">
-                                                <div class="col-sm-6 researcher-name">
-                                                        {{ researcher.user.identicon_small_html }} {{ researcher.user.get_short_name }}
-                                                </div>
-                                                {% if can_manage_researchers %}
-                                                <div class="col-sm-4">
-                                                    <div class="permissionDisplay">
-                                                        <a href="#" data-name="update_user"
-                                                           class="researcher_permissions"
-                                                           data-type="select"
-                                                           data-url="{% url 'exp:manage-researcher-permissions' study.id %}"
-                                                           data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
-                                                           data-id="{{ researcher.user.get_short_name }}"
-                                                           data-pk="{{ researcher.user.id }}"
-                                                           data-title="Select researcher permissions">
-                                                            {{ researcher.current_group }}
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-2 researcher-delete">
-                                                    <form method="POST" action="{% url 'exp:manage-researcher-permissions' study.id %}">{% csrf_token %}
-                                                        <input type="hidden" name="remove_user"
-                                                               value="{{ researcher.user.id }}"/>
-                                                        <button aria-label="Remove researcher from study" type="submit"
-                                                                class="btn btn-danger btn-sm">
-                                                <span class="hidden-xs"><i aria-hidden="true"
-                                                                           class="fa fa-minus"></i></span>
-                                                            <span class="visible-xs">Remove</span>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                                {% else %}
-                                                <div class="col-sm-4">
-                                                    <div class="permissionDisplay">
-                                                        {{ researcher.current_group }}
-                                                    </div>
-                                                </div>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
+                                {% endif %}
                             </div>
-                        </div>
-                    </div>
-                    {#  ------ END MANAGE RESEARCHERS ------- #}
-                </div>
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="mt-xs panel panel-default">
-                            <div class="panel-heading">
-                                <h1 id="study-logs" class="panel-title"> Study Logs </h1>
-                            </div>
-                            <div class="panel-body">
-                            
-                                {% for log in logs %}
-                                    <div class="row pb-sm">
-                                        <div class="col-sm-3">
-                                            {% localtime on %}
-                                                {{ log.created_at }}
-                                            {% endlocaltime %}
-                                        </div>
-                                        <div class="col-sm-3">
-                                            Study
-                                            {% if log.action == "active" %} started
-                                            {% elif log.action == "deploy" %} experiment runner built
-                                            {% else %}
-                                                {{ log.action }}
-                                            {% endif %}
-
-
-                                            {% if log.user %}
-                                                by {{ log.user.get_short_name }}
-                                            {% elif log.action == "rejected" %}
-                                                due to changes
-                                            {% endif %}
-                                        </div>
-                                        <div class="col-sm-6">
-                                            {% if log.extra.comments %}
-                                                {{ log.extra.comments|linebreaks }}
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                                <div class="row">
-                                    <div class="col-xs-10 col-xs-offset-1">
-                                        {% include 'studies/_paginator.html' with page=logs anchor="study-logs" %}
-                                    </div>
-                                </div>
-                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    {#  MODALS #}
-    <form class="modal fade" id="study-state-modal" action="{% url 'exp:change-study-status' study.id %}" method="POST">{% csrf_token %}
-        <input type="hidden" name="trigger"/>
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">×</button>
-                <h3>Are you sure you want to change the status of {{ study.name }}? </h3>
+    {#  ------ END MANAGE RESEARCHERS ------- #}
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="mt-xs panel panel-default">
+            <div class="panel-heading">
+                <h1 id="study-logs" class="panel-title">
+                    Study Logs
+                </h1>
             </div>
-            <div class="modal-body">
-                <p class="help-text">
-                    <span id="study-comments-help-text"> </span>
-                </p>
-                <textarea class="form-control" rows="5" name="comments-text"
-                          placeholder="Please explain what changes need to be made here."></textarea>
-                <p>
-                    <span id="study-status-additional-information"> </span>
-                </p>
-            </div>
-            <div class="modal-footer"> {% csrf_token %}
-                <a class="btn btn-default" href="{% url 'exp:study-detail' pk=study.id %}">
-                    Cancel </a>
-                <button id="changeStatusButton"
-                        name="submit" value="submit" class="btn btn-success" type="submit">Save
-                </button>
+            <div class="panel-body">
+                {% for log in logs %}
+                    <div class="row pb-sm">
+                        <div class="col-sm-3">
+                            {% localtime on %}
+                            {{ log.created_at }}
+                        {% endlocaltime %}
+                    </div>
+                    <div class="col-sm-3">
+                        Study
+                        {% if log.action == "active" %}
+                            started
+                        {% elif log.action == "deploy" %}
+                            experiment runner built
+                        {% else %}
+                            {{ log.action }}
+                        {% endif %}
+                        {% if log.user %}
+                            by {{ log.user.get_short_name }}
+                        {% elif log.action == "rejected" %}
+                            due to changes
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-6">
+                        {% if log.extra.comments %}{{ log.extra.comments|linebreaks }}{% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col-xs-10 col-xs-offset-1">
+                    {% include 'studies/_paginator.html' with page=logs anchor="study-logs" %}
+                </div>
             </div>
         </div>
-    </form>
-{% endblock %}
+    </div>
+</div>
+</div>
+</div>
+</div>
+{#  MODALS #}
+<form class="modal fade"
+      id="study-state-modal"
+      action="{% url 'exp:change-study-status' study.id %}"
+      method="post">
+    {% csrf_token %}
+    <input type="hidden" name="trigger"/>
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                ×
+            </button>
+            <h3>
+                Are you sure you want to change the status of {{ study.name }}?
+            </h3>
+        </div>
+        <div class="modal-body">
+            <p class="help-text">
+                <span id="study-comments-help-text"> </span>
+            </p>
+            <textarea class="form-control"
+                      rows="5"
+                      name="comments-text"
+                      placeholder="Please explain what changes need to be made here."></textarea>
+            <p>
+                <span id="study-status-additional-information"> </span>
+            </p>
+        </div>
+        <div class="modal-footer">
+            {% csrf_token %}
+            <a class="btn btn-default"
+               href="{% url 'exp:study-detail' pk=study.id %}">
+            Cancel </a>
+            <button id="changeStatusButton"
+                    name="submit"
+                    value="submit"
+                    class="btn btn-success"
+                    type="submit">
+                Save
+            </button>
+        </div>
+    </div>
+</form>
+</div>
+{% endblock content %}

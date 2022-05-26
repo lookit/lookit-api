@@ -1,43 +1,44 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
-{% block title %}Sign up to participate{% endblock %}
-
+{% block title %}
+    Sign up to participate
+{% endblock title %}
 {% block flash %}
-  {% bootstrap_messages %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
-{% endblock %}
+    {% bootstrap_messages %}
+    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% endblock flash %}
 {% block content %}
-  <div class="container pt-md">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h1 class="panel-title">{% trans "Create Participant Account" %}</h1>
-      </div>
-      <div class="panel-body">
-        <div class="alert alert-info">
-          <p>{% trans "Ready to participate in a Lookit study? Create a family account here!" %}</p>
-          <p>
-            {% trans "To make a researcher account, please use" %} 
-            <a href="{% url 'accounts:researcher-registration' %}" class="alert-link">{% trans "this registration form" %}</a>
-            {% trans "instead." %}
-          </p>
+    <div class="container pt-md">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h1 class="panel-title">{% trans "Create Participant Account" %}</h1>
+            </div>
+            <div class="panel-body">
+                <div class="alert alert-info">
+                    <p>
+                        {% trans "Ready to participate in a Lookit study? Create a family account here!" %}
+                    </p>
+                    <p>
+                        {% trans "To make a researcher account, please use" %}
+                        <a href="{% url 'accounts:researcher-registration' %}"
+                           class="alert-link">{% trans "this registration form" %}</a>
+                        {% trans "instead." %}
+                    </p>
+                </div>
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                    <p>
+                        {% trans "By clicking 'Create Account', I agree that I have read and accepted the " %} <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">{% trans "Privacy Statement" %}.</a>
+                    </p>
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-success">{% bootstrap_icon "plus" %} {% trans "Create Account" %}</button>
+                    </div>
+                {% endbuttons %}
+            </form>
         </div>
-        <form method="POST" action="">{% csrf_token %}
-          {% bootstrap_form form %}
-          {% buttons %}
-          <p> {% trans "By clicking 'Create Account', I agree that I have read and accepted the " %} <a href="/privacy/" target="_blank">{% trans "Privacy Statement" %}.</a></p>
-          <div class="pull-right">
-            <button type="submit" class="btn btn-success">
-              {% bootstrap_icon "plus" %} {% trans "Create Account" %}
-            </button>
-          </div>
-          {% endbuttons %}
-        </form>
     </div>
-  </div>
 </div>
-{% endblock %}
+{% endblock content %}

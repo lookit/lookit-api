@@ -2,53 +2,55 @@
 {% load static %}
 {% load i18n %}
 {% load web_extras %}
-
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>{% block title %}{% endblock %} &mdash; {% trans "Lookit" %}</title>
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-  <meta name="apple-touch-fullscreen" content="yes">
-  {% bootstrap_css %}
-  {% bootstrap_javascript jquery=True %}
-  <link href="{% static 'css/lato-font.css' %}" rel="stylesheet">
-  <script src="{% static 'js/jquery-ui.min.js' %}" integrity="sha384-S3zIKOq/nelLqr0KAhub+iP5nyS201AUUfFxfEyKp9cM02cIiVixkZe+g3a10Rav"></script>
-  <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-s9KfTj2cVSa5Yc4gOd2/VyMCQCfFHwEoDAiVHgW2xDOlO/U9UcFQ0KXijfnM7qq8"></script>
-  <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" />
-  <script src="{% static 'js/moment.min.js' %}" integrity="sha384-pUJlcb0s5ZVM8ujEW3wr2qTVRBbcLEIvcEVEhk9GUd65R3z4uPx9NlB52/4+R3b3"></script>
-  <link type="text/css" rel="stylesheet" href="{% static 'base.css' %}" />
-  {% block head %}
-  {% endblock %}
-  {% google_tag_manager %}
-</head>
-
-<body>
-  <div class="container">
-    <header class="row">
-      {% block header %}
-      {% include 'web/_navigation.html' %}
-      {% endblock %}
-    </header>
-    <section id="flash-messages">
-      {% block flash %}
-      {% endblock %}
-    </section>
-    <section>
-      <article class="row">
-        <div>
-          {% block content %}
-          {% endblock %}
+    <head>
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <title>
+            {% block title %}
+            {% endblock title %}
+            - {% trans "Lookit" %}
+        </title>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1"/>
+        <meta name="apple-touch-fullscreen" content="yes" />
+        {% bootstrap_css %}
+        {% bootstrap_javascript jquery=True %}
+        <link href="{% static 'css/lato-font.css' %}" rel="stylesheet"/>
+        <script src="{% static 'js/jquery-ui.min.js' %}" integrity="sha384-S3zIKOq/nelLqr0KAhub+iP5nyS201AUUfFxfEyKp9cM02cIiVixkZe+g3a10Rav"></script>
+        <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-s9KfTj2cVSa5Yc4gOd2/VyMCQCfFHwEoDAiVHgW2xDOlO/U9UcFQ0KXijfnM7qq8"></script>
+        <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" />
+        <script src="{% static 'js/moment.min.js' %}" integrity="sha384-pUJlcb0s5ZVM8ujEW3wr2qTVRBbcLEIvcEVEhk9GUd65R3z4uPx9NlB52/4+R3b3"></script>
+        <link type="text/css" rel="stylesheet" href="{% static 'base.css' %}" />
+        {% block head %}
+        {% endblock head %}
+        {% google_tag_manager %}
+    </head>
+    <body>
+        <div class="container">
+            <header class="row">
+                {% block header %}
+                    {% include 'web/_navigation.html' %}
+                {% endblock header %}
+            </header>
+            <section id="flash-messages">
+                {% block flash %}
+                {% endblock flash %}
+            </section>
+            <section>
+                <article class="row">
+                    <div>
+                        {% block content %}
+                        {% endblock content %}
+                    </div>
+                </article>
+            </section>
+            {% block footerjs %}
+            {% endblock footerjs %}
         </div>
-      </article>
-    </section>
-    {% block footerjs %}
-    {% endblock %}
-  </div>
-</body>
-
+    </body>
 </html>

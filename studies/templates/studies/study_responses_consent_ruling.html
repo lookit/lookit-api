@@ -1,10 +1,10 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load exp_extras %}
 {% load static %}
-
-{% block title %}Responses | {{ study.name }}{% endblock %}
-
+{% block title %}
+    Responses | {{ study.name }}
+{% endblock title %}
 {% block head %}
     {{ block.super }}
     <script type="application/json" id="response-key-value-store">
@@ -141,7 +141,7 @@
                     $hiddenInput.attr("name", hiddenInputAttrs["name"]);
                 } else {  // If it's not there, create a new one...
                     hiddenInputAttrs["value"] = responseId;
-                    $consentRulingForm.append($("<input/>", hiddenInputAttrs).addClass("consent-ruling"));
+                    $consentRulingForm.append($("<input />", hiddenInputAttrs).addClass("consent-ruling"));
                 }
 
                 // ... Finally, update the UI with whatever approval state was changed.
@@ -297,25 +297,22 @@
             });
         });
     </script>
-
-{% endblock %}
-
+{% endblock head %}
 {% block flash %}
     {% bootstrap_messages %}
-    {% if form.non_field_errors %}
-        <div class="alert alert-danger" role="alert">
-            {{ form.non_field_errors }}
-        </div>
-    {% endif %}
-{% endblock %}
-
+    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% endblock flash %}
 {% block content %}
-    <div class='container mb-lg'>
-        <div class='row'>
+    <div class="container mb-lg">
+        <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-                    <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
+                    <li>
+                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
+                    </li>
                     <li class="active">Consent Manager</li>
                 </ol>
             </div>
@@ -332,7 +329,7 @@
                         <h4 class="panel-title">Responses</h4>
                     </div>
                     <div class="form-inline panel-body">
-                        <label for="response-status-filters">Show Currently ... </label>
+                        <label for="response-status-filters">Show Currently ...</label>
                         <select id="response-status-filters"
                                 name="response-status-filters"
                                 class="form-control">
@@ -345,57 +342,62 @@
                             <option id="filter-rejected" value="rejected">
                                 Rejected
                             </option>
-                        </select> Responses*
-                        <br>
+                        </select>
+                        Responses*
+                        <br />
                         <p class="help small">
-                            <em>
-                            *Responses with approvals older than 3 weeks are not shown.
-                            </em>
+                            <em>*Responses with approvals older than 3 weeks are not shown.</em>
                         </p>
                     </div>
                     <ul id="list-of-responses" class="list-group">
                         {% for response in loaded_responses %}
                             <li id="response-option-{{ response.uuid }}"
-                                class="response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %} preview-row {% endif %}"
+                                class="response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %} preview-row{% endif %}"
                                 data-id="{{ response.uuid }}"
                                 data-original-status="{{ response.current_ruling }}">
                                 <span>
                                     <strong>{{ response.date_created | date:"D M d, P e" }}</strong>
-                                    {% if response.is_preview %} 
-                                    <p>
-                                        <strong>[Preview]</strong>
-                                    </p>{% endif %}
+                                    {% if response.is_preview %}
+                                        <p>
+                                            <strong>[Preview]</strong>
+                                        </p>
+                                    {% endif %}
                                     <p>
                                         <em class="small">{{ response.ruling_comments }}</em>
                                     </p>
                                 </span>
                                 <div class="btn-group btn-group-sm pull-right" role="group">
-                                    <button id="response-actor-{{ response.uuid }}" type="button"
+                                    <button id="response-actor-{{ response.uuid }}"
+                                            type="button"
                                             class="btn btn-default dropdown-toggle response-actor"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            data-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="false">
                                         {{ response.current_ruling }}
                                         <span class="caret"></span>
                                         <span class="sr-only">Toggle Dropdown</span>
                                     </button>
-                                    <ul class="dropdown-menu" role="menu"
+                                    <ul class="dropdown-menu"
+                                        role="menu"
                                         aria-labelledby="response-actor-{{ response.uuid }}">
                                         <li>
-                                            <a class="consent-judgment" data-action="reset"
-                                               style="display:none;">Undo</a>
+                                            <button class="consent-judgment btn btn-link"
+                                                    data-action="reset"
+                                                    style="display:none;">Undo</button>
                                         </li>
                                         {% if response.current_ruling != 'pending' %}
                                             <li>
-                                                <a class="consent-judgment" data-action="pending">Revert to Pending</a>
+                                                <button class="consent-judgment btn btn-link" data-action="pending">Revert to Pending</button>
                                             </li>
                                         {% endif %}
                                         {% if response.current_ruling != 'accepted' %}
                                             <li>
-                                                <a class="consent-judgment" data-action="accepted">Accept</a>
+                                                <button class="consent-judgment btn btn-link" data-action="accepted">Accept</button>
                                             </li>
                                         {% endif %}
                                         {% if response.current_ruling != 'rejected' %}
                                             <li>
-                                                <a class="consent-judgment" data-action="rejected">Reject</a>
+                                                <button class="consent-judgment btn btn-link" data-action="rejected">Reject</button>
                                             </li>
                                         {% endif %}
                                     </ul>
@@ -403,20 +405,20 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    <form id="consent-ruling-form" class="panel-footer clearfix" method="POST">{% csrf_token %}
+                    <form id="consent-ruling-form" class="panel-footer clearfix" method="post">
+                        {% csrf_token %}
                         <div class="panel panel-default">
-                            <span class="label label-warning">Revert to Pending <span
-                                    class="pending-count badge">0</span></span>
-                            <span class="label label-success">Approvals <span
-                                    class="approvals-count badge">0</span></span>
-                            <span class="label label-danger">Rejections <span
-                                    class="rejections-count badge">0</span></span>
+                            <span class="label label-warning">Revert to Pending <span class="pending-count badge">0</span></span>
+                            <span class="label label-success">Approvals <span class="approvals-count badge">0</span></span>
+                            <span class="label label-danger">Rejections <span class="rejections-count badge">0</span></span>
                         </div>
                         <input name="comments" type="hidden" value="{}"/>
                         <button type="submit" class="btn btn-primary btn-lg btn-block">
                             Submit Rulings & Comments <span class="glyphicon glyphicon-send"></span>
                         </button>
-                        <button id="reset-choices" type="button" class="btn btn-default btn-slg btn-block">
+                        <button id="reset-choices"
+                                type="button"
+                                class="btn btn-default btn-slg btn-block">
                             Reset Current Choices <span class="glyphicon glyphicon-repeat"></span>
                         </button>
                     </form>
@@ -430,7 +432,7 @@
                         </div>
                     </section>
                     <video controls id="video-under-consideration" height="270" width="360">
-                        <source src="" type="video/mp4">
+                        <source src="" type="video/mp4"/>
                     </video>
                     <textarea id="response-commentary"
                               class="form-control"
@@ -440,13 +442,13 @@
                             <ul class="pagination">
                                 <li id="nav-video-previous">
                                     <a aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
+                                        <span aria-hidden="true">«</span>
                                     </a>
                                 </li>
                                 {# list items go here#}
                                 <li id="nav-video-next">
                                     <a aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
+                                        <span aria-hidden="true">»</span>
                                     </a>
                                 </li>
                             </ul>
@@ -457,7 +459,9 @@
             <section id="response-statistics" class="col-md-4 col-xs-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4 class="panel-title">Response Statistics</h4>
+                        <h4 class="panel-title">
+                            Response Statistics
+                        </h4>
                     </div>
                     <div class="panel-body">
                         <ul class="list-group">
@@ -492,61 +496,96 @@
                         </ul>
                     </div>
                 </div>
-
             </section>
         </div>
         <div id="response-info-container" class="row pt-md well">
-            <h2>Session Data</h2>
-            <h3>Account Information</h3>
+            <h2>
+                Session Data
+            </h2>
+            <h3>
+                Account Information
+            </h3>
             <table id="participant" class="table">
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Global ID</th>
-                    <th>Parent name</th>
-                </tr>
+                    <tr>
+                        <th>
+                            ID
+                        </th>
+                        <th>
+                            Global ID
+                        </th>
+                        <th>
+                            Parent name
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    {# Participant data inserted here #}
-                </tr>
+                    <tr>
+                        {# Participant data inserted here #}
+                    </tr>
                 </tbody>
             </table>
-            <h3>Child Information</h3>
+            <h3>
+                Child Information
+            </h3>
             <table id="child" class="table">
                 <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Global ID</th>
-                    <th>Name</th>
-                    <th>Birthday</th>
-                    <th>Gender</th>
-                    <th>Additional Info</th>
-                </tr>
+                    <tr>
+                        <th>
+                            ID
+                        </th>
+                        <th>
+                            Global ID
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Birthday
+                        </th>
+                        <th>
+                            Gender
+                        </th>
+                        <th>
+                            Additional Info
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    {# Child data inserted here #}
-                </tr>
+                    <tr>
+                        {# Child data inserted here #}
+                    </tr>
                 </tbody>
             </table>
-            <h3 id="general-info-header">Response Information</h3>
+            <h3 id="general-info-header">
+                Response Information
+            </h3>
             <table id="general" class="table">
                 <thead>
-                <tr>
-                    <th>Uuid</th>
-                    <th>Global Event Timings</th>
-                    <th>Sequence</th>
-                    <th>Completed</th>
-                    <th>Date Created</th>
-                </tr>
+                    <tr>
+                        <th>
+                            Uuid
+                        </th>
+                        <th>
+                            Global Event Timings
+                        </th>
+                        <th>
+                            Sequence
+                        </th>
+                        <th>
+                            Completed
+                        </th>
+                        <th>
+                            Date Created
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    {# General data inserted here #}
-                </tr>
+                    <tr>
+                        {# General data inserted here #}
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}

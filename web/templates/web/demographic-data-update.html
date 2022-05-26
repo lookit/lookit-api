@@ -1,15 +1,12 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
-{% block title %}{% trans "Update demographics" %}{% endblock %}
-
+{% block title %}
+    {% trans "Update demographics" %}
+{% endblock title %}
 {% block flash %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
-{% endblock %}
+    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% endblock flash %}
 {% block content %}
     <script>
         $(document).ready(function() {
@@ -74,54 +71,60 @@
             $(`label[for=id_${field}]`).show();
         }
     </script>
-
     {% bootstrap_messages %}
     <div class="container">
         <div class="row account-edit">
             <div class="col-md-4 mb-lg">
-                 {% include 'accounts/_account-navigation.html' with current_page="demographic-update" %}
+                {% include 'accounts/_account-navigation.html' with current_page="demographic-update" %}
             </div>
             <div class="col-md-8">
-           
                 {% if request.session.study_name and user.has_demographics and not has_study_child %}
-                <p>{% trans "If the \"Continue to Study\" button still isn't lighting up, make sure you have completed the form below and added the participating child to your account. The study may also have become full or be recruiting a slightly different set of kids right now." %}</p>
-                <p>
-                    {% trans "You can click the \"Children Information\" button to add another child, \"Find Another Study\" to explore more studies for your family, or" %}
-                    <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %}">{% trans "click here" %}</a>
-                    {% trans "to review the requirements for" %} 
-                    "{{ request.session.study_name }}".
-                </p>
+                    <p>
+                        {% trans "If the \"Continue to Study\" button still isn't lighting up, make sure you have completed the form below and added the participating child to your account. The study may also have become full or be recruiting a slightly different set of kids right now." %}
+                    </p>
+                    <p>
+                        {% trans "You can click the \"Children Information\" button to add another child, \"Find Another Study\" to explore more studies for your family, or" %}
+                        <a href="{% url 'web:study-detail' uuid=request.session.study_uuid %}">{% trans "click here" %}</a>
+                        {% trans "to review the requirements for" %}
+                        "{{ request.session.study_name }}".
+                    </p>
                 {% else %}
-
-                    {% if not request.session.study_name and not user.has_demographics %} 
-                    <p>{% trans "Welcome to Children Helping Science! Before you take your first study, we are asking you to share some information about your family." %}</p>
+                    {% if not request.session.study_name and not user.has_demographics %}
+                        <p>
+                            {% trans "Welcome to Children Helping Science! Before you take your first study, we are asking you to share some information about your family." %}
+                        </p>
                     {% elif request.session.study_name and not user.has_demographics %}
-                    <p>{% trans "Welcome to Children Helping Science! Before you continue to the main study" %} ("{{ request.session.study_name }}"), {% trans "we are asking you to share some information about your family." %}</p>
+                        <p>
+                            {% trans "Welcome to Children Helping Science! Before you continue to the main study" %} ("{{ request.session.study_name }}"), {% trans "we are asking you to share some information about your family." %}
+                        </p>
                     {% elif request.session.study_name and user.has_demographics and has_study_child %}
-                    <p>{% trans "Use this form to share more information about your family. When you are ready to move on, you can click the \"Continue to Study\" button on the left!" %}</p>
+                        <p>
+                            {% trans "Use this form to share more information about your family. When you are ready to move on, you can click the \"Continue to Study\" button on the left!" %}
+                        </p>
                     {% endif %}
-
-                    <p>{% trans "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning." %}</p>
-                    <p>{% trans "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video." %}</p>
-                
+                    <p>
+                        {% trans "One reason we are developing Internet-based experiments is to represent a more diverse group of families in our research. Your answers to these questions will help us understand what audience we reach, as well as how factors like speaking multiple languages or having older siblings affect children's learning." %}
+                    </p>
+                    <p>
+                        {% trans "Even if you allow your study videos to be published for scientific or publicity purposes, your demographic information is never published in conjunction with your video." %}
+                    </p>
                 {% endif %}
-
                 <div class="panel panel-default">
-                  <div class="panel-body">
-                    <form method="POST" action="">{% csrf_token %}
-                      {% bootstrap_form form %}
-                      {% buttons %}
-                      <div class="pull-right">
-                          <a class="btn btn-default" href="{% url 'web:demographic-data-update' %}"> {% trans "Cancel" %} </a>
-                          <button type="submit" class="btn btn-success">
-                             {% trans "Save" %}
-                          </button>
-                      </div>
-                      {% endbuttons %}
+                    <div class="panel-body">
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            {% bootstrap_form form %}
+                            {% buttons %}
+                            <div class="pull-right">
+                                <a class="btn btn-default"
+                                   href="{% url 'web:demographic-data-update' %}">{% trans "Cancel" %}</a>
+                                <button type="submit" class="btn btn-success">{% trans "Save" %}</button>
+                            </div>
+                        {% endbuttons %}
                     </form>
                 </div>
-              </div>
             </div>
         </div>
     </div>
-{% endblock %}
+</div>
+{% endblock content %}

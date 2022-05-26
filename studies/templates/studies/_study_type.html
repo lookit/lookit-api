@@ -1,5 +1,4 @@
 {% load exp_extras %}
-
 <script>
     function toggleOtherTextInput (e) {
         const otherTextInput = document.querySelector(`input[name=other_${e.name}]`)
@@ -129,73 +128,89 @@
     <div class="row">
         <div class="col-xs-12">
             {% for study_type in study_types %}
-            <div class='type-fields' id='type-metadata-{{ study_type.id }}'>
-                {% for field in study_type.configuration.metadata.fields %}
-                {% with field.name as key %}
-                {% with field.value as value %}
-                {% with key_help_text|get_key:key|default:"" as help_text %}
-
-
-                {% if field.input_type == "checkbox" %}
-                <div class="form-group" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
-                    <input name="{{key}}" type="{{field.input_type}}" {% if study and study.metadata|get_key:key %}checked{% endif %}>
-                    <label>{{key_display_names|get_key:key|default:key}}</label>
+                <div class="type-fields" id="type-metadata-{{ study_type.id }}">
+                    {% for field in study_type.configuration.metadata.fields %}
+                        {% with field.name as key %}
+                            {% with field.value as value %}
+                                {% with key_help_text|get_key:key|default:"" as help_text %}
+                                    {% if field.input_type == "checkbox" %}
+                                        <div class="form-group"
+                                             data-previous='{% if not create %}{{ study.metadata|get_key:key|default:"" }}{% endif %}'>
+                                            <input name="{{ key }}"
+                                                   type="{{ field.input_type }}"
+                                                   {% if study and study.metadata|get_key:key %}checked{% endif %}/>
+                                            <label>{{ key_display_names|get_key:key|default:key }}</label>
+                                        </div>
+                                    {% elif field.input_type == "radio" %}
+                                        <div class="form-group">
+                                            <label id="id_{{ field.name }}"
+                                                   class="control-label"
+                                                   title="{{ help_text }}">
+                                                {{ key_display_names|get_key:key|default:key }}
+                                            </label>
+                                            {% for option in field.options %}
+                                                <div class="radio">
+                                                    <label>
+                                                        <input name="{{ field.name }}"
+                                                               value="{{ option }}"
+                                                               type="radio"
+                                                               {% if study and study.metadata|get_key:key == option %}checked{% endif %}/>
+                                                        {{ option }}
+                                                    </label>
+                                                </div>
+                                                {% if option == "Other" %}
+                                                    {% if study %}
+                                                        {% with "other_"|add:field.name as other_field %}
+                                                            {% with study.metadata|get_key:other_field|default:'' as other_value %}
+                                                                <input class="form-control hidden"
+                                                                       type="text"
+                                                                       name="other_{{ field.name }}"
+                                                                       value="{{ other_value }}"/>
+                                                            {% endwith %}
+                                                        {% endwith %}
+                                                    {% else %}
+                                                        <input class="form-control hidden" type="text" name="other_{{ field.name }}"/>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <div class="help-block">{{ help_text }}</div>
+                                        </div>
+                                    {% else %}
+                                        <div class="form-group metadata-key"
+                                             data-previous='{% if not create %}{{ study.metadata|get_key:key|default:"" }}{% endif %}'>
+                                            <label class="control-label">{{ key_display_names|get_key:key|default:key }}</label>
+                                            <div class="input-container">
+                                                <input class="form-control"
+                                                       title="{{ help_text }}"
+                                                       name="{{ key }}"
+                                                       type="{{ field.input_type }}"
+                                                       value="{% if study_type.id == currentType and not create %}{{ study.metadata|get_key:key|default:'' }}{% else %}{{ value | default:'' }}{% endif %}"/>
+                                            </div>
+                                            <div class="help-block">{{ help_text }}</div>
+                                        </div>
+                                    {% endif %}
+                                    {% if key == "last_known_player_sha" %}
+                                        <div id="commit-description" class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">
+                                                    About this version
+                                                    <button class="btn btn-default pull-right" id="update-button">Check for updates</button>
+                                                </h3>
+                                            </div>
+                                            <div class="panel-body"></div>
+                                        </div>
+                                        <div id="commit-update-info" class="panel panel-default">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">Update info</h3>
+                                            </div>
+                                            <div class="panel-body"></div>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endwith %}
+                        {% endwith %}
+                    {% endfor %}
                 </div>
-                {% elif field.input_type == "radio" %}
-                <div class="form-group">
-                <label id="id_{{field.name}}" class="control-label" title="{{help_text}}">{{key_display_names|get_key:key|default:key}}</label>
-                {% for option in field.options %}
-                 <div class="radio">
-                    <label><input name="{{field.name}}" value="{{option}}" type="radio" {% if study and study.metadata|get_key:key == option %}checked{% endif %}>{{option}}</label>
-                </div>
-                {% if option == "Other" %}
-                {% if study %}
-                {% with "other_"|add:field.name as other_field %}
-                {% with study.metadata|get_key:other_field|default:'' as other_value%}
-                <input class="form-control hidden" type="text" name="other_{{field.name}}" value="{{other_value}}">
-                {% endwith %}
-                {% endwith %}
-                {% else %}
-                <input class="form-control hidden" type="text" name="other_{{field.name}}">
-                {% endif %}
-                {% endif %}
-                {% endfor %}
-                <div class="help-block">{{help_text}}</div>
-                </div>
-                {% else %}
-                <div class="form-group metadata-key" data-previous='{% if not create %}{{study.metadata|get_key:key|default:""}}{% endif %}'>
-                    <label class="control-label">{{key_display_names|get_key:key|default:key}}</label>
-                    <div class="input-container">
-                        <input class="form-control" title="{{help_text}}" name="{{key}}" type="{{field.input_type}}" value="{% if study_type.id == currentType and not create %}{{study.metadata|get_key:key|default:''}}{% else %}{{value | default:''}}{% endif %}" >
-                    </div>
-                    <div class="help-block">{{help_text}}</div>
-                </div>
-                {% endif %}
-          
-
-
-                {% if key == "last_known_player_sha" %}
-                <div id="commit-description" class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">About this version <button class="btn btn-default pull-right" id="update-button">Check for updates</button> </h3>
-                    </div>
-                    <div class="panel-body">
-                    </div>
-                </div>
-
-                <div id="commit-update-info" class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Update info</h3>
-                    </div>
-                    <div class="panel-body">
-                    </div>
-                </div>
-                {% endif %}
-                {% endwith %}
-                {% endwith %}
-                {% endwith %}
-                {% endfor %}
-            </div>
             {% endfor %}
         </div>
     </div>

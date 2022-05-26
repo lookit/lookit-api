@@ -2,70 +2,74 @@
 {% load static %}
 {% load guardian_tags %}
 {% load web_extras %}
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{% block title %}{% endblock %} &mdash; Experimenter</title>
-
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1">
-    <meta name="apple-touch-fullscreen" content="yes">
-    {% bootstrap_css %}
-    {% bootstrap_javascript jquery=True %}
-    <link href="{% static 'exp/css/app.css' %}" rel="stylesheet" />
-    {% if request.user.is_superuser %}
-    <style>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <title>
+            {% block title %}
+            {% endblock title %}
+        - Experimenter</title>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1"/>
+        <meta name="apple-touch-fullscreen" content="yes" />
+        {% bootstrap_css %}
+        {% bootstrap_javascript jquery=True %}
+        <link href="{% static 'exp/css/app.css' %}" rel="stylesheet" />
+        {% if request.user.is_superuser %}
+            <style>
       body {
           background: url('{% static "exp/img/su-mode.svg" %}') repeat transparent;
           background-size: 400px 400px;
       }
-    </style>
-    {% endif %}
-    {% block head %}
-    {% endblock %}
-    {% block css %}
-        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    {% endblock %}
-    <link href="{% static 'exp/css/bootstrap-editable.css' %}" rel="stylesheet"/>
-    <script src="{% static 'exp/js/bootstrap-editable.min.js' %}" integrity="sha384-U+oyyQtlZ0gWSjCW7DGnSUxmWwo0EtGjKPOG7i8WjkZkErNgccKPLFOlbYwYTPud"></script>
-    <script src="{% static 'exp/js/clipboard.min.js' %}" integrity="sha384-yfYgXC4debH24R+YufOxRYpRWQzZ9Vy/u7bClZYCobaimHiUK+g6msjpjx2ta0Bx"></script>
-    <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-s9KfTj2cVSa5Yc4gOd2/VyMCQCfFHwEoDAiVHgW2xDOlO/U9UcFQ0KXijfnM7qq8"></script>
-    {% google_tag_manager %}
-  </head>
-  <body>
-    <div class="container-fluid">
-      <header class="row">
-          {% block header %}
-            {% include 'exp/_navigation.html' %}
-          {% endblock %}
-      </header>
-      <section id="flash-messages">
-        {% block flash %}
-        {% endblock %}
-      </section>
-      <section>
-          <article class="row">
-              <div>
-                  {% block content %}
-                  {% endblock %}
-              </div>
-          </article>
-      </section>
-      {% block footer %}
-        <footer class="row">
-          <div class="col">
-          <p class="text-center">
-            <a href="/termsofuse/">Terms of Use</a> | 
-            <a href="/privacy/">Privacy</a>
-          </p>
-          </div>
-        </footer>
-      {% endblock %}
-      {% block footerjs %}
-      {% endblock %}
-      </div>
-  </body>
+            </style>
+        {% endif %}
+        {% block head %}
+        {% endblock head %}
+        {% block css %}
+            <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" />
+        {% endblock css %}
+        <link href="{% static 'exp/css/bootstrap-editable.css' %}" rel="stylesheet"/>
+        <script src="{% static 'exp/js/bootstrap-editable.min.js' %}" integrity="sha384-U+oyyQtlZ0gWSjCW7DGnSUxmWwo0EtGjKPOG7i8WjkZkErNgccKPLFOlbYwYTPud"></script>
+        <script src="{% static 'exp/js/clipboard.min.js' %}" integrity="sha384-yfYgXC4debH24R+YufOxRYpRWQzZ9Vy/u7bClZYCobaimHiUK+g6msjpjx2ta0Bx"></script>
+        <script defer src="{% static 'js/fontawesome-all.js' %}" integrity="sha384-s9KfTj2cVSa5Yc4gOd2/VyMCQCfFHwEoDAiVHgW2xDOlO/U9UcFQ0KXijfnM7qq8"></script>
+        {% google_tag_manager %}
+    </head>
+    <body>
+        <div class="container-fluid">
+            <header class="row">
+                {% block header %}
+                    {% include 'exp/_navigation.html' %}
+                {% endblock header %}
+            </header>
+            <section id="flash-messages">
+                {% block flash %}
+                {% endblock flash %}
+            </section>
+            <section>
+                <article class="row">
+                    <div>
+                        {% block content %}
+                        {% endblock content %}
+                    </div>
+                </article>
+            </section>
+            {% block footer %}
+                <footer class="row">
+                    <div class="col">
+                        <p class="text-center">
+                            <a href="{% url 'web:termsofuse' %}">Terms of Use</a> |
+                        <a href="{% url 'web:privacy' %}">Privacy</a>
+                    </p>
+                </div>
+            </footer>
+        {% endblock footer %}
+        {% block footerjs %}
+        {% endblock footerjs %}
+    </div>
+</body>
 </html>

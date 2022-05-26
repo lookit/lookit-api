@@ -1,13 +1,13 @@
 <p>
-  Dear {{ researcher_name }},
+    Dear {{ researcher_name }},
 </p>
 <p>
     You have been given {{ permission }} permissions to collaborate on {{ study_name }}.
 </p>
 <p>
-    Here is a link to <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">start collaborating</a>.
+Here is a link to <a href="{{ base_url }}{% url 'exp:study-detail' study_id %}">start collaborating</a>.
 </p>
 <p>
     Best,
-    <div> {{ lab_name }} Admin </div>
+    <div>{{ lab_name }} Admin</div>
 </p>

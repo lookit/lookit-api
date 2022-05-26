@@ -1,110 +1,97 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
-
-{% block title %}Support Lookit{% endblock %}
-
+{% block title %}
+    Support Lookit
+{% endblock title %}
 {% block content %}
-<div class="container">
-<h1>How Researchers can Support Lookit</h1>
-
-<p>
-Lookit is free for labs to use, but like any open source software project, it's not free to run! 
-On this page, you can learn about ways to keep Lookit running (and getting better!) for a long time 
-to come.
-</p>
-
-<h3>Cite Lookit!</h3>
-
-<p>
-The biggest way you can support Lookit is by citing us in any paper (or poster, or presentation, 
-etc.) that you publish using data you collected on Lookit, or that depends on the site in some 
-other way. This helps us demonstrate our impact to funders and potential funders! In your methods 
-section, please include something like the following - the details will vary on exactly how you are 
-using Lookit.
-</p>
-
-<ul>
-    <li>
-    Data was collected using Lookit (Scott & Schulz 2017) for participant management, study 
-    creation, and data collection. In addition to the automated recruitment of families in the 
-    Lookit database, we also [describe your recruiting/advertising approaches.]
-    </li>
-    <li>
-    The study design was implemented using Lookit's experiment runner, which uses a JSON object 
-    specifying all stimuli and presentation parameters. A text file of the JSON for this 
-    experiment can be found at [online location where you upload materials], and the experiment 
-    can be previewed by a logged-in user at Lookit at [preview link for your study.]
-    </li>
-</ul>
-
-<p>And the corresponding citation is:</p>
-
-<ul>
-    <li>
-    Scott, K., & Schulz, L. (2017). Lookit (part 1): A new online platform for developmental 
-    research. Open Mind, 1(1), 4-14. 
-    <a href="https://doi.org/10.1162/OPMI_a_00002" >https://doi.org/10.1162/OPMI_a_00002</a>
-    </li>
-</ul>
-
-<p>
-If you create an experiment that is closely based on one made by another researcher, you should 
-also cite or credit that person's work - reach out to the study creator to learn the best way to 
-do this!
-</p>
-
-<h3>Tell us how you use Lookit</h3>
-
-<p>
-Developmental psychology is slow, and this can put us at a disadvantage especially when talking 
-about software with people from other fields that get to publication more quickly. You can help us 
-a TON by letting us know any time you have a milestone. Milestones could include:
-</p>
-
-<ul>
-    <li>Posting a preprint or submitting a paper</li>
-    <li>Presenting a poster or conference talk</li>
-    <li>Making guides or teaching materials to help others learn to use Lookit</li>
-    <li>Submitting a grant that plans to use Lookit</li>
-    <li>A surprising or cool finding</li>
-    <li>A new or unexpected way to use Lookit</li>
-</ul>
-
-<p>
-We would LOVE to showcase your work on the Lookit website - please fill in the form below to tell us about it!
-</p>
-
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScy0DBdFNvDPsd-YkqiDkykoUmpjEfZCObOBefW7w-ekw5v0w/viewform?embedded=true" width="640" height="2100" frameborder="0" marginheight="0" marginwidth="0" title="Lookit - Citations & Impact">Loading…</iframe>
-
-<h3>Write Lookit into your grants</h3>
-
-<p>
-Lookit is free for researchers to use, but if you are seeking funding, we would really appreciate 
-you planning for funds to cover the cost of using the site. There are two main ways that Lookit 
-might be involved in a funding application:
-</p>
-
-<ul>
-    <li>As a service, covering the cost of testing N participants during the course of your grant 
-    (contact us for ideas about how to calculate and write Lookit testing into your budget)</li>
-    <li>As a collaborator, to implement something new that would expand what Lookit can do.</li>
-</ul>
-
-<p>
-We would be thrilled to discuss any and all proposals you may be working on - contact Melissa 
-(mekline@mit.edu) for any inquiries!
-</p>
-
-<h3>Our Funders</h3>
-
-<p>
-Finally, a big thank-you to the funders that make Lookit possible:
-</p>
-
-<div>Halis Family Foundation</div>
-<div>The National Science Foundation (1429216, 1823919, CCF-1231216)</div>
-<div>Defense Advanced Research Projects Agency (HR001119S0005)</div>
-
-</div>
-{% endblock %}
+    <div class="container">
+        <h1>How Researchers can Support Lookit</h1>
+        <p>
+            Lookit is free for labs to use, but like any open source software project, it's not free to run!
+            On this page, you can learn about ways to keep Lookit running (and getting better!) for a long time
+            to come.
+        </p>
+        <h3>Cite Lookit!</h3>
+        <p>
+            The biggest way you can support Lookit is by citing us in any paper (or poster, or presentation,
+            etc.) that you publish using data you collected on Lookit, or that depends on the site in some
+            other way. This helps us demonstrate our impact to funders and potential funders! In your methods
+            section, please include something like the following - the details will vary on exactly how you are
+            using Lookit.
+        </p>
+        <ul>
+            <li>
+                Data was collected using Lookit (Scott & Schulz 2017) for participant management, study
+                creation, and data collection. In addition to the automated recruitment of families in the
+                Lookit database, we also [describe your recruiting/advertising approaches.]
+            </li>
+            <li>
+                The study design was implemented using Lookit's experiment runner, which uses a JSON object
+                specifying all stimuli and presentation parameters. A text file of the JSON for this
+                experiment can be found at [online location where you upload materials], and the experiment
+                can be previewed by a logged-in user at Lookit at [preview link for your study.]
+            </li>
+        </ul>
+        <p>
+            And the corresponding citation is:
+        </p>
+        <ul>
+            <li>
+                Scott, K., & Schulz, L. (2017). Lookit (part 1): A new online platform for developmental
+                research. Open Mind, 1(1), 4-14.
+                <a href="https://doi.org/10.1162/OPMI_a_00002">https://doi.org/10.1162/OPMI_a_00002</a>
+            </li>
+        </ul>
+        <p>
+            If you create an experiment that is closely based on one made by another researcher, you should
+            also cite or credit that person's work - reach out to the study creator to learn the best way to
+            do this!
+        </p>
+        <h3>Tell us how you use Lookit</h3>
+        <p>
+            Developmental psychology is slow, and this can put us at a disadvantage especially when talking
+            about software with people from other fields that get to publication more quickly. You can help us
+            a TON by letting us know any time you have a milestone. Milestones could include:
+        </p>
+        <ul>
+            <li>Posting a preprint or submitting a paper</li>
+            <li>Presenting a poster or conference talk</li>
+            <li>Making guides or teaching materials to help others learn to use Lookit</li>
+            <li>Submitting a grant that plans to use Lookit</li>
+            <li>A surprising or cool finding</li>
+            <li>A new or unexpected way to use Lookit</li>
+        </ul>
+        <p>
+            We would LOVE to showcase your work on the Lookit website - please fill in the form below to tell us about it!
+        </p>
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScy0DBdFNvDPsd-YkqiDkykoUmpjEfZCObOBefW7w-ekw5v0w/viewform?embedded=true"
+                width="640"
+                height="2100"
+                title="Lookit - Citations & Impact">Loading…</iframe>
+        <h3>Write Lookit into your grants</h3>
+        <p>
+            Lookit is free for researchers to use, but if you are seeking funding, we would really appreciate
+            you planning for funds to cover the cost of using the site. There are two main ways that Lookit
+            might be involved in a funding application:
+        </p>
+        <ul>
+            <li>
+                As a service, covering the cost of testing N participants during the course of your grant
+                (contact us for ideas about how to calculate and write Lookit testing into your budget)
+            </li>
+            <li>As a collaborator, to implement something new that would expand what Lookit can do.</li>
+        </ul>
+        <p>
+            We would be thrilled to discuss any and all proposals you may be working on - contact Melissa
+            (mekline@mit.edu) for any inquiries!
+        </p>
+        <h3>Our Funders</h3>
+        <p>
+            Finally, a big thank-you to the funders that make Lookit possible:
+        </p>
+        <div>Halis Family Foundation</div>
+        <div>The National Science Foundation (1429216, 1823919, CCF-1231216)</div>
+        <div>Defense Advanced Research Projects Agency (HR001119S0005)</div>
+    </div>
+{% endblock content %}
