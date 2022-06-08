@@ -5,6 +5,8 @@ services:
     container_name: lookit-api-db
     volumes:
       - ./data:/var/lib/postgresql/data
+    ports:
+     - "5432:5432"
     environment:
       - POSTGRES_DB=lookit
       - POSTGRES_USER=postgres
@@ -28,6 +30,7 @@ services:
       - .env
     environment:
       - DB_HOST=db
+      - RABBITMQ_HOST=broker
     depends_on:
       db:
         condition: service_healthy
