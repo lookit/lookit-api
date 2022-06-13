@@ -2,8 +2,8 @@ serve:
 	docker compose pull && docker compose up --build
 
 clean:
-	rm -rf ./data
 	docker rm -f lookit-api-web lookit-api-db lookit-api-broker lookit-api-worker
+	docker image rm lookit-api_worker lookit-api_web
 
 migrate:
 	docker compose run --rm web poetry run ./manage.py migrate
