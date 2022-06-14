@@ -3,6 +3,7 @@ services:
   db:
     image: postgres:9.6
     container_name: lookit-api-db
+    command: postgres -c stats_temp_directory=/tmp
     volumes:
       - ./data:/var/lib/postgresql/data
     ports:
