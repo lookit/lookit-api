@@ -1,6 +1,7 @@
 from rest_framework_json_api import serializers
 
 from accounts.models import Child
+from accounts.utils import hash_child_id_from_model
 from api.serializers import (
     PatchedHyperlinkedRelatedField,
     PatchedResourceRelatedField,
@@ -107,6 +108,7 @@ class ResponseSerializer(UuidHyperlinkedModelSerializer):
         related_link_url_kwarg="uuid",
         required=False,
     )
+    hash_child_id = serializers.SerializerMethodField("get_hash_child_id")
 
     class Meta:
         model = Response
@@ -126,7 +128,11 @@ class ResponseSerializer(UuidHyperlinkedModelSerializer):
             "is_preview",
             "pk",
             "withdrawn",
+            "hash_child_id",
         )
+
+    def get_hash_child_id(self, obj):
+        return hash_child_id_from_model(obj)
 
 
 class ResponseWriteableSerializer(UuidResourceModelSerializer):
