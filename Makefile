@@ -20,6 +20,12 @@ site:
 		from django.contrib.sites.models import Site; \
 		Site.objects.create(domain='localhost', name='Lookit')"
 
+dbpipe:
+	docker compose exec -T db psql -U postgres -d lookit
+
+dbshell:
+	docker compose exec -it db psql -U postgres -d lookit
+
 broker-perms:
 	docker compose exec -it broker /bin/sh -c \
 		"rabbitmqctl add_user lookit-admin admin; \
