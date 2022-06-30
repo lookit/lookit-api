@@ -113,7 +113,9 @@
                     <div class="panel-body">
                         <form method="post" action="">
                             {% csrf_token %}
-                            {% bootstrap_form form %}
+                            {% block demo_form %}
+                                {% bootstrap_form form %}
+                            {% endblock demo_form %}
                             {% buttons %}
                             <div class="pull-right">
                                 <a class="btn btn-default"
