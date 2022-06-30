@@ -515,25 +515,25 @@ class DemographicData(models.Model):
     child_birthdays = ArrayField(
         models.DateField(), verbose_name="children's birthdays", blank=True
     )
-    languages_spoken_at_home = models.TextField(
+    old_languages_spoken_at_home = models.TextField(
         verbose_name="languages spoken at home", blank=True
     )
     number_of_guardians = models.CharField(
         choices=GUARDIAN_CHOICES, max_length=6, blank=True
     )
-    number_of_guardians_explanation = models.TextField(blank=True)
+    old_number_of_guardians_explanation = models.TextField(blank=True)
     race_identification = MultiSelectField(choices=RACE_CHOICES, blank=True)
     age = models.CharField(max_length=5, choices=AGE_CHOICES, blank=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES, blank=True)
     education_level = models.CharField(
         max_length=5, choices=EDUCATION_CHOICES, blank=True
     )
-    spouse_education_level = models.CharField(
+    old_spouse_education_level = models.CharField(
         max_length=5, choices=SPOUSE_EDUCATION_CHOICES, blank=True
     )
     annual_income = models.CharField(max_length=7, choices=INCOME_CHOICES, blank=True)
     former_lookit_annual_income = models.CharField(max_length=30, blank=True)
-    number_of_books = models.IntegerField(null=True, blank=True, default=None)
+    old_number_of_books = models.IntegerField(null=True, blank=True, default=None)
     additional_comments = models.TextField(blank=True)
     country = CountryField(blank=True)
     state = USStateField(
@@ -559,16 +559,11 @@ class DemographicData(models.Model):
             created_at=self.created_at.isoformat(),
             number_of_children=self.get_number_of_children_display(),
             child_birthdays=[birthday.isoformat() for birthday in self.child_birthdays],
-            languages_spoken_at_home=self.languages_spoken_at_home,
             number_of_guardians=self.get_number_of_guardians_display(),
-            number_of_guardians_explanation=self.number_of_guardians_explanation,
-            race_identification=self.get_race_identification_display(),
             age=self.get_age_display(),
             gender=self.get_gender_display(),
             education_level=self.get_education_level_display(),
-            spouse_education_level=self.get_spouse_education_level_display(),
             annual_income=self.get_annual_income_display(),
-            number_of_books=self.number_of_books,
             additional_comments=self.additional_comments,
             country=str(self.country),
             state=self.get_state_display(),
