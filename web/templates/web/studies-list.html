@@ -95,12 +95,14 @@
     </div>
     <div class="panel-default">
         <div class="panel-body">
-        {% trans 'Looking for more ways to contribute to research from home? Check out <a href="https://childrenhelpingscience.com/"
-    target="_blank"
-    rel="noreferrer noopener">Children Helping Science</a> for even more studies!' %}
+            {% trans 'Looking for more ways to contribute to research from home? Check out' %}
+            <a href="https://childrenhelpingscience.com/"
+               target="_blank"
+               rel="noreferrer noopener">
+            {% trans 'Children Helping Science' %} </a> {% trans 'for even more studies!' %}
+        </div>
     </div>
-</div>
-<script>
+    <script>
     $(function () {
         const $form = $('form');
         const $hideStudiesCheckbox = $form.find('input:checkbox[name=hide_studies_we_have_done]')
@@ -150,5 +152,5 @@
     });
 
 
-</script>
+    </script>
 {% endblock content %}

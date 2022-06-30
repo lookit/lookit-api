@@ -424,6 +424,14 @@ class StudyFormTestCase(TestCase):
         self.assertNotIn(self.other_lab, edit_form.fields["lab"].queryset)
         self.assertNotIn("lab", edit_form.errors)
 
+    def test_scheduled_checkbox_enabled(self):
+        """Checking that the Study Edit Form's sheduled field is always enabled.  JavaScript will disable this field when study is internal."""
+        data = model_to_dict(self.study)
+        structure_text = '{"frames": {"frame-a": {}, "frame-b": {}}, "sequence": ["frame-a", "frame-b"]}'
+        data["structure"] = structure_text
+        form = StudyEditForm(data=data, instance=self.study, user=self.study_designer)
+        self.assertFalse(form.fields["scheduled"].disabled)
+
 
 class StudyMixinsTestCase(TestCase):
     @parameterized.expand(

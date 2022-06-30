@@ -329,7 +329,6 @@ class StudyEditForm(StudyForm):
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["external"].disabled = True
-        self.fields["scheduled"].disabled = True
         self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Restrict ability to edit study lab based on user permissions
         can_change_lab = user.has_study_perms(

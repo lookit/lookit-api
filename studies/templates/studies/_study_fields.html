@@ -114,7 +114,7 @@
     function updateScheduled(){
         const external = document.querySelector('#id_external')
         const scheduled = document.querySelector('#id_scheduled')
-        scheduled.disabled = external.disabled || !external.checked
+        scheduled.disabled = !external.checked
     }
 
     function updateScheduling (scheduledCheckBox) {            
