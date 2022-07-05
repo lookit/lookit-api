@@ -79,9 +79,7 @@ class StudyParticipantAnalyticsView(
             "demographic_snapshot__age",
             "demographic_snapshot__education_level",
             "demographic_snapshot__gender",
-            "demographic_snapshot__spouse_education_level",
             "demographic_snapshot__density",
-            "demographic_snapshot__number_of_books",
             "demographic_snapshot__country",
             "demographic_snapshot__state",
             "demographic_snapshot__lookit_referrer",
@@ -183,11 +181,7 @@ def get_flattened_responses(response_qs, studies_for_child):
                         "demographic_snapshot__education_level"
                     ],
                     "Parent/Guardian Gender": resp["demographic_snapshot__gender"],
-                    "Parent/Guardian Spouse Educational Level": resp[
-                        "demographic_snapshot__spouse_education_level"
-                    ],
                     "Living Density": resp["demographic_snapshot__density"],
-                    "Number of Books": resp["demographic_snapshot__number_of_books"],
                     "Country": resp["demographic_snapshot__country"],
                     "State": resp["demographic_snapshot__state"],
                     "Time of Response": resp["date_created"].isoformat(),
