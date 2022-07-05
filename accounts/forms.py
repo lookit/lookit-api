@@ -271,7 +271,10 @@ class DemographicDataForm(forms.ModelForm):
         help_texts = {
             "child_birthdays": _(
                 "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
-            )
+            ),
+            "number_of_guardians": _(
+                "If the answer varies or needs more explanation, you can tell us more below."
+            ),
         }
 
         labels = {
@@ -322,8 +325,8 @@ class ChildForm(forms.ModelForm):
             "birthday",
             "gender",
             "gestational_age_at_birth",
-            "existing_conditions",
             "languages_spoken",
+            "existing_conditions",
             "additional_information",
         )
 
@@ -351,6 +354,9 @@ class ChildForm(forms.ModelForm):
             "gestational_age_at_birth": _(
                 "Please round down to the nearest full week of pregnancy completed"
             ),
+            "existing_conditions": _(
+                "Most research studies are designed for a general age range, but some focus on a particular group of children. The choices you make below are used to show you studies that are designed for children with these characteristics."
+            ),
         }
 
         widgets = {
@@ -373,8 +379,8 @@ class ChildUpdateForm(forms.ModelForm):
             "birthday",
             "gender",
             "gestational_age_at_birth",
-            "existing_conditions",
             "languages_spoken",
+            "existing_conditions",
             "additional_information",
         )
 
@@ -398,6 +404,9 @@ class ChildUpdateForm(forms.ModelForm):
             ),
             "additional_information": _(
                 "For instance, diagnosed developmental disorders or vision or hearing problems"
+            ),
+            "existing_conditions": _(
+                "Most research studies are designed for a general age range, but some focus on a particular group of children. The choices you make below are used to show you studies that are designed for children with these characteristics."
             ),
         }
 

@@ -39,6 +39,13 @@ from studies.permissions import (
     StudyPermission,
 )
 
+GENDER_CHOICES = Choices(
+    ("m", _("male")),
+    ("f", _("female")),
+    ("o", _("open response")),
+    ("na", _("prefer not to answer")),
+)
+
 
 class UserManager(BaseUserManager):
     def get_by_natural_key(self, username):
@@ -301,13 +308,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
 
 class Child(models.Model):
-    GENDER_CHOICES = Choices(
-        ("m", _("male")),
-        ("f", _("female")),
-        ("o", _("other")),
-        ("na", _("prefer not to answer")),
-    )
-
     # Deprecating
     AGE_AT_BIRTH_CHOICES = Choices(
         ("na", _("Not sure or prefer not to answer")),
@@ -404,12 +404,7 @@ class DemographicData(models.Model):
         ("hawaiian-pac-isl", _("Native Hawaiian or Other Pacific Islander")),
         ("other", _("Another race, ethnicity, or origin")),
     )
-    GENDER_CHOICES = Choices(
-        ("m", _("male")),
-        ("f", _("female")),
-        ("o", _("other")),
-        ("na", _("prefer not to answer")),
-    )
+
     EDUCATION_CHOICES = Choices(
         ("some", _("some or attending high school")),
         ("hs", _("high school diploma or GED")),
@@ -458,7 +453,10 @@ class DemographicData(models.Model):
     )
 
     GUARDIAN_CHOICES = Choices(
-        ("1", _("1")), ("2", _("2")), ("3>", _("3 or more")), ("varies", _("varies"))
+        ("1", _("1")),
+        ("2", _("2")),
+        ("3", _("3")),
+        ("varies", _("Another number, or explain below")),
     )
     INCOME_CHOICES = Choices(
         ("0", _("0")),
