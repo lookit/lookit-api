@@ -20,7 +20,7 @@ class DemographicsTestCase(APITestCase):
         self.demographics_with_consented_response = G(
             DemographicData,
             user=self.participant_with_consented_response,
-            languages_spoken_at_home="French",
+            additional_comments="Additional comments 1",
         )
         self.child_with_consent = G(
             Child, user=self.participant_with_consented_response, given_name="Sally"
@@ -31,7 +31,7 @@ class DemographicsTestCase(APITestCase):
         self.demographics_without_consented_response = G(
             DemographicData,
             user=self.participant_without_consented_response,
-            languages_spoken_at_home="Spanish",
+            additional_comments="Additional comments 2",
         )
         self.child_without_consent = G(
             Child, user=self.participant_without_consented_response, given_name="Sally"
@@ -99,7 +99,8 @@ class DemographicsTestCase(APITestCase):
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            api_response.data["results"][0]["languages_spoken_at_home"], "Spanish"
+            api_response.data["results"][0]["additional_comments"],
+            "Additional comments 2",
         )
 
     def testGetDemographicsIncorrectPermissions(self):
@@ -142,7 +143,8 @@ class DemographicsTestCase(APITestCase):
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            api_response.data["results"][0]["languages_spoken_at_home"], "French"
+            api_response.data["results"][0]["additional_comments"],
+            "Additional comments 1",
         )
 
     def testGetDemographicsListWithLabwideCanViewStudyResponsesPermissions(self):
@@ -161,13 +163,16 @@ class DemographicsTestCase(APITestCase):
         # Can only view demographics from consented participants - should not see both!
         self.assertEqual(api_response.data["links"]["meta"]["count"], 1)
         self.assertEqual(
-            api_response.data["results"][0]["languages_spoken_at_home"], "French"
+            api_response.data["results"][0]["additional_comments"],
+            "Additional comments 1",
         )
 
     def testSuperusersCanViewAllDemographics(self):
         # Superusers can see all demographics of active participants
         self.demographics2 = G(
-            DemographicData, user=self.researcher, languages_spoken_at_home="English"
+            DemographicData,
+            user=self.researcher,
+            additional_comments="English",
         )
         self.client.force_authenticate(user=self.superuser)
         api_response = self.client.get(
@@ -206,7 +211,9 @@ class DemographicsTestCase(APITestCase):
             self.demo_data_unconsented_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["languages_spoken_at_home"], "Spanish")
+        self.assertEqual(
+            api_response.data["additional_comments"], "Additional comments 2"
+        )
 
     def testGetDemographicDataIncorrectPermissions(self):
         # None of these perms or groups should be sufficient for viewing demographics
@@ -246,7 +253,9 @@ class DemographicsTestCase(APITestCase):
             self.demo_data_consented_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["languages_spoken_at_home"], "French")
+        self.assertEqual(
+            api_response.data["additional_comments"], "Additional comments 1"
+        )
 
     def testGetDemographicDataWithLabwideCanViewStudyResponsesPermissions(self):
         # As a researcher, need read_study__responses permissions to view demo data
@@ -260,7 +269,9 @@ class DemographicsTestCase(APITestCase):
             self.demo_data_consented_url, content_type="application/vnd.api+json"
         )
         self.assertEqual(api_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(api_response.data["languages_spoken_at_home"], "French")
+        self.assertEqual(
+            api_response.data["additional_comments"], "Additional comments 1"
+        )
 
     def testGetUnconsentedDemographicDataWithCanViewStudyResponsesPermissions(self):
         # As a researcher, can't view demo data only associated with unconsented responses

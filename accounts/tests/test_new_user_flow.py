@@ -192,10 +192,10 @@ class NewUserAccountTestCase(TestCase):
 
         # iterate over list of urls and check the state of the buttons
         for url in self.my_account_urls:
-            response = self.client.get(url)
+            response = self.client.get(url, follow=True)
             study_button, study_list_button = self.get_study_buttons(response)
 
-            self.assertEqual(response.status_code, 200)
+            self.assertIn(response.status_code, [200, 302])
             self.assertIn("disabled", study_button.attrs["class"])
             self.assertIn("disabled", study_list_button.attrs["class"])
 

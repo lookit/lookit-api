@@ -425,7 +425,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.non_preview_demo = G(
             DemographicData,
             user=self.non_preview_participant,
-            languages_spoken_at_home="Swahili",
+            additional_comments="comments",
         )
         self.non_preview_resp = G(
             Response,
@@ -495,7 +495,7 @@ class ResponseDataDownloadTestCase(TestCase):
         self.unconsented_demo = G(
             DemographicData,
             user=self.unconsented_participant,
-            languages_spoken_at_home=self.poison_string,
+            additional_comments="comments",
         )
         self.unconsented_resp = G(
             Response,
@@ -1084,7 +1084,7 @@ class ResponseDataDownloadTestCase(TestCase):
             "Data from unconsented response included in demographic file download!",
         )
         self.assertIn(
-            "Swahili",
+            "comments",
             content,
             "Data from participant who provided consented non-preview response not available to researcher",
         )
