@@ -120,8 +120,12 @@
                                 {% bootstrap_field form.number_of_children %}
                                 {% bootstrap_field form.child_birthdays %}
                                 {% bootstrap_field form.number_of_guardians %}
+                                {% if country == 'US' %}
+                                    {% bootstrap_field form.race_ethnicity_identification %}
+                                {% endif %}
                                 {% bootstrap_field form.age %}
                                 {% bootstrap_field form.gender %}
+                                {% bootstrap_field form.gender_self_describe %}
                                 {% if country == 'US' %}
                                     {% bootstrap_field form.education_level %}
                                     {% bootstrap_field form.annual_income %}
