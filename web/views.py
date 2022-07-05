@@ -218,6 +218,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         context["countries"] = countries
         context["states"] = USPS_CHOICES
         context["has_study_child"] = self.request.user.has_study_child(self.request)
+        context["country"] = self.request.user.latest_demographics.country
         return context
 
 
