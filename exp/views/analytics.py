@@ -73,7 +73,7 @@ class StudyParticipantAnalyticsView(
             "study_id",
             "child__user__uuid",
             "demographic_snapshot__number_of_children",
-            "demographic_snapshot__race_identification",
+            "demographic_snapshot__race_ethnicity_identification",
             "demographic_snapshot__number_of_guardians",
             "demographic_snapshot__annual_income",
             "demographic_snapshot__age",
@@ -170,7 +170,7 @@ def get_flattened_responses(response_qs, studies_for_child):
                         "demographic_snapshot__number_of_children"
                     ],
                     "Family Race/Ethnicity": resp[
-                        "demographic_snapshot__race_identification"
+                        "demographic_snapshot__race_ethnicity_identification"
                     ],
                     "Family # of Guardians": resp[
                         "demographic_snapshot__number_of_guardians"
