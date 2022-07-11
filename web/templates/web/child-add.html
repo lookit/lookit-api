@@ -1,5 +1,6 @@
 {% extends "web/base.html" %}
 {% load bootstrap3 %}
+{% load static %}
 {% block title %}
     Children
 {% endblock title %}
@@ -8,6 +9,7 @@
     {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
 {% endblock flash %}
 {% block content %}
+    <script src="{% static 'js/demographics-form.js' %}" defer></script>
     <script>
         $(document).ready(function() {
             $('.datepicker').datepicker({
