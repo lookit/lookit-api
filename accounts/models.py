@@ -405,7 +405,6 @@ class DemographicData(models.Model):
         ("hawaiian-pac-isl", _("Native Hawaiian or Other Pacific Islander")),
         ("other", _("Another race, ethnicity, or origin")),
     )
-
     EDUCATION_CHOICES = Choices(
         ("some", _("some or attending high school")),
         ("hs", _("high school diploma or GED")),
@@ -452,7 +451,6 @@ class DemographicData(models.Model):
         ("60s", _("60-69")),
         (">70", _("70 or over")),
     )
-
     GUARDIAN_CHOICES = Choices(
         ("1", _("1")),
         ("2", _("2")),
