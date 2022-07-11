@@ -261,6 +261,7 @@ class DemographicDataForm(forms.ModelForm):
             "number_of_children",
             "child_birthdays",
             "number_of_guardians",
+            "guardians_explanation",
             "age",
             "gender",
             "gender_self_describe",
@@ -310,6 +311,7 @@ class DemographicDataForm(forms.ModelForm):
             "additional_comments": forms.Textarea(attrs={"rows": 2}),
             "lookit_referrer": forms.Textarea(attrs={"rows": 2}),
             "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
+            "guardians_explanation": forms.Textarea(attrs={"rows": 2}),
         }
 
 

@@ -231,9 +231,9 @@ def create_demographics(user, participant, apps):
         number_of_guardians_explanation=get_simple_field(
             attributes.get("demographicsNumberOfGuardiansExplanation")
         ),
-        race_identification=pull_choice_value(
+        race_ethnicity_identification=pull_choice_value(
             attributes.get("demographicsRaceIdentification"),
-            "race_identification",
+            "race_ethnicity_identification",
             apps,
         ),
         former_lookit_annual_income=income,
