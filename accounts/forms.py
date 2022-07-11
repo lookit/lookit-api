@@ -257,11 +257,14 @@ class DemographicDataForm(forms.ModelForm):
             "country",
             "state",
             "density",
+            "race_ethnicity_identification",
             "number_of_children",
             "child_birthdays",
             "number_of_guardians",
+            "guardians_explanation",
             "age",
             "gender",
+            "gender_self_describe",
             "education_level",
             "annual_income",
             "lookit_referrer",
@@ -274,6 +277,9 @@ class DemographicDataForm(forms.ModelForm):
             ),
             "number_of_guardians": _(
                 "If the answer varies or needs more explanation, you can tell us more below."
+            ),
+            "race_ethnicity_identification": _(
+                "Please select the appropriate responses for everyone in your children's immediate family."
             ),
         }
 
@@ -296,11 +302,16 @@ class DemographicDataForm(forms.ModelForm):
             ),
             "additional_comments": _("Anything else you'd like us to know?"),
             "lookit_referrer": _("How did you hear about Lookit?"),
+            "race_ethnicity_identification": _(
+                "Which of the following best describes your family?"
+            ),
         }
 
         widgets = {
             "additional_comments": forms.Textarea(attrs={"rows": 2}),
             "lookit_referrer": forms.Textarea(attrs={"rows": 2}),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
+            "guardians_explanation": forms.Textarea(attrs={"rows": 2}),
         }
 
 
@@ -324,6 +335,7 @@ class ChildForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
+            "gender_self_describe",
             "gestational_age_at_birth",
             "languages_spoken",
             "existing_conditions",
@@ -366,6 +378,7 @@ class ChildForm(forms.ModelForm):
             "languages_spoken": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
             ),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
         }
 
 
@@ -378,6 +391,7 @@ class ChildUpdateForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
+            "gender_self_describe",
             "gestational_age_at_birth",
             "languages_spoken",
             "existing_conditions",
@@ -417,6 +431,7 @@ class ChildUpdateForm(forms.ModelForm):
             "languages_spoken": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
             ),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
         }
 
 

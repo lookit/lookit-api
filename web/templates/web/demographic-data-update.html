@@ -1,6 +1,7 @@
 {% extends "web/base.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load static %}
 {% block title %}
     {% trans "Update demographics" %}
 {% endblock title %}
@@ -8,69 +9,7 @@
     {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
 {% endblock flash %}
 {% block content %}
-    <script>
-        $(document).ready(function() {
-        
-            if ($('#id_number_of_children')[0].value === "0" || $('#id_number_of_children')[0].value === '') {
-                hideField('child_birthdays');
-                $('.help-block').first().hide();
-            }
-            if ($('#id_number_of_guardians')[0].value !== 'varies') {
-                hideField('number_of_guardians_explanation');
-            }
-            
-            if ($('#id_country')[0].value !== 'US') {
-                hideField('state');
-            }
-            
-            $('#id_country').on('change', function() {
-            	// Show/hide state field based on USA or not
-                if ($(this)[0].value === 'US') {
-                    showField('state');
-                } else {
-                    hideField('state');
-                    $(`#id_state`)[0].value = '';
-                }
-            });
-
-            $('#id_number_of_children').on('change', function() {
-                if (this.value === "0" || this.value === '') {
-                    hideField('child_birthdays');
-                    $('.help-block').first().hide();
-                    $(`#id_child_birthdays`)[0].value = '';
-
-                } else {
-                    showField('child_birthdays');
-                    $('.help-block').first().show();
-
-                }
-            });
-            
-            $('#id_number_of_guardians').on('change', function() {
-                if (this.value === 'varies') {
-                    showField('number_of_guardians_explanation');
-                } else {
-                    hideField('number_of_guardians_explanation');
-                    $(`#id_number_of_guardians_explanation`)[0].value = '';
-                }
-            });
-        });
-        function hideField(field) {
-            $(`#id_${field}`).hide().prop('required',false);
-            $(`#id_${field}`).parent('.form-group').hide(); // hide the parent form-group div
-            $(`label[for=id_${field}]`).hide();
-        }
-        function clearField(fieldName) { // hide field and remove any stored data
-            hideField(fieldName);
-            $(`#id_${fieldName}`)[0].value = '';
-            $(`#id_${fieldName} input[type=checkbox]`).prop("checked", false );
-        }
-        function showField(field) {
-            $(`#id_${field}`).show();
-            $(`#id_${field}`).parent('.form-group').show(); // show the parent form-group div
-            $(`label[for=id_${field}]`).show();
-        }
-    </script>
+    <script src="{% static 'js/demographics-form.js' %}" defer></script>
     {% bootstrap_messages %}
     <div class="container">
         <div class="row account-edit">
@@ -120,8 +59,13 @@
                                 {% bootstrap_field form.number_of_children %}
                                 {% bootstrap_field form.child_birthdays %}
                                 {% bootstrap_field form.number_of_guardians %}
+                                {% bootstrap_field form.guardians_explanation %}
+                                {% if country == 'US' %}
+                                    {% bootstrap_field form.race_ethnicity_identification %}
+                                {% endif %}
                                 {% bootstrap_field form.age %}
                                 {% bootstrap_field form.gender %}
+                                {% bootstrap_field form.gender_self_describe %}
                                 {% if country == 'US' %}
                                     {% bootstrap_field form.education_level %}
                                     {% bootstrap_field form.annual_income %}

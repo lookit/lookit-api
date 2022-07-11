@@ -337,6 +337,7 @@ class Child(models.Model):
     given_name = models.CharField(max_length=255)
     birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
+    gender_self_describe = models.TextField(blank=True)
     gestational_age_at_birth = models.PositiveSmallIntegerField(
         choices=GESTATIONAL_AGE_CHOICES,
         default=GESTATIONAL_AGE_CHOICES.no_answer,
@@ -519,10 +520,11 @@ class DemographicData(models.Model):
     number_of_guardians = models.CharField(
         choices=GUARDIAN_CHOICES, max_length=6, blank=True
     )
-    old_number_of_guardians_explanation = models.TextField(blank=True)
-    race_identification = MultiSelectField(choices=RACE_CHOICES, blank=True)
+    guardians_explanation = models.TextField(blank=True)
+    race_ethnicity_identification = MultiSelectField(choices=RACE_CHOICES, blank=True)
     age = models.CharField(max_length=5, choices=AGE_CHOICES, blank=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES, blank=True)
+    gender_self_describe = models.TextField(blank=True)
     education_level = models.CharField(
         max_length=5, choices=EDUCATION_CHOICES, blank=True
     )
