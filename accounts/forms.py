@@ -257,11 +257,14 @@ class DemographicDataForm(forms.ModelForm):
             "country",
             "state",
             "density",
+            "race_ethnicity_identification",
             "number_of_children",
             "child_birthdays",
             "number_of_guardians",
+            "guardians_explanation",
             "age",
             "gender",
+            "gender_self_describe",
             "education_level",
             "annual_income",
             "lookit_referrer",
@@ -271,7 +274,13 @@ class DemographicDataForm(forms.ModelForm):
         help_texts = {
             "child_birthdays": _(
                 "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
-            )
+            ),
+            "number_of_guardians": _(
+                "If the answer varies or needs more explanation, you can tell us more below."
+            ),
+            "race_ethnicity_identification": _(
+                "Please select the appropriate responses for everyone in your children's immediate family."
+            ),
         }
 
         labels = {
@@ -293,11 +302,16 @@ class DemographicDataForm(forms.ModelForm):
             ),
             "additional_comments": _("Anything else you'd like us to know?"),
             "lookit_referrer": _("How did you hear about Lookit?"),
+            "race_ethnicity_identification": _(
+                "Which of the following best describes your family?"
+            ),
         }
 
         widgets = {
             "additional_comments": forms.Textarea(attrs={"rows": 2}),
             "lookit_referrer": forms.Textarea(attrs={"rows": 2}),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
+            "guardians_explanation": forms.Textarea(attrs={"rows": 2}),
         }
 
 
@@ -321,9 +335,10 @@ class ChildForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
+            "gender_self_describe",
             "gestational_age_at_birth",
-            "existing_conditions",
             "languages_spoken",
+            "existing_conditions",
             "additional_information",
         )
 
@@ -351,6 +366,9 @@ class ChildForm(forms.ModelForm):
             "gestational_age_at_birth": _(
                 "Please round down to the nearest full week of pregnancy completed"
             ),
+            "existing_conditions": _(
+                "Most research studies are designed for a general age range, but some focus on a particular group of children. The choices you make below are used to show you studies that are designed for children with these characteristics."
+            ),
         }
 
         widgets = {
@@ -360,6 +378,7 @@ class ChildForm(forms.ModelForm):
             "languages_spoken": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
             ),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
         }
 
 
@@ -372,9 +391,10 @@ class ChildUpdateForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
+            "gender_self_describe",
             "gestational_age_at_birth",
-            "existing_conditions",
             "languages_spoken",
+            "existing_conditions",
             "additional_information",
         )
 
@@ -399,6 +419,9 @@ class ChildUpdateForm(forms.ModelForm):
             "additional_information": _(
                 "For instance, diagnosed developmental disorders or vision or hearing problems"
             ),
+            "existing_conditions": _(
+                "Most research studies are designed for a general age range, but some focus on a particular group of children. The choices you make below are used to show you studies that are designed for children with these characteristics."
+            ),
         }
 
         widgets = {
@@ -408,6 +431,7 @@ class ChildUpdateForm(forms.ModelForm):
             "languages_spoken": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
             ),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
         }
 
 

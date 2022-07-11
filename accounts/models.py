@@ -39,6 +39,13 @@ from studies.permissions import (
     StudyPermission,
 )
 
+GENDER_CHOICES = Choices(
+    ("m", _("male")),
+    ("f", _("female")),
+    ("o", _("open response")),
+    ("na", _("prefer not to answer")),
+)
+
 
 class UserManager(BaseUserManager):
     def get_by_natural_key(self, username):
@@ -301,13 +308,6 @@ class User(AbstractBaseUser, PermissionsMixin, GuardianUserMixin):
 
 
 class Child(models.Model):
-    GENDER_CHOICES = Choices(
-        ("m", _("male")),
-        ("f", _("female")),
-        ("o", _("other")),
-        ("na", _("prefer not to answer")),
-    )
-
     # Deprecating
     AGE_AT_BIRTH_CHOICES = Choices(
         ("na", _("Not sure or prefer not to answer")),
@@ -337,6 +337,7 @@ class Child(models.Model):
     given_name = models.CharField(max_length=255)
     birthday = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
+    gender_self_describe = models.TextField(blank=True)
     gestational_age_at_birth = models.PositiveSmallIntegerField(
         choices=GESTATIONAL_AGE_CHOICES,
         default=GESTATIONAL_AGE_CHOICES.no_answer,
@@ -404,12 +405,7 @@ class DemographicData(models.Model):
         ("hawaiian-pac-isl", _("Native Hawaiian or Other Pacific Islander")),
         ("other", _("Another race, ethnicity, or origin")),
     )
-    GENDER_CHOICES = Choices(
-        ("m", _("male")),
-        ("f", _("female")),
-        ("o", _("other")),
-        ("na", _("prefer not to answer")),
-    )
+
     EDUCATION_CHOICES = Choices(
         ("some", _("some or attending high school")),
         ("hs", _("high school diploma or GED")),
@@ -458,7 +454,10 @@ class DemographicData(models.Model):
     )
 
     GUARDIAN_CHOICES = Choices(
-        ("1", _("1")), ("2", _("2")), ("3>", _("3 or more")), ("varies", _("varies"))
+        ("1", _("1")),
+        ("2", _("2")),
+        ("3", _("3")),
+        ("varies", _("Another number, or explain below")),
     )
     INCOME_CHOICES = Choices(
         ("0", _("0")),
@@ -521,10 +520,11 @@ class DemographicData(models.Model):
     number_of_guardians = models.CharField(
         choices=GUARDIAN_CHOICES, max_length=6, blank=True
     )
-    old_number_of_guardians_explanation = models.TextField(blank=True)
-    race_identification = MultiSelectField(choices=RACE_CHOICES, blank=True)
+    guardians_explanation = models.TextField(blank=True)
+    race_ethnicity_identification = MultiSelectField(choices=RACE_CHOICES, blank=True)
     age = models.CharField(max_length=5, choices=AGE_CHOICES, blank=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES, blank=True)
+    gender_self_describe = models.TextField(blank=True)
     education_level = models.CharField(
         max_length=5, choices=EDUCATION_CHOICES, blank=True
     )
