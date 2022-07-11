@@ -44,7 +44,7 @@ class DemographicDataSerializer(UuidHyperlinkedModelSerializer):
             "number_of_children",
             "child_birthdays",
             "number_of_guardians",
-            "race_identification",
+            "race_ethnicity_identification",
             "age",
             "gender",
             "education_level",
