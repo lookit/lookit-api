@@ -22,15 +22,20 @@ $gender.on('change', function () {
 });
 $gender.change();
 
-// Show state field if US is selected in the country field.
+// Show state and race/ethnicity fields if US is selected in the country field.
 const $country = $('#id_country');
 $country.on('change', function () {
-    // Show/hide state field based on USA or not
+    // Show/hide state and race/ethnicity fields based on USA or not
     if ($(this)[0].value === 'US') {
         showField('state');
+        showField('race_ethnicity_identification');
     } else {
         hideField('state');
         $(`#id_state`)[0].value = '';
+        hideField('race_ethnicity_identification');
+        $(`input[name="race_ethnicity_identification"`).each(function() {
+            this.checked = false;
+        });
     }
 });
 $country.change();
