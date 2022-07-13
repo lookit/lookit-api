@@ -10,7 +10,7 @@ function showField(field) {
     $(`label[for=id_${field}]`).show();
 }
 
-// Show gender self describe when gener is "open response"
+// Show gender self describe when gender is "open response"
 const $gender = $('#id_gender');
 $gender.on('change', function () {
     if (this.value === 'o') {
@@ -29,6 +29,8 @@ $country.on('change', function () {
     if ($(this)[0].value === 'US') {
         showField('state');
         showField('race_ethnicity_identification');
+        showField('education_level');
+        showField('annual_income');
     } else {
         hideField('state');
         $(`#id_state`)[0].value = '';
@@ -36,6 +38,10 @@ $country.on('change', function () {
         $(`input[name="race_ethnicity_identification"`).each(function() {
             this.checked = false;
         });
+        hideField('education_level');
+        $(`#id_education_level`)[0].value = '';
+        hideField('annual_income');
+        $(`#id_annual_income`)[0].value = '';
     }
 });
 $country.change();
