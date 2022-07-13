@@ -305,6 +305,9 @@ class DemographicDataForm(forms.ModelForm):
             "race_ethnicity_identification": _(
                 "Which of the following best describes your family?"
             ),
+            "guardians_explanation": _(
+                "Share more about your children's parents/guardians:"
+            ),
         }
 
         widgets = {
