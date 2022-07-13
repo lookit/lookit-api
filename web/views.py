@@ -170,13 +170,6 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
     model = DemographicData
     form_class = forms.DemographicDataForm
 
-    def get(self, request, *args, **kwargs):
-        demo = self.request.user.latest_demographics
-        if demo and demo.country:
-            return super().get(request, args, kwargs)
-        else:
-            return HttpResponseRedirect(reverse("web:demographic-data-country"))
-
     def form_valid(self, form):
         """
         Before saving form, adds user relationship to demographic data, and sets "previous"
@@ -218,26 +211,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         context["countries"] = countries
         context["states"] = USPS_CHOICES
         context["has_study_child"] = self.request.user.has_study_child(self.request)
-        context["country"] = self.request.user.latest_demographics.country
         return context
-
-
-class DemographicDataCountryView(LoginRequiredMixin, generic.CreateView):
-    template_name = "web/demographic-data-country.html"
-    model = DemographicData
-    form_class = forms.DemographicDataForm
-
-    def get_success_url(self):
-        return reverse("web:demographic-data-update")
-
-    def form_valid(self, form):
-        resp = super().form_valid(form)
-        self.object.user = self.request.user
-        self.object.previous = self.request.user.latest_demographics or None
-        self.object.save()
-        messages.success(self.request, _("Demographic country data saved."))
-        return resp
-
 
 class ChildrenListView(LoginRequiredMixin, generic.TemplateView):
     """

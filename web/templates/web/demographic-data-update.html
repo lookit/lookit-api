@@ -53,25 +53,7 @@
                         <form method="post" action="">
                             {% csrf_token %}
                             {% block demo_form %}
-                                {% bootstrap_field form.country %}
-                                {% bootstrap_field form.state %}
-                                {% bootstrap_field form.density %}
-                                {% bootstrap_field form.number_of_children %}
-                                {% bootstrap_field form.child_birthdays %}
-                                {% bootstrap_field form.number_of_guardians %}
-                                {% bootstrap_field form.guardians_explanation %}
-                                {% if country == 'US' %}
-                                    {% bootstrap_field form.race_ethnicity_identification %}
-                                {% endif %}
-                                {% bootstrap_field form.age %}
-                                {% bootstrap_field form.gender %}
-                                {% bootstrap_field form.gender_self_describe %}
-                                {% if country == 'US' %}
-                                    {% bootstrap_field form.education_level %}
-                                    {% bootstrap_field form.annual_income %}
-                                {% endif %}
-                                {% bootstrap_field form.lookit_referrer %}
-                                {% bootstrap_field form.additional_comments %}
+                                {% bootstrap_form form %}
                             {% endblock demo_form %}
                             {% buttons %}
                             <div class="pull-right">

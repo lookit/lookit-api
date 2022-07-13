@@ -11,11 +11,6 @@ urlpatterns = [
         views.DemographicDataUpdateView.as_view(),
         name="demographic-data-update",
     ),
-    path(
-        "account/demographics/country/",
-        views.DemographicDataCountryView.as_view(),
-        name="demographic-data-country",
-    ),
     path("account/children/", views.ChildrenListView.as_view(), name="children-list"),
     path("account/add-child/", views.ChildAddView.as_view(), name="child-add"),
     path(
