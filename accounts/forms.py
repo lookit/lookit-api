@@ -258,6 +258,7 @@ class DemographicDataForm(forms.ModelForm):
             "state",
             "density",
             "race_ethnicity_identification",
+            "race_ethnicity_identification_describe",
             "number_of_children",
             "child_birthdays",
             "number_of_guardians",
@@ -315,6 +316,7 @@ class DemographicDataForm(forms.ModelForm):
             "lookit_referrer": forms.Textarea(attrs={"rows": 2}),
             "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
             "guardians_explanation": forms.Textarea(attrs={"rows": 2}),
+            "race_ethnicity_identification_describe": forms.Textarea(attrs={"rows": 2}),
         }
 
 

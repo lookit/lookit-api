@@ -22,30 +22,6 @@ $gender.on('change', function () {
 });
 $gender.change();
 
-// Show state and race/ethnicity fields if US is selected in the country field.
-const $country = $('#id_country');
-$country.on('change', function () {
-    // Show/hide state and race/ethnicity fields based on USA or not
-    if ($(this)[0].value === 'US') {
-        showField('state');
-        showField('race_ethnicity_identification');
-        showField('education_level');
-        showField('annual_income');
-    } else {
-        hideField('state');
-        $(`#id_state`)[0].value = '';
-        hideField('race_ethnicity_identification');
-        $(`input[name="race_ethnicity_identification"`).each(function() {
-            this.checked = false;
-        });
-        hideField('education_level');
-        $(`#id_education_level`)[0].value = '';
-        hideField('annual_income');
-        $(`#id_annual_income`)[0].value = '';
-    }
-});
-$country.change();
-
 // Show child birthdays field if child value is not zero or null.
 const $numberOfChildren = $('#id_number_of_children');
 $numberOfChildren.on('change', function () {
@@ -73,3 +49,44 @@ $numberOfGuardians.on('change', function () {
     }
 });
 $numberOfGuardians.change();
+
+// Ethnicity describe field when other box is selected
+const $raceEthnicityIdentificationOther = $('#id_race_ethnicity_identification input[value=other]');
+$raceEthnicityIdentificationOther.on('change', function () {
+    if (this.checked) {
+        showField('race_ethnicity_identification_describe')
+    } else {
+        hideField('race_ethnicity_identification_describe')
+        $('#id_race_ethnicity_identification_describe')[0].value = '';
+    }
+
+});
+$raceEthnicityIdentificationOther.change();
+
+// Show state and race/ethnicity fields if US is selected in the country field.
+const $country = $('#id_country');
+$country.on('change', function () {
+    // Show/hide state and race/ethnicity fields based on USA or not
+    if ($(this)[0].value === 'US') {
+        showField('state');
+        showField('race_ethnicity_identification');
+        showField('education_level');
+        showField('annual_income');
+    } else {
+        hideField('state');
+        $(`#id_state`)[0].value = '';
+        hideField('race_ethnicity_identification');
+        $('input[name="race_ethnicity_identification"').each(function () {
+            this.checked = false;
+        });
+        hideField('education_level');
+        $(`#id_education_level`)[0].value = '';
+        hideField('annual_income');
+        $(`#id_annual_income`)[0].value = '';
+    }
+
+    // Remove the ethnicity other box if a non-US country is selected
+    $raceEthnicityIdentificationOther.change();
+
+});
+$country.change();

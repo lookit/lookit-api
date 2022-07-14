@@ -520,6 +520,7 @@ class DemographicData(models.Model):
     )
     guardians_explanation = models.TextField(blank=True)
     race_ethnicity_identification = MultiSelectField(choices=RACE_CHOICES, blank=True)
+    race_ethnicity_identification_describe = models.TextField(blank=True)
     age = models.CharField(max_length=5, choices=AGE_CHOICES, blank=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES, blank=True)
     gender_self_describe = models.TextField(blank=True)
