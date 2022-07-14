@@ -213,6 +213,7 @@ class DemographicDataUpdateView(LoginRequiredMixin, generic.CreateView):
         context["has_study_child"] = self.request.user.has_study_child(self.request)
         return context
 
+
 class ChildrenListView(LoginRequiredMixin, generic.TemplateView):
     """
     Allows user to view a list of current children and add children
