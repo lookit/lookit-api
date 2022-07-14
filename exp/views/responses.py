@@ -443,7 +443,7 @@ class DemographicDownloadMixin(CanViewStudyResponsesMixin, MultipleObjectMixin):
                 "demographic_snapshot__number_of_children",
                 "demographic_snapshot__child_birthdays",
                 "demographic_snapshot__number_of_guardians",
-                "demographic_snapshot__race_ethnicity_identification",
+                "demographic_snapshot__us_race_ethnicity_identification",
                 "demographic_snapshot__age",
                 "demographic_snapshot__gender",
                 "demographic_snapshot__education_level",

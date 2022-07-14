@@ -440,7 +440,7 @@ DEMOGRAPHIC_COLUMNS = [
         name="Number of guardians",
     ),
     ResponseDataColumn(
-        id="demographic__race_ethnicity_identification",
+        id="demographic__us_race_ethnicity_identification",
         description=(
             "Comma-separated list of all values checked for question 'What category(ies) does your family "
             "identify as?', from list:  White; Hispanic, Latino, or Spanish origin; Black or African American; "
@@ -448,7 +448,7 @@ DEMOGRAPHIC_COLUMNS = [
             "Other Pacific Islander; Another race, ethnicity, or origin"
         ),
         extractor=lambda resp: resp[
-            "demographic_snapshot__race_ethnicity_identification"
+            "demographic_snapshot__us_race_ethnicity_identification"
         ],
         name="Race",
     ),
