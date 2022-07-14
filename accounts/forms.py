@@ -250,13 +250,6 @@ class EmailPreferencesForm(forms.ModelForm):
 
 
 class DemographicDataForm(forms.ModelForm):
-    race_identification = forms.MultipleChoiceField(
-        choices=DemographicData.RACE_CHOICES,
-        widget=forms.CheckboxSelectMultiple(),
-        label=_("What category(ies) does your family identify as?"),
-        required=False,
-    )
-
     class Meta:
         model = DemographicData
         exclude = ("created_at", "previous", "user", "extra", "uuid")
@@ -264,18 +257,17 @@ class DemographicDataForm(forms.ModelForm):
             "country",
             "state",
             "density",
-            "languages_spoken_at_home",
+            "us_race_ethnicity_identification",
+            "us_race_ethnicity_identification_describe",
             "number_of_children",
             "child_birthdays",
             "number_of_guardians",
-            "number_of_guardians_explanation",
-            "race_identification",
+            "guardians_explanation",
             "age",
             "gender",
+            "gender_self_describe",
             "education_level",
-            "spouse_education_level",
             "annual_income",
-            "number_of_books",
             "lookit_referrer",
             "additional_comments",
         )
@@ -284,50 +276,52 @@ class DemographicDataForm(forms.ModelForm):
             "child_birthdays": _(
                 "Enter as a comma-separated list: YYYY-MM-DD, YYYY-MM-DD, ..."
             ),
-            "number_of_books": _("Numerical answers only - a rough guess is fine!"),
+            "number_of_guardians": _(
+                "If the answer varies or needs more explanation, you can tell us more below."
+            ),
+            "us_race_ethnicity_identification": _(
+                "Please select the appropriate responses for everyone in your children's immediate family."
+            ),
         }
 
         labels = {
             "country": _("What country do you live in?"),
             "state": _("What state do you live in?"),
             "density": _("How would you describe the area where you live?"),
-            "languages_spoken_at_home": _(
-                "What language(s) does your family speak at home?"
-            ),
             "number_of_children": _("How many children do you have?"),
             "child_birthdays": _("For each child, please enter his or her birthdate:"),
             "number_of_guardians": _(
                 "How many parents/guardians do your children live with?"
-            ),
-            "race_identification": _(
-                "What category(ies) does your family identify as?"
             ),
             "age": _("What is your age?"),
             "gender": _("What is your gender?"),
             "education_level": _(
                 "What is the highest level of education you've completed?"
             ),
-            "spouse_education_level": _(
-                "What is the highest level of education your spouse has completed?"
-            ),
             "annual_income": _(
                 "What is your approximate family yearly income (in US dollars)?"
             ),
-            "number_of_books": _(
-                "About how many children's books are there in your home?"
-            ),
             "additional_comments": _("Anything else you'd like us to know?"),
             "lookit_referrer": _("How did you hear about Lookit?"),
-            "number_of_guardians_explanation": _(
-                "If the answer varies due to shared custody arrangements or travel, please enter the number of parents/guardians your children are usually living with or explain."
+            "us_race_ethnicity_identification": _(
+                "Which of the following best describes your family?"
+            ),
+            "us_race_ethnicity_identification_describe": _(
+                "Share more about your family's race, ethnicity, or origin:"
+            ),
+            "guardians_explanation": _(
+                "Share more about your children's parents/guardians:"
             ),
         }
 
         widgets = {
-            "languages_spoken_at_home": forms.Textarea(attrs={"rows": 1}),
             "additional_comments": forms.Textarea(attrs={"rows": 2}),
-            "number_of_guardians_explanation": forms.Textarea(attrs={"rows": 2}),
             "lookit_referrer": forms.Textarea(attrs={"rows": 2}),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
+            "guardians_explanation": forms.Textarea(attrs={"rows": 2}),
+            "us_race_ethnicity_identification_describe": forms.Textarea(
+                attrs={"rows": 2}
+            ),
         }
 
 
@@ -351,9 +345,10 @@ class ChildForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
+            "gender_self_describe",
             "gestational_age_at_birth",
-            "existing_conditions",
             "languages_spoken",
+            "existing_conditions",
             "additional_information",
         )
 
@@ -381,6 +376,9 @@ class ChildForm(forms.ModelForm):
             "gestational_age_at_birth": _(
                 "Please round down to the nearest full week of pregnancy completed"
             ),
+            "existing_conditions": _(
+                "Most research studies are designed for a general age range, but some focus on a particular group of children. The choices you make below are used to show you studies that are designed for children with these characteristics."
+            ),
         }
 
         widgets = {
@@ -390,6 +388,7 @@ class ChildForm(forms.ModelForm):
             "languages_spoken": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
             ),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
         }
 
 
@@ -402,9 +401,10 @@ class ChildUpdateForm(forms.ModelForm):
             "given_name",
             "birthday",
             "gender",
+            "gender_self_describe",
             "gestational_age_at_birth",
-            "existing_conditions",
             "languages_spoken",
+            "existing_conditions",
             "additional_information",
         )
 
@@ -429,6 +429,9 @@ class ChildUpdateForm(forms.ModelForm):
             "additional_information": _(
                 "For instance, diagnosed developmental disorders or vision or hearing problems"
             ),
+            "existing_conditions": _(
+                "Most research studies are designed for a general age range, but some focus on a particular group of children. The choices you make below are used to show you studies that are designed for children with these characteristics."
+            ),
         }
 
         widgets = {
@@ -438,6 +441,7 @@ class ChildUpdateForm(forms.ModelForm):
             "languages_spoken": BitFieldCheckboxSelectMultiple(
                 attrs={"class": "column-checkbox"}
             ),
+            "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
         }
 
 

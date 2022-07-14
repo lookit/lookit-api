@@ -1,5 +1,6 @@
 serve:
-	docker compose pull && docker compose up --build
+	docker compose pull
+	docker compose up --build
 
 clean:
 	docker rm -f lookit-api-web lookit-api-db lookit-api-broker lookit-api-worker

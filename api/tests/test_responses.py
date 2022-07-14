@@ -18,9 +18,7 @@ class ResponseTestCase(APITestCase):
         )
         self.participant = G(User, is_active=True, given_name="Participant 1")
         self.superuser = G(User, is_active=True, is_researcher=True, is_superuser=True)
-        self.demographics = G(
-            DemographicData, user=self.participant, languages_spoken_at_home="French"
-        )
+        self.demographics = G(DemographicData, user=self.participant)
         self.participant.save()
 
         self.child = G(Child, user=self.participant, given_name="Sally")

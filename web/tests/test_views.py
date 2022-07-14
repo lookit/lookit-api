@@ -42,13 +42,10 @@ class ParticipantAccountViewsTestCase(TestCase):
         self.demographic_orig = G(
             DemographicData,
             user=self.participant,
-            languages_spoken_at_home="French",
             additional_comments="Original comments",
             previous=None,
             number_of_children="",
-            number_of_guardians_explanation="",
             number_of_guardians="2",
-            number_of_books=75,
             former_lookit_annual_income="",
             lookit_referrer="Google",
         )
@@ -56,12 +53,9 @@ class ParticipantAccountViewsTestCase(TestCase):
         self.demographic_current = G(
             DemographicData,
             user=self.participant,
-            languages_spoken_at_home="Spanish",
             previous=self.demographic_orig,
             number_of_children="",
-            number_of_guardians_explanation="",
             number_of_guardians="2",
-            number_of_books=75,
             former_lookit_annual_income="",
             lookit_referrer="Google",
         )
@@ -227,11 +221,12 @@ class ParticipantAccountViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         form = response.context["form"]
         data = form.initial
-        self.assertEqual(data["languages_spoken_at_home"], "Spanish")
+
+        self.assertEqual(data["country"], "US")
         self.assertNotEqual(data["additional_comments"], "Original comments")
 
         # Update data and save
-        data["languages_spoken_at_home"] = "Swahili"
+        data["country"] = "BR"
         cleaned_data = {key: val for (key, val) in data.items() if val is not None}
         response = self.client.post(
             reverse("web:demographic-data-update"), cleaned_data, follow=True
@@ -244,10 +239,7 @@ class ParticipantAccountViewsTestCase(TestCase):
         # Make sure we can retrieve updated data
         response = self.client.get(reverse("web:demographic-data-update"))
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Swahili", response.content.decode("utf-8"))  # or
-        self.assertEqual(
-            response.context["form"].initial["languages_spoken_at_home"], "Swahili"
-        )
+        self.assertEqual(response.context["form"].initial["country"], "BR")
 
         # Check we've created an additional demographicdata object for this
         self.assertEqual(self.participant.demographics.count(), 3)
@@ -303,13 +295,10 @@ class ParticipantStudyViewsTestCase(TestCase):
         self.demographic_orig = G(
             DemographicData,
             user=self.participant,
-            languages_spoken_at_home="French",
             additional_comments="Original comments",
             previous=None,
             number_of_children="",
-            number_of_guardians_explanation="",
             number_of_guardians="2",
-            number_of_books=75,
             former_lookit_annual_income="",
             lookit_referrer="Google",
         )

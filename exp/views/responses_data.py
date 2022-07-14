@@ -434,37 +434,22 @@ DEMOGRAPHIC_COLUMNS = [
         name="Child ages rounded",
     ),
     ResponseDataColumn(
-        id="demographic__languages_spoken_at_home",
-        description="Freeform response to 'What language(s) does your family speak at home?'",
-        extractor=lambda resp: resp["demographic_snapshot__languages_spoken_at_home"],
-        name="Languages spoken at home",
-    ),
-    ResponseDataColumn(
         id="demographic__number_of_guardians",
         description="Response to 'How many parents/guardians do your children live with?' - 1, 2, 3> [3 or more], varies",
         extractor=lambda resp: resp["demographic_snapshot__number_of_guardians"],
         name="Number of guardians",
     ),
     ResponseDataColumn(
-        id="demographic__number_of_guardians_explanation",
-        description=(
-            "Freeform response to 'If the answer varies due to shared custody arrangements or travel, please "
-            "enter the number of parents/guardians your children are usually living with or explain.'"
-        ),
-        extractor=lambda resp: resp[
-            "demographic_snapshot__number_of_guardians_explanation"
-        ],
-        name="Number of guardians explanation",
-    ),
-    ResponseDataColumn(
-        id="demographic__race_identification",
+        id="demographic__us_race_ethnicity_identification",
         description=(
             "Comma-separated list of all values checked for question 'What category(ies) does your family "
             "identify as?', from list:  White; Hispanic, Latino, or Spanish origin; Black or African American; "
             "Asian; American Indian or Alaska Native; Middle Eastern or North African; Native Hawaiian or "
             "Other Pacific Islander; Another race, ethnicity, or origin"
         ),
-        extractor=lambda resp: resp["demographic_snapshot__race_identification"],
+        extractor=lambda resp: resp[
+            "demographic_snapshot__us_race_ethnicity_identification"
+        ],
         name="Race",
     ),
     ResponseDataColumn(
@@ -497,18 +482,6 @@ DEMOGRAPHIC_COLUMNS = [
         name="Parent education level",
     ),
     ResponseDataColumn(
-        id="demographic__spouse_education_level",
-        description=(
-            "Parent's response to question 'What is the highest level of education your spouse has "
-            "completed?'; options are some [some or attending high school], hs [high school diploma or GED], "
-            "col [some or attending college], assoc [2-year college degree], bach [4-year college degree], "
-            "grad [some or attending graduate or professional school], prof [graduate or professional degree], "
-            "na [not applicable - no spouse or partner]"
-        ),
-        extractor=lambda resp: resp["demographic_snapshot__spouse_education_level"],
-        name="Parent education level",
-    ),
-    ResponseDataColumn(
         id="demographic__annual_income",
         description=(
             "Parent's response to question 'What is your approximate family yearly income (in US dollars)?'; "
@@ -517,12 +490,6 @@ DEMOGRAPHIC_COLUMNS = [
         ),
         extractor=lambda resp: resp["demographic_snapshot__annual_income"],
         name="Annual income",
-    ),
-    ResponseDataColumn(
-        id="demographic__number_of_books",
-        description="Parent's response to question 'About how many children's books are there in your home?'; integer",
-        extractor=lambda resp: resp["demographic_snapshot__number_of_books"],
-        name="Number of books",
     ),
     ResponseDataColumn(
         id="demographic__additional_comments",
