@@ -257,8 +257,8 @@ class DemographicDataForm(forms.ModelForm):
             "country",
             "state",
             "density",
-            "race_ethnicity_identification",
-            "race_ethnicity_identification_describe",
+            "us_race_ethnicity_identification",
+            "us_race_ethnicity_identification_describe",
             "number_of_children",
             "child_birthdays",
             "number_of_guardians",
@@ -279,7 +279,7 @@ class DemographicDataForm(forms.ModelForm):
             "number_of_guardians": _(
                 "If the answer varies or needs more explanation, you can tell us more below."
             ),
-            "race_ethnicity_identification": _(
+            "us_race_ethnicity_identification": _(
                 "Please select the appropriate responses for everyone in your children's immediate family."
             ),
         }
@@ -303,8 +303,11 @@ class DemographicDataForm(forms.ModelForm):
             ),
             "additional_comments": _("Anything else you'd like us to know?"),
             "lookit_referrer": _("How did you hear about Lookit?"),
-            "race_ethnicity_identification": _(
+            "us_race_ethnicity_identification": _(
                 "Which of the following best describes your family?"
+            ),
+            "us_race_ethnicity_identification_describe": _(
+                "Share more about your family's race, ethnicity, or origin:"
             ),
             "guardians_explanation": _(
                 "Share more about your children's parents/guardians:"
@@ -316,7 +319,9 @@ class DemographicDataForm(forms.ModelForm):
             "lookit_referrer": forms.Textarea(attrs={"rows": 2}),
             "gender_self_describe": forms.Textarea(attrs={"rows": 2}),
             "guardians_explanation": forms.Textarea(attrs={"rows": 2}),
-            "race_ethnicity_identification_describe": forms.Textarea(attrs={"rows": 2}),
+            "us_race_ethnicity_identification_describe": forms.Textarea(
+                attrs={"rows": 2}
+            ),
         }
 
 
