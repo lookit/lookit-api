@@ -84,11 +84,7 @@ class ParticipantAccountViewsTestCase(TestCase):
         )
         # We're redirected successfully to demographic data update
         self.assertEqual(
-            response.redirect_chain,
-            [
-                (reverse("web:demographic-data-update"), 302),
-                (reverse("web:demographic-data-country"), 302),
-            ],
+            response.redirect_chain, [(reverse("web:demographic-data-update"), 302)]
         )
         self.assertEqual(response.status_code, 200)
         # And are a logged-in user with the expected attributes for new participant
