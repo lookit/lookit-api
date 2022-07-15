@@ -9,39 +9,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: POEditor.com\n"
 
-#: accounts/forms.py:58
-msgid "Enter a valid 6-digit one-time password from Google Authenticator"
-msgstr ""
-
-#: accounts/forms.py:109
-#, python-format
-msgid ""
-"Please enter a correct %(username)s and password. Note that email and "
-"password fields may be case-sensitive. If you have turned on two-factor "
-"authentication, you will need a one-time password (OTP code) from Google "
-"Authenticator as well. "
-msgstr ""
-
-#: accounts/forms.py:114
-msgid "This account is inactive."
-msgstr ""
-
-#: accounts/forms.py:197
-msgid "Your password can’t be too similar to your other personal information."
-msgstr ""
-
-#: accounts/forms.py:198
-msgid "Your password must contain at least 16 characters."
-msgstr ""
-
-#: accounts/forms.py:199
-msgid "Your password can’t be a commonly used password."
-msgstr ""
-
-#: accounts/forms.py:200
-msgid "Your password can’t be entirely numeric."
-msgstr ""
-
 #: accounts/forms.py:216 accounts/forms.py:232 accounts/models.py:141
 msgid "Email address"
 msgstr "כתובת מייל"
@@ -668,10 +635,6 @@ msgstr "בחרו מדינה"
 msgid "Account Information"
 msgstr "פרטי חשבון"
 
-#: accounts/templates/accounts/_account-navigation.html:2
-msgid "Change your login credentials and/or nickname."
-msgstr ""
-
 #: accounts/templates/accounts/_account-navigation.html:3
 msgid "Demographic Survey"
 msgstr "סקר דמוגרפי"
@@ -716,20 +679,6 @@ msgstr "לשמור"
 #: accounts/templates/accounts/account-update.html:45
 msgid "Change Your Password"
 msgstr "שנו את סיסמתכם"
-
-#: accounts/templates/accounts/account-update.html:68
-msgid "Manage Two-Factor Authentication"
-msgstr ""
-
-#: accounts/templates/accounts/account-update.html:83
-msgid ""
-"If you'd like, you can turn two-factor authentication off here. Just enter "
-"your one-time password here, hit submit, and it'll get deleted for you!"
-msgstr ""
-
-#: accounts/templates/accounts/account-update.html:108
-msgid "Set up Two-Factor Authentication"
-msgstr ""
 
 #: accounts/templates/accounts/participant_detail.html:15
 msgid "All Participants"
@@ -804,103 +753,11 @@ msgstr "מגזר"
 msgid "Dashboard"
 msgstr "לוּחַ מַחווָנִים"
 
-#: project/settings.py:228 studies/fields.py:68
-msgid "German"
-msgstr ""
-
-#: project/settings.py:229 studies/fields.py:57
-msgid "English"
-msgstr ""
-
-#: project/settings.py:230 studies/fields.py:101
-msgid "Spanish"
-msgstr ""
-
-#: project/settings.py:231
-msgid "Argentinian Spanish"
-msgstr ""
-
-#: project/settings.py:232 studies/fields.py:66
-msgid "French"
-msgstr ""
-
-#: project/settings.py:233
-msgid "Canadian French"
-msgstr ""
-
-#: project/settings.py:234
-msgid "Hebrew"
-msgstr ""
-
-#: project/settings.py:235 studies/fields.py:76
-msgid "Italian"
-msgstr ""
-
-#: project/settings.py:236 studies/fields.py:77
-msgid "Japanese"
-msgstr ""
-
-#: project/settings.py:237 studies/fields.py:82
-msgid "Korean"
-msgstr ""
-
-#: project/settings.py:238
-msgid "Norwegian Bokmål"
-msgstr ""
-
-#: project/settings.py:239 studies/fields.py:94
-msgid "Polish"
-msgstr ""
-
-#: project/settings.py:240 studies/fields.py:95
-msgid "Portuguese"
-msgstr ""
-
-#: project/settings.py:241
-msgid "Brazilian Portuguese"
-msgstr ""
-
-#: project/settings.py:242 studies/fields.py:96
-msgid "Romanian"
-msgstr ""
-
 #: project/settings.py:243 studies/fields.py:97
 #, fuzzy
 #| msgid "Asian"
 msgid "Russian"
 msgstr "אסייתי"
-
-#: project/settings.py:244 studies/fields.py:107
-msgid "Turkish"
-msgstr ""
-
-#: project/settings.py:245
-msgid "Simplified Chinese"
-msgstr ""
-
-#: project/settings.py:246 studies/fields.py:64
-msgid "Dutch"
-msgstr ""
-
-#: studies/fields.py:7
-msgid "Autism Spectrum Disorder"
-msgstr ""
-
-#: studies/fields.py:8
-msgid "Deaf"
-msgstr ""
-
-#: studies/fields.py:9
-msgid "Hard of Hearing"
-msgstr ""
-
-#: studies/fields.py:10
-msgid "Dyslexia"
-msgstr ""
-
-#: studies/fields.py:11
-msgid "Multiple Birth (twin, triplet, or higher order)"
-msgstr ""
 
 #: studies/fields.py:45
 msgid "Twin"
@@ -930,187 +787,11 @@ msgstr "שביעיה"
 msgid "Octuplet"
 msgstr "שמיניה"
 
-#: studies/fields.py:58
-msgid "Amharic"
-msgstr ""
-
-#: studies/fields.py:59
-msgid "Bengali"
-msgstr ""
-
-#: studies/fields.py:60
-msgid "Bhojpuri"
-msgstr ""
-
-#: studies/fields.py:61
-msgid "Burmese"
-msgstr ""
-
-#: studies/fields.py:62
-msgid "Cebuano"
-msgstr ""
-
-#: studies/fields.py:63
-msgid "Chhattisgarhi"
-msgstr ""
-
-#: studies/fields.py:65
-msgid "Egyptian Spoken Arabic"
-msgstr ""
-
-#: studies/fields.py:67
-msgid "Gan"
-msgstr ""
-
 #: studies/fields.py:69
 #, fuzzy
 #| msgid "Duration"
 msgid "Gujarati"
 msgstr "מֶשֶׁך"
-
-#: studies/fields.py:70
-msgid "Hakka"
-msgstr ""
-
-#: studies/fields.py:71
-msgid "Hausa"
-msgstr ""
-
-#: studies/fields.py:72
-msgid "Hindi"
-msgstr ""
-
-#: studies/fields.py:73
-msgid "Igbo"
-msgstr ""
-
-#: studies/fields.py:74
-msgid "Indonesian"
-msgstr ""
-
-#: studies/fields.py:75
-msgid "Iranian Persian"
-msgstr ""
-
-#: studies/fields.py:78
-msgid "Javanese"
-msgstr ""
-
-#: studies/fields.py:79
-msgid "Jinyu"
-msgstr ""
-
-#: studies/fields.py:80
-msgid "Kannada"
-msgstr ""
-
-#: studies/fields.py:81
-msgid "Khmer"
-msgstr ""
-
-#: studies/fields.py:83
-msgid "Magahi"
-msgstr ""
-
-#: studies/fields.py:84
-msgid "Maithili"
-msgstr ""
-
-#: studies/fields.py:85
-msgid "Malay"
-msgstr ""
-
-#: studies/fields.py:86
-msgid "Malayalam"
-msgstr ""
-
-#: studies/fields.py:87
-msgid "Mandarin"
-msgstr ""
-
-#: studies/fields.py:88
-msgid "Marathi"
-msgstr ""
-
-#: studies/fields.py:89
-msgid "Min Nan"
-msgstr ""
-
-#: studies/fields.py:90
-msgid "Moroccan Spoken Arabic"
-msgstr ""
-
-#: studies/fields.py:91
-msgid "Northern Pashto"
-msgstr ""
-
-#: studies/fields.py:92
-msgid "Northern Uzbek"
-msgstr ""
-
-#: studies/fields.py:93
-msgid "Odia"
-msgstr ""
-
-#: studies/fields.py:98
-msgid "Saraiki"
-msgstr ""
-
-#: studies/fields.py:99
-msgid "Sindhi"
-msgstr ""
-
-#: studies/fields.py:100
-msgid "Somali"
-msgstr ""
-
-#: studies/fields.py:102
-msgid "Sunda"
-msgstr ""
-
-#: studies/fields.py:103
-msgid "Tagalog"
-msgstr ""
-
-#: studies/fields.py:104
-msgid "Tamil"
-msgstr ""
-
-#: studies/fields.py:105
-msgid "Telugu"
-msgstr ""
-
-#: studies/fields.py:106
-msgid "Thai"
-msgstr ""
-
-#: studies/fields.py:108
-msgid "Ukrainian"
-msgstr ""
-
-#: studies/fields.py:109
-msgid "Urdu"
-msgstr ""
-
-#: studies/fields.py:110
-msgid "Vietnamese"
-msgstr ""
-
-#: studies/fields.py:111
-msgid "Western Punjabi"
-msgstr ""
-
-#: studies/fields.py:112
-msgid "Wu"
-msgstr ""
-
-#: studies/fields.py:113
-msgid "Xiang Chinese"
-msgstr ""
-
-#: studies/fields.py:114
-msgid "Yoruba"
-msgstr ""
 
 #: studies/fields.py:115
 #, fuzzy
@@ -1146,14 +827,6 @@ msgstr ""
 msgid "The Users who have requested to join this Lab."
 msgstr "המשתמשים שביקשו להצטרף למעבדה זו."
 
-#: web/templates/frontpages/contact.html:15
-msgid "Technical difficulties"
-msgstr ""
-
-#: web/templates/frontpages/contact.html:17
-msgid "Questions about the studies"
-msgstr ""
-
 #: web/templates/frontpages/contact.html:19
 #: web/templates/frontpages/privacy.html:140
 #, fuzzy
@@ -1167,34 +840,11 @@ msgstr "כניסת חוקרים"
 msgid "Lookit"
 msgstr "Lookit"
 
-#: web/templates/frontpages/default.html:53
-msgid ""
-"This material is based upon work supported by the National Science "
-"Foundation (NSF) under Grants 1429216 and 1823919; the Center for Brains, "
-"Minds and Machines (CBMM), funded by NSF STC award CCF-1231216, and by an "
-"NSF Graduate Research Fellowship under Grant No. 1122374. Any opinion, "
-"findings, and conclusions or recommendations expressed in this material are "
-"those of the authors(s) and do not necessarily reflect the views of the "
-"National Science Foundation."
-msgstr ""
-
-#: web/templates/frontpages/default.html:60 web/templates/frontpages/home.html:48
-msgid "Privacy"
-msgstr ""
-
 #: web/templates/frontpages/default.html:61 web/templates/frontpages/home.html:49
 #, fuzzy
 #| msgid "Contact:"
 msgid "Contact us"
 msgstr "איש קשר:"
-
-#: web/templates/frontpages/default.html:63
-msgid "Connect"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:11
-msgid "Frequently Asked Questions"
-msgstr ""
 
 #: web/templates/frontpages/faq.html:16
 #, fuzzy
@@ -1202,19 +852,11 @@ msgstr ""
 msgid "Participation"
 msgstr "לְהִשְׂתַתֵף"
 
-#: web/templates/frontpages/faq.html:20
-msgid "What is a 'study' about cognitive development?"
-msgstr ""
-
 #: web/templates/frontpages/faq.html:40
 #, fuzzy
 #| msgid "Log in to participate"
 msgid "How can we participate online?"
 msgstr "התחברו כדי להשתתף"
-
-#: web/templates/frontpages/faq.html:56
-msgid "Who can create studies on Lookit?"
-msgstr ""
 
 #: web/templates/frontpages/faq.html:69
 #, fuzzy
@@ -1222,46 +864,11 @@ msgstr ""
 msgid "How do we provide consent to participate?"
 msgstr "התחברו כדי להשתתף"
 
-#: web/templates/frontpages/faq.html:80
-msgid "https://storage.googleapis.com/lookit-staging/static/videos/consent.mp4"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:89
-msgid "How is our information kept secure and confidential?"
-msgstr ""
-
 #: web/templates/frontpages/faq.html:107
 #, fuzzy
 #| msgid "What is your gender?"
 msgid "Who will see our video?"
 msgstr "מה מגדרך?"
-
-#: web/templates/frontpages/faq.html:130
-msgid "What information do researchers use from our video?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:136
-msgid ""
-"For children under about two years old, we usually design our studies to let "
-"their eyes do the talking! We're interested in where on the screen your "
-"child looks and/or how long your child looks at the screen rather than "
-"looking away. Our calibration videos (example shown below) help us get an "
-"idea of what it looks like when your child is looking to the right or the "
-"left, so we can code the rest of the video."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:143
-msgid ""
-"Here's an example of a few children watching our calibration video--it's "
-"easy to see that they look to one side and then the other."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:149
-msgid ""
-"Your child's decisions about where to look can give us lots of information "
-"about what he or she understands. Here are some of the techniques labs use "
-"to learn more about how children learn."
-msgstr ""
 
 #: web/templates/frontpages/faq.html:150
 #, fuzzy
@@ -1269,225 +876,11 @@ msgstr ""
 msgid "Habituation"
 msgstr "מֶשֶׁך"
 
-#: web/templates/frontpages/faq.html:156
-msgid "Violation of expectation"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:157
-msgid ""
-"Infants and children already have rich expectations about how events work. "
-"Children (and adults for that matter) tend to look longer at things they "
-"find surprising, so in some cases, we can take their looking times as a "
-"measure of how surprised they are."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:158
-msgid "Preferential looking"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:159
-msgid ""
-"Even when they seem to be passive observers, children are making lots of "
-"decisions about where to look and what to pay attention to. In this "
-"technique, we present children with a choice between two side-by-side images "
-"or videos, and see if children spend more time looking at one of them. We "
-"may additionally play audio that matches one of the videos. The video below "
-"shows a participant looking to her left when asked to 'find clapping'; the "
-"display she's watching is shown at the top."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:165
-msgid "Predictive looking"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:166
-msgid ""
-"Children can often make sophisticated predictions about what they expect to "
-"see or hear next. One way we can see those predictions in young children is "
-"to look at their eye movements. For example, if a child sees a ball roll "
-"behind a barrier, she may look to the other edge of the barrier, expecting "
-"the ball to emerge there. We may also set up artificial predictive "
-"relationships--for instance, the syllable 'da' means a toy will appear at "
-"the left of the screen, and 'ba' means a toy will appear at the right. Then "
-"we can see whether children learn these relationships, and how they "
-"generalize, by watching where they look when they hear a syllable."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:168
-msgid ""
-"Older children may simply be able to answer spoken questions about what they "
-"think is happening. For instance, in a recent study, two women called an "
-"object two different made-up names, and children were asked which is the "
-"correct name for the object."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:174
-msgid ""
-"Another way we can learn about how older children (and adults) think is to "
-"measure their reaction times. For instance, we might ask you to help your "
-"child learn to press one key when a circle appears and another key when a "
-"square appears, and then look at factors that influence how quickly they "
-"press a key."
-msgstr ""
-
 #: web/templates/frontpages/faq.html:181
 #, fuzzy
 #| msgid "We are not running any studies at this time!"
 msgid "Why are you running studies online instead of in person?"
 msgstr "כרגע אנחנו לא עורכים שום מחקרים!"
-
-#: web/templates/frontpages/faq.html:186
-msgid ""
-"Traditionally, developmental studies happen in a quiet room in a university "
-"lab. Researchers call or email local parents to see if they'd like to take "
-"part and schedule an appointment for them to come visit the lab. Why "
-"complement these in-lab studies with online ones? We're hoping to..."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:206
-msgid "When will we see the results of the study?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:211
-msgid ""
-"The process of publishing a scientific study, from starting data collection "
-"to seeing the paper in a journal, can take several years. You can check the "
-"Lookit home page for updates on papers, or set your communication "
-"preferences to be notified when we have results from studies you "
-"participated in."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:218
-msgid ""
-"My child wasn't paying attention, or we were interrupted. Can we try the "
-"study again?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:223
-msgid ""
-"Certainly--thanks for your dedication! You may see a warning that you have "
-"already participated in the study when you go to try it again, but you can "
-"ignore it. You don't need to tell us that you tried the study before; we'll "
-"have a record of your previous participation."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:230
-msgid ""
-"My child is outside the age range. Can he/she still participate in this "
-"study?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:235
-msgid ""
-"Sure! We may not be able to use his or her data in our research directly, "
-"but if you're curious you're welcome to try the study anyway. (Sometimes big "
-"siblings really want their own turn!) If your child is just below the "
-"minimum age for a study, however, we encourage you to wait so that we'll be "
-"able to use the data."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:242
-msgid "My child was born prematurely. Should we use his/her adjusted age?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:247
-msgid ""
-"For study eligibility, we usually use the child's chronological age (time "
-"since birth), even for premature babies. If adjusted age is important for a "
-"particular study, we will make that clear in the study eligibility criteria."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:254
-msgid ""
-"Our family speaks a language other than English at home. Can my child "
-"participate?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:259
-msgid ""
-"Sure! Right now, instructions for children and parents are written only in "
-"English, so some of them may be confusing to a child who does not hear "
-"English regularly. However, you're welcome to try any of the studies and "
-"translate for your child if you can. If it matters for the study whether "
-"your child speaks any languages besides English, we'll ask specifically. You "
-"can also indicate the languages your child speaks or is learning to speak on "
-"your demographic survey."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:266
-msgid ""
-"My child has been diagnosed with a developmental disorder or has special "
-"needs. Can he/she still participate?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:281
-msgid ""
-"I have multiple children in the age range for a study. Can they participate "
-"together?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:286
-msgid ""
-"If possible, we ask that each child participate separately. When children "
-"participate together they generally influence each other. That's a "
-"fascinating subject in its own right but usually not the focus of our "
-"research."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:293
-msgid "But I've heard that young children should avoid 'screen time.'"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:308
-msgid "Will we be paid for our participation?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:313
-msgid ""
-"Some research groups provide gift cards or other compensation for completing "
-"their studies, and others rely on volunteers. (This often depends on the "
-"rules of the university that's doing the research.) This information will be "
-"listed on the study description page."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:320
-msgid "Can I get my child's results?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:335
-msgid "Technical"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:339
-msgid "What browsers are supported?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:344
-msgid ""
-"Lookit supports recent versions of Chrome and Firefox. We are not currently "
-"able to support Internet Explorer or Safari."
-msgstr ""
-
-#: web/templates/frontpages/faq.html:351
-msgid "Can we do a study on my phone or tablet?"
-msgstr ""
-
-#: web/templates/frontpages/faq.html:357
-msgid ""
-"Not yet! Because we're measuring kids' looking patterns, we need a "
-"reasonably stable view of their eyes and a big enough screen that we can "
-"tell whether they're looking at the left or the right side of it. We're "
-"excited about the potential for touchscreen studies that allow us to observe "
-"infants and toddlers exploring, though!"
-msgstr ""
-
-#: web/templates/frontpages/home.html:11
-msgid "the online child lab"
-msgstr ""
-
-#: web/templates/frontpages/home.html:12
-msgid "A project of the MIT Early Childhood Cognition Lab"
-msgstr ""
 
 #: web/templates/frontpages/home.html:12
 #, fuzzy
@@ -1495,55 +888,11 @@ msgstr ""
 msgid "Participate in a Study"
 msgstr "לְהִשְׂתַתֵף"
 
-#: web/templates/frontpages/home.html:22
-msgid "Bringing science home"
-msgstr ""
-
-#: web/templates/frontpages/home.html:23
-msgid ""
-"Here at MIT's Early Childhood Cognition Lab, we're trying a new approach in "
-"developmental psychology: bringing the experiments to you."
-msgstr ""
-
-#: web/templates/frontpages/home.html:29
-msgid "Help us understand how your child thinks"
-msgstr ""
-
-#: web/templates/frontpages/home.html:30
-msgid ""
-"Your family can contribute to research about how children learn by doing fun "
-"activities together, right in your web browser."
-msgstr ""
-
-#: web/templates/frontpages/home.html:36
-msgid "Participate whenever and wherever"
-msgstr ""
-
-#: web/templates/frontpages/home.html:37
-msgid ""
-"Log in or create an account at the top right to get started! You can "
-"participate with your child from any computer with a webcam."
-msgstr ""
-
 #: web/templates/frontpages/privacy.html:11
 #, fuzzy
 #| msgid "Privacy Statement"
 msgid "Privacy statement"
 msgstr "הצהרת פרטיות"
-
-#: web/templates/frontpages/privacy.html:17
-msgid "Introduction"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:18
-msgid ""
-"Lookit is committed to supporting the privacy of individuals who enroll on "
-"our Platform to conduct\n"
-"                research or serve as research subjects. This Privacy "
-"Statement explains how we handle and use the\n"
-"                personal information we collect about our researchers and "
-"research participant community."
-msgstr ""
 
 #: web/templates/frontpages/privacy.html:22
 #, fuzzy
@@ -1551,354 +900,11 @@ msgstr ""
 msgid "For participants"
 msgstr "כל המשתתפים"
 
-#: web/templates/frontpages/privacy.html:24
-msgid ""
-"Lookit is a platform that many different researchers use to conduct studies "
-"about how children learn and\n"
-"                develop. It is run by the MIT Early Childhood Cognition Lab, "
-"which has access to all of the data\n"
-"                collected on Lookit. Researchers using Lookit to conduct "
-"studies only access your personal information\n"
-"                if you choose to participate in their study."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:29
-#: web/templates/frontpages/privacy.html:142
-msgid "What personal information we collect"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:31
-msgid "We collect the following kinds of personal information:"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:44
-#: web/templates/frontpages/privacy.html:147
-msgid "How we collect personal information about you"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:46
-msgid ""
-"The information we collect and maintain about you is the information you "
-"provide to us when registering\n"
-"                for a Lookit account, registering your children, updating "
-"your account or your children’s profiles,\n"
-"                completing or updating surveys, or participating in "
-"individual Lookit studies."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:50
-#: web/templates/frontpages/privacy.html:167
-msgid "When we share your personal information"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:52
-msgid ""
-"When you participate in a Lookit study, we share the following information "
-"with the research group conducting the study:"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:61
-msgid ""
-"Your email address is not shared directly with the research group, although "
-"they can contact you via Lookit in accordance with your contact preferences."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:63
-msgid ""
-"Researchers may publish the results of a study, including individual "
-"responses. However, although they\n"
-"                may publish the ages of participants, they may not publish "
-"participant birthdates (or information that\n"
-"                could be used to calculate birthdates)."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:67
-msgid ""
-"We and/or the researchers responsible for a study may share video of your "
-"family’s participation for\n"
-"                scientific, educational, and/or publicity purposes, but only "
-"if you choose at the conclusion of a study\n"
-"                to allow such usage. Researchers may also share your video "
-"and other data with Databrary if you choose\n"
-"                at the conclusion of a study to allow that. We don’t publish "
-"video of participants such that it can be\n"
-"                linked to individual demographic data (e.g., household "
-"income or number of parents/guardians), and\n"
-"                researchers must also agree not to do so in order to use "
-"Lookit."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:74
-msgid ""
-"We don’t share, sell, publish, or otherwise disclose your contact "
-"information (email and/or mailing\n"
-"                address) to anyone but the researchers involved in a study. "
-"Researchers must also agree not to disclose\n"
-"                your contact information in order to use Lookit."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:78
-#: web/templates/frontpages/privacy.html:152
-msgid "How we use your personal information"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:80
-msgid ""
-"We may use your personal information (account, child, demographic, and study "
-"data) for a variety of purposes, including to:"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:100
-msgid ""
-"Researchers use the data collected in their studies to address particular "
-"scientific questions. It may\n"
-"                also turn out that data collected for one study can help to "
-"answer a related question later on. If\n"
-"                researchers are using any additional information about you "
-"in their study, beyond what is collected on\n"
-"                Lookit – for instance, if you are participating in a follow-"
-"up online session for an in-person study –\n"
-"                they must tell you that in the study consent form."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:106
-msgid ""
-"There are some basic rules about how personal information may be used that "
-"all Lookit researchers agree to, including:"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:114
-#: web/templates/frontpages/privacy.html:163
-msgid ""
-"If you have concerns about any of these purposes, or how we communicate with "
-"you, please contact us at\n"
-"                dataprotection@mit.edu. We will always respect a request by "
-"you to stop processing your personal\n"
-"                information (subject to our legal obligations)."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:118
-#: web/templates/frontpages/privacy.html:171
-msgid "How your information is stored and secured"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:120
-#, python-format
-msgid ""
-"We have implemented industry-standard security safeguards designed to "
-"protect the personal information\n"
-"                that you may provide. We also periodically monitor our "
-"system for possible vulnerabilities and attacks,\n"
-"                consistent with industry standards. Only authenticated users "
-"with specific permissions may access the\n"
-"                data. All data is transmitted via a secure https connection, "
-"and all video data is encrypted at rest on\n"
-"                the storage systems used by Lookit to provide data to "
-"researchers. Researchers are responsible for their\n"
-"                own secure storage of data once they obtain it from Lookit. "
-"You should be aware, however, that since the\n"
-"                internet is not a 100%% secure environment, there’s no "
-"guarantee that information may not be accessed,\n"
-"                disclosed, altered, or destroyed by breach of any of our "
-"physical, technical, or managerial safeguards.\n"
-"                It's your responsibility to protect the security of your "
-"account details, including your username and\n"
-"                password."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:131
-#: web/templates/frontpages/privacy.html:182
-msgid "How long we keep your personal information"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:133
-msgid ""
-"We consider our relationship with our research community to be lifelong. "
-"This means that we will maintain\n"
-"                a record for you until such time as you tell us that you no "
-"longer wish us to keep in touch. If you wish\n"
-"                to remove your account, we will retain a core set of "
-"information about you to fulfill administrative\n"
-"                tasks and legal obligations. If you have participated in "
-"Lookit studies, the personal information\n"
-"                already shared with those researchers may not generally be "
-"‘taken back,’ as it is part of a scientific\n"
-"                dataset and removing your data could affect already "
-"published findings."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:144
-msgid ""
-"We may collect basic biographic/contact information about you and your "
-"representative organization,\n"
-"                including name, title, business addresses, phone numbers, "
-"and email addresses."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:149
-msgid ""
-"The information we collect and maintain about you is that which you have "
-"provided to us when registering\n"
-"                to use Lookit, updating your profile, or creating or editing "
-"a study."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:154
-msgid ""
-"We use your personal information for a number of legitimate purposes, "
-"including the performance of contractual obligations. Specifically, we use "
-"your personal information to:"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:169
-msgid "We do not share your personal information with any third parties."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:173
-#, python-format
-msgid ""
-"We have implemented industry-standard security safeguards designed to "
-"protect the personal information\n"
-"                that you may provide. We also periodically monitor our "
-"system for possible vulnerabilities and attacks,\n"
-"                consistent with industry standards. Only authenticated users "
-"with specific permissions may access the\n"
-"                data. All data is transmitted via a secure https connection. "
-"You should be aware, however, that since\n"
-"                the internet is not a 100%% secure environment, there’s no "
-"guarantee that information may not be\n"
-"                accessed, disclosed, altered, or destroyed by breach of any "
-"of our physical, technical, or managerial\n"
-"                safeguards. It's your responsibility to protect the security "
-"of your account details, including your\n"
-"                username and password."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:184
-msgid ""
-"We consider our relationship with our research community to be lifelong. "
-"This means that we will maintain\n"
-"                a record for you until such time as you tell us that you no "
-"longer wish us to keep in touch. If you no\n"
-"                longer wish to hear from Lookit, we will retain a core set "
-"of information about you to fulfill\n"
-"                administrative tasks and legal obligations."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:189
-msgid "For everyone"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:191
-msgid "Rights for individuals in the European Economic Area"
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:192
-msgid ""
-"You have the right in certain circumstances to (1) access your personal "
-"information; (2) to correct or\n"
-"                erase information; (3) restrict processing; and (4) object "
-"to communications, direct marketing, or\n"
-"                profiling. To the extent applicable, the EU’s General Data "
-"Protection Regulation provides further\n"
-"                information about your rights. You also have the right to "
-"lodge complaints with your national or\n"
-"                regional data protection authority."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:198
-msgid ""
-"If you are inclined to exercise these rights, we request an opportunity to "
-"discuss with you any concerns\n"
-"                you may have. To protect the personal information we hold, "
-"we may also request further information to\n"
-"                verify your identify when exercising these rights. Upon a "
-"request to erase information, we will maintain\n"
-"                a core set of personal data to ensure we do not contact you "
-"inadvertently in the future, as well as any\n"
-"                information necessary for archival purposes. We may also "
-"need to retain some financial information for\n"
-"                legal purposes, including US IRS compliance. In the event of "
-"an actual or threatened legal claim, we may\n"
-"                retain your information for purposes of establishing, "
-"defending against or exercising our rights with\n"
-"                respect to such claim."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:207
-msgid ""
-"By providing information directly to Lookit, you consent to the transfer of "
-"your personal information\n"
-"                outside of the European Economic Area to the United States. "
-"You understand that the current laws and\n"
-"                regulations of the United States may not provide the same "
-"level of protection as the data and privacy\n"
-"                laws and regulations of the EEA."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:212
-msgid ""
-"You are under no statutory or contractual obligation to provide any personal "
-"data to us."
-msgstr ""
-
 #: web/templates/frontpages/privacy.html:214
 #, fuzzy
 #| msgid "Additional Info"
 msgid "Additional Information"
 msgstr "מידע נוסף"
-
-#: web/templates/frontpages/privacy.html:216
-msgid ""
-"We may change this Privacy Statement from time to time. If we make any "
-"significant changes in the way we\n"
-"                treat your personal information we will make this clear on "
-"our website or by contacting you directly."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:220
-msgid ""
-"The controller for your personal information is MIT. We can be contacted at "
-"dataprotection@mit.edu."
-msgstr ""
-
-#: web/templates/frontpages/privacy.html:222
-msgid "This policy was last updated in June 2018."
-msgstr ""
-
-#: web/templates/frontpages/scientists.html:27
-msgid "Meet the Lookit team"
-msgstr ""
-
-#: web/templates/frontpages/scientists.html:33
-msgid "Core Team"
-msgstr ""
-
-#: web/templates/frontpages/scientists.html:38
-msgid ""
-"Rico is Lookit's lead software engineer, working on planning and adding "
-"features for both participants and researchers."
-msgstr ""
-
-#: web/templates/frontpages/scientists.html:43
-msgid ""
-"Laura is the PI of the Early Childhood Cognition Lab. She conducts research "
-"about how children arrive at a common-sense understanding of the physical "
-"and social world through exploration and instruction."
-msgstr ""
-
-#: web/templates/frontpages/scientists.html:49
-msgid ""
-"Kim started Lookit as a graduate student, and now runs the project as a "
-"research scientist in the Early Childhood Cognition Lab. Her three children "
-"frequently provide feedback on studies."
-msgstr ""
-
-#: web/templates/frontpages/scientists.html:54
-msgid ""
-"Mark organizes the Lookit Working Groups, which are groups of researchers "
-"working to improve Lookit in a variety of ways."
-msgstr ""
 
 #: web/templates/registration/logged_out.html:6
 msgid "You've successfully logged out."
@@ -1925,10 +931,6 @@ msgstr "שכחת סיסמה?"
 #: web/templates/registration/login.html:36
 msgid "New to Lookit?"
 msgstr "חדש/ה ב- Lookit?"
-
-#: web/templates/registration/login.html:36
-msgid "Register your family!"
-msgstr ""
 
 #: web/templates/registration/password_change_done.html:11
 msgid "Password changed"
@@ -2248,10 +1250,6 @@ msgstr "אנו מבקשים ליצור איתנו קשר כאשר:"
 msgid "Create Participant Account"
 msgstr "חשבון המשתתפ/ת"
 
-#: web/templates/web/participant-signup.html:22
-msgid "Create a family account to start participating in Lookit studies!"
-msgstr ""
-
 #: web/templates/web/participant-signup.html:31
 msgid ""
 "By clicking 'Create Account', I agree that I have read and accepted the "
@@ -2328,10 +1326,6 @@ msgstr "תמורה: "
 msgid "Study Responses"
 msgstr "תגובות מחקר"
 
-#: web/templates/web/studies-history.html:107
-msgid "Video"
-msgstr ""
-
 #: web/templates/web/studies-history.html:118
 msgid "Date"
 msgstr "תַאֲרִיך"
@@ -2374,14 +1368,6 @@ msgstr ""
 msgid "No information about consent video review status."
 msgstr "אין מידע על סטטוס סקירת הסרטון."
 
-#: web/templates/web/studies-history.html:133
-msgid "Feedback"
-msgstr ""
-
-#: web/templates/web/studies-history.html:139
-msgid "None"
-msgstr ""
-
 #: web/templates/web/studies-history.html:154
 msgid "You have not yet participated in any studies."
 msgstr "עדיין לא השתתפת בשום מחקרים."
@@ -2421,14 +1407,6 @@ msgstr ""
 #| msgid " days"
 msgid "days"
 msgstr " ימים"
-
-#: web/templates/web/study-detail.html:53
-msgid " until "
-msgstr ""
-
-#: web/templates/web/study-detail.html:53
-msgid " when "
-msgstr ""
 
 #: web/templates/web/study-detail.html:93
 msgid "Study overview"
@@ -2475,11 +1453,6 @@ msgstr "התחברו כדי להשתתף"
 #| msgid "No child profiles registered!"
 msgid "Add child profile to "
 msgstr "לא נרשמו פרופילי ילדים!"
-
-#: web/templates/web/study-detail.html:142
-#: web/templates/web/study-detail.html:144
-msgid "preview"
-msgstr ""
 
 #: web/templates/web/study-detail.html:142
 #: web/templates/web/study-detail.html:144
@@ -2539,10 +1512,6 @@ msgstr "בנו מריץ ניסויים לתצוגה מקדימה"
 msgid "Participate"
 msgstr "לְהִשְׂתַתֵף"
 
-#: web/templates/web/study-detail.html:167
-msgid "now"
-msgstr ""
-
 #: web/templates/web/study-detail.html:168
 msgid ""
 "For an easy way to see what happens as you update your study protocol, "
@@ -2569,27 +1538,11 @@ msgstr "סקר דמוגרפי"
 msgid "Child added."
 msgstr "יְלָדִים"
 
-#: web/views.py:192
-msgid "Child deleted."
-msgstr ""
-
-#: web/views.py:194
-msgid "Child updated."
-msgstr ""
-
 #: web/views.py:217
 #, fuzzy
 #| msgid "Email Preferences"
 msgid "Email preferences saved."
 msgstr "העדפות דוא\"ל"
-
-#: web/views.py:311
-#, python-brace-format
-msgid ""
-"The study {study.name} is not currently collecting data - the study is "
-"either completed or paused. If you think this is an error, please contact "
-"{study.contact_info}"
-msgstr ""
 
 #, fuzzy
 #~| msgid "instead?"

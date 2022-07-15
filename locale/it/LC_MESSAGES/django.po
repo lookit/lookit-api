@@ -2135,10 +2135,6 @@ msgstr "Il laboratorio online per bambini"
 msgid "A project of the MIT Early Childhood Cognition Lab"
 msgstr "Un progetto del MIT Early Childhood Cognition Lab "
 
-#: web/templates/frontpages/home.html:12
-msgid "Participate in a Study"
-msgstr ""
-
 #: web/templates/frontpages/home.html:22
 msgid "Bringing science home"
 msgstr "Portare la scienza a casa"
