@@ -1550,21 +1550,6 @@ msgstr "העדפות דוא\"ל"
 #~ msgstr "במקום זאת?"
 
 #, fuzzy
-#~| msgid ""
-#~| "Looking for more ways to contribute to research from home? Check out <a "
-#~| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#~| "\"noreferrer noopener\">Children Helping Science</a> for even more "
-#~| "studies!"
-#~ msgid ""
-#~ "For even more ways to participate in science with your kids at home, "
-#~ "check out the newly launched site <a href='https://childrenhelpingscience."
-#~ "com/' target="_blank">Children Helping Science"
-#~ msgstr ""
-#~ "מחפשים דרכים נוספות לתרום למחקר מהבית? עיינו ב <a href=\"https://"
-#~ "childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener"
-#~ "\"> ילדים העוזרים למדע </a> למחקרים נוספים!"
-
-#, fuzzy
 #~| msgid "Birthday"
 #~ msgid "Birthday test"
 #~ msgstr "יום הולדת"

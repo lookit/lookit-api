@@ -1592,22 +1592,6 @@ msgstr "Настройки электронной почты"
 #~ msgid "instead"
 #~ msgstr "вместо?"
 
-#, fuzzy
-#~| msgid ""
-#~| "Looking for more ways to contribute to research from home? Check out <a "
-#~| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#~| "\"noreferrer noopener\">Children Helping Science</a> for even more "
-#~| "studies!"
-#~ msgid ""
-#~ "For even more ways to participate in science with your kids at home, "
-#~ "check out the newly launched site <a href='https://childrenhelpingscience."
-#~ "com/' target="_blank">Children Helping Science"
-#~ msgstr ""
-#~ "Вам интересно, как еще можно внести вклад в науку, находясь дома? "
-#~ "Посетите <a href=\"https://childrenhelpingscience.com/\" target=\"_blank"
-#~ "\" rel=\"noreferrer noopener\"> Children Helping Science </a>, где Вы "
-#~ "найдете ещё больше исследований!"
-
 #~ msgid "Login Unsuccessful"
 #~ msgstr "Не удалось войти"
 

@@ -1576,22 +1576,6 @@ msgstr "Preferencias de correo electrónico"
 #~ msgid "instead"
 #~ msgstr "¿En lugar?"
 
-#, fuzzy
-#~| msgid ""
-#~| "Looking for more ways to contribute to research from home? Check out <a "
-#~| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#~| "\"noreferrer noopener\">Children Helping Science</a> for even more "
-#~| "studies!"
-#~ msgid ""
-#~ "For even more ways to participate in science with your kids at home, "
-#~ "check out the newly launched site <a href='https://childrenhelpingscience."
-#~ "com/' target="_blank">Children Helping Science"
-#~ msgstr ""
-#~ "¿Busca más formas de participar en investigaciones desde casa? ¡Visite <a "
-#~ "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#~ "\"noreferrer noopener\"> Niños/as ayudando a la ciencia </a> para tener "
-#~ "acceso a aún más estudios!"
-
 #~ msgid "Login Unsuccessful"
 #~ msgstr "Inicio de sesión fallido"
 

@@ -1578,22 +1578,6 @@ msgstr "Preferinţe e-mail"
 #~ msgstr "cumva?"
 
 #, fuzzy
-#~| msgid ""
-#~| "Looking for more ways to contribute to research from home? Check out <a "
-#~| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#~| "\"noreferrer noopener\">Children Helping Science</a> for even more "
-#~| "studies!"
-#~ msgid ""
-#~ "For even more ways to participate in science with your kids at home, "
-#~ "check out the newly launched site <a href='https://childrenhelpingscience."
-#~ "com/' target="_blank">Children Helping Science"
-#~ msgstr ""
-#~ "Căutați alte modalități de a contribui la cercetare de acasă? Pentru a "
-#~ "vedea mai multe studii, consultați <a href=\"https://"
-#~ "childrenhelpingscience.com/\" target=\"_blank\" rel=\"noreferrer noopener"
-#~ "\"> Children Helping Science </a>."
-
-#, fuzzy
 #~| msgid "Birthday"
 #~ msgid "Birthday test"
 #~ msgstr "Data de naștere"

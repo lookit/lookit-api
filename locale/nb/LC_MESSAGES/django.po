@@ -1977,21 +1977,6 @@ msgstr ""
 #~ msgid "instead"
 #~ msgstr "i stedet"
 
-#, fuzzy
-#~| msgid ""
-#~| "Looking for more ways to contribute to research from home? Check out <a "
-#~| "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#~| "\"noreferrer noopener\">Children Helping Science</a> for even more "
-#~| "studies!"
-#~ msgid ""
-#~ "For even more ways to participate in science with your kids at home, "
-#~ "check out the newly launched site <a href='https://childrenhelpingscience."
-#~ "com/' target="_blank">Children Helping Science"
-#~ msgstr ""
-#~ "Ser du etter flere måter å bidra til forskning hjemmefra? Sjekk ut <a "
-#~ "href=\"https://childrenhelpingscience.com/\" target=\"_blank\" rel="
-#~ "\"noreferrer noopener\">Children Helping Science</a> for flere studier!"
-
 #~ msgid "Birthday test"
 #~ msgstr "Bursdagstest"
 
