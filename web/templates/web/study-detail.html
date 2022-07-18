@@ -198,7 +198,7 @@
                                         {% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research." %}
                                     </p>
                                     <p class="text-warning" style="display:none" id="criteria-not-met">
-                                        {% blocktrans with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktrans %}
+                                        {% blocktranslate with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktranslate %}
                                     </p>
                                     {% if preview_mode and object.needs_to_be_built %}
                                         <a id="participate-button"
