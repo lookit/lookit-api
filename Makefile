@@ -6,6 +6,9 @@ clean:
 	docker rm -f lookit-api-web lookit-api-db lookit-api-broker lookit-api-worker
 	docker image rm lookit-api_worker lookit-api_web
 
+clean-translations:
+	find ./locale -name *.mo -exec rm {} \; 
+
 migrate:
 	docker compose run --rm web poetry run ./manage.py migrate
 

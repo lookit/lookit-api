@@ -1165,43 +1165,14 @@ msgstr "Ususarios/as que han solicitado unirse a este laboratorio."
 msgid "Technical difficulties"
 msgstr "Dificultades técnicas"
 
-#: web/templates/frontpages/contact.html:16
-msgid ""
-"To report any technical difficulties during participation, please contact "
-"our team by email at <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu"
-msgstr ""
-
 #: web/templates/frontpages/contact.html:17
 msgid "Questions about the studies"
 msgstr "Preguntas sobre los estudios"
-
-#: web/templates/frontpages/contact.html:18
-msgid ""
-"If you have any questions or concerns about the studies, please first check "
-"our FAQ. With any additional questions, please contact us at <a href='mailto:"
-"lookit@mit.edu'>lookit@mit.edu</a>."
-msgstr ""
 
 #: web/templates/frontpages/contact.html:19
 #: web/templates/frontpages/privacy.html:140
 msgid "For researchers"
 msgstr "Para personal de investigación"
-
-#: web/templates/frontpages/contact.html:20
-msgid ""
-"Lookit is available to all developmental researchers, and the code is "
-"entirely open- To learn more about running your own studies or contributing, "
-"please check out the <a href='https://lookit.readthedocs.io/en/develop' "
-"target="_blank">documentation</a>."
-msgstr ""
-
-#: web/templates/frontpages/contact.html:21
-msgid ""
-"Several initial test studies of a prototype Lookit platform were completed "
-"in 2015; you can read about the results, and strengths and limitations of "
-"the platform, in <a href='http://www.mitpressjournals.org/toc/"
-"opmi/1/1'>these papers</a>."
-msgstr ""
 
 #: web/templates/frontpages/default.html:10
 #: web/templates/web/_navigation.html:16 web/templates/web/_navigation.html:21
@@ -3414,15 +3385,6 @@ msgstr "Crear cuenta de participante"
 msgid "Create a family account to start participating in Lookit studies!"
 msgstr ""
 "¡Crea una cuenta familiar para empezar a participar en los estudios Lookit!"
-
-#: web/templates/web/participant-signup.html:23
-#, python-format
-msgid ""
-"\n"
-"              (To register as a researcher, please use <a href=\"%(link)s"
-"\">this form</a> instead.)\n"
-"            "
-msgstr ""
 
 #: web/templates/web/participant-signup.html:31
 msgid ""
