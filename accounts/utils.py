@@ -3,6 +3,8 @@ import hashlib
 
 from django.utils.text import slugify
 
+from studies.models import Response
+
 
 def build_org_group_name(org_name, group):
     """
@@ -38,6 +40,12 @@ def hash_child_id(resp):
         resp["study__uuid"],
         resp["study__salt"],
         resp["study__hash_digits"],
+    )
+
+
+def hash_child_id_from_model(resp: Response):
+    return hash_id(
+        resp.child.uuid, resp.study.uuid, resp.study.salt, resp.study.hash_digits
     )
 
 

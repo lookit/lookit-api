@@ -12,7 +12,7 @@ __all__ = ["celery_app"]
 # so that e.g. DEBUG from .env is used to determine other values. Note this will not overwrite any system-level
 # environment variables (e.g. in .bashrc)
 try:
-    from dotenv import load_dotenv, find_dotenv
+    from dotenv import find_dotenv, load_dotenv
 except ImportError:
     warnings.warn(
         "Module dotenv not available; not importing local settings from .env",

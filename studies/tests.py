@@ -604,7 +604,7 @@ class TestSendMail(TestCase):
         self.assertEqual(
             email.alternatives[0],
             (
-                '\n<p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n\n\n<br>\n\n<a href="https://localhost:8000/account/email/"> Update your email preferences </a>\n',
+                '\n    <p>line 1<br></p><p><img style="width: 24px;" src="cid:image-00001" data-filename="small.jpg"></p><p>line 2<br></p>\n\n<br />\n<a href="https://localhost:8000/account/email/">Update your email preferences</a>\n',
                 "text/html",
             ),
         )
@@ -629,14 +629,14 @@ class TestSendMail(TestCase):
     def test_empty_reply_to(self):
         reply_to = []
         email = send_mail(
-            template_name="empty", subject="subject", to_addresses="to_addresses"
+            template_name="custom_email", subject="subject", to_addresses="to_addresses"
         )
         self.assertEquals(email.reply_to, reply_to)
 
     def test_one_reply_to(self):
         reply_to = ["email@mit.edu"]
         email = send_mail(
-            template_name="empty",
+            template_name="custom_email",
             subject="subject",
             to_addresses="to_addresses",
             reply_to=reply_to,
@@ -646,7 +646,7 @@ class TestSendMail(TestCase):
     def test_couple_reply_to(self):
         reply_to = ["email@mit.edu", "email@smith.edu"]
         email = send_mail(
-            template_name="empty",
+            template_name="custom_email",
             subject="subject",
             to_addresses="to_addresses",
             reply_to=reply_to,

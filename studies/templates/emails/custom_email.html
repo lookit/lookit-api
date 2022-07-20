@@ -1,7 +1,5 @@
 {% autoescape off %}
-{{ custom_message }}
+    {{ custom_message }}
 {% endautoescape %}
-
-<br>
-
-<a href="{{base_url}}{% url 'web:email-preferences' %}"> Update your email preferences </a>
+<br />
+<a href="{{ base_url }}{% url 'web:email-preferences' %}">Update your email preferences</a>

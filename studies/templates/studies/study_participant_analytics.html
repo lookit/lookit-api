@@ -1,15 +1,15 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load static %}
 {% load guardian_tags %}
-
 {% block head %}
     {{ block.super }}
     <script src="{% static 'js/jquery-ui.min.js' %}" integrity="sha384-S3zIKOq/nelLqr0KAhub+iP5nyS201AUUfFxfEyKp9cM02cIiVixkZe+g3a10Rav"></script>
-    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}"/>
     <script src="{% static 'js/bootstrap-select.min.js' %}" integrity="sha384-8fu9aU0rBHyWhoS96J+3YorJqJZsUp8c3IkInX6NKYi/K/jmG98rDibD+JgkI+fZ"></script>
     <script src="{% static 'studies/js/d3.min.js' %}" integrity="sha384-M06Cb6r/Yrkprjr7ngOrJlzgekrkkdmGZDES/SUnkUpUol0/qjsaQWQfLzq0mcfg"></script>
-    <link rel="stylesheet" href="{% static 'studies/css/metricsgraphics.min.css' %}" />
+    <link rel="stylesheet"
+          href="{% static 'studies/css/metricsgraphics.min.css' %}"/>
     <script src="{% static 'studies/js/metricsgraphics.min.js' %}" integrity="sha384-1tg+Caggw2MOJb5XdqvPWuAdItLy/pYh+OKAUeUp2u3LcAjTuqEUraUNX7wVUgGO"></script>
     {# Moment #}
     <script type="text/javascript" src="{% static 'js/moment.min.js' %}" integrity="sha384-pUJlcb0s5ZVM8ujEW3wr2qTVRBbcLEIvcEVEhk9GUd65R3z4uPx9NlB52/4+R3b3"></script>
@@ -21,40 +21,38 @@
     <script src="{% static 'studies/js/gchart_renderers.min.js' %}" integrity="sha384-MGue9XkTSfyc/uIW6x6YGXpPzZ7rPbs7YOA5kjhf5pALg11XA7rpxifZ+kZgkEkB"></script>
     <!-- Datepicker -->
     <script type="text/javascript" src="{% static 'js/daterangepicker.min.js' %}" integrity="sha384-ty7j9l9dyFJXResSJqxWIltBRwUxu77rLFQK18vubTvNC+6NUMAeu/xri9AU0WqK"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.min.css' %}"/>
-
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'css/daterangepicker.min.css' %}"/>
     {% comment %}
         When we upgrade to django 2.x, please convert to the following insertions to json_script.
         Please see: https://docs.djangoproject.com/en/2.1/ref/templates/builtins/#json-script
     {% endcomment %}
-    <script type="application/json" id="response-timeseries-data">
-        {{ response_timeseries_data | safe }}
-    </script>
-    <script type="application/json" id="registration-data">
-        {{ registration_data | safe }}
-    </script>
+    <script type="application/json" id="response-timeseries-data">{{ response_timeseries_data | safe }}</script>
+    <script type="application/json" id="registration-data">{{ registration_data | safe }}</script>
     {{ form.media }}
-{% endblock %}
-
-{% block title %}Participant Analytics{% endblock %}
-
+{% endblock head %}
+{% block title %}
+    Participant Analytics
+{% endblock title %}
 {% block flash %}
     {% if messages %}
         {% for message in messages %}
             <div id="details" class="alert {{ message.tags }} alert-dismissable">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
                 {{ message }}
             </div>
         {% endfor %}
     {% endif %}
-{% endblock %}
-
+{% endblock flash %}
 {% block content %}
     <div class="container">
-        <nav class='row'>
+        <nav class="row">
             <section class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
+                    <li>
+                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+                    </li>
                     <li class="active">Participant Analytics</li>
                 </ol>
             </section>
@@ -67,286 +65,358 @@
                     efforts: how well do various approaches work? What populations do they reach? You may also find
                     it helpful for reporting aggregate characteristics of your participants.
                 </p>
-
                 <p class="help-block">
                     Please note that demographic survey data may never be published such that it could be linked to an individual
-                    participant's video (see <a href="https://lookit.mit.edu/termsofuse/">Terms of Use</a>). Before sharing any demographic data, consider whether it
-                    might be possible to link to individual participants: e.g., because a child's name is mentioned
-                    in a comment or because only one family speaks a particular language and that language is
-                    used in their video.
-                </p>
-            </div>
-        </section>
-        <section id="participation-section" class="row">
-            <h3>Recruitment Data Plots</h3>
-            <p class="help-block">
-                The <strong>participation</strong> plots display the number of responses across studies 
-                that you have read access to.
+                participant's video (see <a href="https://lookit.mit.edu/termsofuse/">Terms of Use</a>). Before sharing any demographic data, consider whether it
+                might be possible to link to individual participants: e.g., because a child's name is mentioned
+                in a comment or because only one family speaks a particular language and that language is
+                used in their video.
             </p>
-            <p class="help-block">
-                The <strong>registration</strong> plots include all registered Lookit users except researcher accounts, regardless of 
-                whether they have participated in a study you have read access to. 
-            </p>
-            <article class="col-xs-4">
-                <div id="global-filter-panel" class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4>Global Data Filters</h4>
-                    </div>
-                    <div class="panel-body">
-                        <label class="control-label" for="date-filter">Date Range</label>
-                        <p class="help-block small">Number of responses and number of new registered participants 
-                        within this range will be displayed in the graphs. This also controls the <strong>pivot table</strong>:  
-                        only data from responses (and the associated children/families) within this time frame will be 
-                        included in the table.
-                        <input id="date-filter" class="form-control input-sm" type="text"/>
-
-                        <table id="total-counts" class="table table-condensed">
-                            <tr>
-                                <th scope="row"># Unique Responses</th>
-                                <td id="total-count-responses"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row"># Unique Children</th scope="row">
-                                <td id="total-count-children"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row"># Registrations in date range</th>
-                                <td id="total-count-registrations"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Total # Registrations at range end</th>
-                                <td id="end-count-registrations"></td>
-                            </tr>
-                        </table>
-                        <label class="control-label" for="granularity-specifier">Bin Granularity</label>
-                        <p class="help-block small">Change the sampling width of the binned graphs.</p>
-                        <select id="granularity-specifier" class="selectpicker form-control">
-                            <option value="day" selected>Day</option>
-                            <option value="week">Week</option>
-                            <option value="month">Month</option>
-                        </select>
-                        <label class="control-label" for="timeseries-filter">Included responses</label>
-                        <p class="help-block small">
-                            Determine the kinds of responses that are counted in the binned participation graph 
-                            and have their own line plotted in the cumulative participation graph. (This does not
-                            affect the registration plots or pivot table.)
-                        </p>
-                        <select id="timeseries-filter"
-                                class="selectpicker form-control"
-                                multiple>
-                            <optgroup id="all-studies-filter" label="ALL STUDIES">
-                                <option value="ALL:any"
-                                        data-ruling="any">
-                                    All Rulings
-                                </option>
-                                <option value="ALL:pending"
-                                        data-ruling="pending">
-                                    Pending
-                                </option>
-                                <option value="ALL:accepted"
-                                        data-ruling="accepted">
-                                    Accepted</option>
-                                <option value="ALL:rejected"
-                                        data-ruling="rejected">
-                                    Rejected
-                                </option>
-                            </optgroup>
-                            {% for study in all_studies %}
-                                <optgroup label="{{ study.name }}"
-                                          data-study-id="{{ study.id }}">
-                                    <option value="{{ study.id }}:any"
-                                            data-subtext="{{ study.name }}"
-                                            data-ruling="any">
-                                        All Rulings
-                                    </option>
-                                    <option value="{{ study.id }}:pending"
-                                            data-subtext="{{ study.name }}"
-                                            data-ruling="pending">
-                                        Pending
-                                    </option>
-                                    <option value="{{ study.id }}:accepted"
-                                            data-subtext="{{ study.name }}"
-                                            data-ruling="accepted">
-                                        Accepted
-                                    </option>
-                                    <option value="{{ study.id }}:rejected"
-                                            data-subtext="{{ study.name }}"
-                                            data-ruling="rejected">
-                                        Rejected
-                                    </option>
-                                </optgroup>
-                            {% endfor %}
-                        </select>
-                        <h5>Legend</h5>
-                        <section id="plot-legend" class="small"></section>
-                    </div>
-                </div>
-            </article>
-            <section class="col-xs-8">
-                <article id="binned-participation-plot"></article>
-                <article id="cumulative-participation-plot"></article>
-                <article id="binned-registration-plot"></article>
-                <article id="cumulative-registration-plot"></article>
-            </section>
+        </div>
+    </section>
+    <section id="participation-section" class="row">
+        <h3>Recruitment Data Plots</h3>
+        <p class="help-block">
+        The <strong>participation</strong> plots display the number of responses across studies
+        that you have read access to.
+    </p>
+    <p class="help-block">
+    The <strong>registration</strong> plots include all registered Lookit users except researcher accounts, regardless of
+    whether they have participated in a study you have read access to.
+</p>
+<article class="col-xs-4">
+    <div id="global-filter-panel" class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Global Data Filters</h4>
+        </div>
+        <div class="panel-body">
+            <label class="control-label" for="date-filter">Date Range</label>
+            <p class="help-block small">
+                Number of responses and number of new registered participants
+            within this range will be displayed in the graphs. This also controls the <strong>pivot table</strong>:
+            only data from responses (and the associated children/families) within this time frame will be
+            included in the table.
+        </p>
+        <input id="date-filter" class="form-control input-sm" type="text"/>
+        <table id="total-counts" class="table table-condensed">
+            <tr>
+                <th scope="row"># Unique Responses</th>
+                <td id="total-count-responses"></td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    # Unique Children
+                </th scope="row">
+                <td id="total-count-children"></td>
+            </tr>
+            <tr>
+                <th scope="row"># Registrations in date range</th>
+                <td id="total-count-registrations">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    Total # Registrations at range end
+                </th>
+                <td id="end-count-registrations">
+                </td>
+            </tr>
+        </table>
+        <label class="control-label" for="granularity-specifier">
+            Bin Granularity
+        </label>
+        <p class="help-block small">
+            Change the sampling width of the binned graphs.
+        </p>
+        <select id="granularity-specifier" class="selectpicker form-control">
+            <option value="day" selected>
+                Day
+            </option>
+            <option value="week">
+                Week
+            </option>
+            <option value="month">
+                Month
+            </option>
+        </select>
+        <label class="control-label" for="timeseries-filter">
+            Included responses
+        </label>
+        <p class="help-block small">
+            Determine the kinds of responses that are counted in the binned participation graph
+            and have their own line plotted in the cumulative participation graph. (This does not
+            affect the registration plots or pivot table.)
+        </p>
+        <select id="timeseries-filter" class="selectpicker form-control" multiple>
+            <optgroup id="all-studies-filter" label="ALL STUDIES">
+                <option value="ALL:any" data-ruling="any">
+                    All Rulings
+                </option>
+                <option value="ALL:pending" data-ruling="pending">
+                    Pending
+                </option>
+                <option value="ALL:accepted" data-ruling="accepted">
+                    Accepted
+                </option>
+                <option value="ALL:rejected" data-ruling="rejected">
+                    Rejected
+                </option>
+            </optgroup>
+            {% for study in all_studies %}
+                <optgroup label="{{ study.name }}" data-study-id="{{ study.id }}">
+                    <option value="{{ study.id }}:any"
+                            data-subtext="{{ study.name }}"
+                            data-ruling="any">
+                        All Rulings
+                    </option>
+                    <option value="{{ study.id }}:pending"
+                            data-subtext="{{ study.name }}"
+                            data-ruling="pending">
+                        Pending
+                    </option>
+                    <option value="{{ study.id }}:accepted"
+                            data-subtext="{{ study.name }}"
+                            data-ruling="accepted">
+                        Accepted
+                    </option>
+                    <option value="{{ study.id }}:rejected"
+                            data-subtext="{{ study.name }}"
+                            data-ruling="rejected">
+                        Rejected
+                    </option>
+                </optgroup>
+            {% endfor %}
+        </select>
+        <h5>
+            Legend
+        </h5>
+        <section id="plot-legend" class="small">
         </section>
-        <section id="summary-section" class="row">
-            <h3>Summary Statistics</h3>
-            <div>
-                <p class="help-block">
-                    This section includes data from responses to your studies (a) within the time range specified above and (b) for which <strong class="text-success">consent has been confirmed</strong>,
-                    along with children/accounts associated with those responses.
-                </p>
-                <p class="help-block">The pivot table is a way for you to summarize data across (primarily) <em>qualitative</em> axes.
-                    The available fields (child age, study, etc.) are shown in the leftmost column. You can drag fields
-                    to the column to the right or the row at the top.
-                </p>
-
-                <p class="help-block">
-                    The aggregation metric you choose (unique children, unique families, average income, etc.) from the
-                    dropdown at right will be broken down in a table. The table has a row for each combination of the
-                    field values at left, and a column for each combination of the field values at the top.
-                </p>
-
-                <p class="help-block">
-                    You can choose to display only certain values of a given field - for instance only some of your
-                    studies, or only some states - by clicking the arrow next to that field and unchecking some of the
-                    values. You can also choose a different visualization instead of a table (area chart, bar chart, etc.)
-                    from the dropdown at the left.
-                </p>
-            </div>
-            <h4>Pivot Table Examples</h4>
-            <div id="pivot-presets" class="btn-group btn-group" role="group" aria-label="Preset Pivot Choices">
-                <button type="button"
-                        class="btn btn-default"
-                        data-cols="Study"
-                        data-rows="Living Density"
-                        data-aggregator="Total # Responses"
-                        data-renderer="Stacked Bar Chart">Living Density by Study</button>
-                <button type="button"
-                        class="btn btn-default"
-                        data-cols="Child Gender"
-                        data-rows="Study"
-                        data-aggregator="Unique Children"
-                        data-renderer="Table">Unique Children per Study by Gender</button>
-                <button type="button"
-                        class="btn btn-default"
-                        data-cols="Parent/Guardian Education Level"
-                        data-aggregator="Unique Families"
-                        data-renderer="Bar Chart">Unique Families per Parent/Guardian Education Level</button>
-                <button type="button"
-                        class="btn btn-default"
-                        data-cols="Study"
-                        data-rows="Lookit Referrer"
-                        data-aggregator="Unique Families"
-                        data-renderer="Table">Referrers by Study</button>
-                <button type="button"
-                        class="btn btn-default"
-                        data-rows="Study"
-                        data-aggregator="Additional Comments"
-                        data-renderer="Table">Additional info by Study</button>
-            </div>
-            <h4>Pivot Table</h4>
-            <article id="responses-pivot" class="col-md-12"></article>
-        </section>
-        <section>
-            <h3>Child Data Summary</h3>
-            
-            <div>
-                <p class="help-block">
-                    This section includes data from all children (except children of researcher accounts) 
-                    
-                    {% if can_view_all_children %}
-                        registered on Lookit, regardless of whether they have participated in any studies.
-                        (This is because you are either a recruitment manager or a superuser - typically only
-                        participants are included).
-                    {% else %}
-                    who submitted a response (with 
-                    consent confirmed) to at least one study you have read access to.
-                    {% endif %}
-                </p>
-            </div>
-            <article id="characteristics-table" class="col-md-4">
-                <h4>Characteristics</h4>
-                <table class="table small">
-                    <thead>
-                    <tr>
-                        <th scope="col">Characteristic</th>
-                        <th scope="col"># Children</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for characteristic, child_count in characteristics.items %}
-                        <tr>
-                            <td>{{ characteristic }}</td>
-                            <td>{{ child_count }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </article>
-            <article id="languages-table" class="col-md-4">
-                <h4>Languages</h4>
-                <table class="table small">
-                    <thead>
-                    <tr>
-                        <th scope="col">Language</th>
-                        <th scope="col"># Children</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for language, child_count in languages.items %}
-                        <tr>
-                            <td>{{ language }}</td>
-                            <td>{{ child_count }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </article>
-            <article id="studies-table" class="col-md-4">
-                <h4>Studies</h4>
-                <table class="table small">
-                    <thead>
-                    <tr>
-                        <th scope="col">Study</th>
-                        <th scope="col"># Children</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for study_name, child_count in studies.items %}
-                        <tr>
-                            <td>{{ study_name }}</td>
-                            <td>{{ child_count }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </article>
+    </div>
+</div>
+</article>
+<section class="col-xs-8">
+    <article id="binned-participation-plot"></article>
+    <article id="cumulative-participation-plot"></article>
+    <article id="binned-registration-plot"></article>
+    <article id="cumulative-registration-plot"></article>
+</section>
+</section>
+<section id="summary-section" class="row">
+    <h3>
+        Summary Statistics
+    </h3>
+    <div>
+        <p class="help-block">
+        This section includes data from responses to your studies (a) within the time range specified above and (b) for which <strong class="text-success">consent has been confirmed</strong>,
+        along with children/accounts associated with those responses.
+    </p>
+    <p class="help-block">
+    The pivot table is a way for you to summarize data across (primarily) <em>qualitative</em> axes.
+    The available fields (child age, study, etc.) are shown in the leftmost column. You can drag fields
+    to the column to the right or the row at the top.
+</p>
+<p class="help-block">
+    The aggregation metric you choose (unique children, unique families, average income, etc.) from the
+    dropdown at right will be broken down in a table. The table has a row for each combination of the
+    field values at left, and a column for each combination of the field values at the top.
+</p>
+<p class="help-block">
+    You can choose to display only certain values of a given field - for instance only some of your
+    studies, or only some states - by clicking the arrow next to that field and unchecking some of the
+    values. You can also choose a different visualization instead of a table (area chart, bar chart, etc.)
+    from the dropdown at the left.
+</p>
+</div>
+<h4>
+    Pivot Table Examples
+</h4>
+<div id="pivot-presets"
+     class="btn-group btn-group"
+     role="group"
+     aria-label="Preset Pivot Choices">
+    <button type="button"
+            class="btn btn-default"
+            data-cols="Study"
+            data-rows="Living Density"
+            data-aggregator="Total # Responses"
+            data-renderer="Stacked Bar Chart">
+        Living Density by Study
+    </button>
+    <button type="button"
+            class="btn btn-default"
+            data-cols="Child Gender"
+            data-rows="Study"
+            data-aggregator="Unique Children"
+            data-renderer="Table">
+        Unique Children per Study by Gender
+    </button>
+    <button type="button"
+            class="btn btn-default"
+            data-cols="Parent/Guardian Education Level"
+            data-aggregator="Unique Families"
+            data-renderer="Bar Chart">
+        Unique Families per Parent/Guardian Education Level
+    </button>
+    <button type="button"
+            class="btn btn-default"
+            data-cols="Study"
+            data-rows="Lookit Referrer"
+            data-aggregator="Unique Families"
+            data-renderer="Table">
+        Referrers by Study
+    </button>
+    <button type="button"
+            class="btn btn-default"
+            data-rows="Study"
+            data-aggregator="Additional Comments"
+            data-renderer="Table">
+        Additional info by Study
+    </button>
+</div>
+<h4>
+    Pivot Table
+</h4>
+<article id="responses-pivot" class="col-md-12"></article>
+</section>
+<section>
+    <h3>
+        Child Data Summary
+    </h3>
+    <div>
+        <p class="help-block">
+            This section includes data from all children (except children of researcher accounts)
             {% if can_view_all_children %}
-            <article id="studies-table" class="col-md-4">
-                <h4>Ages</h4>
-                <table class="table small">
-                    <thead>
+                registered on Lookit, regardless of whether they have participated in any studies.
+                (This is because you are either a recruitment manager or a superuser - typically only
+                participants are included).
+            {% else %}
+                who submitted a response (with
+                consent confirmed) to at least one study you have read access to.
+            {% endif %}
+        </p>
+    </div>
+    <article id="characteristics-table" class="col-md-4">
+        <h4>
+            Characteristics
+        </h4>
+        <table class="table small">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        Characteristic
+                    </th>
+                    <th scope="col">
+                        # Children
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for characteristic, child_count in characteristics.items %}
                     <tr>
-                        <th scope="col">Age</th>
-                        <th scope="col"># Children</th>
+                        <td>
+                            {{ characteristic }}
+                        </td>
+                        <td>
+                            {{ child_count }}
+                        </td>
                     </tr>
-                    </thead>
-                    <tbody>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+    <article id="languages-table" class="col-md-4">
+        <h4>
+            Languages
+        </h4>
+        <table class="table small">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        Language
+                    </th>
+                    <th scope="col">
+                        # Children
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for language, child_count in languages.items %}
+                    <tr>
+                        <td>
+                            {{ language }}
+                        </td>
+                        <td>
+                            {{ child_count }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+    <article id="studies-table" class="col-md-4">
+        <h4>
+            Studies
+        </h4>
+        <table class="table small">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        Study
+                    </th>
+                    <th scope="col">
+                        # Children
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for study_name, child_count in studies.items %}
+                    <tr>
+                        <td>
+                            {{ study_name }}
+                        </td>
+                        <td>
+                            {{ child_count }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+    {% if can_view_all_children %}
+        <article id="studies-table" class="col-md-4">
+            <h4>
+                Ages
+            </h4>
+            <table class="table small">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            Age
+                        </th>
+                        <th scope="col">
+                            # Children
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
                     {% for age, child_count in ages.items %}
                         <tr>
-                            <td>{{ age }}</td>
-                            <td>{{ child_count }}</td>
+                            <td>
+                                {{ age }}
+                            </td>
+                            <td>
+                                {{ child_count }}
+                            </td>
                         </tr>
                     {% endfor %}
-                    </tbody>
-                </table>
-            </article>
-            {% endif %}
-        </section>
-
-    </div>
-    <script type="text/javascript">
+                </tbody>
+            </table>
+        </article>
+    {% endif %}
+</section>
+</div>
+<script type="text/javascript">
         /* ------------------------- *
          * ---- ELEMENT HANDLES ---- *
          * ------------------------- */
@@ -1036,5 +1106,5 @@
          * ---- INITIALIZATION ---- *
          * ------------------------ */
         initializeView();
-    </script>
-{% endblock %}
+</script>
+{% endblock content %}

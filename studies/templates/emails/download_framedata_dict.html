@@ -1,12 +1,12 @@
 <p>
-  Dear {{ user.given_name }},
+    Dear {{ user.given_name }},
 </p>
 <p>
-  Your frame data dictionary has been created and is ready for download.
-  <br/>
-  <br/>
-  <a href="{{signed_url|safe}}">{{csv_filename}}</a>
-  <br/>
-  <br/>
-  <em>For security reasons this link will only work for 1 day. If you need to access this archive after 1 day you will have to rebuild it in experimenter.</em>
+    Your frame data dictionary has been created and is ready for download.
+    <br />
+    <br />
+    <a href="{{ signed_url|safe }}">{{ csv_filename }}</a>
+    <br />
+    <br />
+    <em>For security reasons this link will only work for 1 day. If you need to access this archive after 1 day you will have to rebuild it in experimenter.</em>
 </p>

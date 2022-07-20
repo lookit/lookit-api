@@ -1,11 +1,12 @@
-{% extends 'frontpages/default.html' %}
+{% extends "frontpages/default.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
 {% load static %}
-{% block title %}Scientists{% endblock %}
-
+{% block title %}
+    Scientists
+{% endblock title %}
 {% block content %}
-<style>
+    <style>
     .profile-img img {
         border-radius: 50%;
         width: 100%;
@@ -33,276 +34,572 @@
     .scientists-row .alumni .lookit-scientist>p {
         text-align: center;
     }
-</style>
-
-<div class="main">
-    <div class="lookit-row lookit-page-title">
-        <div class="container">
-            <h1>{% trans "Meet the Lookit team"%}</h1>
-        </div>
-    </div>
-    <div class="lookit-row scientists-row">
-        <div class="container">
-            <div class="row core-team">
-                <h2>Core Lookit Team</h2>
-                <hr>
-                <div class="lookit-scientist col-xs-6 col-sm-3">
-                    <div class="profile-img"><img alt="CJ Green" src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1631222453488-GVKT2Y702UXNTX9R1582/IMG_0117.jpeg"></div>
-                    <h3>CJ Green</h3>
-                    <p>CJ is Lookit's lead software infrastructure engineer, working on planning and adding features for both participants and researchers.</p>
-                </div>
-                <div class="lookit-scientist col-xs-6 col-sm-3">
-                    <div class="profile-img"><img alt="Laura Schulz" src="https://lookitcontents.s3.amazonaws.com/website/laura.jpg"></div>
-                    <h3>Laura Schulz</h3>
-                    <p>Laura is the PI of the Early Childhood Cognition Lab. She conducts research about how children arrive at a common-sense understanding of the physical and social world through exploration and instruction.</p>
-                </div>
-                <div class="lookit-scientist col-xs-6 col-sm-3">
-                    <div class="profile-img"><img alt="Melissa Kline Struhl" src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1632270902704-FISLLHVUMDGVA40HX7HX/Screen+Shot+2021-09-21+at+8.34.02+PM.png"></div>
-                    <h3>Melissa Kline Struhl</h3>
-                    <p>Melissa is the director of Lookit and a research scientist in the MIT Early Childhood Cognition Lab. She loves it when the data surprises her, and loves talking to researchers and families about how to make Lookit better.</p>
-                </div>
-                <div class="lookit-scientist col-xs-6 col-sm-3">
-                    <div class="profile-img"><img alt="Mark Sheskin" src="https://lookitcontents.s3.amazonaws.com/website/mark.jpg"></div>
-                    <h3>Mark Sheskin</h3>
-                    <p>Mark organizes the Lookit Working Groups, which are groups of researchers working to improve Lookit in a variety of ways.</p>
-                </div>
+    </style>
+    <div class="main">
+        <div class="lookit-row lookit-page-title">
+            <div class="container">
+                <h1>{% trans "Meet the Lookit team" %}</h1>
             </div>
-            <div class="row">
-                <h2>Parent Researcher Collaborative</h2>
-                <hr>
-                <p>
-                    If you are a parent who has participated with your child in a study on this 
-                    website, or a university-based researcher who has posted a study on Lookit or 
-                    <a href="https://childrenhelpingscience.com">childrenhelpingscience.com</a>,
-                    then we consider you a member of the Parent Researcher Collaborative! The 
-                    team who created the original Children Helping Science platform includes 
+        </div>
+        <div class="lookit-row scientists-row">
+            <div class="container">
+                <div class="row core-team">
+                    <h2>Core Lookit Team</h2>
+                    <hr />
+                    <div class="lookit-scientist col-xs-6 col-sm-3">
+                        <div class="profile-img">
+                            <img alt="CJ Green"
+                                 src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1631222453488-GVKT2Y702UXNTX9R1582/IMG_0117.jpeg"/>
+                        </div>
+                        <h3>CJ Green</h3>
+                        <p>
+                            CJ is Lookit's lead software infrastructure engineer, working on planning and adding features for both participants and researchers.
+                        </p>
+                    </div>
+                    <div class="lookit-scientist col-xs-6 col-sm-3">
+                        <div class="profile-img">
+                            <img alt="Laura Schulz"
+                                 src="https://lookitcontents.s3.amazonaws.com/website/laura.jpg"/>
+                        </div>
+                        <h3>Laura Schulz</h3>
+                        <p>
+                            Laura is the PI of the Early Childhood Cognition Lab. She conducts research about how children arrive at a common-sense understanding of the physical and social world through exploration and instruction.
+                        </p>
+                    </div>
+                    <div class="lookit-scientist col-xs-6 col-sm-3">
+                        <div class="profile-img">
+                            <img alt="Melissa Kline Struhl"
+                                 src="https://images.squarespace-cdn.com/content/v1/6126c8e3cfefd4410af41836/1632270902704-FISLLHVUMDGVA40HX7HX/Screen+Shot+2021-09-21+at+8.34.02+PM.png"/>
+                        </div>
+                        <h3>Melissa Kline Struhl</h3>
+                        <p>
+                            Melissa is the director of Lookit and a research scientist in the MIT Early Childhood Cognition Lab. She loves it when the data surprises her, and loves talking to researchers and families about how to make Lookit better.
+                        </p>
+                    </div>
+                    <div class="lookit-scientist col-xs-6 col-sm-3">
+                        <div class="profile-img">
+                            <img alt="Mark Sheskin"
+                                 src="https://lookitcontents.s3.amazonaws.com/website/mark.jpg"/>
+                        </div>
+                        <h3>Mark Sheskin</h3>
+                        <p>
+                            Mark organizes the Lookit Working Groups, which are groups of researchers working to improve Lookit in a variety of ways.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <h2>Parent Researcher Collaborative</h2>
+                    <hr />
+                    <p>
+                        If you are a parent who has participated with your child in a study on this
+                        website, or a university-based researcher who has posted a study on Lookit or
+                        <a href="https://childrenhelpingscience.com">childrenhelpingscience.com</a>,
+                    then we consider you a member of the Parent Researcher Collaborative! The
+                    team who created the original Children Helping Science platform includes
                     Laura Schulz, Mark Sheskin, as well as:
                 </p>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
                     <div class="profile-img">
-                        <img alt="Elizabeth Bonawitz" src="{% static 'images/elizabeth-bonawitz.jpg' %}">
+                        <img alt="Elizabeth Bonawitz"
+                             src="{% static 'images/elizabeth-bonawitz.jpg' %}"/>
                     </div>
-                    <h3>Elizabeth <br>Bonawitz</h3>
+                    <h3>
+                        Elizabeth
+                        <br />
+                        Bonawitz
+                    </h3>
                     <p>
-                        Elizabeth is the David Vitale Associate Professor in Learning Sciences and 
-                        PI of the Computational Cognitive Development Lab at Harvard University, 
-                        Graduate School of Education. Her work focuses on the basic science 
-                        theories of learning with the broader goal of informing educational 
-                        practice, and her research bridges two research traditions: cognitive 
+                        Elizabeth is the David Vitale Associate Professor in Learning Sciences and
+                        PI of the Computational Cognitive Development Lab at Harvard University,
+                        Graduate School of Education. Her work focuses on the basic science
+                        theories of learning with the broader goal of informing educational
+                        practice, and her research bridges two research traditions: cognitive
                         development and computational modeling.
                     </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
                     <div class="profile-img">
-                        <img alt="Hyowon Gweon" src="{% static 'images/hyowon-gweon.jpg' %}">
+                        <img alt="Hyowon Gweon" src="{% static 'images/hyowon-gweon.jpg' %}" />
                     </div>
-                    <h3>Hyowon<br>Gweon</h3>
+                    <h3>
+                        Hyowon
+                        <br />
+                        Gweon
+                    </h3>
                     <p>
-                        Hyo is an associate professor at Stanford University in the Department of 
+                        Hyo is an associate professor at Stanford University in the Department of
                         Psychology.
                     </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
                     <div class="profile-img">
-                        <img alt="Julian Jara-Ettinger" src="{% static 'images/julian-jara-ettinger.png' %}">
+                        <img alt="Julian Jara-Ettinger"
+                             src="{% static 'images/julian-jara-ettinger.png' %}"/>
                     </div>
-                    <h3>Julian<br>Jara-Ettinger</h3>
-                    <p>Julian is an assistant professor of psychology at Yale.</p>
+                    <h3>
+                        Julian
+                        <br />
+                        Jara-Ettinger
+                    </h3>
+                    <p>
+                        Julian is an assistant professor of psychology at Yale.
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-3">
                     <div class="profile-img">
-                        <img alt="Candice Mills" src="{% static 'images/candice-mills.jpg' %}">
+                        <img alt="Candice Mills" src="{% static 'images/candice-mills.jpg' %}" />
                     </div>
-                    <h3>Candice<br>Mills</h3>
+                    <h3>
+                        Candice
+                        <br />
+                        Mills
+                    </h3>
                     <p>
-                        Candice is an associate professor at the University of Texas at Dallas, in 
+                        Candice is an associate professor at the University of Texas at Dallas, in
                         the School of Behavioral and Brain Sciences.
                     </p>
                 </div>
             </div>
             <div class="row">
                 <h2>Affiliated Universities and Researchers</h2>
-                <hr>
+                <hr />
                 <p>
                     As of March 2021, there are over 450 researchers in our community, and around 50 universities across seven countries affiliated with Lookit, including:
                 </p>
                 <ul class="affiliate-list">
-                    <li> American University </li>
-                    <li> Boston College </li>
-                    <li> Boğaziçi University </li>
-                    <li> University of British Columbia </li>
-                    <li> Brown University </li>
-                    <li> University at Buffalo </li>
-                    <li> University of California, Davis </li>
-                    <li> University of California, Los Angeles (UCLA) </li>
-                    <li> University of California, San Diego (UCSD) </li>
-                    <li> University of Chicago </li>
-                    <li> Centre National de la Recherche Scientifique (CNRS) </li>
-                    <li> Duke University </li>
-                    <li> University of Essex </li>
-                    <li> East Tennessee State University </li>
-                    <li> George Mason University </li>
-                    <li> Goldsmiths, University of London </li>
-                    <li> Harvard University </li>
-                    <li> Haskins Laboratories </li>
-                    <li> University of Illinois </li>
-                    <li> University of Kansas </li>
-                    <li> Leiden University </li>
-                    <li> University College London </li>
-                    <li> Loyola University Chicago </li>
-                    <li> University of Maryland (UMD) </li>
-                    <li> Massachusetts Institute of Technology (MIT) </li>
-                    <li> McMaster University </li>
-                    <li> University of Pennsylvania </li>
-                    <li> University of Nottingham </li>
-                    <li> New York University (NYU) </li>
-                    <li> University of Oregon </li>
-                    <li> Rutgers University </li>
-                    <li> Sacred Heart University </li>
-                    <li> Skidmore College </li>
-                    <li> Smith College </li>
-                    <li> University of Southern California (USC) </li>
-                    <li> Stanford University </li>
-                    <li> University of Texas at Austin </li>
-                    <li> University of Texas at Dallas </li>
-                    <li> University of Tokyo </li>
-                    <li> University of Toronto </li>
-                    <li> University of Virginia </li>
-                    <li> University of Washington </li>
-                    <li> University of Waterloo </li>
-                    <li> Western Sydney University </li>
-                    <li> University of Wisconsin - Madison </li>
-                    <li> Yale University </li>
-                    <li> Yeshiva University </li>
+                    <li>American University</li>
+                    <li>Boston College</li>
+                    <li>Boğaziçi University</li>
+                    <li>University of British Columbia</li>
+                    <li>Brown University</li>
+                    <li>University at Buffalo</li>
+                    <li>University of California, Davis</li>
+                    <li>University of California, Los Angeles (UCLA)</li>
+                    <li>University of California, San Diego (UCSD)</li>
+                    <li>University of Chicago</li>
+                    <li>Centre National de la Recherche Scientifique (CNRS)</li>
+                    <li>Duke University</li>
+                    <li>University of Essex</li>
+                    <li>East Tennessee State University</li>
+                    <li>George Mason University</li>
+                    <li>Goldsmiths, University of London</li>
+                    <li>Harvard University</li>
+                    <li>
+                        Haskins Laboratories
+                    </li>
+                    <li>
+                        University of Illinois
+                    </li>
+                    <li>
+                        University of Kansas
+                    </li>
+                    <li>
+                        Leiden University
+                    </li>
+                    <li>
+                        University College London
+                    </li>
+                    <li>
+                        Loyola University Chicago
+                    </li>
+                    <li>
+                        University of Maryland (UMD)
+                    </li>
+                    <li>
+                        Massachusetts Institute of Technology (MIT)
+                    </li>
+                    <li>
+                        McMaster University
+                    </li>
+                    <li>
+                        University of Pennsylvania
+                    </li>
+                    <li>
+                        University of Nottingham
+                    </li>
+                    <li>
+                        New York University (NYU)
+                    </li>
+                    <li>
+                        University of Oregon
+                    </li>
+                    <li>
+                        Rutgers University
+                    </li>
+                    <li>
+                        Sacred Heart University
+                    </li>
+                    <li>
+                        Skidmore College
+                    </li>
+                    <li>
+                        Smith College
+                    </li>
+                    <li>
+                        University of Southern California (USC)
+                    </li>
+                    <li>
+                        Stanford University
+                    </li>
+                    <li>
+                        University of Texas at Austin
+                    </li>
+                    <li>
+                        University of Texas at Dallas
+                    </li>
+                    <li>
+                        University of Tokyo
+                    </li>
+                    <li>
+                        University of Toronto
+                    </li>
+                    <li>
+                        University of Virginia
+                    </li>
+                    <li>
+                        University of Washington
+                    </li>
+                    <li>
+                        University of Waterloo
+                    </li>
+                    <li>
+                        Western Sydney University
+                    </li>
+                    <li>
+                        University of Wisconsin - Madison
+                    </li>
+                    <li>
+                        Yale University
+                    </li>
+                    <li>
+                        Yeshiva University
+                    </li>
                 </ul>
                 <p>
-                    To learn about joining us, visit the <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html" target="_blank" rel="noopener">guide to getting started!</a>
+                    To learn about joining us, visit the
+                    <a href="https://lookit.readthedocs.io/en/develop/researchers-start-here.html"
+                       target="_blank"
+                       rel="noopener">guide to getting started!</a>
                 </p>
             </div>
             <div class="row">
-                <h2>Working Groups</h2>
-                <hr>
-                <p> Although the Core Team at MIT provides a foundation for Lookit to function, a lot of great additional work is done by the community of researchers using Lookit.
+                <h2>
+                    Working Groups
+                </h2>
+                <hr />
+                <p>
+                    Although the Core Team at MIT provides a foundation for Lookit to function, a lot of great additional work is done by the community of researchers using Lookit.
                     These efforts are organized as "Working Groups" that each have a different focus. For example, one Working Group is focused on increasing our sample size and diversity,
-                    and another is focused on supporting new researchers as they learn how to use Lookit. A current list of members includes: </p>
+                    and another is focused on supporting new researchers as they learn how to use Lookit. A current list of members includes:
+                </p>
                 <ul class="working-group-list">
-                    <li> Caspar Addyman </li>
-                    <li> Catherine Best </li>
-                    <li> Agata Bochynska </li>
-                    <li> Katherine Casey </li>
-                    <li> Lisa Chalik </li>
-                    <li> Allie Chroust </li>
-                    <li> Junyi Chu </li>
-                    <li> Marc Colomer </li>
-                    <li> Nicole Cuneo </li>
-                    <li> Michaela C. DeBolt </li>
-                    <li> Caitlin Fausey </li>
-                    <li> Hyesung Grace Hwang </li>
-                    <li> Liz Lapidow </li>
-                    <li> Bria Long </li>
-                    <li> AJ Orena </li>
-                    <li> Maddie Pelz </li>
-                    <li> Rico Rodriguez </li>
-                    <li> Haley Weaver </li>
-                    <li> Yang Wu </li>
-                    <li> Francis Yuen </li>
+                    <li>
+                        Caspar Addyman
+                    </li>
+                    <li>
+                        Catherine Best
+                    </li>
+                    <li>
+                        Agata Bochynska
+                    </li>
+                    <li>
+                        Katherine Casey
+                    </li>
+                    <li>
+                        Lisa Chalik
+                    </li>
+                    <li>
+                        Allie Chroust
+                    </li>
+                    <li>
+                        Junyi Chu
+                    </li>
+                    <li>
+                        Marc Colomer
+                    </li>
+                    <li>
+                        Nicole Cuneo
+                    </li>
+                    <li>
+                        Michaela C. DeBolt
+                    </li>
+                    <li>
+                        Caitlin Fausey
+                    </li>
+                    <li>
+                        Hyesung Grace Hwang
+                    </li>
+                    <li>
+                        Liz Lapidow
+                    </li>
+                    <li>
+                        Bria Long
+                    </li>
+                    <li>
+                        AJ Orena
+                    </li>
+                    <li>
+                        Maddie Pelz
+                    </li>
+                    <li>
+                        Rico Rodriguez
+                    </li>
+                    <li>
+                        Haley Weaver
+                    </li>
+                    <li>
+                        Yang Wu
+                    </li>
+                    <li>
+                        Francis Yuen
+                    </li>
                 </ul>
             </div>
-
             <div class="row alumni">
-                <h2>Staff alumni</h2>
-                <hr>
-
+                <h2>
+                    Staff alumni
+                </h2>
+                <hr />
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Kim Scott" src="https://storage.googleapis.com/lookit-staging/static/images/kimandremy.png"></div>
-                    <h3>Kim <br>Scott</h3>
-                    <p>Founder and Director</p>
+                    <div class="profile-img">
+                        <img alt="Kim Scott"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/kimandremy.png"/>
+                    </div>
+                    <h3>
+                        Kim
+                        <br />
+                        Scott
+                    </h3>
+                    <p>
+                        Founder and Director
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Rico Rodriquez" src="https://s3.amazonaws.com/lookitcontents/website/Rico.jpg"></div>
-                    <h3>Rico <br>Rodriguez</h3>
-                    <p>Software Engineer</p>
+                    <div class="profile-img">
+                        <img alt="Rico Rodriquez"
+                             src="https://s3.amazonaws.com/lookitcontents/website/Rico.jpg"/>
+                    </div>
+                    <h3>
+                        Rico
+                        <br />
+                        Rodriguez
+                    </h3>
+                    <p>
+                        Software Engineer
+                    </p>
                 </div>
             </div>
-
             <div class="row alumni">
-                <h2>Undergraduate student alumni</h2>
-                <hr>
+                <h2>
+                    Undergraduate student alumni
+                </h2>
+                <hr />
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Joseph Alvarez" src="https://storage.googleapis.com/lookit-staging/static/images/joseph.jpg"></div>
-                    <h3>Joseph <br>Alvarez</h3>
-                    <p>Summer 2015</p>
-                    <p>Skidmore College</p>
+                    <div class="profile-img">
+                        <img alt="Joseph Alvarez"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/joseph.jpg"/>
+                    </div>
+                    <h3>
+                        Joseph
+                        <br />
+                        Alvarez
+                    </h3>
+                    <p>
+                        Summer 2015
+                    </p>
+                    <p>
+                        Skidmore College
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Daniela Carrasco" src="https://storage.googleapis.com/lookit-staging/static/images/daniela.jpg"></div>
-                    <h3>Daniela <br>Carrasco</h3>
-                    <p>Spring 2015 </p>
-                    <p>MIT</p>
+                    <div class="profile-img">
+                        <img alt="Daniela Carrasco"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/daniela.jpg"/>
+                    </div>
+                    <h3>
+                        Daniela
+                        <br />
+                        Carrasco
+                    </h3>
+                    <p>
+                        Spring 2015
+                    </p>
+                    <p>
+                        MIT
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Jean Chow" src="https://storage.googleapis.com/lookit-staging/static/images/jean.jpg"></div>
-                    <h3>Jean <br>Chow</h3>
-                    <p>Fall 2014</p>
-                    <p>MIT</p>
+                    <div class="profile-img">
+                        <img alt="Jean Chow"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/jean.jpg"/>
+                    </div>
+                    <h3>
+                        Jean
+                        <br />
+                        Chow
+                    </h3>
+                    <p>
+                        Fall 2014
+                    </p>
+                    <p>
+                        MIT
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Junyi Chu" src="https://storage.googleapis.com/lookit-staging/static/images/junyi.jpg"></div>
-                    <h3>Junyi <br>Chu</h3>
-                    <p>Summer 2015</p>
-                    <p>Vanderbilt</p>
+                    <div class="profile-img">
+                        <img alt="Junyi Chu"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/junyi.jpg"/>
+                    </div>
+                    <h3>
+                        Junyi
+                        <br />
+                        Chu
+                    </h3>
+                    <p>
+                        Summer 2015
+                    </p>
+                    <p>
+                        Vanderbilt
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Annie Dai" src="https://storage.googleapis.com/lookit-staging/static/images/annie.jpg"></div>
-                    <h3>Annie <br>Dai</h3>
-                    <p>IAP, Spring 2015</p>
-                    <p>MIT</p>
+                    <div class="profile-img">
+                        <img alt="Annie Dai"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/annie.jpg"/>
+                    </div>
+                    <h3>
+                        Annie
+                        <br />
+                        Dai
+                    </h3>
+                    <p>
+                        IAP, Spring 2015
+                    </p>
+                    <p>
+                        MIT
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Hope Fuller-Becker" src="https://storage.googleapis.com/lookit-staging/static/images/hope.jpg"></div>
-                    <h3>Hope <br>Fuller-Becker</h3>
-                    <p>Spring 2015, 2016</p>
-                    <p>Wellesley College</p>
+                    <div class="profile-img">
+                        <img alt="Hope Fuller-Becker"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/hope.jpg"/>
+                    </div>
+                    <h3>
+                        Hope
+                        <br />
+                        Fuller-Becker
+                    </h3>
+                    <p>
+                        Spring 2015, 2016
+                    </p>
+                    <p>
+                        Wellesley College
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Kamaria Kaalund" src="https://s3.amazonaws.com/lookitcontents/website/kamaria.jpg"></div>
-                    <h3>Kamaria <br>Kaalund</h3>
-                    <p>Fall 2019</p>
-                    <p>Wellesley College</p>
+                    <div class="profile-img">
+                        <img alt="Kamaria Kaalund"
+                             src="https://s3.amazonaws.com/lookitcontents/website/kamaria.jpg"/>
+                    </div>
+                    <h3>
+                        Kamaria
+                        <br />
+                        Kaalund
+                    </h3>
+                    <p>
+                        Fall 2019
+                    </p>
+                    <p>
+                        Wellesley College
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Audrey Ricks" src="https://storage.googleapis.com/lookit-staging/static/images/audrey.jpg"></div>
-                    <h3>Audrey <br>Ricks</h3>
-                    <p>Summer 2016</p>
-                    <p>MIT</p>
+                    <div class="profile-img">
+                        <img alt="Audrey Ricks"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/audrey.jpg"/>
+                    </div>
+                    <h3>
+                        Audrey
+                        <br />
+                        Ricks
+                    </h3>
+                    <p>
+                        Summer 2016
+                    </p>
+                    <p>
+                        MIT
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Rianna Shah" src="https://storage.googleapis.com/lookit-staging/static/images/rianna.jpg"></div>
-                    <h3>Rianna <br>Shah</h3>
-                    <p>IAP, Sp, Fall 2015; IAP, Sp 2016; Sp 2018</p>
-                    <p>MIT </p>
+                    <div class="profile-img">
+                        <img alt="Rianna Shah"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/rianna.jpg"/>
+                    </div>
+                    <h3>
+                        Rianna
+                        <br />
+                        Shah
+                    </h3>
+                    <p>
+                        IAP, Sp, Fall 2015; IAP, Sp 2016; Sp 2018
+                    </p>
+                    <p>
+                        MIT
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Alice Wang" src="https://s3.amazonaws.com/lookitcontents/website/alice.jpg"></div>
-                    <h3>Alice <br>Wang</h3>
-                    <p>Summer 2017</p>
-                    <p>Wellesley</p>
+                    <div class="profile-img">
+                        <img alt="Alice Wang"
+                             src="https://s3.amazonaws.com/lookitcontents/website/alice.jpg"/>
+                    </div>
+                    <h3>
+                        Alice
+                        <br />
+                        Wang
+                    </h3>
+                    <p>
+                        Summer 2017
+                    </p>
+                    <p>
+                        Wellesley
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Jean Yu" src="https://storage.googleapis.com/lookit-staging/static/images/jeanyu.jpg"></div>
-                    <h3>Jean <br>Yu</h3>
-                    <p>IAP, Spring 2015</p>
-                    <p>Wellesley College</p>
+                    <div class="profile-img">
+                        <img alt="Jean Yu"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/jeanyu.jpg"/>
+                    </div>
+                    <h3>
+                        Jean
+                        <br />
+                        Yu
+                    </h3>
+                    <p>
+                        IAP, Spring 2015
+                    </p>
+                    <p>
+                        Wellesley College
+                    </p>
                 </div>
                 <div class="lookit-scientist col-xs-4 col-sm-3 col-lg-2">
-                    <div class="profile-img"><img alt="Jessica Zhu" src="https://storage.googleapis.com/lookit-staging/static/images/jessica.jpg"></div>
-                    <h3>Jessica <br>Zhu</h3>
-                    <p>Fall 2016</p>
-                    <p>MIT</p>
+                    <div class="profile-img">
+                        <img alt="Jessica Zhu"
+                             src="https://storage.googleapis.com/lookit-staging/static/images/jessica.jpg"/>
+                    </div>
+                    <h3>
+                        Jessica
+                        <br />
+                        Zhu
+                    </h3>
+                    <p>
+                        Fall 2016
+                    </p>
+                    <p>
+                        MIT
+                    </p>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

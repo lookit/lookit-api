@@ -1,13 +1,13 @@
 <p>
-  Dear {{ researcher_name }},
+    Dear {{ researcher_name }},
 </p>
 <p>
     Your permission level for the lab {{ lab_name }} on Lookit has been changed to: {{ permission }}
 </p>
 <p>
-    Here is a link to <a href="{{ base_url }}{% url 'exp:lab-detail' pk=lab_id %}">this lab</a>.
+Here is a link to <a href="{{ base_url }}{% url 'exp:lab-detail' pk=lab_id %}">this lab</a>.
 </p>
 <p>
     Best,
-    <div> {{ lab_name }} Admin </div>
+    <div>{{ lab_name }} Admin</div>
 </p>

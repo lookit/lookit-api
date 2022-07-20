@@ -1,26 +1,23 @@
 {% load exp_extras %}
-
 <ul class="nav nav-tabs">
-    <li {% if active == 'individual' %} class="active" {% endif %}>
+    <li {% if active == 'individual' %} class="active"{% endif %}>
         <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}">
-            Individual <span class="hidden-xs"> Responses </span>
+            Individual <span class="hidden-xs">Responses</span>
         </a>
     </li>
-    <li {% if active == 'all' %} class="active" {% endif %}>
+    <li {% if active == 'all' %} class="active"{% endif %}>
         <a href="{% url 'exp:study-responses-all' study.id %}">
-            All <span class="hidden-xs"> Responses </span>
+            All <span class="hidden-xs">Responses</span>
         </a>
     </li>
-    <li {% if active == 'demographics' %} class="active" {% endif %}>
+    <li {% if active == 'demographics' %} class="active"{% endif %}>
         <a href="{% url 'exp:study-demographics' study.id %}">
-            Demographic <span class="hidden-xs"> Snapshots </span>
+            Demographic <span class="hidden-xs">Snapshots</span>
         </a>
     </li>
     {% if study.show_videos %}
-    <li {% if active == 'attachments' %} class="active" {% endif %}>
-        <a href="{% url 'exp:study-attachments' study.id %}">
-            Videos
-        </a>
-    </li>
+        <li {% if active == 'attachments' %} class="active"{% endif %}>
+            <a href="{% url 'exp:study-attachments' study.id %}">Videos</a>
+        </li>
     {% endif %}
 </ul>

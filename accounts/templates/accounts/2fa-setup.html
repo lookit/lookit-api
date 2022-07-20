@@ -1,10 +1,10 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
-{% block title %}Set up Two Factor Authentication{% endblock %}
-
+{% block title %}
+    Set up Two Factor Authentication
+{% endblock title %}
 {% block content %}
     {% bootstrap_messages %}
-
     <div class="container mt-lg">
         <div class="row">
             <div class="col-md-12">
@@ -15,22 +15,23 @@
                     <div id="qr-container" class="panel-body">
                         <ol>
                             <li>Open up the Google Authenticator App on your mobile device.</li>
-                            <li>Click on the <span class="glyphicon glyphicon-plus"></span> button on the right side of the top menu.</li>
-                            <li>Focus your phone camera on the QR code.</li>
                             <li>
-                                <form method="post">{% csrf_token %}
-                                    {% bootstrap_form_errors form %}
-                                    {% bootstrap_form form %}
-                                    {% bootstrap_button "Test Code" button_type="submit" button_class="btn-primary" %}
-                                </form>
-                            </li>
-                        </ol>
-
-                        <div>{{ svg_qr_code | safe }}</div>
-                    </div>
+                            Click on the <span class="glyphicon glyphicon-plus"></span> button on the right side of the top menu.
+                        </li>
+                        <li>Focus your phone camera on the QR code.</li>
+                        <li>
+                            <form method="post">
+                                {% csrf_token %}
+                                {% bootstrap_form_errors form %}
+                                {% bootstrap_form form %}
+                                {% bootstrap_button "Test Code" button_type="submit" button_class="btn-primary" %}
+                            </form>
+                        </li>
+                    </ol>
+                    <div>{{ svg_qr_code | safe }}</div>
                 </div>
             </div>
         </div>
     </div>
-
-{% endblock %}
+</div>
+{% endblock content %}

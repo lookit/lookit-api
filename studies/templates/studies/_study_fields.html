@@ -1,5 +1,4 @@
 {% load bootstrap3 %}
-
 <script>
 
     // Show the generator function field only if use_generator is checked.
@@ -115,7 +114,7 @@
     function updateScheduled(){
         const external = document.querySelector('#id_external')
         const scheduled = document.querySelector('#id_scheduled')
-        scheduled.disabled = external.disabled || !external.checked
+        scheduled.disabled = !external.checked
     }
 
     function updateScheduling (scheduledCheckBox) {            
@@ -194,7 +193,6 @@
         updateScheduling(scheduledCheckBox)
     });
 </script>
-
 {% bootstrap_form_errors form %}
 {% bootstrap_field form.name %}
 {% bootstrap_field form.public %}
@@ -212,41 +210,66 @@
 <div class="row">
     <div class="col-xs-12">
         <label class="control-label">Minimum Age Cutoff</label>
-        <p class="help-block"> This and the maximum age cutoff are used to check eligibility for studies; families who select a child outside the age range see a warning indicating that their data may not be used. The child's age in days is compared to these (inclusive) min and max ages (computed as years * 365 + months * 30 + days) to check eligibility. </p>
+        <p class="help-block">
+            This and the maximum age cutoff are used to check eligibility for studies; families who select a child outside the age range see a warning indicating that their data may not be used. The child's age in days is compared to these (inclusive) min and max ages (computed as years * 365 + months * 30 + days) to check eligibility.
+        </p>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_min_age_years"><em>Years</em></label>
-            <select name="min_age_years" class="form-control" title="" id="id_min_age_years">
+            <label class="control-label" for="id_min_age_years">
+                <em>Years</em>
+            </label>
+            <select name="min_age_years"
+                    class="form-control"
+                    title=""
+                    id="id_min_age_years">
                 {% for x, y in form.fields.min_age_years.choices %}
-                    <option value="{{ x }}" {% if study.min_age_years == x %} selected {% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.min_age_years == x %} selected{% endif %}>
+                        {{ y }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_min_age_months"><em>Months</em></label>
-            <select class="form-control" id="id_min_age_months" name="min_age_months" title="">
+            <label class="control-label" for="id_min_age_months">
+                <em>Months</em>
+            </label>
+            <select class="form-control"
+                    id="id_min_age_months"
+                    name="min_age_months"
+                    title="">
                 {% for x, y in form.fields.min_age_months.choices %}
-                    <option value="{{ x }}"{% if study.min_age_months == x %} selected{% endif %}>{{ y }}</option>
+                    <option value="{{ x }}"{% if study.min_age_months == x %} selected{% endif %}>
+                        {{ y }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_min_age_days"><em>Days</em></label>
-            <select class="form-control" id="id_min_age_days" name="min_age_days" title="">
+            <label class="control-label" for="id_min_age_days">
+                <em>Days</em>
+            </label>
+            <select class="form-control"
+                    id="id_min_age_days"
+                    name="min_age_days"
+                    title="">
                 {% for x, y in form.fields.min_age_days.choices %}
-                    <option value="{{ x }}" {% if study.min_age_days == x %} selected {% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.min_age_days == x %} selected{% endif %}>
+                        {{ y }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="min_age_in_days"><em>Age in Days</em></label>
+            <label class="control-label" for="min_age_in_days">
+                <em>Age in Days</em>
+            </label>
             <span class="help-block" id="min_age_in_days_val">0</span>
         </div>
     </div>
@@ -257,37 +280,61 @@
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_max_age_years"><em>Years</em></label>
-            <select name="max_age_years" class="form-control" title="" id="id_max_age_years">
+            <label class="control-label" for="id_max_age_years">
+                <em>Years</em>
+            </label>
+            <select name="max_age_years"
+                    class="form-control"
+                    title=""
+                    id="id_max_age_years">
                 {% for x, y in form.fields.max_age_years.choices %}
-                    <option value="{{ x }}" {% if study.max_age_years == x %} selected {% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.max_age_years == x %} selected{% endif %}>
+                        {{ y }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_max_age_months"><em>Months</em></label>
-            <select class="form-control" id="id_max_age_months" name="max_age_months" title="">
+            <label class="control-label" for="id_max_age_months">
+                <em>Months</em>
+            </label>
+            <select class="form-control"
+                    id="id_max_age_months"
+                    name="max_age_months"
+                    title="">
                 {% for x, y in form.fields.max_age_months.choices %}
-                    <option value="{{ x }}" {% if study.max_age_months == x %} selected {% endif %}>{{ y }}</option>
+                    <option value="{{ x }}"
+                            {% if study.max_age_months == x %} selected{% endif %}>
+                        {{ y }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="id_max_age_days"><em>Days</em></label>
-            <select class="form-control" id="id_max_age_days" name="max_age_days" title="">
+            <label class="control-label" for="id_max_age_days">
+                <em>Days</em>
+            </label>
+            <select class="form-control"
+                    id="id_max_age_days"
+                    name="max_age_days"
+                    title="">
                 {% for x, y in form.fields.max_age_days.choices %}
-                    <option value="{{ x }}" {% if study.max_age_days == x %} selected {% endif %}>{{ y }}</option>
+                    <option value="{{ x }}" {% if study.max_age_days == x %} selected{% endif %}>
+                        {{ y }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
-            <label class="control-label" for="max_age_in_days"><em>Age in Days</em></label>
+            <label class="control-label" for="max_age_in_days">
+                <em>Age in Days</em>
+            </label>
             <span class="help-block" id="max_age_in_days_val">0</span>
         </div>
     </div>
@@ -295,18 +342,12 @@
 {% bootstrap_field form.duration %}
 {% bootstrap_field form.contact_info %}
 {% bootstrap_field form.lab %}
-
 <div class="row">
     <div class="col-xs-12">
         <label class="control-label">Experiment Details</label>
     </div>
 </div>
-
-<div id="structure-container">
-    {% bootstrap_field form.structure %}
-</div>
+<div id="structure-container">{% bootstrap_field form.structure %}</div>
 {% bootstrap_field form.use_generator %}
-<div class="use-generator help-block">{{form.generator.help_text|safe}}</div>
-<div id="generator-container">
-    {% bootstrap_field form.generator show_help=False %}
-</div>
+<div class="use-generator help-block">{{ form.generator.help_text|safe }}</div>
+<div id="generator-container">{% bootstrap_field form.generator show_help=False %}</div>

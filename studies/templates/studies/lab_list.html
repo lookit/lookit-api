@@ -1,18 +1,13 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load exp_extras %}
-
-{% block title %}Labs{% endblock %}
-
+{% block title %}
+    Labs
+{% endblock title %}
 {% block flash %}
     {% bootstrap_messages %}
-    {% if form.non_field_errors %}
-        <div class="alert alert-danger" role="alert">
-            {{ form.non_field_errors }}
-        </div>
-    {% endif %}
-{% endblock %}
-
+    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% endblock flash %}
 {% block content %}
     <script>
         $(document).ready(function () {
@@ -24,122 +19,127 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-10 col-lg-8 col-xs-12">
-                <h1> View Labs </h1>
+                <h1>View Labs</h1>
             </div>
-
             <div class="col-xs-12 col-sm-2 pt-lg pull-right">
                 <a class="btn btn-success" href="{% url 'exp:lab-create' %}">
                     <i aria-hidden="true" class="fa fa-plus"></i> Create Lab
-                </a>
-            </div>
-        </div>
-        <div class="row text-center mt-lg mb-md">
-            <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
-                <form method="GET">
-                    <input id="search-labs" class="form-control" name="match"
-                           placeholder="Filter by name, PI, or institution" size="50" type="text">
-                    <input type="hidden" name="set" value={{ set }}>
-                    <input type="hidden" name="page" value="1">
-                </form>
-            </div>
-        </div>
-
-        <div class="row text-center button-block">
-            <div style="display: inline-block; float: none;">
-                <ul class="nav nav-pills">
-                    <li class="multi-toggle-filter {% if set == 'myLabs' %}active {% endif %}">
-                        <a class='state-link'
-                           href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='myLabs' %}">
-                            My Labs
-                        </a></li>
-                    {% if can_approve_labs %}
-                        <li class="multi-toggle-filter {% if set == 'unapproved' %}active {% endif %} ">
-                            <a class='state-link'
-                               href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='unapproved' %}">
-                                Inactive
-                            </a>
-                        </li>
-                    {% endif %}
-                    <li class="multi-toggle-filter {% if set == 'all' %}active {% endif %} ">
-                        <a class='state-link'
-                           href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='all' %}">
-                            All
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="row hidden-xs pt-md">
-            <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <strong>Name</strong>
-                    </div>
-                    <div class="col-sm-3">
-                        <strong>Institution</strong>
-                    </div>
-                    <div class="col-sm-4">
-                        <strong>PI</strong>
-                    </div>
-                    <div class="col-sm-1">
-                        <strong>Active</strong>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <hr>
-        <div class="row results">
-            {% for lab in object_list %}
-                <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 well">
-                    <div class="row table-block">
-                        <div class="col-xs-12 col-sm-4">
-                            <a href="{% url 'exp:lab-detail' pk=lab.id %}"><strong>{{ lab.name }}</strong></a>
-                        </div>
-                        <div class="col-xs-12 col-sm-3">
-                            <strong class="hidden-xs"> {{ lab.institution }}</strong>
-                        </div>
-                        <div class="col-xs-12 col-sm-4">
-                            <strong class="hidden-xs"> {{ lab.principal_investigator_name }}</strong>
-                        </div>
-                        <div class="col-xs-12 col-sm-1">
-                            <strong class="hidden-xs"> {% if lab.approved_to_test %} Yes {% else %} No {% endif %}</strong>
-                        </div>
-                    </div>
-                    <div class="row table-block">
-                        <div class="col-xs-12 mt-sm">
-                            <span class="pull-right">
-                                {% if lab in user_labs %}
-                                    You have joined this lab.
-                                {% elif lab in user_requested_labs %}
-                                    You have requested to join this lab.
-                                {% else %}
-                                    <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
-                                        {% csrf_token %}
-                                        <button class="btn btn-default" type="submit"> Request to join </button>
-                                    </form>
-                                {% endif %}
-                            </span>
-                        </div>
-
-                    </div>
-                </div>
-            {% empty %}
-                <div class="row">
-                    <div class="col-xs-10 col-xs-offset-1 col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                        <p class="mb-lg"><em> No labs found! </em></p>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="paginator">
-            {% if object_list %}
-                <div class="row pb-lg">
-                    <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                        {% include 'studies/_paginator.html' with page=page_obj %}
-                    </div>
-                </div>
-            {% endif %}
+            </a>
         </div>
     </div>
-{% endblock %}
+    <div class="row text-center mt-lg mb-md">
+        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+            <form method="get">
+                <input id="search-labs"
+                       class="form-control"
+                       name="match"
+                       placeholder="Filter by name, PI, or institution"
+                       size="50"
+                       type="text"/>
+                <input type="hidden" name="set" value={{ set }}/>
+                <input type="hidden" name="page" value="1"/>
+            </form>
+        </div>
+    </div>
+    <div class="row text-center button-block">
+        <div style="display: inline-block; float: none;">
+            <ul class="nav nav-pills">
+                <li class="multi-toggle-filter {% if set == 'myLabs' %}active{% endif %}">
+                    <a class="state-link"
+                       href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='myLabs' %}">My Labs</a>
+                </li>
+                {% if can_approve_labs %}
+                    <li class="multi-toggle-filter {% if set == 'unapproved' %}active{% endif %} ">
+                        <a class="state-link"
+                           href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='unapproved' %}">
+                            Inactive
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="multi-toggle-filter {% if set == 'all' %}active{% endif %} ">
+                    <a class="state-link"
+                       href="{% url 'exp:lab-list' %}?{% query_transform request page='1' set='all' %}">All</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row hidden-xs pt-md">
+        <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+            <div class="row">
+                <div class="col-sm-4">
+                    <strong>Name</strong>
+                </div>
+                <div class="col-sm-3">
+                    <strong>Institution</strong>
+                </div>
+                <div class="col-sm-4">
+                    <strong>PI</strong>
+                </div>
+                <div class="col-sm-1">
+                    <strong>Active</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row results">
+        {% for lab in object_list %}
+            <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 well">
+                <div class="row table-block">
+                    <div class="col-xs-12 col-sm-4">
+                        <a href="{% url 'exp:lab-detail' pk=lab.id %}"><strong>{{ lab.name }}</strong></a>
+                    </div>
+                    <div class="col-xs-12 col-sm-3">
+                        <strong class="hidden-xs">{{ lab.institution }}</strong>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                        <strong class="hidden-xs">{{ lab.principal_investigator_name }}</strong>
+                    </div>
+                    <div class="col-xs-12 col-sm-1">
+                        <strong class="hidden-xs">
+                            {% if lab.approved_to_test %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+                <div class="row table-block">
+                    <div class="col-xs-12 mt-sm">
+                        <span class="pull-right">
+                            {% if lab in user_labs %}
+                                You have joined this lab.
+                            {% elif lab in user_requested_labs %}
+                                You have requested to join this lab.
+                            {% else %}
+                                <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="btn btn-default" type="submit">Request to join</button>
+                                </form>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="row">
+                <div class="col-xs-10 col-xs-offset-1 col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                    <p class="mb-lg">
+                        <em>No labs found!</em>
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="paginator">
+        {% if object_list %}
+            <div class="row pb-lg">
+                <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                    {% include 'studies/_paginator.html' with page=page_obj %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,8 +1,7 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load guardian_tags %}
 {% load exp_extras %}
-
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
@@ -30,110 +29,121 @@
         });
     </script>
     {{ form.media }}
-{% endblock %}
-
-{% block title %}Edit | {{ study.name }}{% endblock %}
-
+{% endblock head %}
+{% block title %}
+    Edit | {{ study.name }}
+{% endblock title %}
 {% block flash %}
     {% if messages %}
         {% for message in messages %}
             {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
                 <div id="details" class="alert {{ message.tags }} alert-dismissable">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
                     {{ message }}
                 </div>
             {% endif %}
         {% endfor %}
     {% endif %}
-{% endblock %}
+{% endblock flash %}
 {% block content %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-                    <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
-                    <li class="active"> Edit</li>
+                    <li>
+                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
+                    </li>
+                    <li class="active">Edit</li>
                 </ol>
             </div>
         </div>
         {% get_obj_perms user for study as "study_perms" %}
-                     
         <div class="row">
             <div class="col-lg-10 col-lg-offset-1">
                 <div class="panel panel-default mt-xl">
                     <div class="panel-heading">
-                        <h1 class="panel-title">Study Editor <a class="btn btn-default btn-sm pull-right" href="{% url 'exp:preview-detail' uuid=study.uuid %}" target="_blank" rel="noopener"
-                                id="preview-button" >
+                        <h1 class="panel-title">
+                            Study Editor <a class="btn btn-default btn-sm pull-right"
+    href="{% url 'exp:preview-detail' uuid=study.uuid %}"
+    target="_blank"
+    rel="noopener"
+    id="preview-button">
                             {% bootstrap_icon "play-circle" %} Preview Study
-                        </a></h1>
-                        
-                    </div>
-                    <div class="panel-body">
-                        <form id="study-details-form" action="" enctype="multipart/form-data"
-                              method="post">{% csrf_token %}
-                            {% include "studies/_study_fields.html" with form=form study=study %}
-                            {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}   
-                            <div class="pull-right">
-                                {% buttons %}
-                                    <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">
-                                        Cancel </a>
-                                    <a id="save-button" data-toggle="modal" class="btn btn-success" href="#save-study-confirmation">Save
-                                        Changes</a>
-                                {% endbuttons %}
-                                <div class="modal fade" id="save-study-confirmation">
-                                    <form class="well" method="post">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal">×</button>
-                                                <h3> Are you sure you want to modify {{ study.name }}? </h3>
-                                            </div>
-                                            {% if study.built or save_confirmation %}
-                                                <div class="modal-body">
-                                                    {% if study.built%}
-                                                        <p id="invalidate-build-warning">
-                                                            You have already built an experiment runner!
-                                                            Because you are changing the runner version, you will need to rebuild these
-                                                            before you can preview or start your study.
-                                                        </p>
-                                                    {% endif %}
-                                                    {% if save_confirmation %}
-                                                        <p>
-                                                            This study has already been <strong>approved</strong>. If
-                                                            you edit this study, the system will
-                                                            automatically give it a rejected status. You will have to resubmit
-                                                            the study so your changes can be reviewed.
-                                                        </p>
-                                                        <p>
-                                                            If your changes are limited to
-                                                            <ul>
-                                                                <li> whether the study is discoverable </li>
-                                                                <li> whether the preview is shared </li>
-                                                                <li> the minimum and maximum age or criteria expression </li>
-                                                                <li> the participant eligibility description </li>
-                                                                <li> the <em>formatting</em> of your study protocol </li>
-                                                            </ul>
-                                                            then your study will stay in its {{ study.state }} state.
-                                                        </p>
-                                                    {% endif %}
-                                                </div>
-                                            {% endif %}
-                                            <div class="modal-footer"> {% csrf_token %}
-                                                <a class="btn btn-default"
-                                                   href="{% url 'exp:study-edit' pk=study.id %}"> Discard Changes </a>
-                                                <button id="save_study_details_confirm" type="submit"
-                                                        class="btn btn-danger">
-                                                    Save
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                        </a>
+                    </h1>
                 </div>
-            </div>    
-        </div>
+                <div class="panel-body">
+                    <form id="study-details-form"
+                          action=""
+                          enctype="multipart/form-data"
+                          method="post">
+                        {% csrf_token %}
+                        {% include "studies/_study_fields.html" with form=form study=study %}
+                        {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
+                        <div class="pull-right">
+                            {% buttons %}
+                            <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">Cancel</a>
+                            <a id="save-button"
+                               data-toggle="modal"
+                               class="btn btn-success"
+                               href="#save-study-confirmation">Save
+                            Changes</a>
+                        {% endbuttons %}
+                        <div class="modal fade" id="save-study-confirmation">
+                            <form class="well" method="post">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">×</button>
+                                        <h3>Are you sure you want to modify {{ study.name }}?</h3>
+                                    </div>
+                                    {% if study.built or save_confirmation %}
+                                        <div class="modal-body">
+                                            {% if study.built %}
+                                                <p id="invalidate-build-warning">
+                                                    You have already built an experiment runner!
+                                                    Because you are changing the runner version, you will need to rebuild these
+                                                    before you can preview or start your study.
+                                                </p>
+                                            {% endif %}
+                                            {% if save_confirmation %}
+                                                <p>
+                                                This study has already been <strong>approved</strong>. If
+                                                you edit this study, the system will
+                                                automatically give it a rejected status. You will have to resubmit
+                                                the study so your changes can be reviewed.
+                                            </p>
+                                            <p>
+                                                If your changes are limited to
+                                                <ul>
+                                                    <li>whether the study is discoverable</li>
+                                                    <li>whether the preview is shared</li>
+                                                    <li>the minimum and maximum age or criteria expression</li>
+                                                    <li>the participant eligibility description</li>
+                                                    <li>
+                                                    the <em>formatting</em> of your study protocol
+                                                </li>
+                                            </ul>
+                                            then your study will stay in its {{ study.state }} state.
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            <div class="modal-footer">
+                                {% csrf_token %}
+                                <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">Discard Changes</a>
+                                <button id="save_study_details_confirm" type="submit" class="btn btn-danger">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </form>
     </div>
-{% endblock %}
+</div>
+</div>
+</div>
+</div>
+{% endblock content %}

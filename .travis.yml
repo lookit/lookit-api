@@ -24,4 +24,5 @@ install:
 
 script:
   - pre-commit run --all-files
+  - python manage.py compilemessages
   - python manage.py test --failfast

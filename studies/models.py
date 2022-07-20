@@ -448,9 +448,7 @@ class Study(models.Model):
         return (
             self.judgeable_responses.prefetch_related(
                 models.Prefetch(
-                    "videos",
-                    queryset=Video.objects.filter(is_consent_footage=True),
-                    # to_attr="consent_videos",
+                    "videos", queryset=Video.objects.filter(is_consent_footage=True)
                 ),
                 "consent_rulings",
             )
@@ -1044,7 +1042,6 @@ class Response(models.Model):
             if f.get("frameType", None) == "EXIT"
         ]
         if exit_frame_values and exit_frame_values != [None]:
-            # return " ".join(list(set(([val for val in exit_frame_values if val is not None]))))
             return exit_frame_values[-1]
         else:
             return None

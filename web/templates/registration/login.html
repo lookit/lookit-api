@@ -1,44 +1,50 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
 {% load i18n %}
 {% block flash %}
-  {% bootstrap_messages %}
-  {% if form.errors %}
-  <div class="alert alert-danger" role="alert">
-    <p>{% trans "Your login credentials didn't work. Please try again." %}</p>
-  </div>
-  {% endif %}
-{% endblock %}
-
+    {% bootstrap_messages %}
+    {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            <p>
+                {% trans "Your login credentials didn't work. Please try again." %}
+            </p>
+        </div>
+    {% endif %}
+{% endblock flash %}
 {% block content %}
-<div class="container">
-    <div class="pt-lg col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12 col-xs-offset-0">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">{% trans "Login" %}</h3>
-          </div>
-          <div class="panel-body">
-            <form action="" method="POST" class="form">{% csrf_token %}
-              {% bootstrap_form form %}
-              {% buttons %}
-                  <div class="text-center">
-                       <button type="submit" class="btn btn-success">{% bootstrap_icon "user" %} {% trans "Login" %}</button>
-                  </div>
-              {% endbuttons %}
-              <input type="hidden" name="next" value="{{ next }}" />
-            </form>
-
-            {# Assumes you setup the password_reset view in your URLconf #}
-            {% if not request.user.is_authenticated %}
-                {# This conditional block is so we can use the this template for 2FA as well #}
-                <p class="text-center"><a href="{% url 'password_reset' %}">{% trans "Forgot password?" %}</a></p>
-                <p class="text-center"><strong>{% trans "New to Lookit?" %}</strong> <a href="{% url 'web:participant-signup' %}">{% trans "Register your family!" %} </a></p>
-            {% else %}
-                <p class="text-center"><a href="https://lookit.readthedocs.io/en/develop/researchers-log-in.html#troubleshooting">Need help with your one time password?</a></p>
-            {% endif %}
-        
-          </div>
+    <div class="container">
+        <div class="pt-lg col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12 col-xs-offset-0">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{% trans "Login" %}</h3>
+                </div>
+                <div class="panel-body">
+                    <form action="" method="post" class="form">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                        {% buttons %}
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success">{% bootstrap_icon "user" %} {% trans "Login" %}</button>
+                        </div>
+                    {% endbuttons %}
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </form>
+                {# Assumes you setup the password_reset view in your URLconf #}
+                {% if not request.user.is_authenticated %}
+                    {# This conditional block is so we can use the this template for 2FA as well #}
+                    <p class="text-center">
+                        <a href="{% url 'password_reset' %}">{% trans "Forgot password?" %}</a>
+                    </p>
+                    <p class="text-center">
+                        <strong>{% trans "New to Lookit?" %}</strong> <a href="{% url 'web:participant-signup' %}">{% trans "Register your family!" %}</a>
+                    </p>
+                {% else %}
+                    <p class="text-center">
+                        <a href="https://lookit.readthedocs.io/en/develop/researchers-log-in.html#troubleshooting">Need help with your one time password?</a>
+                    </p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

@@ -1,7 +1,8 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
-{% block title %}Researcher Registration{% endblock %}
-
+{% block title %}
+    Researcher Registration
+{% endblock title %}
 {% block content %}
     <div class="container pt-md">
         <div class="panel panel-default">
@@ -9,20 +10,19 @@
                 <h1 class="panel-title">Create Researcher Account</h1>
             </div>
             <div class="panel-body">
-                <form method="POST" action="">
+                <form method="post" action="">
                     {% csrf_token %}
                     {% bootstrap_form form %}
                     {% buttons %}
-                        <p> By clicking 'Create Account', you agree that you have read and accepted the <a href="/termsofuse/" target="_blank">Terms of Use</a> and <a href="/privacy/" target="_blank">Privacy Statement</a>.
-                        <div class="pull-right">
-                            <button type="submit" class="btn btn-success">
-                                {% bootstrap_icon "plus" %} Create Account
-                            </button>
-                        </div>
-                    {% endbuttons %}
-                </form>
-            </div>
-        </div>
+                    <p>
+                    By clicking 'Create Account', you agree that you have read and accepted the <a href="{% url 'web:termsofuse' %}" target="_blank" rel="noopener">Terms of Use</a> and <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">Privacy Statement</a>.
+                </p>
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-success">{% bootstrap_icon "plus" %} Create Account</button>
+                </div>
+            {% endbuttons %}
+        </form>
     </div>
-
-{% endblock %}
+</div>
+</div>
+{% endblock content %}

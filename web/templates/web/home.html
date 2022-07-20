@@ -1,9 +1,7 @@
-{% extends 'web/base.html' %}
-
-{% block title %}{% trans "Home" %}{% endblock %}
-
+{% extends "web/base.html" %}
+{% block title %}
+    {% trans "Home" %}
+{% endblock title %}
 {% block content %}
-  <div class="container">
-      {% trans "Home" %}
-  </div>
-{% endblock %}
+    <div class="container">{% trans "Home" %}</div>
+{% endblock content %}

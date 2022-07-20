@@ -1,112 +1,101 @@
-{% extends 'web/base.html' %}
+{% extends "web/base.html" %}
 {% load bootstrap3 %}
-{% block title %}Update account information{% endblock %}
+{% block title %}
+    Update account information
+{% endblock title %}
 {% load i18n %}
 {% block flash %}
-  {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
-      {{ form.non_field_errors }}
-  </div>
-  {% endif %}
-{% endblock %}
+    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% endblock flash %}
 {% block content %}
-{% bootstrap_messages %}
+    {% bootstrap_messages %}
     <div class="container">
         <div class="row account-edit">
-            <div class="col-md-4 mb-lg ">
-                {% include 'accounts/_account-navigation.html' with current_page="manage-account" %}
-            </div>
+            <div class="col-md-4 mb-lg ">{% include 'accounts/_account-navigation.html' with current_page="manage-account" %}</div>
             <div class="col-md-8">
                 <div class="panel-heading">
                     <h1 class="panel-title">{% trans "Account Information" %}</h1>
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <form method="POST">
+                        <form method="post">
                             {% csrf_token %}
                             {% bootstrap_form update_account_form %}
                             {% buttons %}
-                                <div class="pull-right">
-                                    <button type="submit"
-                                            name="form-handle"
-                                            value="update-account"
-                                            class="btn btn-success">
-                                        Save
-                                    </button>
-                                </div>
-                            {% endbuttons %}
-                        </form>
-                    </div>
+                            <div class="pull-right">
+                                <button type="submit"
+                                        name="form-handle"
+                                        value="update-account"
+                                        class="btn btn-success">Save</button>
+                            </div>
+                        {% endbuttons %}
+                    </form>
                 </div>
-                <div class="panel-heading">
-                    <h1 class="panel-title">{% trans "Change Your Password" %} </h1>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            {% bootstrap_form change_password_form %}
-                            {% buttons %}
-                                <div class="pull-right">
-                                    <button name="form-handle"
-                                            value="change-password"
-                                            type="submit"
-                                            class="btn btn-success">
-                                        Save
-                                    </button>
-                                </div>
-                            {% endbuttons %}
-                        </form>
-                    </div>
-                </div>
-                {# Only show 2FA management panel for researchers #}
-                {% if request.user.is_researcher %}
-                    <div class="panel-heading">
-                        <h1 class="panel-title">{% trans "Manage Two-Factor Authentication" %}</h1>
-                    </div>
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            {% if otp %}
-                                {% comment %}
+            </div>
+            <div class="panel-heading">
+                <h1 class="panel-title">{% trans "Change Your Password" %}</h1>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% bootstrap_form change_password_form %}
+                        {% buttons %}
+                        <div class="pull-right">
+                            <button name="form-handle"
+                                    value="change-password"
+                                    type="submit"
+                                    class="btn btn-success">Save</button>
+                        </div>
+                    {% endbuttons %}
+                </form>
+            </div>
+        </div>
+        {# Only show 2FA management panel for researchers #}
+        {% if request.user.is_researcher %}
+            <div class="panel-heading">
+                <h1 class="panel-title">{% trans "Manage Two-Factor Authentication" %}</h1>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {% if otp %}
+                        {% comment %}
                                     If we have OTP, enable setup completion in the case where it's not yet
                                     activated, and allow reset with verified OTP if it is.
-                                {% endcomment %}
-                                <form method="POST">
-                                    {% csrf_token %}
-
-                                    {% if otp.activated %}  {# enable reset of OTP #}
-                                        <p>
-                                            {% trans "If you'd like, you can turn two-factor authentication off here. Just enter your one-time password here, hit submit, and it'll get deleted for you!" %}
-                                        </p>
-                                    {% else %}
-                                        <div class="col-md-4">
-                                            {{ otp.get_svg_qr_code | safe }}
-                                        </div>
-                                        <p>
-                                            {% trans "It looks like you were in the middle of setting up two factor authentication,
-                                            but didn't complete the process. You can capture the QR code here, verify with
-                                            a one-time password, and finish the process." %}
-                                        </p>
-                                    {% endif %}
-                                    {% bootstrap_form otp_check_form %}
-                                    {% buttons %}
-                                        <div class="pull-right">
-                                            <button name="form-handle"
-                                                    value="{% if otp.activated %}de{% endif %}activate-otp"
-                                                    type="submit"
-                                                    class="btn btn-success">
-                                                Submit
-                                            </button>
-                                        </div>
-                                    {% endbuttons %}
-                                </form>
-                            {% else %}  {# if we don't have OTP, link to 2FA setup directly. #}
-                                <a href="{% url "accounts:2fa-setup" %}">{% trans "Set up Two-Factor Authentication" %}</a>
+                        {% endcomment %}
+                        <form method="post">
+                            {% csrf_token %}
+                            {% if otp.activated %}
+                                {# enable reset of OTP #}
+                                <p>
+                                    {% trans "If you'd like, you can turn two-factor authentication off here. Just enter your one-time password here, hit submit, and it'll get deleted for you!" %}
+                                </p>
+                            {% else %}
+                                <div class="col-md-4">{{ otp.get_svg_qr_code | safe }}</div>
+                                <p>
+                                    {% trans "It looks like you were in the middle of setting up two factor authentication, but didn't complete the process. You can capture the QR code here, verify with a one-time password, and finish the process." %}
+                                </p>
                             {% endif %}
-                        </div>
-                    </div>
+                            {% bootstrap_form otp_check_form %}
+                            {% buttons %}
+                            <div class="pull-right">
+                                <button name="form-handle"
+                                        value="{% if otp.activated %}de{% endif %}activate-otp"
+                                        type="submit"
+                                        class="btn btn-success">
+                                    Submit
+                                </button>
+                            </div>
+                        {% endbuttons %}
+                    </form>
+                {% else %}
+                    {# if we don't have OTP, link to 2FA setup directly. #}
+                    <a href="{% url "accounts:2fa-setup" %}">{% trans "Set up Two-Factor Authentication" %}</a>
                 {% endif %}
             </div>
         </div>
-    </div>
-{% endblock %}
+    {% endif %}
+</div>
+</div>
+</div>
+{% endblock content %}

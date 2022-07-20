@@ -1,9 +1,33 @@
 {% load i18n %}
-<a class="{% if current_page == 'manage-account' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'accounts:manage-account' %}"><strong>{% trans "Account Information" %}</strong><br>{% trans "Change your login credentials and/or nickname." %}</a>
-<a class="{% if current_page == 'demographic-update' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:demographic-data-update' %}"><strong>{% trans "Demographic Survey" %}</strong><br>{% trans "Tell us more about yourself." %}</a>
-<a class="{% if current_page == 'children-list' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:children-list' %}"><strong>{% trans "Children Information" %}</strong><br>{% trans "Add or edit participant information." %}</a>
+<a class="{% if current_page == 'manage-account' %} active{% endif %} btn btn-default btn-md btn-block"
+   href="{% url 'accounts:manage-account' %}"><strong>{% trans "Account Information" %}</strong>
+<br />
+{% trans "Change your login credentials and/or nickname." %}</a>
+<a class="{% if current_page == 'demographic-update' %} active{% endif %} btn btn-default btn-md btn-block"
+   href="{% url 'web:demographic-data-update' %}"><strong>{% trans "Demographic Survey" %}</strong>
+<br />
+{% trans "Tell us more about yourself." %}</a>
+<a class="{% if current_page == 'children-list' %} active{% endif %} btn btn-default btn-md btn-block"
+   href="{% url 'web:children-list' %}"><strong>{% trans "Children Information" %}</strong>
+<br />
+{% trans "Add or edit participant information." %}</a>
 {% if request.session.study_name %}
-    <a class="btn-has-study btn btn-default btn-md btn-block btn-primary{% if not has_study_child or not user.has_demographics %} disabled{% endif %}" href="{% url 'web:study-detail' uuid=request.session.study_uuid %}"><strong>{% trans "Continue to Study" %}</strong><br>{% trans "Go on to" %} "{{ request.session.study_name|truncatechars:40 }}".</a>
+    <a class="btn-has-study btn btn-default btn-md btn-block btn-primary{% if not has_study_child or not user.has_demographics %} disabled{% endif %}"
+       href="{% url 'web:study-detail' uuid=request.session.study_uuid %}"><strong>{% trans "Continue to Study" %}</strong>
+    <br />
+{% trans "Go on to" %} "{{ request.session.study_name|truncatechars:40 }}".</a>
 {% endif %}
-<a  class="btn-study-list btn btn-default btn-md btn-block {% if not request.session.study_name %}btn-primary{% endif %}{% if not user.has_any_child or not user.has_demographics %} disabled{% endif %}" href="{% url 'web:studies-list' %}"><strong>{% if request.session.study_name %}{% trans "Find Another Study" %}{% else %}{% trans "Find a Study Now" %}{% endif %}</strong><br>{% trans "See all available studies." %}</a>
-<a class="{% if current_page == 'email-preferences' %} active {% endif %} btn btn-default btn-md btn-block" href="{% url 'web:email-preferences' %}"><strong>{% trans "Email Preferences" %}</strong><br>{% trans "Edit when you can be contacted." %}</a>
+<a class="btn-study-list btn btn-default btn-md btn-block {% if not request.session.study_name %}btn-primary{% endif %}{% if not user.has_any_child or not user.has_demographics %} disabled{% endif %}"
+   href="{% url 'web:studies-list' %}"><strong>
+    {% if request.session.study_name %}
+        {% trans "Find Another Study" %}
+    {% else %}
+        {% trans "Find a Study Now" %}
+    {% endif %}
+</strong>
+<br />
+{% trans "See all available studies." %}</a>
+<a class="{% if current_page == 'email-preferences' %} active{% endif %} btn btn-default btn-md btn-block"
+   href="{% url 'web:email-preferences' %}"><strong>{% trans "Email Preferences" %}</strong>
+<br />
+{% trans "Edit when you can be contacted." %}</a>

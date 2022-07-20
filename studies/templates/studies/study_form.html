@@ -1,7 +1,8 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
-
-{% block title %}Create Study{% endblock %}
+{% block title %}
+    Create Study
+{% endblock title %}
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
@@ -22,43 +23,44 @@
         });
     </script>
     {{ form.media }}
-{% endblock %}
-
+{% endblock head %}
 {% block content %}
-{% bootstrap_messages %}
-  <div class="container">
-    <div class="row">
-        <div class="col-xs-12">
-            <ol class="breadcrumb">
-              <li><a href="{% url 'exp:study-list' %}"> Manage Studies </a></li>
-              <li class="active">Create Study</li>
-            </ol>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1" id="study-create-form">
-            <div class="panel panel-default mt-md">
-              <div class="panel-heading">
-                <h1 class="panel-title">Create Study</h1>
-              </div>
-              <div class="panel-body">
-                <form action="" enctype="multipart/form-data" method="post">{% csrf_token %}
-                    {% include "studies/_study_fields.html" with form=form %}
-                    {% include "studies/_study_type.html" with types=types create=1 %}
-                    <div class="pull-right">
-                        {% buttons %}
-                            <a href="{% url 'exp:study-list' %}" class="btn btn-default">
-                                Cancel
-                            </a>
-                            <button type="submit" id="create-study-button" class="btn btn-success">
-                                {% bootstrap_icon "plus" %} Create Study
-                            </button>
-                        {% endbuttons %}
-                    </div>
-                </form>
+    {% bootstrap_messages %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+                    </li>
+                    <li class="active">Create Study</li>
+                </ol>
             </div>
-          </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1"
+                 id="study-create-form">
+                <div class="panel panel-default mt-md">
+                    <div class="panel-heading">
+                        <h1 class="panel-title">Create Study</h1>
+                    </div>
+                    <div class="panel-body">
+                        <form action="" enctype="multipart/form-data" method="post">
+                            {% csrf_token %}
+                            {% include "studies/_study_fields.html" with form=form %}
+                            {% include "studies/_study_type.html" with types=types create=1 %}
+                            <div class="pull-right">
+                                {% buttons %}
+                                <a href="{% url 'exp:study-list' %}" class="btn btn-default">Cancel</a>
+                                <button type="submit" id="create-study-button" class="btn btn-success">
+                                    {% bootstrap_icon "plus" %} Create Study
+                                </button>
+                            {% endbuttons %}
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-  </div>
-{% endblock %}
+</div>
+{% endblock content %}

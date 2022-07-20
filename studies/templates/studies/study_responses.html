@@ -1,23 +1,24 @@
-{% extends 'exp/base.html' %}
+{% extends "exp/base.html" %}
 {% load bootstrap3 %}
 {% load exp_extras %}
 {% load static %}
-
-{% block title %}Responses | {{ study.name }}{% endblock %}
+{% block title %}
+    Responses | {{ study.name }}
+{% endblock title %}
 {% block head %}
-{{ block.super }}
-<style>
+    {{ block.super }}
+    <style>
     tr.preview-row {
         background: url('{% static "exp/img/preview.svg" %}') repeat transparent;
     }
-</style>
-<script type="application/javascript">
+    </style>
+    <script type="application/javascript">
     $(document).ready(function () {
         $(".selectable-participant").first().addClass('selected');
         let currentResponseId = $(".selectable-participant").first().data("response-id");
         showResponse(1);
         showFeedbackList(currentResponseId);
-        $('#response-id-for-download').val(currentResponseId);
+        $('form.download [name=response_id]').val(currentResponseId);
         showAttachments(1);
 
         $('.selectable-participant').click(function () {
@@ -29,7 +30,7 @@
             showResponse(index);
             showAttachments(index);
             var responseId = $(this).data("response-id");
-            $('#response-id-for-download').val(responseId);
+            $('form.download [name=response_id]').val(responseId);
             showFeedbackList(responseId);
         });
 
@@ -40,7 +41,7 @@
 
         function showFeedbackList(responseId) {
             $('.feedback-list').hide();
-            $('#response-id-for-feedback').val(responseId);
+            $('form.feedback [name=response_id]').val(responseId);
             $(`#feedback-list-for-${responseId}`).show();
         }
 
@@ -56,220 +57,273 @@
 
     });
 
-</script>
-{{ form.media }}
-{% endblock %}
-
+    </script>
+    {{ form.media }}
+{% endblock head %}
 {% block flash %}
-{% bootstrap_messages %}
-{% if form.non_field_errors %}
-<div class="alert alert-danger" role="alert">
-    {{ form.non_field_errors }}
-</div>
-{% endif %}
-{% endblock %}
-
+    {% bootstrap_messages %}
+    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+{% endblock flash %}
 {% block content %}
-<div class='container mb-lg'>
-    <div class='row'>
-        <div class="col-xs-12">
-            <ol class="breadcrumb">
-                <li><a href="{% url 'exp:study-list' %}">Manage Studies</a></li>
-                <li><a href="{% url 'exp:study-detail' pk=study.id %}"> {{ study.name }}</a></li>
-                <li class="active"> Individual Responses </li>
-            </ol>
+    <div class="container mb-lg">
+        <div class="row">
+            <div class="col-xs-12">
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
+                    </li>
+                    <li class="active">Individual Responses</li>
+                </ol>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Individual Responses</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">{% include 'studies/_response_nav_tabs.html' with active="individual" %}</div>
+        </div>
+        {% if response_data %}
+            <div class="row pt-md">
+                <div class="col-md-6 col-xs-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped study-responses">
+                            <caption>Study Responses</caption>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Child ID</th>
+                                    <th>Response UUID</th>
+                                    <th>
+                                        Status
+                                        <a class="pl-md"
+                                           href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='status' %}"><em class="fa fa-chevron-up" role="button"></em></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-status' %}"><em class="fa fa-chevron-down" role="button"></em></a>
+                                    </th>
+                                    <th>
+                                        Date
+                                        <a class="pl-sm"
+                                           href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_created' %}"><em class="fa fa-chevron-up" role="button"></em></a>
+                                        <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}"><em class="fa fa-chevron-down" role="button"></em></a>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for response in response_data %}
+                                    <tr class="selectable-participant {% if response.response__is_preview %} preview-row{% endif %}"
+                                        id="response-participant-{{ forloop.counter }}"
+                                        data-response-id="{{ response.response__id }}"
+                                        data-response-uuid="{{ response.response__uuid }}">
+                                        <td>
+                                            {% if response.response__is_preview %}P{% endif %}
+                                        </td>
+                                        <td>{{ response.child__hashed_id }}</td>
+                                        <td>{{ response.response__uuid|truncatechars:9 }}</td>
+                                        <td>
+                                            {% if response.response__completed %}
+                                                Complete
+                                            {% else %}
+                                                Incomplete
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if can_view_regular_responses and not can_view_preview_responses %}
+                        <p>
+                            <em>Based on your permissions, no preview responses are shown.</em>
+                        </p>
+                    {% endif %}
+                    {% if not can_view_regular_responses and can_view_preview_responses %}
+                        <p>
+                            <em>Based on your permissions, only preview responses are shown.</em>
+                        </p>
+                    {% endif %}
+                    {% include 'studies/_paginator.html' with page=page_obj %}
+                    <div class="well mt-md">
+                        {% if can_edit_feedback %}
+                            <form class="feedback"
+                                  method="post"
+                                  action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
+                                {% csrf_token %}
+                                <h4>New Feedback</h4>
+                                <section class="form-group">
+                                    <label class="sr-only" for="response-feedback">Response feedback</label>
+                                    <textarea id="response-feedback"
+                                              class="form-control"
+                                              name="comment"
+                                              rows="4"
+                                              cols="50"></textarea>
+                                    <input type="hidden" name="response_id"/>
+                                    <button class="btn mt-sm btn-primary pull-right" type="submit">Create</button>
+                                    <br />
+                                </section>
+                            </form>
+                        {% endif %}
+                        <section class="mt-md">
+                            <h4>Existing Feedback:</h4>
+                            {% for response in response_list %}
+                                <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
+                                    {% for feedback in response.feedback.all %}
+                                        {% if can_edit_feedback %}
+                                            <form method="post"
+                                                  class="small"
+                                                  action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label class="sr-only" for="feedback-edit-{{ feedback.id }}">
+                                                        <strong>Edit Feedback</strong>
+                                                    </label>
+                                                    <textarea id="feedback-edit-{{ feedback.id }}"
+                                                              class="form-control"
+                                                              name="comment"
+                                                              rows="2"
+                                                              cols="50">{{ feedback.comment }}</textarea>
+                                                    <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
+                                                    <button type="submit" class="btn btn-xs btn-warning pull-right mt-sm">Update</button>
+                                                    <footer class="pt-sm pb-sm">
+                                                        Added by: {{ feedback.researcher.get_full_name }}
+                                                    </footer>
+                                                </div>
+                                            </form>
+                                        {% else %}
+                                            <p>
+                                                {{ feedback.comment }}
+                                            </p>
+                                            <footer class="pt-sm pb-sm">
+                                                {{ feedback.researcher.get_full_name }}
+                                            </footer>
+                                        {% endif %}
+                                    {% empty %}
+                                        No feedback
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </section>
+                    </div>
+                    {% if study.show_videos %}
+                        <section class="mt-md well">
+                            <h4>Videos</h4>
+                            {% for response in response_data %}
+                                <div class="response-attachments"
+                                     id="resp-attachment-{{ forloop.counter }}"
+                                     style="display:none">
+                                    {% for video in response.videos %}
+                                        <div class="row pt-xs">
+                                            <div class="col-xs-12 col-md-8">{{ video.display_name|wordwrap:45 }}</div>
+                                            <div class="col-xs-12 col-md-4">
+                                                <a target="_blank"
+                                                   rel="noreferrer noopener"
+                                                   href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view"
+                                                   class="btn btn-primary btn-sm"> View </a>
+                                                <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download"
+                                                   class="btn btn-primary btn-sm"> Download </a>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <p>
+                                            <em>Expect a delay of a few minutes for videos to be available for download.</em>
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </section>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-xs-12">
+                    <form class="download"
+                          method="get"
+                          action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
+                        {% csrf_token %}
+                        <div class="well">
+                            <input type="hidden" name="response_id"/>
+                            <h4 class="pb-sm">
+                                Download response
+                            </h4>
+                            Include with response download:
+                            <div class="two-column-list pb-md">
+                                {% include 'studies/_data_options.html' with data_options=data_options %}
+                            </div>
+                            <label for="data-type-selector">
+                                Data Type
+                            </label>
+                            <div class="input-group">
+                                <select class="form-control"
+                                        id="data-type-selector"
+                                        name="data-type-selector">
+                                    <option value="json">
+                                        JSON
+                                    </option>
+                                    <option value="csv">
+                                        CSV summary
+                                    </option>
+                                    <option value="framedata">
+                                        CSV frame data
+                                    </option>
+                                </select>
+                                <span class="input-group-btn">
+                                    <button name="download-individual-data"
+                                            type="submit"
+                                            class="btn mb-sm btn-primary">
+                                        Download response
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                    {% for response in response_data %}
+                        <div class="response-summary well"
+                             id="response-summary-{{ forloop.counter }}"
+                             style="display:none;">
+                            <h4>
+                                Response details
+                            </h4>
+                            <table class="table table-sm table-hover response-details">
+                                <caption>Response Details</caption>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Name
+                                        </th>
+                                        <th>
+                                            Value
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pair in response.summary %}
+                                        <tr class="{% if pair.name == 'Video privacy level' %} {% if pair.value == 'public' %} success {% elif pair.value == 'scientific' %} warning {% else %} danger {% endif %} {% endif %}">
+                                            <td tabindex="0" title="{{ pair.description }}">
+                                                {{ pair.name }}
+                                            </td>
+                                            <td>
+                                                {{ pair.value }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-    <div class='row'>
-        <div class="col-xs-12">
-            <h1>Individual Responses</h1>
-        </div>
-    </div>
+{% else %}
     <div class="row">
         <div class="col-xs-12">
-            {% include 'studies/_response_nav_tabs.html' with active="individual" %}
+            <p class="pt-md">
+                <em>No responses with confirmed consent.</em>
+            </p>
         </div>
     </div>
-    {% if response_data %}
-    <div class="row pt-md">
-        <div class="col-md-6 col-xs-12">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>
-
-                            </th>
-                            <th>
-                                Child ID
-                            </th>
-                            <th>
-                                Response UUID
-                            </th>
-                            <th>
-                                Status
-                                <a class="pl-md" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='status' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-status' %}"><i class="fa fa-chevron-down" role="button"></i></a>
-                            </th>
-                            <th>
-                                Date
-                                <a class="pl-sm" href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='date_created' %}"><i class="fa fa-chevron-up" role="button"></i></a>
-                                <a href="{% url 'exp:study-responses-list' study.id %}?{% query_transform request sort='-date_created' %}"><i class="fa fa-chevron-down" role="button"></i></a>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for response in response_data %}
-                        <tr class='selectable-participant {% if response.response__is_preview %} preview-row {% endif %}' id='response-participant-{{ forloop.counter }}' data-response-id="{{ response.response__id }}" data-response-uuid="{{ response.response__uuid }}">
-                            <td>{% if response.response__is_preview %}P{% endif %}</td>
-                            <td>{{ response.child__hashed_id }}</td>
-                            <td>{{ response.response__uuid|truncatechars:9 }} </td>
-                            <td>{% if response.response__completed %} Complete {% else %} Incomplete {% endif %} </td>
-                            <td>{{ response.response__date_created|date:"n/j/Y g:i A"|default:"N/A" }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% if can_view_regular_responses and not can_view_preview_responses%}
-            <p><em>Based on your permissions, no preview responses are shown.</em></p>
-            {% endif %}
-            {% if not can_view_regular_responses and can_view_preview_responses%}
-            <p><em>Based on your permissions, only preview responses are shown.</em></p>
-            {% endif %}
-            {% include 'studies/_paginator.html' with page=page_obj %}
-
-            <div class="well mt-md">
-                {% if can_edit_feedback %}
-                <form method="POST" action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">{% csrf_token %}
-                    <h4>New Feedback</h4>
-                    <section class="form-group">
-                        <label class="sr-only" for="response-feedback">
-                            Response feedback
-                        </label>
-                        <textarea id="response-feedback" class="form-control" name="comment" rows="4" cols="50"></textarea>
-                        <input id="response-id-for-feedback" type="hidden" name="response_id" value=0 />
-                        <button class="btn mt-sm btn-primary pull-right" type="submit">Create</button>
-                        <br>
-                    </section>
-                </form>
-                {% endif %}
-
-                <section class="mt-md">
-                    <h4>Existing Feedback:</h4>
-                    {% for response in response_list %}
-                    <div id="feedback-list-for-{{ response.id }}" class="feedback-list">
-                        {% for feedback in response.feedback.all %}
-                        {% if can_edit_feedback %}
-                        <form method="POST" class="small" action="{% url 'exp:study-response-submit-feedback' pk=study.id %}">{% csrf_token %}
-                            <div class="form-group">
-                                <label class="sr-only" for="feedback-edit-{{ feedback.id }}">
-                                    <strong>Edit Feedback</strong>
-                                </label>
-
-                                <textarea id="feedback-edit-{{ feedback.id }}" class="form-control" name="comment" rows="2" cols="50">{{ feedback.comment }}</textarea>
-                                <input type="hidden" name="feedback_id" value="{{ feedback.id }}" />
-                                <button type="submit" class="btn btn-xs btn-warning pull-right mt-sm">Update</button>
-                                <footer class="pt-sm pb-sm">
-                                    Added by: {{ feedback.researcher.get_full_name }}
-                                </footer>
-                            </div>
-                        </form>
-                        {% else %}
-                        <p>{{ feedback.comment }}</p>
-                        <footer class="pt-sm pb-sm">
-                            {{ feedback.researcher.get_full_name }}
-                        </footer>
-                        {% endif %}
-                        {% empty %}
-                        No feedback
-                        {% endfor %}
-                    </div>
-                    {% endfor %}
-                </section>
-            </div>
-
-            {% if study.show_videos%}
-            <section class="mt-md well">
-                <h4> Videos </h4>
-                {% for response in response_data %}
-                <div class='response-attachments' id='resp-attachment-{{ forloop.counter }}' style="display:none">
-                    {% for video in response.videos %}
-                    <div class="row pt-xs">
-                        <div class="col-xs-12 col-md-8">
-                            {{ video.display_name|wordwrap:45 }}
-                        </div>
-                        <div class="col-xs-12 col-md-4">
-                            <a target="_blank" rel="noreferrer noopener" href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=view" class="btn btn-primary btn-sm"> View </a>
-                            <a href="{% url 'exp:study-response-video-download' pk=study.id video=video.pk %}?mode=download" class="btn btn-primary btn-sm"> Download </a>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p><em> Expect a delay of a few minutes for videos to be available for download. </em></p>
-                    {% endfor %}
-                </div>
-                {% endfor %}
-            </section>
-            {% endif %}
-
-        </div>
-        <div class="col-md-6 col-xs-12">
-
-            <form method="GET" action="{% url 'exp:study-responses-single-download' pk=study.pk %}"> {% csrf_token %}
-                <div class="well">
-                    <input id="response-id-for-download" type="hidden" name="response_id" value=0 />
-
-                    <h4 class="pb-sm">Download response</h4>
-                    Include with response download:
-
-                    <div class="two-column-list pb-md">
-                        {% include 'studies/_data_options.html' with data_options=data_options %}
-                    </div>
-
-                    <label for="data-type-selector">Data Type</label>
-
-                    <div class="input-group">
-                        <select class="form-control" id="data-type-selector" name="data-type-selector">
-                            <option value="json">JSON</option>
-                            <option value="csv">CSV summary</option>
-                            <option value="framedata">CSV frame data</option>
-                        </select>
-                        <span class="input-group-btn">
-                            <button name="download-individual-data" type="submit" class='btn mb-sm btn-primary'>
-                                Download response
-                            </button>
-                        </span>
-                    </div>
-                </div>
-            </form>
-
-            {% for response in response_data %}
-            <div class='response-summary well' id='response-summary-{{ forloop.counter }}' style="display:none;">
-                <h4>Response details</h4>
-                <table class="table table-sm table-hover">
-                    {% for pair in response.summary %}
-                    <tr class='{% if pair.name == "Video privacy level" %} {% if pair.value == "public" %} success {% elif pair.value == "scientific" %} warning {% else %} danger {% endif %} {% endif %}'>
-                        <td tabindex="0" title="{{ pair.description }}">{{ pair.name }}</td>
-                        <td>{{ pair.value }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-            {% endfor %}
-
-
-        </div>
-
-    </div>
-
-</div>
-</div>
-{% else %}
-<div class="row">
-    <div class="col-xs-12">
-        <p class="pt-md"><em>No responses with confirmed consent.</em></p>
-    </div>
-</div>
 {% endif %}
 </div>
-{% endblock %}
+{% endblock content %}

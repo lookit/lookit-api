@@ -38,7 +38,9 @@ a.state-link {
     text-decoration: inherit;
 }
 
-.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+.nav-pills>li.active>a,
+.nav-pills>li.active>a:hover,
+.nav-pills>li.active>a:focus {
     background-color: rgba(96, 96, 96, 0.15);
     color: black
 }
@@ -50,23 +52,25 @@ a.state-link {
     border-right: 1px solid #ffffff;
 }
 
-nav.navbar-default.navbar-static-top ul.nav.navbar-nav li a{
-    color:#666666;
+nav.navbar-default.navbar-static-top ul.nav.navbar-nav li a {
+    color: #666666;
 }
 
-nav.navbar-default.navbar-static-top ul.nav.navbar-nav li a:hover{
-    color:#000;
+nav.navbar-default.navbar-static-top ul.nav.navbar-nav li a:hover {
+    color: #000;
 }
 
-button.btn.btn-success, a.btn.btn-success {
-    background-color:#398339;
-    border-color:#398339;
-} 
+button.btn.btn-success,
+a.btn.btn-success {
+    background-color: #398339;
+    border-color: #398339;
+}
 
-button.btn.btn-success:hover, a.btn.btn-success:hover {
-    background-color:#5cb85c;
-    border-color:#5cb85c;
-} 
+button.btn.btn-success:hover,
+a.btn.btn-success:hover {
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+}
 
 .sort-studies-button {
     color: inherit;
@@ -187,7 +191,8 @@ button.btn.btn-success:hover, a.btn.btn-success:hover {
 }
 
 .modal.in {
-    width: 80%; /* respsonsive width */
+    width: 80%;
+    /* respsonsive width */
     top: 5%;
     margin: 0 auto;
 }
@@ -223,8 +228,8 @@ a:hover.view-responses-link {
 }
 
 #preview-button {
-    padding:0.4em;
-    margin-top:-0.5em !important;
+    padding: 0.4em;
+    margin-top: -0.5em !important;
 }
 
 .study-detail-block {
@@ -371,7 +376,8 @@ div.download-button .btn {
 
 /* Consent Manager */
 #list-of-responses {
-    max-height: 300px; /* same height as video */
+    max-height: 300px;
+    /* same height as video */
     overflow-y: scroll;
 }
 
@@ -504,11 +510,13 @@ a:hover.build-study-link {
     padding-top: 100px;
 }
 
-#study-details-form .ace-overlay, #study-create-form .ace-overlay {
+#study-details-form .ace-overlay,
+#study-create-form .ace-overlay {
     width: 100%;
 }
 
-#structure-container .code-container, #generator-container .code-container {
+#structure-container .code-container,
+#generator-container .code-container {
     max-height: 10em;
 }
 
@@ -526,7 +534,8 @@ a:hover.build-study-link {
     border-top: thin solid gray;
 }
 
-#commit-update-info th, #commit-update-info td {
+#commit-update-info th,
+#commit-update-info td {
     vertical-align: top;
 }
 
@@ -565,11 +574,11 @@ a:hover.build-study-link {
     background-color: #B7D4EE;
 }
 
-.table-striped > tbody > tr {
+.table-striped>tbody>tr {
     background-color: transparent;
 }
 
-.table-striped > tbody > tr.selected {
+.table-striped>tbody>tr.selected {
     background-color: #B7D4EE;
 }
 
@@ -595,13 +604,15 @@ pre.individual-block {
     min-height: 650px;
 }
 
-#previous-message-viewer h3, #previous-message-viewer section {
+#previous-message-viewer h3,
+#previous-message-viewer section {
     padding: 10px;
 }
 
 #previous-messages-list {
     overflow-y: scroll;
-    height: 546px;  /* TODO: figure out how to do less implicit styling on the parent container */
+    height: 546px;
+    /* TODO: figure out how to do less implicit styling on the parent container */
 }
 
 #message-body-view {
@@ -646,11 +657,13 @@ pre.individual-block {
 
 span.hide-if-in-select-box {
     display: inline-block;
-    width: 70px;  /* ~4 small glyphicons */
+    width: 70px;
+    /* ~4 small glyphicons */
 }
 
 #email-preference-filters .input-group-addon {
-    width: 0; /* Ensure that the addon collapses onto the buttons */
+    width: 0;
+    /* Ensure that the addon collapses onto the buttons */
 }
 
 
@@ -659,7 +672,7 @@ span.hide-if-in-select-box {
     color: white;
 }
 
-.dropdown-menu.open li.active h5 > em {
+.dropdown-menu.open li.active h5>em {
     color: white;
 }
 
@@ -686,10 +699,12 @@ span.hide-if-in-select-box {
 }
 
 #message-type-help-block {
-    position: relative;  /* positioning context for fade bar */
+    position: relative;
+    /* positioning context for fade bar */
 }
 
-#message-type-help-block .help-block {  /* cubic-bezier(0.33, 1.19, 0.69, 0.9) */
+#message-type-help-block .help-block {
+    /* cubic-bezier(0.33, 1.19, 0.69, 0.9) */
     opacity: 1;
     max-height: 100px;
     transition: max-height 0.8s cubic-bezier(0.19, 0.8, 0.22, 1), opacity 1s cubic-bezier(0.19, 1, 0.22, 1);
@@ -707,11 +722,10 @@ span.hide-if-in-select-box {
     bottom: 0;
     width: 100%;
     height: 2em;
-    background: linear-gradient(
-            180deg,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,0.6124) 90%,
-            rgba(255,255,255,1) 100%);
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.6124) 90%,
+            rgba(255, 255, 255, 1) 100%);
 }
 
 #other-message-type {
@@ -722,7 +736,8 @@ span.hide-if-in-select-box {
  -------- SUMMERNOTE ---------
 */
 .dt-button-info#datatables_buttons_info {
-    z-index: 2000;  /* Otherwise, the DataTables copy button popup can get clobbered */
+    z-index: 2000;
+    /* Otherwise, the DataTables copy button popup can get clobbered */
 }
 
 
@@ -736,7 +751,7 @@ so we have to do this manually.
     border-top: 0;
 }
 
-#messages-table tr.information-row > td > div.panel {
+#messages-table tr.information-row>td>div.panel {
     max-height: 0;
     overflow: hidden;
     transition: max-height 1s cubic-bezier(0, 1.05, 0, 1);
@@ -746,31 +761,32 @@ so we have to do this manually.
     border: 0;
 }
 
-#messages-table tr.information-row.open > td > div.panel {
-    max-height: 20em;  /*  20 x font size of document, so about 240px */
+#messages-table tr.information-row.open>td>div.panel {
+    max-height: 20em;
+    /*  20 x font size of document, so about 240px */
     -webkit-transition: max-height 1.3s ease;
     -moz-transition: max-height 1.3s ease;
     transition: max-height 1.3s ease;
     overflow-y: scroll;
 }
 
-#messages-table tfoot > tr > th {
+#messages-table tfoot>tr>th {
     width: 20%;
 }
 
-#messages-table tfoot > tr > th:first-child {
+#messages-table tfoot>tr>th:first-child {
     width: 0;
 }
 
-#messages-table tfoot > tr > th:last-child {
+#messages-table tfoot>tr>th:last-child {
     width: 0;
 }
 
-#messages-table tfoot > tr > th .input-group {
+#messages-table tfoot>tr>th .input-group {
     width: 100%;
 }
 
-#messages-table tfoot > tr > th .form-control {
+#messages-table tfoot>tr>th .form-control {
     width: 100%;
 }
 
@@ -815,7 +831,8 @@ section.form-group.col-md-12 {
 
 /* Gestational Age modifier columns */
 #edit-participant-eligibility section.form-group {
-    position: relative;  /* enable absolute positioning for children */
+    position: relative;
+    /* enable absolute positioning for children */
 }
 
 #age-range-specifier {
@@ -827,7 +844,7 @@ section.form-group.col-md-12 {
     transform: rotate(-45deg);
     position: relative;
     top: 20px;
-    right:15px;
+    right: 15px;
 }
 
 /**
@@ -836,7 +853,7 @@ section.form-group.col-md-12 {
  */
 #age-range-specifier .noUi-value-horizontal:nth-of-type(2) p.tiny-ticks {
     top: 30px;
-    right:15px;
+    right: 15px;
 }
 
 #gestational-age-range-specifier {
@@ -867,4 +884,28 @@ label[for="gestational-age-include-na"] {
 #global-filter-panel .panel-body .form-control {
     margin-bottom: 8px;
     margin-left: 2px;
+}
+
+
+/* study response consent ruling */
+
+/* .open>ul:nth-child(2)>li:nth-child(2)>button:nth-child(1) { */
+ul.dropdown-menu button.consent-judgment {
+
+    padding: 3px 20px;
+    color: #333;
+    text-decoration: none;
+    text-align: left;
+    width: 100%;
+}
+
+ul.dropdown-menu button.consent-judgment:hover {
+    background-color: #f5f5f5;
+}
+
+table.response-details thead,
+table.response-details caption,
+table.study-responses caption,
+table.study-attachments caption {
+    display: none;
 }

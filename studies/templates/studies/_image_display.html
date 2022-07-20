@@ -5,13 +5,18 @@
         placeholder.style.display = 'block';
     }
 </script>
-
 <p class="image-block">
     {% if object.image %}
-        <img class="study-detail-thumbnail" alt="{{ object.name }}" onerror="imgError(this)" src="{{ object.image.url }}" width="100%">
+        <img class="study-detail-thumbnail"
+             alt="{{ object.name }}"
+             onerror="imgError(this)"
+             src="{{ object.image.url }}"
+             width="100%"/>
     {% endif %}
-    <div style="display:none;" class="study-list-placeholder" id="image-placeholder">
-          <i aria-hidden="true" class="fas fa-picture {% if large %} fa-5x {% endif %}"></i>
+    <div style="display:none;"
+         class="study-list-placeholder"
+         id="image-placeholder">
+        <i aria-hidden="true"
+           class="fas fa-picture {% if large %} fa-5x{% endif %}"></i>
     </div>
-    
 </p>
