@@ -920,7 +920,7 @@ class StudyDeletePreviewResponses(
         study = self.get_object()
         # Note: delete all, not just consented!
         preview_responses = study.responses.filter(is_preview=True).prefetch_related(
-            "videos", "responselog_set", "consent_rulings", "feedback"
+            "videos", "consent_rulings", "feedback"
         )
         paginator = Paginator(preview_responses, RESPONSE_PAGE_SIZE)
         for page_num in paginator.page_range:
