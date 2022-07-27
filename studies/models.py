@@ -1233,21 +1233,6 @@ class StudyLog(Log):
         index_together = ("study", "action")
 
 
-class ResponseLog(Log):
-    """Unused class, keeping for migrations only."""
-
-    action = models.CharField(max_length=128, db_index=True)
-    # if deleting Response, also delete its logs
-    response = models.ForeignKey(Response, on_delete=models.CASCADE)
-
-    class Meta:
-        index_together = ("response", "action")
-
-    class JSONAPIMeta:
-        resource_name = "response-logs"
-        lookup_field = "uuid"
-
-
 class Video(models.Model):
     """Metadata abstraction to capture information on videos."""
 
