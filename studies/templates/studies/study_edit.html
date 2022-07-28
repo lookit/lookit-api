@@ -60,40 +60,34 @@
                 </ol>
             </div>
         </div>
-        {% get_obj_perms user for study as "study_perms" %}
         <div class="row">
             <div class="col-lg-10 col-lg-offset-1">
                 <div class="panel panel-default mt-xl">
                     <div class="panel-heading">
                         <h1 class="panel-title">
-                            Study Editor <a class="btn btn-default btn-sm pull-right"
-    href="{% url 'exp:preview-detail' uuid=study.uuid %}"
-    target="_blank"
-    rel="noopener"
-    id="preview-button">
-                            {% bootstrap_icon "play-circle" %} Preview Study
-                        </a>
-                    </h1>
-                </div>
-                <div class="panel-body">
-                    <form id="study-details-form"
-                          action=""
-                          enctype="multipart/form-data"
-                          method="post">
-                        {% csrf_token %}
-                        {% include "studies/_study_fields.html" with form=form study=study %}
-                        {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
-                        <div class="pull-right">
-                            {% buttons %}
-                            <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">Cancel</a>
-                            <a id="save-button"
-                               data-toggle="modal"
-                               class="btn btn-success"
-                               href="#save-study-confirmation">Save
-                            Changes</a>
-                        {% endbuttons %}
-                        <div class="modal fade" id="save-study-confirmation">
-                            <form class="well" method="post">
+                            Study Editor
+                            <a class="btn btn-default btn-sm pull-right"
+                               href="{% url 'exp:preview-detail' uuid=study.uuid %}"
+                               target="_blank"
+                               rel="noopener"
+                               id="preview-button">
+                                {% bootstrap_icon "play-circle" %} Preview Study
+                            </a>
+                        </h1>
+                    </div>
+                    <div class="panel-body">
+                        <form id="study-details-form" enctype="multipart/form-data" method="post">
+                            {% csrf_token %}
+                            {% include "studies/_study_fields.html" with form=form study=study %}
+                            {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
+                            <div class="pull-right">
+                                <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">Cancel</a>
+                                <a id="save-button"
+                                   data-toggle="modal"
+                                   class="btn btn-success"
+                                   href="#save-study-confirmation">Save Changes</a>
+                            </div>
+                            <div class="modal fade" id="save-study-confirmation">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">×</button>
@@ -110,40 +104,40 @@
                                             {% endif %}
                                             {% if save_confirmation %}
                                                 <p>
-                                                This study has already been <strong>approved</strong>. If
-                                                you edit this study, the system will
-                                                automatically give it a rejected status. You will have to resubmit
-                                                the study so your changes can be reviewed.
-                                            </p>
-                                            <p>
-                                                If your changes are limited to
-                                                <ul>
-                                                    <li>whether the study is discoverable</li>
-                                                    <li>whether the preview is shared</li>
-                                                    <li>the minimum and maximum age or criteria expression</li>
-                                                    <li>the participant eligibility description</li>
-                                                    <li>
-                                                    the <em>formatting</em> of your study protocol
-                                                </li>
-                                            </ul>
-                                            then your study will stay in its {{ study.state }} state.
-                                        </p>
+                                                    This study has already been
+                                                    <strong>approved</strong>
+                                                    . If you edit this study, the system will
+                                                    automatically give it a rejected status. You will have to resubmit
+                                                    the study so your changes can be reviewed.
+                                                </p>
+                                                <p>
+                                                    If your changes are limited to
+                                                    <ul>
+                                                        <li>whether the study is discoverable</li>
+                                                        <li>whether the preview is shared</li>
+                                                        <li>the minimum and maximum age or criteria expression</li>
+                                                        <li>the participant eligibility description</li>
+                                                        <li>
+                                                            the
+                                                            <em>formatting</em>
+                                                            of your study protocol
+                                                        </li>
+                                                    </ul>
+                                                    then your study will stay in its {{ study.state }} state.
+                                                </p>
+                                            {% endif %}
+                                        </div>
                                     {% endif %}
+                                    <div class="modal-footer">
+                                        <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">Discard Changes</a>
+                                        <button id="save_study_details_confirm" type="submit" class="btn btn-danger">Save</button>
+                                    </div>
                                 </div>
-                            {% endif %}
-                            <div class="modal-footer">
-                                {% csrf_token %}
-                                <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">Discard Changes</a>
-                                <button id="save_study_details_confirm" type="submit" class="btn btn-danger">Save</button>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
-</div>
-</div>
-</div>
 {% endblock content %}
