@@ -666,8 +666,8 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
         and then re-write the request path so that it points to a working study URL.
         """
         if study_uuid == "studies":
-            _, _, studies, study_uuid, child_uuid, _, _, *rest = request.path.split("/")
-            path_no_locale = "/"+"/".join([studies, study_uuid, child_uuid, "preview/"])
+            _, _, studies, study_uuid, child_uuid, _, *rest = request.path.split("/")
+            path_no_locale = "/"+"/".join([studies, study_uuid, child_uuid])+"/"
             request.path = path_no_locale
             request.path_info = path_no_locale
             request.META['HTTP_REFERER'] = request.META["BASE_URL"] + path_no_locale
