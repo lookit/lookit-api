@@ -911,12 +911,24 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
             and then re-write the request path so that it points to a working study URL.
             """
             if study_uuid == "studies":
-                _, _, exp, studies, study_uuid, child_uuid, _, _, *rest = request.path.split("/")
-                path_no_locale = "/"+"/".join([exp, studies, study_uuid, child_uuid, "preview/"])
+                (
+                    _,
+                    _,
+                    exp,
+                    studies,
+                    study_uuid,
+                    child_uuid,
+                    _,
+                    _,
+                    *rest,
+                ) = request.path.split("/")
+                path_no_locale = "/" + "/".join(
+                    [exp, studies, study_uuid, child_uuid, "preview/"]
+                )
                 request.path = path_no_locale
                 request.path_info = path_no_locale
-                request.META['HTTP_REFERER'] = request.META["BASE_URL"] + path_no_locale
-                request.META['PATH_INFO'] = path_no_locale
+                request.META["HTTP_REFERER"] = request.META["BASE_URL"] + path_no_locale
+                request.META["PATH_INFO"] = path_no_locale
             path = f"{study_uuid}/{'/'.join(rest)}"
             if not rest:
                 path += "index.html"

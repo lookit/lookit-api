@@ -657,7 +657,7 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
 
     def dispatch(self, request, *args, **kwargs):
         """The redirect functionality in revproxy is broken so we have to patch
-        path replacement manually. 
+        path replacement manually.
         """
         _, _, study_uuid, _, _, *rest = request.path.split("/")
         """If locale (language code) is present in the URL, then there will be an extra element
@@ -667,11 +667,11 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
         """
         if study_uuid == "studies":
             _, _, studies, study_uuid, child_uuid, _, *rest = request.path.split("/")
-            path_no_locale = "/"+"/".join([studies, study_uuid, child_uuid])+"/"
+            path_no_locale = "/" + "/".join([studies, study_uuid, child_uuid]) + "/"
             request.path = path_no_locale
             request.path_info = path_no_locale
-            request.META['HTTP_REFERER'] = request.META["BASE_URL"] + path_no_locale
-            request.META['PATH_INFO'] = path_no_locale
+            request.META["HTTP_REFERER"] = request.META["BASE_URL"] + path_no_locale
+            request.META["PATH_INFO"] = path_no_locale
         path = f"{study_uuid}/{'/'.join(rest)}"
         if not rest:
             path += "index.html"
