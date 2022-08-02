@@ -1397,8 +1397,11 @@ class StudyAttachments(CanViewStudyResponsesMixin, generic.ListView):
         are paginated.
         """
         context = super().get_context_data(**kwargs)
+
         context["match"] = self.request.GET.get("match", "")
+        context["sort"] = self.request.GET.get("sort", "")
         context["study"] = self.study
+
         return context
 
     def post(self, request, *args, **kwargs):
