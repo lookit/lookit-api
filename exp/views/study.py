@@ -30,6 +30,7 @@ from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
 from studies.workflow import (
     COMMENTS_HELP_TEXT,
+    DECLARATIONS,
     STATE_UI_SIGNALS,
     STATUS_HELP_TEXT,
     TRANSITION_HELP_TEXT,
@@ -434,6 +435,7 @@ class StudyDetailView(
         )
 
         context["comments"] = self.comments(study)
+        context["declarations"] = json.dumps(DECLARATIONS)
         return context
 
     def comments(self, study: Study):

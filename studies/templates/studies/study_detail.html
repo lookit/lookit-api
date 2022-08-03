@@ -12,119 +12,12 @@
     {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
 {% endblock flash %}
 {% block content %}
-    <script>
-        $.fn.editable.defaults.mode = 'inline';
-
+    <script defer>
         window.transitionHelpData = JSON.parse('{{ transition_help | escapejs }}');
         window.commentsHelpData = JSON.parse('{{ comments_help | escapejs }}');
-
-        function cloneStudy() {
-            document.getElementById('cloneForm').submit()
-        }
-
-        function onStateSelect(stateListItem) {
-            let trigger = $(stateListItem).data()['trigger'],
-                stateChangeForm = $('#study-state-modal'),
-                stateChangeCommentsInput = stateChangeForm.find('textarea[name=comments-text]'),
-                infoText = transitionHelpData[trigger];
-                commentsHelpText = commentsHelpData[trigger];
-
-            switch(trigger) {
-                case 'reject':
-                    stateChangeCommentsInput.attr('placeholder', 'List requested changes here');    
-                    break;
-                case 'resubmit':
-                    stateChangeCommentsInput.attr('placeholder', 'List changes here');
-                    break;
-                case 'submit':
-                    stateChangeCommentsInput.attr('placeholder', 'Provide information about peer review and any nonstandard elements here');
-                    break;
-                case 'approve':
-                    stateChangeCommentsInput.attr('placeholder', 'List approval comments here');
-                    break;
-                default:
-                    stateChangeCommentsInput.hide();
-                }
-
-            let $additionalInfoSpan = stateChangeForm.find('#study-status-additional-information');
-            $additionalInfoSpan.text(infoText);
-
-            let $commentsHelpText = stateChangeForm.find('#study-comments-help-text');
-            $commentsHelpText.text(commentsHelpText);
-
-            stateChangeForm.find('input[name=trigger]').val(trigger);
-        }
-
-        $(document).ready(function () {
-
-            var origin = window.location.origin;
-            var privateLink = document.getElementById('private-study-link');
-            var previewLink = document.getElementById('study-preview-link');
-            if (privateLink && !privateLink.value.startsWith(origin)) {
-                privateLink.value = origin + privateLink.value;
-            }
-            if (previewLink && !previewLink.value.startsWith(origin)) {
-                previewLink.value = origin + previewLink.value;
-            }
-
-            if ("{{ match }}" !== '') {
-                document.getElementById("search-organization").value = "{{ match }}";
-            }
-            $('.researcher_permissions').editable({
-                source: [
-                    {value: 'study_preview', text: 'Preview'},
-                    {value: 'study_design', text: 'Design'},
-                    {value: 'study_analysis', text: 'Analysis'},
-                    {value: 'study_submission_processor', text: 'Submission processor'},
-                    {value: 'study_researcher', text: 'Researcher'},
-                    {value: 'study_manager', text: 'Manager'},
-                    {value: 'study_admin', text: 'Admin'},
-                ],
-                error: function (response, newValue) {
-                    // If removing own permissions, direct to study detail page.
-                    if (response.status === 403) {
-                        window.location = window.location.href.replace('edit/', '');
-                    }
-                },
-                success: function (response, newValue) {
-                    // On success, populate the success message with the permissions the user was given
-                    // and reveal the permission edit alert message.
-                    // This is necessary b/c we're using x-editable here. Page is not reloaded.
-                    $('#add-researcher-messages').hide()
-                    $('#permission-edit-text').append(' given ' + newValue + ' permissions for this study.');
-                    $('.disabledPermissionDisplay').hide()
-                    $('.permissionDisplay').show();
-                    // Shows success message
-                    $('#permission-edit').show();
-                }
-            }).on('click', function (e) {
-                // When clicking on a researcher, prepopulate success message with researcher name.
-                $('#permission-edit').hide();
-                $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
-            });
-
-            new Clipboard('#copy-link-button');
-            $('#private-study-link, #study-preview-link').attr('readonly', 'readonly');
-            $('#copy-link-button').tooltip({
-                title: "Copied!",
-                trigger: "click",
-                placement: "bottom",
-            });
-            $('.question-icon').tooltip({
-                placement: "top",
-            });
-            $('body').on('hidden.bs.tooltip', function (e) {
-                $(e.target).data("bs.tooltip").inState.click = false;
-            });
-
-            removeTooltip = function () {
-                $('[data-toggle="tooltip"]').tooltip('hide');
-            }
-            $('form').submit(function () {
-                $('#changeStatusButton').prop("disabled", "disabled");
-            });
-        });
+        window.declarations = JSON.parse('{{ declarations | escapejs }}');
     </script>
+    <script src="{% static 'studies/js/study-detail.js' %}" defer></script>
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
@@ -166,17 +59,13 @@
                     <div class="col-xs-6">
                         <div class="row">
                             <div class="col-xs-12">
-                                <p>
-                                    {{ study.short_description }}
-                                </p>
+                                <p>{{ study.short_description }}</p>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-xs-12">
                                 <label>Purpose:</label>
-                                <p>
-                                    {{ study.purpose }}
-                                </p>
+                                <p>{{ study.purpose }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -364,7 +253,9 @@
             <div class="col-lg-12">
                 <ul class="list-group">
                     <li class="list-group-item panel-heading">
-                        <h1 class="panel-title">Study Status</h1>
+                        <h1 class="panel-title">
+                            Study Status
+                        </h1>
                     </li>
                     <li class="list-group-item list-group-item-{{ state_ui_tag }}">
                         <div class="row">
@@ -650,21 +541,23 @@
             </div>
             <div class="modal-body">
                 <p class="help-text">
-                    <span id="study-comments-help-text"> </span>
+                    <span id="study-comments-help-text"></span>
                 </p>
                 <textarea class="form-control"
                           rows="5"
                           name="comments-text"
                           placeholder="Please explain what changes need to be made here."></textarea>
                 <p>
-                    <span id="study-status-additional-information"> </span>
+                    <span id="study-status-additional-information"></span>
                 </p>
+                <div class="declarations">
+                </div>
             </div>
             <div class="modal-footer">
-                {% csrf_token %}
                 <a class="btn btn-default"
                    href="{% url 'exp:study-detail' pk=study.id %}">
-                Cancel </a>
+                    Cancel
+                </a>
                 <button id="changeStatusButton"
                         name="submit"
                         value="submit"
