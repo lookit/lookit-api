@@ -676,17 +676,26 @@ class ChangeStudyStatusView(
         :type self: StudyDetailView or StudyUpdateView
         """
         trigger = self.request.POST.get("trigger")
-        object = self.get_object()
-        if trigger:
-            if hasattr(object, trigger):
-                if "comments-text" in self.request.POST.keys():
-                    object.comments = self.request.POST["comments-text"]
-                    object.save()
-                # transition through workflow state
-                getattr(object, trigger)(user=self.request.user)
-        displayed_state = object.state if object.state != "active" else "activated"
-        messages.success(self.request, f"Study {object.name} {displayed_state}.")
-        return object
+        study: Study = self.get_object()
+        if trigger and hasattr(study, trigger):
+            if study.comments_extra is None:
+                study.comments_extra = {"declarations": {}}
+            if trigger in DECLARATIONS:
+                study.comments_extra["declarations"][
+                    "issues_description"
+                ] = self.request.POST.get("issues_description", "")
+                for key in DECLARATIONS[trigger]:
+                    study.comments_extra["declarations"][key] = (
+                        self.request.POST.get(key, None) is not None
+                    )
+            if "comments-text" in self.request.POST.keys():
+                study.comments = self.request.POST["comments-text"]
+            study.save()
+            # transition through workflow state
+            getattr(study, trigger)(user=self.request.user)
+        displayed_state = study.state if study.state != "active" else "activated"
+        messages.success(self.request, f"Study {study.name} {displayed_state}.")
+        return study
 
 
 class CloneStudyView(
