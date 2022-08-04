@@ -675,7 +675,6 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
             )
             request.path = path_no_locale
             request.path_info = path_no_locale
-            request.META["HTTP_REFERER"] = request.META["BASE_URL"] + path_no_locale
             request.META["PATH_INFO"] = path_no_locale
 
         path = f"{study_uuid}/"+"index.html"
