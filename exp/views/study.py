@@ -906,15 +906,27 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
             response = create_external_response(study, child_uuid, preview=True)
             return HttpResponseRedirect(get_external_url(study, response))
         else:
-            """Check if locale (language code) is present in the URL. 
-            If so, we need to re-write the request path without the locale 
+            """Check if locale (language code) is present in the URL.
+            If so, we need to re-write the request path without the locale
             so that it points to a working study URL.
             """
-            locale_pattern = r"/(?P<locale>[a-zA-Z-].+)/exp/studies/"+str(study_uuid)+"/"+str(child_uuid)+"/preview/(?P<rest>.*?)"
+            locale_pattern = (
+                r"/(?P<locale>[a-zA-Z-].+)/exp/studies/"
+                + str(study_uuid)
+                + "/"
+                + str(child_uuid)
+                + "/preview/(?P<rest>.*?)"
+            )
             path_match = re.match(locale_pattern, request.path)
             if path_match:
                 path_no_locale = "/" + "/".join(
-                    ["exp/studies", str(study_uuid), str(child_uuid), "preview", path_match.group('rest')]
+                    [
+                        "exp/studies",
+                        str(study_uuid),
+                        str(child_uuid),
+                        "preview",
+                        path_match.group("rest"),
+                    ]
                 )
                 request.path = path_no_locale
                 request.path_info = path_no_locale
