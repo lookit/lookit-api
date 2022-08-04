@@ -1,5 +1,6 @@
 import json
 import operator
+import re
 from functools import reduce
 from typing import NamedTuple
 
@@ -897,42 +898,30 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         path replacement manually. Great! Just wonderful.
         """
 
-        study = Study.objects.get(uuid=kwargs.get("uuid", None))
+        study_uuid = kwargs.get("uuid", None)
+        child_uuid = kwargs.get("child_id", None)
+        study = Study.objects.get(uuid=study_uuid)
 
         if study.study_type.is_external:
-            child_uuid = kwargs["child_id"]
             response = create_external_response(study, child_uuid, preview=True)
             return HttpResponseRedirect(get_external_url(study, response))
         else:
-            _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
-            """If locale (language code) is present in the URL, then there will be an extra element
-            returned from split("/") before the study UUID, so the UUID variable will be "studies".
-            In this case we need to add an extra returned string before study_uuid to capture the values correctly,
-            and then re-write the request path so that it points to a working study URL.
+            """Check if locale (language code) is present in the URL. 
+            If so, we need to re-write the request path without the locale 
+            so that it points to a working study URL.
             """
-            if study_uuid == "studies":
-                (
-                    _,
-                    _,
-                    exp,
-                    studies,
-                    study_uuid,
-                    child_uuid,
-                    _,
-                    _,
-                    *rest,
-                ) = request.path.split("/")
+            locale_pattern = r"/(?P<locale>[a-zA-Z-].+)/exp/studies/"+str(study_uuid)+"/"+str(child_uuid)+"/preview/(?P<rest>.*?)"
+            path_match = re.match(locale_pattern, request.path)
+            if path_match:
                 path_no_locale = "/" + "/".join(
-                    [exp, studies, study_uuid, child_uuid, "preview/"]
+                    ["exp/studies", str(study_uuid), str(child_uuid), "preview", path_match.group('rest')]
                 )
                 request.path = path_no_locale
                 request.path_info = path_no_locale
                 request.META["HTTP_REFERER"] = request.META["BASE_URL"] + path_no_locale
                 request.META["PATH_INFO"] = path_no_locale
-            path = f"{study_uuid}/{'/'.join(rest)}"
-            if not rest:
-                path += "index.html"
-            path = f"{kwargs['uuid']}/index.html"
+
+            path = f"{study_uuid}/index.html"
 
             return super().dispatch(request, path)
 
