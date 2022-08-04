@@ -759,11 +759,14 @@ class Study(models.Model):
 
     # Runs for every transition to log action
     def _log_action(self, ev):
+        extra = {"comments": ev.model.comments}
+        extra.update(ev.model.comments_extra)
+
         StudyLog.objects.create(
             action=ev.state.name,
             study=ev.model,
             user=ev.kwargs.get("user"),
-            extra={"comments": ev.model.comments},
+            extra=extra,
         )
 
     # Runs for every transition to save state and log action

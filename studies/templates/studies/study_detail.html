@@ -479,6 +479,7 @@
                 </div>
             </div>
         </div>
+        {# LOGS #}
         <div class="row">
             <div class="col-xs-12">
                 <div class="mt-xs panel panel-default">
@@ -510,6 +511,26 @@
                                 </div>
                                 <div class="col-sm-6">
                                     {% if log.extra.comments %}{{ log.extra.comments|linebreaks }}{% endif %}
+                                    {# Submit triggers are logged under the action "submitted" #}
+                                    {% if log.extra.declarations and log.action == 'submitted' %}
+                                        <p>
+                                            Declarations:
+                                        </p>
+                                        <ul>
+                                            {% for key, value in declarations_dict.submit.items %}
+                                                {% if log.extra.declarations|get_key:key %}
+                                                    <li>
+                                                        {{ value }}
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                        {% if log.extra.declarations.issues_description %}
+                                            <p>
+                                                {{ log.extra.declarations.issues_description }}
+                                            </p>
+                                        {% endif %}
+                                    {% endif %}
                                 </div>
                             </div>
                         {% endfor %}
@@ -522,6 +543,7 @@
                 </div>
             </div>
         </div>
+        {# ENDLOGS #}
     </div>
     {# MODALS #}
     <form class="modal fade"
