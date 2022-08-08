@@ -910,10 +910,10 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
             If so, we need to re-write the request path without the locale
             so that it points to a working study URL.
             """
-            locale_pattern = fr"/(?P<locale>[a-zA-Z-].+)/exp/studies/{study_uuid}/{child_uuid}/preview/(?P<rest>.*?)"
+            locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/exp/studies/{study_uuid}/{child_uuid}/preview/(?P<rest>.*?)"
             path_match = re.match(locale_pattern, request.path)
             if path_match:
-                path_no_locale = fr"/exp/studies/{study_uuid}/{child_uuid}/preview/{path_match.group('rest')}"
+                path_no_locale = rf"/exp/studies/{study_uuid}/{child_uuid}/preview/{path_match.group('rest')}"
                 request.path = path_no_locale
                 request.path_info = path_no_locale
                 request.META["PATH_INFO"] = path_no_locale
