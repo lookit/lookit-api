@@ -110,7 +110,9 @@ $(document).ready(function () {
         $('#permission-edit-text').text($(event.currentTarget).attr('data-id'));
     });
 
-    new Clipboard('#copy-link-button');
+
+    new Clipboard('#copy-link-button'); // NOSONAR
+
     $('#private-study-link, #study-preview-link').attr('readonly', 'readonly');
     $('#copy-link-button').tooltip({
         title: "Copied!",
