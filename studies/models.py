@@ -295,6 +295,7 @@ class Study(models.Model):
     image = models.ImageField(null=True, upload_to="study_images/")
     exit_url = models.URLField(default="https://lookit.mit.edu/studies/history/")
     comments = models.TextField(blank=True, null=True)
+    comments_extra = models.JSONField(blank=True, null=True)
     study_type = models.ForeignKey(
         "StudyType",
         on_delete=models.PROTECT,
@@ -758,11 +759,14 @@ class Study(models.Model):
 
     # Runs for every transition to log action
     def _log_action(self, ev):
+        extra = {"comments": ev.model.comments}
+        extra.update(ev.model.comments_extra)
+
         StudyLog.objects.create(
             action=ev.state.name,
             study=ev.model,
             user=ev.kwargs.get("user"),
-            extra={"comments": ev.model.comments},
+            extra=extra,
         )
 
     # Runs for every transition to save state and log action
@@ -1199,20 +1203,10 @@ class Feedback(models.Model):
         lookup_field = "uuid"
 
 
-class Log(models.Model):
+class StudyLog(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return f"<{self.__class__.name}: {self.action} @ {self.created_at:%c}>"
-
-    class Meta:
-        abstract = True
-        ordering = ["-created_at"]
-
-
-class StudyLog(Log):
     action = models.CharField(max_length=128, db_index=True)
     extra = models.JSONField(null=True)
     study = models.ForeignKey(
@@ -1231,21 +1225,6 @@ class StudyLog(Log):
 
     class Meta:
         index_together = ("study", "action")
-
-
-class ResponseLog(Log):
-    """Unused class, keeping for migrations only."""
-
-    action = models.CharField(max_length=128, db_index=True)
-    # if deleting Response, also delete its logs
-    response = models.ForeignKey(Response, on_delete=models.CASCADE)
-
-    class Meta:
-        index_together = ("response", "action")
-
-    class JSONAPIMeta:
-        resource_name = "response-logs"
-        lookup_field = "uuid"
 
 
 class Video(models.Model):

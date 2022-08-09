@@ -2,7 +2,7 @@ import json
 import operator
 import re
 from functools import reduce
-from typing import NamedTuple
+from typing import NamedTuple, Text
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -31,6 +31,7 @@ from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
 from studies.workflow import (
     COMMENTS_HELP_TEXT,
+    DECLARATIONS,
     STATE_UI_SIGNALS,
     STATUS_HELP_TEXT,
     TRANSITION_HELP_TEXT,
@@ -435,6 +436,8 @@ class StudyDetailView(
         )
 
         context["comments"] = self.comments(study)
+        context["declarations"] = json.dumps(DECLARATIONS)
+        context["declarations_dict"] = DECLARATIONS
         return context
 
     def comments(self, study: Study):
@@ -668,6 +671,26 @@ class ChangeStudyStatusView(
             reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
         )
 
+    def update_declarations(self, trigger: Text, study: Study):
+        if trigger in DECLARATIONS:
+            if study.comments_extra is None:
+                study.comments_extra = {}
+
+            if "declarations" not in study.comments_extra:
+                study.comments_extra["declarations"] = {}
+
+            study.comments_extra["declarations"][
+                "issues_description"
+            ] = self.request.POST.get("issues_description", "")
+
+            for key in DECLARATIONS[trigger]:
+                study.comments_extra["declarations"][key] = (
+                    self.request.POST.get(key, None) is not None
+                )
+        else:
+            if "declarations" in study.comments_extra:
+                del study.comments_extra["declarations"]
+
     def update_trigger(self):
         """Transition to next state in study workflow.
 
@@ -675,17 +698,23 @@ class ChangeStudyStatusView(
         :type self: StudyDetailView or StudyUpdateView
         """
         trigger = self.request.POST.get("trigger")
-        object = self.get_object()
-        if trigger:
-            if hasattr(object, trigger):
-                if "comments-text" in self.request.POST.keys():
-                    object.comments = self.request.POST["comments-text"]
-                    object.save()
-                # transition through workflow state
-                getattr(object, trigger)(user=self.request.user)
-        displayed_state = object.state if object.state != "active" else "activated"
-        messages.success(self.request, f"Study {object.name} {displayed_state}.")
-        return object
+        study: Study = self.get_object()
+
+        if trigger and hasattr(study, trigger):
+
+            self.update_declarations(trigger, study)
+
+            if "comments-text" in self.request.POST.keys():
+                study.comments = self.request.POST["comments-text"]
+
+            study.save()
+
+            # transition through workflow state
+            getattr(study, trigger)(user=self.request.user)
+
+        displayed_state = study.state if study.state != "active" else "activated"
+        messages.success(self.request, f"Study {study.name} {displayed_state}.")
+        return study
 
 
 class CloneStudyView(

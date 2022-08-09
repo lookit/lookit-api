@@ -399,6 +399,7 @@ class StudyViewsTestCase(TestCase):
         data = model_to_dict(self.study)
         data["metadata"] = new_metadata
         data["comments"] = "Changed experiment runner version"
+        data["comments_extra"] = {}
         data["structure"] = json.dumps(data["structure"])
 
         self.assertTrue(self.study.built)
@@ -459,11 +460,14 @@ class StudyViewsTestCase(TestCase):
             self.lab_researcher,
             self.study,
         )
+
         data = model_to_dict(self.study)
         data["structure"] = json.dumps(
             {"frames": {"frame-c": {}}, "sequence": ["frame-c"]}
         )
         data["comments"] = "Changed protocol"
+        data["comments_extra"] = {}
+
         response = self.client.post(url, data, follow=True)
         self.assertEqual(
             response.status_code,
