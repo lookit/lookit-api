@@ -394,7 +394,7 @@ class StudyDetailView(
         """
         context = super(StudyDetailView, self).get_context_data(**kwargs)
 
-        study = context["study"]
+        study: Study = context["study"]
         admin_group = study.admin_group
 
         context["triggers"] = get_permitted_triggers(
@@ -440,11 +440,36 @@ class StudyDetailView(
         context["declarations_dict"] = DECLARATIONS
         return context
 
-    def comments(self, study: Study):
+    def comments(self, study: Study) -> Text:
+        comments_text = []
+
         if not study.lab.approved_to_test:
-            return f"It is not possible to submit or start this study until the lab {study.lab.name} is approved to test."
+            comments_text.append(
+                f"It is not possible to submit or start this study until the lab {study.lab.name} is approved to test."
+            )
         else:
-            return study.comments
+            comments_text.append(study.comments)
+
+        # if study is submitted, see if there are any declarations to display
+        if study.state == "submitted":
+
+            declarations_state = ", ".join(
+                DECLARATIONS["submit"][k]
+                for k, v in study.comments_extra["declarations"].items()
+                if v and k in DECLARATIONS["submit"]
+            )
+
+            if declarations_state:
+                comments_text.append(f"Potential issues: {declarations_state}")
+
+            declarations_decription = study.comments_extra["declarations"][
+                "issues_description"
+            ]
+
+            if declarations_decription:
+                comments_text.append(declarations_decription)
+
+        return "\n\n".join(comments_text)
 
     def get_study_researchers(self):
         """Pulls researchers that belong to any study access groups for displaying/managing that access
