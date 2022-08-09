@@ -1,5 +1,6 @@
 import json
 import operator
+import re
 from functools import reduce
 from typing import NamedTuple, Text
 
@@ -926,18 +927,27 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         path replacement manually. Great! Just wonderful.
         """
 
-        study = Study.objects.get(uuid=kwargs.get("uuid", None))
+        study_uuid = kwargs.get("uuid", None)
+        child_uuid = kwargs.get("child_id", None)
+        study = Study.objects.get(uuid=study_uuid)
 
         if study.study_type.is_external:
-            child_uuid = kwargs["child_id"]
             response = create_external_response(study, child_uuid, preview=True)
             return HttpResponseRedirect(get_external_url(study, response))
         else:
-            _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
-            path = f"{study_uuid}/{'/'.join(rest)}"
-            if not rest:
-                path += "index.html"
-            path = f"{kwargs['uuid']}/index.html"
+            """Check if locale (language code) is present in the URL.
+            If so, we need to re-write the request path without the locale
+            so that it points to a working study URL.
+            """
+            locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/exp/studies/{study_uuid}/{child_uuid}/preview/(?P<rest>.*?)"
+            path_match = re.match(locale_pattern, request.path)
+            if path_match:
+                path_no_locale = rf"/exp/studies/{study_uuid}/{child_uuid}/preview/{path_match.group('rest')}"
+                request.path = path_no_locale
+                request.path_info = path_no_locale
+                request.META["PATH_INFO"] = path_no_locale
+
+            path = f"{study_uuid}/index.html"
 
             return super().dispatch(request, path)
 

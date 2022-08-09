@@ -656,9 +656,29 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
         return super().setup(request, *args, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
-        _, _, study_uuid, _, _, *rest = request.path.split("/")
-        path = f"{study_uuid}/{'/'.join(rest)}"
-        if not rest:
-            path += "index.html"
+        """The redirect functionality in revproxy is broken so we have to patch
+        path replacement manually.
+        """
+
+        study_uuid = kwargs.get("uuid", None)
+        child_uuid = kwargs.get("child_id", None)
+
+        """Check if locale (language code) is present in the URL. 
+        If so, we need to re-write the request path without the locale 
+        so that it points to a working study URL.
+        """
+        locale_pattern = (
+            rf"/(?P<locale>[a-zA-Z-].+)/studies/{study_uuid}/{child_uuid}/(?P<rest>.*?)"
+        )
+        path_match = re.match(locale_pattern, request.path)
+        if path_match:
+            path_no_locale = (
+                rf"/studies/{study_uuid}/{child_uuid}/{path_match.group('rest')}"
+            )
+            request.path = path_no_locale
+            request.path_info = path_no_locale
+            request.META["PATH_INFO"] = path_no_locale
+
+        path = f"{study_uuid}/index.html"
 
         return super().dispatch(request, path)
