@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import migrations
 
 from accounts.models import DemographicData, Organization, User
-from studies.models import Response, ResponseLog, Study, StudyLog
+from studies.models import Response, Study, StudyLog
 
 permission_models = [
     Study,
@@ -16,7 +16,6 @@ permission_models = [
     User,
     DemographicData,
     Response,
-    ResponseLog,
 ]
 
 GROUP_NAME = "COS_ADMIN"

@@ -1199,20 +1199,10 @@ class Feedback(models.Model):
         lookup_field = "uuid"
 
 
-class Log(models.Model):
+class StudyLog(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return f"<{self.__class__.name}: {self.action} @ {self.created_at:%c}>"
-
-    class Meta:
-        abstract = True
-        ordering = ["-created_at"]
-
-
-class StudyLog(Log):
     action = models.CharField(max_length=128, db_index=True)
     extra = models.JSONField(null=True)
     study = models.ForeignKey(
@@ -1231,21 +1221,6 @@ class StudyLog(Log):
 
     class Meta:
         index_together = ("study", "action")
-
-
-class ResponseLog(Log):
-    """Unused class, keeping for migrations only."""
-
-    action = models.CharField(max_length=128, db_index=True)
-    # if deleting Response, also delete its logs
-    response = models.ForeignKey(Response, on_delete=models.CASCADE)
-
-    class Meta:
-        index_together = ("response", "action")
-
-    class JSONAPIMeta:
-        resource_name = "response-logs"
-        lookup_field = "uuid"
 
 
 class Video(models.Model):

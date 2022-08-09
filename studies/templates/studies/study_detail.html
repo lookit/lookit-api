@@ -270,7 +270,7 @@
                                 </p>
                             </div>
                             <div class="col-xs-12">
-                                {% if study.built %}
+                                {% if study.built or study.study_type.is_external %}
                                     <span>
                                         <label>Study link:</label>
                                     </span>
