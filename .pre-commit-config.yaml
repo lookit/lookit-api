@@ -16,7 +16,7 @@ repos:
     rev: 0.7.6
     hooks:
       - id: djlint-django
-        args: ['--lint', '--reformat', '--quiet']
+        args: ['--profile', 'django', '--lint', '--reformat', '--quiet']
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:

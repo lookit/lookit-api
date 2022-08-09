@@ -295,6 +295,7 @@ class Study(models.Model):
     image = models.ImageField(null=True, upload_to="study_images/")
     exit_url = models.URLField(default="https://lookit.mit.edu/studies/history/")
     comments = models.TextField(blank=True, null=True)
+    comments_extra = models.JSONField(blank=True, null=True)
     study_type = models.ForeignKey(
         "StudyType",
         on_delete=models.PROTECT,
@@ -758,11 +759,14 @@ class Study(models.Model):
 
     # Runs for every transition to log action
     def _log_action(self, ev):
+        extra = {"comments": ev.model.comments}
+        extra.update(ev.model.comments_extra)
+
         StudyLog.objects.create(
             action=ev.state.name,
             study=ev.model,
             user=ev.kwargs.get("user"),
-            extra={"comments": ev.model.comments},
+            extra=extra,
         )
 
     # Runs for every transition to save state and log action
