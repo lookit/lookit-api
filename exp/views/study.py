@@ -447,7 +447,7 @@ class StudyDetailView(
             comments_text.append(
                 f"It is not possible to submit or start this study until the lab {study.lab.name} is approved to test."
             )
-        else:
+        elif study.comments is not None:
             comments_text.append(study.comments)
 
         # if study is submitted, see if there are any declarations to display
