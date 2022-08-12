@@ -679,6 +679,10 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
             request.path_info = path_no_locale
             request.META["PATH_INFO"] = path_no_locale
 
-        path = f"{study_uuid}/index.html"
-
-        return super().dispatch(request, path)
+        if settings.DEBUG and settings.ENVIRONMENT == "develop":
+            """If we're in a local environment, then redirect shortcut to switch to the ember server"""
+            debug_path = rf"{settings.EXPERIMENT_BASE_URL}{request.path_info}"
+            return redirect(debug_path)
+        else:
+            path = f"{study_uuid}/index.html"
+            return super().dispatch(request, path)
