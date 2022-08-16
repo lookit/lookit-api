@@ -62,7 +62,7 @@
                     </li>
                     <li class="multi-toggle-filter{% if state == 'approved' %} active{% endif %}">
                         <a class="state-link"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' %}">Approved</a>
+                           href="{% url 'exp:study-list-approved' %}?{% query_transform request page='1' %}">Approved</a>
                     </li>
                     <li class="multi-toggle-filter{% if state == 'created' %} active{% endif %}">
                         <a class="state-link"

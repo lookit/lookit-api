@@ -64,6 +64,7 @@ from exp.views.study import (
     CloneStudyView,
     ManageResearcherPermissionsView,
     StudyListViewActive,
+    StudyListViewApproved,
     StudyListViewRejected,
     StudyListViewSubmitted,
 )
@@ -95,6 +96,9 @@ urlpatterns = [
     ),
     path(
         "studies/rejected/", StudyListViewRejected.as_view(), name="study-list-rejected"
+    ),
+    path(
+        "studies/approved/", StudyListViewApproved.as_view(), name="study-list-approved"
     ),
     path(
         "studies/analytics/",

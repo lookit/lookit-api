@@ -363,6 +363,11 @@ class StudyListViewRejected(StudyListView):
     state = "rejected"
 
 
+class StudyListViewApproved(StudyListView):
+    template_name = "studies/study_list_approved.html"
+    state = "approved"
+
+
 class StudyDetailView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
