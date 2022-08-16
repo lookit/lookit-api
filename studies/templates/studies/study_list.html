@@ -47,32 +47,32 @@
     <div class="row text-center button-block hidden-xs">
         <div style="display: inline-block; float: none;">
             <ul class="nav nav-pills">
-                <li class="multi-toggle-filter {% if state == 'active' %}active{% endif %} ">
+                <li class="multi-toggle-filter{% if state == 'active' %} active{% endif %}">
                     <a class="state-link"
                        href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='active' %}">Active</a>
                 </li>
-                <li class="multi-toggle-filter {% if state == 'submitted' %}active{% endif %}">
+                <li class="multi-toggle-filter{% if state == 'submitted' %} active{% endif %}">
                     <a class="state-link"
                        href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='submitted' %}">Submitted</a>
                 </li>
-                <li class="multi-toggle-filter {% if state == 'approved' %}active{% endif %}">
+                <li class="multi-toggle-filter{% if state == 'approved' %} active{% endif %}">
                     <a class="state-link"
                        href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='approved' %}">Approved</a>
                 </li>
-                <li class="multi-toggle-filter {% if state == 'created' %}active{% endif %}">
+                <li class="multi-toggle-filter{% if state == 'created' %} active{% endif %}">
                     <a class="state-link"
                        href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='created' %}">Created</a>
                 </li>
-                <li class="multi-toggle-filter {% if state == 'deactivated' %}active{% endif %}">
+                <li class="multi-toggle-filter{% if state == 'deactivated' %} active{% endif %}">
                     <a class="state-link"
                        href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='deactivated' %}">Deactivated</a>
                 </li>
-                <li class="multi-toggle-filter {% if state == 'myStudies' %}active{% endif %}">
+                <li class="multi-toggle-filter{% if state == 'myStudies' %} active{% endif %}">
                     <a class="state-link"
                        href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='myStudies' %}">My
                     Studies</a>
                 </li>
-                <li class="multi-toggle-filter {% if state == 'all' %}active{% endif %} ">
+                <li class="multi-toggle-filter{% if state == 'all' %} active{% endif %}">
                     <a class="state-link"
                        href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='all' %}">All</a>
                 </li>
