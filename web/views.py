@@ -661,19 +661,18 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
         path replacement manually.
         """
 
-        """Manually set the language code to the default language, which isn't prefixed in URLs, 
-        to stop the locale middleware from adding a language/locale prefix back into the study URL 
-        after the request has been dispatched"""
+        # Manually set the language code to the default language, which isn't prefixed in URLs,
+        # to stop the locale middleware from adding a language/locale prefix back into the study URL
+        # after the request has been dispatched
         translation.activate(settings.LANGUAGE_CODE)
         request.LANGUAGE_CODE = settings.LANGUAGE_CODE
 
         study_uuid = kwargs.get("uuid", None)
         child_uuid = kwargs.get("child_id", None)
 
-        """Check if locale (language code) is present in the URL. 
-        If so, we need to re-write the request path without the locale 
-        so that it points to a working study URL.
-        """
+        # Check if locale (language code) is present in the URL.
+        # If so, we need to re-write the request path without the locale
+        # so that it points to a working study URL.
         locale_pattern = (
             rf"/(?P<locale>[a-zA-Z-].+)/studies/{study_uuid}/{child_uuid}/(?P<rest>.*?)"
         )

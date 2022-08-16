@@ -928,9 +928,9 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         path replacement manually. Great! Just wonderful.
         """
 
-        """Manually set the language code to the default language, which isn't prefixed in URLs, 
-        to stop the locale middleware from adding a language/locale prefix back into the study URL 
-        after the request has been dispatched"""
+        # Manually set the language code to the default language, which isn't prefixed in URLs,
+        # to stop the locale middleware from adding a language/locale prefix back into the study URL
+        # after the request has been dispatched
         translation.activate(settings.LANGUAGE_CODE)
         request.LANGUAGE_CODE = settings.LANGUAGE_CODE
 
@@ -942,10 +942,9 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
             response = create_external_response(study, child_uuid, preview=True)
             return HttpResponseRedirect(get_external_url(study, response))
         else:
-            """Check if locale (language code) is present in the URL.
-            If so, we need to re-write the request path without the locale
-            so that it points to a working study URL.
-            """
+            # Check if locale (language code) is present in the URL.
+            # If so, we need to re-write the request path without the locale
+            # so that it points to a working study URL.
             locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/exp/studies/{study_uuid}/{child_uuid}/preview/(?P<rest>.*?)"
             path_match = re.match(locale_pattern, request.path)
             if path_match:
