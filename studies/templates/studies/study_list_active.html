@@ -1,0 +1,79 @@
+{% extends "studies/study_list.html" %}
+{% block cards %}
+    {% for study in object_list %}
+        <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 well">
+            <div class="row table-block">
+                <div class="col-xs-12 col-sm-6">
+                    <a href="{% url 'exp:study-detail' pk=study.id %}">
+                        <strong>{{ study.name }}</strong>
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <span class="visible-xs">Last Edited:
+                        <strong>{{ study.date_modified|date:"M d, Y"|default:"N/A" }}</strong>
+                    </span>
+                    <strong class="hidden-xs">{{ study.date_modified|date:"M d, Y"|default:"N/A" }}</strong>
+                </div>
+                <div class="col-xs-3">
+                    <strong>Active Since:</strong>
+                    N/A
+                </div>
+            </div>
+            <div class="row table-block">
+                <div class="col-xs-9">
+                    <p>
+                        {{ study.short_description }}
+                    </p>
+                </div>
+                <div class="col-xs-3">
+                    <strong>Type:</strong>
+                    {{ study.study_type.display_name }}
+                </div>
+            </div>
+            <div class="row table-block">
+                <div class="col-xs-6">
+                    <strong>Study Creator:</strong>
+                    {{ study.creator_name }}
+                </div>
+                <div class="col-xs-3">
+                    <strong>
+                        Compl<span class="hidden-sm hidden-md">eted</span>
+                        Responses:
+                    </strong> {{ study.completed_responses_count }}
+                </div>
+                <div class="col-xs-3">
+                    <strong>
+                        App<span class="hidden-sm hidden-md">roved</span>
+                        Consent:
+                    </strong> {{ study.valid_consent_count }}
+                </div>
+            </div>
+            <div class="row table-block">
+                <div class="col-xs-6">
+                    <strong>Lab:</strong>
+                    {{ study.lab_name }}
+                </div>
+                <div class="col-xs-3">
+                    <strong>
+                        Inc<span class="hidden-sm hidden-md">omplete</span>
+                        Responses:
+                    </strong> {{ study.incomplete_responses_count }}
+                </div>
+                <div class="col-xs-3">
+                    <strong>
+                        Pen<span class="hidden-sm hidden-md">ding</span>
+                        Judgement:
+                    </strong> {{ study.pending_consent_count }}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="row">
+            <div class="col-xs-10 col-xs-offset-1 col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                <p class="mb-lg">
+                    <em>No studies found!</em>
+                </p>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock cards %}

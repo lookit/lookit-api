@@ -314,9 +314,10 @@ class StudyListView(
 
     model = Study
     raise_exception = True
-    template_name = "studies/study_list.html"
+    template_name = "studies/study_list_all.html"
     paginate_by = 10
     ordering = ("name",)
+    state = "all"
 
     def can_see_study_list(self):
         return self.request.user.is_researcher
@@ -328,24 +329,28 @@ class StudyListView(
         Returns paginated list of items for the StudyListView - handles filtering on state, match,
         and sort.
         """
-        user = self.request.user
-        query_dict = self.request.GET
+        query_dict = dict(self.request.GET)
+        query_dict["state"] = self.state
 
-        queryset = get_study_list_qs(user, query_dict)  # READ_STUDY_DETAILS permission
-
-        return queryset
+        # READ_STUDY_DETAILS permission
+        return get_study_list_qs(self.request.user, query_dict)
 
     def get_context_data(self, **kwargs):
         """
         Gets the context for the StudyListView and supplements with the state, match, and sort query params.
         """
         context = super().get_context_data(**kwargs)
-        context["state"] = self.request.GET.get("state", "all")
+        context["state"] = self.state
         context["match"] = self.request.GET.get("match", "")
         context["sort"] = self.request.GET.get("sort", "name")
         context["page"] = self.request.GET.get("page", "1")
         context["can_create_study"] = self.request.user.can_create_study()
         return context
+
+
+class StudyListViewActive(StudyListView):
+    template_name = "studies/study_list_active.html"
+    state = "active"
 
 
 class StudyDetailView(

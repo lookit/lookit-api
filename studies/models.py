@@ -240,6 +240,13 @@ class StudyType(models.Model):
     def is_external(self):
         return self.name == StudyTypeEnum.external.value
 
+    @property
+    def display_name(self):
+        if self.is_external:
+            return "External"
+        else:
+            return "Internal"
+
     @classmethod
     def get_ember_frame_player(cls):
         return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value)
