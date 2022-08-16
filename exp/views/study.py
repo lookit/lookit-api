@@ -383,6 +383,11 @@ class StudylistViewDeactivated(StudyListView):
     state = "deactivated"
 
 
+class StudyListViewMyStudies(StudyListView):
+    template_name = "studies/study_list_mystudies.html"
+    state = "myStudies"
+
+
 class StudyDetailView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,

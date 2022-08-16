@@ -67,6 +67,7 @@ from exp.views.study import (
     StudyListViewApproved,
     StudyListViewCreated,
     StudylistViewDeactivated,
+    StudyListViewMyStudies,
     StudyListViewPaused,
     StudyListViewRejected,
     StudyListViewSubmitted,
@@ -109,6 +110,11 @@ urlpatterns = [
         "studies/deactivated/",
         StudylistViewDeactivated.as_view(),
         name="study-list-deactivated",
+    ),
+    path(
+        "studies/mystudies",
+        StudyListViewMyStudies.as_view(),
+        name="study-list-mystudies",
     ),
     path(
         "studies/analytics/",

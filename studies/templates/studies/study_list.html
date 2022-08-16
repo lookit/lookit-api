@@ -78,8 +78,7 @@
                     </li>
                     <li class="multi-toggle-filter{% if state == 'myStudies' %} active{% endif %}">
                         <a class="state-link"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' %}">My
-                        Studies</a>
+                           href="{% url 'exp:study-list-mystudies' %}?{% query_transform request page='1' %}">My Studies</a>
                     </li>
                     <li class="multi-toggle-filter{% if state == 'all' %} active{% endif %}">
                         <a class="state-link"
