@@ -56,6 +56,10 @@
                         <a class="state-link"
                            href="{% url 'exp:study-list-submitted' %}?{% query_transform request page='1' %}">Submitted</a>
                     </li>
+                    <li class="multi-toggle-filter{% if state == 'rejected' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-rejected' %}?{% query_transform request page='1' %}">Rejected</a>
+                    </li>
                     <li class="multi-toggle-filter{% if state == 'approved' %} active{% endif %}">
                         <a class="state-link"
                            href="{% url 'exp:study-list' %}?{% query_transform request page='1' %}">Approved</a>
