@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.http.response import HttpResponse
-from django.shortcuts import get_object_or_404, reverse
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 from revproxy.views import ProxyView
@@ -935,10 +935,9 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
             response = create_external_response(study, child_uuid, preview=True)
             return HttpResponseRedirect(get_external_url(study, response))
         else:
-            """Check if locale (language code) is present in the URL.
-            If so, we need to re-write the request path without the locale
-            so that it points to a working study URL.
-            """
+            # Check if locale (language code) is present in the URL.
+            # If so, we need to re-write the request path without the locale
+            # so that it points to a working study URL.
             locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/exp/studies/{study_uuid}/{child_uuid}/preview/(?P<rest>.*?)"
             path_match = re.match(locale_pattern, request.path)
             if path_match:
@@ -947,9 +946,13 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
                 request.path_info = path_no_locale
                 request.META["PATH_INFO"] = path_no_locale
 
-            path = f"{study_uuid}/index.html"
-
-            return super().dispatch(request, path)
+            if settings.DEBUG and settings.ENVIRONMENT == "develop":
+                # If we're in a local environment, then redirect shortcut to switch to the ember server
+                debug_path = rf"{settings.EXPERIMENT_BASE_URL}{request.path_info}"
+                return redirect(debug_path)
+            else:
+                path = f"{study_uuid}/index.html"
+                return super().dispatch(request, path)
 
 
 # UTILITY FUNCTIONS
