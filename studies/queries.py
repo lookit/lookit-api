@@ -352,7 +352,7 @@ def get_study_list_qs(user, query_dict):
                 operator.and_,
                 (
                     Q(name__icontains=term) | Q(short_description__icontains=term)
-                    for term in match.split()
+                    for term in match
                 ),
             )
         )
