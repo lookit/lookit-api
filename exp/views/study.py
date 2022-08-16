@@ -353,6 +353,11 @@ class StudyListViewActive(StudyListView):
     state = "active"
 
 
+class StudyListViewSubmitted(StudyListView):
+    template_name = "studies/study_list_submitted.html"
+    state = "submitted"
+
+
 class StudyDetailView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
