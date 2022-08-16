@@ -373,6 +373,11 @@ class StudyListViewCreated(StudyListView):
     state = "created"
 
 
+class StudyListViewPaused(StudyListView):
+    template_name = "studies/study_list_paused.html"
+    state = "paused"
+
+
 class StudyDetailView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,

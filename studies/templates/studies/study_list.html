@@ -68,6 +68,10 @@
                         <a class="state-link"
                            href="{% url 'exp:study-list-created' %}?{% query_transform request page='1' %}">Created</a>
                     </li>
+                    <li class="multi-toggle-filter{% if state == 'paused' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-paused' %}?{% query_transform request page='1' %}">Paused</a>
+                    </li>
                     <li class="multi-toggle-filter{% if state == 'deactivated' %} active{% endif %}">
                         <a class="state-link"
                            href="{% url 'exp:study-list' %}?{% query_transform request page='1' %}">Deactivated</a>

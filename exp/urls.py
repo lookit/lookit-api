@@ -66,6 +66,7 @@ from exp.views.study import (
     StudyListViewActive,
     StudyListViewApproved,
     StudyListViewCreated,
+    StudyListViewPaused,
     StudyListViewRejected,
     StudyListViewSubmitted,
 )
@@ -102,6 +103,7 @@ urlpatterns = [
         "studies/approved/", StudyListViewApproved.as_view(), name="study-list-approved"
     ),
     path("studies/created/", StudyListViewCreated.as_view(), name="study-list-created"),
+    path("studies/paused/", StudyListViewPaused.as_view(), name="study-list-paused"),
     path(
         "studies/analytics/",
         StudyParticipantAnalyticsView.as_view(),
