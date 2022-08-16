@@ -378,6 +378,11 @@ class StudyListViewPaused(StudyListView):
     state = "paused"
 
 
+class StudylistViewDeactivated(StudyListView):
+    template_name = "studies/study_list_deactivated.html"
+    state = "deactivated"
+
+
 class StudyDetailView(
     ResearcherLoginRequiredMixin,
     UserPassesTestMixin,
@@ -728,10 +733,10 @@ class ChangeStudyStatusView(
         )
 
     def update_declarations(self, trigger: Text, study: Study):
-        if trigger in DECLARATIONS:
-            if study.comments_extra is None:
-                study.comments_extra = {}
+        if study.comments_extra is None:
+            study.comments_extra = {}
 
+        if trigger in DECLARATIONS:
             if "declarations" not in study.comments_extra:
                 study.comments_extra["declarations"] = {}
 
