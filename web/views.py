@@ -13,6 +13,7 @@ from django.db.models.query_utils import Q
 from django.dispatch import receiver
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
+from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from django.views.generic.edit import FormView
@@ -659,6 +660,12 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
         """The redirect functionality in revproxy is broken so we have to patch
         path replacement manually.
         """
+
+        # Manually set the language code to the default language, which isn't prefixed in URLs,
+        # to stop the locale middleware from adding a language/locale prefix back into the study URL
+        # after the request has been dispatched
+        translation.activate(settings.LANGUAGE_CODE)
+        request.LANGUAGE_CODE = settings.LANGUAGE_CODE
 
         study_uuid = kwargs.get("uuid", None)
         child_uuid = kwargs.get("child_id", None)
