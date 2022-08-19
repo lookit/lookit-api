@@ -14,6 +14,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import get_users_with_perms
@@ -779,6 +780,7 @@ class Study(models.Model):
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
+        ev.model.status_change_date = timezone.now()
         ev.model.save()
         self._log_action(ev)
 
