@@ -574,6 +574,16 @@ class Study(models.Model):
         if self.status_change_date:
             return (timezone.now() - self.status_change_date).days
 
+    @property
+    def approved_by(self):
+        user = (
+            StudyLog.objects.filter(study=self, action="submitted")
+            .order_by("-created_at")
+            .first()
+            .user
+        )
+        return f"{user.given_name} {user.family_name}"
+
     # WORKFLOW CALLBACKS
 
     def clone(self):
