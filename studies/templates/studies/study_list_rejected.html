@@ -16,7 +16,7 @@
                 </div>
                 <div class="col-xs-3">
                     <strong>Rejected On:</strong>
-                    N/A
+                    {{ study.status_change_date|date:"M d, Y"|default:"N/A" }}
                 </div>
             </div>
             <div class="row table-block">

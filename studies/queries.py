@@ -3,10 +3,11 @@ from collections import defaultdict
 from datetime import timedelta
 from functools import reduce
 
+from django.core.exceptions import FieldError
 from django.db import models
 from django.db.models import Count, F, IntegerField, OuterRef, Q, Subquery, Value
 from django.db.models.fields import CharField
-from django.db.models.functions import Coalesce, Concat, Lower
+from django.db.models.functions import Coalesce, Concat
 from django.utils.timezone import now
 from guardian.shortcuts import get_objects_for_user
 
@@ -357,18 +358,13 @@ def get_study_list_qs(user, query_dict):
             )
         )
 
-    sort = query_dict.get("sort", "")
-    if "name" in sort:
-        queryset = queryset.order_by(
-            Lower("name").desc() if "-" in sort else Lower("name").asc()
-        )
-    elif "beginDate" in sort:
-        queryset = queryset.order_by("starting_date")
-    elif "endDate" in sort:
-        queryset = queryset.order_by("ending_date")
-    elif "dateModified" in sort:
-        queryset = queryset.order_by("date_modified")
-    elif "lastStatusChange" in sort:
-        queryset = queryset.order_by("status_change_date")
+    # Sort value is in a list
+    sort = "".join(query_dict.get("sort", []))
+    if sort:
+        try:
+            queryset = queryset.order_by(sort)
+        except FieldError:
+            # if someone attempts to manually enter a field that doesn't exist
+            pass
 
     return queryset

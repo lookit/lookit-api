@@ -178,17 +178,17 @@
                         <strong>Last Edited</strong>
                         <a aria-label="Sort studies by last edited date"
                            class="pl-sm"
-                           href="?{% query_transform request page='1' sort='dateModified' %}">{% bootstrap_icon "menu-up" %}</a>
+                           href="?{% query_transform request page='1' sort='date_modified' %}">{% bootstrap_icon "menu-up" %}</a>
                         <a aria-label="Reverse sort studies by last edited date"
-                           href="?{% query_transform request page='1' sort='-dateModified' %}">{% bootstrap_icon "menu-down" %}</a>
+                           href="?{% query_transform request page='1' sort='-date_modified' %}">{% bootstrap_icon "menu-down" %}</a>
                     </div>
                     <div class="col-sm-3">
                         <strong>Last Status Change</strong>
                         <a aria-label="Sort studies by end date"
                            class="pl-sm"
-                           href="?{% query_transform request page='1' sort='lastStatusChange' %}">{% bootstrap_icon "menu-up" %}</a>
+                           href="?{% query_transform request page='1' sort='status_change_date' %}">{% bootstrap_icon "menu-up" %}</a>
                         <a aria-label="Reverse sort studies by end date"
-                           href="?{% query_transform request page='1' sort='-lastStatusChange' %}">{% bootstrap_icon "menu-down" %}</a>
+                           href="?{% query_transform request page='1' sort='-status_change_date' %}">{% bootstrap_icon "menu-down" %}</a>
                     </div>
                 </div>
             </div>
