@@ -170,25 +170,25 @@
                         <strong>Name</strong>
                         <a aria-label="Sort studies by name"
                            class="pl-sm"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='name' %}">{% bootstrap_icon "menu-up" %}</a>
+                           href="?{% query_transform request page='1' sort='name' %}">{% bootstrap_icon "menu-up" %}</a>
                         <a aria-label="Reverse sort studies by name"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-name' %}">{% bootstrap_icon "menu-down" %}</a>
+                           href="?{% query_transform request page='1' sort='-name' %}">{% bootstrap_icon "menu-down" %}</a>
                     </div>
                     <div class="col-sm-3">
-                        <strong>Begin Date</strong>
-                        <a aria-label="Sort studies by begin date"
+                        <strong>Last Edited</strong>
+                        <a aria-label="Sort studies by last edited date"
                            class="pl-sm"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='beginDate' %}">{% bootstrap_icon "menu-up" %}</a>
-                        <a aria-label="Reverse sort studies by begin date"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-beginDate' %}">{% bootstrap_icon "menu-down" %}</a>
+                           href="?{% query_transform request page='1' sort='dateModified' %}">{% bootstrap_icon "menu-up" %}</a>
+                        <a aria-label="Reverse sort studies by last edited date"
+                           href="?{% query_transform request page='1' sort='-dateModified' %}">{% bootstrap_icon "menu-down" %}</a>
                     </div>
                     <div class="col-sm-3">
-                        <strong>End Date</strong>
+                        <strong>Last Status Change</strong>
                         <a aria-label="Sort studies by end date"
                            class="pl-sm"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='endDate' %}">{% bootstrap_icon "menu-up" %}</a>
+                           href="?{% query_transform request page='1' sort='lastStatusChange' %}">{% bootstrap_icon "menu-up" %}</a>
                         <a aria-label="Reverse sort studies by end date"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-endDate' %}">{% bootstrap_icon "menu-down" %}</a>
+                           href="?{% query_transform request page='1' sort='-lastStatusChange' %}">{% bootstrap_icon "menu-down" %}</a>
                     </div>
                 </div>
             </div>

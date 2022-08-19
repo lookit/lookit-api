@@ -366,5 +366,9 @@ def get_study_list_qs(user, query_dict):
         queryset = queryset.order_by("starting_date")
     elif "endDate" in sort:
         queryset = queryset.order_by("ending_date")
+    elif "dateModified" in sort:
+        queryset = queryset.order_by("date_modified")
+    elif "lastStatusChange" in sort:
+        queryset = queryset.order_by("status_change_date")
 
     return queryset
