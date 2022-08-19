@@ -569,6 +569,11 @@ class Study(models.Model):
     def show_scheduled(self):
         return self.study_type.is_external and self.metadata["scheduled"]
 
+    @property
+    def days_submitted(self):
+        if self.status_change_date:
+            return (timezone.now() - self.status_change_date).days
+
     # WORKFLOW CALLBACKS
 
     def clone(self):
