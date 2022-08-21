@@ -215,7 +215,9 @@
                                     Last Status Change:
                                 {% endblock status_change_label %}
                             </strong>
-                            {{ study.status_change_date|date:"M d, Y"|default:"N/A" }}
+                            {% block status_change_date %}
+                                {{ study.status_change_date|date:"M d, Y"|default:"N/A" }}
+                            {% endblock status_change_date %}
                         </div>
                     </div>
                     <div class="row table-block">
