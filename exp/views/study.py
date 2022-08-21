@@ -314,7 +314,7 @@ class StudyListView(
 
     model = Study
     raise_exception = True
-    template_name = "studies/study_list_all.html"
+    template_name = "studies/study_list.html"
     paginate_by = 10
     ordering = ("name",)
     state = "all"
@@ -384,7 +384,7 @@ class StudylistViewDeactivated(StudyListView):
 
 
 class StudyListViewMyStudies(StudyListView):
-    template_name = "studies/study_list_mystudies.html"
+    # Use the template from super class
     state = "myStudies"
 
 
