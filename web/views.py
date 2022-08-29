@@ -611,9 +611,32 @@ class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
 
     def dispatch(self, request, *args, **kwargs):
         """Bypass presence of child ID."""
+
+        # Manually set the language code to the default language, which isn't prefixed in URLs,
+        # to stop the locale middleware from adding a language/locale prefix back into the study assets URLs
+        # after the request has been dispatched
+        translation.activate(settings.LANGUAGE_CODE)
+        request.LANGUAGE_CODE = settings.LANGUAGE_CODE
+
         uuid = kwargs.pop("uuid")
         asset_path = kwargs.pop("path")
         path = f"{uuid}/{asset_path}"
+
+        # Check if locale (language code) is present in the URL.
+        # If so, we need to re-write the request path without the locale
+        # so that it points to a working study asset URL.
+        locale_pattern = (
+            rf"/(?P<locale>[a-zA-Z-].+)/studies/{uuid}/(?P<rest>.*)$"
+        )
+        path_match = re.match(locale_pattern, request.path)
+        if path_match:
+            path_no_locale = (
+                rf"/studies/{uuid}/{path_match.group('rest')}"
+            )
+            request.path = path_no_locale
+            request.path_info = path_no_locale
+            request.META["PATH_INFO"] = path_no_locale
+
         return super().dispatch(request, path, *args, **kwargs)
 
 
