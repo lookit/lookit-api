@@ -625,14 +625,10 @@ class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
         # Check if locale (language code) is present in the URL.
         # If so, we need to re-write the request path without the locale
         # so that it points to a working study asset URL.
-        locale_pattern = (
-            rf"/(?P<locale>[a-zA-Z-].+)/studies/{uuid}/(?P<rest>.*)$"
-        )
+        locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/studies/{uuid}/(?P<rest>.*)$"
         path_match = re.match(locale_pattern, request.path)
         if path_match:
-            path_no_locale = (
-                rf"/studies/{uuid}/{path_match.group('rest')}"
-            )
+            path_no_locale = rf"/studies/{uuid}/{path_match.group('rest')}"
             request.path = path_no_locale
             request.path_info = path_no_locale
             request.META["PATH_INFO"] = path_no_locale
