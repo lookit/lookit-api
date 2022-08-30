@@ -304,7 +304,7 @@ class Study(models.Model):
     image = models.ImageField(null=True, upload_to="study_images/")
     exit_url = models.URLField(default="https://lookit.mit.edu/studies/history/")
     comments = models.TextField(blank=True, null=True)
-    comments_extra = models.JSONField(blank=True, null=True)
+    comments_extra = models.JSONField(blank=True, null=True, default=dict)
     study_type = models.ForeignKey(
         "StudyType",
         on_delete=models.PROTECT,
