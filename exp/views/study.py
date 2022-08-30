@@ -452,10 +452,7 @@ class StudyDetailView(
             comments_text.append(study.comments)
 
         # if study is submitted, see if there are any declarations to display
-        declarations_exist = False
-        if study.comments_extra and study.comments_extra.get("declarations"):
-            declarations_exist = True
-
+        declarations_exist = study.comments_extra.get("declarations")
         if study.state == "submitted" and declarations_exist:
 
             declarations_state = ", ".join(
