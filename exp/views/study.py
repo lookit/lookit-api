@@ -11,7 +11,6 @@ from django.db.models.functions import Lower
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils import translation
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 from revproxy.views import ProxyView
@@ -953,12 +952,6 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         path replacement manually. Great! Just wonderful.
         """
 
-        # Manually set the language code to the default language, which isn't prefixed in URLs,
-        # to stop the locale middleware from adding a language/locale prefix back into the study URL
-        # after the request has been dispatched
-        translation.activate(settings.LANGUAGE_CODE)
-        request.LANGUAGE_CODE = settings.LANGUAGE_CODE
-
         study_uuid = kwargs.get("uuid", None)
         child_uuid = kwargs.get("child_id", None)
         study = Study.objects.get(uuid=study_uuid)
@@ -966,25 +959,26 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         if study.study_type.is_external:
             response = create_external_response(study, child_uuid, preview=True)
             return HttpResponseRedirect(get_external_url(study, response))
-        else:
-            # Check if locale (language code) is present in the URL.
-            # If so, we need to re-write the request path without the locale
-            # so that it points to a working study URL.
-            locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/exp/studies/{study_uuid}/{child_uuid}/preview/(?P<rest>.*?)"
-            path_match = re.match(locale_pattern, request.path)
-            if path_match:
-                path_no_locale = rf"/exp/studies/{study_uuid}/{child_uuid}/preview/{path_match.group('rest')}"
-                request.path = path_no_locale
-                request.path_info = path_no_locale
-                request.META["PATH_INFO"] = path_no_locale
 
-            if settings.DEBUG and settings.ENVIRONMENT == "develop":
-                # If we're in a local environment, then redirect shortcut to switch to the ember server
-                debug_path = rf"{settings.EXPERIMENT_BASE_URL}{request.path_info}"
-                return redirect(debug_path)
-            else:
-                path = f"{study_uuid}/index.html"
-                return super().dispatch(request, path)
+        # Check if locale (language code) is present in the URL.
+        # If so, we need to re-write the request path without the locale
+        # so that it points to a working study URL.
+        path = request.path
+        locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/exp/studies/{study_uuid}/{child_uuid}/preview/(?P<rest>.*?)"
+        path_match = re.match(locale_pattern, path)
+        if path_match:
+            path = f"/exp/studies/{study_uuid}/{child_uuid}/preview/{path_match.group('rest')}"
+            url = request.build_absolute_uri(path)
+            # Using redirect instead of super().dispatch here to get around locale/translation middleware
+            return redirect(url)
+
+        if settings.DEBUG and settings.ENVIRONMENT == "develop":
+            # If we're in a local environment, then redirect to the ember server
+            url = f"{settings.EXPERIMENT_BASE_URL}{path}"
+            return redirect(url)
+
+        path = f"{study_uuid}/index.html"
+        return super().dispatch(request, path)
 
 
 # UTILITY FUNCTIONS
