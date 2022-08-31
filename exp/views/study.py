@@ -979,7 +979,7 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
 
         path = f"{study_uuid}/index.html"
         return super().dispatch(request, path)
-            
+
 
 # UTILITY FUNCTIONS
 def get_permitted_triggers(view_instance, triggers):

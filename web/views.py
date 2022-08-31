@@ -669,7 +669,9 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
         # If so, we need to re-write the request path without the locale
         # so that it points to a working study URL.
         path = request.path
-        locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/studies/{study_uuid}/{child_uuid}/(?P<rest>.*?)"
+        locale_pattern = (
+            rf"/(?P<locale>[a-zA-Z-].+)/studies/{study_uuid}/{child_uuid}/(?P<rest>.*?)"
+        )
         path_match = re.match(locale_pattern, path)
         if path_match:
             path = f"/studies/{study_uuid}/{child_uuid}/{path_match.group('rest')}"
