@@ -52,6 +52,15 @@
                         <a class="state-link"
                            href="{% url 'exp:study-list-active' %}?{% query_transform request page='1' %}">Active</a>
                     </li>
+                    <li class="multi-toggle-filter{% if state == 'paused' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-paused' %}?{% query_transform request page='1' %}">Paused</a>
+                    </li>
+                    <li class="state-spacer">|</li>
+                    <li class="multi-toggle-filter{% if state == 'created' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-created' %}?{% query_transform request page='1' %}">Created</a>
+                    </li>
                     <li class="multi-toggle-filter{% if state == 'submitted' %} active{% endif %}">
                         <a class="state-link"
                            href="{% url 'exp:study-list-submitted' %}?{% query_transform request page='1' %}">Submitted</a>
@@ -64,18 +73,12 @@
                         <a class="state-link"
                            href="{% url 'exp:study-list-approved' %}?{% query_transform request page='1' %}">Approved</a>
                     </li>
-                    <li class="multi-toggle-filter{% if state == 'created' %} active{% endif %}">
-                        <a class="state-link"
-                           href="{% url 'exp:study-list-created' %}?{% query_transform request page='1' %}">Created</a>
-                    </li>
-                    <li class="multi-toggle-filter{% if state == 'paused' %} active{% endif %}">
-                        <a class="state-link"
-                           href="{% url 'exp:study-list-paused' %}?{% query_transform request page='1' %}">Paused</a>
-                    </li>
+                    <li class="state-spacer">|</li>
                     <li class="multi-toggle-filter{% if state == 'deactivated' %} active{% endif %}">
                         <a class="state-link"
                            href="{% url 'exp:study-list-deactivated' %}?{% query_transform request page='1' %}">Deactivated</a>
                     </li>
+                    <li class="state-spacer">|</li>
                     <li class="multi-toggle-filter{% if state == 'myStudies' %} active{% endif %}">
                         <a class="state-link"
                            href="{% url 'exp:study-list-mystudies' %}?{% query_transform request page='1' %}">My Studies</a>
@@ -107,6 +110,7 @@
                             <a class="dropdown-item"
                                href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='paused' %}">Paused</a>
                         </li>
+                        <li>|</li>
                         <li>
                             <a class="dropdown-item"
                                href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='submitted' %}">Submitted</a>
