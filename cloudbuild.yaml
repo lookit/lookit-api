@@ -147,4 +147,4 @@ secrets:
   secretEnv:
     SENTRY_AUTH_TOKEN: CiQAVYLHlum+JbxvLUXADsLiiIwXjocXFGg5SAsxKyvAkDRjEaESaABnxmN4TReBWF0cY+XPS8xytlGSUhClZewwH7ttpBFKC65+Y0a6W8XIsTjyQMyVzWiLxSOef46bmI1Bo8JIbh/ErIRWm3rPBNFs843z52oF8M93+miMUlt8UOWmIgyq1U/fjThhq0UI
 
-timeout: 1200s
+timeout: 1800s
