@@ -14,6 +14,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from guardian.shortcuts import get_users_with_perms
@@ -240,6 +241,13 @@ class StudyType(models.Model):
     def is_external(self):
         return self.name == StudyTypeEnum.external.value
 
+    @property
+    def display_name(self):
+        if self.is_external:
+            return "External"
+        else:
+            return "Internal"
+
     @classmethod
     def get_ember_frame_player(cls):
         return cls.objects.get(name=StudyTypeEnum.ember_frame_player.value)
@@ -280,6 +288,7 @@ class Study(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
+    status_change_date = models.DateTimeField(null=True)
     preview_summary = models.CharField(max_length=500, default="")
     short_description = models.TextField()
     purpose = models.TextField()
@@ -295,7 +304,7 @@ class Study(models.Model):
     image = models.ImageField(null=True, upload_to="study_images/")
     exit_url = models.URLField(default="https://lookit.mit.edu/studies/history/")
     comments = models.TextField(blank=True, null=True)
-    comments_extra = models.JSONField(blank=True, null=True)
+    comments_extra = models.JSONField(blank=True, null=True, default=dict)
     study_type = models.ForeignKey(
         "StudyType",
         on_delete=models.PROTECT,
@@ -560,6 +569,21 @@ class Study(models.Model):
     def show_scheduled(self):
         return self.study_type.is_external and self.metadata["scheduled"]
 
+    @property
+    def days_submitted(self):
+        if self.status_change_date:
+            return (timezone.now() - self.status_change_date).days
+
+    @property
+    def approved_by(self):
+        user = (
+            StudyLog.objects.filter(study=self, action="submitted")
+            .order_by("-created_at")
+            .first()
+            .user
+        )
+        return f"{user.given_name} {user.family_name}"
+
     # WORKFLOW CALLBACKS
 
     def clone(self):
@@ -771,6 +795,7 @@ class Study(models.Model):
 
     # Runs for every transition to save state and log action
     def _finalize_state_change(self, ev):
+        ev.model.status_change_date = timezone.now()
         ev.model.save()
         self._log_action(ev)
 

@@ -24,265 +24,296 @@
             {% if can_create_study %}
                 <div class="col-xs-12 col-sm-2 pt-lg pull-right">
                     <a class="btn btn-success" href="{% url 'exp:study-create' %}">
-                        <i aria-hidden="true" class="fa fa-plus"></i> Create Study
-                </a>
+                        {% bootstrap_icon "plus" %}
+                        Create Study
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="row text-center mt-lg">
+            <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
+                <form method="get">
+                    <input id="search-studies"
+                           class="form-control"
+                           name="match"
+                           placeholder="Filter name or description"
+                           size="50"
+                           type="text"/>
+                    <input type="hidden" name="sort" value="{{ sort }}"/>
+                    <input type="hidden" name="state" value="{{ state }}"/>
+                    <input type="hidden" name="page" value="1"/>
+                </form>
             </div>
-        {% endif %}
-    </div>
-    <div class="row text-center mt-lg">
-        <div class="col-xs-12 col-sm-offset-1 col-sm-10 col-md-offset-2 col-md-8">
-            <form method="get">
-                <input id="search-studies"
-                       class="form-control"
-                       name="match"
-                       placeholder="Filter name or description"
-                       size="50"
-                       type="text"/>
-                <input type="hidden" name="sort" value="{{ sort }}"/>
-                <input type="hidden" name="state" value="{{ state }}"/>
-                <input type="hidden" name="page" value="1"/>
-            </form>
         </div>
-    </div>
-    <div class="row text-center button-block hidden-xs">
-        <div style="display: inline-block; float: none;">
-            <ul class="nav nav-pills">
-                <li class="multi-toggle-filter {% if state == 'active' %}active{% endif %} ">
-                    <a class="state-link"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='active' %}">Active</a>
-                </li>
-                <li class="multi-toggle-filter {% if state == 'submitted' %}active{% endif %}">
-                    <a class="state-link"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='submitted' %}">Submitted</a>
-                </li>
-                <li class="multi-toggle-filter {% if state == 'approved' %}active{% endif %}">
-                    <a class="state-link"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='approved' %}">Approved</a>
-                </li>
-                <li class="multi-toggle-filter {% if state == 'created' %}active{% endif %}">
-                    <a class="state-link"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='created' %}">Created</a>
-                </li>
-                <li class="multi-toggle-filter {% if state == 'deactivated' %}active{% endif %}">
-                    <a class="state-link"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='deactivated' %}">Deactivated</a>
-                </li>
-                <li class="multi-toggle-filter {% if state == 'myStudies' %}active{% endif %}">
-                    <a class="state-link"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='myStudies' %}">My
-                    Studies</a>
-                </li>
-                <li class="multi-toggle-filter {% if state == 'all' %}active{% endif %} ">
-                    <a class="state-link"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='all' %}">All</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="row visible-xs pt-lg">
-        <div class="col-xs-12">
-            <div class="dropdown show">
-                <a class="btn btn-default dropdown-toggle"
-                   href="#"
-                   id="dropdownMenuLink"
-                   data-toggle="dropdown"
-                   aria-haspopup="true"
-                   aria-expanded="false">
-                    Change filter: {{ state|capfirst }}
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="stateDropdown">
-                    <li>
-                        <a class="dropdown-item"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='active' %}">Active</a>
+        <div class="row text-center button-block hidden-xs">
+            <div style="display: inline-block; float: none;">
+                <ul class="nav nav-pills">
+                    <li class="multi-toggle-filter{% if state == 'active' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-active' %}?{% query_transform request page='1' %}">Active</a>
                     </li>
-                    <li>
-                        <a class="dropdown-item"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='paused' %}">Paused</a>
+                    <li class="multi-toggle-filter{% if state == 'paused' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-paused' %}?{% query_transform request page='1' %}">Paused</a>
                     </li>
-                    <li>
-                        <a class="dropdown-item"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='submitted' %}">Submitted</a>
+                    <li class="state-spacer">|</li>
+                    <li class="multi-toggle-filter{% if state == 'created' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-created' %}?{% query_transform request page='1' %}">Created</a>
                     </li>
-                    <li>
-                        <a class="dropdown-item"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='myStudies' %}">My
-                        Studies</a>
+                    <li class="multi-toggle-filter{% if state == 'submitted' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-submitted' %}?{% query_transform request page='1' %}">Submitted</a>
                     </li>
-                    <li>
-                        <a class="dropdown-item"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='all' %}">All</a>
+                    <li class="multi-toggle-filter{% if state == 'rejected' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-rejected' %}?{% query_transform request page='1' %}">Rejected</a>
+                    </li>
+                    <li class="multi-toggle-filter{% if state == 'approved' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-approved' %}?{% query_transform request page='1' %}">Approved</a>
+                    </li>
+                    <li class="state-spacer">|</li>
+                    <li class="multi-toggle-filter{% if state == 'deactivated' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-deactivated' %}?{% query_transform request page='1' %}">Deactivated</a>
+                    </li>
+                    <li class="state-spacer">|</li>
+                    <li class="multi-toggle-filter{% if state == 'myStudies' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list-mystudies' %}?{% query_transform request page='1' %}">My Studies</a>
+                    </li>
+                    <li class="multi-toggle-filter{% if state == 'all' %} active{% endif %}">
+                        <a class="state-link"
+                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' %}">All</a>
                     </li>
                 </ul>
             </div>
-            <div class="dropdown show">
-                <a class="btn btn-default dropdown-toggle mt-md"
-                   href="#"
-                   id="dropdownMenuLink"
-                   data-toggle="dropdown"
-                   aria-haspopup="true"
-                   aria-expanded="false">
-                    Change sort:
-                    {% if sort == 'endDate' %}
-                        End Date
-                    {% elif sort == 'beginDate' %}
-                        Begin
-                        Date
-                    {% elif sort == "" %}
-                        Name
-                    {% else %}
-                        {{ sort|capfirst }}
-                    {% endif %}
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="stateDropdown">
-                    <li>
+        </div>
+        <div class="row visible-xs pt-lg">
+            <div class="col-xs-12">
+                <div class="dropdown show">
+                    <a class="btn btn-default dropdown-toggle"
+                       href="#"
+                       id="dropdownMenuLink"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">
+                        Change filter: {{ state|capfirst }}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="stateDropdown">
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='active' %}">Active</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='paused' %}">Paused</a>
+                        </li>
+                        <li>|</li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='submitted' %}">Submitted</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='myStudies' %}">My
+                            Studies</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' state='all' %}">All</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown show">
+                    <a class="btn btn-default dropdown-toggle mt-md"
+                       href="#"
+                       id="dropdownMenuLink"
+                       data-toggle="dropdown"
+                       aria-haspopup="true"
+                       aria-expanded="false">
+                        Change sort:
+                        {% if sort == 'endDate' %}
+                            End Date
+                        {% elif sort == 'beginDate' %}
+                            Begin
+                            Date
+                        {% elif sort == "" %}
+                            Name
+                        {% else %}
+                            {{ sort|capfirst }}
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="stateDropdown">
+                        <li>
+                            <a aria-label="Sort studies by name"
+                               class="dropdown-item"
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='name' %}">Name</a>
+                        </li>
+                        <li>
+                            <a aria-label="Sort studies by begin date"
+                               class="dropdown-item"
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='beginDate' %}">Begin
+                            Date</a>
+                        </li>
+                        <li>
+                            <a aria-label="Sort studies by end date"
+                               class="dropdown-item"
+                               href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='endDate' %}">End
+                            Date</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row hidden-xs pt-md">
+            <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <strong>Name</strong>
                         <a aria-label="Sort studies by name"
-                           class="dropdown-item"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='name' %}">Name</a>
-                    </li>
-                    <li>
-                        <a aria-label="Sort studies by begin date"
-                           class="dropdown-item"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='beginDate' %}">Begin
-                        Date</a>
-                    </li>
-                    <li>
+                           class="pl-sm"
+                           href="?{% query_transform request page='1' sort='name' %}">{% bootstrap_icon "menu-up" %}</a>
+                        <a aria-label="Reverse sort studies by name"
+                           href="?{% query_transform request page='1' sort='-name' %}">{% bootstrap_icon "menu-down" %}</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>Last Edited</strong>
+                        <a aria-label="Sort studies by last edited date"
+                           class="pl-sm"
+                           href="?{% query_transform request page='1' sort='date_modified' %}">{% bootstrap_icon "menu-up" %}</a>
+                        <a aria-label="Reverse sort studies by last edited date"
+                           href="?{% query_transform request page='1' sort='-date_modified' %}">{% bootstrap_icon "menu-down" %}</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>Last Status Change</strong>
                         <a aria-label="Sort studies by end date"
-                           class="dropdown-item"
-                           href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='endDate' %}">End
-                        Date</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="row hidden-xs pt-md">
-        <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-            <div class="row">
-                <div class="col-sm-6">
-                    <strong>Name</strong>
-                    <a aria-label="Sort studies by name"
-                       class="pl-sm"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='name' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
-                    <a aria-label="Reverse sort studies by name"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-name' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
-                </div>
-                <div class="col-sm-3">
-                    <strong>Begin Date</strong>
-                    <a aria-label="Sort studies by begin date"
-                       class="pl-sm"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='beginDate' %}"><i aria-hidden="true" class="fa fa-chevron-up" role="button"></i></a>
-                    <a aria-label="Reverse sort studies by begin date"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-beginDate' %}"><i aria-hidden="true" class="fa fa-chevron-down" role="button"></i></a>
-                </div>
-                <div class="col-sm-3">
-                    <strong>End Date</strong>
-                    <a aria-label="Sort studies by end date"
-                       class="pl-sm"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='endDate' %}"><i aria-hidden="true"
-   class="fa fa-chevron-up"
-   role="button"
-   name="endDate"></i></a>
-                    <a aria-label="Reverse sort studies by end date"
-                       href="{% url 'exp:study-list' %}?{% query_transform request page='1' sort='-endDate' %}"><i aria-hidden="true"
-   class="fa fa-chevron-down"
-   role="button"
-   name="endDate"></i></a>
+                           class="pl-sm"
+                           href="?{% query_transform request page='1' sort='status_change_date' %}">{% bootstrap_icon "menu-up" %}</a>
+                        <a aria-label="Reverse sort studies by end date"
+                           href="?{% query_transform request page='1' sort='-status_change_date' %}">{% bootstrap_icon "menu-down" %}</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <hr />
-    <div class="row results">
-        {% for study in object_list %}
-            <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 well">
-                <div class="row table-block">
-                    <div class="col-xs-12 col-sm-6">
-                        <a href="{% url 'exp:study-detail' pk=study.id %}"><strong>{{ study.name }}</strong></a>
+        <hr />
+        <div class="row results">
+            {% for study in object_list %}
+                <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1 well">
+                    <div class="row table-block">
+                        <div class="col-xs-12 col-sm-6">
+                            <a href="{% url 'exp:study-detail' pk=study.id %}">
+                                <strong>{{ study.name }}</strong>
+                            </a>
+                        </div>
+                        <div class="col-xs-12 col-sm-3">
+                            <span class="visible-xs">Last Edited:
+                                <strong>{{ study.date_modified|date:"M d, Y"|default:"N/A" }}</strong>
+                            </span>
+                            <strong class="hidden-xs">{{ study.date_modified|date:"M d, Y"|default:"N/A" }}</strong>
+                        </div>
+                        <div class="col-xs-3">
+                            <strong>
+                                {% block status_change_label %}
+                                    Last Status Change:
+                                {% endblock status_change_label %}
+                            </strong>
+                            {% block status_change_date %}
+                                {{ study.status_change_date|date:"M d, Y"|default:"N/A" }}
+                            {% endblock status_change_date %}
+                        </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3">
-                        <span class="visible-xs">Begin date: <strong>{{ study.starting_date|date:"M d, Y"|default:"N/A" }}</strong> </span>
-                        <strong class="hidden-xs">{{ study.starting_date|date:"M d, Y"|default:"N/A" }}</strong>
+                    <div class="row table-block">
+                        <div class="col-xs-9">
+                            <p>
+                                {{ study.short_description }}
+                            </p>
+                        </div>
+                        <div class="col-xs-3">
+                            {% if state in 'all,myStudies' %}
+                                <div>
+                                    <strong>Status:</strong>
+                                    {{ study.state|title }}
+                                </div>
+                            {% endif %}
+                            {% if state in 'submitted,' %}
+                                <div>
+                                    <strong>Days In Queue:</strong>
+                                    {{ study.days_submitted }}
+                                </div>
+                            {% endif %}
+                            {% if state in 'approved,' %}
+                                <div>
+                                    <strong>Approved By:</strong>
+                                    {{ study.approved_by }}
+                                </div>
+                            {% endif %}
+                            <div>
+                                <strong>Type:</strong>
+                                {{ study.study_type.display_name }}
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3">
-                        <span class="visible-xs">End date: <strong>{{ study.ending_date|date:"M d, Y"|default:"N/A" }}</strong> </span>
-                        <strong class="hidden-xs">{{ study.ending_date|date:"M d, Y"|default:"N/A" }}</strong>
+                    <div class="row table-block">
+                        <div class="col-xs-6">
+                            <strong>Study Creator:</strong>
+                            {{ study.creator_name }}
+                        </div>
+                        {% if state not in 'created,' %}
+                            <div class="col-xs-3">
+                                <strong>
+                                    Compl<span class="hidden-sm hidden-md">eted</span>
+                                    Responses:
+                                </strong> {{ study.completed_responses_count }}
+                            </div>
+                            <div class="col-xs-3">
+                                <strong>
+                                    App<span class="hidden-sm hidden-md">roved</span>
+                                    Consent:
+                                </strong> {{ study.valid_consent_count }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="row table-block">
+                        <div class="col-xs-6">
+                            <strong>Lab:</strong>
+                            {{ study.lab_name }}
+                        </div>
+                        {% if state not in 'created,' %}
+                            <div class="col-xs-3">
+                                <strong>
+                                    Inc<span class="hidden-sm hidden-md">omplete</span>
+                                    Responses:
+                                </strong> {{ study.incomplete_responses_count }}
+                            </div>
+                            <div class="col-xs-3">
+                                <strong>
+                                    Pen<span class="hidden-sm hidden-md">ding</span>
+                                    Judgement:
+                                </strong> {{ study.pending_consent_count }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="row table-block">
-                    <div class="col-xs-12">
-                        <p>
-                            {{ study.short_description }}
+            {% empty %}
+                <div class="row">
+                    <div class="col-xs-10 col-xs-offset-1 col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                        <p class="mb-lg">
+                            <em>No studies found!</em>
                         </p>
                     </div>
                 </div>
-                <div class="row table-block">
-                    <div class="col-xs-12">
-                        <strong>Study Creator:</strong> {{ study.creator_name }}
+            {% endfor %}
+        </div>
+        <div class="paginator">
+            {% if object_list %}
+                <div class="row pb-lg">
+                    <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                        {% include 'studies/_paginator.html' with page=page_obj %}
+                    </div>
                 </div>
-                <div class="col-xs-12">
-                    <strong>Lab:</strong> {{ study.lab_name }}
-            </div>
+            {% endif %}
         </div>
-        <div class="row table-block">
-            <div class="col-sm-3">
-                <strong>Status:</strong> {{ study.state|title }}
-        </div>
-        <div class="col-sm-3">
-            <strong><span class="hidden-sm">Last</span>
-        Edited:</strong> {{ study.date_modified|date:"M d, Y" }}
     </div>
-    {% if study.show_expressed_interest %}
-        <div class="col-sm-3">
-            <div>
-            <strong>Exp<span class="hidden-sm hidden-md">ressed</span> Interest:
-        </strong> {{ study.expressed_interest_count }}
-    </div>
-</div>
-{% endif %}
-{% if study.show_responses %}
-    <div class="col-sm-3">
-        <div>
-        <strong> Compl<span class="hidden-sm hidden-md">eted</span> Responses:
-    </strong> {{ study.completed_responses_count }}
-</div>
-<div>
-<strong> Inc<span class="hidden-sm hidden-md">omplete</span> Responses:
-</strong> {{ study.incomplete_responses_count }}
-</div>
-</div>
-{% endif %}
-{% if study.show_consent %}
-    <div class="col-sm-3">
-        <div>
-        <strong>App<span class="hidden-sm hidden-md">roved </span> Consent:
-    </strong> {{ study.valid_consent_count }}
-</div>
-<div>
-<strong>Pen<span class="hidden-sm hidden-md">ding </span> Judgement:
-</strong> {{ study.pending_consent_count }}
-</div>
-</div>
-{% endif %}
-</div>
-</div>
-{% empty %}
-<div class="row">
-    <div class="col-xs-10 col-xs-offset-1 col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-        <p class="mb-lg">
-            <em> No studies found! </em>
-        </p>
-    </div>
-</div>
-{% endfor %}
-</div>
-<div class="paginator">
-    {% if object_list %}
-        <div class="row pb-lg">
-            <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                {% include 'studies/_paginator.html' with page=page_obj %}
-            </div>
-        </div>
-    {% endif %}
-</div>
-</div>
 {% endblock content %}

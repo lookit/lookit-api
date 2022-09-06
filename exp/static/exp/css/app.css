@@ -38,6 +38,12 @@ a.state-link {
     text-decoration: inherit;
 }
 
+li.state-spacer {
+    padding: 10px 5px;
+    color: inherit;
+    text-decoration: inherit;
+}
+
 .nav-pills>li.active>a,
 .nav-pills>li.active>a:hover,
 .nav-pills>li.active>a:focus {

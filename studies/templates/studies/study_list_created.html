@@ -1,0 +1,8 @@
+{% extends "studies/study_list.html" %}
+{% block status_change_label %}
+    Created On:
+{% endblock status_change_label %}
+{% block status_change_date %}
+    {# Assumes that created on date is the same as the last edited date #}
+    {{ study.date_modified|date:"M d, Y"|default:"N/A" }}
+{% endblock status_change_date %}

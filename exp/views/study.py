@@ -316,6 +316,7 @@ class StudyListView(
     template_name = "studies/study_list.html"
     paginate_by = 10
     ordering = ("name",)
+    state = "all"
 
     def can_see_study_list(self):
         return self.request.user.is_researcher
@@ -327,24 +328,63 @@ class StudyListView(
         Returns paginated list of items for the StudyListView - handles filtering on state, match,
         and sort.
         """
-        user = self.request.user
-        query_dict = self.request.GET
+        query_dict = dict(self.request.GET)
+        query_dict["state"] = self.state
 
-        queryset = get_study_list_qs(user, query_dict)  # READ_STUDY_DETAILS permission
-
-        return queryset
+        # READ_STUDY_DETAILS permission
+        return get_study_list_qs(self.request.user, query_dict)
 
     def get_context_data(self, **kwargs):
         """
         Gets the context for the StudyListView and supplements with the state, match, and sort query params.
         """
         context = super().get_context_data(**kwargs)
-        context["state"] = self.request.GET.get("state", "all")
+        context["state"] = self.state
         context["match"] = self.request.GET.get("match", "")
         context["sort"] = self.request.GET.get("sort", "name")
         context["page"] = self.request.GET.get("page", "1")
         context["can_create_study"] = self.request.user.can_create_study()
         return context
+
+
+class StudyListViewActive(StudyListView):
+    template_name = "studies/study_list_active.html"
+    state = "active"
+
+
+class StudyListViewSubmitted(StudyListView):
+    template_name = "studies/study_list_submitted.html"
+    state = "submitted"
+
+
+class StudyListViewRejected(StudyListView):
+    template_name = "studies/study_list_rejected.html"
+    state = "rejected"
+
+
+class StudyListViewApproved(StudyListView):
+    template_name = "studies/study_list_approved.html"
+    state = "approved"
+
+
+class StudyListViewCreated(StudyListView):
+    template_name = "studies/study_list_created.html"
+    state = "created"
+
+
+class StudyListViewPaused(StudyListView):
+    template_name = "studies/study_list_paused.html"
+    state = "paused"
+
+
+class StudylistViewDeactivated(StudyListView):
+    template_name = "studies/study_list_deactivated.html"
+    state = "deactivated"
+
+
+class StudyListViewMyStudies(StudyListView):
+    # Use the template from super class
+    state = "myStudies"
 
 
 class StudyDetailView(
@@ -451,7 +491,7 @@ class StudyDetailView(
             comments_text.append(study.comments)
 
         # if study is submitted, see if there are any declarations to display
-        if study.state == "submitted":
+        if study.state == "submitted" and "declarations" in study.comments_extra:
 
             declarations_state = ", ".join(
                 DECLARATIONS["submit"][k]
@@ -697,10 +737,10 @@ class ChangeStudyStatusView(
         )
 
     def update_declarations(self, trigger: Text, study: Study):
-        if trigger in DECLARATIONS:
-            if study.comments_extra is None:
-                study.comments_extra = {}
+        if study.comments_extra is None:
+            study.comments_extra = {}
 
+        if trigger in DECLARATIONS:
             if "declarations" not in study.comments_extra:
                 study.comments_extra["declarations"] = {}
 
