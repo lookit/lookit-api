@@ -610,9 +610,11 @@ class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
 
     def dispatch(self, request, *args, **kwargs):
         """Bypass presence of child ID."""
+
         uuid = kwargs.pop("uuid")
         asset_path = kwargs.pop("path")
         path = f"{uuid}/{asset_path}"
+
         return super().dispatch(request, path, *args, **kwargs)
 
 
@@ -656,9 +658,31 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
         return super().setup(request, *args, **kwargs)
 
     def dispatch(self, request, *args, **kwargs):
-        _, _, study_uuid, _, _, *rest = request.path.split("/")
-        path = f"{study_uuid}/{'/'.join(rest)}"
-        if not rest:
-            path += "index.html"
+        """The redirect functionality in revproxy is broken so we have to patch
+        path replacement manually.
+        """
 
+        study_uuid = kwargs.get("uuid", None)
+        child_uuid = kwargs.get("child_id", None)
+
+        # Check if locale (language code) is present in the URL.
+        # If so, we need to re-write the request path without the locale
+        # so that it points to a working study URL.
+        path = request.path
+        locale_pattern = (
+            rf"/(?P<locale>[a-zA-Z-].+)/studies/{study_uuid}/{child_uuid}/(?P<rest>.*?)"
+        )
+        path_match = re.match(locale_pattern, path)
+        if path_match:
+            path = f"/studies/{study_uuid}/{child_uuid}/{path_match.group('rest')}"
+            url = request.build_absolute_uri(path)
+            # Using redirect instead of super().dispatch here to get around locale/translation middleware
+            return redirect(url)
+
+        if settings.DEBUG and settings.ENVIRONMENT == "develop":
+            # If we're in a local environment, then redirect shortcut to switch to the ember server
+            url = f"{settings.EXPERIMENT_BASE_URL}{path}"
+            return redirect(url)
+
+        path = f"{study_uuid}/index.html"
         return super().dispatch(request, path)

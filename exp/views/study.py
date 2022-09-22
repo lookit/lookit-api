@@ -1,7 +1,8 @@
 import json
 import operator
+import re
 from functools import reduce
-from typing import NamedTuple
+from typing import NamedTuple, Text
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -9,7 +10,7 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.http.response import HttpResponse
-from django.shortcuts import get_object_or_404, reverse
+from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 from revproxy.views import ProxyView
@@ -30,6 +31,7 @@ from studies.queries import get_study_list_qs
 from studies.tasks import ember_build_and_gcp_deploy
 from studies.workflow import (
     COMMENTS_HELP_TEXT,
+    DECLARATIONS,
     STATE_UI_SIGNALS,
     STATUS_HELP_TEXT,
     TRANSITION_HELP_TEXT,
@@ -314,6 +316,7 @@ class StudyListView(
     template_name = "studies/study_list.html"
     paginate_by = 10
     ordering = ("name",)
+    state = "all"
 
     def can_see_study_list(self):
         return self.request.user.is_researcher
@@ -325,24 +328,63 @@ class StudyListView(
         Returns paginated list of items for the StudyListView - handles filtering on state, match,
         and sort.
         """
-        user = self.request.user
-        query_dict = self.request.GET
+        query_dict = dict(self.request.GET)
+        query_dict["state"] = self.state
 
-        queryset = get_study_list_qs(user, query_dict)  # READ_STUDY_DETAILS permission
-
-        return queryset
+        # READ_STUDY_DETAILS permission
+        return get_study_list_qs(self.request.user, query_dict)
 
     def get_context_data(self, **kwargs):
         """
         Gets the context for the StudyListView and supplements with the state, match, and sort query params.
         """
         context = super().get_context_data(**kwargs)
-        context["state"] = self.request.GET.get("state", "all")
+        context["state"] = self.state
         context["match"] = self.request.GET.get("match", "")
         context["sort"] = self.request.GET.get("sort", "name")
         context["page"] = self.request.GET.get("page", "1")
         context["can_create_study"] = self.request.user.can_create_study()
         return context
+
+
+class StudyListViewActive(StudyListView):
+    template_name = "studies/study_list_active.html"
+    state = "active"
+
+
+class StudyListViewSubmitted(StudyListView):
+    template_name = "studies/study_list_submitted.html"
+    state = "submitted"
+
+
+class StudyListViewRejected(StudyListView):
+    template_name = "studies/study_list_rejected.html"
+    state = "rejected"
+
+
+class StudyListViewApproved(StudyListView):
+    template_name = "studies/study_list_approved.html"
+    state = "approved"
+
+
+class StudyListViewCreated(StudyListView):
+    template_name = "studies/study_list_created.html"
+    state = "created"
+
+
+class StudyListViewPaused(StudyListView):
+    template_name = "studies/study_list_paused.html"
+    state = "paused"
+
+
+class StudylistViewDeactivated(StudyListView):
+    template_name = "studies/study_list_deactivated.html"
+    state = "deactivated"
+
+
+class StudyListViewMyStudies(StudyListView):
+    # Use the template from super class
+    state = "myStudies"
 
 
 class StudyDetailView(
@@ -392,7 +434,7 @@ class StudyDetailView(
         """
         context = super(StudyDetailView, self).get_context_data(**kwargs)
 
-        study = context["study"]
+        study: Study = context["study"]
         admin_group = study.admin_group
 
         context["triggers"] = get_permitted_triggers(
@@ -434,13 +476,40 @@ class StudyDetailView(
         )
 
         context["comments"] = self.comments(study)
+        context["declarations"] = json.dumps(DECLARATIONS)
+        context["declarations_dict"] = DECLARATIONS
         return context
 
-    def comments(self, study: Study):
+    def comments(self, study: Study) -> Text:
+        comments_text = []
+
         if not study.lab.approved_to_test:
-            return f"It is not possible to submit or start this study until the lab {study.lab.name} is approved to test."
-        else:
-            return study.comments
+            comments_text.append(
+                f"It is not possible to submit or start this study until the lab {study.lab.name} is approved to test."
+            )
+        elif study.comments is not None:
+            comments_text.append(study.comments)
+
+        # if study is submitted, see if there are any declarations to display
+        if study.state == "submitted" and "declarations" in study.comments_extra:
+
+            declarations_state = ", ".join(
+                DECLARATIONS["submit"][k]
+                for k, v in study.comments_extra["declarations"].items()
+                if v and k in DECLARATIONS["submit"]
+            )
+
+            if declarations_state:
+                comments_text.append(f"Potential issues: {declarations_state}")
+
+            declarations_decription = study.comments_extra["declarations"][
+                "issues_description"
+            ]
+
+            if declarations_decription:
+                comments_text.append(declarations_decription)
+
+        return "\n\n".join(comments_text)
 
     def get_study_researchers(self):
         """Pulls researchers that belong to any study access groups for displaying/managing that access
@@ -667,6 +736,26 @@ class ChangeStudyStatusView(
             reverse("exp:study-detail", kwargs=dict(pk=self.get_object().pk))
         )
 
+    def update_declarations(self, trigger: Text, study: Study):
+        if study.comments_extra is None:
+            study.comments_extra = {}
+
+        if trigger in DECLARATIONS:
+            if "declarations" not in study.comments_extra:
+                study.comments_extra["declarations"] = {}
+
+            study.comments_extra["declarations"][
+                "issues_description"
+            ] = self.request.POST.get("issues_description", "")
+
+            for key in DECLARATIONS[trigger]:
+                study.comments_extra["declarations"][key] = (
+                    self.request.POST.get(key, None) is not None
+                )
+        else:
+            if "declarations" in study.comments_extra:
+                del study.comments_extra["declarations"]
+
     def update_trigger(self):
         """Transition to next state in study workflow.
 
@@ -674,17 +763,23 @@ class ChangeStudyStatusView(
         :type self: StudyDetailView or StudyUpdateView
         """
         trigger = self.request.POST.get("trigger")
-        object = self.get_object()
-        if trigger:
-            if hasattr(object, trigger):
-                if "comments-text" in self.request.POST.keys():
-                    object.comments = self.request.POST["comments-text"]
-                    object.save()
-                # transition through workflow state
-                getattr(object, trigger)(user=self.request.user)
-        displayed_state = object.state if object.state != "active" else "activated"
-        messages.success(self.request, f"Study {object.name} {displayed_state}.")
-        return object
+        study: Study = self.get_object()
+
+        if trigger and hasattr(study, trigger):
+
+            self.update_declarations(trigger, study)
+
+            if "comments-text" in self.request.POST.keys():
+                study.comments = self.request.POST["comments-text"]
+
+            study.save()
+
+            # transition through workflow state
+            getattr(study, trigger)(user=self.request.user)
+
+        displayed_state = study.state if study.state != "active" else "activated"
+        messages.success(self.request, f"Study {study.name} {displayed_state}.")
+        return study
 
 
 class CloneStudyView(
@@ -897,20 +992,33 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
         path replacement manually. Great! Just wonderful.
         """
 
-        study = Study.objects.get(uuid=kwargs.get("uuid", None))
+        study_uuid = kwargs.get("uuid", None)
+        child_uuid = kwargs.get("child_id", None)
+        study = Study.objects.get(uuid=study_uuid)
 
         if study.study_type.is_external:
-            child_uuid = kwargs["child_id"]
             response = create_external_response(study, child_uuid, preview=True)
             return HttpResponseRedirect(get_external_url(study, response))
-        else:
-            _, _, _, study_uuid, _, _, _, *rest = request.path.split("/")
-            path = f"{study_uuid}/{'/'.join(rest)}"
-            if not rest:
-                path += "index.html"
-            path = f"{kwargs['uuid']}/index.html"
 
-            return super().dispatch(request, path)
+        # Check if locale (language code) is present in the URL.
+        # If so, we need to re-write the request path without the locale
+        # so that it points to a working study URL.
+        path = request.path
+        locale_pattern = rf"/(?P<locale>[a-zA-Z-].+)/exp/studies/{study_uuid}/{child_uuid}/preview/(?P<rest>.*?)"
+        path_match = re.match(locale_pattern, path)
+        if path_match:
+            path = f"/exp/studies/{study_uuid}/{child_uuid}/preview/{path_match.group('rest')}"
+            url = request.build_absolute_uri(path)
+            # Using redirect instead of super().dispatch here to get around locale/translation middleware
+            return redirect(url)
+
+        if settings.DEBUG and settings.ENVIRONMENT == "develop":
+            # If we're in a local environment, then redirect to the ember server
+            url = f"{settings.EXPERIMENT_BASE_URL}{path}"
+            return redirect(url)
+
+        path = f"{study_uuid}/index.html"
+        return super().dispatch(request, path)
 
 
 # UTILITY FUNCTIONS

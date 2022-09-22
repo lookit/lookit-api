@@ -63,6 +63,14 @@ from exp.views.study import (
     ChangeStudyStatusView,
     CloneStudyView,
     ManageResearcherPermissionsView,
+    StudyListViewActive,
+    StudyListViewApproved,
+    StudyListViewCreated,
+    StudylistViewDeactivated,
+    StudyListViewMyStudies,
+    StudyListViewPaused,
+    StudyListViewRejected,
+    StudyListViewSubmitted,
 )
 
 app_name = "exp"
@@ -84,6 +92,30 @@ urlpatterns = [
     ),
     path("renamevideo/", csrf_exempt(RenameVideoView.as_view()), name="rename-video"),
     path("studies/", StudyListView.as_view(), name="study-list"),
+    path("studies/active/", StudyListViewActive.as_view(), name="study-list-active"),
+    path(
+        "studies/submitted/",
+        StudyListViewSubmitted.as_view(),
+        name="study-list-submitted",
+    ),
+    path(
+        "studies/rejected/", StudyListViewRejected.as_view(), name="study-list-rejected"
+    ),
+    path(
+        "studies/approved/", StudyListViewApproved.as_view(), name="study-list-approved"
+    ),
+    path("studies/created/", StudyListViewCreated.as_view(), name="study-list-created"),
+    path("studies/paused/", StudyListViewPaused.as_view(), name="study-list-paused"),
+    path(
+        "studies/deactivated/",
+        StudylistViewDeactivated.as_view(),
+        name="study-list-deactivated",
+    ),
+    path(
+        "studies/mystudies",
+        StudyListViewMyStudies.as_view(),
+        name="study-list-mystudies",
+    ),
     path(
         "studies/analytics/",
         StudyParticipantAnalyticsView.as_view(),

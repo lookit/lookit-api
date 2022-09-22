@@ -15,6 +15,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import model_to_dict
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 from django.views.generic.detail import SingleObjectMixin
 from django_dynamic_fixture import G
 from guardian.shortcuts import assign_perm, get_objects_for_user
@@ -399,6 +400,8 @@ class StudyViewsTestCase(TestCase):
         data = model_to_dict(self.study)
         data["metadata"] = new_metadata
         data["comments"] = "Changed experiment runner version"
+        data["comments_extra"] = {}
+        data["status_change_date"] = timezone.now()
         data["structure"] = json.dumps(data["structure"])
 
         self.assertTrue(self.study.built)
@@ -459,11 +462,15 @@ class StudyViewsTestCase(TestCase):
             self.lab_researcher,
             self.study,
         )
+
         data = model_to_dict(self.study)
         data["structure"] = json.dumps(
             {"frames": {"frame-c": {}}, "sequence": ["frame-c"]}
         )
         data["comments"] = "Changed protocol"
+        data["status_change_date"] = timezone.now()
+        data["comments_extra"] = {}
+
         response = self.client.post(url, data, follow=True)
         self.assertEqual(
             response.status_code,
