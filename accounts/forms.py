@@ -304,7 +304,7 @@ class DemographicDataForm(forms.ModelForm):
             "additional_comments": _("Anything else you'd like us to know?"),
             "lookit_referrer": _("How did you hear about Lookit?"),
             "us_race_ethnicity_identification": _(
-                "Which of the following best describes your family?"
+                "What racial group(s) do you identify with / belong to, if any? Select any that apply from the options below:"
             ),
             "us_race_ethnicity_identification_describe": _(
                 "Share more about your family's race, ethnicity, or origin:"
