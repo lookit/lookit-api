@@ -28,7 +28,6 @@ from exp.views import (
     ParticipantListView,
     PreviewProxyView,
     RenameVideoView,
-    ResearcherDashboardView,
     StudyAttachments,
     StudyBuildView,
     StudyChildrenCSV,
@@ -251,6 +250,5 @@ urlpatterns = [
         PreviewProxyView.as_view(),
         name="preview-proxy",
     ),
-    path("", ResearcherDashboardView.as_view(), name="dashboard"),
     path("support/", SupportView.as_view(), name="support"),
 ]

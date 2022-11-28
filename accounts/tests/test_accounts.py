@@ -150,7 +150,6 @@ class AuthenticationTestCase(TestCase):
                 "exp:preview-proxy",
                 kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
             ),
-            reverse("exp:dashboard"),
         ]
         # All the POST views that should be protected by 2fa - url, data to post tuples
         self.mfa_protected_post_views = [
@@ -241,9 +240,9 @@ class AuthenticationTestCase(TestCase):
     def test_researcher_regular_login_cannot_access_exp_views(self):
         self.client.login(username=self.researcher_email, password=self.test_password)
         for url in self.mfa_protected_get_views:
-            response = self.client.get(url, follow=True)
+            response = self.client.get(url)
             self.assertEqual(
-                response.redirect_chain[-1],
+                (response.url, response.status_code),
                 (reverse("accounts:2fa-login"), 302),
                 f"Researcher logged in without 2FA not redirected from {url}",
             )
