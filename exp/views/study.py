@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.db.models.functions import Lower
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.http.response import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.shortcuts import get_object_or_404, reverse
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 from revproxy.views import ProxyView
@@ -18,6 +18,7 @@ from revproxy.views import ProxyView
 from accounts.models import Child, User
 from exp.mixins.paginator_mixin import PaginatorMixin
 from exp.views.mixins import (
+    ResearcherAuthenticatedRedirectMixin,
     ResearcherLoginRequiredMixin,
     SingleObjectFetchProtocol,
     StudyTypeMixin,
@@ -946,7 +947,12 @@ class StudyPreviewDetailView(
         return HttpResponseRedirect(reverse("exp:preview-proxy", kwargs=kwargs))
 
 
-class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyView):
+class PreviewProxyView(
+    ResearcherAuthenticatedRedirectMixin,
+    ResearcherLoginRequiredMixin,
+    UserPassesTestMixin,
+    ProxyView,
+):
     """
     Proxy view to forward researcher to preview page in the Ember app
     """
@@ -1010,12 +1016,12 @@ class PreviewProxyView(ResearcherLoginRequiredMixin, UserPassesTestMixin, ProxyV
             path = f"/exp/studies/{study_uuid}/{child_uuid}/preview/{path_match.group('rest')}"
             url = request.build_absolute_uri(path)
             # Using redirect instead of super().dispatch here to get around locale/translation middleware
-            return redirect(url)
+            return self.authenticated_redirect(url)
 
         if settings.DEBUG and settings.ENVIRONMENT == "develop":
             # If we're in a local environment, then redirect to the ember server
             url = f"{settings.EXPERIMENT_BASE_URL}{path}"
-            return redirect(url)
+            return self.authenticated_redirect(url)
 
         path = f"{study_uuid}/index.html"
         return super().dispatch(request, path)
