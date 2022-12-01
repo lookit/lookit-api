@@ -964,12 +964,13 @@ class PreviewProxyView(
         request = self.request
         kwargs = self.kwargs
         user = request.user
+        is_researcher = getattr(user, "is_researcher", False)
 
-        if not user.is_researcher:
+        if not is_researcher:
             return False
 
         try:
-            child = Child.objects.get(uuid=kwargs.get("child_id", None))
+            child: Child = Child.objects.get(uuid=kwargs.get("child_id", None))
         except Child.DoesNotExist:
             return False
 
@@ -978,6 +979,8 @@ class PreviewProxyView(
         except Study.DoesNotExist:
             return False
 
+        print(child.user, request.user)
+
         if child.user != request.user:
             # requesting user doesn't belong to that child
             return False
@@ -985,7 +988,7 @@ class PreviewProxyView(
         # Relevant permission in order to preview is READ_STUDY_DETAILS (previewing is essentially
         # examining the study protocol configuration), rather than READY_STUDY_PREVIEW_DATA
         # (which has to do with accessing data from other preview sessions)
-        return (study.shared_preview and user.is_researcher) or user.has_study_perms(
+        return (study.shared_preview and is_researcher) or user.has_study_perms(
             StudyPermission.READ_STUDY_DETAILS, study
         )
 
