@@ -232,6 +232,7 @@ class StudyForm(ModelForm):
         fields = [
             "name",
             "lab",
+            "priority",
             "image",
             "preview_summary",
             "short_description",
@@ -296,6 +297,9 @@ class StudyForm(ModelForm):
                         "(age_in_days >= 365 AND age_in_days <= 1095)"
                     ),
                 }
+            ),
+            "priority": forms.TextInput(
+                attrs={"type": "range", "min": "1", "max": "99"}
             ),
         }
 

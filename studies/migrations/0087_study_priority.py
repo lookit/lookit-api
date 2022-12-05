@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("studies", "0085_study_comments_extra_set_default"),
+        ("studies", "0086_prior_studies_elegibility_criteria"),
     ]
 
     operations = [
