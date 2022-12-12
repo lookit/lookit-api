@@ -253,6 +253,8 @@ class StudyForm(ModelForm):
             "generator",
             "use_generator",
             "criteria_expression",
+            "must_have_participated",
+            "must_not_have_participated",
         ]
         labels = {
             "name": "Study Name",
