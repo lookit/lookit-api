@@ -979,8 +979,6 @@ class PreviewProxyView(
         except Study.DoesNotExist:
             return False
 
-        print(child.user, request.user)
-
         if child.user != request.user:
             # requesting user doesn't belong to that child
             return False
