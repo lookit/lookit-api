@@ -35,6 +35,7 @@ from accounts.queries import (
 from accounts.utils import hash_id
 from project import settings
 from studies.models import Response, Study, StudyType, Video
+from web.mixins import AuthenticatedRedirectMixin
 
 
 @receiver(signals.user_logged_out)
@@ -618,7 +619,12 @@ class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
         return super().dispatch(request, path, *args, **kwargs)
 
 
-class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
+class ExperimentProxyView(
+    AuthenticatedRedirectMixin,
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    ProxyView,
+):
     """
     Proxy view to forward user to participate page in the Ember app
     """
@@ -677,12 +683,12 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
             path = f"/studies/{study_uuid}/{child_uuid}/{path_match.group('rest')}"
             url = request.build_absolute_uri(path)
             # Using redirect instead of super().dispatch here to get around locale/translation middleware
-            return redirect(url)
+            return self.authenticated_redirect(url)
 
         if settings.DEBUG and settings.ENVIRONMENT == "develop":
             # If we're in a local environment, then redirect shortcut to switch to the ember server
             url = f"{settings.EXPERIMENT_BASE_URL}{path}"
-            return redirect(url)
+            return self.authenticated_redirect(url)
 
         path = f"{study_uuid}/index.html"
         return super().dispatch(request, path)

@@ -49,6 +49,7 @@ class AuthenticationTestCase(TestCase):
             creator=self.researcher,
             name="Fake Study",
             lab=self.lab,
+            shared_preview=True,
         )
 
         # Participant Setup
@@ -146,11 +147,6 @@ class AuthenticationTestCase(TestCase):
             ),
             reverse("exp:study-attachments", kwargs={"pk": self.study.pk}),
             reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid}),
-            reverse(
-                "exp:preview-proxy",
-                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
-            ),
-            reverse("exp:dashboard"),
         ]
         # All the POST views that should be protected by 2fa - url, data to post tuples
         self.mfa_protected_post_views = [
@@ -168,6 +164,43 @@ class AuthenticationTestCase(TestCase):
                 {"comment": "Thank you!", "response_id": self.response.pk},
             ),
         ]
+
+    def test_proxy_auth_researcher_success(self):
+        """Check if researcher can get redirected through proxy to experiment."""
+        client = Force2FAClient()
+        client.login(username=self.researcher_email, password=self.test_password)
+        researcher_child = G(
+            Child,
+            user=self.researcher,
+            given_name="Baby",
+            birthday=datetime.date.today() - datetime.timedelta(180),
+        )
+        url = reverse(
+            "exp:preview-proxy",
+            kwargs={"uuid": self.study.uuid, "child_id": researcher_child.uuid},
+        )
+        response = client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith(url))
+
+    def test_proxy_auth_researcher_fail(self):
+        """Check if researcher can get redirected to login page if they don't have 2fa setup."""
+        self.client.login(username=self.researcher_email, password=self.test_password)
+        researcher_child = G(
+            Child,
+            user=self.researcher,
+            given_name="Baby",
+            birthday=datetime.date.today() - datetime.timedelta(180),
+        )
+        url = reverse(
+            "exp:preview-proxy",
+            kwargs={"uuid": self.study.uuid, "child_id": researcher_child.uuid},
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("login"))
 
     def test_researcher_registration_flow(self):
         response = self.client.post(
@@ -241,9 +274,9 @@ class AuthenticationTestCase(TestCase):
     def test_researcher_regular_login_cannot_access_exp_views(self):
         self.client.login(username=self.researcher_email, password=self.test_password)
         for url in self.mfa_protected_get_views:
-            response = self.client.get(url, follow=True)
+            response = self.client.get(url)
             self.assertEqual(
-                response.redirect_chain[-1],
+                (response.url, response.status_code),
                 (reverse("accounts:2fa-login"), 302),
                 f"Researcher logged in without 2FA not redirected from {url}",
             )

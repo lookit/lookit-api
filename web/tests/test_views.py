@@ -746,6 +746,52 @@ class LabStudiesListViewTestCase(TestCase):
         self.assertEqual(url, mock_reverse())
 
 
+class ExperimentProxyViewTestCase(TestCase):
+    def setUp(self):
+        # Create user
+        self.user: User = G(User, is_active=True)
+
+        # Create user's child
+        self.child = G(Child, user=self.user)
+
+        # Create child that's not user's
+        self.other_child = G(Child)
+
+        # Some study
+        self.study = G(Study)
+        self.study_url = reverse(
+            "web:experiment-proxy",
+            kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
+        )
+        self.other_child_study_url = reverse(
+            "web:experiment-proxy",
+            kwargs={"uuid": self.study.uuid, "child_id": self.other_child.uuid},
+        )
+
+    def test_proxy_auth_success(self):
+        "Authenticated user can access experiment with their child."
+        self.client.force_login(self.user)
+        response = self.client.get(self.study_url)
+        self.assertNotEqual(self.user, self.other_child.user)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith(self.study_url))
+
+    def test_proxy_auth_fail_no_logged_in(self):
+        "Unauthenticated user is redirected to login when not logged in."
+        response = self.client.get(self.study_url)
+        self.assertEqual(self.user, self.child.user)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("login"))
+
+    def test_proxy_auth_fail_not_their_child(self):
+        "Unauthenticated user get redirecte to login when not their child."
+        self.client.force_login(self.user)
+        response = self.client.get(self.other_child_study_url)
+        self.assertNotEqual(self.user, self.other_child.user)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("login"))
+
+
 # TODO: StudyDetailView
 # - check can see for public or private active study, unauthenticated or authenticated
 # - check context[children] has own children
@@ -754,5 +800,3 @@ class LabStudiesListViewTestCase(TestCase):
 # child, not for consent frame incomplete.
 # TODO: ExperimentAssetsProxyView
 # - check have to be authenticated, maybe that's it for now?
-# TODO: ExperimentProxyView
-# - check have to be authenticated, has to be own child
