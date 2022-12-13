@@ -42,7 +42,10 @@ class ParticipantListView(
             qs = qs.filter(
                 reduce(
                     operator.or_,
-                    (Q(nickname__icontains=term) for term in match.split()),
+                    (
+                        Q(nickname__icontains=term) | Q(uuid__icontains=term)
+                        for term in match.split()
+                    ),
                 )
             )
 
