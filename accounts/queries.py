@@ -105,6 +105,16 @@ def get_child_eligibility_for_study(child_obj, study_obj):
 
 
 def get_child_participation_eligibility(child, study) -> bool:
+    """Check if child's participation in other studies changes their eligibility.
+
+    Args:
+        child (Child): Child model object
+        study (Study): Study model object
+
+    Returns:
+        bool: Return true if child is eligible based on their prior study participation
+    """
+    print("elibibilty")
     must_have_participated = True
     must_not_have_participated = True
 
