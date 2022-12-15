@@ -195,10 +195,29 @@
 </script>
 {% bootstrap_form_errors form %}
 {% bootstrap_field form.name %}
-{% bootstrap_field form.public %}
-{% bootstrap_field form.shared_preview %}
+{% bootstrap_field form.lab %}
+<hr />
+<div class="row">
+    <div class="col-xs-12">
+        <label class="control-label">Study Type</label>
+        <p>
+            Choose what type of study you are creating - this will change the fields that appear in the Experiment Details section.
+        </p>
+    </div>
+</div>
 {% bootstrap_field form.external %}
 {% bootstrap_field form.scheduled %}
+<hr />
+<div class="row">
+    <div class="col-xs-12">
+        <label class="control-label">"Studies" Card and Study Detail Page</label>
+        <p>
+            Add details about your study and how it should be displayed on Lookit
+        </p>
+    </div>
+</div>
+{% bootstrap_field form.public %}
+{% bootstrap_field form.shared_preview %}
 {% bootstrap_field form.image %}
 {% bootstrap_field form.preview_summary %}
 {% bootstrap_field form.short_description %}
@@ -206,15 +225,22 @@
 {% bootstrap_field form.compensation_description %}
 {% bootstrap_field form.exit_url %}
 {% bootstrap_field form.criteria %}
-{% bootstrap_field form.criteria_expression %}
-{% bootstrap_field form.must_have_participated %}
-{% bootstrap_field form.must_not_have_participated %}
+{% bootstrap_field form.duration %}
+{% bootstrap_field form.contact_info %}
+<hr />
+<div class="row">
+    <div class="col-xs-12">
+        <label class="control-label">Eligibility</label>
+        <p>
+            Choose the criteria used to determine if a child is currently eligible for a study. First set the age range and any restrictions on previous studies. Then you can add any additional rules for eligibility. Please visit our
+            <a href="https://lookit.readthedocs.io/en/develop/researchers-set-study-fields.html#criteria-expression">documentation</a>
+            for more details on how study eligibility works.
+        </p>
+    </div>
+</div>
 <div class="row">
     <div class="col-xs-12">
         <label class="control-label">Minimum Age Cutoff</label>
-        <p class="help-block">
-            This and the maximum age cutoff are used to check eligibility for studies; families who select a child outside the age range see a warning indicating that their data may not be used. The child's age in days is compared to these (inclusive) min and max ages (computed as years * 365 + months * 30 + days) to check eligibility.
-        </p>
     </div>
     <div class="col-xs-2">
         <div class="form-group">
@@ -341,12 +367,19 @@
         </div>
     </div>
 </div>
-{% bootstrap_field form.duration %}
-{% bootstrap_field form.contact_info %}
-{% bootstrap_field form.lab %}
+<p class="help-block">
+    Families who select a child outside the age range see a warning indicating that their data may not be used. The child's age in days is compared to these (inclusive) min and max ages (computed as years * 365 + months * 30 + days) to check eligibility.
+</p>
+{% bootstrap_field form.must_have_participated %}
+{% bootstrap_field form.must_not_have_participated %}
+{% bootstrap_field form.criteria_expression %}
+<hr />
 <div class="row">
     <div class="col-xs-12">
         <label class="control-label">Experiment Details</label>
+        <p>
+            Now it's time for the actual study! For internal studies, you will add a protocol configuration or generator. For external studies, you will paste in your study or scheduling link. If you don't see what you expect, check the "External" and "Scheduled" checkboxes at the top of this form!
+        </p>
     </div>
 </div>
 <div id="structure-container">{% bootstrap_field form.structure %}</div>
