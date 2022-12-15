@@ -97,9 +97,38 @@ def age_range_eligibility_for_study(child_age_range, study) -> bool:
 
 
 def get_child_eligibility_for_study(child_obj, study_obj):
-    return _child_in_age_range_for_study(
-        child_obj, study_obj
-    ) and get_child_eligibility(child_obj, study_obj.criteria_expression)
+    return (
+        get_child_participation_eligibility(child_obj, study_obj)
+        and _child_in_age_range_for_study(child_obj, study_obj)
+        and get_child_eligibility(child_obj, study_obj.criteria_expression)
+    )
+
+
+def get_child_participation_eligibility(child, study) -> bool:
+    """Check if child's participation in other studies changes their eligibility.
+
+    Args:
+        child (Child): Child model object
+        study (Study): Study model object
+
+    Returns:
+        bool: Return true if child is eligible based on their prior study participation
+    """
+    print("elibibilty")
+    must_have_participated = True
+    must_not_have_participated = True
+
+    if study.must_have_participated.exists():
+        must_have_participated = child.responses.filter(
+            study__in=study.must_have_participated.all()
+        ).exists()
+
+    if study.must_not_have_participated.exists():
+        must_not_have_participated = not child.responses.filter(
+            study__in=study.must_not_have_participated.all()
+        ).exists()
+
+    return must_have_participated and must_not_have_participated
 
 
 def _child_in_age_range_for_study(child, study):

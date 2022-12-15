@@ -338,6 +338,12 @@ class Study(models.Model):
     is_building = models.BooleanField(default=False)
     compensation_description = models.TextField(blank=True)
     criteria_expression = models.TextField(blank=True)
+    must_have_participated = models.ManyToManyField(
+        "self", blank=True, symmetrical=False, related_name="expected_participation"
+    )
+    must_not_have_participated = models.ManyToManyField(
+        "self", blank=True, symmetrical=False, related_name="expected_nonparticipation"
+    )
 
     # Groups
     # The related_name convention seems silly, but django complains about reverse
@@ -974,7 +980,7 @@ class Response(models.Model):
     # delete all data on parent request, delete the associated responses manually. May want
     # to be able to keep some minimal info about those responses though (e.g. #, # unique
     # users they came from).
-    child = models.ForeignKey(Child, on_delete=models.PROTECT)
+    child = models.ForeignKey(Child, on_delete=models.PROTECT, related_name="responses")
     is_preview = models.BooleanField(default=False)
     demographic_snapshot = models.ForeignKey(
         DemographicData, on_delete=models.SET_NULL, null=True

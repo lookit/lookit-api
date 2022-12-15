@@ -16,9 +16,18 @@ from accounts.queries import (
     age_range_eligibility_for_study,
     get_child_eligibility,
     get_child_eligibility_for_study,
+    get_child_participation_eligibility,
 )
 from studies.fields import GESTATIONAL_AGE_CHOICES
-from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
+from studies.models import (
+    ConsentRuling,
+    Lab,
+    Response,
+    Study,
+    StudyType,
+    StudyTypeEnum,
+    Video,
+)
 
 
 class AuthenticationTestCase(TestCase):
@@ -950,6 +959,57 @@ class EligibilityTestCase(TestCase):
         self.assertIs(
             age_range_eligibility_for_study(child_age_range, mock_study), expected
         )
+
+    def test_get_child_eligibilty_prior_studies_success(self):
+        study = G(Study, max_age_years=2, criteria_expression="")
+        child = G(Child, birthday=datetime.date.today())
+
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_prior_studies_must_have_participated(self):
+        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
+        other_study = G(Study, max_age_years=2, criteria_expression="")
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[other_study],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Add response
+        G(Response, child=child, study=other_study)
+
+        # Check with response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_prior_studies_must_not_have_participated(self):
+        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
+        other_study = G(Study, max_age_years=2, criteria_expression="")
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[other_study],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add response
+        G(Response, child=child, study=other_study)
+
+        # Check again with response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
 
 
 class Force2FAClient(Client):
