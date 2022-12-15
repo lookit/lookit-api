@@ -9,9 +9,6 @@ cache:
   directories:
     - $HOME/.cache/pre-commit 
 
-env:
-  - ENVIRONMENT=develop DEBUG=True
-
 services:
   - postgresql
 
