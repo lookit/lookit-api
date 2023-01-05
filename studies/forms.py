@@ -271,6 +271,7 @@ class StudyForm(ModelForm):
             "study_type": "Experiment Runner Type",
             "compensation_description": "Compensation",
             "use_generator": "Use protocol generator (advanced)",
+            "priority": "Lab Page Priority",
         }
         widgets = {
             "preview_summary": Textarea(attrs={"rows": 2}),
@@ -326,6 +327,7 @@ class StudyForm(ModelForm):
                 For more information on experiment runner types, please
                 <a href={STUDY_TYPE_HELP_LINK}>see the documentation.</a></p>""",
             "structure": PROTOCOL_HELP_TEXT_INITIAL,
+            "priority": f"This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at priority 1, all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you set the priority of this study to 100, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on study prioritization (link here).",
         }
 
 
