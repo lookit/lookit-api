@@ -191,6 +191,23 @@
             updateScheduling(scheduledCheckBox)
         })
         updateScheduling(scheduledCheckBox)
+
+        /*
+            Priority current value
+        */
+
+        // Add current priority element
+        const priority = document.querySelector('#id_priority');
+        const currentPriority = document.createElement('div');
+        currentPriority.id = 'current-priority';
+        priority.parentElement.insertBefore(currentPriority, priority);
+
+        // Event listener to update current priority value
+        priority.addEventListener('input', ()=>{currentPriority.innerHTML = `Current Priority: ${priority.value}`});
+        
+        // Call input event one time to populate current priority element
+        priority.dispatchEvent(new Event('input'));
+
     });
 </script>
 {% bootstrap_form_errors form %}
