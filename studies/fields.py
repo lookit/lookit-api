@@ -69,7 +69,7 @@ LANGUAGES = (
     ("gu", _("Gujarati")),
     ("hak", _("Hakka")),
     ("ha", _("Hausa")),
-    ("iw", _("Hebrew")),
+    ("he", _("Hebrew")),
     ("hi", _("Hindi")),
     ("ig", _("Igbo")),
     ("id", _("Indonesian")),
