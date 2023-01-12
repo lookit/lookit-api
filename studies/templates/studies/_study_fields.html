@@ -196,11 +196,23 @@
             Priority current value
         */
 
-        // Add current priority element
         const priority = document.querySelector('#id_priority');
         const currentPriority = document.createElement('div');
+        const priority_parent = priority.parentElement;
+        const highest = document.createElement('span');
+        const lowest = document.createElement('span');
+        const help_block = priority_parent.querySelector('.help-block');
+
+        // Add current priority element
         currentPriority.id = 'current-priority';
-        priority.parentElement.insertBefore(currentPriority, priority);
+        priority_parent.insertBefore(currentPriority, priority);
+
+        // Add priority labels
+        highest.innerHTML = 'Highest';
+        lowest.innerHTML = 'Lowest';
+        lowest.classList.add('priority-lowest');
+        priority_parent.insertBefore(highest, help_block);
+        priority_parent.insertBefore(lowest, help_block);
 
         // Event listener to update current priority value
         priority.addEventListener('input', ()=>{currentPriority.innerHTML = `Current Priority: ${priority.value}`});

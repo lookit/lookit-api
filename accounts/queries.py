@@ -114,7 +114,6 @@ def get_child_participation_eligibility(child, study) -> bool:
     Returns:
         bool: Return true if child is eligible based on their prior study participation
     """
-    print("elibibilty")
     must_have_participated = True
     must_not_have_participated = True
 
