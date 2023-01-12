@@ -9,9 +9,6 @@ cache:
   directories:
     - $HOME/.cache/pre-commit 
 
-env:
-  - ENVIRONMENT=develop DEBUG=True
-
 services:
   - postgresql
 
@@ -22,6 +19,7 @@ before_install:
   - curl -sSL https://install.python-poetry.org | python3 -
 
 install:
+  - cp env_dist .env
   - poetry env info
   - poetry install
 
