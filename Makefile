@@ -47,4 +47,4 @@ local-certs:
 	cd certs && mkcert local_lookit.mit.edu
 
 test:
-	docker compose run --rm web poetry run ./manage.py test --failfast
+	docker compose run --rm -e ENVIRONMEN= web poetry run ./manage.py test --failfast 
