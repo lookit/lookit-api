@@ -769,7 +769,7 @@ class ExperimentProxyViewTestCase(TestCase):
             kwargs={"uuid": self.study.uuid, "child_id": self.other_child.uuid},
         )
 
-    @skip("Issue with CI")
+    @skip("Issue with CI #1055")
     def test_proxy_auth_success(self):
         "Authenticated user can access experiment with their child."
         self.client.force_login(self.user)
@@ -785,7 +785,7 @@ class ExperimentProxyViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith(reverse("login")))
 
-    @skip("Issue with CI")
+    @skip("Issue with CI #1055")
     def test_proxy_auth_fail_not_their_child(self):
         "Unauthenticated user get redirecte to login when not their child."
         self.client.force_login(self.user)

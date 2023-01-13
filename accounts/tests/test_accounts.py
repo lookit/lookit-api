@@ -175,7 +175,7 @@ class AuthenticationTestCase(TestCase):
             ),
         ]
 
-    @skip("Issue with CI")
+    @skip("Issue with CI #1055")
     def test_proxy_auth_researcher_success(self):
         """Check if researcher can get redirected through proxy to experiment."""
         client = Force2FAClient()
@@ -195,7 +195,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.endswith(url))
 
-    @skip("Issue with CI")
+    @skip("Issue with CI #1055")
     def test_proxy_auth_researcher_fail(self):
         """Check if researcher can get redirected to login page if they don't have 2fa setup."""
         self.client.login(username=self.researcher_email, password=self.test_password)
