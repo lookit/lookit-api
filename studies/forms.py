@@ -5,6 +5,7 @@ from django import forms
 from django.db.models import Q
 from django.forms import ModelForm, Textarea
 from guardian.shortcuts import get_objects_for_user
+from PIL import Image
 
 from accounts.queries import compile_expression
 from studies.models import Lab, Response, Study
@@ -210,7 +211,7 @@ class StudyForm(ModelForm):
         try:
             json_data = json.loads(structure_text)  # loads string as json
             json_data["exact_text"] = structure_text
-        except:
+        except Exception:
             raise forms.ValidationError(
                 "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
@@ -226,6 +227,17 @@ class StudyForm(ModelForm):
             raise forms.ValidationError(f"Invalid criteria expression:\n{e.args[0]}")
 
         return criteria_expression
+
+    def clean_image(self):
+        cleaned_image = self.cleaned_data["image"]
+
+        with Image.open(cleaned_image) as image:
+            if image.width != image.height:
+                raise forms.ValidationError(
+                    f"Study image is {image.width} x {image.height} and it must be square."
+                )
+
+        return cleaned_image
 
     class Meta:
         model = Study
