@@ -126,10 +126,44 @@ class LabApprovalForm(ModelForm):
             "description",
             "irb_contact_info",
             "approved_to_test",
+            "banner",
+            "badge",
         ]
         widgets = {
             "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
         }
+
+    def clean_banner(self):
+        """This limits the banner ratio to being higher then 2 and less then 3.9.
+
+        Raises:
+            forms.ValidationError: If the banner is the wrong ratio, then alert the user.
+        """
+
+        cleaned_banner = self.cleaned_data["banner"]
+        ratio = 3.9
+
+        if cleaned_banner:
+            with Image.open(cleaned_banner) as image:
+                print(image.width / image.height)
+                if image.width / image.height < ratio:
+                    raise forms.ValidationError(
+                        f"Banner image ratio (w:h) is {image.width / image.height:.2}.  It should be at least {ratio}."
+                    )
+
+        return cleaned_banner
+
+    def clean_badge(self):
+        cleaned_badge = self.cleaned_data["badge"]
+
+        if cleaned_badge:
+            with Image.open(cleaned_badge) as image:
+                if image.width != image.height:
+                    raise forms.ValidationError(
+                        f"Badge image is {image.width} x {image.height} and it must be square."
+                    )
+
+        return cleaned_badge
 
 
 class StudyForm(ModelForm):
