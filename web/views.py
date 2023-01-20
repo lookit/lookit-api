@@ -479,6 +479,24 @@ class LabStudiesListView(StudiesListView):
         lab_slug = self.kwargs.get("lab_slug")
         return super().filter_studies(studies.filter(lab__slug=lab_slug))
 
+    def sort_fn(self):
+        """Sort by first reverse priority (Highest values first) and then by normal uuid/hash method.
+
+        Returns:
+            function: lamdba function to be used in sort method.
+        """
+        user = self.request.user
+        if user.is_anonymous:
+            return lambda s: (
+                s.priority * -1,
+                s.uuid.bytes,
+            )
+        else:
+            return lambda s: (
+                s.priority * -1,
+                sha256(user.uuid.bytes + s.uuid.bytes).hexdigest(),
+            )
+
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
     """

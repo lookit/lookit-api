@@ -11,6 +11,7 @@ from botocore.exceptions import ClientError
 from django.conf import settings
 from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.fields import ArrayField
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
@@ -289,6 +290,9 @@ class Study(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False, db_index=True)
     date_modified = models.DateTimeField(auto_now=True)
     status_change_date = models.DateTimeField(null=True)
+    priority = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(99)], default=99
+    )
     preview_summary = models.CharField(max_length=500, default="")
     short_description = models.TextField()
     purpose = models.TextField()

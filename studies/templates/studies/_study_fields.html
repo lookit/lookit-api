@@ -191,11 +191,42 @@
             updateScheduling(scheduledCheckBox)
         })
         updateScheduling(scheduledCheckBox)
+
+        /*
+            Priority current value
+        */
+
+        const priority = document.querySelector('#id_priority');
+        const currentPriority = document.createElement('div');
+        const priority_parent = priority.parentElement;
+        const highest = document.createElement('span');
+        const lowest = document.createElement('span');
+        const help_block = priority_parent.querySelector('.help-block');
+
+        // Add current priority element
+        currentPriority.id = 'current-priority';
+        priority_parent.insertBefore(currentPriority, priority);
+
+        // Add priority labels
+        highest.innerHTML = 'Highest';
+        lowest.innerHTML = 'Lowest';
+        highest.classList.add('priority-highest');
+        priority_parent.insertBefore(lowest, help_block);
+        priority_parent.insertBefore(highest, help_block);
+        
+
+        // Event listener to update current priority value
+        priority.addEventListener('input', ()=>{currentPriority.innerHTML = `Current Priority: ${priority.value}`});
+        
+        // Call input event one time to populate current priority element
+        priority.dispatchEvent(new Event('input'));
+
     });
 </script>
 {% bootstrap_form_errors form %}
 {% bootstrap_field form.name %}
 {% bootstrap_field form.lab %}
+{% bootstrap_field form.priority %}
 <hr />
 <div class="row">
     <div class="col-xs-12">
