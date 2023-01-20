@@ -34,7 +34,7 @@ from accounts.queries import (
 )
 from accounts.utils import hash_id
 from project import settings
-from studies.models import Response, Study, StudyType, Video
+from studies.models import Lab, Response, Study, StudyType, Video
 from web.mixins import AuthenticatedRedirectMixin
 
 
@@ -471,6 +471,8 @@ class StudiesListView(generic.ListView, FormView):
 
 
 class LabStudiesListView(StudiesListView):
+    template_name = "web/lab-studies-list.html"
+
     def get_success_url(self):
         lab_slug = self.kwargs.get("lab_slug")
         return reverse("web:lab-studies-list", args=[lab_slug])
@@ -478,6 +480,11 @@ class LabStudiesListView(StudiesListView):
     def filter_studies(self, studies: QuerySet) -> QuerySet:
         lab_slug = self.kwargs.get("lab_slug")
         return super().filter_studies(studies.filter(lab__slug=lab_slug))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["lab"] = Lab.objects.filter(slug=self.kwargs.get("lab_slug")).first()
+        return context
 
     def sort_fn(self):
         """Sort by first reverse priority (Highest values first) and then by normal uuid/hash method.
