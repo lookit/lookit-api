@@ -916,6 +916,6 @@ table.study-attachments caption {
     display: none;
 }
 
-span.priority-lowest {
+span.priority-highest {
     float: right;
 }

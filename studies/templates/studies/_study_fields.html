@@ -210,9 +210,10 @@
         // Add priority labels
         highest.innerHTML = 'Highest';
         lowest.innerHTML = 'Lowest';
-        lowest.classList.add('priority-lowest');
-        priority_parent.insertBefore(highest, help_block);
+        highest.classList.add('priority-highest');
         priority_parent.insertBefore(lowest, help_block);
+        priority_parent.insertBefore(highest, help_block);
+        
 
         // Event listener to update current priority value
         priority.addEventListener('input', ()=>{currentPriority.innerHTML = `Current Priority: ${priority.value}`});
