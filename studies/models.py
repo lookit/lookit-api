@@ -143,6 +143,8 @@ class Lab(models.Model):
         related_name="requested_labs",
         related_query_name="requested_lab",  # User.objects.filter(requested_lab=...)
     )
+    banner = models.ImageField(null=True, blank=True, upload_to="lab_images/")
+    badge = models.ImageField(null=True, blank=True, upload_to="lab_images/")
 
     class Meta:
         permissions = LabPermission
