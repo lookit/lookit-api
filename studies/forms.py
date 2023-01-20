@@ -134,14 +134,8 @@ class LabApprovalForm(ModelForm):
         }
 
     def clean_banner(self):
-        """This limits the banner ratio to being higher then 2 and less then 3.9.
-
-        Raises:
-            forms.ValidationError: If the banner is the wrong ratio, then alert the user.
-        """
-
         cleaned_banner = self.cleaned_data["banner"]
-        ratio = 3.9
+        ratio = 2
 
         if cleaned_banner:
             with Image.open(cleaned_banner) as image:
