@@ -313,7 +313,7 @@ class StudyForm(ModelForm):
 
         help_texts = {
             "lab": "Which lab this study will be affiliated with",
-            "image": "This is the image participants will see when browsing studies. Please keep your file size less than 1 MB.",
+            "image": "This is the image participants will see when browsing studies. Please make sure that your image file dimensions are square and the size is less than 1 MB.",
             "exit_url": "Specify the page where you want to send your participants after they've completed the study. (The 'Past studies' page on Lookit is a good default option.)",
             "preview_summary": "This is the text participants will see when browsing studies. Please keep your description under 100 words.",
             "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of how they will sign up and access the study session.",
