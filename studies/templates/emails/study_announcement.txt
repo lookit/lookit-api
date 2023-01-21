@@ -12,8 +12,11 @@ Why: {{ study.purpose }}
 
 Compensation: {{ study.compensation_description|default:"This is a volunteer-based study." }}
 
-You and your child can participate any time you want by going to "{{ study.name }}" on Lookit ({{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}). If you have any questions, please reply to this email to reach the {{ study.lab.name }} at {{ study.lab.contact_email }}.
+{% if study.show_scheduled %}You can schedule a time to participate with your child{% else %}You and your child can participate any time you want{% endif %} by going to "{{ study.name }}" on Lookit ({{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}). If you have any questions, please reply to this email to reach the {{ study.lab.name }} at {{ study.lab.contact_email }}.
 
 Thanks for contributing to the science of how kids learn - we hope to see you soon!
 
 -- the Lookit team
+
+
+Update your email preferences here: {{ base_url }}{% url 'web:email-preferences' %}

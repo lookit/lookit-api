@@ -30,7 +30,12 @@
 </li>
 </ul>
 <p>
-    You and your child can participate any time you want by going to
+    {% if study.show_scheduled %}
+        You can schedule a time to participate with your child
+    {% else %}
+        You and your child can participate any time you want
+    {% endif %}
+    by going to
     <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a> on Lookit.
 If you have any questions, please reply to this email to reach the {{ study.lab.name }} at
 {{ study.lab.contact_email }}.
@@ -39,3 +44,5 @@ If you have any questions, please reply to this email to reach the {{ study.lab.
     Thanks for contributing to the science of how kids learn - we hope to see you soon!
 </p>
 -- the Lookit team
+<br />
+<a href="{{ base_url }}{% url 'web:email-preferences' %}">Update your email preferences</a>
