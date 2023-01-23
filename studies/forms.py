@@ -133,6 +133,7 @@ class LabApprovalForm(ModelForm):
             "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
         }
         help_texts = {
+            "description": "A short (2-3 sentences), parent-facing description of what your lab studies or other information of interest to families. This description will be shown under the banner image on your custom URL page.",
             "banner": "This image will be shown at the top of your custom URL page, when it is viewed on a laptop/wide browser window. Please keep your file size less than 1 MB.",
             "badge": "This image will be shown at the top of your custom URL page when it is viewed on a mobile device/narrow browser window, and as a badge/avatar image for your lab. This image should be square. Please keep your file size less than 1 MB.",
         }
