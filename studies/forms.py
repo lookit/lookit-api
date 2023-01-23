@@ -123,11 +123,11 @@ class LabApprovalForm(ModelForm):
             "contact_phone",
             "lab_website",
             "slug",
+            "banner",
+            "badge",
             "description",
             "irb_contact_info",
             "approved_to_test",
-            "banner",
-            "badge",
         ]
         widgets = {
             "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
