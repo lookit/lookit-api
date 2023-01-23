@@ -123,6 +123,8 @@ class LabApprovalForm(ModelForm):
             "contact_phone",
             "lab_website",
             "slug",
+            "banner",
+            "badge",
             "description",
             "irb_contact_info",
             "approved_to_test",
@@ -130,6 +132,37 @@ class LabApprovalForm(ModelForm):
         widgets = {
             "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
         }
+        help_texts = {
+            "description": "A short (2-3 sentences), parent-facing description of what your lab studies or other information of interest to families. This description will be shown under the banner image on your custom URL page.",
+            "banner": "This image will be shown at the top of your custom URL page, when it is viewed on a laptop/wide browser window. Please keep your file size less than 1 MB.",
+            "badge": "This image will be shown at the top of your custom URL page when it is viewed on a mobile device/narrow browser window, and as a badge/avatar image for your lab. This image should be square. Please keep your file size less than 1 MB.",
+        }
+
+    def clean_banner(self):
+        cleaned_banner = self.cleaned_data["banner"]
+        ratio = 2
+
+        if cleaned_banner:
+            with Image.open(cleaned_banner) as image:
+                print(image.width / image.height)
+                if image.width / image.height < ratio:
+                    raise forms.ValidationError(
+                        f"Banner image ratio (w:h) is {image.width / image.height:.2}.  It should be at least {ratio}."
+                    )
+
+        return cleaned_banner
+
+    def clean_badge(self):
+        cleaned_badge = self.cleaned_data["badge"]
+
+        if cleaned_badge:
+            with Image.open(cleaned_badge) as image:
+                if image.width != image.height:
+                    raise forms.ValidationError(
+                        f"Badge image is {image.width} x {image.height} and it must be square."
+                    )
+
+        return cleaned_badge
 
 
 class StudyForm(ModelForm):
