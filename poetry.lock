@@ -613,18 +613,18 @@ python-crontab = ">=2.3.4"
 
 [[package]]
 name = "django-cors-headers"
-version = "3.4.0"
+version = "3.13.0"
 description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 files = [
-    {file = "django-cors-headers-3.4.0.tar.gz", hash = "sha256:f5218f2f0bb1210563ff87687afbf10786e080d8494a248e705507ebd92d7153"},
-    {file = "django_cors_headers-3.4.0-py3-none-any.whl", hash = "sha256:5240062ef0b16668ce8a5f43324c388d65f5439e1a30e22c38684d5ddaff0d15"},
+    {file = "django-cors-headers-3.13.0.tar.gz", hash = "sha256:f9dc6b4e3f611c3199700b3e5f3398c28757dcd559c2f82932687f3d0443cfdf"},
+    {file = "django_cors_headers-3.13.0-py3-none-any.whl", hash = "sha256:37e42883b5f1f2295df6b4bba96eb2417a14a03270cb24b2a07f021cd4487cf4"},
 ]
 
 [package.dependencies]
-Django = ">=2.0"
+Django = ">=3.2"
 
 [[package]]
 name = "django-countries"
@@ -2722,4 +2722,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ad430324f04ae4c9916f1b44a064d3277f13d3d837158e6cc2a1613fdef6ce14"
+content-hash = "20e57061ecee28c958fc25c6105fb9805cd153ad496b42b246eda90edb8e7a8a"
