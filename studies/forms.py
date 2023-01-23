@@ -96,26 +96,7 @@ class ResponseForm(ModelForm):
 class LabForm(ModelForm):
     class Meta:
         model = Lab
-        fields = [
-            "name",
-            "institution",
-            "principal_investigator_name",
-            "contact_email",
-            "contact_phone",
-            "lab_website",
-            "slug",
-            "description",
-            "irb_contact_info",
-        ]
-        widgets = {
-            "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
-        }
-
-
-class LabApprovalForm(ModelForm):
-    class Meta:
-        model = Lab
-        fields = [
+        fields = (
             "name",
             "institution",
             "principal_investigator_name",
@@ -127,8 +108,7 @@ class LabApprovalForm(ModelForm):
             "badge",
             "description",
             "irb_contact_info",
-            "approved_to_test",
-        ]
+        )
         widgets = {
             "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
         }
@@ -163,6 +143,12 @@ class LabApprovalForm(ModelForm):
                     )
 
         return cleaned_badge
+
+
+class LabApprovalForm(LabForm):
+    class Meta:
+        model = LabForm.Meta.model
+        fields = LabForm.Meta.fields + ("approved_to_test",)
 
 
 class StudyForm(ModelForm):
