@@ -23,7 +23,7 @@
                         <h1 class="panel-title">Create Lab</h1>
                     </div>
                     <div class="panel-body">
-                        <form action="" method="post">
+                        <form action="" enctype="multipart/form-data" method="post">
                             {% csrf_token %}
                             {% bootstrap_form_errors form %}
                             {% bootstrap_form form %}
