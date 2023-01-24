@@ -1405,14 +1405,20 @@ zookeeper = ["kazoo (>=1.3.1)"]
 
 [[package]]
 name = "lark-parser"
-version = "0.8.9"
+version = "0.12.0"
 description = "a modern parsing library"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "lark-parser-0.8.9.tar.gz", hash = "sha256:78915e9e59c7a3068830fd2d2cd733f7ab0cbea2d7928ebfaac4f8df10e4e989"},
+    {file = "lark-parser-0.12.0.tar.gz", hash = "sha256:15967db1f1214013dca65b1180745047b9be457d73da224fcda3d9dd4e96a138"},
+    {file = "lark_parser-0.12.0-py2.py3-none-any.whl", hash = "sha256:0eaf30cb5ba787fe404d73a7d6e61df97b21d5a63ac26c5008c78a494373c675"},
 ]
+
+[package.extras]
+atomic-cache = ["atomicwrites"]
+nearley = ["js2py"]
+regex = ["regex"]
 
 [[package]]
 name = "more-itertools"
@@ -2722,4 +2728,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "20e57061ecee28c958fc25c6105fb9805cd153ad496b42b246eda90edb8e7a8a"
+content-hash = "a17ddc64f37c3c392b5a6ef5d8912781303b7c5a274979c9bf3ba01204d7602a"
