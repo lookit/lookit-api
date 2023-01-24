@@ -224,7 +224,7 @@ class StudyForm(ModelForm):
         try:
             compile_expression(criteria_expression)
         except Exception as e:
-            raise forms.ValidationError(f"Invalid criteria expression:\n{e.args[0]}")
+            raise forms.ValidationError(f"Invalid criteria expression:\n{e.args}")
 
         return criteria_expression
 
