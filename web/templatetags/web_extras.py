@@ -1,4 +1,3 @@
-import os
 import textwrap
 from typing import Text
 
@@ -9,15 +8,13 @@ from django.utils.translation import gettext as _
 
 from accounts.forms import StudyListSearchForm
 from accounts.queries import get_child_eligibility
-from project.settings import DEBUG
+from project.settings import GOOGLE_TAG_MANAGER_ID
 
 register = template.Library()
 
-GOOGLE_TAG_MANAGER_ID = os.environ.get("GOOGLE_TAG_MANAGER_ID", "")
-
 
 def format(text: Text) -> Text:
-    if not DEBUG and GOOGLE_TAG_MANAGER_ID:
+    if GOOGLE_TAG_MANAGER_ID:
         return mark_safe(textwrap.dedent(text))
     else:
         return ""
@@ -80,11 +77,14 @@ def child_is_valid_for_study_criteria_expression(child, study):
 def google_tag_manager() -> Text:
     return format(
         f"""
-    <script>(function(w,d,s,l,i){{w[l]=w[l]||[];w[l].push({{'gtm.start':
-    new Date().getTime(),event:'gtm.js'}});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    }})(window,document,'script','dataLayer','{GOOGLE_TAG_MANAGER_ID}');</script>
+    <!-- Google tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={GOOGLE_TAG_MANAGER_ID}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){{dataLayer.push(arguments);}}
+        gtag('js', new Date());
+        gtag('config', '{GOOGLE_TAG_MANAGER_ID}');
+    </script>
     """
     )
 
