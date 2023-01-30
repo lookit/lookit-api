@@ -38,6 +38,23 @@ class LookitHandlerBase:
     kwargs: Dict
 
 
+class ResearcherAuthenticatedRedirectMixin(UserPassesTestMixin):
+    def authenticated_redirect(self, url):
+        request = self.request
+        user = request.user
+        is_researcher = getattr(user, "is_researcher", False)
+        enabled_2fa = request.session.get(TWO_FACTOR_AUTH_SESSION_KEY)
+
+        if is_researcher and enabled_2fa and self.test_func():
+            return redirect(url)
+        else:
+            messages.error(
+                request,
+                "Please log in with a research account to view this experiment.",
+            )
+            return redirect("login")
+
+
 class ResearcherLoginRequiredMixin(LookitHandlerBase, LoginRequiredMixin):
     """Require logged-in user; if not logged in, redirect to researcher login."""
 

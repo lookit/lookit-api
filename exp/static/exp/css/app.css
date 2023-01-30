@@ -915,3 +915,7 @@ table.study-responses caption,
 table.study-attachments caption {
     display: none;
 }
+
+span.priority-highest {
+    float: right;
+}

@@ -5,6 +5,7 @@
 {% endblock title %}
 {% block content %}
     <div class="container">
+        {% bootstrap_messages %}
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
@@ -26,7 +27,7 @@
                         <h1 class="panel-title">Update Lab</h1>
                     </div>
                     <div class="panel-body">
-                        <form action="" method="post">
+                        <form action="" enctype="multipart/form-data" method="post">
                             {% csrf_token %}
                             {% bootstrap_form_errors form %}
                             {% bootstrap_form form %}

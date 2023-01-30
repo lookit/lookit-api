@@ -5,6 +5,7 @@ from django import forms
 from django.db.models import Q
 from django.forms import ModelForm, Textarea
 from guardian.shortcuts import get_objects_for_user
+from PIL import Image
 
 from accounts.queries import compile_expression
 from studies.models import Lab, Response, Study
@@ -95,7 +96,7 @@ class ResponseForm(ModelForm):
 class LabForm(ModelForm):
     class Meta:
         model = Lab
-        fields = [
+        fields = (
             "name",
             "institution",
             "principal_investigator_name",
@@ -103,32 +104,51 @@ class LabForm(ModelForm):
             "contact_phone",
             "lab_website",
             "slug",
+            "banner",
+            "badge",
             "description",
             "irb_contact_info",
-        ]
+        )
         widgets = {
             "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
         }
+        help_texts = {
+            "description": "A short (2-3 sentences), parent-facing description of what your lab studies or other information of interest to families. This description will be shown under the banner image on your custom URL page.",
+            "banner": "This image will be shown at the top of your custom URL page, when it is viewed on a laptop/wide browser window. Please keep your file size less than 1 MB.",
+            "badge": "This image will be shown at the top of your custom URL page when it is viewed on a mobile device/narrow browser window, and as a badge/avatar image for your lab. This image should be square. Please keep your file size less than 1 MB.",
+        }
+
+    def clean_banner(self):
+        cleaned_banner = self.cleaned_data["banner"]
+        ratio = 2
+
+        if cleaned_banner:
+            with Image.open(cleaned_banner) as image:
+                print(image.width / image.height)
+                if image.width / image.height < ratio:
+                    raise forms.ValidationError(
+                        f"Banner image ratio (w:h) is {image.width / image.height:.2}.  It should be at least {ratio}."
+                    )
+
+        return cleaned_banner
+
+    def clean_badge(self):
+        cleaned_badge = self.cleaned_data["badge"]
+
+        if cleaned_badge:
+            with Image.open(cleaned_badge) as image:
+                if image.width != image.height:
+                    raise forms.ValidationError(
+                        f"Badge image is {image.width} x {image.height} and it must be square."
+                    )
+
+        return cleaned_badge
 
 
-class LabApprovalForm(ModelForm):
+class LabApprovalForm(LabForm):
     class Meta:
-        model = Lab
-        fields = [
-            "name",
-            "institution",
-            "principal_investigator_name",
-            "contact_email",
-            "contact_phone",
-            "lab_website",
-            "slug",
-            "description",
-            "irb_contact_info",
-            "approved_to_test",
-        ]
-        widgets = {
-            "slug": forms.TextInput(attrs={"placeholder": "my-lab-name"}),
-        }
+        model = LabForm.Meta.model
+        fields = LabForm.Meta.fields + ("approved_to_test",)
 
 
 class StudyForm(ModelForm):
@@ -210,7 +230,7 @@ class StudyForm(ModelForm):
         try:
             json_data = json.loads(structure_text)  # loads string as json
             json_data["exact_text"] = structure_text
-        except:
+        except Exception:
             raise forms.ValidationError(
                 "Saving protocol configuration failed due to invalid JSON! Please use valid JSON and save again. If you reload this page, all changes will be lost."
             )
@@ -223,15 +243,27 @@ class StudyForm(ModelForm):
         try:
             compile_expression(criteria_expression)
         except Exception as e:
-            raise forms.ValidationError(f"Invalid criteria expression:\n{e.args[0]}")
+            raise forms.ValidationError(f"Invalid criteria expression:\n{e.args}")
 
         return criteria_expression
+
+    def clean_image(self):
+        cleaned_image = self.cleaned_data["image"]
+
+        with Image.open(cleaned_image) as image:
+            if image.width != image.height:
+                raise forms.ValidationError(
+                    f"Study image is {image.width} x {image.height} and it must be square."
+                )
+
+        return cleaned_image
 
     class Meta:
         model = Study
         fields = [
             "name",
             "lab",
+            "priority",
             "image",
             "preview_summary",
             "short_description",
@@ -253,6 +285,8 @@ class StudyForm(ModelForm):
             "generator",
             "use_generator",
             "criteria_expression",
+            "must_have_participated",
+            "must_not_have_participated",
         ]
         labels = {
             "name": "Study Name",
@@ -268,6 +302,7 @@ class StudyForm(ModelForm):
             "study_type": "Experiment Runner Type",
             "compensation_description": "Compensation",
             "use_generator": "Use protocol generator (advanced)",
+            "priority": "Lab Page Priority",
         }
         widgets = {
             "preview_summary": Textarea(attrs={"rows": 2}),
@@ -295,20 +330,23 @@ class StudyForm(ModelForm):
                     ),
                 }
             ),
+            "priority": forms.TextInput(
+                attrs={"type": "range", "min": "1", "max": "99"}
+            ),
         }
 
         help_texts = {
             "lab": "Which lab this study will be affiliated with",
-            "image": "This is the image participants will see when browsing studies. Please keep your file size less than 1 MB.",
+            "image": "This is the image participants will see when browsing studies. Please make sure that your image file dimensions are square and the size is less than 1 MB.",
             "exit_url": "Specify the page where you want to send your participants after they've completed the study. (The 'Past studies' page on Lookit is a good default option.)",
             "preview_summary": "This is the text participants will see when browsing studies. Please keep your description under 100 words.",
             "short_description": "Describe what happens during your study here. This should give families a concrete idea of what they will be doing - e.g., reading a story together and answering questions, watching a short video, playing a game about numbers. If you are running a scheduled study, make sure to include a description of how they will sign up and access the study session.",
             "purpose": "Explain the purpose of your study here. This should address what question this study answers AND why that is an interesting or important question, in layperson-friendly terms.",
             "contact_info": "This should give the name of the PI for your study, and an email address where the PI or study staff can be reached with questions. Format: PIs Name (contact: youremail@lab.edu)",
-            "criteria": "Text shown to families - this is not used to actually verify eligibility.",
+            "criteria": "This is the description shown to families - it is not used to actually verify eligibility. You will set study eligibility in the next section.",
             "compensation_description": "Provide a description of any compensation for participation, including when and how participants will receive it and any limitations or eligibility criteria (e.g., only one gift card per participant, being in age range for study, child being visible in consent video). Please see the Terms of Use for details on allowable compensation and restrictions. If this field is left blank it will not be displayed to participants.",
             "criteria_expression": (
-                "Provide a relational expression indicating any criteria for eligibility besides the age range specified below."
+                "Provide a relational expression indicating any criteria for eligibility besides the age range and study restrictions above. "
                 "For more information on how to structure criteria expressions, please visit our "
                 f"<a href={CRITERIA_EXPRESSION_HELP_LINK}>documentation</a>."
             ),
@@ -320,6 +358,7 @@ class StudyForm(ModelForm):
                 For more information on experiment runner types, please
                 <a href={STUDY_TYPE_HELP_LINK}>see the documentation.</a></p>""",
             "structure": PROTOCOL_HELP_TEXT_INITIAL,
+            "priority": f"This affects how studies are ordered at your lab's custom URL, not the main study page. If you leave all studies at the highest priority (99), then all of your lab's active/discoverable studies will be shown in a randomized order on your lab page. If you lower the priority of this study to 1, then it will appear last in the list on your lab page. You can find your lab's custom URL from the <a href='/exp/labs/'>labs page</a>. For more info, see the documentation on <a href='https://lookit.readthedocs.io/en/develop/researchers-manage-org.html#ordering-studies-on-your-lab-page'>study prioritization</a>.",
         }
 
 

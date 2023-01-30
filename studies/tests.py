@@ -38,6 +38,9 @@ You and your child can participate any time you want by going to "The Most Fake 
 Thanks for contributing to the science of how kids learn - we hope to see you soon!
 
 -- the Lookit team
+
+
+Update your email preferences here: {base_url}/account/email/
 """
 
 

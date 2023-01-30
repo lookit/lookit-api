@@ -58,9 +58,10 @@ class StudyFormTestCase(TestCase):
         self.study = G(
             Study,
             image=SimpleUploadedFile(
-                "fake_image.png", b"fake-stuff", content_type="image/png"
-            ),  # we could also pass fill_nullable_fields=True
-            # See: https://django-dynamic-fixture.readthedocs.io/en/latest/data.html#fill-nullable-fields
+                name="test_image.jpg",
+                content=open("exp/tests/static/study_image.png", "rb").read(),
+                content_type="image/jpeg",
+            ),
             creator=self.study_admin,
             shared_preview=False,
             study_type=self.study_type,

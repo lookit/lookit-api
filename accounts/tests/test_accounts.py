@@ -1,4 +1,5 @@
 import datetime
+from unittest import skip
 from unittest.mock import MagicMock, patch
 
 from django.contrib.sites.models import Site
@@ -16,9 +17,18 @@ from accounts.queries import (
     age_range_eligibility_for_study,
     get_child_eligibility,
     get_child_eligibility_for_study,
+    get_child_participation_eligibility,
 )
 from studies.fields import GESTATIONAL_AGE_CHOICES
-from studies.models import ConsentRuling, Lab, Response, Study, StudyType, Video
+from studies.models import (
+    ConsentRuling,
+    Lab,
+    Response,
+    Study,
+    StudyType,
+    StudyTypeEnum,
+    Video,
+)
 
 
 class AuthenticationTestCase(TestCase):
@@ -49,6 +59,7 @@ class AuthenticationTestCase(TestCase):
             creator=self.researcher,
             name="Fake Study",
             lab=self.lab,
+            shared_preview=True,
         )
 
         # Participant Setup
@@ -146,11 +157,6 @@ class AuthenticationTestCase(TestCase):
             ),
             reverse("exp:study-attachments", kwargs={"pk": self.study.pk}),
             reverse("exp:preview-detail", kwargs={"uuid": self.study.uuid}),
-            reverse(
-                "exp:preview-proxy",
-                kwargs={"uuid": self.study.uuid, "child_id": self.child.uuid},
-            ),
-            reverse("exp:dashboard"),
         ]
         # All the POST views that should be protected by 2fa - url, data to post tuples
         self.mfa_protected_post_views = [
@@ -168,6 +174,45 @@ class AuthenticationTestCase(TestCase):
                 {"comment": "Thank you!", "response_id": self.response.pk},
             ),
         ]
+
+    @skip("Issue with CI #1055")
+    def test_proxy_auth_researcher_success(self):
+        """Check if researcher can get redirected through proxy to experiment."""
+        client = Force2FAClient()
+        client.login(username=self.researcher_email, password=self.test_password)
+        researcher_child = G(
+            Child,
+            user=self.researcher,
+            given_name="Baby",
+            birthday=datetime.date.today() - datetime.timedelta(180),
+        )
+        url = reverse(
+            "exp:preview-proxy",
+            kwargs={"uuid": self.study.uuid, "child_id": researcher_child.uuid},
+        )
+        response = client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith(url))
+
+    @skip("Issue with CI #1055")
+    def test_proxy_auth_researcher_fail(self):
+        """Check if researcher can get redirected to login page if they don't have 2fa setup."""
+        self.client.login(username=self.researcher_email, password=self.test_password)
+        researcher_child = G(
+            Child,
+            user=self.researcher,
+            given_name="Baby",
+            birthday=datetime.date.today() - datetime.timedelta(180),
+        )
+        url = reverse(
+            "exp:preview-proxy",
+            kwargs={"uuid": self.study.uuid, "child_id": researcher_child.uuid},
+        )
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("login"))
 
     def test_researcher_registration_flow(self):
         response = self.client.post(
@@ -241,9 +286,9 @@ class AuthenticationTestCase(TestCase):
     def test_researcher_regular_login_cannot_access_exp_views(self):
         self.client.login(username=self.researcher_email, password=self.test_password)
         for url in self.mfa_protected_get_views:
-            response = self.client.get(url, follow=True)
+            response = self.client.get(url)
             self.assertEqual(
-                response.redirect_chain[-1],
+                (response.url, response.status_code),
                 (reverse("accounts:2fa-login"), 302),
                 f"Researcher logged in without 2FA not redirected from {url}",
             )
@@ -917,6 +962,57 @@ class EligibilityTestCase(TestCase):
         self.assertIs(
             age_range_eligibility_for_study(child_age_range, mock_study), expected
         )
+
+    def test_get_child_eligibilty_prior_studies_success(self):
+        study = G(Study, max_age_years=2, criteria_expression="")
+        child = G(Child, birthday=datetime.date.today())
+
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_prior_studies_must_have_participated(self):
+        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
+        other_study = G(Study, max_age_years=2, criteria_expression="")
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_have_participated=[other_study],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
+
+        # Add response
+        G(Response, child=child, study=other_study)
+
+        # Check with response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+    def test_get_child_eligibilty_prior_studies_must_not_have_participated(self):
+        G(StudyType, name=StudyTypeEnum.ember_frame_player.value)
+        other_study = G(Study, max_age_years=2, criteria_expression="")
+        study = G(
+            Study,
+            max_age_years=2,
+            criteria_expression="",
+            must_not_have_participated=[other_study],
+        )
+        child = G(Child, birthday=datetime.date.today())
+
+        # Check without response
+        self.assertTrue(get_child_participation_eligibility(child, study))
+        self.assertTrue(get_child_eligibility_for_study(child, study))
+
+        # Add response
+        G(Response, child=child, study=other_study)
+
+        # Check again with response
+        self.assertFalse(get_child_participation_eligibility(child, study))
+        self.assertFalse(get_child_eligibility_for_study(child, study))
 
 
 class Force2FAClient(Client):

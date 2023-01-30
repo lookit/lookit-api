@@ -34,7 +34,8 @@ from accounts.queries import (
 )
 from accounts.utils import hash_id
 from project import settings
-from studies.models import Response, Study, StudyType, Video
+from studies.models import Lab, Response, Study, StudyType, Video
+from web.mixins import AuthenticatedRedirectMixin
 
 
 @receiver(signals.user_logged_out)
@@ -470,6 +471,8 @@ class StudiesListView(generic.ListView, FormView):
 
 
 class LabStudiesListView(StudiesListView):
+    template_name = "web/lab-studies-list.html"
+
     def get_success_url(self):
         lab_slug = self.kwargs.get("lab_slug")
         return reverse("web:lab-studies-list", args=[lab_slug])
@@ -477,6 +480,29 @@ class LabStudiesListView(StudiesListView):
     def filter_studies(self, studies: QuerySet) -> QuerySet:
         lab_slug = self.kwargs.get("lab_slug")
         return super().filter_studies(studies.filter(lab__slug=lab_slug))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["lab"] = Lab.objects.filter(slug=self.kwargs.get("lab_slug")).first()
+        return context
+
+    def sort_fn(self):
+        """Sort by first reverse priority (Highest values first) and then by normal uuid/hash method.
+
+        Returns:
+            function: lamdba function to be used in sort method.
+        """
+        user = self.request.user
+        if user.is_anonymous:
+            return lambda s: (
+                s.priority * -1,
+                s.uuid.bytes,
+            )
+        else:
+            return lambda s: (
+                s.priority * -1,
+                sha256(user.uuid.bytes + s.uuid.bytes).hexdigest(),
+            )
 
 
 class StudiesHistoryView(LoginRequiredMixin, generic.ListView, FormView):
@@ -618,7 +644,12 @@ class ExperimentAssetsProxyView(LoginRequiredMixin, ProxyView):
         return super().dispatch(request, path, *args, **kwargs)
 
 
-class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
+class ExperimentProxyView(
+    AuthenticatedRedirectMixin,
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    ProxyView,
+):
     """
     Proxy view to forward user to participate page in the Ember app
     """
@@ -677,12 +708,12 @@ class ExperimentProxyView(LoginRequiredMixin, UserPassesTestMixin, ProxyView):
             path = f"/studies/{study_uuid}/{child_uuid}/{path_match.group('rest')}"
             url = request.build_absolute_uri(path)
             # Using redirect instead of super().dispatch here to get around locale/translation middleware
-            return redirect(url)
+            return self.authenticated_redirect(url)
 
         if settings.DEBUG and settings.ENVIRONMENT == "develop":
             # If we're in a local environment, then redirect shortcut to switch to the ember server
             url = f"{settings.EXPERIMENT_BASE_URL}{path}"
-            return redirect(url)
+            return self.authenticated_redirect(url)
 
         path = f"{study_uuid}/index.html"
         return super().dispatch(request, path)

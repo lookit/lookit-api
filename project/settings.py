@@ -15,6 +15,8 @@ from pathlib import Path
 
 from django.contrib.messages import constants as messages
 
+GOOGLE_TAG_MANAGER_ID = os.environ.get("GOOGLE_TAG_MANAGER_ID", "")
+
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "develop")
 
 # Build paths inside the project as str(Path(BASE_DIR, ...).resolve()) or os.path.join(BASE_DIR, ...).
