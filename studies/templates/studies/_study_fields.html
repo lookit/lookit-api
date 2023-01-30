@@ -198,21 +198,21 @@
 
         const priority = document.querySelector('#id_priority');
         const currentPriority = document.createElement('div');
-        const priority_parent = priority.parentElement;
+        const priorityParent = priority.parentElement;
         const highest = document.createElement('span');
         const lowest = document.createElement('span');
-        const help_block = priority_parent.querySelector('.help-block');
+        const helpBlock = priorityParent.querySelector('.help-block');
 
         // Add current priority element
         currentPriority.id = 'current-priority';
-        priority_parent.insertBefore(currentPriority, priority);
+        priorityParent.insertBefore(currentPriority, priority);
 
         // Add priority labels
         highest.innerHTML = 'Highest';
         lowest.innerHTML = 'Lowest';
         highest.classList.add('priority-highest');
-        priority_parent.insertBefore(lowest, help_block);
-        priority_parent.insertBefore(highest, help_block);
+        priorityParent.insertBefore(lowest, helpBlock);
+        priorityParent.insertBefore(highest, helpBlock);
         
 
         // Event listener to update current priority value
@@ -220,6 +220,57 @@
         
         // Call input event one time to populate current priority element
         priority.dispatchEvent(new Event('input'));
+
+        /*
+            Participation Selection 
+        */
+
+        const mustHaveList = document.createElement('ul');
+        const mustNotHaveList = document.createElement('ul');
+        const mustHave = document.querySelector('#id_must_have_participated');
+        const mustNotHave = document.querySelector('#id_must_not_have_participated');
+        const mustHaveDiv = document.createElement('div');
+        const mustNotHaveDiv = document.createElement('div');
+
+        // List headers
+        mustHaveDiv.innerHTML = 'Participants must have participated in:';
+        mustNotHaveDiv.innerHTML = 'Participants must NOT have participated in:';
+        mustHave.parentElement.append(mustHaveDiv, mustHaveList);
+        mustNotHave.parentElement.append(mustNotHaveDiv, mustNotHaveList);
+
+        // Update list with current selection.  Hide header when list empty. 
+        function showSelectedStudies(select, ul, div){
+            const selection = select.querySelectorAll('option:checked');
+            ul.children && [...ul.children].forEach(e=>e.remove());
+            selection.forEach(e => {
+                const li = document.createElement('li');
+                li.innerHTML = e.innerHTML;
+                ul.append(li);
+            });
+            ul.children.length ? div.classList.remove('hidden') : div.classList.add('hidden');
+        }
+
+        // Augment default mousedown event for multi select.  Option is selected when clicked and 
+        // unselected when clicked again. 
+        function toggleSelection(el){
+            el.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+                // Adjust selection when element has focus.
+                if (document.activeElement === el.parentElement){
+                    el.selected = !el.selected
+                }
+                el.parentElement.focus();
+            });
+        }
+
+        // add event listeners to select and options.
+        mustHave.addEventListener('mousedown', ()=>{showSelectedStudies(mustHave, mustHaveList, mustHaveDiv);});
+        mustNotHave.addEventListener('mousedown', ()=>{showSelectedStudies(mustNotHave, mustNotHaveList, mustNotHaveDiv);});
+        [...mustHave.options, ...mustNotHave.options].forEach(el => toggleSelection(el));
+
+        // Trigger mousedown to populate ui.
+        mustHave.dispatchEvent(new Event('mousedown'));
+        mustNotHave.dispatchEvent(new Event('mousedown'));
 
     });
 </script>
