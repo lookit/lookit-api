@@ -19,7 +19,7 @@
                     <h3 class="panel-title">{% trans "Login" %}</h3>
                 </div>
                 <div class="panel-body">
-                    <form action="" method="post" class="form">
+                    <form action="" method="post" class="form" autocomplete="off">
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         {% buttons %}
