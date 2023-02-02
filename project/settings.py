@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     "guardian",
     "localflavor",
     "rest_framework",
-    "bootstrap3",
+    "django_bootstrap5",
     "ace_overlay",
     "corsheaders",
     "rest_framework.authtoken",
