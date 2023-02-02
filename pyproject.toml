@@ -13,7 +13,7 @@ Django = "3.2.11"
 django-ace-overlay = { git = "https://github.com/lookit/django-ace-overlay.git", branch = "master" }
 django-allauth = "0.42.0"
 django-bitfield = "2.1.0"
-django-bootstrap3 = "^21.1"
+django-bootstrap5 = "22.2"
 django-celery-beat = "2.0.0"
 django-cors-headers = "3.13.0"
 django-countries = "7.2.1"
