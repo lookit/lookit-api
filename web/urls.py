@@ -1,4 +1,5 @@
 from django.urls import path, re_path
+from django.views.generic.base import TemplateView
 
 from web import views
 
@@ -40,13 +41,33 @@ urlpatterns = [
         views.ExperimentAssetsProxyView.as_view(),
         name="experiment-assets-proxy",
     ),
-    path("", views.HomeView.as_view(), name="home"),
-    path("faq/", views.FAQView.as_view(), name="faq"),
-    path("privacy/", views.PrivacyView.as_view(), name="privacy"),
-    path("scientists/", views.ScientistsView.as_view(), name="scientists"),
-    path("contact_us/", views.ContactView.as_view(), name="contact"),
-    path("resources/", views.ResourcesView.as_view(), name="resources"),
-    path("termsofuse/", views.TermsOfUseView.as_view(), name="termsofuse"),
+    path("", TemplateView.as_view(template_name="web/home.html"), name="home"),
+    path("faq/", TemplateView.as_view(template_name="web/faq.html"), name="faq"),
+    path(
+        "privacy/",
+        TemplateView.as_view(template_name="web/privacy.html"),
+        name="privacy",
+    ),
+    path(
+        "scientists/",
+        TemplateView.as_view(template_name="web/scientists.html"),
+        name="scientists",
+    ),
+    path(
+        "contact_us/",
+        TemplateView.as_view(template_name="web/contact.html"),
+        name="contact",
+    ),
+    path(
+        "resources/",
+        TemplateView.as_view(template_name="web/resources.html"),
+        name="resources",
+    ),
+    path(
+        "termsofuse/",
+        TemplateView.as_view(template_name="web/termsofuse.html"),
+        name="termsofuse",
+    ),
     path(
         r"studies/<slug:lab_slug>/",
         views.LabStudiesListView.as_view(),
