@@ -20,7 +20,7 @@ def format(text: Text) -> Text:
         return ""
 
 
-def active_nav(request, url) -> Text:
+def active_nav(request, url) -> bool:
     """Determine is this button is the active button in the navigation bar.
 
     Args:
@@ -28,12 +28,9 @@ def active_nav(request, url) -> Text:
         url (Text): String url for the current view
 
     Returns:
-        Text: "active" if this is the active view, else empty string.
+        boolean: returns true if this path is active
     """
-    if request.path == url:
-        return "active"
-    else:
-        return ""
+    return request.path == url
 
 
 def nav_next(request, url, text, button):
@@ -53,9 +50,9 @@ def nav_next(request, url, text, button):
     if button:
         css_class = "btn btn-lg btn-default"
     elif active:
-        css_class = f"{active} btn-link"
+        css_class = f"btn active btn-link"
     else:
-        css_class = "btn-link"
+        css_class = "btn btn-link"
 
     form = f"""<form action="{url}" method="get">
     <button class="{css_class}" type="submit" value="login">{_(text)}</button>
@@ -90,7 +87,7 @@ def google_tag_manager() -> Text:
 
 
 @register.simple_tag
-def nav_item(request, url_name, text):
+def nav_link(request, url_name, text):
     """General navigation bar item
 
     Args:
@@ -101,11 +98,16 @@ def nav_item(request, url_name, text):
     Returns:
         SafeText: HTML of navigation item
     """
-    li_class = ""
+    html_classes = ["nav-link"]
     url = reverse(url_name)
-    li_class = active_nav(request, url)
+    aria_current = ""
+    if active_nav(request, url):
+        html_classes.append("active")
+        aria_current = ' aria-current="page"'
 
-    return mark_safe(f'<li class="{li_class}"><a href="{url}">{_(text)}</a></li>')
+    return mark_safe(
+        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
+    )
 
 
 @register.simple_tag
