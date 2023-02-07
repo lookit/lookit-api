@@ -11,7 +11,6 @@
             {% block title %}
             {% endblock title %}
         - {% trans "Lookit" %}</title>
-        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"/>
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta name="viewport"
               content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1"/>
@@ -19,12 +18,16 @@
         <meta name="description" value=""/>
         <meta name="keywords" value=""/>
         {% bootstrap_css %}
-        {% bootstrap_javascript %}
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
-              rel="stylesheet"/>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"/>
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
+              integrity="sha512-2L0dEjIN/DAmTV5puHriEIuQU/IL3CoPm/4eyZp3bM8dnaXri6lK8u6DC5L96b+YSs9f3Le81dDRZUSYeX4QcQ=="
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"/>
         <link type="text/css" rel="stylesheet" href="{% static 'base.css' %}" />
-        <script src="https://use.fontawesome.com/41c082d3c2.js"></script>
+        {% bootstrap_javascript %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js" integrity="sha512-ZvZXSc7TvLyNMr3bwgkRPQD2EqlnJ877gNEjv/EGbdve5mtTlRfXYfAhmFjtVyCfHw33lQvVfLwO52B/AzWnoA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         {% google_tag_manager %}
     </head>
     <body>
