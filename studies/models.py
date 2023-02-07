@@ -82,7 +82,7 @@ class Lab(models.Model):
         verbose_name="Custom URL Slug",
         help_text="A unique URL ending (slug) for the webpage that will show any discoverable, active studies for this lab. "
         "For example, entering \"my-lab-name\" in this box will produce the custom URL \"https://lookit.mit.edu/studies/my-lab-name\" "
-        "for this lab. Slugs can contain letters, numbers, underscores, and/or hyphens.",
+        "for this lab. Slugs should not contain spaces and can contain letters, numbers, underscores, and/or hyphens.",
     )
     institution = models.CharField(max_length=255, blank=True)
     principal_investigator_name = models.CharField(max_length=255, blank=False)
