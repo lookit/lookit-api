@@ -1,6 +1,9 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
 {% load i18n %}
+{% block title %}
+    {% trans "Login" %}
+{% endblock title %}
 {% block content %}
     {% trans "Login" as login %}
     <div class="card">
