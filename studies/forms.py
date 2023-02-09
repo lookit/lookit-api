@@ -311,7 +311,7 @@ class StudyForm(ModelForm):
             "compensation_description": Textarea(attrs={"rows": 2}),
             "exit_url": Textarea(attrs={"rows": 1}),
             "criteria": Textarea(
-                attrs={"rows": 1, "placeholder": "For 4-year-olds who love dinosaurs"}
+                attrs={"rows": 1, "placeholder": "For 4- to 6-year-olds"}
             ),
             "duration": Textarea(attrs={"rows": 1, "placeholder": "15 minutes"}),
             "contact_info": Textarea(
