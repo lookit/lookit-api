@@ -120,7 +120,7 @@ div.alert.alert-success.alert-dismissable button.close {
 
 /* JUMBOTRON */
 .home-jumbotron {
-    background: white url('images/chs_collage.png') center top no-repeat;
+    background: white url('../images/chs_collage.png') center top no-repeat;
     height: 595px;
 }
 
