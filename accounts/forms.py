@@ -478,7 +478,7 @@ class StudyListSearchForm(forms.Form):
     study_list_tabs = forms.ChoiceField(
         choices=Tabs.choices(),
         initial=0,
-        widget=forms.RadioSelect(attrs={"class": "hidden"}),
+        widget=forms.RadioSelect(attrs={"class": "d-none"}),
         required=False,
     )
     study_location = forms.ChoiceField(choices=StudyLocation.choices(), required=False)

@@ -338,10 +338,7 @@ class StudiesListView(generic.ListView, FormView):
 
         studies = self.filter_studies(studies)
 
-        studies = sorted(studies, key=self.sort_fn())
-
-        # convert studies in to a 3d list of four elements
-        return [studies[x : x + 4] for x in range(0, len(studies), 4)]
+        return sorted(studies, key=self.sort_fn())
 
     def filter_studies(self, studies: QuerySet) -> QuerySet:
         session = self.request.session
