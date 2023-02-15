@@ -76,7 +76,7 @@ $country.on('change', function () {
         hideField('state');
         $(`#id_state`)[0].value = '';
         hideField('us_race_ethnicity_identification');
-        $('input[name="us_race_ethnicity_identification"').each(function () {
+        $('input[name="us_race_ethnicity_identification"]').each(function () {
             this.checked = false;
         });
         hideField('education_level');
