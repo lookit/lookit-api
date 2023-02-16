@@ -1,4 +1,4 @@
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load static %}
 {% load guardian_tags %}
 {% load web_extras %}
@@ -47,6 +47,7 @@
                 {% endblock header %}
             </header>
             <section id="flash-messages">
+                {% bootstrap_messages %}
                 {% block flash %}
                 {% endblock flash %}
             </section>

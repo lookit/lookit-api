@@ -1,7 +1,47 @@
 {% extends "web/base.html" %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+{% load static %}
+{% load bootstrap_icons %}
 {% block title %}
-    {% trans "Home" %}
+    Home
 {% endblock title %}
 {% block content %}
-    <div class="container">{% trans "Home" %}</div>
+    <div class="row align-items-center position-relative">
+        <img class="img-fluid"
+             alt="CHS home page collage"
+             src="{% static 'images/chs_collage.png' %}"/>
+        <div class="d-flex flex-column align-items-center position-absolute bottom-0">
+            <h3 class="m-xl-4 m-md-1">{% trans "Powered by Lookit" %}</h3>
+            <h5>{% trans "Fun for Families, Serious for Science" %}</h5>
+            <a class="btn btn-primary btn-lg m-xl-5 m-md-1"
+               href="{% url 'web:studies-list' %}">{% trans "Participate in a Study" %}</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="text-center m-5">{% bs_icon "clipboard-data-fill" size='3.5em' %}</div>
+            <h3 class="text-center">{% trans "Help Science" %}</h3>
+            <p class="m-4">
+                {% trans "This website has studies you and your child can participate in from your home, brought to you by researchers from universities around the world!" %}
+            </p>
+        </div>
+        <div class="col-4">
+            <div class="text-center m-5">{% bs_icon "cup-hot-fill" size='3.5em' %}</div>
+            <h3 class="text-center">{% trans "From Home" %}</h3>
+            <p class="m-4">
+                {% trans "You and your child use your computer to participate. Some studies can also be done on a tablet or phone." %}
+            </p>
+        </div>
+        <div class="col-4">
+            <div class="text-center m-5">{% bs_icon "balloon-heart-fill" size='3.5em' %}</div>
+            <h3 class="text-center">{% trans "With Fun Activities" %}</h3>
+            <p class="m-4">
+                {% trans "Many studies are either short games, or listening to a story and answering questions about it. Some are available at any time, and others are a scheduled video chat with a researcher." %}
+            </p>
+        </div>
+    </div>
 {% endblock content %}
+{% block footer %}
+    {% include 'web/_footer.html' %}
+{% endblock footer %}
