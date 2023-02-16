@@ -134,7 +134,7 @@
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-6">{{ study.short_description }}</div>
+                    <div class="col-9">{{ study.short_description }}</div>
                     <div class="col-3">
                         {% if state in 'all,myStudies' %}
                             <div>
@@ -204,7 +204,7 @@
         </div>
     {% empty %}
         <div class="row">
-            <em class="mt-5 mb-5 text-center">No studies found!</em>
+            <em class="m-5 text-center">No studies found!</em>
         </div>
     {% endfor %}
     {% if object_list %}
