@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "localflavor",
     "rest_framework",
     "django_bootstrap5",
+    "django_bootstrap_icons",
     "ace_overlay",
     "corsheaders",
     "rest_framework.authtoken",
