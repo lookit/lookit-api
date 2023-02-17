@@ -48,9 +48,9 @@ def nav_next(request, url, text, button):
     active = active_nav(request, url)
 
     if button:
-        css_class = "btn btn-lg btn-default"
+        css_class = "nav-link navbar-link link-secondary border-0"
     elif active:
-        css_class = f"btn active btn-link"
+        css_class = f"btn active btn-secondary btn-link"
     else:
         css_class = "btn btn-link"
 
@@ -98,12 +98,11 @@ def nav_link(request, url_name, text, html_classes=None):
     Returns:
         SafeText: HTML of navigation item
     """
-    if html_classes is None:
-        html_classes = ["nav-link"]
+    html_classes = ["nav-link navbar-link link-secondary"]
     url = reverse(url_name)
     aria_current = ""
     if active_nav(request, url):
-        html_classes.append("active")
+        html_classes.append("active btn-secondary")
         aria_current = ' aria-current="page"'
 
     return mark_safe(
