@@ -1,207 +1,140 @@
 {% extends "web/base.html" %}
 {% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 {% load i18n %}
+{% load static %}
 {% block title %}
     {% trans "Past Studies" %}
 {% endblock title %}
+{% block head %}
+    <script src="{% static 'js/studies-history.js' %}" defer></script>
+{% endblock head %}
 {% block content %}
-    {% bootstrap_messages %}
-    <div class="lookit-row studies-row">
-        <form action method="post" class="hidden">
-            {% csrf_token %}
-            {{ form }}
-        </form>
-        <ul class="nav nav-tabs">
-            {% for tab in form.past_studies_tabs %}
-                <li role="past_studies_tabs" data-value="{{ tab.data.value }}">
-                    <a href="">{{ tab.data.label }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-        <div class="container">
-            <div id="past-studies">
-                {% if object_list %}
-                    <div class="panel-default">
-                        <div class="panel-body">{% trans "Here you can view your studies and see comments left by researchers:" %}</div>
-                    </div>
-                {% endif %}
+    {% bs_icon "arrow-right" as bs_icon_arrow_right %}
+    {% trans "Next Video" as trans_next_video %}
+    <form action method="post" class="d-none">
+        {% csrf_token %}
+        {{ form }}
+    </form>
+    <ul class="nav nav-tabs">
+        {% for tab in form.past_studies_tabs %}
+            <li class="nav-item"
+                role="past_studies_tabs"
+                data-value="{{ tab.data.value }}">
+                <a class="nav-link" href="">{{ tab.data.label }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% if object_list %}
+        <div class="m-3">{% trans "Here you can view your studies and see comments left by researchers:" %}</div>
+    {% endif %}
+    {% for study in object_list %}
+        <div class="card mb-5">
+            <div class="card-body">
+                <h3 class="card-title">{{ study.name }}</h3>
                 <div class="row">
-                    <div>
-                        {% for study in object_list %}
-                            <div class="col-md-12">
-                                <div class="thumbnail">
-                                    <div class="caption">
-                                        <!-- Title -->
-                                        <h3>{{ study.name }}</h3>
-                                        <!-- Study Info -->
-                                        <div class="study-feedback-experiment-info">
-                                            <div class="study-feedback-thumbnail-wrapper">
-                                                {% if study.image %}
-                                                    <p class="image-block">
-                                                        <img class="study-list-thumbnail"
-                                                             height="150"
-                                                             width="auto"
-                                                             alt="{% trans "Study Thumbnail" %}"
-                                                             src="{{ study.image.url }}"/>
-                                                    </p>
-                                                {% else %}
-                                                    <div class="study-list-placeholder">
-                                                        <i aria-hidden="true" class="fas fa-flask"></i>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                            <div class="study-feedback-description-wrapper">
-                                                {{ study.short_description|linebreaks }}
-                                                <div class="pt-sm">
-                                                    <strong>{% trans "Eligibility:" %}</strong> {{ study.criteria }}
-                                                <br />
-                                                <strong>{% trans "Contact:" %}</strong> {{ study.contact_info }}
-                                            <br />
-                                            <strong>{% trans "Still collecting data?" %}</strong>
-                                            {% if study.state == 'active' %}
-                                                {% trans "Yes" %}
-                                            {% else %}
-                                                {% trans "No" %}
-                                            {% endif %}
-                                            <br />
-                                            {% if study.compensation_description %}
-                                                <strong>{% trans "Compensation: " %}</strong>{{ study.compensation_description }}
-                                        {% endif %}
-                                    </div>
-                                </div>
+                    <div class="col-3">
+                        <img class="img-fluid"
+                             alt="{% trans "Study Thumbnail" %}"
+                             src="{{ study.image.url }}"/>
+                    </div>
+                    <div class="col-9">
+                        {{ study.short_description|linebreaks }}
+                        <div>
+                            <strong>{% trans "Eligibility" %}:</strong>
+                            {{ study.criteria }}
+                        </div>
+                        <div>
+                            <strong>{% trans "Contact" %}:</strong>
+                            {{ study.contact_info }}
+                        </div>
+                        <div>
+                            <strong>{% trans "Still collecting data?" %}</strong>
+                            {% if study.state == 'active' %}
+                                {% trans "Yes" %}
+                            {% else %}
+                                {% trans "No" %}
+                            {% endif %}
+                        </div>
+                        {% if study.compensation_description %}
+                            <div>
+                                <strong>{% trans "Compensation" %}:</strong>
+                                {{ study.compensation_description }}
                             </div>
-                            <!-- Responses -->
-                            <h4 class="study-feedback-label">{% trans "Study Responses" %}</h4>
-                            <section class="session-media-boxes">
-                                {% for response in study.responses.all %}
-                                    {% with videos=response.videos.all %}
-                                        <div class="media">
-                                            {% if study.show_videos %}
-                                                <div class="media-left media-top">
-                                                    {% if videos.0.download_url %}
-                                                        <video controls class="media-object" width="200">
-                                                            {% for video in videos %}
-                                                                <source src="{{ video.download_url }}"
-                                                                        type="video/mp4"
-                                                                        data-index="{{ forloop.counter }}"/>
-                                                            {% endfor %}
-                                                        </video>
-                                                        <button class="btn btn-primary btn-xs btn-block" type="button">
-                                                            <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Next
-                                                    {% trans "Video" %} (<span class="video-number">1</span>/{{ videos | length }})
-                                                </button>
-                                            {% else %}
-                                                <i aria-hidden="true" class="fas fa-question-circle fa-5x"></i>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-                                    <div class="media-body">
-                                        <dl class="dl-horizontal">
-                                            <dt>
-                                                {% trans "Child" %}
-                                            </dt>
-                                            <dd>
-                                                {{ response.child.given_name }}
-                                            </dd>
-                                            <dt>
-                                                {% trans "Date" %}
-                                            </dt>
-                                            <dd>
-                                                {{ response.date_created }}
-                                            </dd>
-                                            {% if study.show_consent %}
-                                                <dt>
-                                                    {% trans "Consent status" %}
-                                                </dt>
-                                                <dd>
-                                                    {% if response.most_recent_ruling == 'accepted' %}
-                                                        {% trans "Approved" %}
-                                                        <br />
-                                                        {% trans "Your consent video was reviewed by a researcher and is valid." %}
-                                                    {% elif response.most_recent_ruling == 'pending' %}
-                                                        {% trans "Pending" %}
-                                                        <br />
-                                                        {% trans "Your consent video has not yet been reviewed by a researcher." %}
-                                                    {% elif response.most_recent_ruling == 'rejected' %}
-                                                        {% trans "Invalid" %}
-                                                        <br />
-                                                        {% trans "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers." %}
-                                                    {% else %}
-                                                        {% trans "No information about consent video review status." %}
-                                                    {% endif %}
-                                                </dd>
-                                            {% endif %}
-                                            {% if response.feedback.all %}
-                                                <dt>
-                                                    {% trans "Feedback" %}
-                                                </dt>
-                                                <dd>
-                                                    <ul>
-                                                        {% for feedback in response.feedback.all %}
-                                                            <li class="response-feedback">{{ feedback.comment }}</li>
-                                                        {% empty %}
-                                                            <span class="response-feedback-none"><em>{% trans "None" %}</em></span>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </dd>
-                                            {% endif %}
-                                        </dl>
-                                    </div>
-                                </div>
-                            {% endwith %}
-                        {% endfor %}
-                    </section>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+                <h4 class="card-title">{% trans "Study Responses" %}</h4>
+                {% for response in study.responses.all %}
+                    <div class="row mb-3">
+                        <div class="col-3 d-flex flex-column">
+                            {% if response.videos.all %}
+                                <video controls width="100%" height="auto">
+                                    {% for video in response.videos.all %}
+                                        <source src="{{ video.download_url }}"
+                                                type="video/mp4"
+                                                data-index="{{ forloop.counter }}"/>
+                                    {% endfor %}
+                                </video>
+                                <button class="btn btn-primary btn-sm next-video d-flex justify-content-center align-items-center"
+                                        type="button">
+                                    {{ bs_icon_arrow_right }}
+                                    &nbsp;
+                                    {{ trans_next_video }}
+                                (<span class="video-number">1</span>/{{ response.videos.all | length }})
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="col">
+                        <div>
+                            <strong>{% trans "Child" %}:</strong>
+                            {{ response.child.given_name }}
+                        </div>
+                        <div>
+                            <strong>{% trans "Date" %}:</strong>
+                            {{ response.date_created }}
+                        </div>
+                        <div>
+                            <strong>{% trans "Date" %}:</strong>
+                            {{ response.date_created }}
+                        </div>
+                        {% if study.show_consent %}
+                            <div>
+                                <strong>{% trans "Consent status" %}:</strong>
+                                {% if response.most_recent_ruling == 'accepted' %}
+                                    {% trans "Approved" %}.
+                                    {% trans "Your consent video was reviewed by a researcher and is valid." %}
+                                {% elif response.most_recent_ruling == 'pending' %}
+                                    {% trans "Pending" %}.
+                                    {% trans "Your consent video has not yet been reviewed by a researcher." %}
+                                {% elif response.most_recent_ruling == 'rejected' %}
+                                    {% trans "Invalid" %}.
+                                    {% trans "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers." %}
+                                {% else %}
+                                    {% trans "No information about consent video review status." %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        {% if response.feedback.all %}
+                            <div>
+                                <strong>{% trans "Feedback" %}:</strong>
+                                <ul>
+                                    {% for feedback in response.feedback.all %}<li>{{ feedback.comment }}</li>{% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% empty %}
-        <div class="panel-default">
-            <div class="panel-body">
-                {% if study.study_type.is_ember_frame_player %}
-                    <em>{% trans "You have not yet participated in any Lookit studies." %}</em>
-                {% else %}
-                    <em>{% trans "You have not yet participated in any external studies." %}</em>
-                {% endif %}
-            </div>
-        </div>
-    {% endfor %}
-</div>
-</div>
-</div>
-</div>
-</div>
-<script type="text/javascript">
-    function handleVideoRotation(event) {
-        if (event.target.tagName === 'BUTTON') {
-            let button = event.target,
-                video = button.parentElement.children[0];
-
-            // This actually works.
-            // See: https://stackoverflow.com/questions/7742305/changing-the-order-of-elements
-            video.appendChild(video.firstElementChild);
-            button.querySelector('span.video-number').innerHTML = video.firstElementChild.dataset['index'];
-
-            video.load();
-        }
-    }
-
-    document.getElementById('past-studies').addEventListener('click', handleVideoRotation);
-
-    // Set active tab based on which "tabs" radio button is checked.
-    checked_radio = document.querySelector('input[name=past_studies_tabs]:checked')
-    active_tab = document.querySelector(`[data-value="${checked_radio.value}"]`)
-    active_tab.classList.add('active')
-
-    // On click, update radio group 
-    document.querySelectorAll('[role=past_studies_tabs]').forEach(function (tab) {
-        tab.addEventListener('click', function (event) {
-            event.preventDefault()
-            const radio = document.querySelector(`[name="past_studies_tabs"][value="${tab.dataset.value}"]`)
-            if (!radio.hasAttribute('checked')) {
-                radio.checked = true
-                document.querySelector('form').submit()
-            }
-        })
-    })
-</script>
+    </div>
+{% empty %}
+    <div class="m-3">
+        {% if study.study_type.is_ember_frame_player %}
+            <em>{% trans "You have not yet participated in any Lookit studies." %}</em>
+        {% else %}
+            <em>{% trans "You have not yet participated in any external studies." %}</em>
+        {% endif %}
+    </div>
+{% endfor %}
 {% endblock content %}
