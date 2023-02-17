@@ -165,3 +165,9 @@ def studies_tab_text(tabs):
                 return _(
                     'You and your child can participate in these studies by scheduling a time to meet with a researcher (usually over video conferencing). Choose a study and then click "Participate" to sign up for a study session in the future.'
                 )
+
+@register.filter(name='studies_tab_selected')
+def studies_tab_selected(value):
+    for tab in value:
+        if tab.data["selected"]:
+            return tab.data["value"]
