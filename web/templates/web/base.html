@@ -40,15 +40,15 @@
     </head>
     <body>
         <div class="container">
-            {% include 'web/_navigation.html' %}
+            {% block nav %}
+                {% include 'web/_navigation.html' %}
+            {% endblock nav %}
             {% bootstrap_messages %}
             {% block content %}
             {% endblock content %}
-            {% block footerjs %}
-            {% endblock footerjs %}
             {% block footer %}
+                {% include 'web/_footer.html' %}
             {% endblock footer %}
         </div>
-        {% comment %} {% include 'web/_footer.html' %} {% endcomment %}
     </body>
 </html>
