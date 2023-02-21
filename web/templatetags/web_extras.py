@@ -87,7 +87,7 @@ def google_tag_manager() -> Text:
 
 
 @register.simple_tag
-def nav_link(request, url_name, text):
+def nav_link(request, url_name, text, html_classes=None):
     """General navigation bar item
 
     Args:
@@ -98,7 +98,8 @@ def nav_link(request, url_name, text):
     Returns:
         SafeText: HTML of navigation item
     """
-    html_classes = ["nav-link"]
+    if html_classes is None:
+        html_classes = ["nav-link"]
     url = reverse(url_name)
     aria_current = ""
     if active_nav(request, url):
@@ -108,6 +109,11 @@ def nav_link(request, url_name, text):
     return mark_safe(
         f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
     )
+
+
+@register.simple_tag
+def dropdown_item(request, url_name, text):
+    return nav_link(request, url_name, text, ["dropdown-item"])
 
 
 @register.simple_tag
