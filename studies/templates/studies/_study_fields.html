@@ -13,7 +13,7 @@
     // Display an error if generator is not a valid JS function. Returns 0 if no errors, 1 if errors.
     function validateGenerator(code) {
 
-        const $errorToDisplay = $('<div id="clientside-generator-validation-message" class="help-block"></div>');
+        const $errorToDisplay = $('<div id="clientside-generator-validation-message" class="form-text"></div>');
         const $generatorField = $('#id_generator').closest('.mb-4');
         $generatorField.removeClass('has-error');
         $('#clientside-generator-validation-message').remove();
@@ -44,7 +44,7 @@
 
     // Display an error if structure is not a valid JSON string. Returns 0 if no errors, 1 if errors.
     function validateStructure(code) {
-        const $errorToDisplay = $('<div id="clientside-protocol-validation-message" class="help-block"></div>');
+        const $errorToDisplay = $('<div id="clientside-protocol-validation-message" class="form-text"></div>');
         const $protocolField = $('#id_structure').closest('.mb-4');
         $protocolField.removeClass('has-error');
         $('#clientside-protocol-validation-message').remove();
@@ -73,7 +73,7 @@
     function setExternal() {
             // hide frame player fields through css                
             document
-                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container, .use-generator.help-block')
+                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container, .use-generator.form-text')
                 .forEach(e => e.classList.add('d-none'))
             // disable frame player metadata fields
             document
@@ -90,7 +90,7 @@
     function setFramePlayer() {
             // hide external fields through css
             document
-                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container, .use-generator.help-block')
+                .querySelectorAll('#type-metadata-1, #structure-container, #generator-container, .use-generator.form-text')
                 .forEach(e => e.classList.remove('d-none'))
             // enable frame player metadata fields
             document
@@ -199,7 +199,7 @@
         const priorityParent = priority.parentElement;
         const highest = document.createElement('span');
         const lowest = document.createElement('span');
-        const helpBlock = priorityParent.querySelector('.form-text'); // should be .help-block but I don't know how to apply this class to the priority help text
+        const helpBlock = priorityParent.querySelector('.form-text');
 
         // Add current priority element
         currentPriority.id = 'current-priority';
@@ -393,7 +393,7 @@
         <label class="form-label" for="min_age_in_days">
             <em>Age in Days</em>
         </label>
-        <div><span class="help-block" id="min_age_in_days_val">0</span></div>
+        <div><span class="text-muted" id="min_age_in_days_val">0</span></div>
     </div>
 </div>
 <div class="row justify-content-start">
@@ -456,10 +456,10 @@
         <label class="form-label" for="max_age_in_days">
             <em>Age in Days</em>
         </label>
-        <div><span class="help-block" id="max_age_in_days_val">0</span></div>
+        <div><span class="text-muted" id="max_age_in_days_val">0</span></div>
     </div>
 </div>
-<p class="help-block text-muted">
+<p class="form-text">
     Families who select a child outside the age range see a warning indicating that their data may not be used. The child's age in days is compared to these (inclusive) min and max ages (computed as years * 365 + months * 30 + days) to check eligibility.
 </p>
 {% bootstrap_field form.must_have_participated label_class="form-label fw-bold" wrapper_class="mb-4" %}
@@ -476,5 +476,5 @@
 </div>
 <div id="structure-container">{% bootstrap_field form.structure label_class="form-label fw-bold" %}</div>
 {% bootstrap_field form.use_generator label_class="form-label" wrapper_class="" %}
-<div class="use-generator help-block text-muted form-text mb-4">{{ form.generator.help_text|safe }}</div>
+<div class="use-generator form-text mb-4">{{ form.generator.help_text|safe }}</div>
 <div id="generator-container">{% bootstrap_field form.generator show_help=False label_class="form-label fw-bold" %}</div>
