@@ -26,6 +26,16 @@
                 })
                 if (runner_type_changed) {
                     $('#invalidate-build-warning').show();
+                } else {
+                    let save_study_confirmation_empty = true;
+                    $("#save-study-confirmation-body").children().each(function() {
+                        if (!($(this).css("visibility") == "hidden" || $(this).css("display") == "none")) {
+                            save_study_confirmation_empty = false;
+                        }
+                    });
+                    if (save_study_confirmation_empty) {
+                        $("#save-study-confirmation-body").hide();
+                    }
                 }
             });
         });
@@ -40,7 +50,7 @@
         {% for message in messages %}
             {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
                 <div id="details" class="alert {{ message.tags }} alert-dismissable">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                    <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">×</a>
                     {{ message }}
                 </div>
             {% endif %}
@@ -83,52 +93,53 @@
                             {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
                             <div class="me-4 float-end">
                                 {% bootstrap_button "Cancel" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
-                                {% bootstrap_button "Save Changes" button_class="btn-success" href="#save-study-confirmation" id="save-button" data_toggle="modal" %}
+                                <button type="button" class="btn btn-success" data-bs-target="#save-study-confirmation" id="save-button" data-bs-toggle="modal">Save Changes</button>
                             </div>
-                            <div class="modal fade" id="save-study-confirmation">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">×</button>
-                                        <h3>Are you sure you want to modify {{ study.name }}?</h3>
-                                    </div>
-                                    {% if study.built or save_confirmation %}
-                                        <div class="modal-body">
-                                            {% if study.built %}
-                                                <p id="invalidate-build-warning">
-                                                    You have already built an experiment runner!
-                                                    Because you are changing the runner version, you will need to rebuild these
-                                                    before you can preview or start your study.
-                                                </p>
-                                            {% endif %}
-                                            {% if save_confirmation %}
-                                                <p>
-                                                    This study has already been
-                                                    <strong>approved</strong>
-                                                    . If you edit this study, the system will
-                                                    automatically give it a rejected status. You will have to resubmit
-                                                    the study so your changes can be reviewed.
-                                                </p>
-                                                <p>
-                                                    If your changes are limited to
-                                                    <ul>
-                                                        <li>whether the study is discoverable</li>
-                                                        <li>whether the preview is shared</li>
-                                                        <li>the minimum and maximum age or criteria expression</li>
-                                                        <li>the participant eligibility description</li>
-                                                        <li>
-                                                            the
-                                                            <em>formatting</em>
-                                                            of your study protocol
-                                                        </li>
-                                                    </ul>
-                                                    then your study will stay in its {{ study.state }} state.
-                                                </p>
-                                            {% endif %}
+                            <div class="modal fade" id="save-study-confirmation" tabindex="-1" aria-labelledby="save-study-confirmation-title" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="save-study-confirmation-title">Are you sure you want to modify {{ study.name }}?</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                    {% endif %}
-                                    <div class="modal-footer">
-                                        <a class="btn btn-light link-secondary border-secondary" href="{% url 'exp:study-edit' pk=study.id %}">Discard Changes</a>
-                                        <button id="save_study_details_confirm" type="submit" class="btn btn-danger">Save</button>
+                                        {% if study.built or save_confirmation %}
+                                            <div id="save-study-confirmation-body" class="modal-body">
+                                                {% if study.built %}
+                                                    <p id="invalidate-build-warning">
+                                                        You have already built an experiment runner!
+                                                        Because you are changing the runner version, you will need to rebuild these
+                                                        before you can preview or start your study.
+                                                    </p>
+                                                {% endif %}
+                                                {% if save_confirmation %}
+                                                    <p>
+                                                        This study has already been
+                                                        <strong>approved</strong>. If you edit this study, the system will
+                                                        automatically give it a rejected status. You will have to resubmit
+                                                        the study so your changes can be reviewed.
+                                                    </p>
+                                                    <p>
+                                                        If your changes are limited to
+                                                        <ul>
+                                                            <li>whether the study is discoverable</li>
+                                                            <li>whether the preview is shared</li>
+                                                            <li>the minimum and maximum age or criteria expression</li>
+                                                            <li>the participant eligibility description</li>
+                                                            <li>
+                                                                the
+                                                                <em>formatting</em>
+                                                                of your study protocol
+                                                            </li>
+                                                        </ul>
+                                                        then your study will stay in its {{ study.state }} state.
+                                                    </p>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                        <div class="modal-footer">
+                                            {% bootstrap_button "Discard Changes" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
+                                            {% bootstrap_button "Save" button_class="btn btn-danger" id="save_study_details_confirm" type="submit" %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
