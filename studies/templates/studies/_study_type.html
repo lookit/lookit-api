@@ -1,12 +1,14 @@
 {% load exp_extras %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 <script>
     function toggleOtherTextInput (e) {
         const otherTextInput = document.querySelector(`input[name=other_${e.name}]`)
         if (e.value === "Other"){
-            otherTextInput.classList.remove('hidden') 
+            otherTextInput.classList.remove('d-none') 
             otherTextInput.disabled = false
         } else {
-            otherTextInput.classList.add('hidden')
+            otherTextInput.classList.add('d-none')
             otherTextInput.disabled = true
         }
          
@@ -14,8 +16,8 @@
 
     $(document).ready(function () {
         var current_commit_date = "";
-        var $commit_description = $('#commit-description div.panel-body');
-        var $update_info = $('#commit-update-info div.panel-body');
+        var $commit_description = $('#commit-description div.card-body');
+        var $update_info = $('#commit-update-info div.card-body');
 
         function checkForUpdates(e) {
             e.preventDefault();
@@ -90,7 +92,7 @@
                                 data.commit.message = data.commit.message.slice(0, 1200) + "...";
                             }
                             var commit_description = `<p>Your study will use commit <a target="_blank" href="${data.html_url}">${data.sha}</a>:</p>` +
-                                `<table><tr><th scope="row">Date</th><td>${data.commit.author.date}</td></tr>` +
+                                `<table class="table"><tr><th scope="row">Date</th><td>${data.commit.author.date}</td></tr>` +
                                 `<tr><th scope="row">Author</th><td>${data.commit.author.name}</td></tr>` +
                                 `<tr><th scope="row">Message</th><td>${data.commit.message}</td></tr>` +
                                 `<tr><th scope="row">Files changed</th><td>${files_changed_list.join('<br>')}</td></tr></table>`
@@ -134,17 +136,17 @@
                             {% with field.value as value %}
                                 {% with key_help_text|get_key:key|default:"" as help_text %}
                                     {% if field.input_type == "checkbox" %}
-                                        <div class="form-group"
+                                        <div class="mb-4"
                                              data-previous='{% if not create %}{{ study.metadata|get_key:key|default:"" }}{% endif %}'>
                                             <input name="{{ key }}"
                                                    type="{{ field.input_type }}"
                                                    {% if study and study.metadata|get_key:key %}checked{% endif %}/>
-                                            <label>{{ key_display_names|get_key:key|default:key }}</label>
+                                            <label class="form-label fw-bold">{{ key_display_names|get_key:key|default:key }}</label>
                                         </div>
                                     {% elif field.input_type == "radio" %}
-                                        <div class="form-group">
+                                        <div class="mb-4">
                                             <label id="id_{{ field.name }}"
-                                                   class="control-label"
+                                                   class="form-label fw-bold"
                                                    title="{{ help_text }}">
                                                 {{ key_display_names|get_key:key|default:key }}
                                             </label>
@@ -162,23 +164,23 @@
                                                     {% if study %}
                                                         {% with "other_"|add:field.name as other_field %}
                                                             {% with study.metadata|get_key:other_field|default:'' as other_value %}
-                                                                <input class="form-control hidden"
+                                                                <input class="form-control d-none"
                                                                        type="text"
                                                                        name="other_{{ field.name }}"
                                                                        value="{{ other_value }}"/>
                                                             {% endwith %}
                                                         {% endwith %}
                                                     {% else %}
-                                                        <input class="form-control hidden" type="text" name="other_{{ field.name }}"/>
+                                                        <input class="form-control d-none" type="text" name="other_{{ field.name }}"/>
                                                     {% endif %}
                                                 {% endif %}
                                             {% endfor %}
                                             <div class="help-block">{{ help_text }}</div>
                                         </div>
                                     {% else %}
-                                        <div class="form-group metadata-key"
+                                        <div class="mb-4 metadata-key"
                                              data-previous='{% if not create %}{{ study.metadata|get_key:key|default:"" }}{% endif %}'>
-                                            <label class="control-label">{{ key_display_names|get_key:key|default:key }}</label>
+                                            <label class="form-label fw-bold">{{ key_display_names|get_key:key|default:key }}</label>
                                             <div class="input-container">
                                                 <input class="form-control"
                                                        title="{{ help_text }}"
@@ -190,20 +192,24 @@
                                         </div>
                                     {% endif %}
                                     {% if key == "last_known_player_sha" %}
-                                        <div id="commit-description" class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <h3 class="panel-title">
+                                        <div id="commit-description" class="card bg-light my-4">
+                                            <div class="card-header">
+                                                <h3 class="card-subtitle my-1">
                                                     About this version
-                                                    <button class="btn btn-default pull-right" id="update-button">Check for updates</button>
+                                                    <div class="float-end me-4">
+                                                        {% bootstrap_button "Check for updates" button_class="btn btn-light link-secondary border-secondary" id="update-button" %}
+                                                    </div>
                                                 </h3>
                                             </div>
-                                            <div class="panel-body"></div>
+                                            <div class="card-body"></div>
                                         </div>
-                                        <div id="commit-update-info" class="panel panel-default">
-                                            <div class="panel-heading">
-                                                <h3 class="panel-title">Update info</h3>
+                                        <div id="commit-update-info" class="card bg-light my-4">
+                                            <div class="card-header">
+                                                <h3 class="card-subtitle my-1">
+                                                    Update info
+                                                </h3>
                                             </div>
-                                            <div class="panel-body"></div>
+                                            <div class="card-body"></div>
                                         </div>
                                     {% endif %}
                                 {% endwith %}

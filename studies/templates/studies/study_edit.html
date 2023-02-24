@@ -3,6 +3,7 @@
 {% load bootstrap_icons %}
 {% load guardian_tags %}
 {% load exp_extras %}
+{% load bootstrap_icons %}
 {% block head %}
     {{ block.super }}
     <script type="application/javascript">
@@ -47,46 +48,42 @@
     {% endif %}
 {% endblock flash %}
 {% block content %}
+    {% bs_icon "play-circle" as bs_icon_play_circle %}
+    {% url 'exp:preview-detail' uuid=study.uuid as url_preview_detail %}
+    {% url 'exp:study-edit' pk=study.id as url_cancel %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li>
+                    <li class="breadcrumb-item">
                         <a href="{% url 'exp:study-list' %}">Manage Studies</a>
                     </li>
-                    <li>
+                    <li class="breadcrumb-item">
                         <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
                     </li>
-                    <li class="active">Edit</li>
+                    <li class="breadcrumb-item active">Edit</li>
                 </ol>
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-10 col-lg-offset-1">
-                <div class="panel panel-default mt-xl">
-                    <div class="panel-heading">
-                        <h1 class="panel-title">
+            <div class="col-lg-10 offset-lg-1">
+                <div class="card bg-light my-4">
+                    <div class="card-header">
+                        <h3 class="card-subtitle my-1">
                             Study Editor
-                            <a class="btn btn-default btn-sm pull-right"
-                               href="{% url 'exp:preview-detail' uuid=study.uuid %}"
-                               target="_blank"
-                               rel="noopener"
-                               id="preview-button">
-                                {% bs_icon "play-circle" %} Preview Study
-                            </a>
-                        </h1>
+                            <div class="float-end me-4">
+                                {% bootstrap_button bs_icon_play_circle|add:"Preview Study" href=url_preview_detail button_class="btn btn-light link-secondary border-secondary" %}
+                            </div>
+                        </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <form id="study-details-form" enctype="multipart/form-data" method="post">
                             {% csrf_token %}
                             {% include "studies/_study_fields.html" with form=form study=study %}
                             {% include "studies/_study_type.html" with types=types create=0 currentType=study.study_type.id %}
-                            <div class="pull-right">
-                                <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">Cancel</a>
-                                <a id="save-button"
-                                   data-toggle="modal"
-                                   class="btn btn-success"
-                                   href="#save-study-confirmation">Save Changes</a>
+                            <div class="me-4 float-end">
+                                {% bootstrap_button "Cancel" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
+                                {% bootstrap_button "Save Changes" button_class="btn-success" href="#save-study-confirmation" id="save-button" data_toggle="modal" %}
                             </div>
                             <div class="modal fade" id="save-study-confirmation">
                                 <div class="modal-content">
@@ -130,7 +127,7 @@
                                         </div>
                                     {% endif %}
                                     <div class="modal-footer">
-                                        <a class="btn btn-default" href="{% url 'exp:study-edit' pk=study.id %}">Discard Changes</a>
+                                        <a class="btn btn-light link-secondary border-secondary" href="{% url 'exp:study-edit' pk=study.id %}">Discard Changes</a>
                                         <button id="save_study_details_confirm" type="submit" class="btn btn-danger">Save</button>
                                     </div>
                                 </div>
