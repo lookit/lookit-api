@@ -60,7 +60,7 @@ def nav_next(request, url, text, button):
     </form>"""
 
     if not button:
-        form = f"<li>{form}</li>"
+        form = f"""<li class="nav-item text-center d-flex align-items-center text-dark">{form}</li>"""
 
     return mark_safe(form)
 
@@ -106,7 +106,7 @@ def nav_link(request, url_name, text, html_classes=None):
         aria_current = ' aria-current="page"'
 
     return mark_safe(
-        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
+        f'<li class="nav-item text-center d-flex align-items-center"><a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a></li>'
     )
 
 
