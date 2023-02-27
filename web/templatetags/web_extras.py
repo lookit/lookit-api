@@ -98,11 +98,11 @@ def nav_link(request, url_name, text, html_classes=None):
     Returns:
         SafeText: HTML of navigation item
     """
-    html_classes = ["nav-link navbar-link link-secondary"]
+    html_classes = ["nav-link","navbar-link","link-secondary"]
     url = reverse(url_name)
     aria_current = ""
     if active_nav(request, url):
-        html_classes.append("active btn-secondary")
+        html_classes.extend(["active","btn-secondary"])
         aria_current = ' aria-current="page"'
 
     return mark_safe(
