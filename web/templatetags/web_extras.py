@@ -48,7 +48,7 @@ def nav_next(request, url, text, button):
     active = active_nav(request, url)
 
     if button:
-        css_class = "nav-link navbar-link link-secondary border-0"
+        css_class = "nav-link navbar-link link-secondary border-0 text-center"
     elif active:
         css_class = f"btn active btn-secondary btn-link"
     else:
@@ -60,7 +60,7 @@ def nav_next(request, url, text, button):
     </form>"""
 
     if not button:
-        form = f"""<li class="nav-item text-center d-flex align-items-center text-dark">{form}</li>"""
+        form = f"""<li>{form}</li>"""
 
     return mark_safe(form)
 
@@ -98,7 +98,7 @@ def nav_link(request, url_name, text, html_classes=None):
     Returns:
         SafeText: HTML of navigation item
     """
-    html_classes = ["nav-link","navbar-link","link-secondary"]
+    html_classes = ["nav-link","navbar-link","link-secondary","text-center"]
     url = reverse(url_name)
     aria_current = ""
     if active_nav(request, url):
@@ -106,7 +106,7 @@ def nav_link(request, url_name, text, html_classes=None):
         aria_current = ' aria-current="page"'
 
     return mark_safe(
-        f'<li class="nav-item text-center d-flex align-items-center"><a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a></li>'
+        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
     )
 
 
