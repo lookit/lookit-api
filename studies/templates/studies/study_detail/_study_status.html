@@ -1,0 +1,74 @@
+{% load bootstrap_icons %}
+<div class="card mb-3">
+    <div class="card-header">Study Status</div>
+    <div class="card-body text-{{ state_ui_tag }}">
+        <div class="row">
+            <div class="col-9">
+                {{ study.name }}
+                is currently
+                <strong>{{ study.state }}.</strong>
+                <p>
+                    {{ status_tooltip }}
+                </p>
+            </div>
+            <div class="col-3">
+                <div class="dropdown">
+                    <button class="btn btn-primary btn-sm dropdown-toggle"
+                            type="button"
+                            id="dropdownMenuButton1"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        Change State
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        {% for trigger in triggers_with_labels %}
+                            <li>
+                                <a class="dropdown-item"
+                                   role="button"
+                                   href="#study-state-modal"
+                                   onclick="onStateSelect(this)"
+                                   data-toggle="modal"
+                                   data-trigger="{{ trigger.name }}">{{ trigger.label }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if comments %}
+        <div class="card-header border-top">Comments</div>
+        <div class="card-body  text-{{ state_ui_tag }}">
+            <em>{{ comments|linebreaks }}</em>
+        </div>
+    {% endif %}
+    {% if study.show_build_experiment_runner %}
+        <div class="card-body border-top text-{{ state_ui_tag }}">
+            <div class="row">
+                <div class="col-9">
+                    Experiment runner
+                    {% if not study.built %}
+                        {% if study.is_building %}
+                            building now.
+                        {% else %}
+                            not built.
+                        {% endif %}
+                    {% else %}
+                        built.
+                    {% endif %}
+                </div>
+                <div class="col-3">
+                    <form action="{% url 'exp:study-build' study.uuid %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="return" value="exp:study-detail"/>
+                        <button type="submit"
+                                class="btn btn-primary btn-sm"
+                                {% if study.built or study.is_building %}disabled{% endif %}>
+                            {% bs_icon "wrench" %} Build experiment runner
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
