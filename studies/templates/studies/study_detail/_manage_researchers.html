@@ -6,6 +6,7 @@
         <div class="row">
             <div class="col-6">
                 <form method="get" action="./#manage-researchers">
+                    <input type="hidden" name="page" value="1"/>
                     <div class="input-group">
                         <input id="search-organization"
                                class="form-control"
@@ -13,10 +14,9 @@
                                placeholder="Search lab"
                                type="text"
                                value="{{ search_query }}"/>
-                        <span class="input-group-btn">
-                            <input type="hidden" name="page" value="1"/>
-                            <button class="btn btn-default" type="submit" aria-label="Search researchers">{% bs_icon "search" %}</button>
-                        </span>
+                        <button class="btn btn-outline-secondary"
+                                type="submit"
+                                aria-label="Search researchers">{% bs_icon "search" %}</button>
                     </div>
                 </form>
                 {% if users_result %}

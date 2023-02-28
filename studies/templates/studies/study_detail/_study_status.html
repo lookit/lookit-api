@@ -12,27 +12,29 @@
                 </p>
             </div>
             <div class="col-3">
-                <div class="dropdown">
-                    <button class="btn btn-primary btn-sm dropdown-toggle"
-                            type="button"
-                            id="dropdownMenuButton1"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                        Change State
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        {% for trigger in triggers_with_labels %}
-                            <li>
-                                <a class="dropdown-item"
-                                   role="button"
-                                   href="#study-state-modal"
-                                   onclick="onStateSelect(this)"
-                                   data-toggle="modal"
-                                   data-trigger="{{ trigger.name }}">{{ trigger.label }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                {% if can_change_status %}
+                    <div class="dropdown small">
+                        <button class="btn btn-primary btn-sm dropdown-toggle"
+                                type="button"
+                                id="changeStudyState"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            Change State
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="changeStudyState">
+                            {% for trigger in triggers_with_labels %}
+                                <li>
+                                    <a class="dropdown-item small"
+                                       href="#study-state-modal"
+                                       onclick="onStateSelect(this)"
+                                       data-trigger="{{ trigger.name }}"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#studyStateModal">{{ trigger.label }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
