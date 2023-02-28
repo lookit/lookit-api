@@ -584,35 +584,19 @@ six = "*"
 tests = ["flake8", "mysqlclient", "psycopg2 (>=2.3)", "pytest-django"]
 
 [[package]]
-name = "django-bootstrap-icons"
-version = "0.8.2"
-description = "A quick way to add Bootstrap Icons with Django template tags."
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "django-bootstrap-icons-0.8.2.tar.gz", hash = "sha256:e7684db3af0fca41eb8aa9d2503c61942ca549c322b6e8a51e8b34abe14ae20d"},
-    {file = "django_bootstrap_icons-0.8.2-py3-none-any.whl", hash = "sha256:209fa35897dab37e6ca7d6eddc52734dd5f35b02c44e33ec3636eaf157778446"},
-]
-
-[package.dependencies]
-django = "*"
-requests = "*"
-
-[[package]]
-name = "django-bootstrap5"
-version = "22.2"
-description = "Bootstrap 5 for Django"
+name = "django-bootstrap3"
+version = "21.2"
+description = "Bootstrap 3 support for Django projects"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "django-bootstrap5-22.2.tar.gz", hash = "sha256:e944f5ced342e0e16cde77e1ddacb4b9fd5bce4cc190df2f7da0b8e18a24c9cb"},
-    {file = "django_bootstrap5-22.2-py3-none-any.whl", hash = "sha256:5d677bbfb94207c1a034d63a5f39d95ce287ef509e0b31dfb4d233cc81f93bcc"},
+    {file = "django-bootstrap3-21.2.tar.gz", hash = "sha256:9a7e95a053455c15cdcbc5dc7f9261f9aecf01d0558435b59e7b364765f2c3e2"},
+    {file = "django_bootstrap3-21.2-py3-none-any.whl", hash = "sha256:845a53e0f68fd520e3df6d53686a641e5008329e492687e225a0c394941dd430"},
 ]
 
 [package.dependencies]
-Django = ">=3.2"
+Django = ">=2.2"
 
 [[package]]
 name = "django-celery-beat"
@@ -2748,4 +2732,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "47cdfece4c2fb8e3c34c3d1075382e401d263f4eabb75383bd27e9fd0a7e05d0"
+content-hash = "5524efc056e790c8c34780cb8152a4427791243b4e2820e11ac0af50aa2c765f"
