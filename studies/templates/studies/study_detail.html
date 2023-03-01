@@ -1,5 +1,6 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 {% load guardian_tags %}
 {% load static %}
 {% load tz %}
@@ -195,28 +196,28 @@
                                    href="{% url 'exp:preview-detail' uuid=study.uuid %}"
                                    target="_blank"
                                    rel="noopener">
-                                    {% bootstrap_icon "play-circle" %} Preview Study
+                                    {% bs_icon "play-circle" %} Preview Study
                                 </a>
                             {% endif %}
                             {% if can_edit_study_details %}
                                 <a type="button"
                                    class="btn btn-default"
                                    href="{% url 'exp:study-edit' pk=study.id %}">
-                                    {% bootstrap_icon "edit" %} Edit Study
+                                    {% bs_icon "edit" %} Edit Study
                                 </a>
                             {% endif %}
                             {% if "read_study__responses" in study_perms or "read_study__responses(is_preview=True)" in study_perms %}
                                 <a type="button"
                                    class="btn btn-default"
                                    href="{% url 'exp:study-responses-all' pk=study.id %}">
-                                    {% bootstrap_icon "comment" %} View Study Responses
+                                    {% bs_icon "comment" %} View Study Responses
                                 </a>
                             {% endif %}
                             {% if "edit_study__message_set" in study_perms %}
                                 <a type="button"
                                    class="btn btn-default"
                                    href="{% url 'exp:study-participant-contact' pk=study.id %}">
-                                    {% bootstrap_icon "envelope" %}
+                                    {% bs_icon "envelope" %}
                                     Message Participants
                                 </a>
                             {% endif %}
@@ -225,7 +226,7 @@
                                     <a type="button"
                                        class="btn btn-default"
                                        href="{% url 'exp:study-responses-consent-manager' pk=study.id %}?{% query_transform request sort='-date_created' %}">
-                                        {% bootstrap_icon "th-list" %}
+                                        {% bs_icon "th-list" %}
                                         Review Consent
                                     </a>
                                 {% endif %}
@@ -244,7 +245,7 @@
                                    class="btn btn-default"
                                    role="button"
                                    onclick="cloneStudy()">
-                                    {% bootstrap_icon "duplicate" %}
+                                    {% bs_icon "duplicate" %}
                                     Clone Study
                                 </a>
                             {% endif %}
@@ -279,7 +280,7 @@
                                        aria-haspopup="true"
                                        aria-expanded="false">
                                         Change State
-                                        {% bootstrap_icon "menu-down" %}
+                                        {% bs_icon "menu-down" %}
                                     </a>
                                     <ul class="dropdown-menu">
                                         {% for trigger in triggers_with_labels %}
@@ -329,7 +330,7 @@
                                         <button type="submit"
                                                 class="btn btn-default btn-sm"
                                                 {% if study.built or study.is_building %}disabled{% endif %}>
-                                            {% bootstrap_icon "wrench" %} Build experiment runner
+                                            {% bs_icon "wrench" %} Build experiment runner
                                         </button>
                                     </form>
                                 </div>
@@ -362,7 +363,7 @@
                                             <span class="input-group-btn">
                                                 <input type="hidden" name="page" value="1"/>
                                                 <button class="btn btn-default" type="submit" aria-label="Search researchers">
-                                                    {% bootstrap_icon "search" %}
+                                                    {% bs_icon "search" %}
                                                 </button>
                                             </span>
                                         </div>
@@ -386,7 +387,7 @@
                                                                     type="submit"
                                                                     value="{{ user.id }}"
                                                                     class="btn btn-success btn-sm">
-                                                                {% bootstrap_icon "plus" %}
+                                                                {% bs_icon "plus" %}
                                                             </button>
                                                         </form>
                                                     </div>
@@ -462,7 +463,7 @@
                                                             type="submit"
                                                             class="btn btn-danger btn-sm">
                                                         <span class="hidden-xs">
-                                                            {% bootstrap_icon "minus" %}
+                                                            {% bs_icon "minus" %}
                                                         </span>
                                                         <span class="visible-xs">Remove</span>
                                                     </button>

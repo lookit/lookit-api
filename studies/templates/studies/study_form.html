@@ -1,5 +1,6 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 {% block title %}
     Create Study
 {% endblock title %}
@@ -52,9 +53,7 @@
                             <div class="pull-right">
                                 {% buttons %}
                                 <a href="{% url 'exp:study-list' %}" class="btn btn-default">Cancel</a>
-                                <button type="submit" id="create-study-button" class="btn btn-success">
-                                    {% bootstrap_icon "plus" %} Create Study
-                                </button>
+                                <button type="submit" id="create-study-button" class="btn btn-success">{% bs_icon "plus" %} Create Study</button>
                             {% endbuttons %}
                         </div>
                     </form>
