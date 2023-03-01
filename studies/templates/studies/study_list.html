@@ -5,17 +5,6 @@
 {% block title %}
     Studies
 {% endblock title %}
-{% block head %}
-    {{ block.super }}
-    <script>
-    $(document).ready(function () {
-        // Place searched value into search bar after page loads
-        if ("{{ match }}" !== '') {
-            document.getElementById("search-studies").value = "{{ match }}";
-        }
-    });
-    </script>
-{% endblock head %}
 {% block content %}
     {% bs_icon "plus" as bs_icon_plus %}
     {% url 'exp:study-create' as url_study_create %}
@@ -32,7 +21,8 @@
                    name="match"
                    placeholder="Filter name or description"
                    size="50"
-                   type="text"/>
+                   type="text"
+                   value="{{ match }}"/>
             <input type="hidden" name="sort" value="{{ sort }}"/>
             <input type="hidden" name="state" value="{{ state }}"/>
             <input type="hidden" name="page" value="1"/>
@@ -134,7 +124,7 @@
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-6">{{ study.short_description }}</div>
+                    <div class="col-9">{{ study.short_description }}</div>
                     <div class="col-3">
                         {% if state in 'all,myStudies' %}
                             <div>
@@ -204,7 +194,7 @@
         </div>
     {% empty %}
         <div class="row">
-            <em class="mt-5 mb-5 text-center">No studies found!</em>
+            <em class="m-5 text-center">No studies found!</em>
         </div>
     {% endfor %}
     {% if object_list %}

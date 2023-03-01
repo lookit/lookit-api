@@ -13,8 +13,8 @@ function handleVideoRotation(event) {
 document.querySelectorAll('button.next-video').forEach(el => el.addEventListener('click', handleVideoRotation));
 
 // Set active tab based on which "tabs" radio button is checked.
-checked_radio = document.querySelector('input[name=past_studies_tabs]:checked')
-active_tab = document.querySelector(`[data-value="${checked_radio.value}"] a`)
+const checked_radio = document.querySelector('input[name=past_studies_tabs]:checked')
+const active_tab = document.querySelector(`[data-value="${checked_radio.value}"] a`)
 active_tab.classList.add('active')
 
 // On click, update radio group 
