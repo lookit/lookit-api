@@ -7,19 +7,17 @@
         {% if user.is_researcher %}
             <a class="nav-link" href="{% url 'exp:study-list' %}">{% trans "Experimenter" %}</a>
         {% endif %}
-        {% block nav_links %}
-            {% nav_link request 'web:studies-list' 'Studies' %}
-            {% nav_link request 'web:faq' 'FAQ' %}
-            {% nav_link request 'web:scientists' 'The Scientists' %}
-            {% nav_link request 'web:resources' 'Resources' %}
-            {% if user.is_authenticated %}
-                {% nav_link request 'accounts:manage-account' 'My Account' %}
-                {% nav_link request 'web:studies-history' 'My Past Studies' %}
-                {% nav_link request 'logout' logout %}
-            {% else %}
-                {% nav_signup request %}
-                {% nav_login request %}
-            {% endif %}
-        {% endblock nav_links %}
+        {% nav_link request 'web:studies-list' 'Studies' %}
+        {% nav_link request 'web:faq' 'FAQ' %}
+        {% nav_link request 'web:scientists' 'The Scientists' %}
+        {% nav_link request 'web:resources' 'Resources' %}
+        {% if user.is_authenticated %}
+            {% nav_link request 'accounts:manage-account' 'My Account' %}
+            {% nav_link request 'web:studies-history' 'My Past Studies' %}
+            {% nav_link request 'logout' logout %}
+        {% else %}
+            {% nav_signup request %}
+            {% nav_login request %}
+        {% endif %}
     </nav>
 </header>
