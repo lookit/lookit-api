@@ -24,12 +24,11 @@
     </h1>
     <div>Last Active: {{ user.last_login|date:"n/d/Y"|default:"N/A" }}</div>
     <div>Participant global ID: {{ user.uuid }}</div>
-    <div class="row border-bottom mb-3">
+    <div class="row mb-3 mt-4">
         <div class="col-6">
-            <h3>{% trans "Children" %}</h3>
             {% for child in children %}
-                <div class="bg-light p-2 fst-italic">{{ child.given_name }}</div>
-                <table class="table table-borderless table-hover table-sm">
+                <table class="table table-borderless table-sm small caption-top">
+                    <caption class="bg-light p-2 fst-italic">{{ child.given_name }}</caption>
                     <tbody>
                         <tr>
                             <th scope="row">{% trans "Birthday" %}:</th>
@@ -52,8 +51,8 @@
             {% endfor %}
         </div>
         <div class="col-6">
-            <h3>{% trans "Latest Demographic Data" %}</h3>
-            <table class="table table-borderless table-hover table-sm">
+            <table class="table table-borderless table-sm small caption-top">
+                <caption class="h4 bg-light p-2">{% trans "Latest Demographic Data" %}</caption>
                 <tr>
                     <th scope="row">{% trans "Country" %}:</th>
                     <td>{{ demographics.country|default:"No Response" }}</td>
@@ -89,17 +88,11 @@
                     <td>{{ demographics.number_of_guardians|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        {% trans "Explanation for Guardians:" %}
-                    </th>
-                    <td>
-                        {{ demographics.number_of_guardians_explanation|default:"No Response" }}
-                    </td>
+                    <th scope="row">{% trans "Explanation for Guardians:" %}</th>
+                    <td>{{ demographics.number_of_guardians_explanation|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">
-                        {% trans "Race" %}:
-                    </th>
+                    <th scope="row">{% trans "Race" %}:</th>
                     <td>
                         {{ demographics.us_race_ethnicity_identification|default:"No Response" }}
                     </td>
@@ -171,16 +164,16 @@
             </table>
         </div>
     </div>
-    <h3>
-        {% if user.nickname %}
-            {{ user.nickname }}
-        {% else %}
-            Participant ID {{ user.id }}
-        {% endif %}
-        's Studies
-    </h3>
     {% if studies %}
-        <table class="table">
+        <table class="table table-hover caption-top">
+            <caption class="h3 bg-light p-2">
+                {% if user.nickname %}
+                    {{ user.nickname }}'s
+                {% else %}
+                    Participant ID {{ user.id }}'s
+                {% endif %}
+                Studies
+            </caption>
             <thead>
                 <tr>
                     <th scope="col">
