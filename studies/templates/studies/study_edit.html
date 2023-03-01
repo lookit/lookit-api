@@ -1,5 +1,6 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
+{% load bootstrap_icons %}
 {% load guardian_tags %}
 {% load exp_extras %}
 {% block head %}
@@ -71,7 +72,7 @@
                                target="_blank"
                                rel="noopener"
                                id="preview-button">
-                                {% bootstrap_icon "play-circle" %} Preview Study
+                                {% bs_icon "play-circle" %} Preview Study
                             </a>
                         </h1>
                     </div>
