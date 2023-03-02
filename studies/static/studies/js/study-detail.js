@@ -1,18 +1,10 @@
 $.fn.editable.defaults.mode = 'inline';
 
 $.fn.editableform.buttons = `
-<button type="submit" class="btn btn-primary btn-sm editable-submit">ok</button>
-<button type="button" class="btn btn-secondary btn-sm editable-cancel">cancel</button>
+<button type="submit" class="btn btn-primary btn-sm editable-submit">&#x2713;</button>
+<button type="button" class="btn btn-secondary btn-sm editable-cancel">&#x2715;</button>
 `
 
-$.fn.editableform.template = `
-<form class="form-inline editableform">
-<div class="control-group">
-     <div><div class="editable-input"></div><div class="editable-buttons"></div></div>
-     <div class="editable-error-block"></div>
-</div> 
-</form>
-`
 
 function removeTooltip() {
     $('[data-toggle="tooltip"]').tooltip('hide');

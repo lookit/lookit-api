@@ -9,16 +9,6 @@
 {% endblock title %}
 {% block head %}
     {{ block.super }}
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/poshytip/1.2/tip-skyblue/tip-skyblue.min.css"
-          integrity="sha512-0xuxtZvZDaJUhA6GHvu54/dhA2scceFWfBxC4B4g1fVGqQSngoZ6zR4m/reuRRjLzLrmQBXjyyFZ1rUxWAxkDQ=="
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/poshytip/1.2/jquery.poshytip.min.js" integrity="sha512-/WRL6m0vrZwChpCDXLzRVpFqM5FqmF0k5A7NWQ+HvhtUtREs8MemDuFcMfEHZqg53UJmWbrs9aAWl6cDwdDv6w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/jquery-editable/css/jquery-editable.css"
-          rel="stylesheet"/>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/jquery-editable/js/jquery-editable-poshytip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.4.0/clipboard.min.js" integrity="sha512-iJh0F10blr9SC3d0Ow1ZKHi9kt12NYa+ISlmCdlCdNZzFwjH1JppRTeAnypvUez01HroZhAmP4ro4AvZ/rG0UQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         window.transitionHelpData = JSON.parse('{{ transition_help | escapejs }}');
         window.commentsHelpData = JSON.parse('{{ comments_help | escapejs }}');
