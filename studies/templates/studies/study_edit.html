@@ -70,7 +70,7 @@
                                             <h5 class="modal-title" id="save-study-confirmation-title">Are you sure you want to modify {{ study.name }}?</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        {% if study.built or save_confirmation %}q
+                                        {% if study.built or save_confirmation %}
                                             <div id="save-study-confirmation-body" class="modal-body">
                                                 {% if study.built %}
                                                     <p id="invalidate-build-warning">
