@@ -1,9 +1,9 @@
 // Show the generator function field only if use_generator is checked.
 function updateGeneratorDisplay() {
     if ($('#id_use_generator:checked').length) {
-        $('#generator-container').show();
+        document.querySelector('#generator-container').classList.remove('d-none');
     } else {
-        $('#generator-container').hide();
+        document.querySelector('#generator-container').classList.add('d-none');
     }
 }
 
@@ -80,7 +80,7 @@ function setExternal() {
     document
         .querySelectorAll("#type-metadata-2 input")
         .forEach(e => e.disabled=false)
-    document.querySelector('#generator-container').classList.add('d-none')
+    document.querySelector('#id_use_generator').closest('.form-group').classList.add('d-none')
     document.querySelector('#type-metadata-2').classList.remove('d-none')
 }
 
@@ -97,8 +97,10 @@ function setFramePlayer() {
     document
         .querySelectorAll("#type-metadata-2 input")
         .forEach(e => e.disabled=true)
-    document.querySelector('#generator-container').classList.remove('d-none')
+    document.querySelector('#id_use_generator').closest('.form-group').classList.remove('d-none')
     document.querySelector('#type-metadata-2').classList.add('d-none')
+
+    updateGeneratorDisplay();
 }
 
 function updateStudyType (externalCheckbox) {
@@ -126,8 +128,12 @@ $(document).ready(function() {
     validateStructure($('#id_structure').val());
     validateGenerator($('#id_generator').val());
 
+    // Update study form based on study type
+    const externalCheckbox = document.querySelector('#id_external')
+    externalCheckbox.addEventListener('click', () => updateStudyType(externalCheckbox))
+    updateStudyType(externalCheckbox)
+
     // When use_generator field changes, update whether generator field is displayed
-    updateGeneratorDisplay();
     $('#id_use_generator').on('change', function() {
         updateGeneratorDisplay();
     });
@@ -175,11 +181,6 @@ $(document).ready(function() {
     $("#id_max_age_years, #id_max_age_months, #id_max_age_days").change(updateMaxAgeDaysDisplay);
     updateMinAgeDaysDisplay();
     updateMaxAgeDaysDisplay();
-
-    // Update study form based on study type
-    const externalCheckbox = document.querySelector('#id_external')
-    externalCheckbox.addEventListener('click', () => updateStudyType(externalCheckbox))
-    updateStudyType(externalCheckbox)
 
     const scheduledCheckBox = document.querySelector("#id_scheduled")
     scheduledCheckBox.addEventListener('click', ()=>{

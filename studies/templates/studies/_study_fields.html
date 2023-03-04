@@ -189,6 +189,6 @@
     </div>
 </div>
 <div id="structure-container">{% bootstrap_field form.structure label_class="form-label fw-bold" %}</div>
-{% bootstrap_field form.use_generator label_class="form-label" wrapper_class="" %}
+{% bootstrap_field form.use_generator label_class="form-label" wrapper_class="form-group" %}
 <div class="use-generator form-text mb-4">{{ form.generator.help_text|safe }}</div>
 <div id="generator-container">{% bootstrap_field form.generator show_help=False label_class="form-label fw-bold" %}</div>
