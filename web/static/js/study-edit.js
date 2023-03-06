@@ -8,8 +8,8 @@
 })();
 
 $(document).ready(function() {
-    $("#invalidate-build-warning").hide();
     $("#save-button").click(function () {
+        $("#invalidate-build-warning").hide();
         $("#save-study-confirmation-body").show();
         var runner_type_changed = $("#id_study_type").data("previous") != $("#id_study_type").val();
         $("#study-type-metadata div.metadata-key").each(function (index, element) {
