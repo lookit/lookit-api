@@ -107,7 +107,9 @@
         <label class="form-label" for="min_age_in_days">
             <em>Age in Days</em>
         </label>
-        <div><span class="text-muted" id="min_age_in_days_val">0</span></div>
+        <div>
+            <span class="text-muted" id="min_age_in_days_val">0</span>
+        </div>
     </div>
 </div>
 <div class="row justify-content-start">
@@ -170,7 +172,9 @@
         <label class="form-label" for="max_age_in_days">
             <em>Age in Days</em>
         </label>
-        <div><span class="text-muted" id="max_age_in_days_val">0</span></div>
+        <div>
+            <span class="text-muted" id="max_age_in_days_val">0</span>
+        </div>
     </div>
 </div>
 <p class="form-text">
@@ -191,4 +195,6 @@
 <div id="structure-container">{% bootstrap_field form.structure label_class="form-label fw-bold" %}</div>
 {% bootstrap_field form.use_generator label_class="form-label" wrapper_class="form-group" %}
 <div class="use-generator form-text mb-4">{{ form.generator.help_text|safe }}</div>
-<div id="generator-container">{% bootstrap_field form.generator show_help=False label_class="form-label fw-bold" %}</div>
+<div id="generator-container">
+    {% bootstrap_field form.generator show_help=False label_class="form-label fw-bold" %}
+</div>
