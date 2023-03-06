@@ -6,9 +6,10 @@
     FAQ
 {% endblock title %}
 {% block content %}
-    <h1>{% trans "Frequently Asked Questions" %}</h1>
-    <h3 class="m-3">{% trans "Participation" %}</h3>
-    <div class="accordion" id="faq-accordion-participation">
+<div class="container m-4">
+    <h2 class="mx-4 my-5">{% trans "Frequently Asked Questions" %}</h2>
+    <h3 class="m-4">{% trans "Participation" %}</h3>
+    <div class="accordion m-4" id="faq-accordion-participation">
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-1">
                 <button class="accordion-button collapsed"
@@ -633,10 +634,8 @@
             </div>
         </div>
     </div>
-    <h3 class="m-3">
-        {% trans "Technical" %}
-    </h3>
-    <div class="accordion" id="faq-accordion-technical">
+    <h3 class="m-4">{% trans "Technical" %}</h3>
+    <div class="accordion m-4" id="faq-accordion-technical">
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-25">
                 <button class="accordion-button collapsed"
@@ -728,10 +727,8 @@
             </div>
         </div>
     </div>
-    <h3 class="m-3">
-        {% trans "For Researchers" %}
-    </h3>
-    <div class="accordion" id="faq-accordion-for-researchers">
+    <h3 class="m-4">{% trans "For Researchers" %}</h3>
+    <div class="accordion m-4" id="faq-accordion-for-researchers">
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-29">
                 <button class="accordion-button collapsed"
@@ -780,6 +777,7 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}
 {% block footer %}
     {% include 'web/_footer.html' %}
