@@ -1,7 +1,7 @@
 {% load bootstrap_icons %}
 <div class="card mb-3">
     <div class="card-header">Study Status</div>
-    <div class="card-body text-{{ state_ui_tag }}">
+    <div class="card-body list-group-item-{{ state_ui_tag }}">
         <div class="row">
             <div class="col-9">
                 {{ study.name }}
@@ -40,12 +40,12 @@
     </div>
     {% if comments %}
         <div class="card-header border-top">Comments</div>
-        <div class="card-body  text-{{ state_ui_tag }}">
+        <div class="card-body">
             <em>{{ comments|linebreaks }}</em>
         </div>
     {% endif %}
     {% if study.show_build_experiment_runner %}
-        <div class="card-body border-top text-{{ state_ui_tag }}">
+        <div class="card-body border-top list-group-item-{{ build_ui_tag }}">
             <div class="row">
                 <div class="col-9">
                     Experiment runner
