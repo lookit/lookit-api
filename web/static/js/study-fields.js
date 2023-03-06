@@ -16,9 +16,9 @@ function validateGenerator(code) {
     $('#clientside-generator-validation-message').remove();
 
     try {
-        Function(code)();
+        Function(code)();  //NOSONAR
         try {
-            const generatorFn = Function('return ' + code)();
+            const generatorFn = Function('return ' + code)(); //NOSONAR
             if (typeof generatorFn !== 'function') {
                 throw new Error();
             }
@@ -75,11 +75,11 @@ function setExternal() {
     // disable frame player metadata fields
     document
         .querySelectorAll("#type-metadata-1 input")
-        .forEach(e => e.disabled=true)
+        .forEach(e => e.disabled = true)
     // enable external fields
     document
         .querySelectorAll("#type-metadata-2 input")
-        .forEach(e => e.disabled=false)
+        .forEach(e => e.disabled = false)
     document.querySelector('#id_use_generator').closest('.form-group').classList.add('d-none')
     document.querySelector('#type-metadata-2').classList.remove('d-none')
 }
@@ -92,38 +92,38 @@ function setFramePlayer() {
     // enable frame player metadata fields
     document
         .querySelectorAll("#type-metadata-1 input")
-        .forEach(e => e.disabled=false)
+        .forEach(e => e.disabled = false)
     // disable external fields
     document
         .querySelectorAll("#type-metadata-2 input")
-        .forEach(e => e.disabled=true)
+        .forEach(e => e.disabled = true)
     document.querySelector('#id_use_generator').closest('.form-group').classList.remove('d-none')
     document.querySelector('#type-metadata-2').classList.add('d-none')
 
     updateGeneratorDisplay();
 }
 
-function updateStudyType (externalCheckbox) {
+function updateStudyType(externalCheckbox) {
     externalCheckbox.checked ? setExternal() : setFramePlayer()
     updateScheduled()
 }
 
-function updateScheduled(){
+function updateScheduled() {
     const external = document.querySelector('#id_external')
     const scheduled = document.querySelector('#id_scheduled')
     scheduled.disabled = !external.checked
 }
 
-function updateScheduling (scheduledCheckBox) {            
+function updateScheduling(scheduledCheckBox) {
     const scheduling = document.querySelector("#id_scheduling").closest('.mb-4')
-    if (!scheduledCheckBox.disabled && scheduledCheckBox.checked){
+    if (!scheduledCheckBox.disabled && scheduledCheckBox.checked) {
         scheduling.classList.remove("d-none")
     } else {
         scheduling.classList.add("d-none")
     }
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Do initial validation of structure, generator.
     validateStructure($('#id_structure').val());
     validateGenerator($('#id_generator').val());
@@ -134,7 +134,7 @@ $(document).ready(function() {
     updateStudyType(externalCheckbox)
 
     // When use_generator field changes, update whether generator field is displayed
-    $('#id_use_generator').on('change', function() {
+    $('#id_use_generator').on('change', function () {
         updateGeneratorDisplay();
     });
 
@@ -158,8 +158,8 @@ $(document).ready(function() {
         const editor = $aceOverlay.data('editor');
         editor.commands.addCommand({
             name: 'save',
-            bindKey: {win: 'Ctrl-S', mac: 'Command-S'},
-            exec: function() {
+            bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+            exec: function () {
                 $aceOverlay.find('.save').click();
                 // Could also consider triggering save button on broader form
             },
@@ -168,7 +168,7 @@ $(document).ready(function() {
     });
 
     // Upon submit, unset use generator if generator function is invalid
-    $("#create-study-button, #save-button").bind("click", function() {
+    $("#create-study-button, #save-button").bind("click", function () {
         if (validateGenerator($('#id_generator').val())) {
             const $useGeneratorCheckbox = $('#id_use_generator');
             $useGeneratorCheckbox.prop("checked", false);
@@ -183,7 +183,7 @@ $(document).ready(function() {
     updateMaxAgeDaysDisplay();
 
     const scheduledCheckBox = document.querySelector("#id_scheduled")
-    scheduledCheckBox.addEventListener('click', ()=>{
+    scheduledCheckBox.addEventListener('click', () => {
         updateScheduling(scheduledCheckBox)
     })
     updateScheduling(scheduledCheckBox)
@@ -212,7 +212,7 @@ $(document).ready(function() {
 
 
     // Event listener to update current priority value
-    priority.addEventListener('input', ()=>{currentPriority.innerHTML = `Current Priority: ${priority.value}`});
+    priority.addEventListener('input', () => { currentPriority.innerHTML = `Current Priority: ${priority.value}` });
 
     // Call input event one time to populate current priority element
     priority.dispatchEvent(new Event('input'));
@@ -235,9 +235,9 @@ $(document).ready(function() {
     mustNotHave.parentElement.append(mustNotHaveDiv, mustNotHaveList);
 
     // Update list with current selection.  Hide header when list empty. 
-    function showSelectedStudies(select, ul, div){
+    function showSelectedStudies(select, ul, div) {
         const selection = select.querySelectorAll('option:checked');
-        ul.children && [...ul.children].forEach(e=>e.remove());
+        ul.children && [...ul.children].forEach(e => e.remove());
         selection.forEach(e => {
             const li = document.createElement('li');
             li.innerHTML = e.innerHTML;
@@ -248,11 +248,11 @@ $(document).ready(function() {
 
     // Augment default mousedown event for multi select.  Option is selected when clicked and 
     // unselected when clicked again. 
-    function toggleSelection(el){
+    function toggleSelection(el) {
         el.addEventListener('mousedown', (event) => {
             event.preventDefault();
             // Adjust selection when element has focus.
-            if (document.activeElement === el.parentElement){
+            if (document.activeElement === el.parentElement) {
                 el.selected = !el.selected
             }
             el.parentElement.focus();
@@ -260,8 +260,8 @@ $(document).ready(function() {
     }
 
     // add event listeners to select and options.
-    mustHave.addEventListener('mousedown', ()=>{showSelectedStudies(mustHave, mustHaveList, mustHaveDiv);});
-    mustNotHave.addEventListener('mousedown', ()=>{showSelectedStudies(mustNotHave, mustNotHaveList, mustNotHaveDiv);});
+    mustHave.addEventListener('mousedown', () => { showSelectedStudies(mustHave, mustHaveList, mustHaveDiv); });
+    mustNotHave.addEventListener('mousedown', () => { showSelectedStudies(mustNotHave, mustNotHaveList, mustNotHaveDiv); });
     [...mustHave.options, ...mustNotHave.options].forEach(el => toggleSelection(el));
 
     // Trigger mousedown to populate ui.
