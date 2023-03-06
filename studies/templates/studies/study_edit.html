@@ -13,18 +13,6 @@
 {% block title %}
     Edit | {{ study.name }}
 {% endblock title %}
-{% block flash %}
-    {% if messages %}
-        {% for message in messages %}
-            {% if message.extra_tags != 'user_added' and message.extra_tags != 'user_removed' %}
-                <div id="details" class="alert {{ message.tags }} alert-dismissable">
-                    <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">×</a>
-                    {{ message }}
-                </div>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-{% endblock flash %}
 {% block content %}
     {% bs_icon "play-circle" as bs_icon_play_circle %}
     {% url 'exp:preview-detail' uuid=study.uuid as url_preview_detail %}
