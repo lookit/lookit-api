@@ -34,25 +34,31 @@
             <div class="card">
                 <div class="card-header">Responses</div>
                 <div class="card-body">
-                    <label for="response-status-filters">Show Currently ...</label>
-                    <select id="response-status-filters"
-                            name="response-status-filters"
-                            class="form-control">
-                        <option id="filter-pending" value="pending">
-                            Pending
-                        </option>
-                        <option id="filter-accepted" value="accepted">
-                            Accepted
-                        </option>
-                        <option id="filter-rejected" value="rejected">
-                            Rejected
-                        </option>
-                    </select>
-                    Responses*
-                    <br />
-                    <p class="help small">
-                        <em>*Responses with approvals older than 3 weeks are not shown.</em>
-                    </p>
+                    <div class="row align-items-center">
+                        <label for="response-status-filters" class="col-auto text-end ">Show Currently...&nbsp;</label>
+                        <div class="col-auto text-center px-0">
+                            <select id="response-status-filters"
+                                    name="response-status-filters"
+                                    class="form-select w-auto"
+                                    aria-label="Filter by repsonse status">
+                                <option id="filter-pending" value="pending">
+                                    Pending
+                                </option>
+                                <option id="filter-accepted" value="accepted">
+                                    Accepted
+                                </option>
+                                <option id="filter-rejected" value="rejected">
+                                    Rejected
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-auto text-start ">&nbsp;Responses*</div>
+                    </div>
+                    <div class="row mt-3">
+                        <p class="help small">
+                            <em>*Responses with approvals older than 3 weeks are not shown.</em>
+                        </p>
+                    </div>
                 </div>
                 <ul id="list-of-responses"
                     class="list-group rounded-0"
@@ -113,17 +119,20 @@
                       method="post">
                     {% csrf_token %}
                     <div class="d-grid gap-2 col-11 mx-auto">
-                        <div class="text-center">
-                            <button class="btn btn-warning btn-sm">
-                                Revert to Pending <span class="pending-count badge">0</span>
-                            </button>
-                            <button class="btn btn-success btn-sm">
-                                Approvals <span class="approvals-count badge">0</span>
-                            </button>
-                            <button class="btn btn-danger btn-sm">
-                                Rejections <span class="rejections-count badge">0</span>
-                            </button>
-                        </div>
+                        <ul class="list-group text-center small">
+                            <li class="list-group-item list-group-item-warning d-flex justify-content-between align-items-center">
+                                <div>Revert to Pending</div>
+                                <span class="pending-count badge bg-secondary rounded-pill">0</span>
+                            </li>
+                            <li class="list-group-item list-group-item-success d-flex justify-content-between align-items-center">
+                                <div>Approvals</div>
+                                <span class="approvals-count badge bg-secondary rounded-pill">0</span>
+                            </li>
+                            <li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
+                                <div>Rejections</div>
+                                <span class="rejections-count badge bg-secondary rounded-pill">0</span>
+                            </li>
+                        </ul>
                         <input name="comments" type="hidden" value="{}"/>
                         <button type="submit" class="btn btn-primary">Submit Rulings & Comments {% bs_icon "send" %}</button>
                         <button id="reset-choices" type="button" class="btn btn-secondary">
@@ -167,11 +176,15 @@
         </div>
         <div class="col">
             <div class="card">
-                <div class="card-header">Response Statistics</div>
+                <div class="card-header">
+                    Response Statistics
+                </div>
                 <div class="card-body">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-warning d-flex justify-content-between align-items-center">
-                            <div class="fw-bold">Pending Responses</div>
+                            <div class="fw-bold">
+                                Pending Responses
+                            </div>
                             <span class="badge bg-secondary rounded-pill">{{ summary_statistics.responses.pending }}</span>
                         </li>
                         <li class="list-group-item list-group-item-success d-flex justify-content-between align-items-center">
