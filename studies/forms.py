@@ -415,6 +415,7 @@ class StudyCreateForm(StudyForm):
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["structure"].help_text = PROTOCOL_HELP_TEXT_EDIT
         # Limit initial lab options to labs this user is a member of & can create studies in
         self.fields["lab"].queryset = Lab.objects.filter(
             id__in=get_objects_for_user(
