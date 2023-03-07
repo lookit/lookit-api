@@ -3,6 +3,7 @@
 {% load bootstrap_icons %}
 {% load i18n %}
 {% load static %}
+{% load web_extras %}
 {% block title %}
     {% trans "Past Studies" %}
 {% endblock title %}
@@ -130,9 +131,9 @@
     </div>
 {% empty %}
     <div class="m-3">
-        {% if study.study_type.is_ember_frame_player %}
+        {% if form.past_studies_tabs|studies_tab_selected == "0" %}
             <em>{% trans "You have not yet participated in any Lookit studies." %}</em>
-        {% else %}
+        {% elif form.past_studies_tabs|studies_tab_selected == "1" %}
             <em>{% trans "You have not yet participated in any external studies." %}</em>
         {% endif %}
     </div>
