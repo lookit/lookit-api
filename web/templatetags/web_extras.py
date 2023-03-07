@@ -98,7 +98,8 @@ def nav_link(request, url_name, text, html_classes=None):
     Returns:
         SafeText: HTML of navigation item
     """
-    html_classes = ["nav-link", "navbar-link", "link-secondary", "text-center"]
+    if html_classes is None:
+        html_classes = ["nav-link", "navbar-link", "link-secondary", "text-center"]
     url = reverse(url_name)
     aria_current = ""
     if active_nav(request, url):
