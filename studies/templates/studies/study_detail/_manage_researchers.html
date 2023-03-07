@@ -1,0 +1,93 @@
+{% load bootstrap_icons %}
+{% load django_bootstrap5 %}
+<div class="card mb-3">
+    <div class="card-header">Manage Researchers</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-6">
+                <form method="get" action="./#manage-researchers">
+                    <input type="hidden" name="page" value="1"/>
+                    <div class="input-group">
+                        <input id="search-organization"
+                               class="form-control"
+                               name="match"
+                               placeholder="Search lab"
+                               type="text"
+                               value="{{ search_query }}"/>
+                        <button class="btn btn-outline-secondary"
+                                type="submit"
+                                aria-label="Search researchers">{% bs_icon "search" %}</button>
+                    </div>
+                </form>
+                {% if users_result %}
+                    <h2 class="researchers-label mt-2">Results</h2>
+                    {% for user in users_result %}
+                        <div class="row mb-1">
+                            <div class="col-9 offset-1">{{ user.identicon_small_html }} {{ user.get_short_name }} ({{ user.username }})</div>
+                            <div class="col-2">
+                                <form method="post"
+                                      action="{% url 'exp:manage-researcher-permissions' study.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="add_user" value="{{ user.id }}"/>
+                                    <button aria-label="Add researcher to study"
+                                            type="submit"
+                                            value="{{ user.id }}"
+                                            class="btn btn-success btn-sm">
+                                        {% bs_icon "plus" %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% include 'studies/_paginator.html' with page=users_result %}
+                {% elif search_query %}
+                    <div class="fst-italic small m-2">No results found!</div>
+                {% endif %}
+            </div>
+            <div class="col-6">
+                <h2>Researchers</h2>
+                <div class="fst-italic small m-2">
+                    Researchers belonging to this study's access groups. {{ study.lab.name }} Admins will automatically be able to edit this study, regardless of study group.
+                </div>
+                <div class="row mb-1">
+                    <div class="col-4 fw-bold">Name</div>
+                    <div class="col-6 fw-bold">Permissions</div>
+                </div>
+                {% for researcher in current_researchers %}
+                    <div class="row mb-1">
+                        <div class="col-4">{{ researcher.user.identicon_small_html }} {{ researcher.user.get_short_name }}</div>
+                        {% if can_manage_researchers %}
+                            <div class="col-6">
+                                <div class="permissionDisplay">
+                                    <a href="#"
+                                       data-name="update_user"
+                                       class="researcher_permissions"
+                                       data-type="select"
+                                       data-url="{% url 'exp:manage-researcher-permissions' study.id %}"
+                                       data-params="{csrfmiddlewaretoken:'{{ csrf_token }}'}"
+                                       data-id="{{ researcher.user.get_short_name }}"
+                                       data-pk="{{ researcher.user.id }}"
+                                       data-title="Select researcher permissions"> {{ researcher.current_group }} </a>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <form method="post"
+                                      action="{% url 'exp:manage-researcher-permissions' study.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="remove_user" value="{{ researcher.user.id }}"/>
+                                    <button aria-label="Remove researcher from study"
+                                            type="submit"
+                                            class="btn btn-danger btn-sm">
+                                        {% bs_icon "dash" %}
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="col-4">{{ researcher.current_group }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
