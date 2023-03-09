@@ -126,7 +126,7 @@ $(document).ready(function () {
         $(e.target).data("bs.tooltip").inState.click = false;
     });
 
-    removeTooltip = function () {
+    const removeTooltip = function () {
         $('[data-toggle="tooltip"]').tooltip('hide');
     }
     $('form').submit(function () {

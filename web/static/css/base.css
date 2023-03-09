@@ -461,6 +461,7 @@ button[disabled]#participate-button {
 
 .mb-lg {
     margin-bottom: 20px;
+    /* margin-bottom: 25px; */
 }
 
 .pb-xs {
@@ -549,10 +550,6 @@ button[disabled]#participate-button {
 
 .mb-md {
     margin-bottom: 20px;
-}
-
-.mb-lg {
-    margin-bottom: 25px;
 }
 
 .mt-sm {

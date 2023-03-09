@@ -147,9 +147,6 @@
     display: inline-block; 
     vertical-align: middle;
     width: auto;
-    /* inline-block emulation for IE7*/
-    zoom: 1; 
-    *display: inline;    
 }
 
 .editable-container.ui-widget {
