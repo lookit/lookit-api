@@ -51,3 +51,6 @@ test:
 
 collectstatic: 
 	docker compose run --rm web poetry run ./manage.py collectstatic --clear
+
+lint: 
+	poetry install --sync && poetry run pre-commit run --all-files
