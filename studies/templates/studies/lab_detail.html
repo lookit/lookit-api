@@ -3,133 +3,102 @@
 {% block title %}
     {{ lab.name }}
 {% endblock title %}
-{% block flash %}
-    {% bootstrap_messages %}
-    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
-{% endblock flash %}
 {% block content %}
-    <div class="container mb-lg">
-        <div class="row">
-            <div class="col-xs-12">
-                <ol class="breadcrumb">
-                    <li>
-                        <a href="{% url 'exp:lab-list' %}">Labs</a>
-                    </li>
-                    <li class="active">
-                        <span>{{ lab.name }}</span>
-                    </li>
-                </ol>
-            </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:lab-list' %}">Labs</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ lab.name }}</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between">
+        <h1>{{ lab.name }}</h1>
+        <div class="d-flex flex-column justify-content-end">
+            <a href="{% url 'exp:lab-edit' pk=lab.id %}">Edit lab</a>
+            <a href="{% url 'exp:lab-members' pk=lab.id %}">View/Manage lab members</a>
+            {% if in_this_lab %}
+                You have joined this lab.
+            {% elif requested_this_lab %}
+                You have requested to join this lab.
+            {% else %}
+                <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
+                    {% csrf_token %}
+                    {% bootstrap_button "Request to join" %}
+                </form>
+            {% endif %}
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-6">
-                <strong>Name</strong>
-                <p>
-                    {{ lab.name }}
-                </p>
-            </div>
-            <div class="col-xs-6">
-                {% if can_edit_lab %}
-                    <div class="row">
-                        <div class="pull-right ">
-                            <a href="{% url 'exp:lab-edit' pk=lab.id %}">Edit lab</a>
-                        </div>
-                    </div>
-                {% endif %}
-                {% if can_see_lab_researchers %}
-                    <div class="row">
-                        <div class="pull-right ">
-                            <a href="{% url 'exp:lab-members' pk=lab.id %}">View/Manage lab members</a>
-                        </div>
-                    </div>
-                {% endif %}
-                <div class="row">
-                    <div class="pull-right ">
-                        {% if in_this_lab %}
-                            You have joined this lab.
-                        {% elif requested_this_lab %}
-                            You have requested to join this lab.
-                        {% else %}
-                            <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
-                                {% csrf_token %}
-                                <button class="btn btn-default" type="submit">Request to join</button>
-                            </form>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>Institution</strong>
+            <p>
+                {{ lab.institution }}
+            </p>
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>Institution</strong>
-                <p>
-                    {{ lab.institution }}
-                </p>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>Principal investigator</strong>
+            <p>
+                {{ lab.principal_investigator_name }}
+            </p>
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>Principal investigator</strong>
-                <p>
-                    {{ lab.principal_investigator_name }}
-                </p>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>Contact email</strong>
+            <p>
+                {{ lab.contact_email }}
+            </p>
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>Contact email</strong>
-                <p>
-                    {{ lab.contact_email }}
-                </p>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>Contact phone</strong>
+            <p>
+                {{ lab.contact_phone }}
+            </p>
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>Contact phone</strong>
-                <p>
-                    {{ lab.contact_phone }}
-                </p>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>Lab website</strong>
+            <p>
+                <a href="{{ lab.lab_website }}"
+                   target="_blank"
+                   rel="noopener noreferrer">{{ lab.lab_website }}</a>
+            </p>
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>Lab website</strong>
-                <p>
-                    <a href="{{ lab.lab_website }}"
-                       target="_blank"
-                       rel="noopener noreferrer">{{ lab.lab_website }}</a>
-                </p>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>Custom URL</strong>
+            <p>
+                <a href="{% url 'web:lab-studies-list' lab.slug %}"
+                   target="_blank"
+                   rel="noopener noreferrer">{{ custom_url }}</a>
+            </p>
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>Custom URL</strong>
-                <p>
-                    <a href="{% url 'web:lab-studies-list' lab.slug %}"
-                       target="_blank"
-                       rel="noopener noreferrer">{{ custom_url }}</a>
-                </p>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>Lab description</strong>
+            {{ lab.description|linebreaks }}
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>Lab description</strong>
-                {{ lab.description|linebreaks }}
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>IRB contact info</strong>
+            <p>
+                {{ lab.irb_contact_info }}
+            </p>
         </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>IRB contact info</strong>
-                <p>
-                    {{ lab.irb_contact_info }}
-                </p>
-            </div>
-        </div>
-        <div class="row mt-md">
-            <div class="col-xs-12">
-                <strong>Approved to test:</strong>
-                {{ lab.approved_to_test|yesno:"Yes,No" }}
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <strong>Approved to test:</strong>
+            {{ lab.approved_to_test|yesno:"Yes,No" }}
         </div>
     </div>
 {% endblock content %}
