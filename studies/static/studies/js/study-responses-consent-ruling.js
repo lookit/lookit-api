@@ -32,7 +32,7 @@ $(document).ready(function () {
         $childRow = $responseDataSection.find("table#child tbody tr");
 
     // Lazily initialized closures (mutable members).
-    var currentlyConsideredVideos,
+    let currentlyConsideredVideos,
         currentVideoListIndex,
         numberedVideoButtons,
         $currentlySelectedResponse; // jQuery container for response li.
