@@ -37,7 +37,7 @@ const table = $("#previousMessagesTable").DataTable({
         this.api()
             .columns(".column-text-search")
             .every(function () {
-                var that = this;
+                const that = this;
                 $('input', this.footer()).on('keyup change clear', function () {
                     if (that.search() !== this.value) {
                         that.search(this.value).draw();
@@ -98,8 +98,7 @@ document.querySelector("#recipientFilter input:checked").click();
 
 // Summernot init/config for email body field
 $('#id_body').summernote({
-    codeviewFilter: true, // Prevent XSS
-    codeviewFilterRegex: /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle|vg)|t(?:itle|extarea)|xml)[^>]*?>/gi,
+    codeviewFilter: false, // Prevent XSS
     codeviewIframeFilter: true, // Prevent XSS
     placeholder: 'Write email contents here.',
     tabsize: 2,

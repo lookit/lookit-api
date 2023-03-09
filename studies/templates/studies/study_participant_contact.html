@@ -24,16 +24,13 @@
           crossorigin="anonymous"
           referrerpolicy="no-referrer"/>
     {# datatables #}
-    {% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js" integrity="sha384-Oz2u38d0ZnNWE1m+AIMNNmk9a0EJEto9y2D3kXTaczVZucXieLf798xkusldWrLs" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js" integrity="sha384-vs+hZVo+dfG9yLWBmBqUYEnAy7NLQ0j3gmCP+2tx31n5HZGlRBlxlkxYkWOtVmoT" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
-          integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
+          href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css"
+          integrity="sha384-8Sp4pLrNlpSBSRuh6y4YI5cH07vvn6DIoUiAAEezYUzdqbTfBNXlP0dJmcVzZjQx"
           crossorigin="anonymous"
-          referrerpolicy="no-referrer"/> {% endcomment %}
-    <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js"></script>
-    <link rel="stylesheet"
-          href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css"/>
+          referrerpolicy="no-referrer"/>
     {# date range picker #}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js" integrity="sha512-mh+AjlD3nxImTUGisMpHXW03gE6F4WdQyvuFRkjecwuWLwD2yCijw4tKA3NsEFpA1C3neiKhGXPSIGSfCYPMlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet"
@@ -154,9 +151,7 @@
                                    id="btnradio3"
                                    autocomplete="off"
                                    data-filter="study-updates"/>
-                            <label class="btn btn-outline-secondary" for="btnradio3">
-                                {% bs_icon "arrow-counterclockwise" %}
-                            </label>
+                            <label class="btn btn-outline-secondary" for="btnradio3">{% bs_icon "arrow-counterclockwise" %}</label>
                             <input type="radio"
                                    class="btn-check"
                                    name="btnradio"
