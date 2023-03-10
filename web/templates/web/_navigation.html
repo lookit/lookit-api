@@ -1,25 +1,40 @@
 {% load i18n %}
 {% load web_extras %}
 {% trans "Logout" as logout %}
-<header class="row">
-    <nav class="nav">
-        {% nav_link request 'web:home' 'Home' %}
-        {% if user.is_researcher %}
-            <a class="nav-link" href="{% url 'exp:study-list' %}">{% trans "Experimenter" %}</a>
-        {% endif %}
-        {% block nav_links %}
-            {% nav_link request 'web:studies-list' 'Studies' %}
-            {% nav_link request 'web:faq' 'FAQ' %}
-            {% nav_link request 'web:scientists' 'The Scientists' %}
-            {% nav_link request 'web:resources' 'Resources' %}
-            {% if user.is_authenticated %}
-                {% nav_link request 'accounts:manage-account' 'My Account' %}
-                {% nav_link request 'web:studies-history' 'My Past Studies' %}
-                {% nav_link request 'logout' logout %}
-            {% else %}
-                {% nav_signup request %}
-                {% nav_login request %}
-            {% endif %}
-        {% endblock nav_links %}
+{% trans "Experimenter" as experimenter %}
+<header class="row" id="navbar-row">
+    <nav class="navbar navbar-expand-md bg-light text-dark">
+        <div class="container-fluid">
+            <div class="navbar-nav nav-pills me-auto w-100 me-auto order-0 w-100">
+                {% nav_link request 'web:home' 'Home' %}
+                {% if user.is_researcher %}
+                    {% nav_link request 'exp:study-list' experimenter %}
+                {% endif %}
+                <button class="navbar-toggler collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target=".collapse1">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            {% block nav_links %}
+                <div class="navbar-nav nav-pills navbar-collapse collapse w-100 order-1 collapse1 mx-auto justify-content-center">
+                    {% nav_link request 'web:studies-list' 'Studies' %}
+                    {% nav_link request 'web:faq' 'FAQ' %}
+                    {% nav_link request 'web:scientists' 'The Scientists' %}
+                    {% nav_link request 'web:resources' 'Resources' %}
+                </div>
+                <div class="navbar-nav nav-pills navbar-collapse collapse w-100 order-2 collapse1 ms-auto justify-content-end">
+                    {% if user.is_authenticated %}
+                        {% nav_link request 'accounts:manage-account' 'My Account' %}
+                        {% nav_link request 'web:studies-history' 'My Past Studies' %}
+                        {% nav_link request 'logout' logout %}
+                    {% else %}
+                        {% nav_signup request 'Sign up' True %}
+                        {% nav_login request 'Login' True %}
+                    {% endif %}
+                </div>
+            {% endblock nav_links %}
+        </div>
     </nav>
 </header>
