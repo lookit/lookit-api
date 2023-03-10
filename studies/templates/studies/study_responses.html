@@ -91,12 +91,12 @@
                             </tbody>
                         </table>
                         {% if can_view_regular_responses and not can_view_preview_responses %}
-                            <p>
+                            <p class="text-center">
                                 <em>Based on your permissions, no preview responses are shown.</em>
                             </p>
                         {% endif %}
                         {% if not can_view_regular_responses and can_view_preview_responses %}
-                            <p>
+                            <p class="text-center">
                                 <em>Based on your permissions, only preview responses are shown.</em>
                             </p>
                         {% endif %}
@@ -158,7 +158,7 @@
                                                 </footer>
                                             {% endif %}
                                         {% empty %}
-                                            No feedback
+                                            <em class="my-2">No feedback</em>
                                         {% endfor %}
                                     </div>
                                 {% endfor %}
@@ -187,7 +187,7 @@
                                             </div>
                                         {% empty %}
                                             <p class="card-text">
-                                                <em>Expect a delay of a few minutes for videos to be available for download.</em>
+                                                <em class="my-2">Expect a delay of a few minutes for videos to be available for download.</em>
                                             </p>
                                         {% endfor %}
                                     </div>
@@ -208,7 +208,9 @@
                                 <p class="card-text">
                                     Include with response download:
                                 </p>
-                                <div class="two-column-list mb-3">{% include 'studies/_data_options.html' with data_options=data_options %}</div>
+                                <div class="two-column-list mb-3">
+                                    {% include 'studies/_data_options.html' with data_options=data_options %}
+                                </div>
                                 <p class="card-text">
                                     <label for="data-type-selector">
                                         Data Type
@@ -276,7 +278,7 @@
             </div>
         {% else %}
             <div class="row">
-                <em>No responses with confirmed consent.</em>
+                <em class="my-2 text-center">No responses with confirmed consent.</em>
             </div>
         {% endif %}
     </div>
