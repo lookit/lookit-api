@@ -27,23 +27,29 @@
     <div class="row mb-3 mt-4">
         <div class="col-6">
             {% for child in children %}
-                <table class="table table-borderless table-sm small caption-top">
-                    <caption class="bg-light p-2 fst-italic">{{ child.given_name }}</caption>
-                    <tbody>
-                        <tr>
-                            <th scope="row">{% trans "Birthday" %}:</th>
-                            <td>{{ child.birthday|date:"n/d/Y"|default:"N/A" }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">{% trans "Age" %}:</th>
-                            <td>{{ child.birthday | timesince }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">{% trans "Gender" %}:</th>
-                            <td >{{ child.get_gender_display }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="bg-light ps-3">{{ child.given_name }}</div>
+                <div class="small mb-3 mx-3">
+                    <div class="row">
+                        <div class="col-4">{% trans "Birthday" %}:</div>
+                        <div class="col">{{ child.birthday|date:"n/d/Y"|default:"N/A" }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">{% trans "Age" %}:</div>
+                        <div class="col">{{ child.birthday | timesince }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">{% trans "Gender" %}:</div>
+                        <div class="col">{{ child.get_gender_display }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">{% trans "Gestational Age at Birth" %}:</div>
+                        <div class="col">{{ child.age_at_birth|default:"No response" }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">{% trans "Additional Info" %}:</div>
+                        <div class="col">{{ child.additional_information|default:"No response" }}</div>
+                    </div>
+                </div>
             {% empty %}
                 <p class="fst-italic">
                     {% trans "No children profiles registered!" %}
@@ -84,15 +90,25 @@
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">{% trans "Number of Guardians" %}:</th>
-                    <td>{{ demographics.number_of_guardians|default:"No Response" }}</td>
+                    <th scope="row">
+                        {% trans "Number of Guardians" %}:
+                    </th>
+                    <td>
+                        {{ demographics.number_of_guardians|default:"No Response" }}
+                    </td>
                 </tr>
                 <tr>
-                    <th scope="row">{% trans "Explanation for Guardians:" %}</th>
-                    <td>{{ demographics.number_of_guardians_explanation|default:"No Response" }}</td>
+                    <th scope="row">
+                        {% trans "Explanation for Guardians:" %}
+                    </th>
+                    <td>
+                        {{ demographics.number_of_guardians_explanation|default:"No Response" }}
+                    </td>
                 </tr>
                 <tr>
-                    <th scope="row">{% trans "Race" %}:</th>
+                    <th scope="row">
+                        {% trans "Race" %}:
+                    </th>
                     <td>
                         {{ demographics.us_race_ethnicity_identification|default:"No Response" }}
                     </td>
