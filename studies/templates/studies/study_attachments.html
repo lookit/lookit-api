@@ -2,19 +2,14 @@
 {% load django_bootstrap5 %}
 {% load exp_extras %}
 {% load tz %}
+{% load static %}
 {% load bootstrap_icons %}
 {% block title %}
     Videos | {{ study.name }}
 {% endblock title %}
 {% block head %}
     {{ block.super }}
-    <script type="application/javascript">
-        $(document).ready(function () {
-            if ("{{ match }}" !== '') {
-                document.getElementById("search-attachments").value = "{{ match }}";
-            }
-        });
-    </script>
+    <script src="{% static 'js/study-attachments.js' %}" type="application/javascript"></script>
     {{ form.media }}
 {% endblock head %}
 {% block content %}
