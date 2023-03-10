@@ -54,26 +54,30 @@
         <div class="col-3">Active</div>
     </div>
     {% for lab in object_list %}
-        <div class="row ">
-            <div class="col-3">
-                <a href="{% url 'exp:lab-detail' pk=lab.id %}">{{ lab.name }}</a>
-            </div>
-            <div class="col-3">{{ lab.institution }}</div>
-            <div class="col-3">{{ lab.principal_investigator_name }}</div>
-            <div class="col-3">{{ lab.approved_to_test|yesno:"Yes,No" }}</div>
-        </div>
-        <div class="row small mb-2 mt-1">
-            <div class="col-12 ">
-                {% if lab in user_labs %}
-                    You have joined this lab.
-                {% elif lab in user_requested_labs %}
-                    You have requested to join this lab.
-                {% else %}
-                    <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
-                        {% csrf_token %}
-                        {% bootstrap_button "Request to join" button_class="btn-sm btn-primary" %}
-                    </form>
-                {% endif %}
+        <div class="card bg-light my-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-3">
+                        <a href="{% url 'exp:lab-detail' pk=lab.id %}">{{ lab.name }}</a>
+                    </div>
+                    <div class="col-3">{{ lab.institution }}</div>
+                    <div class="col-3">{{ lab.principal_investigator_name }}</div>
+                    <div class="col-3">
+                        <div>{{ lab.approved_to_test|yesno:"Yes,No" }}</div>
+                        <div class="small text-muted">
+                            {% if lab in user_labs %}
+                                You have joined this lab.
+                            {% elif lab in user_requested_labs %}
+                                You have requested to join this lab.
+                            {% else %}
+                                <form action="{% url 'exp:lab-request' pk=lab.id %}" method="post">
+                                    {% csrf_token %}
+                                    {% bootstrap_button "Request to join" button_class="btn-sm btn-primary" %}
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     {% empty %}
