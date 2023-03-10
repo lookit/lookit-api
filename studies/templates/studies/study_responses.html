@@ -100,6 +100,11 @@
                                 <em>Based on your permissions, only preview responses are shown.</em>
                             </p>
                         {% endif %}
+                        {% if not can_view_regular_responses and not can_view_preview_responses %}
+                            <p class="text-center">
+                                <em>You do not have permission to view responses.</em>
+                            </p>
+                        {% endif %}
                         <div class="text-end">{% include 'studies/_paginator.html' with page=page_obj %}</div>
                     </div>
                     <div class="card bg-light my-4">
@@ -204,7 +209,9 @@
                         <div class="card bg-light my-4">
                             <div class="card-body">
                                 <input type="hidden" name="response_id"/>
-                                <h5 class="card-title">Download response</h5>
+                                <h5 class="card-title">
+                                    Download response
+                                </h5>
                                 <p class="card-text">
                                     Include with response download:
                                 </p>
