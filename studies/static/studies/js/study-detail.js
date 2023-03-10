@@ -5,7 +5,6 @@ $.fn.editableform.buttons = `
 <button type="button" class="btn btn-secondary btn-sm editable-cancel">&#x2715;</button>
 `
 
-
 function removeTooltip() {
     $('[data-toggle="tooltip"]').tooltip('hide');
 }

@@ -50,7 +50,7 @@ def nav_next(request, url, text, button):
     if button:
         css_class = "nav-link navbar-link link-secondary border-0 text-center"
     elif active:
-        css_class = f"btn active btn-secondary btn-link"
+        css_class = "btn active btn-secondary btn-link"
     else:
         css_class = "btn btn-link"
 

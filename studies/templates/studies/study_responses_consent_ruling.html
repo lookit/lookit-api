@@ -1,6 +1,6 @@
 {% extends "exp/base.html" %}
 {% load django_bootstrap5 %}
-{% load exp_extras %}
+{% load bootstrap_icons %}
 {% load static %}
 {% block title %}
     Responses | {{ study.name }}
@@ -14,498 +14,223 @@
         {% endcomment %}
         {{ response_key_value_store | safe }}
     </script>
-    <script type="application/javascript">
-        const RESET = "reset",
-            CONSENT_PENDING = "pending",
-            CONSENT_APPROVAL = "accepted",
-            CONSENT_REJECTION = "rejected",
-            RESPONSE_KEY_VALUE_STORE = JSON.parse(document.querySelector("#response-key-value-store").innerText),
-            COMMENTS_CACHE = {};
-
-        $(document).ready(function () {
-            /*
-             Initialize important elements. $-prepended elements indicate jQuery element.
-             */
-            // Element Members.
-            const $videoElement = $("#video-under-consideration"),
-                $videoSource = $videoElement.find("source"),
-                $videoManager = $("#video-manager"),
-                $videoPreviousButton = $videoManager.find("#nav-video-previous"),
-                $videoNextButton = $videoManager.find("#nav-video-next"),
-                $currentVideoInfo = $("#current-video-information"),
-                $responseComments = $("#response-commentary"),
-                $responseStatusFilter = $("#response-status-filters"),
-                $listOfResponses = $("#list-of-responses"),
-                $consentRulingForm = $("#consent-ruling-form"),
-                $approvalsCountBadge = $(".approvals-count"),
-                $rejectionsCountBadge = $(".rejections-count"),
-                $pendingCountBadge = $(".pending-count"),
-                $commentsHiddenInput = $consentRulingForm.find("input[name='comments']"),
-                $resetChoicesButton = $consentRulingForm.find("#reset-choices"),
-                $responseDataSection = $("#response-info-container"),
-                $generalHeader = $responseDataSection.find("table#general thead tr"),
-                $generalRow = $responseDataSection.find("table#general tbody tr"),
-                $participantRow = $responseDataSection.find("table#participant tbody tr"),
-                $childRow = $responseDataSection.find("table#child tbody tr");
-
-            // Lazily initialized closures (mutable members).
-            var currentlyConsideredVideos,
-                currentVideoListIndex,
-                numberedVideoButtons,
-                $currentlySelectedResponse; // jQuery container for response li.
-
-            /*
-             Call functions to set components to initial state.
-            */
-            applyFilterParametersToResponseList(CONSENT_PENDING);
-            $('[data-toggle="tooltip"]').tooltip();
-            
-            applyFilterParametersToResponseList($responseStatusFilter.val());
-
-            /*
-             "Controller methods" - using closures to mimic class-like behavior.
-             */
-            function updateBadges() {
-                $approvalsCountBadge.text($(`.consent-ruling[name=${CONSENT_APPROVAL}]`).length);
-                $rejectionsCountBadge.text($(`.consent-ruling[name=${CONSENT_REJECTION}]`).length);
-                $pendingCountBadge.text($(`.consent-ruling[name=${CONSENT_PENDING}]`).length);
-            }
-
-            function saveComments() {
-                let currentText = $responseComments.val();
-                if (currentText) {
-                    COMMENTS_CACHE[$currentlySelectedResponse.data("id")] = $responseComments.val();
-                }
-            }
-
-            function retrieveComments() {
-                $responseComments.val(COMMENTS_CACHE[$currentlySelectedResponse.data("id")] || "");
-            }
-
-            function applyFilterParametersToResponseList(stateToToggle) {
-                let $responseOptions = $listOfResponses.find(".response-option"),
-                    $toShow = $responseOptions.filter(`.${stateToToggle}`),
-                    $toHide = $responseOptions.not(`.${stateToToggle}`);
-
-                $toShow.show();
-                $toHide.hide();
-                
-                // Start out with no response selected
-                $currentVideoInfo.text("Please select a response from the list on the left.");
-                $currentVideoInfo.removeClass("bg-danger bg-warning");
-                $videoElement.css("visibility", "hidden");
-                $responseComments.css("visibility", "hidden");
-            }
-
-            function handleRulingActions($button, $responseListItem, responseData) {
-                let responseId = responseData["id"],
-                    responseRulingHiddenInputId = "consent-ruling-" + responseId,
-                    hiddenInputAttrs = {id: responseRulingHiddenInputId, type: "hidden"},
-                    $hiddenInput = $consentRulingForm.find("#" + responseRulingHiddenInputId),
-                    $optionList = $button.closest("ul"),
-                    $resetButton = $optionList.find(".consent-judgment[data-action=reset]"),
-                    $responseActor = $optionList.siblings("button"),
-                    action = $button.data("action");
-
-                // First, change the UI signaling in the pending list.
-                switch (action) {
-                    case RESET:
-                        $responseListItem.removeClass(
-                            "list-group-item-danger list-group-item-success list-group-item-warning");
-                        // if already pending, just break out early after updating badges.
-                        $hiddenInput.remove();
-                        $resetButton.hide();
-                        // Gross but whatever - jquery's .text() blows out the other sibling DOM.
-                        $responseActor.contents()[0].textContent = responseData["originalStatus"] + " ";
-                        updateBadges();
-                        return;
-                    case CONSENT_APPROVAL:
-                        $responseListItem.removeClass("list-group-item-danger list-group-item-warning");
-                        $responseListItem.addClass("list-group-item-success");
-                        hiddenInputAttrs["name"] = CONSENT_APPROVAL;
-                        break;
-                    case CONSENT_REJECTION:
-                        $responseListItem.removeClass("list-group-item-success list-group-item-warning");
-                        $responseListItem.addClass("list-group-item-danger");
-                        hiddenInputAttrs["name"] = CONSENT_REJECTION;
-                        break;
-                    case CONSENT_PENDING:
-                        $responseListItem.removeClass("list-group-item-danger list-group-item-success");
-                        $responseListItem.addClass("list-group-item-warning");
-                        hiddenInputAttrs["name"] = CONSENT_PENDING;
-                        break;
-                }
-
-                // Now, either change or add the hidden form input.
-                if ($hiddenInput.length) {
-                    $hiddenInput.attr("name", hiddenInputAttrs["name"]);
-                } else {  // If it's not there, create a new one...
-                    hiddenInputAttrs["value"] = responseId;
-                    $consentRulingForm.append($("<input />", hiddenInputAttrs).addClass("consent-ruling"));
-                }
-
-                // ... Finally, update the UI with whatever approval state was changed.
-                $resetButton.show();
-                $responseActor.contents()[0].textContent = action + " ";
-                updateBadges();
-            }
-
-
-            function updateVideoContainer(responseData) {
-                // 1) Clear the current container
-                $videoPreviousButton.nextUntil($videoNextButton).remove();
-
-                currentlyConsideredVideos = responseData["videos"];
-                currentVideoListIndex = 0;
-
-                // 2) Reset video buttons.
-                numberedVideoButtons = []; // Empty out current set of buttons.
-                currentlyConsideredVideos.forEach((videoObject, index) => {
-                    videoObject["pointer"] = index;
-                    let $numberedVideoButton = $("<li></li>").data(videoObject);
-                    $numberedVideoButton.append(
-                        $("<a></a>").text(index + 1)
-                    );
-                    numberedVideoButtons.push($numberedVideoButton);
-                });
-                $videoPreviousButton.after(numberedVideoButtons);
-
-                if (currentlyConsideredVideos.length) { // Auto-set first video.
-                    let awsUrl = currentlyConsideredVideos[0]["aws_url"];
-                    $videoElement.css("visibility", "visible");
-                    $videoSource.attr("src", awsUrl);
-                    numberedVideoButtons[0].addClass("active");
-                    $videoElement.trigger("load").trigger("play");
-                } else {
-                    $videoElement.css("visibility", "hidden");
-                    $currentVideoInfo.addClass("bg-warning").text("No video found for this response.")
-                }
-            }
-
-            function updateResponseDataSection(responseData) {
-                let details = responseData["details"];
-
-                $generalHeader.empty();
-                $generalRow.empty();
-                $generalHeader.append(Array.from(Object.keys(details["general"]), val => $(`<th>${val.split('_').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')}</th>`)));
-                $generalRow.append(Array.from(Object.values(details["general"]), val => $(`<td>${val}</td>`)));
-
-                $participantRow.empty();
-                $participantRow.append(Array.from(Object.values(details["participant"]), val => $(`<td>${val}</td>`)));
-
-                $childRow.empty();
-                $childRow.append(Array.from(Object.values(details["child"]), val => $(`<td>${val}</td>`)));
-            }
-
-            /*
-             EVENT LISTENERS.
-             XXX: Lots of manual event delegation, to account for constantly-updating elements.
-             */
-            $responseStatusFilter.on("change", function (event) {
-                applyFilterParametersToResponseList($responseStatusFilter.val());
-            });
-
-            $listOfResponses.on("click", ".response-option", function (event) {
-
-                // UI Signal - we're paying attention to this video.
-                if ($currentlySelectedResponse) { // If we've got something, deselect it.
-                    $currentlySelectedResponse.removeClass("active");
-                    $videoElement.trigger("pause");
-                }
-
-                // Keep these in order for now, figure out a clean way to factor this out later.
-                saveComments();
-                $currentlySelectedResponse = $(this);
-                retrieveComments();
-                $responseComments.css("visibility", "visible");
-                
-                $currentlySelectedResponse.addClass("active");
-
-                let $target = $(event.target);
-                let responseData = $currentlySelectedResponse.data();
-
-                // If it's consent or approval, deal with it.
-                if ($target.is(".dropdown-menu .consent-judgment")) {
-                    handleRulingActions($target, $currentlySelectedResponse, responseData);
-                } else { // Update the video container with nav buttons.
-                    let responseObjects = RESPONSE_KEY_VALUE_STORE[responseData["id"]];
-                    updateVideoContainer(responseObjects);
-                    updateResponseDataSection(responseObjects);
-                }
-            });
-
-            $videoManager.on("click", "li", function (event) {
-                // Early exit if there's less than two videos.
-                if (!currentlyConsideredVideos || currentlyConsideredVideos.length < 2) {
-                    return;
-                }
-
-                // Otherwise, get started.
-                let $videoNavButton = $(this),
-                    navId = $videoNavButton.attr("id"),
-                    length = currentlyConsideredVideos.length,
-                    videoData, awsUrl;
-
-                numberedVideoButtons.forEach($button => $button.removeClass("active"));
-
-                if (navId === "nav-video-previous") {
-                    currentVideoListIndex -= 1;
-                    currentVideoListIndex %= length; // rotate backward,
-                    videoData = currentlyConsideredVideos[currentVideoListIndex];
-                } else if (navId === "nav-video-next") {
-                    currentVideoListIndex += 1;
-                    currentVideoListIndex %= length; // rotate forward,
-                    videoData = currentlyConsideredVideos[currentVideoListIndex];
-                } else {
-                    videoData = $videoNavButton.data(); // or get the actual index from the element data.
-                    currentVideoListIndex = videoData["pointer"];
-                }
-
-                // Mark currently active video.
-                numberedVideoButtons[currentVideoListIndex].addClass("active");
-
-                awsUrl = videoData["aws_url"];
-                $videoSource.attr("src", awsUrl);
-                $videoElement.trigger("load").trigger("play");
-            });
-
-            $consentRulingForm.submit(function (event) {
-                // Create comments JSON and append to form.
-                saveComments();
-                $commentsHiddenInput.val(JSON.stringify(COMMENTS_CACHE));
-            });
-
-            $resetChoicesButton.on("click", function () {
-                $listOfResponses.find(".response-option").removeClass(
-                    "list-group-item-danger list-group-item-success list-group-item-warning");
-                $consentRulingForm.find("input.consent-ruling").remove();
-                updateBadges();
-            });
-
-            $videoSource.on("error", function (event) {
-                if ($videoSource.attr("src").length) {
-                    $currentVideoInfo.addClass("bg-danger").text("The video is not loading; the link probably timed out. Try refreshing this page.");
-                } else {
-                    $currentVideoInfo.text("Please select a response from the list on the left.");
-                }
-            });
-
-            $videoElement.on("canplay", function () {
-                let currentVideo = currentlyConsideredVideos[currentVideoListIndex],
-                    timeString = new Date(parseInt(currentVideo["filename"].split("_")[4])).toLocaleString();
-                $currentVideoInfo.removeClass("bg-danger bg-warning").text("Processed: " + timeString);
-            });
-        });
-    </script>
+    <script src="{% static "studies/js/study-responses-consent-ruling.js" %}" defer></script>
 {% endblock head %}
-{% block flash %}
-    {% bootstrap_messages %}
-    {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
-{% endblock flash %}
 {% block content %}
-    <div class="container mb-lg">
-        <div class="row">
-            <div class="col-xs-12">
-                <ol class="breadcrumb">
-                    <li>
-                        <a href="{% url 'exp:study-list' %}">Manage Studies</a>
-                    </li>
-                    <li>
-                        <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
-                    </li>
-                    <li class="active">Consent Manager</li>
-                </ol>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <h1>Consent Manager</h1>
-            </div>
-        </div>
-        <div class="row pt-md">
-            <section id="response-controls" class="col-md-4 col-xs-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">Responses</h4>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-light p-2">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study-list' %}">Manage Studies</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:study-detail' pk=study.id %}">{{ study.name }}</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Consent Manager</li>
+        </ol>
+    </nav>
+    <h1>Consent Manager</h1>
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Responses</div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <label for="response-status-filters" class="col-auto text-end ">Show Currently...&nbsp;</label>
+                        <div class="col-auto text-center px-0">
+                            <select id="response-status-filters"
+                                    name="response-status-filters"
+                                    class="form-select w-auto"
+                                    aria-label="Filter by repsonse status">
+                                <option id="filter-pending" value="pending">
+                                    Pending
+                                </option>
+                                <option id="filter-accepted" value="accepted">
+                                    Accepted
+                                </option>
+                                <option id="filter-rejected" value="rejected">
+                                    Rejected
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-auto text-start ">&nbsp;Responses*</div>
                     </div>
-                    <div class="form-inline panel-body">
-                        <label for="response-status-filters">Show Currently ...</label>
-                        <select id="response-status-filters"
-                                name="response-status-filters"
-                                class="form-control">
-                            <option id="filter-pending" value="pending">
-                                Pending
-                            </option>
-                            <option id="filter-accepted" value="accepted">
-                                Accepted
-                            </option>
-                            <option id="filter-rejected" value="rejected">
-                                Rejected
-                            </option>
-                        </select>
-                        Responses*
-                        <br />
+                    <div class="row mt-3">
                         <p class="help small">
                             <em>*Responses with approvals older than 3 weeks are not shown.</em>
                         </p>
                     </div>
-                    <ul id="list-of-responses" class="list-group">
-                        {% for response in loaded_responses %}
-                            <li id="response-option-{{ response.uuid }}"
-                                class="response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %} preview-row{% endif %}"
-                                data-id="{{ response.uuid }}"
-                                data-original-status="{{ response.current_ruling }}">
-                                <span>
-                                    <strong>{{ response.date_created | date:"D M d, P e" }}</strong>
-                                    {% if response.is_preview %}
-                                        <p>
-                                            <strong>[Preview]</strong>
-                                        </p>
-                                    {% endif %}
+                </div>
+                <ul id="list-of-responses"
+                    class="list-group rounded-0"
+                    style="max-height:300px;
+                           overflow-y: scroll;">
+                    {% for response in loaded_responses %}
+                        <li id="response-option-{{ response.uuid }}"
+                            class="border-start-0 border-end-0 response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %} preview-row{% endif %}"
+                            data-id="{{ response.uuid }}"
+                            data-original-status="{{ response.current_ruling }}">
+                            <span>
+                                <strong>{{ response.date_created | date:"D M d, P e" }}</strong>
+                                {% if response.is_preview %}
                                     <p>
-                                        <em class="small">{{ response.ruling_comments }}</em>
+                                        <strong>[Preview]</strong>
                                     </p>
-                                </span>
-                                <div class="btn-group btn-group-sm pull-right" role="group">
-                                    <button id="response-actor-{{ response.uuid }}"
-                                            type="button"
-                                            class="btn btn-default dropdown-toggle response-actor"
-                                            data-toggle="dropdown"
-                                            aria-haspopup="true"
-                                            aria-expanded="false">
-                                        {{ response.current_ruling }}
-                                        <span class="caret"></span>
-                                        <span class="sr-only">Toggle Dropdown</span>
-                                    </button>
-                                    <ul class="dropdown-menu"
-                                        role="menu"
-                                        aria-labelledby="response-actor-{{ response.uuid }}">
+                                {% endif %}
+                                <p>
+                                    <em class="small">{{ response.ruling_comments }}</em>
+                                </p>
+                            </span>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle"
+                                        type="button"
+                                        id="consentJudgementDropdown"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    {{ response.current_ruling }}
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="consentJudgementDropdown">
+                                    <li>
+                                        <button class="consent-judgment dropdown-item"
+                                                data-action="reset"
+                                                style="display:none;">Undo</button>
+                                    </li>
+                                    {% if response.current_ruling != 'pending' %}
                                         <li>
-                                            <button class="consent-judgment btn btn-link"
-                                                    data-action="reset"
-                                                    style="display:none;">Undo</button>
+                                            <button class="consent-judgment dropdown-item" data-action="pending">Revert to Pending</button>
                                         </li>
-                                        {% if response.current_ruling != 'pending' %}
-                                            <li>
-                                                <button class="consent-judgment btn btn-link" data-action="pending">Revert to Pending</button>
-                                            </li>
-                                        {% endif %}
-                                        {% if response.current_ruling != 'accepted' %}
-                                            <li>
-                                                <button class="consent-judgment btn btn-link" data-action="accepted">Accept</button>
-                                            </li>
-                                        {% endif %}
-                                        {% if response.current_ruling != 'rejected' %}
-                                            <li>
-                                                <button class="consent-judgment btn btn-link" data-action="rejected">Reject</button>
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </div>
+                                    {% endif %}
+                                    {% if response.current_ruling != 'accepted' %}
+                                        <li>
+                                            <button class="consent-judgment dropdown-item" data-action="accepted">Accept</button>
+                                        </li>
+                                    {% endif %}
+                                    {% if response.current_ruling != 'rejected' %}
+                                        <li>
+                                            <button class="consent-judgment dropdown-item" data-action="rejected">Reject</button>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <form id="consent-ruling-form"
+                      class="panel-footer clearfix m-2"
+                      method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 col-11 mx-auto">
+                        <ul class="list-group text-center small">
+                            <li class="list-group-item list-group-item-warning d-flex justify-content-between align-items-center">
+                                <div>Revert to Pending</div>
+                                <span class="pending-count badge bg-secondary rounded-pill">0</span>
                             </li>
-                        {% endfor %}
-                    </ul>
-                    <form id="consent-ruling-form" class="panel-footer clearfix" method="post">
-                        {% csrf_token %}
-                        <div class="panel panel-default">
-                            <span class="label label-warning">Revert to Pending <span class="pending-count badge">0</span></span>
-                            <span class="label label-success">Approvals <span class="approvals-count badge">0</span></span>
-                            <span class="label label-danger">Rejections <span class="rejections-count badge">0</span></span>
-                        </div>
-                        <input name="comments" type="hidden" value="{}"/>
-                        <button type="submit" class="btn btn-primary btn-lg btn-block">
-                            Submit Rulings & Comments <span class="glyphicon glyphicon-send"></span>
-                        </button>
-                        <button id="reset-choices"
-                                type="button"
-                                class="btn btn-default btn-slg btn-block">
-                            Reset Current Choices <span class="glyphicon glyphicon-repeat"></span>
-                        </button>
-                    </form>
-                </div>
-            </section>
-            <section class="col-md-4 col-xs-12">
-                <div class="video-container">
-                    <section class="panel panel-default">
-                        <div id="current-video-information" class="panel-body">
-                            {# Basic video information/warnings go here. #}
-                        </div>
-                    </section>
-                    <video controls id="video-under-consideration" height="270" width="360">
-                        <source src="" type="video/mp4"/>
-                    </video>
-                    <textarea id="response-commentary"
-                              class="form-control"
-                              placeholder="Comment on session. These will be saved upon submit."></textarea>
-                    <div class="btn-toolbar" id="video-manager">
-                        <nav aria-label="Video navigation">
-                            <ul class="pagination">
-                                <li id="nav-video-previous">
-                                    <a aria-label="Previous">
-                                        <span aria-hidden="true">«</span>
-                                    </a>
-                                </li>
-                                {# list items go here#}
-                                <li id="nav-video-next">
-                                    <a aria-label="Next">
-                                        <span aria-hidden="true">»</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </section>
-            <section id="response-statistics" class="col-md-4 col-xs-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">
-                            Response Statistics
-                        </h4>
-                    </div>
-                    <div class="panel-body">
-                        <ul class="list-group">
-                            <li class="list-group-item list-group-item-warning">
-                                Pending Responses
-                                <span class="badge">{{ summary_statistics.responses.pending }}</span>
+                            <li class="list-group-item list-group-item-success d-flex justify-content-between align-items-center">
+                                <div>Approvals</div>
+                                <span class="approvals-count badge bg-secondary rounded-pill">0</span>
                             </li>
-                            <li class="list-group-item list-group-item-success">
-                                Accepted Responses
-                                <span class="badge">{{ summary_statistics.responses.accepted }}</span>
-                            </li>
-                            <li class="list-group-item child-count">
-                                <em class="bg-success">Unique Children</em>
-                                <span class="badge">{{ summary_statistics.children.with_accepted_responses }}</span>
-                            </li>
-                            <li class="list-group-item list-group-item-danger">
-                                Rejected Responses
-                                <span class="badge">{{ summary_statistics.responses.rejected }}</span>
-                            </li>
-                            <li class="list-group-item child-count">
-                                <em class="bg-danger">Children with no accepted responses</em>
-                                <span class="badge">{{ summary_statistics.children.without_accepted_responses }}</span>
-                            </li>
-                            <li class="list-group-item totals">
-                                <strong>Total # Responses</strong>
-                                <span class="badge">{{ summary_statistics.responses.total }}</span>
-                            </li>
-                            <li class="list-group-item totals">
-                                <strong>Total # Children</strong>
-                                <span class="badge">{{ summary_statistics.children.total }}</span>
+                            <li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
+                                <div>Rejections</div>
+                                <span class="rejections-count badge bg-secondary rounded-pill">0</span>
                             </li>
                         </ul>
+                        <input name="comments" type="hidden" value="{}"/>
+                        <button type="submit" class="btn btn-primary">Submit Rulings & Comments {% bs_icon "send" %}</button>
+                        <button id="reset-choices" type="button" class="btn btn-secondary">
+                            Reset Current Choices {% bs_icon "repeat" %}
+                        </button>
                     </div>
-                </div>
-            </section>
+                </form>
+            </div>
         </div>
-        <div id="response-info-container" class="row pt-md well">
-            <h2>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    {# Basic video information/warnings go in below div #}
+                    <div id="current-video-information" class="panel-body"></div>
+                </div>
+            </div>
+            <video controls id="video-under-consideration" height="270" width="360">
+                <source src="" type="video/mp4"/>
+            </video>
+            <textarea id="response-commentary"
+                      class="form-control"
+                      placeholder="Comment on session. These will be saved upon submit."></textarea>
+            <div class="btn-toolbar d-flex justify-content-center m-2"
+                 id="video-manager">
+                <nav aria-label="Video navigation">
+                    <ul class="pagination">
+                        <li id="nav-video-previous">
+                            <a aria-label="Previous" class="page-link">
+                                <span aria-hidden="true">{% bs_icon "chevron-double-left" %}</span>
+                            </a>
+                        </li>
+                        {# list items go here#}
+                        <li id="nav-video-next">
+                            <a aria-label="Next" class="page-link">
+                                <span aria-hidden="true">{% bs_icon "chevron-double-right" %}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Response Statistics
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-warning d-flex justify-content-between align-items-center">
+                            <div class="fw-bold">
+                                Pending Responses
+                            </div>
+                            <span class="badge bg-secondary rounded-pill">{{ summary_statistics.responses.pending }}</span>
+                        </li>
+                        <li class="list-group-item list-group-item-success d-flex justify-content-between align-items-center">
+                            <div class="me-auto">
+                                <div class="fw-bold">
+                                    Accepted Responses
+                                </div>
+                                <div class="small">
+                                    Unique Children
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary rounded-pill">{{ summary_statistics.responses.accepted }} / {{ summary_statistics.children.with_accepted_responses }}</span>
+                        </li>
+                        <li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
+                            <div class="me-auto">
+                                <div class="fw-bold">
+                                    Rejected Responses
+                                </div>
+                                <div class="small">
+                                    Children with no accepted responses
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary rounded-pill">{{ summary_statistics.responses.rejected }} / {{ summary_statistics.children.without_accepted_responses }}</span>
+                        </li>
+                    </ul>
+                    <ul class="list-group my-3">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Total # Responses
+                            <span class="badge bg-secondary rounded-pill">{{ summary_statistics.responses.total }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Total # Children
+                            <span class="badge bg-secondary rounded-pill">{{ summary_statistics.children.total }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="response-info-container" class="card bg-light my-3">
+        <div class="card-body">
+            <h2 class="card-title">
                 Session Data
             </h2>
-            <h3>
-                Account Information
-            </h3>
-            <table id="participant" class="table">
+            <table id="participant" class="table caption-top">
+                <caption class="h3">Account Information</caption>
                 <thead>
                     <tr>
                         <th>
@@ -525,10 +250,8 @@
                     </tr>
                 </tbody>
             </table>
-            <h3>
-                Child Information
-            </h3>
-            <table id="child" class="table">
+            <table id="child" class="table caption-top">
+                <caption class="h3">  Child Information</caption>
                 <thead>
                     <tr>
                         <th>
@@ -557,10 +280,8 @@
                     </tr>
                 </tbody>
             </table>
-            <h3 id="general-info-header">
-                Response Information
-            </h3>
-            <table id="general" class="table">
+            <table id="general" class="table caption-top">
+                <caption class="h3">    Response Information</caption>
                 <thead>
                     <tr>
                         <th>

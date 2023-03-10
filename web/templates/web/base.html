@@ -31,12 +31,9 @@
               integrity="sha512-ELV+xyi8IhEApPS/pSj66+Jiw+sOT1Mqkzlh8ExXihe4zfqbWkxPRi8wptXIO9g73FSlhmquFlUOuMSoXz5IRw=="
               crossorigin="anonymous"
               referrerpolicy="no-referrer"/>
-        {% comment %} <link href="{% static 'css/lato-font.css' %}" rel="stylesheet"/> {% endcomment %}
-        {% comment %} <link type="text/css" rel="stylesheet" href="{% static 'base.css' %}" /> {% endcomment %}
         <link type="text/css"
               rel="stylesheet"
               href="{% static 'css/navigation.css' %}"/>
-        {% bootstrap_javascript %}
         {% block head %}
         {% endblock head %}
         {% bootstrap_javascript %}
@@ -54,5 +51,6 @@
                 {% include 'web/_footer.html' %}
             {% endblock footer %}
         </div>
+        {% comment %} {% include 'web/_footer.html' %} {% endcomment %}
     </body>
 </html>
