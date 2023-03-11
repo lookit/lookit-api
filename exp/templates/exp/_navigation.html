@@ -5,9 +5,6 @@
         {% nav_link request 'exp:support' 'Support Lookit' %}
         {% nav_link request 'exp:study-list' 'Manage Studies' %}
         {% nav_link request 'exp:participant-list' 'View Participants' %}
-        {% if perms.accounts.can_view_analytics %}
-            {% nav_link request 'exp:study-participant-analytics' 'Recruitment Stats' %}
-        {% endif %}
     </div>
     <div class="navbar-nav nav-pills navbar-collapse collapse order-2 collapse1 ms-auto justify-content-end">
         <div class="nav-item dropdown">
