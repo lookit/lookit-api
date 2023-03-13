@@ -1,5 +1,5 @@
 {% extends "web/base.html" %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load web_extras %}
 {% load i18n %}
 {% block title %}
@@ -13,14 +13,11 @@
         $(".childDropdown").val("none");
     });
     </script>
-    {{ form.media }}
 {% endblock head %}
 {% block flash %}
     {% if form.errors %}
         <div class="alert alert-danger" role="alert">
-            <p>
-                {% trans "Your login credentials didn't work. Please try again." %}
-            </p>
+            <p>{% trans "Your login credentials didn't work. Please try again." %}</p>
         </div>
     {% endif %}
 {% endblock flash %}
@@ -100,9 +97,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <h1>{{ study.name }}</h1>
-                                        <p>
-                                            {{ study.lab.name }} ({{ study.lab.institution }})
-                                        </p>
+                                        <p>{{ study.lab.name }} ({{ study.lab.institution }})</p>
                                     </div>
                                 </div>
                             </div>
@@ -148,9 +143,7 @@
                     <div class="col-md-3">
                         <h3>{% trans "Would you like to participate in this study?" %}</h3>
                         {% if not request.user.is_authenticated %}
-                            <p>
-                                {% nav_login request text="Log in to participate" button=True %}
-                            </p>
+                            <p>{% nav_login request text="Log in to participate" button=True %}</p>
                             {% nav_signup request text="Create a new account" button=True %}
                         {% elif not children %}
                             <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %}
@@ -224,9 +217,7 @@
                                             </p>
                                         {% endif %}
                                         {% if object.study_type.is_external %}
-                                            <p>
-                                                {% trans "This study is being run outside of Lookit." %}
-                                            </p>
+                                            <p>{% trans "This study is being run outside of Lookit." %}</p>
                                             <p>
                                                 {% trans "Clicking to participate via Lookit will make it possible for researchers to contact you & will share profile information with researchers." %}
                                             </p>

@@ -1,0 +1,22 @@
+{% extends "web/base.html" %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+{% load static %}
+{% block title %}
+    Scientists
+{% endblock title %}
+{% block content %}
+    <h1 class="pt-5 text-center">{% trans "Meet the Lookit team" %}</h1>
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Core Lookit Team</h2>
+    {% include "web/scientists/core-team.html" %}
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Parent Researcher Collaborative</h2>
+    {% include "web/scientists/parent-researcher-collaborative.html" %}
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Affiliated Universities and Researchers</h2>
+    {% include "web/scientists/affiliated-universities-and-researchers.html" %}
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Working Groups</h2>
+    {% include "web/scientists/working-groups.html" %}
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Staff alumni</h2>
+    {% include "web/scientists/staff-alumni.html" %}
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Undergraduate student alumni</h2>
+    {% include "web/scientists/undergrade-student-alumni.html" %}
+{% endblock content %}

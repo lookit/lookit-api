@@ -1,0 +1,9 @@
+tr.preview-row {
+    background: url('../images/preview.svg') repeat transparent;
+}
+
+.two-column-list {
+    column-count: 2;
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+}

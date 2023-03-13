@@ -12,22 +12,20 @@
     participate in the study <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a>
     on Lookit! This study is run by the {{ study.lab.name }} at {{ study.lab.institution }}.
 </p>
-<p>
-    More details about the study...
-</p>
+<p>More details about the study...</p>
 <ul>
     <li>
         <strong>Who:</strong> {{ study.criteria }}
-</li>
-<li>
-    <strong>What happens:</strong> {{ study.short_description }}
-</li>
-<li>
-    <strong>Why:</strong> {{ study.purpose }}
-</li>
-<li>
-    <strong>Compensation:</strong> {{ study.compensation_description|default:"This is a volunteer-based study." }}
-</li>
+    </li>
+    <li>
+        <strong>What happens:</strong> {{ study.short_description }}
+    </li>
+    <li>
+        <strong>Why:</strong> {{ study.purpose }}
+    </li>
+    <li>
+        <strong>Compensation:</strong> {{ study.compensation_description|default:"This is a volunteer-based study." }}
+    </li>
 </ul>
 <p>
     {% if study.show_scheduled %}
@@ -37,12 +35,10 @@
     {% endif %}
     by going to
     <a href="{{ base_url }}{% url 'web:study-detail' uuid=study.uuid %}">"{{ study.name }}"</a> on Lookit.
-If you have any questions, please reply to this email to reach the {{ study.lab.name }} at
-{{ study.lab.contact_email }}.
+    If you have any questions, please reply to this email to reach the {{ study.lab.name }} at
+    {{ study.lab.contact_email }}.
 </p>
-<p>
-    Thanks for contributing to the science of how kids learn - we hope to see you soon!
-</p>
+<p>Thanks for contributing to the science of how kids learn - we hope to see you soon!</p>
 -- the Lookit team
 <br />
 <a href="{{ base_url }}{% url 'web:email-preferences' %}">Update your email preferences</a>

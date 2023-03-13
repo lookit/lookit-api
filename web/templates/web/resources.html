@@ -1,0 +1,92 @@
+{% extends "web/base.html" %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+{% load static %}
+{% block head %}
+    <script src="{% static 'js/resources.js' %}" defer></script>
+{% endblock head %}
+{% block title %}
+    Resources
+{% endblock title %}
+{% block content %}
+    <h1 class="pt-5 text-center">Resources</h1>
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Find a developmental lab near you</h2>
+    <p>
+        Interested in participating in research in person? Find a list of labs that study child
+        development
+        in
+        your state.
+    </p>
+    <p>
+        Did we miss your lab, or one you know about? Our apologies, and please let us know at <a href="mailto:lookit-ed@mit.edu">lookit-ed@mit.edu</a>
+    </p>
+    <div class="row bg-light py-3">
+        <div class="col-4">
+            <select id="state-select">
+            </select>
+        </div>
+        <div class="col-8">
+            <strong class="selected-state"></strong>
+            <p id="nothing-to-show"></p>
+            <ul id="lab-list">
+            </ul>
+        </div>
+    </div>
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Other ways to participate from home</h2>
+    <p>
+        Visit
+        <a href="https://childrenhelpingscience.com/"
+           target="_blank"
+           rel="noopener">Children Helping Science</a>
+        for an extensive list of other opportunities to participate in research about child development!
+    </p>
+    <p>
+        To contribute to other scientific research as a family, check out <a href="https://scistarter.org/">SciStarter</a>, which has many citizen
+        science projects
+        suitable for elementary school children and up!
+    </p>
+    <h2 class="border-bottom pb-2 pt-5 mb-4">Activities to try at home</h2>
+    <p>
+        Want to learn more about cognitive development? Here are some activities that may give you some insight
+        into your own child's developing mind. Instead of studies our lab is running, these are "at home labs"
+        for parents to try on their own--but please feel free to contact us with any questions!
+    </p>
+    <h4 class="mt-5 mb-3">Learning about other minds: your child's developing theory of mind</h4>
+    <div>
+        <iframe allowfullscreen
+                height="315"
+                src="https://www.youtube.com/embed/uxyVYATX9-M"
+                width="560"
+                title="YouTube Video"></iframe>
+    </div>
+    <p>
+        <strong>Age range</strong>: 2.5 to 5 years
+    </p>
+    <p>
+        <strong>What you'll need</strong>: For the "Maxi and the chocolate" story, any props you'd like (you can try drawing a picture or acting out the story). For the word-learning task, two containers to hold two objects your child doesn't know a name for (weird kitchen tools, bike parts, etc.).
+    </p>
+    <p>
+        In this lab, you'll see how your child thinks about what other people are thinking.
+        Children under
+        about
+        four years old tend to have trouble expressing what's going on when someone else knows
+        less than
+        they
+        do. They will often insist that everyone knows what they themselves know!
+    </p>
+    <h4 class="mt-5 mb-3">Learning to count: measuring your child's N-knower level</h4>
+    <div>
+        <iframe allowfullscreen
+                height="315"
+                src="https://www.youtube.com/embed/i0q6H8MRXo8"
+                width="560"
+                title="YouTube Video">></iframe>
+    </div>
+    <p>
+        <strong>Age range</strong>: 1 to 5 years
+    </p>
+    <p>
+        <strong>What you'll need</strong>:
+        At least ten small objects your child can pick up, like pegs or Cheerios.
+    </p>
+{% endblock content %}

@@ -8,6 +8,7 @@ from django.views import generic
 from accounts.models import Message, User
 from accounts.utils import hash_id
 from exp.views.mixins import ResearcherLoginRequiredMixin, SingleObjectFetchProtocol
+from studies import forms
 from studies.models import Study
 from studies.permissions import StudyPermission
 
@@ -17,6 +18,7 @@ class StudyParticipantContactView(
     UserPassesTestMixin,
     SingleObjectFetchProtocol[Study],
     generic.DetailView,
+    generic.FormView,
 ):
     """
     StudyParticipantContactView lets you contact study participants.
@@ -25,6 +27,7 @@ class StudyParticipantContactView(
     model = Study
     raise_exception = True
     template_name = "studies/study_participant_contact.html"
+    form_class = forms.EmailParticipantsForm
 
     def can_contact_participants(self):
         user = self.request.user
@@ -124,6 +127,11 @@ class StudyParticipantContactView(
             if None in sender_ids
             else []
         )
+
+        ctx["form"].fields["recipients"].choices = [
+            (p["uuid"], p) for p in participants
+        ]
+
         return ctx
 
     def post(self, request, *args, **kwargs):
