@@ -14,6 +14,7 @@
                     <h1 class="card-title">{% trans "Account Information" %}</h1>
                     <form method="post">
                         {% csrf_token %}
+                        {% bootstrap_form_errors update_account_form %}
                         {% bootstrap_form update_account_form %}
                         {% bootstrap_button "Save" name="form-handle" value="update-account" %}
                     </form>
@@ -25,6 +26,7 @@
                     <h1 class="card-title">{% trans "Change Your Password" %}</h1>
                     <form method="post">
                         {% csrf_token %}
+                        {% bootstrap_form_errors change_password_form %}
                         {% bootstrap_form change_password_form %}
                         {% bootstrap_button "Save" name="form-handle" value="change-password" %}
                     </form>
@@ -50,6 +52,7 @@
                                     </p>
                                 {% endif %}
                                 {% csrf_token %}
+                                {% bootstrap_form_errors otp_check_form %}
                                 {% bootstrap_form otp_check_form %}
                                 {% if otp.activated %}
                                     {% bootstrap_button "Submit" name="form-handle" value="deactivate-otp" %}

@@ -22,6 +22,7 @@
             </div>
             <form method="post" action="">
                 {% csrf_token %}
+                {% bootstrap_form_errors form %}
                 {% bootstrap_form form %}
                 <p>
                     {% trans "By clicking 'Create Account', I agree that I have read and accepted the " %} <a href="{% url 'web:privacy' %}" target="_blank" rel="noopener">{% trans "Privacy Statement" %}.</a>

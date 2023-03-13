@@ -25,6 +25,7 @@
                     <h1 class="card-title">{% trans "Update" %} {{ child.given_name }}</h1>
                     <form method="post" action="">
                         {% csrf_token %}
+                        {% bootstrap_form_errors form %}
                         {% bootstrap_form form %}
                         {% bootstrap_button trans_delete button_class="btn-danger" name="deleteChild" %}
                         {% bootstrap_button trans_cancel href=url_children_list button_class="btn-secondary" %}

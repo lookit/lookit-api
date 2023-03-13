@@ -16,6 +16,7 @@
                     <h1 class="card-title">{% trans "I would like to be contacted when:" %}</h1>
                     <form method="post" action="">
                         {% csrf_token %}
+                        {% bootstrap_form_errors form %}
                         {% bootstrap_form form %}
                         {% bootstrap_button trans_cancel href=url_email_prefs button_class="btn-secondary" %}
                         {% bootstrap_button trans_save name="password_update" button_class="btn-success" %}
