@@ -82,60 +82,60 @@
                                     {{ bs_icon_arrow_right }}
                                     &nbsp;
                                     {{ trans_next_video }}
-                                (<span class="video-number">1</span>/{{ response.videos.all | length }})
-                            </button>
-                        {% endif %}
-                    </div>
-                    <div class="col">
-                        <div>
-                            <strong>{% trans "Child" %}:</strong>
-                            {{ response.child.given_name }}
+                                    (<span class="video-number">1</span>/{{ response.videos.all | length }})
+                                </button>
+                            {% endif %}
                         </div>
-                        <div>
-                            <strong>{% trans "Date" %}:</strong>
-                            {{ response.date_created }}
-                        </div>
-                        <div>
-                            <strong>{% trans "Date" %}:</strong>
-                            {{ response.date_created }}
-                        </div>
-                        {% if study.show_consent %}
+                        <div class="col">
                             <div>
-                                <strong>{% trans "Consent status" %}:</strong>
-                                {% if response.most_recent_ruling == 'accepted' %}
-                                    {% trans "Approved" %}.
-                                    {% trans "Your consent video was reviewed by a researcher and is valid." %}
-                                {% elif response.most_recent_ruling == 'pending' %}
-                                    {% trans "Pending" %}.
-                                    {% trans "Your consent video has not yet been reviewed by a researcher." %}
-                                {% elif response.most_recent_ruling == 'rejected' %}
-                                    {% trans "Invalid" %}.
-                                    {% trans "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers." %}
-                                {% else %}
-                                    {% trans "No information about consent video review status." %}
-                                {% endif %}
+                                <strong>{% trans "Child" %}:</strong>
+                                {{ response.child.given_name }}
                             </div>
-                        {% endif %}
-                        {% if response.feedback.all %}
                             <div>
-                                <strong>{% trans "Feedback" %}:</strong>
-                                <ul>
-                                    {% for feedback in response.feedback.all %}<li>{{ feedback.comment }}</li>{% endfor %}
-                                </ul>
+                                <strong>{% trans "Date" %}:</strong>
+                                {{ response.date_created }}
                             </div>
-                        {% endif %}
+                            <div>
+                                <strong>{% trans "Date" %}:</strong>
+                                {{ response.date_created }}
+                            </div>
+                            {% if study.show_consent %}
+                                <div>
+                                    <strong>{% trans "Consent status" %}:</strong>
+                                    {% if response.most_recent_ruling == 'accepted' %}
+                                        {% trans "Approved" %}.
+                                        {% trans "Your consent video was reviewed by a researcher and is valid." %}
+                                    {% elif response.most_recent_ruling == 'pending' %}
+                                        {% trans "Pending" %}.
+                                        {% trans "Your consent video has not yet been reviewed by a researcher." %}
+                                    {% elif response.most_recent_ruling == 'rejected' %}
+                                        {% trans "Invalid" %}.
+                                        {% trans "There was a technical problem with your consent video, or it did not show you reading the consent statement out loud. Your other data from this session will not be viewed or used by the study researchers." %}
+                                    {% else %}
+                                        {% trans "No information about consent video review status." %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            {% if response.feedback.all %}
+                                <div>
+                                    <strong>{% trans "Feedback" %}:</strong>
+                                    <ul>
+                                        {% for feedback in response.feedback.all %}<li>{{ feedback.comment }}</li>{% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
-    </div>
-{% empty %}
-    <div class="m-3">
-        {% if form.past_studies_tabs|studies_tab_selected == "0" %}
-            <em>{% trans "You have not yet participated in any Lookit studies." %}</em>
-        {% elif form.past_studies_tabs|studies_tab_selected == "1" %}
-            <em>{% trans "You have not yet participated in any external studies." %}</em>
-        {% endif %}
-    </div>
-{% endfor %}
+    {% empty %}
+        <div class="m-3">
+            {% if form.past_studies_tabs|studies_tab_selected == "0" %}
+                <em>{% trans "You have not yet participated in any Lookit studies." %}</em>
+            {% elif form.past_studies_tabs|studies_tab_selected == "1" %}
+                <em>{% trans "You have not yet participated in any external studies." %}</em>
+            {% endif %}
+        </div>
+    {% endfor %}
 {% endblock content %}

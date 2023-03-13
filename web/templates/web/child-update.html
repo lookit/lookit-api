@@ -17,7 +17,7 @@
     {% url 'web:children-list' as url_children_list %}
     {% bs_icon "caret-left-fill" as bs_icon_caret %}
     <div class="row">
-        <div class="col-4">{% include 'accounts/_account-navigation.html' with current_page="children-list" %}</div>
+        <div class="col-4">{% include "accounts/_account-navigation.html" with current_page="children-list" %}</div>
         <div class="col-8">
             {% bootstrap_button bs_icon_caret|add:trans_back href=url_children_list %}
             <div class="card my-4">
@@ -26,7 +26,7 @@
                     <form method="post" action="">
                         {% csrf_token %}
                         {% bootstrap_form form %}
-                        {% bootstrap_button trans_delete button_class="btn-danger" name='deleteChild' %}
+                        {% bootstrap_button trans_delete button_class="btn-danger" name="deleteChild" %}
                         {% bootstrap_button trans_cancel href=url_children_list button_class="btn-secondary" %}
                         {% bootstrap_button trans_save button_class="btn-success" %}
                     </form>

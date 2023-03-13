@@ -90,5 +90,5 @@
     {% empty %}
         <div class="text-center fst-italic">No researchers found!</div>
     {% endfor %}
-    {% include 'studies/_paginator.html' with page=lab_members_qs %}
+    {% include "studies/_paginator.html" with page=lab_members_qs %}
 {% endblock content %}

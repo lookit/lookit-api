@@ -8,38 +8,59 @@
 {% block head %}
     {{ block.super }}
     {# moment #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js" integrity="sha512-42PE0rd+wZ2hNXftlM78BSehIGzezNeQuzihiBCvUEB3CVxHvsShF86wBWwQORNxNINlBPuq7rG4WWhNiTVHFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"
+            integrity="sha512-42PE0rd+wZ2hNXftlM78BSehIGzezNeQuzihiBCvUEB3CVxHvsShF86wBWwQORNxNINlBPuq7rG4WWhNiTVHFg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
     {# summernote #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js" integrity="sha512-6F1RVfnxCprKJmfulcxxym1Dar5FsT/V2jiEUvABiaEiFWoQ8yHvqRM/Slf0qJKiwin6IDQucjXuolCfCKnaJQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"
+            integrity="sha512-6F1RVfnxCprKJmfulcxxym1Dar5FsT/V2jiEUvABiaEiFWoQ8yHvqRM/Slf0qJKiwin6IDQucjXuolCfCKnaJQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css"
           integrity="sha512-ngQ4IGzHQ3s/Hh8kMyG4FC74wzitukRMIcTOoKT3EyzFZCILOPF0twiXOQn75eDINUfKBYmzYn2AA8DkAk8veQ=="
           crossorigin="anonymous"
           referrerpolicy="no-referrer"/>
     {# jqueryui #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js" integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"
+            integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css"
           integrity="sha512-ELV+xyi8IhEApPS/pSj66+Jiw+sOT1Mqkzlh8ExXihe4zfqbWkxPRi8wptXIO9g73FSlhmquFlUOuMSoXz5IRw=="
           crossorigin="anonymous"
           referrerpolicy="no-referrer"/>
     {# datatables #}
-    <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js" integrity="sha384-Oz2u38d0ZnNWE1m+AIMNNmk9a0EJEto9y2D3kXTaczVZucXieLf798xkusldWrLs" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js" integrity="sha384-vs+hZVo+dfG9yLWBmBqUYEnAy7NLQ0j3gmCP+2tx31n5HZGlRBlxlkxYkWOtVmoT" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"
+            integrity="sha384-Oz2u38d0ZnNWE1m+AIMNNmk9a0EJEto9y2D3kXTaczVZucXieLf798xkusldWrLs"
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap5.min.js"
+            integrity="sha384-vs+hZVo+dfG9yLWBmBqUYEnAy7NLQ0j3gmCP+2tx31n5HZGlRBlxlkxYkWOtVmoT"
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
     <link rel="stylesheet"
           href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap5.min.css"
           integrity="sha384-8Sp4pLrNlpSBSRuh6y4YI5cH07vvn6DIoUiAAEezYUzdqbTfBNXlP0dJmcVzZjQx"
           crossorigin="anonymous"
           referrerpolicy="no-referrer"/>
     {# date range picker #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js" integrity="sha512-mh+AjlD3nxImTUGisMpHXW03gE6F4WdQyvuFRkjecwuWLwD2yCijw4tKA3NsEFpA1C3neiKhGXPSIGSfCYPMlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"
+            integrity="sha512-mh+AjlD3nxImTUGisMpHXW03gE6F4WdQyvuFRkjecwuWLwD2yCijw4tKA3NsEFpA1C3neiKhGXPSIGSfCYPMlQ=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.css"
           integrity="sha512-rBi1cGvEdd3NmSAQhPWId5Nd6QxE8To4ADjM2a6n0BrqQdisZ/RPUlm0YycDzvNL1HHAh1nKZqI0kSbif+5upQ=="
           crossorigin="anonymous"
           referrerpolicy="no-referrer"/>
     {# select2 #}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+            integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
           integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw=="
@@ -85,12 +106,8 @@
                                     <td>{{ message.sender.full_name }}</td>
                                     <td>{{ message.subject }}</td>
                                     <td>
-                                        <p>
-                                            {% join_on_key message.recipients 'slug' %}
-                                        </p>
-                                        <p>
-                                            {% join_on_key message.recipients 'uuid' %}
-                                        </p>
+                                        <p>{% join_on_key message.recipients 'slug' %}</p>
+                                        <p>{% join_on_key message.recipients 'uuid' %}</p>
                                     </td>
                                     <td>{{ message.date_created|localtime|date:"r" }}</td>
                                     <td>{{ message.body|safe }}</td>
@@ -144,14 +161,18 @@
                                    id="btnradio2"
                                    autocomplete="off"
                                    data-filter="new-studies"/>
-                            <label class="btn btn-outline-secondary" for="btnradio2">{% bs_icon "file-earmark-plus" %}</label>
+                            <label class="btn btn-outline-secondary" for="btnradio2">
+                                {% bs_icon "file-earmark-plus" %}
+                            </label>
                             <input type="radio"
                                    class="btn-check"
                                    name="btnradio"
                                    id="btnradio3"
                                    autocomplete="off"
                                    data-filter="study-updates"/>
-                            <label class="btn btn-outline-secondary" for="btnradio3">{% bs_icon "arrow-counterclockwise" %}</label>
+                            <label class="btn btn-outline-secondary" for="btnradio3">
+                                {% bs_icon "arrow-counterclockwise" %}
+                            </label>
                             <input type="radio"
                                    class="btn-check"
                                    name="btnradio"

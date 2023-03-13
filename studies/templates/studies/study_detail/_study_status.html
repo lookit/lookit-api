@@ -7,9 +7,7 @@
                 {{ study.name }}
                 is currently
                 <strong>{{ study.state }}.</strong>
-                <p>
-                    {{ status_tooltip }}
-                </p>
+                <p>{{ status_tooltip }}</p>
             </div>
             <div class="col-3">
                 {% if can_change_status %}

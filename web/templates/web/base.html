@@ -25,7 +25,10 @@
                 font-family: 'Noto Sans', sans-serif;
             }
         </style>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+                integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"></script>
         <link rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css"
               integrity="sha512-ELV+xyi8IhEApPS/pSj66+Jiw+sOT1Mqkzlh8ExXihe4zfqbWkxPRi8wptXIO9g73FSlhmquFlUOuMSoXz5IRw=="
@@ -42,15 +45,14 @@
     <body>
         <div class="container">
             {% block nav %}
-                {% include 'web/_navigation.html' %}
+                {% include "web/_navigation.html" %}
             {% endblock nav %}
             {% bootstrap_messages %}
             {% block content %}
             {% endblock content %}
             {% block footer %}
-                {% include 'web/_footer.html' %}
+                {% include "web/_footer.html" %}
             {% endblock footer %}
         </div>
-        {% comment %} {% include 'web/_footer.html' %} {% endcomment %}
     </body>
 </html>
