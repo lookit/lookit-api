@@ -4,36 +4,19 @@
     Create lab
 {% endblock title %}
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <ol class="breadcrumb">
-                    <li>
-                        <a href="{% url 'exp:lab-list' %}">Labs</a>
-                    </li>
-                    <li class="active">Create Lab</li>
-                </ol>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1"
-                 id="study-create-form">
-                <div class="panel panel-default mt-md">
-                    <div class="panel-heading">
-                        <h1 class="panel-title">Create Lab</h1>
-                    </div>
-                    <div class="panel-body">
-                        <form action="" enctype="multipart/form-data" method="post">
-                            {% csrf_token %}
-                            {% bootstrap_form_errors form %}
-                            {% bootstrap_form form %}
-                            <div class="modal-footer">
-                                <button type="submit">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'exp:lab-list' %}">Labs</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Create Lab</li>
+        </ol>
+    </nav>
+    <h1>Create Lab</h1>
+    <form action="" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        {% bootstrap_form_errors form %}
+        {% bootstrap_form form %}
+        {% bootstrap_button "Submit" %}
+    </form>
 {% endblock content %}
