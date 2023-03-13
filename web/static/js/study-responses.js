@@ -7,13 +7,13 @@ showAttachments(1);
 
 $('.selectable-participant').click(function () {
     // Shows selected individual's response data
-    var id = $(this)[0].id;
-    var index = extractIdNumber(id);
+    const id = $(this)[0].id;
+    const index = extractIdNumber(id);
     $('.selectable-participant').removeClass('selected');
     $('#' + id).addClass('selected');
     showResponse(index);
     showAttachments(index);
-    var responseId = $(this).data("response-id");
+    const responseId = $(this).data("response-id");
     $('form.download [name=response_id]').val(responseId);
     showFeedbackList(responseId);
 });
