@@ -14,7 +14,8 @@
         {% endcomment %}
         {{ response_key_value_store | safe }}
     </script>
-    <script src="{% static "studies/js/study-responses-consent-ruling.js" %}" defer></script>
+    <script src="{% static "studies/js/study-responses-consent-ruling.js" %}"
+            defer></script>
 {% endblock head %}
 {% block content %}
     <nav aria-label="breadcrumb">
@@ -63,7 +64,7 @@
                 <ul id="list-of-responses"
                     class="list-group rounded-0"
                     style="max-height:300px;
-                           overflow-y: scroll;">
+                           overflow-y: scroll">
                     {% for response in loaded_responses %}
                         <li id="response-option-{{ response.uuid }}"
                             class="border-start-0 border-end-0 response-option list-group-item {{ response.current_ruling }} {% if response.is_preview %} preview-row{% endif %}"
@@ -92,7 +93,7 @@
                                     <li>
                                         <button class="consent-judgment dropdown-item"
                                                 data-action="reset"
-                                                style="display:none;">Undo</button>
+                                                style="display:none">Undo</button>
                                     </li>
                                     {% if response.current_ruling != 'pending' %}
                                         <li>

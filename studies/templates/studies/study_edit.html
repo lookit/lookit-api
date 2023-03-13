@@ -84,38 +84,38 @@
                                                     <p>
                                                         This study has already been
                                                         <strong>approved</strong>. If you edit this study, the system will
-                                                    automatically give it a rejected status. You will have to resubmit
-                                                    the study so your changes can be reviewed.
-                                                </p>
-                                                <p>
-                                                    If your changes are limited to
-                                                    <ul>
-                                                        <li>whether the study is discoverable</li>
-                                                        <li>whether the preview is shared</li>
-                                                        <li>the minimum and maximum age or criteria expression</li>
-                                                        <li>the participant eligibility description</li>
-                                                        <li>
-                                                            the
-                                                            <em>formatting</em>
-                                                            of your study protocol
-                                                        </li>
-                                                    </ul>
-                                                    then your study will stay in its {{ study.state }} state.
-                                                </p>
-                                            {% endif %}
+                                                        automatically give it a rejected status. You will have to resubmit
+                                                        the study so your changes can be reviewed.
+                                                    </p>
+                                                    <p>
+                                                        If your changes are limited to
+                                                        <ul>
+                                                            <li>whether the study is discoverable</li>
+                                                            <li>whether the preview is shared</li>
+                                                            <li>the minimum and maximum age or criteria expression</li>
+                                                            <li>the participant eligibility description</li>
+                                                            <li>
+                                                                the
+                                                                <em>formatting</em>
+                                                                of your study protocol
+                                                            </li>
+                                                        </ul>
+                                                        then your study will stay in its {{ study.state }} state.
+                                                    </p>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                        <div class="modal-footer">
+                                            {% bootstrap_button "Discard Changes" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
+                                            {% bootstrap_button "Save" button_class="btn btn-danger" id="save_study_details_confirm" type="submit" %}
                                         </div>
-                                    {% endif %}
-                                    <div class="modal-footer">
-                                        {% bootstrap_button "Discard Changes" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
-                                        {% bootstrap_button "Save" button_class="btn btn-danger" id="save_study_details_confirm" type="submit" %}
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock content %}

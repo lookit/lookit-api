@@ -39,9 +39,7 @@
             </div>
         </div>
         <div class="col">
-            <p>
-                {{ study.short_description }}
-            </p>
+            <p>{{ study.short_description }}</p>
             <p>
                 <span class="fw-bold">Purpose:</span>
                 {{ study.purpose }}
@@ -125,7 +123,7 @@
             <form id="cloneForm"
                   action="{% url 'exp:clone-study' study.id %}"
                   method="post"
-                  style="display:none;">
+                  style="display:none">
                 {% csrf_token %}
                 <input type="hidden" name="clone_study" value="{{ study.id }}"/>
             </form>

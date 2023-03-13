@@ -45,15 +45,9 @@
                 <img src="{{ study.image.url }}"
                      class="img-fluid mx-auto d-block"
                      alt="{{ study.name }}"/>
-                <p>
-                    {{ study.name }}
-                </p>
-                <p>
-                    {{ study.preview_summary }}
-                </p>
-                <p>
-                    Learn More →
-                </p>
+                <p>{{ study.name }}</p>
+                <p>{{ study.preview_summary }}</p>
+                <p>Learn More →</p>
             </a>
         {% empty %}
             <p class="mx-auto d-block">

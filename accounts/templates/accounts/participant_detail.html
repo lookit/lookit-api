@@ -51,9 +51,7 @@
                     </div>
                 </div>
             {% empty %}
-                <p class="fst-italic">
-                    {% trans "No children profiles registered!" %}
-                </p>
+                <p class="fst-italic">{% trans "No children profiles registered!" %}</p>
             {% endfor %}
         </div>
         <div class="col-6">
@@ -80,7 +78,9 @@
                     <td>{{ demographics.number_of_children|default:"No Response" }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">{% trans "Children current ages" %}:</th>
+                    <th scope="row">
+                        {% trans "Children current ages" %}:
+                    </th>
                     <td>
                         {% for birthday in user.latest_demographics.child_birthdays %}
                             {{ birthday | timesince|default:"N/A" }}

@@ -12,26 +12,26 @@
             <p>
                 {% trans "To report any technical difficulties during participation, please contact our team by email at " %}
                 <a href='mailto:lookit-tech@mit.edu'>lookit-tech@mit.edu</a>{% trans "." %}
-        </p>
+            </p>
+        </div>
+        <h3 class="m-4">{% trans "Questions about the studies" %}</h3>
+        <div class="m-4">
+            <p>
+                {% trans "If you have any questions or concerns about the studies, please first check our FAQ. With any additional questions, please contact us at " %}<a href='mailto:lookit@mit.edu'>lookit@mit.edu</a>{% trans "." %}
+            </p>
+        </div>
+        <h3 class="m-4">{% trans "For researchers" %}</h3>
+        <div class="m-4">
+            <p>
+                {% trans "Lookit is available to all developmental researchers, and the code is entirely open- To learn more about running your own studies or contributing, please check out the " %}
+                <a href='https://lookit.readthedocs.io/en/develop'
+                   target="_blank"
+                   rel="noopener">{% trans "documentation" %}</a>{% trans "." %}
+            </p>
+            <p>
+                {% trans "Several initial test studies of a prototype Lookit platform were completed in 2015; you can read about the results, and strengths and limitations of the platform, in " %}
+                <a href='https://direct.mit.edu/opmi/issue/1/1'>{% trans "these papers" %}</a>{% trans "." %}
+            </p>
+        </div>
     </div>
-    <h3 class="m-4">{% trans "Questions about the studies" %}</h3>
-    <div class="m-4">
-        <p>
-        {% trans "If you have any questions or concerns about the studies, please first check our FAQ. With any additional questions, please contact us at " %}<a href='mailto:lookit@mit.edu'>lookit@mit.edu</a>{% trans "." %}
-    </p>
-</div>
-<h3 class="m-4">{% trans "For researchers" %}</h3>
-<div class="m-4">
-    <p>
-        {% trans "Lookit is available to all developmental researchers, and the code is entirely open- To learn more about running your own studies or contributing, please check out the " %}
-        <a href='https://lookit.readthedocs.io/en/develop'
-           target="_blank"
-           rel="noopener">{% trans "documentation" %}</a>{% trans "." %}
-</p>
-<p>
-    {% trans "Several initial test studies of a prototype Lookit platform were completed in 2015; you can read about the results, and strengths and limitations of the platform, in " %}
-    <a href='https://direct.mit.edu/opmi/issue/1/1'>{% trans "these papers" %}</a>{% trans "." %}
-</p>
-</div>
-</div>
 {% endblock content %}

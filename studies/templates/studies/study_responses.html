@@ -8,7 +8,9 @@
 {% endblock title %}
 {% block head %}
     {{ block.super }}
-    <script src="{% static 'js/study-responses.js' %}" type="application/javascript" defer></script>
+    <script src="{% static 'js/study-responses.js' %}"
+            type="application/javascript"
+            defer></script>
     <link rel="stylesheet" href="{% static 'css/study-responses.css' %}"/>
     {{ form.media }}
 {% endblock head %}
@@ -155,9 +157,7 @@
                                                     </div>
                                                 </form>
                                             {% else %}
-                                                <p class="card-text">
-                                                    {{ feedback.comment }}
-                                                </p>
+                                                <p class="card-text">{{ feedback.comment }}</p>
                                                 <footer class="py-2">
                                                     {{ feedback.researcher.get_full_name }}
                                                 </footer>
@@ -248,7 +248,7 @@
                     {% for response in response_data %}
                         <div class="card bg-light my-4 response-summary"
                              id="response-summary-{{ forloop.counter }}"
-                             style="display:none;">
+                             style="display:none">
                             <div class="card-body">
                                 <h5 class="card-title">
                                     Response details
