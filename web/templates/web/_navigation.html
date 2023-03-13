@@ -5,7 +5,7 @@
 <header class="row" id="navbar-row">
     <nav class="navbar navbar-expand-md bg-light text-dark">
         <div class="container-fluid">
-            <div class="navbar-nav nav-pills me-auto w-100 me-auto order-0 w-100">
+            <div class="navbar-nav nav-pills me-auto me-auto order-0">
                 {% nav_link request 'web:home' 'Home' %}
                 {% if user.is_researcher %}
                     {% nav_link request 'exp:study-list' experimenter %}
