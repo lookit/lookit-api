@@ -14,7 +14,7 @@
         window.commentsHelpData = JSON.parse('{{ comments_help | escapejs }}');
         window.declarations = JSON.parse('{{ declarations | escapejs }}');
     </script>
-    <script src="{% static 'studies/js/study-detail.js' %}" defer></script>
+    <script src="{% static 'js/study-detail.js' %}" defer></script>
 {% endblock head %}
 {% block content %}
     <nav aria-label="breadcrumb">
@@ -82,7 +82,7 @@
                               data-toggle="tooltip"
                               class="input-group-addon btn copy-link-button"
                               data-clipboard-target="#study-preview-link">
-                            <img src="{% static 'exp/img/clippy.svg' %}"
+                            <img src="{% static 'images/clippy.svg' %}"
                                  alt="copy preview link"
                                  width="13"/>
                         </span>
@@ -109,7 +109,7 @@
                               data-toggle="tooltip"
                               class="input-group-addon btn copy-link-button"
                               data-clipboard-target="#private-study-link">
-                            <img src="{% static 'exp/img/clippy.svg' %}"
+                            <img src="{% static 'images/clippy.svg' %}"
                                  alt="copy study link"
                                  width="13"/>
                         </span>
