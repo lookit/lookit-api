@@ -39,7 +39,7 @@
                             </div>
                         </div>
                     {% endfor %}
-                    {% include 'studies/_paginator.html' with page=users_result %}
+                    {% include "studies/_paginator.html" with page=users_result %}
                 {% elif search_query %}
                     <div class="fst-italic small m-2">No results found!</div>
                 {% endif %}

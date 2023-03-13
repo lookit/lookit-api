@@ -265,7 +265,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% include 'studies/_paginator.html' with page=studies request=request %}
+        {% include "studies/_paginator.html" with page=studies request=request %}
     {% else %}
         <p class="fst-italic">
             {{ user.nickname }} has not participated in any studies yet!

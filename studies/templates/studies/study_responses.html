@@ -35,7 +35,7 @@
     </nav>
     <h1>Individual Responses</h1>
     <div class="row">
-        <div class="col">{% include 'studies/_response_nav_tabs.html' with active="individual" %}</div>
+        <div class="col">{% include "studies/_response_nav_tabs.html" with active="individual" %}</div>
     </div>
     <div class="container px-4">
         {% if response_data %}
@@ -107,7 +107,7 @@
                                 <em>You do not have permission to view responses.</em>
                             </p>
                         {% endif %}
-                        <div class="text-end">{% include 'studies/_paginator.html' with page=page_obj %}</div>
+                        <div class="text-end">{% include "studies/_paginator.html" with page=page_obj %}</div>
                     </div>
                     <div class="card bg-light my-4">
                         <div class="card-body">
@@ -204,7 +204,7 @@
                 <div class="col">
                     <form class="download"
                           method="get"
-                          action="{% url 'exp:study-responses-single-download' pk=study.pk %}">
+                          action="{% url "exp:study-responses-single-download" pk=study.pk %}">
                         {% csrf_token %}
                         <div class="card bg-light my-4">
                             <div class="card-body">
@@ -216,7 +216,7 @@
                                     Include with response download:
                                 </p>
                                 <div class="two-column-list mb-3">
-                                    {% include 'studies/_data_options.html' with data_options=data_options %}
+                                    {% include "studies/_data_options.html" with data_options=data_options %}
                                 </div>
                                 <p class="card-text">
                                     <label for="data-type-selector">

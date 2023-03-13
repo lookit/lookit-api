@@ -72,4 +72,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.djlint]
 profile = "django"
-ignore = "H006,H021,T002,T027"
+ignore = "H006,H021,T027"
