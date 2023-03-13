@@ -20,7 +20,7 @@ def format(text: Text) -> Text:
         return ""
 
 
-def active_nav(request, url) -> Text:
+def active_nav(request, url) -> bool:
     """Determine is this button is the active button in the navigation bar.
 
     Args:
@@ -28,12 +28,9 @@ def active_nav(request, url) -> Text:
         url (Text): String url for the current view
 
     Returns:
-        Text: "active" if this is the active view, else empty string.
+        boolean: returns true if this path is active
     """
-    if request.path == url:
-        return "active"
-    else:
-        return ""
+    return request.path == url
 
 
 def nav_next(request, url, text, button):
@@ -51,11 +48,11 @@ def nav_next(request, url, text, button):
     active = active_nav(request, url)
 
     if button:
-        css_class = "btn btn-lg btn-default"
+        css_class = "nav-link navbar-link link-secondary border-0 text-center"
     elif active:
-        css_class = f"{active} btn-link"
+        css_class = "btn active btn-secondary btn-link"
     else:
-        css_class = "btn-link"
+        css_class = "btn btn-link"
 
     form = f"""<form action="{url}" method="get">
     <button class="{css_class}" type="submit" value="login">{_(text)}</button>
@@ -63,7 +60,7 @@ def nav_next(request, url, text, button):
     </form>"""
 
     if not button:
-        form = f"<li>{form}</li>"
+        form = f"""<li>{form}</li>"""
 
     return mark_safe(form)
 
@@ -90,7 +87,7 @@ def google_tag_manager() -> Text:
 
 
 @register.simple_tag
-def nav_item(request, url_name, text):
+def nav_link(request, url_name, text, html_classes=None):
     """General navigation bar item
 
     Args:
@@ -101,11 +98,28 @@ def nav_item(request, url_name, text):
     Returns:
         SafeText: HTML of navigation item
     """
-    li_class = ""
+    if html_classes is None:
+        html_classes = [
+            "nav-link",
+            "navbar-link",
+            "link-secondary",
+            "text-center",
+            "px-3",
+        ]
     url = reverse(url_name)
-    li_class = active_nav(request, url)
+    aria_current = ""
+    if active_nav(request, url):
+        html_classes.extend(["active", "btn-secondary"])
+        aria_current = ' aria-current="page"'
 
-    return mark_safe(f'<li class="{li_class}"><a href="{url}">{_(text)}</a></li>')
+    return mark_safe(
+        f'<a class="{" ".join(html_classes)}"{aria_current} href="{url}">{_(text)}</a>'
+    )
+
+
+@register.simple_tag
+def dropdown_item(request, url_name, text):
+    return nav_link(request, url_name, text, ["dropdown-item"])
 
 
 @register.simple_tag
@@ -157,3 +171,10 @@ def studies_tab_text(tabs):
                 return _(
                     'You and your child can participate in these studies by scheduling a time to meet with a researcher (usually over video conferencing). Choose a study and then click "Participate" to sign up for a study session in the future.'
                 )
+
+
+@register.filter(name="studies_tab_selected")
+def studies_tab_selected(value):
+    for tab in value:
+        if tab.data["selected"]:
+            return tab.data["value"]

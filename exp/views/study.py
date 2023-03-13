@@ -448,7 +448,7 @@ class StudyDetailView(
         context["users_result"] = self.search_researchers()
         context["build_ui_tag"] = "success" if study.built else "warning"
         context["state_ui_tag"] = STATE_UI_SIGNALS.get(study.state, "info")
-        context["search_query"] = self.request.GET.get("match")
+        context["search_query"] = self.request.GET.get("match", "")
         context["name"] = self.request.GET.get("match", None)
         context["multiple_admins"] = (
             len(User.objects.filter(groups__name=admin_group.name)) > 1

@@ -1,156 +1,69 @@
 {% extends "web/base.html" %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load i18n %}
 {% load web_extras %}
+{% load static %}
 {% block title %}
     {% trans "Studies" %}
 {% endblock title %}
-{% block flash %}
-    {% if form.errors %}
-        <div class="alert alert-danger" role="alert">
-            <p>
-                {% trans "Your login credentials didn't work. Please try again." %}
-            </p>
-        </div>
-    {% endif %}
-    {% if next %}
-        <div class="alert alert-danger" role="alert">
-            {% if user.is_authenticated %}
-                <p>
-                    {% trans "Your account doesn't have access to this page. To proceed, please login with an account that has access." %}
-                </p>
-            {% else %}
-                <p>
-                    {% trans "Please login to see this page." %}
-                </p>
-            {% endif %}
-        </div>
-    {% endif %}
-{% endblock flash %}
+{% block head %}
+    <script src="{% static "js/studies-list.js"%}" defer></script>
+{% endblock head %}
 {% block content %}
-    {% bootstrap_messages %}
-    <div class="panel-default">
-        <div class="panel-body">
-            <form action method="post" class="study-list">
-                {% csrf_token %}
-                {{ form.study_list_tabs }}
-                <div class="form-inline">
-                    {% bootstrap_field form.child show_label=False %}
-                    {% bootstrap_field form.study_location show_label=False %}
-                    {% bootstrap_field form.hide_studies_we_have_done form_group_class="form-group show-experiments" %}
-                    {% if user.is_anonymous %}
-                        <div class="form-group login-message">Log in to find studies just right for your child!</div>
-                    {% endif %}
-                    <div class="pull-right">
-                        {% trans "Clear" as clear_button_text %}
-                        {% bootstrap_field form.search show_label=False %}
-                        {% bootstrap_button clear_button_text "reset" button_class="btn btn-default" %}
-                    </div>
-                </div>
-            </form>
+    <form action method="post" class="study-list row g-2">
+        {% csrf_token %}
+        {{ form.study_list_tabs }}
+        <div class="col-auto">{% bootstrap_field form.child show_label=False %}</div>
+        <div class="col-auto">{% bootstrap_field form.study_location show_label=False %}</div>
+        <div class="col-auto p-2">{% bootstrap_field form.hide_studies_we_have_done %}</div>
+        {% if user.is_anonymous %}<div class="col-auto pt-2">Log in to find studies just right for your child!</div>{% endif %}
+        <div class="col-auto">{% bootstrap_field form.search show_label=False %}</div>
+        <div class="col-auto">
+            {% trans "Clear" as clear_button_text %}
+            {% bootstrap_button clear_button_text button_type="reset" %}
         </div>
-    </div>
+    </form>
     <ul class="nav nav-tabs">
         {% for tab in form.study_list_tabs %}
-            <li role="study_list_tabs" data-value="{{ tab.data.value }}">
-                <a href="">{{ tab.data.label }}</a>
+            <li role="study_list_tabs"
+                data-value="{{ tab.data.value }}"
+                class="nav-item">
+                <a class="nav-link" href="#">{{ tab.data.label }}</a>
             </li>
         {% endfor %}
     </ul>
-    <div class="panel-default">
-        <div class="panel-body active-tab-text">
+    <div class="row active-tab-text">
+        <p>
             {% studies_tab_text form.study_list_tabs as tab_text %}
             {{ tab_text|linebreaks }}
-        </div>
+        </p>
     </div>
-    <div class="container-fluid study-list">
-        {% for study_row in object_list %}
-            <div class="row">
-                {% for study in study_row %}
-                    <div class="col-sm-3 col-md-3 col-lg-3">
-                        <a href="{% url 'web:study-detail' uuid=study.uuid %}">
-                            <img src="{{ study.image.url }}"
-                                 class="img-responsive"
-                                 alt="{{ study.name }}"/>
-                            <p>
-                                {{ study.name }}
-                            </p>
-                            <p>
-                                {{ study.preview_summary }}
-                            </p>
-                            <p>
-                                Learn More →
-                            </p>
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
+    <div class="d-flex flex-wrap">
+        {% for study in object_list %}
+            <a class="text-decoration-none link-dark w-25 p-2"
+               href="{% url 'web:study-detail' uuid=study.uuid %}">
+                <img src="{{ study.image.url }}"
+                     class="img-fluid mx-auto d-block"
+                     alt="{{ study.name }}"/>
+                <p>{{ study.name }}</p>
+                <p>{{ study.preview_summary }}</p>
+                <p>Learn More →</p>
+            </a>
         {% empty %}
-            <div class="col-xs-12">
-                <p>
-                    <em>{% trans "No studies found." %}</em>
-                </p>
-            </div>
+            <p class="mx-auto d-block">
+                <em>{% trans "No studies found." %}</em>
+            </p>
         {% endfor %}
     </div>
-    <div class="panel-default">
-        <div class="panel-body">
-            {% trans 'Looking for more ways to contribute to research from home? Check out' %}
+    <div class="row">
+        <p>
+            {% trans "Looking for more ways to contribute to research from home? Check out" %}
             <a href="https://childrenhelpingscience.com/"
                target="_blank"
                rel="noreferrer noopener">
-            {% trans 'Children Helping Science' %} </a> {% trans 'for even more studies!' %}
-        </div>
+                {% trans "Children Helping Science" %}
+            </a>
+            {% trans "for even more studies!" %}
+        </p>
     </div>
-    <script>
-    $(function () {
-        const $form = $('form');
-        const $hideStudiesCheckbox = $form.find('input:checkbox[name=hide_studies_we_have_done]')
-        const $checkboxes = $form.find('input:checkbox')
-        const $dropdownSelected = $form.find('select option:selected')
-
-        if ($dropdownSelected.val() === '') {
-            $hideStudiesCheckbox.attr('disabled', true);
-        }
-
-        $form.on('reset', function (event) {
-            resetForm(submitForm);
-        })
-
-        function resetForm(callbackFn) {
-            $form.find('input:text').attr('value', '')
-            $checkboxes.attr('checked', true);
-            $hideStudiesCheckbox.attr('checked', false)
-            $dropdownSelected.removeAttr('selected');
-            callbackFn()
-        }
-
-        function submitForm() {
-            $checkboxes.attr('disabled', false);
-            $form.submit()
-        }
-
-        $('select, input:checkbox').on('change', submitForm)
-
-        // Set active tab based on which "tabs" radio button is checked.
-        checked_radio = document.querySelector('input[name=study_list_tabs]:checked')
-        active_tab = document.querySelector(`[data-value="${checked_radio.value}"]`)
-        active_tab.classList.add('active')
-
-        // On click, update radio group 
-        document.querySelectorAll('[role=study_list_tabs]').forEach(function (tab) {
-            tab.addEventListener('click', function (event) {
-                event.preventDefault()
-                const radio = document.querySelector(`[name="study_list_tabs"][value="${tab.dataset.value}"]`)
-                if (!radio.hasAttribute('checked')) {
-                    radio.checked = true
-                    submitForm()
-                }
-            })
-        })
-
-    });
-
-
-    </script>
 {% endblock content %}

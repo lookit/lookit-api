@@ -49,6 +49,11 @@ def values_list_as_json(queryset, attribute):
 
 
 @register.simple_tag
+def join_on_key(data, key):
+    return ", ".join(str(d[key]) for d in data)
+
+
+@register.simple_tag
 def bit_is_set(bit_handler, bit_number):
     return bit_handler.get_bit(bit_number).is_set
 
