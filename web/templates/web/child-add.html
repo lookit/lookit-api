@@ -7,17 +7,8 @@
     {% trans "Children" %}
 {% endblock title %}
 {% block head %}
-    <script src="{% static "js/demographics-form.js" %}" defer></script>
-    <script src="{% static "js/child-add.js" %}" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"
-            integrity="sha512-57oZ/vW8ANMjR/KQ6Be9v/+/h6bq9/l3f0Oc7vn6qMqyhvPd1cvKBRWWpzu0QoneImqr2SkmO4MSqU+RpHom3Q=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"
-            integrity="sha512-42PE0rd+wZ2hNXftlM78BSehIGzezNeQuzihiBCvUEB3CVxHvsShF86wBWwQORNxNINlBPuq7rG4WWhNiTVHFg=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"></script>
-    <script></script>
+    <script src="{% static 'js/demographics-form.js' %}" defer></script>
+    <script src="{% static 'js/child-add.js' %}" defer></script>
 {% endblock head %}
 {% block content %}
     {% trans "Cancel" as trans_cancel %}
