@@ -53,7 +53,7 @@ test:
 	docker compose run --rm -e ENVIRONMENT= web poetry run ./manage.py test --failfast 
 
 collectstatic: 
-	docker compose run --rm web poetry run ./manage.py collectstatic --clear
+	docker compose run --rm web poetry run ./manage.py collectstatic --clear --noinput
 
 lint: 
 	poetry install --sync && poetry run pre-commit run --all-files
