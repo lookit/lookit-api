@@ -1,34 +1,33 @@
-$(document).ready(function () {
-    $('.text-warning').hide();
-    $(".childDropdown").val("none");
-});
+$('.text-warning').hide();
+$("#child-dropdown").val("none");
+childSelected(document.getElementById('child-dropdown'));
 
 function childSelected(selectElement) {
     var participateButton = document.getElementById('participate-button');
     if (selectElement.value === 'none') {
         participateButton.disabled = true;
-        document.getElementById('too-old').style.display = 'none';
-        document.getElementById('too-young').style.display = 'none';
-        document.getElementById('criteria-not-met').style.display = 'none';
+        document.getElementById('too-old').classList.add('d-none');
+        document.getElementById('too-young').classList.add('d-none');
+        document.getElementById('criteria-not-met').classList.add('d-none');
     } else {
         participateButton.disabled = false;
     }
     participateButton.value = selectElement.value;
 
-    document.getElementById('too-old').style.display = 'none';
-    document.getElementById('too-young').style.display = 'none';
-    document.getElementById('criteria-not-met').style.display = 'none';
-    let birthday = selectElement.selectedOptions[0].dataset["birthdate"],
-        age = calculateAgeInDays(birthday),
-        ineligibleBasedOnAge = ageCheck(age),
-        ineligibleBasedOnCriteria = selectElement.selectedOptions[0].dataset["eligible"] === "False";
+    document.getElementById('too-old').classList.add('d-none');
+    document.getElementById('too-young').classList.add('d-none');
+    document.getElementById('criteria-not-met').classList.add('d-none');
+    let birthday = selectElement.selectedOptions[0].dataset["birthdate"];
+    let age = calculateAgeInDays(birthday);
+    let ineligibleBasedOnAge = ageCheck(age);
+    let ineligibleBasedOnCriteria = selectElement.selectedOptions[0].dataset["eligible"] === "False";
 
     if (ineligibleBasedOnAge > 0) { // Too old
-        document.getElementById('too-old').style.display = 'inline-block';
+        document.getElementById('too-old').classList.remove('d-none');
     } else if (ineligibleBasedOnAge < 0 && !ineligibleBasedOnCriteria) { // Too young, but otherwise eligible
-        document.getElementById('too-young').style.display = 'inline-block';
+        document.getElementById('too-young').classList.remove('d-none');
     } else if (ineligibleBasedOnCriteria) {
-        document.getElementById('criteria-not-met').style.display = 'inline-block';
+        document.getElementById('criteria-not-met').classList.remove('d-none');
     }
 }
 
@@ -43,10 +42,11 @@ function ageCheck(age) {
     // Adapted from experiment model in exp-addons
     var minDays;
     var maxDays;
+    var study_age_criteria = document.getElementById('child-dropdown').dataset;
     // These are now hard-coded to avoid unpredictable behavior from moment.duration().asDays()
     // e.g. 1 year = 365 days, 1 month = 30 days, and 1 year + 1 month = 396 days.
-    minDays = Number("{{study.min_age_days}}") + 30 * Number("{{study.min_age_months}}") + 365 * Number("{{study.min_age_years}}");
-    maxDays = Number("{{study.max_age_days}}") + 30 * Number("{{study.max_age_months}}") + 365 * Number("{{study.max_age_years}}");
+    minDays = parseInt(study_age_criteria.studyMinAgeDays,10) + 30 * parseInt(study_age_criteria.studyMinAgeMonths,10) + 365 * parseInt(study_age_criteria.studyMinAgeYears,10);
+    maxDays = parseInt(study_age_criteria.studyMaxAgeDays,10) + 30 * parseInt(study_age_criteria.studyMaxAgeMonths,10) + 365 * parseInt(study_age_criteria.studyMaxAgeYears,10);
 
     minDays = minDays || -1;
     maxDays = maxDays || Number.MAX_SAFE_INTEGER;
