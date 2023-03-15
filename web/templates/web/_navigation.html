@@ -30,8 +30,8 @@
                         {% nav_link request 'web:studies-history' 'My Past Studies' %}
                         {% nav_link request 'logout' logout %}
                     {% else %}
-                        {% nav_signup request 'Sign up' True %}
-                        {% nav_login request 'Login' True %}
+                        {% nav_signup request 'Sign up' %}
+                        {% nav_login request 'Login' %}
                     {% endif %}
                 </div>
             {% endblock nav_links %}

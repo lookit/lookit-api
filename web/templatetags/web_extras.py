@@ -48,11 +48,11 @@ def nav_next(request, url, text, button):
     active = active_nav(request, url)
 
     if button:
-        css_class = "nav-link navbar-link link-secondary border-0 text-center"
+        css_class = "btn btn-light link-secondary border-secondary text-center"
     elif active:
-        css_class = "btn active btn-secondary btn-link"
+        css_class = "btn active btn-light link-secondary text-center"
     else:
-        css_class = "btn btn-link"
+        css_class = "nav-link navbar-link link-secondary border-0 text-center"
 
     form = f"""<form action="{url}" method="get">
     <button class="{css_class}" type="submit" value="login">{_(text)}</button>
