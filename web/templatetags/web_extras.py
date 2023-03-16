@@ -48,11 +48,11 @@ def nav_next(request, url, text, button):
     active = active_nav(request, url)
 
     if button:
-        css_class = "nav-link navbar-link link-secondary border-0 text-center"
+        css_class = "btn btn-light link-secondary border-secondary text-center"
     elif active:
-        css_class = "btn active btn-secondary btn-link"
+        css_class = "btn active btn-light link-secondary text-center"
     else:
-        css_class = "btn btn-link"
+        css_class = "nav-link navbar-link link-secondary border-0 text-center"
 
     form = f"""<form action="{url}" method="get">
     <button class="{css_class}" type="submit" value="login">{_(text)}</button>
@@ -178,3 +178,44 @@ def studies_tab_selected(value):
     for tab in value:
         if tab.data["selected"]:
             return tab.data["value"]
+
+
+@register.simple_tag
+def set_variable(val=None):
+    """Tag for defining a string variable.
+
+    Args:
+        val (str): string value that needs to be assigned to a variable.
+
+    Returns:
+        String to be held in a variable.
+    """
+    return val
+
+
+@register.simple_tag
+def study_info_table_heading_classes():
+    return "col-sm-12 col-md-4 py-2 align-top"
+
+
+@register.simple_tag
+def study_info_table_content_classes():
+    return "col-sm-12 col-md-8 py-2 ps-2 align-top"
+
+
+@register.simple_tag
+def button_primary_classes(extra_classes=None):
+    classes = ["btn", "btn-primary", "my-3"]
+    if extra_classes:
+        classes.extend([extra_classes])
+
+    return " ".join(classes)
+
+
+@register.simple_tag
+def button_secondary_classes(extra_classes=None):
+    classes = ["btn", "btn-light", "link-secondary", "border-secondary", "my-3"]
+    if extra_classes:
+        classes.extend([extra_classes])
+
+    return " ".join(classes)
