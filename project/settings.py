@@ -358,3 +358,5 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 LOCALE_PATHS = (os.path.join(BASE_DIR, "../locale"),)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+BOOTSTRAP5 = {"css_url": ("/static/main.css")}
