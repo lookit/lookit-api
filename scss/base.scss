@@ -1,2 +1,11 @@
 @import "custom";
+@import "2fa-setup";
+@import "all-json-and-csv-data";
+@import "navigation";
+@import "study-fields";
+@import "study-responses";
 @import "bootstrap-5.2.3/scss/bootstrap";
+
+body {
+    font-family: 'Noto Sans', sans-serif !important;
+}

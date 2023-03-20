@@ -1,3 +1,35 @@
+.text-align-icon {
+  vertical-align: bottom; }
+
+.three-column-list {
+  column-count: 3;
+  -moz-column-count: 3;
+  -webkit-column-count: 3; }
+
+div.navbar-nav button.active,
+div.navbar-nav a.active {
+  --bs-nav-pills-link-active-bg: #e7e7e7; }
+
+#study-details-form .ace-overlay,
+#study-create-form .ace-overlay {
+  width: 100%;
+  margin-bottom: 1.5rem; }
+
+#structure-container .code-container,
+#generator-container .code-container {
+  max-height: 10em; }
+
+span.priority-highest {
+  float: right; }
+
+tr.preview-row {
+  background: url("../images/preview.svg") repeat transparent; }
+
+.two-column-list {
+  column-count: 2;
+  -moz-column-count: 2;
+  -webkit-column-count: 2; }
+
 /*!
    * Bootstrap  v5.2.3 (https://getbootstrap.com/)
    * Copyright 2011-2022 The Bootstrap Authors
@@ -29,7 +61,7 @@
   --bs-gray-800: #343a40;
   --bs-gray-900: #212529;
   --bs-primary: #52c8ed;
-  --bs-secondary: #ff5f5c;
+  --bs-secondary: #6c757d;
   --bs-success: #198754;
   --bs-info: #0dcaf0;
   --bs-warning: #ffc107;
@@ -37,7 +69,7 @@
   --bs-light: #f8f9fa;
   --bs-dark: #212529;
   --bs-primary-rgb: 82, 200, 237;
-  --bs-secondary-rgb: 255, 95, 92;
+  --bs-secondary-rgb: 108, 117, 125;
   --bs-success-rgb: 25, 135, 84;
   --bs-info-rgb: 13, 202, 240;
   --bs-warning-rgb: 255, 193, 7;
@@ -1405,13 +1437,13 @@ progress {
 
 .table-secondary {
   --bs-table-color: #000;
-  --bs-table-bg: #ffdfde;
-  --bs-table-border-color: #e6c9c8;
-  --bs-table-striped-bg: #f2d4d3;
+  --bs-table-bg: #e2e3e5;
+  --bs-table-border-color: #cbccce;
+  --bs-table-striped-bg: #d7d8da;
   --bs-table-striped-color: #000;
-  --bs-table-active-bg: #e6c9c8;
+  --bs-table-active-bg: #cbccce;
   --bs-table-active-color: #000;
-  --bs-table-hover-bg: #eccecd;
+  --bs-table-hover-bg: #d1d2d4;
   --bs-table-hover-color: #000;
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color); }
@@ -2234,20 +2266,20 @@ textarea.form-control-lg {
   --bs-btn-disabled-border-color: #52c8ed; }
 
 .btn-secondary {
-  --bs-btn-color: #000;
-  --bs-btn-bg: #ff5f5c;
-  --bs-btn-border-color: #ff5f5c;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #ff7774;
-  --bs-btn-hover-border-color: #ff6f6c;
-  --bs-btn-focus-shadow-rgb: 217, 81, 78;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #ff7f7d;
-  --bs-btn-active-border-color: #ff6f6c;
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #6c757d;
+  --bs-btn-border-color: #6c757d;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #5c636a;
+  --bs-btn-hover-border-color: #565e64;
+  --bs-btn-focus-shadow-rgb: 130, 138, 145;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #565e64;
+  --bs-btn-active-border-color: #51585e;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #000;
-  --bs-btn-disabled-bg: #ff5f5c;
-  --bs-btn-disabled-border-color: #ff5f5c; }
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #6c757d;
+  --bs-btn-disabled-border-color: #6c757d; }
 
 .btn-success {
   --bs-btn-color: #fff;
@@ -2362,19 +2394,19 @@ textarea.form-control-lg {
   --bs-gradient: none; }
 
 .btn-outline-secondary {
-  --bs-btn-color: #ff5f5c;
-  --bs-btn-border-color: #ff5f5c;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #ff5f5c;
-  --bs-btn-hover-border-color: #ff5f5c;
-  --bs-btn-focus-shadow-rgb: 255, 95, 92;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #ff5f5c;
-  --bs-btn-active-border-color: #ff5f5c;
+  --bs-btn-color: #6c757d;
+  --bs-btn-border-color: #6c757d;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #6c757d;
+  --bs-btn-hover-border-color: #6c757d;
+  --bs-btn-focus-shadow-rgb: 108, 117, 125;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #6c757d;
+  --bs-btn-active-border-color: #6c757d;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #ff5f5c;
+  --bs-btn-disabled-color: #6c757d;
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #ff5f5c;
+  --bs-btn-disabled-border-color: #6c757d;
   --bs-gradient: none; }
 
 .btn-outline-success {
@@ -3768,11 +3800,11 @@ textarea.form-control-lg {
     color: #1a404c; }
 
 .alert-secondary {
-  --bs-alert-color: #993937;
-  --bs-alert-bg: #ffdfde;
-  --bs-alert-border-color: #ffcfce; }
+  --bs-alert-color: #41464b;
+  --bs-alert-bg: #e2e3e5;
+  --bs-alert-border-color: #d3d6d8; }
   .alert-secondary .alert-link {
-    color: #7a2e2c; }
+    color: #34383c; }
 
 .alert-success {
   --bs-alert-color: #0f5132;
@@ -4057,15 +4089,15 @@ textarea.form-control-lg {
     border-color: #21505f; }
 
 .list-group-item-secondary {
-  color: #993937;
-  background-color: #ffdfde; }
+  color: #41464b;
+  background-color: #e2e3e5; }
   .list-group-item-secondary.list-group-item-action:hover, .list-group-item-secondary.list-group-item-action:focus {
-    color: #993937;
-    background-color: #e6c9c8; }
+    color: #41464b;
+    background-color: #cbccce; }
   .list-group-item-secondary.list-group-item-action.active {
     color: #fff;
-    background-color: #993937;
-    border-color: #993937; }
+    background-color: #41464b;
+    border-color: #41464b; }
 
 .list-group-item-success {
   color: #0f5132;
@@ -5369,8 +5401,8 @@ textarea.form-control-lg {
   background-color: RGBA(82, 200, 237, var(--bs-bg-opacity, 1)) !important; }
 
 .text-bg-secondary {
-  color: #000 !important;
-  background-color: RGBA(255, 95, 92, var(--bs-bg-opacity, 1)) !important; }
+  color: #fff !important;
+  background-color: RGBA(108, 117, 125, var(--bs-bg-opacity, 1)) !important; }
 
 .text-bg-success {
   color: #fff !important;
@@ -5402,9 +5434,9 @@ textarea.form-control-lg {
     color: #75d3f1 !important; }
 
 .link-secondary {
-  color: #ff5f5c !important; }
+  color: #6c757d !important; }
   .link-secondary:hover, .link-secondary:focus {
-    color: #ff7f7d !important; }
+    color: #565e64 !important; }
 
 .link-success {
   color: #198754 !important; }
@@ -8357,3 +8389,6 @@ textarea.form-control-lg {
     display: inline-flex !important; }
   .d-print-none {
     display: none !important; } }
+
+body {
+  font-family: 'Noto Sans', sans-serif !important; }
