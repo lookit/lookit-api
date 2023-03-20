@@ -359,4 +359,4 @@ LOCALE_PATHS = (os.path.join(BASE_DIR, "../locale"),)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-BOOTSTRAP5 = {"css_url": ("/static/main.css")}
+BOOTSTRAP5 = {"css_url": ("/static/custom_bootstrap5.css")}
