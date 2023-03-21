@@ -29,28 +29,29 @@ class Command(BaseCommand):
         bs5_url = f"https://github.com/twbs/bootstrap/archive/v{bs5_version}.zip"
         bs5_filename = bs5_url.split("/")[-1]
 
+        # the known root directory of the BS5 archive zip file
+        zip_root_dir = Path("bootstrap-5.2.0")
+
+        # get the hash of the exisiting compiled css file
         css_hash = self.get_css_hash()
 
-        # Get BS5 zip file
-        print(f"Downloading bootstrap v{bs5_version}....")
-        urllib.request.urlretrieve(bs5_url, bs5_filename)
+        # when the root directory doesn't exists, download and extract file
+        if not zip_root_dir.exists():
+            print(f"Downloading bootstrap v{bs5_version}....")
+            urllib.request.urlretrieve(bs5_url, bs5_filename)
 
-        print("Unzip bootstrap file...")
-        with zipfile.ZipFile(bs5_filename) as zip_ref:
-            # Find, what should be, the only root directory in the zip file.
-            root_dir = {n.split("/")[0] for n in zip_ref.namelist() if n.endswith("/")}
-            if len(root_dir) != 1:
+            print("Unzip bootstrap file...")
+            with zipfile.ZipFile(bs5_filename) as zip_ref:
+                zip_ref.extractall("./")
+
+            print("Remove downloaded compressed file...")
+            Path(bs5_filename).unlink()
+
+            if not zip_root_dir.exists():
                 raise CommandError(
-                    "Found more then one root directory in bootstrap zip file."
+                    f'Expected directory "{zip_root_dir}" was not found after unzip.'
                 )
 
-            zip_ref.extractall("./")
-
-        # Delete zip file
-        print("Remove downloaded compressed file...")
-        Path(bs5_filename).unlink()
-
-        # Compile and write css from downloaded source
         print("Compile sass to css...")
         with open(self.output_css, "w") as fp:
             fp.write(sass.compile(filename="scss/base.scss"))
