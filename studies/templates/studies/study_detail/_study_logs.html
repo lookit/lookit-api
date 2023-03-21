@@ -1,0 +1,45 @@
+{% load tz %}
+{% load exp_extras %}
+<div class="card mb-3">
+    <div class="card-header">Study Logs</div>
+    <div class="card-body">
+        {% for log in logs %}
+            <div class="row mb-1 small">
+                <div class="col-3">{% localtime on %}{{ log.created_at }}{% endlocaltime %}</div>
+                <div class="col-3">
+                    Study
+                    {% if log.action == "active" %}
+                        started
+                    {% elif log.action == "deploy" %}
+                        experiment runner built
+                    {% else %}
+                        {{ log.action }}
+                    {% endif %}
+                    {% if log.user %}
+                        by {{ log.user.get_short_name }}
+                    {% elif log.action == "rejected" %}
+                        due to changes
+                    {% endif %}
+                </div>
+                <div class="col-6">
+                    {% if log.extra.comments %}{{ log.extra.comments|linebreaks }}{% endif %}
+                    {# Submit triggers are logged under the action "submitted" #}
+                    {% if log.extra.declarations and log.action == 'submitted' %}
+                        <p>Declarations:</p>
+                        <ul>
+                            {% for key, value in declarations_dict.submit.items %}
+                                {% if log.extra.declarations|get_key:key %}
+                                    <li>{{ value }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        {% if log.extra.declarations.issues_description %}<p>{{ log.extra.declarations.issues_description }}</p>{% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        <div class="row">
+            <div class="col mt-2">{% include "studies/_paginator.html" with page=logs anchor="study-logs" %}</div>
+        </div>
+    </div>
+</div>

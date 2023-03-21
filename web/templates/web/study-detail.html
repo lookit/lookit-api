@@ -1,243 +1,161 @@
 {% extends "web/base.html" %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
 {% load web_extras %}
 {% load i18n %}
+{% load static %}
 {% block title %}
     {{ object.name }}
 {% endblock title %}
 {% block head %}
     {{ block.super }}
-    <script type="application/javascript">
-    $(document).ready(function () {
-        $('.text-warning').hide();
-        $(".childDropdown").val("none");
-    });
-    </script>
-    {{ form.media }}
+    <script src="{% static 'js/study-detail-web.js' %}" defer></script>
 {% endblock head %}
-{% block flash %}
-    {% if form.errors %}
-        <div class="alert alert-danger" role="alert">
-            <p>
-                {% trans "Your login credentials didn't work. Please try again." %}
-            </p>
-        </div>
-    {% endif %}
-{% endblock flash %}
 {% block content %}
-    <script>
-    function childSelected(selectElement) {
-        var participateButton = document.getElementById('participate-button');
-        if (selectElement.value === 'none') {
-            participateButton.disabled = true;
-            document.getElementById('too-old').style.display = 'none';
-            document.getElementById('too-young').style.display = 'none';
-            document.getElementById('criteria-not-met').style.display = 'none';
-        } else {
-            participateButton.disabled = false;
-        }
-        participateButton.value = selectElement.value;
-
-        document.getElementById('too-old').style.display = 'none';
-        document.getElementById('too-young').style.display = 'none';
-        document.getElementById('criteria-not-met').style.display = 'none';
-        let birthday = selectElement.selectedOptions[0].dataset["birthdate"],
-            age = calculateAgeInDays(birthday),
-            ineligibleBasedOnAge = ageCheck(age),
-            ineligibleBasedOnCriteria = selectElement.selectedOptions[0].dataset["eligible"] === "False";
-
-        if (ineligibleBasedOnAge > 0) { // Too old
-            document.getElementById('too-old').style.display = 'inline-block';
-        } else if (ineligibleBasedOnAge < 0 && !ineligibleBasedOnCriteria) { // Too young, but otherwise eligible
-            document.getElementById('too-young').style.display = 'inline-block';
-        } else if (ineligibleBasedOnCriteria) {
-            document.getElementById('criteria-not-met').style.display = 'inline-block';
-        }
-    }
-
-    function calculateAgeInDays(birthday) {
-        // Warning: do NOT use moment.duration in the calculation of age! Use diffs
-        // instead to get ACTUAL time difference, without passing through an 
-        // approximation where each month is 30 days and each year is 365.
-        return moment(moment()._d).diff(new Date(birthday), 'days');
-    }
-
-    function ageCheck(age) {
-        // Adapted from experiment model in exp-addons
-        var minDays;
-        var maxDays;
-        // These are now hard-coded to avoid unpredictable behavior from moment.duration().asDays()
-        // e.g. 1 year = 365 days, 1 month = 30 days, and 1 year + 1 month = 396 days.
-        minDays = Number("{{study.min_age_days}}") + 30 * Number("{{study.min_age_months}}") + 365 * Number("{{study.min_age_years}}");
-        maxDays = Number("{{study.max_age_days}}") + 30 * Number("{{study.max_age_months}}") + 365 * Number("{{study.max_age_years}}");
-
-        minDays = minDays || -1;
-        maxDays = maxDays || Number.MAX_SAFE_INTEGER;
-
-        if (age <= minDays) {
-            return age - minDays;
-        } else if (age >= maxDays) {
-            return age - maxDays;
-        } else {
-            return 0;
-        }
-    }
-
-    </script>
-    {% bootstrap_messages %}
-    <div class="container">
-        <div class="lookit-row row">
-            <div class="col-md-11">
-                <div class="row">
-                    <div class="col-md-9">
-                        <div class="caption">
-                            <div class="container-fluid">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <img class="img-responsive"
-                                             alt="{{ study.name }}"
-                                             src="{{ study.image.url }}"/>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h1>{{ study.name }}</h1>
-                                        <p>
-                                            {{ study.lab.name }} ({{ study.lab.institution }})
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <table class="study-detail-infotable">
-                                <tr>
-                                    <td>
-                                        <h3>{% trans "Who Can Participate" %}</h3>
-                                    </td>
-                                    <td>{{ object.criteria|linebreaks }}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <h3>{% trans "What Happens" %}</h3>
-                                    </td>
-                                    <td>{{ object.short_description|linebreaks }}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <h3>{% trans "What We're Studying" %}</h3>
-                                    </td>
-                                    <td>{{ object.purpose|linebreaks }}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <h3>{% trans "Duration" %}</h3>
-                                    </td>
-                                    <td>{{ object.duration|linebreaks }}</td>
-                                </tr>
-                                {% if object.compensation_description %}
-                                    <tr>
-                                        <td>
-                                            <h3>{% trans "Compensation" %}</h3>
-                                        </td>
-                                        <td>{{ object.compensation_description|linebreaks }}</td>
-                                    </tr>
-                                {% endif %}
-                            </table>
-                            <p class="study-detail-contactinfo">
-                                <em>{% trans "This study is conducted by" %} {{ object.contact_info }}</em>
-                            </p>
-                        </div>
+    {% url 'exp:study-detail' object.pk as build_runner_url %}
+    {% url 'web:children-list' as add_child_url %}
+    {% url 'web:demographic-data-update' as complete_demo_url %}
+    {% trans "preview" as preview %}
+    {% trans "participate" as participate %}
+    {% trans "now" as now %}
+    {% trans "Build experiment runner to preview" as build_runner %}
+    {% trans "Schedule a time to participate" as schedule %}
+    {% trans "Add child profile to " as add_child_profile_start %}
+    {% trans "Complete demographic survey to " as complete_demo_start %}
+    {% if preview_mode %}
+        {% set_variable preview as pre_or_part_text %}
+    {% else %}
+        {% set_variable participate as pre_or_part_text %}
+    {% endif %}
+    {% set_variable pre_or_part_text|capfirst|add:" "|add:now|add:"!" as pre_or_part_button_text %}
+    {% set_variable add_child_profile_start|add:pre_or_part_text as add_child_profile %}
+    {% set_variable complete_demo_start|add:pre_or_part_text as complete_demo %}
+    {% button_primary_classes "btn-lg" as btn_primary_classes %}
+    {% button_secondary_classes "btn-lg" as btn_secondary_classes %}
+    <div class="row mt-3 px-4">
+        <div class="col-md-9">
+            <div class="container-sm">
+                <div class="row mb-3">
+                    <div class="col-9 col-md-5 ps-0">
+                        <img class="img-responsive"
+                             alt="{{ study.name }}"
+                             src="{{ study.image.url }}"
+                             width="100%"/>
                     </div>
-                    <div class="col-md-3">
-                        <h3>{% trans "Would you like to participate in this study?" %}</h3>
-                        {% if not request.user.is_authenticated %}
-                            <p>
-                                {% nav_login request text="Log in to participate" button=True %}
-                            </p>
-                            {% nav_signup request text="Create a new account" button=True %}
-                        {% elif not children %}
-                            <a class="btn btn-lg btn-default" href="{% url 'web:children-list' %}">{% trans "Add child profile to " %}
-                                {% if preview_mode %}
-                                    {% trans "preview" %}
-                                {% else %}
-                                    {% trans "participate" %}
-                                {% endif %}
-                            </a>
-                        {% elif not has_demographic %}
-                            <a class="btn btn-lg btn-default"
-                               href="{% url 'web:demographic-data-update' %}">{% trans "Complete demographic survey to " %}
-                                {% if preview_mode %}
-                                    {% trans "preview" %}
-                                {% else %}
-                                    {% trans "participate" %}
-                                {% endif %}
-                            </a>
-                        {% else %}
-                            <div class="form-group">
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <label for="child-dropdown">{% trans "Select a child:" %}</label>
-                                    <select id="child-dropdown"
-                                            name="child_id"
-                                            class="childDropdown form-control"
-                                            onchange="childSelected(this)">
-                                        <option value=none>
-                                            {% trans "None Selected" %}
-                                        </option>
-                                        {% for child in children %}
-                                            {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
-                                            <option onemptied=""
-                                                    value="{{ child.uuid }}"
-                                                    data-birthdate="{{ child.birthday|date:'c' }}"
-                                                    data-eligible="{{ child_is_eligible }}">
-                                                {{ child.given_name }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
-                                    <p class="text-warning" style="display:none" id="too-young">
-                                        {% trans "Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research!" %}
-                                    </p>
-                                    <p class="text-warning" style="display:none" id="too-old">
-                                        {% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research." %}
-                                    </p>
-                                    <p class="text-warning" style="display:none" id="criteria-not-met">
-                                        {% blocktranslate with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktranslate %}
-                                    </p>
-                                    {% if preview_mode and object.needs_to_be_built %}
-                                        <a id="participate-button"
-                                           class="btn btn-lg btn-default"
-                                           href="{% url 'exp:study-detail' object.pk %}">{% trans "Build experiment runner to preview" %}</a>
-                                    {% else %}
-                                        <button type="submit"
-                                                disabled
-                                                class="btn-lg btn-primary"
-                                                id="participate-button">
-                                            {% if object.show_scheduled %}
-                                                {% trans "Schedule a time to participate" %}
-                                            {% elif preview_mode %}
-                                                {% trans "Preview" %}
-                                            {% else %}
-                                                {% trans "Participate" %}
-                                            {% endif %}
-                                            {% trans "now" %}!
-                                        </button>
-                                        {% if preview_mode %}
-                                            <p>
-                                                {% trans "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to." %}
-                                            </p>
-                                        {% endif %}
-                                        {% if object.study_type.is_external %}
-                                            <p>
-                                                {% trans "This study is being run outside of Lookit." %}
-                                            </p>
-                                            <p>
-                                                {% trans "Clicking to participate via Lookit will make it possible for researchers to contact you & will share profile information with researchers." %}
-                                            </p>
-                                        {% endif %}
-                                    {% endif %}
-                                </form>
-                            </div>
-                        {% endif %}
+                    <div class="col-9 col-md-5 px-5">
+                        <h1 class="mt-4">{{ study.name }}</h1>
+                        <p>{{ study.lab.name }} ({{ study.lab.institution }})</p>
                     </div>
                 </div>
             </div>
+            <div class="container-sm">
+                <table role="presentation">
+                    <tr>
+                        <td class="{% study_info_table_heading_classes %}">
+                            <h4>{% trans "Who Can Participate" %}</h4>
+                        </td>
+                        <td class="{% study_info_table_content_classes %}">{{ object.criteria|linebreaks }}</td>
+                    </tr>
+                    <tr>
+                        <td class="{% study_info_table_heading_classes %}">
+                            <h4>{% trans "What Happens" %}</h4>
+                        </td>
+                        <td class="{% study_info_table_content_classes %}">{{ object.short_description|linebreaks }}</td>
+                    </tr>
+                    <tr>
+                        <td class="{% study_info_table_heading_classes %}">
+                            <h4>{% trans "What We're Studying" %}</h4>
+                        </td>
+                        <td class="{% study_info_table_content_classes %}">{{ object.purpose|linebreaks }}</td>
+                    </tr>
+                    <tr>
+                        <td class="{% study_info_table_heading_classes %}">
+                            <h4>{% trans "Duration" %}</h4>
+                        </td>
+                        <td class="{% study_info_table_content_classes %}">{{ object.duration|linebreaks }}</td>
+                    </tr>
+                    {% if object.compensation_description %}
+                        <tr>
+                            <td class="{% study_info_table_heading_classes %}">
+                                <h4>{% trans "Compensation" %}</h4>
+                            </td>
+                            <td class="{% study_info_table_content_classes %}">{{ object.compensation_description|linebreaks }}</td>
+                        </tr>
+                    {% endif %}
+                </table>
+                <p class="pb-0">
+                    <em class="mt-3 mb-0 text-center text-muted">{% trans "This study is conducted by" %} {{ object.contact_info }}</em>
+                </p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <h4 class="mt-4 mb-3">{% trans "Would you like to participate in this study?" %}</h4>
+            {% if not request.user.is_authenticated %}
+                <div class="my-3">{% nav_login request text="Log in to participate" button=True %}</div>
+                <div class="my-3">{% nav_signup request text="Create a new account" button=True %}</div>
+            {% elif not children %}
+                {% bootstrap_button add_child_profile href=add_child_url button_class=btn_secondary_classes %}
+            {% elif not has_demographic %}
+                {% bootstrap_button complete_demo href=complete_demo_url button_class=btn_secondary_classes %}
+            {% else %}
+                <div class="form-group">
+                    <form method="post">
+                        {% csrf_token %}
+                        <label for="child-dropdown" class="form-label">{% trans "Select a child:" %}</label>
+                        <select id="child-dropdown"
+                                name="child_id"
+                                class="form-select"
+                                data-study-min-age-days="{{ study.min_age_days }}"
+                                data-study-min-age-months="{{ study.min_age_months }}"
+                                data-study-min-age-years="{{ study.min_age_years }}"
+                                data-study-max-age-days="{{ study.max_age_days }}"
+                                data-study-max-age-months="{{ study.max_age_months }}"
+                                data-study-max-age-years="{{ study.max_age_years }}"
+                                onchange="childSelected(this)">
+                            <option value=none>
+                                {% trans "None Selected" %}
+                            </option>
+                            {% for child in children %}
+                                {% child_is_valid_for_study_criteria_expression child object as child_is_eligible %}
+                                <option onemptied=""
+                                        value="{{ child.uuid }}"
+                                        data-birthdate="{{ child.birthday|date:'c' }}"
+                                        data-eligible="{{ child_is_eligible }}">
+                                    {{ child.given_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <p class="text-danger mb-0 mt-3 d-none" id="too-young">
+                            {% trans "Your child is still younger than the recommended age range for this study. If you can wait until he or she is old enough, we'll be able to use the collected data in our research!" %}
+                        </p>
+                        <p class="text-danger mb-0 mt-3 d-none" id="too-old">
+                            {% trans "Your child is older than the recommended age range for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research." %}
+                        </p>
+                        <p class="text-danger mb-0 mt-3 d-none" id="criteria-not-met">
+                            {% blocktranslate with contact=study.contact_info %} Your child does not meet the eligibility criteria listed for this study. You're welcome to try the study anyway, but we won't be able to use the collected data in our research. Please contact the study researchers {{ contact }} if you feel this is in error. {% endblocktranslate %}
+                        </p>
+                        {% if preview_mode and object.needs_to_be_built %}
+                            {% bootstrap_button build_runner href=build_runner_url button_class=btn_secondary_classes id="participate-button" %}
+                        {% else %}
+                            {% if object.show_scheduled %}
+                                {% bootstrap_button schedule button_type="submit" button_class=btn_primary_classes id="participate-button" disabled="disabled" %}
+                            {% else %}
+                                {% bootstrap_button pre_or_part_button_text button_type="submit" button_class=btn_primary_classes id="participate-button" disabled="disabled" %}
+                            {% endif %}
+                            {% if preview_mode %}
+                                <p>
+                                    {% trans "For an easy way to see what happens as you update your study protocol, bookmark the URL the button above sends you to." %}
+                                </p>
+                            {% endif %}
+                            {% if object.study_type.is_external %}
+                                <p>{% trans "This study is being run outside of Lookit." %}</p>
+                                <p>
+                                    {% trans "Clicking to participate via Lookit will make it possible for researchers to contact you & will share profile information with researchers." %}
+                                </p>
+                            {% endif %}
+                        {% endif %}
+                    </form>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

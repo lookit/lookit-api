@@ -1,66 +1,48 @@
 {% extends "exp/base.html" %}
-{% load bootstrap3 %}
+{% load django_bootstrap5 %}
+{% load bootstrap_icons %}
+{% load static %}
+{% block head %}
+    {{ block.super }}
+    <script src="{% static 'js/study-create.js' %}"></script>
+    {{ form.media }}
+{% endblock head %}
 {% block title %}
     Create Study
 {% endblock title %}
-{% block head %}
-    {{ block.super }}
-    <script type="application/javascript">
-        /* Fix for ace-editor. It thinks it's in the admin only */
-        (function (){
-            if (window.jQuery !== undefined) {
-                window.django = {
-                    'jQuery': window.jQuery
-                };
-            }
-        })();
-    </script>
-    <script>
-        $(document).ready(function(){
-            $('form').submit(function() {
-                $('#create-study-button').prop("disabled", "disabled");
-            });
-        });
-    </script>
-    {{ form.media }}
-{% endblock head %}
 {% block content %}
-    {% bootstrap_messages %}
+    {% bs_icon "plus" as bs_icon_plus %}
+    {% url 'exp:study-list' as url_cancel %}
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
                 <ol class="breadcrumb">
-                    <li>
+                    <li class="breadcrumb-item">
                         <a href="{% url 'exp:study-list' %}">Manage Studies</a>
                     </li>
-                    <li class="active">Create Study</li>
+                    <li class="breadcrumb-item active">Create Study</li>
                 </ol>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12 col-xs-offset-0 col-md-10 col-md-offset-1"
-                 id="study-create-form">
-                <div class="panel panel-default mt-md">
-                    <div class="panel-heading">
-                        <h1 class="panel-title">Create Study</h1>
+            <div class="col-lg-10 offset-lg-1">
+                <div class="card bg-light my-4">
+                    <div class="card-header">
+                        <h3 class="card-subtitle my-1">Create Study</h3>
                     </div>
-                    <div class="panel-body">
-                        <form action="" enctype="multipart/form-data" method="post">
+                    <div class="card-body">
+                        <form id="study-details-form" enctype="multipart/form-data" method="post">
                             {% csrf_token %}
                             {% include "studies/_study_fields.html" with form=form %}
                             {% include "studies/_study_type.html" with types=types create=1 %}
-                            <div class="pull-right">
-                                {% buttons %}
-                                <a href="{% url 'exp:study-list' %}" class="btn btn-default">Cancel</a>
-                                <button type="submit" id="create-study-button" class="btn btn-success">
-                                    {% bootstrap_icon "plus" %} Create Study
-                                </button>
-                            {% endbuttons %}
-                        </div>
-                    </form>
+                            <div class="me-4 float-end">
+                                {% bootstrap_button "Cancel" button_class="btn btn-light link-secondary border-secondary" href=url_cancel %}
+                                {% bootstrap_button bs_icon_plus|add:"Create Study" button_class="btn btn-success" button_type="submit" id="create-study-button" %}
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock content %}

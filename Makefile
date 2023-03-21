@@ -46,5 +46,14 @@ local-certs:
 	mkcert -install
 	cd certs && mkcert local_lookit.mit.edu
 
+media:
+	gsutil -m cp -r "gs://lookit-staging/media" ./project
+
 test:
 	docker compose run --rm -e ENVIRONMENT= web poetry run ./manage.py test --failfast 
+
+collectstatic: 
+	docker compose run --rm web poetry run ./manage.py collectstatic --clear --noinput
+
+lint: 
+	poetry install --sync && poetry run pre-commit run --all-files
