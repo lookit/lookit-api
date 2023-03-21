@@ -6,10 +6,6 @@
   -moz-column-count: 3;
   -webkit-column-count: 3; }
 
-div.navbar-nav button.active,
-div.navbar-nav a.active {
-  --bs-nav-pills-link-active-bg: #e7e7e7; }
-
 #study-details-form .ace-overlay,
 #study-create-form .ace-overlay {
   width: 100%;
@@ -2972,7 +2968,7 @@ textarea.form-control-lg {
 .nav-pills {
   --bs-nav-pills-border-radius: 0.375rem;
   --bs-nav-pills-link-active-color: #fff;
-  --bs-nav-pills-link-active-bg: #52c8ed; }
+  --bs-nav-pills-link-active-bg: #e7e7e7; }
   .nav-pills .nav-link {
     background: none;
     border: 0;
