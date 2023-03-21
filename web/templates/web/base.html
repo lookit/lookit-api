@@ -103,15 +103,11 @@
         {% bootstrap_javascript %}
         {% bootstrap_css %}
         {# others... #}
-        <link type="text/css" rel="stylesheet" href="{% static 'css/base.css' %}"/>
-        <link type="text/css"
-              rel="stylesheet"
-              href="{% static 'css/navigation.css' %}"/>
         {% block head %}
         {% endblock head %}
         {% google_tag_manager %}
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock body_class %}">
         <div class="container">
             {% block nav %}
                 {% include "web/_navigation.html" %}
