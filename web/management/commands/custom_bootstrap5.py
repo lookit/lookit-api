@@ -13,13 +13,12 @@ class Command(BaseCommand):
     output_css = "web/static/custom_bootstrap5.css"
 
     def get_css_hash(self):
-        sha1 = hashlib.sha1()
+        m = hashlib.sha256()
 
-        with open(self.output_css, "r", encoding="utf-8") as fp:
-            data = fp.read()
-            sha1.update(data.encode("utf-8"))
+        with open(self.output_css) as fp:
+            m.update(fp.read().encode("utf-8"))
 
-        return sha1.hexdigest()
+        return m.hexdigest()
 
     def handle(self, *args, **kwargs):
         # get currently used version by django-boostrap package
