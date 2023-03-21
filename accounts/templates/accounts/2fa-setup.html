@@ -2,10 +2,6 @@
 {% load django_bootstrap5 %}
 {% load bootstrap_icons %}
 {% load static %}
-{% block head %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{% static 'css/2fa-setup.css' %}"/>
-{% endblock head %}
 {% block title %}
     Set up Two Factor Authentication
 {% endblock title %}

@@ -57,3 +57,6 @@ collectstatic:
 
 lint: 
 	poetry install --sync && poetry run pre-commit run --all-files
+
+css:
+	poetry run ./manage.py custom_bootstrap5

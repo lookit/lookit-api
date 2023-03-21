@@ -23,9 +23,20 @@ jobs:
       - run:
           name: Run linters
           command: poetry run pre-commit run --all-files
+  build-and-css: 
+    docker:
+      - image: cimg/python:3.9
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: Compile css
+          command: poetry run ./manage.py custom_bootstrap5
 
 workflows:
   sample: 
     jobs:
       - build-and-test
       - build-and-lint
+      - build-and-css
